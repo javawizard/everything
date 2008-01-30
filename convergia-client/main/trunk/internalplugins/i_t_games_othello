@@ -1,5 +1,5 @@
 type=tool
-class=com.trivergia.intouch3.client.tools.games.othello.Othello
+class=net.sf.convergia.client.tools.games.othello.Othello
 name=Othello
 description=\
 <html>\
