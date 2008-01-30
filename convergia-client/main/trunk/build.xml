@@ -1,0 +1,64 @@
+<?xml version="1.0"?>
+<!-- ====================================================================== 
+     Jan 1, 2008 2:34:47 AM                                                        
+
+     project    
+     description
+                   
+     Alexander Boyd                                                              
+     ====================================================================== -->
+<project name="InTouch3">
+	<description>
+
+	</description>
+
+	<!-- ================================= 
+          target: default              
+         ================================= -->
+	<target name="jar" description="creates a jar file, excluding the folder appdata and the jar file intouch3updates.jar, and saves it to intouch3updates.jar">
+		<jar destfile="intouch3updates.jar">
+			<fileset dir=".">
+				<include name="**/*" />
+				<exclude name="intouch3updates.jar" />
+				<exclude name="appdata/**/*" />
+				<exclude name="plugins/**/*" />
+				<exclude name="bin/plugins/**/*" />
+				<exclude name="bin/appdata/**/*" />
+				<exclude name="docs/**/*" />
+				<exclude name="bin/docs/**/*" />
+				<exclude name="bin/intouch3updates.jar" />
+			</fileset>
+		</jar>
+	</target>
+
+	<target name="upload" depends="jar" description="creates a jar file, then uploads it to the server. the update versionindex will be incremented by one.">
+		<get dest="tmpupd.properties" src="http://trivergia.com:8080/intouch3updates.properties" />
+		<java classpath="bin" fork="true" failonerror="true" dir="." classname="com.trivergia.intouch3.uploader.IVersion">
+		</java>
+		<exec executable="cmd.exe" failonerror="true">
+			<arg value="/C" />
+			<arg value="start" />
+			<arg value='"InTouch 3 Upload"' />
+			<arg value="/WAIT" />
+			<arg value="C:/cygwin/bin/scp" />
+			<arg value="-i" />
+			<arg value='"/c/Users/mboyd/id_rsa"' />
+			<arg value="-r" />
+			<arg value="intouch3updates.jar" />
+			<arg value="root@trivergia.com:/apache/tomcat-i/webapps/ROOT/intouch3updates.jar" />
+		</exec>
+		<exec executable="cmd.exe" failonerror="true">
+			<arg value="/C" />
+			<arg value="start" />
+			<arg value='"InTouch 3 Updates"' />
+			<arg value="/WAIT" />
+			<arg value="C:/cygwin/bin/scp" />
+			<arg value="-i" />
+			<arg value='"/c/Users/mboyd/id_rsa"' />
+			<arg value="-r" />
+			<arg value="intouch3updates.properties" />
+			<arg value="root@trivergia.com:/apache/tomcat-i/webapps/ROOT" />
+		</exec>
+	</target>
+
+</project>

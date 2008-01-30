@@ -1,0 +1,3 @@
+MORE MEANINGLESS RAMBLE FROM ME
+
+when synchronization is attempted (only one synchronization may be active at a time), the synchronizing method starts a new thread.

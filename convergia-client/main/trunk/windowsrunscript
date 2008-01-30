@@ -1,0 +1,2 @@
+cd "%INSTALLDIR%"
+javaw.exe -cp bin;examples.jar;jna.jar com.trivergia.intouch3.client.Loader

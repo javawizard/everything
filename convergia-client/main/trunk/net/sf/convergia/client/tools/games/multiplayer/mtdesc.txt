@@ -1,0 +1,24 @@
+there is a key called board which holds the board contents. this may only be written by the current player.
+there is a key called currentplayer which is the user who's turn it is. there is a number of keys called participant_USERNAME
+where USERNAME is the username of a participant and the value is the player metadata object, or the empty string if
+the player has not provided a metadata object. metadata objects and participants are reset once somebody win()s the game.
+metadata objects can only be read when the game is in progress. when a player win()s the game, the currentplayer property
+is deleted, but gameboard persists until the start of the next game, at which point it is set to getDefaultBoardObject().
+this is so that the participants may view the game board while the win message has shown up.
+
+there is a property called winningplayer which exists after a game has ended but before
+
+if currentplayer exists, then a game is in progress and the user specified by that property is the current user.
+if it doesn't (even if participant_XXX parameters still exist), there is no game in progress. if participant_XXX
+parameters exist, this means that those people have chosen to participate in the upcoming game. any of the
+people may start the game. in addition, a small chat box is provided for conversation between both players and
+observers, and the chat box is cleared for any of the users when that user exits InTouch 3. anyway,
+when a user clicks the button to join the game (this is before it starts), createPlayerMetadata() is called.
+this creates the player's metadata. for example, in Pente, this method could pop up a JColorChooser that
+asks the user for their bead color. when the user chooses a color, the method would return. when a user
+click start, gameboard is set to getDefaultBoardObject(), currentplayer is set to that user, a message
+is sent to all users alerting them that the game has started, and play begins. that user takes their turn,
+calling setBoardObject() as many times as they want, and each time, gameboard will be updated and a message
+sent to all players alerting them of the game board update. there is a menuitem on the advanced menu called reload state
+which gets the board property and the current player again. this is useful for if the user went offline for a brief moment.
+when a player calls finishedTurn()
