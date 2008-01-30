@@ -15,7 +15,7 @@
 	<!-- ================================= 
           target: default              
          ================================= -->
-	<target name="jar" description="creates a jar file, excluding the folder appdata and the jar file intouch3updates.jar, and saves it to intouch3updates.jar">
+	<target name="jar" description="creates a jar file, excluding the folder appdata and the jar file convergiaupdates.jar, and saves it to intouch3updates.jar">
 		<jar destfile="convergiaupdates.jar">
 			<fileset dir=".">
 				<include name="**/*" />
