@@ -35,7 +35,7 @@ import javax.swing.border.EmptyBorder;
 import javax.swing.border.EtchedBorder;
 import javax.swing.border.LineBorder;
 
-import net.sf.convergia.client.InTouch3;
+import net.sf.convergia.client.Convergia;
 import net.sf.convergia.client.Plugin;
 import net.sf.convergia.client.PluginManager;
 import net.sf.convergia.client.UserInformationLink;
@@ -362,12 +362,12 @@ public class ToolWorkspace extends Workspace
 	public void initialize()
 	{
 		frame = new WorkspaceFrame();
-		frame.setIconImage(InTouch3.getWindowIcon());
+		frame.setIconImage(Convergia.getWindowIcon());
 		creatorInfoUpdaterThread.start();
 		setFrameTitle();
 		frame.getChatPopOutButton().setText("");
 		frame.getChatPopOutButton().setIcon(
-				new ImageIcon(InTouch3.Icons.POP_OUT.getImage()));
+				new ImageIcon(Convergia.Icons.POP_OUT.getImage()));
 		frame.invalidate();
 		frame.validate();
 		frame.repaint();
@@ -430,11 +430,11 @@ public class ToolWorkspace extends Workspace
 					};
 					descriptionLabel.addMouseListener(ls);
 					mainLabel.addMouseListener(ls);
-					InTouch3.setPlainFont(descriptionLabel);
+					Convergia.setPlainFont(descriptionLabel);
 					ip.add(mainLabel, BorderLayout.NORTH);
 					ip.add(descriptionLabel, BorderLayout.CENTER);
 					buttons[i] = b;
-					p.add(InTouch3.pad(op, 1, 12));
+					p.add(Convergia.pad(op, 1, 12));
 				}
 				new Thread()
 				{
@@ -463,7 +463,7 @@ public class ToolWorkspace extends Workspace
 								// to begin with
 								return;
 							ToolWrapper w = new ToolWrapper();
-							w.setId(InTouch3.generateId());
+							w.setId(Convergia.generateId());
 							w.setDatastore(new File(storage.getToolDatastore(),
 									w.getId() + "-"
 											+ System.currentTimeMillis()));
@@ -692,7 +692,7 @@ public class ToolWorkspace extends Workspace
 					try
 					{
 						String chatMessageId = ""
-								+ InTouch3.com.getServerTime() + "-"
+								+ Convergia.com.getServerTime() + "-"
 								+ getUsername();
 						ChatMessage message = new ChatMessage();
 						message.setId(chatMessageId);
@@ -923,7 +923,7 @@ public class ToolWorkspace extends Workspace
 			if (!f)
 				toolsBuilder.append("||");
 			f = false;
-			String toolString = InTouch3.delimited(Arrays.asList(new String[]
+			String toolString = Convergia.delimited(Arrays.asList(new String[]
 			{ w.getId(), w.getTypeId(), "" + w.getIndex(),
 					w.getName().length() == 0 ? " " : w.getName() }), "|");
 			toolsBuilder.append(toolString);
@@ -1012,7 +1012,7 @@ public class ToolWorkspace extends Workspace
 			toolLabelPanel.setLayout(new BorderLayout());
 			toolLabelPanel.add(toolLabel, BorderLayout.CENTER);
 			JLinkButton popLabel = new JLinkButton(new ImageIcon(
-					InTouch3.Icons.POP_OUT.getImage()));
+					Convergia.Icons.POP_OUT.getImage()));
 			popLabel.setFocusable(false);
 			popLabel.setBorder(new EmptyBorder(1, 1, 1, 1));
 			toolLabelPanel.setOpaque(false);

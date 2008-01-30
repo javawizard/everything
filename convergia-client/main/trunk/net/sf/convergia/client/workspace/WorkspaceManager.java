@@ -13,7 +13,7 @@ import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JTabbedPane;
 
-import net.sf.convergia.client.InTouch3;
+import net.sf.convergia.client.Convergia;
 import net.sf.convergia.client.Plugin;
 import net.sf.convergia.client.PluginManager;
 import net.sf.convergia.client.Storage;
@@ -247,23 +247,23 @@ public class WorkspaceManager
 														null,
 														JOptionPane.YES_NO_OPTION) == JOptionPane.YES_OPTION)
 										{
-											if (!InTouch3.com.getCommunicator()
+											if (!Convergia.com.getCommunicator()
 													.isActive())
 											{
-												InTouch3.launchbar.show();
+												Convergia.launchbar.show();
 												JOptionPane
 														.showMessageDialog(
-																InTouch3.launchbar,
+																Convergia.launchbar,
 																"You must be connected to the internet to add a workspace");
 												return;
 											}
 											String id = wId;
 											if (WorkspaceManager.getById(id) != null)
 											{
-												InTouch3.launchbar.show();
+												Convergia.launchbar.show();
 												JOptionPane
 														.showMessageDialog(
-																InTouch3.launchbar,
+																Convergia.launchbar,
 																"You are already participating in this workspace");
 												return;
 											}
@@ -273,7 +273,7 @@ public class WorkspaceManager
 											{
 												String creator = WorkspaceManager
 														.getWorkspaceCreator(id);
-												String mdString = InTouch3.com
+												String mdString = Convergia.com
 														.getUserMetadata(creator);
 												if (mdString != null)
 												{
@@ -291,16 +291,16 @@ public class WorkspaceManager
 														for (String u : allowedUsers)
 														{
 															if (u
-																	.equals(InTouch3.username))
+																	.equals(Convergia.username))
 																allowed = true;
 														}
 														if (!allowed)
 														{
-															InTouch3.launchbar
+															Convergia.launchbar
 																	.show();
 															JOptionPane
 																	.showMessageDialog(
-																			InTouch3.launchbar,
+																			Convergia.launchbar,
 																			"<html>The creator of that workspace, "
 																					+ creator
 																					+ ", has <br/> not allowed you to participate in this workspace. Contact<br/>"
@@ -328,7 +328,7 @@ public class WorkspaceManager
 																								.currentTimeMillis()));
 																ws.setId(id);
 																ws
-																		.setName(InTouch3.WORKSPACE_DEFAULT_NAME);
+																		.setName(Convergia.WORKSPACE_DEFAULT_NAME);
 																ws
 																		.setTypeId(mdWorkspaceType);
 																Storage
@@ -337,7 +337,7 @@ public class WorkspaceManager
 																		.reloadWorkspaces();
 																WorkspaceManager
 																		.reloadWorkspaceMembers();
-																InTouch3
+																Convergia
 																		.reloadLaunchbarWorkspaces();
 																for (String u : WorkspaceManager
 																		.getById(
@@ -346,7 +346,7 @@ public class WorkspaceManager
 																{
 																	try
 																	{
-																		InTouch3.com
+																		Convergia.com
 																				.sendMessage(
 																						u,
 																						"wsi|reloadusers");
@@ -356,21 +356,21 @@ public class WorkspaceManager
 																				.printStackTrace();
 																	}
 																}
-																InTouch3.launchbar
+																Convergia.launchbar
 																		.show();
 																JOptionPane
 																		.showMessageDialog(
-																				InTouch3.launchbar,
+																				Convergia.launchbar,
 																				"<html>The workspace has been successfully imported. Click<br/>on the configure icon next to it in the launchbar to edit it's settings.<br/><br/>"
 																						+ "");
 																return;
 															} else
 															{
-																InTouch3.launchbar
+																Convergia.launchbar
 																		.show();
 																JOptionPane
 																		.showMessageDialog(
-																				InTouch3.launchbar,
+																				Convergia.launchbar,
 																				"<html>You don't have this workspace's type installed.<br/>It's type is "
 																						+ mdWorkspaceType
 																						+ ".<br/>Please install this type, then try again.");
@@ -394,10 +394,10 @@ public class WorkspaceManager
 											}
 											if (incorrectId)
 											{
-												InTouch3.launchbar.show();
+												Convergia.launchbar.show();
 												JOptionPane
 														.showMessageDialog(
-																InTouch3.launchbar,
+																Convergia.launchbar,
 																"The ID specified is not a valid ID.");
 											}
 
@@ -425,7 +425,7 @@ public class WorkspaceManager
 						Thread.sleep(120 * 1000);
 						if (communicator.getCommunicator().isActive())
 						{
-							InTouch3.updateMetadata();
+							Convergia.updateMetadata();
 							reloadWorkspaceMembers();
 							communicator.reloadAllUsers();
 							communicator.reloadOnlineUsers();
@@ -553,7 +553,7 @@ public class WorkspaceManager
 		}
 		if (isKnownUser)
 		{
-			InTouch3.notificationFrame.addNotification(new NotificationAdapter(
+			Convergia.notificationFrame.addNotification(new NotificationAdapter(
 					new JLabel("" + u + " is now " + status.getStatusString()),
 					false, true), true);
 		}

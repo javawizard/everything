@@ -180,7 +180,7 @@ public class PluginManager
 
 	public static final String PLUGIN_EXTENTION = ".jar";
 
-	public static final File UPDATE_DOWNLOAD_FOLDER = new File(InTouch3.sfile,
+	public static final File UPDATE_DOWNLOAD_FOLDER = new File(Convergia.sfile,
 			"pluginupdates");
 	static
 	{
@@ -258,7 +258,7 @@ public class PluginManager
 			HashMap<Plugin, Properties> pluginsWithUpdates)
 	{
 		// PluginUpdateDialog dialog = new
-		// PluginUpdateDialog(InTouch3.launchbar);
+		// PluginUpdateDialog(Convergia.launchbar);
 		return pluginsWithUpdates;
 	}
 

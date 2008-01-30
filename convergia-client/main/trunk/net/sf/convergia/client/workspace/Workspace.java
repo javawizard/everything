@@ -9,7 +9,7 @@ import java.util.Properties;
 import javax.swing.JComponent;
 import javax.swing.JFrame;
 
-import net.sf.convergia.client.InTouch3;
+import net.sf.convergia.client.Convergia;
 import net.sf.convergia.client.Plugin;
 import net.sf.convergia.client.Storage;
 import net.sf.convergia.client.com.Communicator;
@@ -131,7 +131,7 @@ public abstract class Workspace implements Serializable
 	 */
 	protected String getUsername()
 	{
-		return InTouch3.username;
+		return Convergia.username;
 	}
 
 	/**
@@ -229,7 +229,7 @@ public abstract class Workspace implements Serializable
 	protected void setAttentionStatus(boolean attention)
 	{
 		this.needsAttention = attention;
-		InTouch3.reloadLaunchbarWorkspaces();
+		Convergia.reloadLaunchbarWorkspaces();
 	}
 
 	/**
@@ -247,7 +247,7 @@ public abstract class Workspace implements Serializable
 	protected void setNewInformationStatus(boolean newInfo)
 	{
 		this.hasNewInformation = newInfo;
-		InTouch3.reloadLaunchbarWorkspaces();
+		Convergia.reloadLaunchbarWorkspaces();
 	}
 
 	/**
@@ -302,7 +302,7 @@ public abstract class Workspace implements Serializable
 	 */
 	protected boolean showConfigurationWindow()
 	{
-		return InTouch3.showConfigWindow(wrapper);
+		return Convergia.showConfigWindow(wrapper);
 	}
 
 	/**
@@ -322,7 +322,7 @@ public abstract class Workspace implements Serializable
 	 */
 	protected boolean showConfigurationWindow(JFrame frame)
 	{
-		return InTouch3.showConfigWindow(wrapper, frame);
+		return Convergia.showConfigWindow(wrapper, frame);
 	}
 
 	/**
@@ -374,7 +374,7 @@ public abstract class Workspace implements Serializable
 	protected void setName(String name)
 	{
 		wrapper.setName(name);
-		InTouch3.reloadLaunchbarWorkspaces();
+		Convergia.reloadLaunchbarWorkspaces();
 		save();
 	}
 
@@ -398,7 +398,7 @@ public abstract class Workspace implements Serializable
 	protected boolean isUnnamed()
 	{
 		return wrapper.getName().equalsIgnoreCase(
-				InTouch3.WORKSPACE_DEFAULT_NAME);
+				Convergia.WORKSPACE_DEFAULT_NAME);
 	}
 
 	/**
@@ -426,9 +426,9 @@ public abstract class Workspace implements Serializable
 	protected void setInfo(String info)
 	{
 		info = Base64Coder.encodeString(info);
-		wrapper.setInfo(InTouch3.username, info);
+		wrapper.setInfo(Convergia.username, info);
 		save();
-		InTouch3.updateMetadata();
+		Convergia.updateMetadata();
 	}
 
 	protected String getProperty(String key)
@@ -520,7 +520,7 @@ public abstract class Workspace implements Serializable
 		WorkspaceNotification nWrapper = new WorkspaceNotification(wrapper
 				.getId(), notification);
 		System.out.println("adding W");
-		InTouch3.notificationFrame.addNotification(nWrapper, requestDisplay);
+		Convergia.notificationFrame.addNotification(nWrapper, requestDisplay);
 		
 		System.out.println("added W");
 	}
@@ -531,13 +531,13 @@ public abstract class Workspace implements Serializable
 				.getId(), notification);
 		// this works because nWrapper.equals() is true if the workspaceId of
 		// the wrapper and the wrapper notification are the same
-		InTouch3.notificationFrame.removeNotification(nWrapper);
+		Convergia.notificationFrame.removeNotification(nWrapper);
 	}
 
 	protected TaskbarNotification[] listNotifications()
 	{
 		ArrayList<TaskbarNotification> notifications = new ArrayList<TaskbarNotification>();
-		for(WorkspaceNotification notification : InTouch3.notificationFrame.listNotificationsByClass(WorkspaceNotification.class))
+		for(WorkspaceNotification notification : Convergia.notificationFrame.listNotificationsByClass(WorkspaceNotification.class))
 		{
 			if(notification.getWorkspaceId().equals(getWrapper().getId()))
 				notifications.add(notification.getNotification());

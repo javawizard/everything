@@ -83,7 +83,7 @@ import com.l2fprod.common.swing.JLinkButton;
  * 
  */
 @SuppressWarnings("deprecation")
-public class InTouch3
+public class Convergia
 {
 	public static LowLevelCommunicator lcom;
 
@@ -2212,7 +2212,7 @@ public class InTouch3
 							boolean allowed = false;
 							for (String u : allowedUsers)
 							{
-								if (u.equals(InTouch3.username))
+								if (u.equals(Convergia.username))
 									allowed = true;
 							}
 							if (!allowed)

@@ -3,7 +3,7 @@ package net.sf.convergia.client.features;
 import java.io.File;
 import java.util.ArrayList;
 
-import net.sf.convergia.client.InTouch3;
+import net.sf.convergia.client.Convergia;
 import net.sf.convergia.client.com.Communicator;
 
 
@@ -98,7 +98,7 @@ public abstract class Feature
 	 */
 	protected String getUsername()
 	{
-		return InTouch3.username;
+		return Convergia.username;
 	}
 
 	/**

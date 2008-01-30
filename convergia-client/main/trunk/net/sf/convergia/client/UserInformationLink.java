@@ -19,7 +19,7 @@ public class UserInformationLink extends JLinkButton
 
 			public void actionPerformed(ActionEvent e)
 			{
-				InTouch3.showUserInformationDialog(username,
+				Convergia.showUserInformationDialog(username,
 						(JFrame) getTopLevelAncestor());
 			}
 		});

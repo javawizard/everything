@@ -4,7 +4,7 @@ import java.awt.Color;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
-import net.sf.convergia.client.InTouch3;
+import net.sf.convergia.client.Convergia;
 
 import com.l2fprod.common.swing.JLinkButton;
 
@@ -18,7 +18,7 @@ public class HelpButton extends JLinkButton
 	 *            the label, or text, that shows up on this button
 	 * @param path
 	 *            the path to the help. this is passed to
-	 *            InTouch3.showHelpTopic()
+	 *            Convergia.showHelpTopic()
 	 */
 	public HelpButton(String name, final String path)
 	{
@@ -30,7 +30,7 @@ public class HelpButton extends JLinkButton
 
 			public void actionPerformed(ActionEvent e)
 			{
-				InTouch3.showHelpTopic(path);
+				Convergia.showHelpTopic(path);
 			}
 		});
 	}

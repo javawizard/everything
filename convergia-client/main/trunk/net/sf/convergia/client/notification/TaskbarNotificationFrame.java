@@ -30,7 +30,7 @@ import javax.swing.border.CompoundBorder;
 import javax.swing.border.EmptyBorder;
 import javax.swing.border.EtchedBorder;
 
-import net.sf.convergia.client.InTouch3;
+import net.sf.convergia.client.Convergia;
 
 import com.sun.jna.examples.WindowUtils;
 
@@ -139,7 +139,7 @@ public class TaskbarNotificationFrame extends javax.swing.JWindow implements
 							tensOfSecondsUntilHide = defaultNumVisibleSeconds * 10;
 							isFadingToVisible = true;
 							currentVisibilityLevel = 64;
-							if (InTouch3.useWindowTransparency())// FIXME:
+							if (Convergia.useWindowTransparency())// FIXME:
 								// setWindowAlpha
 								// only
 								// works
@@ -164,7 +164,7 @@ public class TaskbarNotificationFrame extends javax.swing.JWindow implements
 						{
 							pbar.setValue(defaultNumVisibleSeconds * 10);
 							currentVisibilityLevel++;
-							if (InTouch3.useWindowTransparency())// FIXME:
+							if (Convergia.useWindowTransparency())// FIXME:
 							// setWindowAlpha
 							// only
 							// works
@@ -203,7 +203,7 @@ public class TaskbarNotificationFrame extends javax.swing.JWindow implements
 						{
 							pbar.setValue(0);
 							currentVisibilityLevel--;
-							if (InTouch3.useWindowTransparency())// FIXME:
+							if (Convergia.useWindowTransparency())// FIXME:
 							// setWindowAlpha
 							// only
 							// works
@@ -226,7 +226,7 @@ public class TaskbarNotificationFrame extends javax.swing.JWindow implements
 												((currentVisibilityLevel * 1.0f) / 64f));
 								Thread.sleep(25);
 							}
-							if (InTouch3.useWindowTransparency()
+							if (Convergia.useWindowTransparency()
 									&& currentVisibilityLevel == 0)// FIXME:
 							// setWindowAlpha
 							// only

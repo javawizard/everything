@@ -13,7 +13,7 @@ import javax.swing.JPanel;
 import javax.swing.JTabbedPane;
 import javax.swing.SwingUtilities;
 
-import net.sf.convergia.client.InTouch3;
+import net.sf.convergia.client.Convergia;
 import net.sf.convergia.client.notification.NotificationAdapter;
 
 
@@ -197,14 +197,14 @@ public class ConfigureInTouch3Dialog extends javax.swing.JDialog
 
 						public void actionPerformed(ActionEvent e)
 						{
-							InTouch3.notificationFrame.addNotification(
+							Convergia.notificationFrame.addNotification(
 									new NotificationAdapter(new JLabel(
 											"test notification at "
 													+ new Date()), true, false)
 									{
 										public void clicked()
 										{
-											InTouch3.notificationFrame
+											Convergia.notificationFrame
 													.removeNotification(this);
 										}
 									}, false);
@@ -222,7 +222,7 @@ public class ConfigureInTouch3Dialog extends javax.swing.JDialog
 
 						public void actionPerformed(ActionEvent e)
 						{
-							InTouch3.notificationFrame
+							Convergia.notificationFrame
 									.addNotification(
 											new NotificationAdapter(new JLabel(
 													"test notification at "

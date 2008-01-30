@@ -15,7 +15,7 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 
-import net.sf.convergia.client.InTouch3;
+import net.sf.convergia.client.Convergia;
 import net.sf.convergia.client.SubversionFileFilter;
 import net.sf.convergia.client.workspace.SetList;
 
@@ -625,7 +625,7 @@ public class Communicator
 	public void setWorkspacePermissions(String workspaceId, String[] users)
 	{
 		String commandString = workspaceId + " "
-				+ InTouch3.delimited(Arrays.asList(users), " ");
+				+ Convergia.delimited(Arrays.asList(users), " ");
 		if (!execCommand("SETWORKSPACEPERMISSIONS", commandString).startsWith(
 				"OK"))
 			throw new RuntimeException("Setting permissions failed");

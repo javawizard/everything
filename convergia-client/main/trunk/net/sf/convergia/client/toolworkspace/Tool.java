@@ -11,7 +11,7 @@ import javax.swing.JFrame;
 import javax.swing.JTabbedPane;
 import javax.swing.SwingUtilities;
 
-import net.sf.convergia.client.InTouch3;
+import net.sf.convergia.client.Convergia;
 import net.sf.convergia.client.notification.TaskbarNotification;
 import net.sf.convergia.client.workspace.WorkspaceManager;
 import net.sf.convergia.client.workspace.WorkspaceNotification;
@@ -566,6 +566,6 @@ public abstract class Tool
 					"The tool is not a member of any tool workspace");
 		tp.setSelectedIndex(index);
 		if (!tp.getPopFrame(index).isShowing())
-			InTouch3.bringToFront(getWrapper().getWorkspace().getFrame());
+			Convergia.bringToFront(getWrapper().getWorkspace().getFrame());
 	}
 }

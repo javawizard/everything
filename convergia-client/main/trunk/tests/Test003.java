@@ -1,6 +1,6 @@
 package tests;
 
-import net.sf.convergia.client.InTouch3;
+import net.sf.convergia.client.Convergia;
 
 public class Test003
 {
@@ -11,8 +11,8 @@ public class Test003
 	public static void main(String[] args)
 	{
 		// generates an id.
-		InTouch3.username = "testuser";
-		System.out.println(InTouch3.generateId());
+		Convergia.username = "testuser";
+		System.out.println(Convergia.generateId());
 	}
 
 }

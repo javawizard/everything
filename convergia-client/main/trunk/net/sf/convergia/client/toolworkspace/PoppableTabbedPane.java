@@ -11,7 +11,7 @@ import javax.swing.JPanel;
 import javax.swing.JTabbedPane;
 import javax.swing.SwingUtilities;
 
-import net.sf.convergia.client.InTouch3;
+import net.sf.convergia.client.Convergia;
 
 
 public class PoppableTabbedPane extends JPanel
@@ -226,7 +226,7 @@ public class PoppableTabbedPane extends JPanel
 		if (getTabIndex(index) != -1)
 			tabbedPane.setSelectedIndex(getTabIndex(index));
 		else if (index >= 0 && index < tabs.size())
-			InTouch3.bringToFront(tabs.get(index).getFrame());
+			Convergia.bringToFront(tabs.get(index).getFrame());
 		else
 			throw new IndexOutOfBoundsException("The index specifed (" + index
 					+ ") is not within 0 - " + tabs.size() + ", max-exclusive");

@@ -29,7 +29,7 @@ import javax.swing.border.EtchedBorder;
 
 import net.sf.convergia.client.IMenu;
 import net.sf.convergia.client.IMenuItem;
-import net.sf.convergia.client.InTouch3;
+import net.sf.convergia.client.Convergia;
 import net.sf.convergia.client.notification.NotificationAdapter;
 import net.sf.convergia.client.notification.TaskbarNotification;
 import net.sf.convergia.client.toolworkspace.Tool;
@@ -392,7 +392,7 @@ public abstract class MultiplayerSequenceGame extends Tool
 
 			public void actionPerformed(ActionEvent e)
 			{
-				InTouch3
+				Convergia
 						.showHelpTopic("/help/workspaces/toolworkspaces/builtInTools/games/msgHowto");
 			}
 		});

@@ -8,7 +8,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Properties;
 
-import net.sf.convergia.client.InTouch3;
+import net.sf.convergia.client.Convergia;
 import net.sf.convergia.client.frames.ConfigureWorkspaceDialog;
 
 
@@ -63,7 +63,7 @@ public class WorkspaceWrapper implements Serializable
 	public boolean isMine()
 	{
 		return WorkspaceManager.getWorkspaceCreator(id).equals(
-				InTouch3.username);
+				Convergia.username);
 	}
 
 	public String getTypeId()

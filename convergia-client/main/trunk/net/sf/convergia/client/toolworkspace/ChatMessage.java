@@ -3,14 +3,14 @@ package net.sf.convergia.client.toolworkspace;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
-import net.sf.convergia.client.InTouch3;
+import net.sf.convergia.client.Convergia;
 
 
 public class ChatMessage
 {
 	private String id;
 	private String message;
-	private static final SimpleDateFormat dateformat = new SimpleDateFormat(InTouch3.getDateFormatString());
+	private static final SimpleDateFormat dateformat = new SimpleDateFormat(Convergia.getDateFormatString());
 	public String getId()
 	{
 		return id;
