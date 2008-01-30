@@ -25,7 +25,6 @@ import net.sf.convergia.client.notification.NotificationAdapter;
 
 import base64.Base64Coder;
 
-
 public class WorkspaceManager
 {
 	/**
@@ -55,7 +54,7 @@ public class WorkspaceManager
 	}
 
 	private static Communicator communicator;
-	
+
 	private static long lastInviteTime = 0;
 
 	/**
