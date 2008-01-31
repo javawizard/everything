@@ -187,7 +187,7 @@ public class Convergia
 
 	private static JPanel contactsPanel;
 
-	private static final String SYSTEM_UPDATE_SITE = "http://trivergia.com:8080/intouch3updates.properties";
+	private static final String SYSTEM_UPDATE_SITE = "http://trivergia.com:8080/convergiaupdates.properties";
 
 	/**
 	 * @param args
@@ -806,13 +806,10 @@ public class Convergia
 	protected static void showAboutWindow()
 	{
 		showLaunchBar();
-		JOptionPane
-				.showMessageDialog(
-						launchbar,
-						"<html>Convergia<br/>Version "
-								+ getDisplayableVersion()
+		JOptionPane.showMessageDialog(launchbar, "<html>Convergia<br/>Version "
+				+ getDisplayableVersion()
 
-								+ "<br/><br/>http://convergia.sf.net");// TODO:
+				+ "<br/><br/>http://convergia.sf.net");// TODO:
 		// if
 		// this
 		// gets
@@ -1759,24 +1756,21 @@ public class Convergia
 			{
 				try
 				{
-					Desktop
-							.getDesktop()
-							.browse(
-									new URI(
-											"http://static.trivergia.com/intouch-register"));
+					Desktop.getDesktop().browse(
+							new URI("http://convergia.sf.net/register.html"));
 				} catch (IOException e)
 				{
 					e.printStackTrace();
 					JOptionPane
 							.showMessageDialog(
 									uframe,
-									"InTouch Communicator may not have been able to open the new user web page. To create an account, visit http://static.trivergia.com/intouch-register");
+									"Convergia may not have been able to open the new user web page. To create an account, visit http://convergia.sf.net/register.html");
 				} catch (URISyntaxException e)
 				{
 					e.printStackTrace();
 					JOptionPane
 							.showMessageDialog(uframe,
-									"An internal error has occured. InTouch Communicator will shut down.");
+									"An internal error has occured. Convergia will shut down.");
 					System.exit(0);
 				}
 			} else if (wasCancel)
@@ -1791,7 +1785,7 @@ public class Convergia
 	private static long nextGenId = 0;
 
 	/**
-	 * creates a new id. the id should be unique for the whole InTouch
+	 * creates a new id. the id should be unique for the whole Convergia
 	 * communicator system. the first part of the id, up until the first hyphen,
 	 * is this user's username.
 	 * 

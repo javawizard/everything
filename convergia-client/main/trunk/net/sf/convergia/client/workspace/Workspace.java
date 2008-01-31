@@ -17,9 +17,10 @@ import net.sf.convergia.client.notification.TaskbarNotification;
 
 import base64.Base64Coder;
 
-
 public abstract class Workspace implements Serializable
 {
+	private static final long serialVersionUID = -6525261980589892668L;
+
 	private WorkspaceWrapper wrapper;
 
 	private Communicator communicator;
@@ -521,7 +522,7 @@ public abstract class Workspace implements Serializable
 				.getId(), notification);
 		System.out.println("adding W");
 		Convergia.notificationFrame.addNotification(nWrapper, requestDisplay);
-		
+
 		System.out.println("added W");
 	}
 
@@ -537,9 +538,10 @@ public abstract class Workspace implements Serializable
 	protected TaskbarNotification[] listNotifications()
 	{
 		ArrayList<TaskbarNotification> notifications = new ArrayList<TaskbarNotification>();
-		for(WorkspaceNotification notification : Convergia.notificationFrame.listNotificationsByClass(WorkspaceNotification.class))
+		for (WorkspaceNotification notification : Convergia.notificationFrame
+				.listNotificationsByClass(WorkspaceNotification.class))
 		{
-			if(notification.getWorkspaceId().equals(getWrapper().getId()))
+			if (notification.getWorkspaceId().equals(getWrapper().getId()))
 				notifications.add(notification.getNotification());
 		}
 		return notifications.toArray(new TaskbarNotification[0]);

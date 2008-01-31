@@ -6,7 +6,6 @@ import java.util.ArrayList;
 import net.sf.convergia.client.Convergia;
 import net.sf.convergia.client.com.Communicator;
 
-
 public abstract class Feature
 {
 	private Communicator communicator;
@@ -141,8 +140,9 @@ public abstract class Feature
 	 */
 	protected File getStorageFile()
 	{
-		wrapper.getDatastore().mkdirs();
-		return wrapper.getDatastore();
+		// wrapper.getDatastore().mkdirs();
+		// return wrapper.getDatastore();
+		return null;
 	}
 
 	/**
@@ -162,7 +162,8 @@ public abstract class Feature
 	 */
 	protected String getRegisteredType()
 	{
-		return wrapper.getTypeId();
+		// return wrapper.getTypeId();
+		return null;
 	}
 
 }
