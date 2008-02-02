@@ -201,7 +201,7 @@ public class Board extends JComponent
 					Polygon polygon = new Polygon(new int[]
 					{ cx, pc.x, nx, tc.x }, new int[]
 					{ cy, pc.y, ny, tc.y }, 4);
-					if (polygon.contains(x, y))
+					if (polygon.contains(x, y) && c != cols)
 						return new LineLocation(r, c, true);
 				}
 				{
@@ -213,7 +213,7 @@ public class Board extends JComponent
 					Polygon polygon = new Polygon(new int[]
 					{ cx, pc.x, nx, tc.x }, new int[]
 					{ cy, pc.y, ny, tc.y }, 4);
-					if (polygon.contains(x, y))
+					if (polygon.contains(x, y) && r != rows)
 						return new LineLocation(r, c, false);
 				}
 			}
