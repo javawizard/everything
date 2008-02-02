@@ -36,7 +36,6 @@ import net.sf.convergia.client.toolworkspace.Tool;
 
 import base64.Base64Coder;
 
-
 /**
  * A class providing additional functionality for multiplayer sequence games,
  * such as Tic-Tac-Toe, Pente, Othello, Blokus, Monopoly, Pentago, Billiards,
@@ -377,10 +376,13 @@ public abstract class MultiplayerSequenceGame extends Tool
 					// to starting the
 					// game
 					return;
+				Serializable boardObject = getDefaultBoardObject();
+				if (boardObject == null)
+					return;
 				lastTurnIndex = 0;
 				setProperty("winner", null);
 				setProperty("turnindex", "1");
-				setProperty("board", serializeToString(getDefaultBoardObject()));
+				setProperty("board", serializeToString(boardObject));
 				setProperty("currentplayer", getUsername());
 				reRenderBoard();
 				broadcastReloadState();
