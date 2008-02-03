@@ -133,6 +133,10 @@ public class DotsAndBoxes extends MultiplayerSequenceGame
 										"There's already a line there. Pick another spot to go.");
 						return;
 					}
+					if (!(location.isHorizontal() && location.getC() == board
+							.getCols()))
+						board.setLine(location.getR(), location.getC(),
+								location.getHorizontal(), true);
 					board.clearPhantomLines();
 					NetworkBoard nb = new NetworkBoard(1, 1);
 					nb.getFrom(board);
