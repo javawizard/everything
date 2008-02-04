@@ -54,6 +54,7 @@ import javax.swing.border.EmptyBorder;
 import net.sf.convergia.client.com.AuthenticationException;
 import net.sf.convergia.client.com.Communicator;
 import net.sf.convergia.client.com.LowLevelCommunicator;
+import net.sf.convergia.client.download.PluginDownloadManager;
 import net.sf.convergia.client.frames.ChooseLAFDialog;
 import net.sf.convergia.client.frames.ConfigureInTouch3Dialog;
 import net.sf.convergia.client.frames.ConfigureWorkspaceDialog;
@@ -141,7 +142,8 @@ public class Convergia
 				"delete-workspace.png", 16), INVITE_TO_WORKSPACE(
 				"invite-to-workspace.png", 16), POP_OUT("pop-out.png", 16), WORKSPACE_INFO(
 				"workspace-info.png", 16), WORKSPACE_WARNING(
-				"workspace-warning.png", 16);
+				"workspace-warning.png", 16), BACK_BUTTON_32("back-button.png",
+				32);
 		private int size;
 
 		private Icons(String iconPath, int size)
@@ -1348,6 +1350,13 @@ public class Convergia
 			{
 				showOptionsWindow();
 			}
+		}, new IMenuItem("Get new plugins")
+		{
+
+			public void actionPerformed(ActionEvent e)
+			{
+				findNewTools(launchbar, null);
+			}
 		} });
 		JMenu lafMenu = new JMenu("Choose look and feel");
 		toolsMenu.add(lafMenu);
@@ -1537,6 +1546,18 @@ public class Convergia
 		} });
 		bar.add(toolsMenu);
 		bar.add(helpMenu);
+	}
+
+	protected static void findNewTools(JFrame frame, String[] types)
+	{
+		try
+		{
+			PluginDownloadManager.promptForDownload(frame, types,
+					PluginManager.pluginFolder.list());
+		} catch (MalformedURLException e)
+		{
+			e.printStackTrace();
+		}
 	}
 
 	protected static void showOptionsWindow()

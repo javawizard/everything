@@ -442,6 +442,11 @@ public class PluginManager
 		return downloadUpdateSite(plugin.getUpdateSite());
 	}
 
+	public Plugin[] getAllPlugins()
+	{
+		return pluginsById.values().toArray(new Plugin[0]);
+	}
+
 	public PluginUpdateSite downloadUpdateSite(URL updateSiteUrl)
 	{
 		if (updateSiteUrl == null)
