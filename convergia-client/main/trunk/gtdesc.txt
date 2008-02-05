@@ -1,5 +1,7 @@
 THIS IS A FEW NOTES INTENDED FOR DEVELOPERS, AND MOSTLY INTENDED FOR ME (ALEX)
 
+THIS IS OUT OF DATE. TOOLS HAVE BEEN DONE ENTIRELY DIFFERENTLY THEN STATED HERE. PLEASE SEE synctooldesc.txt
+FOR A MORE UP-TO-DATE DESCRIPTION OF TOOLS THAT SYNCHRONIZE DATA.
 
 
 tools have an ObjectHierarchy that they can use to store data. it has 2 root folders. it is not possible to add or remove folders

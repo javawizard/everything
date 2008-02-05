@@ -1,0 +1,53 @@
+MORE RAMBLE ON HOW CONVERGIA WORKS
+
+specifically, how net.sf.convergia.client.toolworkspace.sync.SynchronizingTool works.
+
+SynchronizingTool (as opposed to net.sf.convergia.client.toolworkspace.Tool) should be extended when a tool has data
+that it would like synchronized between all users of that tool, but, in contrast to tools such as games (if you
+are writing a board game or other game where users each take a turn, you might want to consider using
+net.sf.convergia.client.tools.games.multiplayer.MultiplayerSequenceGame), the data need not be synchronized
+instantly. the intention of SynchronizingTool is that, when data is changed, it will be synchronized (excluding
+data transmission times) within 30 seconds.
+
+currently, SynchronizedTool only synchronizes when the users are online. for example, let's assume that we have 4 users,
+A, B, C, and D. A and B are online. A makes a modification to the data in the SynchronizedTool. This change is then
+sent to B. A then goes offline, and C comes online. the change is then sent to C. B and C go offline, and A and D
+come online. The change is then sent to D. In the future, once offline messaging capability is added, data will be sent
+in an offline message, thereby elimintating the need for all users to be online at the same time.
+
+Anyway, data is stored as chunks. A chunk has a name, which identifies it. It's reccomended not to delete a chunk
+and then create one with the same name. (*** FOLLOW UP NEEDED) A chunk's name should be no longer than 1024 bytes,
+although it is reccomended to make it even shorter to speed up transmission and sync times. A chunk has keys and 
+values, which is how data is stored. keys should be no longer than 1024 bytes, and values can be as short as even
+0 bytes and as long as 32768 bytes (32 KB). whenever changes are made to a chunk, or a new chunk is created, it is
+guaranteed that the entire chunk (all of it's attributes) will be synchronized at once. the same is not true of
+multiple chunks, however. this means that if 3 chunks are updated, and the user goes offline almost immediately, 2
+of the chunks may have synchronized. even if the third started, if it did not finish, the changes will not be received
+for it by the other participants. therefore, if 2 portions of data are requisite for each other to function, they should
+be put in the same chunk.
+
+where possible, chunk size should be limited to limit synchronization time. whenever a chunk is changed, the whole
+chunk is sent to each user. therefore, where possible, small chunks will result in the smallest data transfer
+possible.
+
+the system waits until 5 seconds have passed without modifications to chunks before beginning synchronization.
+chunks may also be manually locked from synchronization via the lock() method. you can see if a chunk is locked
+by calling isLocked(). to unlock a chunk, you can call unlock(). chunks should generally not remain locked
+throughout invocations of Convergia. A tool should check to see if any chunks are locked when initialize() is
+called, and if they are, figure out why they are still locked and unlock them. If a chunk is locked, no
+synchronizations will be performed on the chunk. Additionally, when a chunk is unlocked, it will be synchronized,
+or, if no internet connection is available, be marked as needing synchronization.
+
+when a chunk has been modified on a remote computer and on the local computer (IE there is a conflict), the most
+recently modified version will be used. in the future, some sort of conflict resolution will be provided.
+
+when a chunk needs to be synchronized, a String representing that chunk (format TBD, possibly Base64 encoded
+Properties file format including last modified date) is created. this string is then sent to all users currently
+online who are members of the workspace. then, a full synchronization is performed with all online users.
+
+When a user comes online, a full synchronization is performed with that user.
+
+A full synchronization is described here: First, a message is sent from the initiating user to the receiver,
+asking them to participate in a synchronization. if that user is already synchronizing with another user, they
+respond that they are unavailable. if they respond that they are available, then each user sends a list of chunk
+names and the hash of the string format of that chunk. (hash algorithm TBD). 

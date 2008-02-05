@@ -7,4 +7,4 @@ it does not take effect until InTouch 3 is restarted. when InTouch 3 starts, jus
 all of the lookandfeel plugins are installed into UIManager. then, the value of the user config property lookandfeel
 is used as the classname (not the plugin name) of the look and feel to use.
 
-currently, there is no support for themes, but expect this to be present in future releases.
+currently, there is no support for metal themes, but expect this to be present in future releases.

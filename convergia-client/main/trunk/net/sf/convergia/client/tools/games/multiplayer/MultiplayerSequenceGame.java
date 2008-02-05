@@ -166,7 +166,7 @@ public abstract class MultiplayerSequenceGame extends Tool
 	private JLabel myTurnNotificationLabel;
 
 	@Override
-	public void initialize()
+	public final void initialize()
 	{
 		myTurnNotificationLabel = new JLabel();
 		myTurnNotification = new NotificationAdapter(myTurnNotificationLabel,
@@ -261,7 +261,7 @@ public abstract class MultiplayerSequenceGame extends Tool
 
 	private JMenuBar menubar = new JMenuBar();
 
-	private void initMenu()
+	private final void initMenu()
 	{
 		menubar.add(new IMenu("Game", new IMenuItem[]
 		{}));
@@ -310,7 +310,7 @@ public abstract class MultiplayerSequenceGame extends Tool
 
 	}
 
-	private void initComponents()
+	private final void initComponents()
 	{
 		playGameParticipantsPanel.setLayout(new BoxLayout(
 				playGameParticipantsPanel, BoxLayout.X_AXIS));
