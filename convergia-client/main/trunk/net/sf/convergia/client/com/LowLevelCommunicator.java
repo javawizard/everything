@@ -31,6 +31,10 @@ public class LowLevelCommunicator
 
 	public HashMap<String, Long> responseAmounts = new HashMap<String, Long>();
 
+	public HashMap<String, Long> commandSizes = new HashMap<String, Long>();
+
+	public HashMap<String, Long> responseSizes = new HashMap<String, Long>();
+
 	private Socket socket;
 
 	private InputStream in;
@@ -42,6 +46,40 @@ public class LowLevelCommunicator
 	private String username;
 
 	private String password;
+
+	private ArrayList<StatisticsListener> statisticsListeners = new ArrayList<StatisticsListener>();
+
+	public void addStatisticsListener(StatisticsListener listener)
+	{
+		statisticsListeners.add(listener);
+	}
+
+	public void removeStatisticsListener(StatisticsListener listener)
+	{
+		statisticsListeners.remove(listener);
+	}
+
+	private void notifyStatsUpdated()
+	{
+		for (final StatisticsListener l : new ArrayList<StatisticsListener>(
+				statisticsListeners))
+		// construct new ArrayList to prevent ConcurrentModificationException
+		{
+			try
+			{
+				new Thread()
+				{
+					public void run()
+					{
+						l.statsUpdated();
+					}
+				}.start();
+			} catch (Exception ex1)
+			{
+				ex1.printStackTrace();
+			}
+		}
+	}
 
 	private String readLineN() throws IOException
 	{
@@ -119,6 +157,12 @@ public class LowLevelCommunicator
 			commandAmounts.put(cmd, (long) 1);
 		else
 			commandAmounts.put(cmd, commandAmounts.get(cmd) + 1);
+		if (commandSizes.get(cmd) == null)
+			commandSizes.put(cmd, (long) message.length() + 2);
+		else
+			commandSizes.put(cmd, commandSizes.get(cmd) + message.length() + 2);
+		// the +2 is for the carriage return and newline we will append
+		notifyStatsUpdated();
 		sendLine(message);
 	}
 
@@ -215,20 +259,27 @@ public class LowLevelCommunicator
 										.indexOf(" ");
 								String cmd = group.trim().split(" ")[0];
 								if (responseAmounts.get(cmd) == null)
-									responseAmounts.put(cmd, (long) 0);
+									responseAmounts.put(cmd, (long) 1);
 								else
 									responseAmounts.put(cmd, responseAmounts
 											.get(cmd) + 1);
+								if (responseSizes.get(cmd) == null)
+									responseSizes.put(cmd, (long) group
+											.length() + 2);
+								else
+									responseSizes.put(cmd, responseSizes
+											.get(cmd)
+											+ group.length() + 2);
+								notifyStatsUpdated();
 								String cx2;
 								String ax2;
-								if(firstSpaceIndex != -1)
+								if (firstSpaceIndex != -1)
 								{
-								cx2 = group.trim()
-										.substring(0, firstSpaceIndex);
-								ax2 = group.trim().substring(
-										firstSpaceIndex + 1);
-								}
-								else
+									cx2 = group.trim().substring(0,
+											firstSpaceIndex);
+									ax2 = group.trim().substring(
+											firstSpaceIndex + 1);
+								} else
 								{
 									cx2 = group.trim();
 									ax2 = "";

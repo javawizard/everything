@@ -1,21 +1,28 @@
 package net.sf.convergia.client.frames;
 
 import java.awt.BorderLayout;
+import java.awt.FlowLayout;
+import java.awt.Font;
+import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
 
 import javax.swing.JButton;
 
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
+import javax.swing.JScrollPane;
 import javax.swing.JTabbedPane;
+import javax.swing.SwingConstants;
 import javax.swing.SwingUtilities;
 
 import net.sf.convergia.client.Convergia;
+import net.sf.convergia.client.com.StatisticsListener;
 import net.sf.convergia.client.notification.NotificationAdapter;
-
 
 /**
  * This code was edited or generated using CloudGarden's Jigloo SWT/Swing GUI
@@ -27,11 +34,30 @@ import net.sf.convergia.client.notification.NotificationAdapter;
  * PURCHASED FOR THIS MACHINE, SO JIGLOO OR THIS CODE CANNOT BE USED LEGALLY FOR
  * ANY CORPORATE OR COMMERCIAL PURPOSE.
  */
-public class ConfigureInTouch3Dialog extends javax.swing.JDialog
+public class ConfigureConvergiaDialog extends javax.swing.JDialog
 {
 	private JTabbedPane optionsTabbedPane;
 
 	private JPanel generalPanel;
+	private JLabel jLabel9;
+
+	private JPanel responseStatPanel;
+
+	private JPanel jPanel3;
+
+	private JScrollPane jScrollPane2;
+
+	private JPanel commandStatPanel;
+
+	private JScrollPane jScrollPane1;
+
+	private JPanel jPanel2;
+
+	private JLabel jLabel8;
+
+	private JLabel jLabel7;
+
+	private JLabel jLabel6;
 
 	private JButton notificationUntilClickedTestButton;
 
@@ -52,6 +78,14 @@ public class ConfigureInTouch3Dialog extends javax.swing.JDialog
 	private JLabel mConnectedPortLabel;
 
 	private JLabel jLabel2;
+
+	private HashMap<String, JLabel> commandSizeLabels = new HashMap<String, JLabel>();
+
+	private HashMap<String, JLabel> commandAmountLabels = new HashMap<String, JLabel>();
+
+	private HashMap<String, JLabel> responseSizeLabels = new HashMap<String, JLabel>();
+
+	private HashMap<String, JLabel> responseAmountLabels = new HashMap<String, JLabel>();
 
 	private JLabel mConnectedServerLabel;
 
@@ -75,14 +109,14 @@ public class ConfigureInTouch3Dialog extends javax.swing.JDialog
 			public void run()
 			{
 				JFrame frame = new JFrame();
-				ConfigureInTouch3Dialog inst = new ConfigureInTouch3Dialog(
+				ConfigureConvergiaDialog inst = new ConfigureConvergiaDialog(
 						frame);
 				inst.setVisible(true);
 			}
 		});
 	}
 
-	public ConfigureInTouch3Dialog(JFrame frame)
+	public ConfigureConvergiaDialog(JFrame frame)
 	{
 		super(frame, true);
 		initGUI();
@@ -104,6 +138,12 @@ public class ConfigureInTouch3Dialog extends javax.swing.JDialog
 			// START >> generalPanel
 			generalPanel = new JPanel();
 			optionsTabbedPane.addTab("General", null, generalPanel, null);
+			//START >>  jLabel9
+			jLabel9 = new JLabel();
+			generalPanel.add(jLabel9);
+			jLabel9.setText("<html>We're still working on the Options dialog.<br/>Check out the other tabs to see what we have done so far.");
+			jLabel9.setPreferredSize(new java.awt.Dimension(450, 69));
+			//END <<  jLabel9
 			// END << generalPanel
 			// START >> updatesTab
 			// START >> checkForUpdatesButton
@@ -175,9 +215,157 @@ public class ConfigureInTouch3Dialog extends javax.swing.JDialog
 			jLabel5.setText("connection");
 			jLabel5.setBounds(196, 191, 63, 16);
 			jLabel5.setFont(new java.awt.Font("Dialog", 0, 12));
+			// START >> jLabel6
+			jLabel6 = new JLabel();
+			connectionTab.add(jLabel6);
+			jLabel6.setText("<html><font size='5'>Transmission:</font>");
+			jLabel6.setBounds(170, 243, 164, 32);
+			jLabel6.setHorizontalAlignment(SwingConstants.CENTER);
+			// END << jLabel6
+			// START >> jLabel7
+			jLabel7 = new JLabel();
+			connectionTab.add(jLabel7);
+			jLabel7.setText("<html><font size='4'>Me &rarr; Server</font>");
+			jLabel7.setBounds(80, 285, 105, 22);
+			// END << jLabel7
+			// START >> jLabel8
+			jLabel8 = new JLabel();
+			connectionTab.add(jLabel8);
+			jLabel8.setText("<html><font size='4'>Server &rarr; Me</font>");
+			jLabel8.setBounds(325, 287, 92, 19);
+			// END << jLabel8
+			// START >> jScrollPane1
+			jScrollPane1 = new JScrollPane();
+			connectionTab.add(jScrollPane1);
+			jScrollPane1.setBounds(12, 318, 235, 200);
+			// START >> jPanel2
+			jPanel2 = new JPanel();
+			FlowLayout jPanel2Layout = new FlowLayout();
+			jScrollPane1.setViewportView(jPanel2);
+			jPanel2.setBounds(32, 331, 207, 188);
+			jPanel2.setLayout(jPanel2Layout);
+			// START >> commandStatPanel
+			commandStatPanel = new JPanel();
+			GridLayout commandStatPanelLayout = new GridLayout(0, 2);
+			commandStatPanelLayout.setHgap(5);
+			commandStatPanelLayout.setVgap(5);
+			commandStatPanel.setLayout(commandStatPanelLayout);
+			jPanel2.add(getCommandStatPanel());
+			// END << commandStatPanel
+			// END << jPanel2
+			// END << jScrollPane1
+			// START >> jScrollPane2
+			jScrollPane2 = new JScrollPane();
+			connectionTab.add(jScrollPane2);
+			jScrollPane2.setBounds(247, 318, 231, 200);
+			// START >> jPanel3
+			jPanel3 = new JPanel();
+			FlowLayout jPanel3Layout = new FlowLayout();
+			jScrollPane2.setViewportView(jPanel3);
+			jPanel3.setLayout(jPanel3Layout);
+			jPanel3.setBounds(32, 331, 207, 188);
+			// START >> responseStatPanel
+			responseStatPanel = new JPanel();
+			GridLayout jPanel4Layout = new GridLayout(0, 2);
+			jPanel4Layout.setColumns(2);
+			jPanel4Layout.setRows(0);
+			jPanel4Layout.setHgap(5);
+			jPanel4Layout.setVgap(5);
+			jPanel3.add(responseStatPanel);
+			responseStatPanel.setLayout(jPanel4Layout);
+			// END << responseStatPanel
+			// END << jPanel3
+			// END << jScrollPane2
 			// END << jLabel5
 			// END << mConnectedPortLabel
 			// END << connectionTab
+			try
+			{
+				// add a statisticslistener for the connection transmissions
+				// section of the connection tab
+				StatisticsListener statListener = new StatisticsListener()
+				{
+
+					public synchronized void statsUpdated()
+					{
+						if (isDisposed)
+						{
+							System.out
+									.println("configure convergia window disposed, removing stat listener");
+							Convergia.com.communicator
+									.removeStatisticsListener(this);
+							return;
+						}
+						for (Map.Entry<String, Long> e : Convergia.com.communicator.commandAmounts
+								.entrySet())
+						{
+							String command = e.getKey();
+							long amount = e.getValue();
+							long size = Convergia.com.communicator.commandSizes
+									.get(command);
+							if (commandAmountLabels.get(command) == null)
+							{
+								JLabel label = new JLabel(command.toLowerCase()
+										+ ":");
+								Convergia.setPlainFont(label);
+								JLabel amountLabel = new JLabel();
+								Convergia.setPlainFont(amountLabel);
+								JLabel sizeLabel = new JLabel();
+								Convergia.setPlainFont(sizeLabel);
+								commandAmountLabels.put(command, amountLabel);
+								commandSizeLabels.put(command, sizeLabel);
+								commandStatPanel.add(label);
+								JPanel p1c = new JPanel();
+								p1c.setLayout(new BorderLayout());
+								p1c.add(amountLabel, BorderLayout.WEST);
+								p1c.add(sizeLabel, BorderLayout.CENTER);
+								commandStatPanel.add(p1c);
+							}
+							commandAmountLabels.get(command).setText(
+									"" + amount + "|");
+							commandSizeLabels.get(command).setText(
+									Convergia.formatDataSize(size));
+						}
+						for (Map.Entry<String, Long> e : Convergia.com.communicator.responseAmounts
+								.entrySet())
+						{
+							String response = e.getKey();
+							long amount = e.getValue();
+							long size = Convergia.com.communicator.responseSizes
+									.get(response);
+							if (responseAmountLabels.get(response) == null)
+							{
+								JLabel label = new JLabel(response
+										.toLowerCase()
+										+ ":");
+								Convergia.setPlainFont(label);
+								JLabel amountLabel = new JLabel();
+								Convergia.setPlainFont(amountLabel);
+								JLabel sizeLabel = new JLabel();
+								Convergia.setPlainFont(sizeLabel);
+								responseAmountLabels.put(response, amountLabel);
+								responseSizeLabels.put(response, sizeLabel);
+								responseStatPanel.add(label);
+								JPanel p1c = new JPanel();
+								p1c.setLayout(new BorderLayout());
+								p1c.add(amountLabel, BorderLayout.WEST);
+								p1c.add(sizeLabel, BorderLayout.CENTER);
+								responseStatPanel.add(p1c);
+
+							}
+							responseAmountLabels.get(response).setText(
+									"" + amount + "|");
+							responseSizeLabels.get(response).setText(
+									Convergia.formatDataSize(size));
+						}
+					}
+				};
+				statListener.statsUpdated();
+				Convergia.com.communicator.addStatisticsListener(statListener);
+			} catch (Exception ex1)
+			{
+				ex1.printStackTrace();
+			}
 			// START >> securityTab
 			securityTab = new JPanel();
 			optionsTabbedPane.addTab("Security", null, securityTab, null);
@@ -288,6 +476,19 @@ public class ConfigureInTouch3Dialog extends javax.swing.JDialog
 	public JButton getNotificationOneTimeTestButton()
 	{
 		return notificationOneTimeTestButton;
+	}
+
+	public JPanel getCommandStatPanel()
+	{
+		return commandStatPanel;
+	}
+
+	private boolean isDisposed = false;
+
+	public void dispose()
+	{
+		super.dispose();
+		isDisposed = true;
 	}
 
 }

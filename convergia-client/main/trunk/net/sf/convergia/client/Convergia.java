@@ -56,7 +56,7 @@ import net.sf.convergia.client.com.Communicator;
 import net.sf.convergia.client.com.LowLevelCommunicator;
 import net.sf.convergia.client.download.PluginDownloadManager;
 import net.sf.convergia.client.frames.ChooseLAFDialog;
-import net.sf.convergia.client.frames.ConfigureInTouch3Dialog;
+import net.sf.convergia.client.frames.ConfigureConvergiaDialog;
 import net.sf.convergia.client.frames.ConfigureWorkspaceDialog;
 import net.sf.convergia.client.frames.CreateWorkspaceDialog;
 import net.sf.convergia.client.frames.ImportWorkspaceDialog;
@@ -1562,7 +1562,7 @@ public class Convergia
 
 	protected static void showOptionsWindow()
 	{
-		final ConfigureInTouch3Dialog dialog = new ConfigureInTouch3Dialog(
+		final ConfigureConvergiaDialog dialog = new ConfigureConvergiaDialog(
 				launchbar);
 		showStatusInfo(dialog);
 		new Thread()
@@ -1575,7 +1575,7 @@ public class Convergia
 		}.start();
 	}
 
-	private static void showStatusInfo(ConfigureInTouch3Dialog dialog)
+	private static void showStatusInfo(ConfigureConvergiaDialog dialog)
 	{
 		Socket socket = com.getCommunicator().getSocket();
 		dialog.getMConnectedServerLabel().setText(
@@ -2519,5 +2519,16 @@ public class Convergia
 		frame.setExtendedState(frame.NORMAL);
 		frame.show();// the double show ensures that the frame is flashing or
 		// focused
+	}
+
+	public static String formatDataSize(double size)
+	{
+		if (size < 1000)
+			return "" + size + "B";
+		if (size < (1000 * 1000))
+			return "" + (size / 1000) + "KB";
+		if (size < (1000 * 1000 * 1000))
+			return "" + (size / (1000 * 1000)) + "MB";
+		return "" + (size / (1000 * 1000 * 1000)) + "GB";
 	}
 }

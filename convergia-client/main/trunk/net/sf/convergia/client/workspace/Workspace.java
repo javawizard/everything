@@ -75,9 +75,9 @@ public abstract class Workspace implements Serializable
 		if (message.contains("\r") || message.contains("\n"))
 			throw new IllegalArgumentException(
 					"that message contains newlines, which isn't allowed.");
-		if (message.length() > 145 * 1000)
+		if (message.length() > 997 * 1000)
 			throw new IllegalArgumentException(
-					"messages cannot be longer than 145,000 bytes");
+					"messages cannot be longer than 997,000 bytes");
 		if (!wrapper.getParticipants().contains(to))
 			throw new IllegalArgumentException("that user (" + to
 					+ ") isn't a participant of this workspace");

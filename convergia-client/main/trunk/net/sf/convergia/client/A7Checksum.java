@@ -1,18 +1,40 @@
 package net.sf.convergia.client;
 
 import java.io.BufferedInputStream;
+import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 
 public class A7Checksum
 {
+	public static void main(String[] args)
+	{
+		System.out.println(checksum(new String(new char[]
+		{ 'h', 'i' })));
+		System.out.println(checksum(new String(new char[]
+		{ 'h', 'i', 0 })));
+	}
+
 	public static final int POSITIVE_LENGTH = 11;
 
 	public static final int NEGATIVE_LENGTH = 8;
 
+	public static String checksum(String input)
+	{
+		return checksum(new ByteArrayInputStream(input.getBytes()));
+	}
+
 	public static String checksum(InputStream input)
 	{
-		return checksum(input, POSITIVE_LENGTH, NEGATIVE_LENGTH);
+		try
+		{
+			return checksum(input, POSITIVE_LENGTH, NEGATIVE_LENGTH);
+		} catch (IOException e)
+		{
+			// TODO Feb 5, 2008 Auto-generated catch block
+			throw new RuntimeException("TODO auto generated on Feb 5, 2008 : "
+					+ e.getClass().getName() + " - " + e.getMessage(), e);
+		}
 	}
 
 	private static String checksum(InputStream fis2,

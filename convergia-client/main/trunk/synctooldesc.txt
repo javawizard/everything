@@ -15,11 +15,11 @@ sent to B. A then goes offline, and C comes online. the change is then sent to C
 come online. The change is then sent to D. In the future, once offline messaging capability is added, data will be sent
 in an offline message, thereby elimintating the need for all users to be online at the same time.
 
-Anyway, data is stored as chunks. A chunk has a name, which identifies it. It's reccomended not to delete a chunk
-and then create one with the same name. (*** FOLLOW UP NEEDED) A chunk's name should be no longer than 1024 bytes,
-although it is reccomended to make it even shorter to speed up transmission and sync times. A chunk has keys and 
-values, which is how data is stored. keys should be no longer than 1024 bytes, and values can be as short as even
-0 bytes and as long as 32768 bytes (32 KB). whenever changes are made to a chunk, or a new chunk is created, it is
+Anyway, data is stored as chunks. A chunk has a name, which identifies it.
+A chunk's name should be no longer than 1024 bytes, although it is reccomended to make it even
+shorter to speed up transmission and sync times. A chunk has keys and values, which is how data is
+stored. keys should be no longer than 1024 bytes, and values can be as short as even 0 bytes and 
+as long as 32768 bytes (32 KB). whenever changes are made to a chunk, or a new chunk is created, it is 
 guaranteed that the entire chunk (all of it's attributes) will be synchronized at once. the same is not true of
 multiple chunks, however. this means that if 3 chunks are updated, and the user goes offline almost immediately, 2
 of the chunks may have synchronized. even if the third started, if it did not finish, the changes will not be received
@@ -45,9 +45,42 @@ when a chunk needs to be synchronized, a String representing that chunk (format 
 Properties file format including last modified date) is created. this string is then sent to all users currently
 online who are members of the workspace. then, a full synchronization is performed with all online users.
 
-When a user comes online, a full synchronization is performed with that user.
+When a user comes online, a full check synchronization is performed with that user.
 
-A full synchronization is described here: First, a message is sent from the initiating user to the receiver,
-asking them to participate in a synchronization. if that user is already synchronizing with another user, they
-respond that they are unavailable. if they respond that they are available, then each user sends a list of chunk
-names and the hash of the string format of that chunk. (hash algorithm TBD). 
+A full check synchronization is 2 half check synchronizations, similar to how a full synchronization is
+2 half-synchronizations.
+
+A half check synchronization is where the user sends a reliable checksum (TBD, consider A7 with MD4 appended)
+of all of the chunks to the receiving user. if the checksum is different than it's own checksum for all of
+it's chunks, then a half synchronization (discussed below) is performed.
+
+A full synchronization is basically 2 half-synchronizations. the computer initiating the synchronization
+sends a message to the other computer, telling it that, when it has time, it should perform a half-synchronization
+with this computer. then, this computer performs a half-synchronization.
+
+A half-synchronization is described here: the user initiating the half-synchronization sends a list of chunk
+names and the hash of the string format of that chunk, and the date that the chunk was last modified. (hash
+algorithm TBD, possibly A7Checksum). (TBD: what if chunks have been deleted?) on the receiving end, if any
+of the chunks are present in that list but not locally, then a message is sent, asking for that chunk to be
+sent. anyway, if a chunk is present remotely and locally, the checksums are NOT equal, and the timestamp of
+the local chunk is OLDER than the remote chunk, a message is sent, asking for that chunk to be sent. if the
+local timestamp is NEWER than the remote chunk's timestamp, nothing is done. ***FINISH THIS SECTION
+
+Every (TBD, sgst 5) minutes, a full check synchronization is performed with each user that is online.
+
+the version of a locked chunk as of just before it was locked is used when calculating checksums when the chunk
+is locked. while a chunk is locked, 
+
+currently, there is a limit placed on the total size of a chunk(including name, keys, values, and 3 additional
+bytes per value) of 970KB. 
+
+***consider: when there are too many chunks to send in one message, split over multiple messages. also, in half
+check synchronization, specify which chunks are locked on the local computer, and therefore which chunks the remote
+computer should exclude when creating it's own checksum. this eliminates the problem of having to store a copy of a
+chunk when it's locked so that the checksums can be calculated.
+
+***consider: chunks are referenced during synchronization not by their name but by a unique id generated for each
+chunk. a particular "chunk id" will never be reused for a chunk. this simplifies deleting chunks. when a chunk is
+deleted, a computer receiving the synchronization can know that the chunk will never be created again, and if another
+computer tells it that it has the chunk, then the computer which had it deleted will tell the computer that the chunk
+was deleted and no longer exists.
