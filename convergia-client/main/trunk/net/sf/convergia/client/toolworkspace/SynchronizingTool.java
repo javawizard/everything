@@ -89,6 +89,10 @@ import java.util.concurrent.TimeUnit;
  * so make sure not to have key names that would cause this formula to yield a
  * larger value then your operating system allows.
  * 
+ * @deprecated This tool has been superseded by
+ *             net.sf.convergia.client.toolworkspace.sync.SynchronizingTool. Use
+ *             that class instead.
+ * 
  * @author Alexander Boyd
  * 
  */
@@ -243,10 +247,9 @@ public abstract class SynchronizingTool extends Tool
 		{
 			syncWithLater.offer(username);
 			return;
-		}
-		else if(!response.equals("ready"))
+		} else if (!response.equals("ready"))
 		{
-			
+
 		}
 	}
 

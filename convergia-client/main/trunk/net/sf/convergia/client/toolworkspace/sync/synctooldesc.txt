@@ -60,11 +60,21 @@ with this computer. then, this computer performs a half-synchronization.
 
 A half-synchronization is described here: the user initiating the half-synchronization sends a list of chunk
 names and the hash of the string format of that chunk, and the date that the chunk was last modified. (hash
-algorithm TBD, possibly A7Checksum). (TBD: what if chunks have been deleted?) on the receiving end, if any
+algorithm TBD, possibly A7Checksum). if a chunk has been deleted, then a special value is sent that
+indicates that the chunk has been deleted. on the receiving end, if any
 of the chunks are present in that list but not locally, then a message is sent, asking for that chunk to be
 sent. anyway, if a chunk is present remotely and locally, the checksums are NOT equal, and the timestamp of
 the local chunk is OLDER than the remote chunk, a message is sent, asking for that chunk to be sent. if the
 local timestamp is NEWER than the remote chunk's timestamp, nothing is done. ***FINISH THIS SECTION
+
+***consider: content of delete chunk could be a list of users who have deleted that chunk. when a user
+deletes that chunk based on the delete chunk arriving, they could add themselves as a user and then sync
+the chunk as normal. when a computer sees all workspace members on the delete chunk, they actually delete
+that chunk and concern themselves with it no more. this would make it so that delete chunks synchronize
+as regular chunks, and maybe a regular chunk has a flag that is whether it is a regular chunk or a delete
+chunk, and therefore synchronizes normally. ***problem: if the chunk functioned as a normal chunk, then
+it would not be synchronized once the last user got the message that they had deleted it. consider how
+to work around this.
 
 Every (TBD, sgst 5) minutes, a full check synchronization is performed with each user that is online.
 
@@ -84,3 +94,17 @@ chunk. a particular "chunk id" will never be reused for a chunk. this simplifies
 deleted, a computer receiving the synchronization can know that the chunk will never be created again, and if another
 computer tells it that it has the chunk, then the computer which had it deleted will tell the computer that the chunk
 was deleted and no longer exists.
+
+if a user has not signed on to a workspace in over one month, the creator will be warned that the user has not signed
+on, and that unnessecary data is being cached on their computer and all other members' computers, and they should 
+contact that useer to see if they still want to use the workspace.
+
+
+
+***********************************************************************************
+** THE SECTIO BELOW DESCRIBES THE CLASSES ASSOCIATED WITH SYNCHRONIZATION. IN    **
+** PARTICULAR, IT DESCRIBES WHAT AN IMPLEMENTOR OF SYNCHRONIZEDTOOL SHOULD KNOW. **
+***********************************************************************************
+
+
+There are a few methods in SynchronizingTool

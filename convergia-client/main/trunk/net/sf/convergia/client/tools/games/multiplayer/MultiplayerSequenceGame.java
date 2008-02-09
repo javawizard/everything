@@ -497,7 +497,7 @@ public abstract class MultiplayerSequenceGame extends Tool
 			mainPanel.removeAll();
 			mainPanel
 					.add(new JLabel(
-							"You are not connected to the internet. Connect to the internet, then try again."));
+							"<html>You are not connected to the internet.<br/>Connect to the internet, then<br/>click Reload State in the Advanced menu."));
 		}
 		String currentPlayer = getProperty("currentplayer");
 		if (currentPlayer != null)
