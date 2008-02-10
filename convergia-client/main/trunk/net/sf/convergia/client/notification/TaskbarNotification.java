@@ -2,6 +2,8 @@ package net.sf.convergia.client.notification;
 
 import java.awt.Component;
 
+import javax.swing.JComponent;
+
 /**
  * 
  * @author Alexander Boyd

@@ -14,14 +14,14 @@ import javax.swing.JOptionPane;
 import javax.swing.JTabbedPane;
 
 import net.sf.convergia.client.Convergia;
-import net.sf.convergia.client.Plugin;
-import net.sf.convergia.client.PluginManager;
 import net.sf.convergia.client.Storage;
 import net.sf.convergia.client.com.Communicator;
 import net.sf.convergia.client.com.MessageSink;
 import net.sf.convergia.client.com.StatusListener;
 import net.sf.convergia.client.frames.ReceiveWorkspaceInviteFrame;
 import net.sf.convergia.client.notification.NotificationAdapter;
+import net.sf.convergia.client.plugins.Plugin;
+import net.sf.convergia.client.plugins.PluginManager;
 
 import base64.Base64Coder;
 

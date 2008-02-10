@@ -1,4 +1,4 @@
-package net.sf.convergia.client;
+package net.sf.convergia.client.plugins;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;
@@ -17,6 +17,9 @@ import java.util.jar.Manifest;
 import java.util.jar.Attributes.Name;
 
 import javax.imageio.ImageIO;
+
+import net.sf.convergia.client.Convergia;
+import net.sf.convergia.client.SubversionFileFilter;
 
 /**
  * NOTES TO ME: the update site of a plugin is the URL that should be used to
@@ -281,7 +284,7 @@ public class PluginManager
 
 	private static boolean pluginsLoaded = false;
 
-	static void loadPlugins()
+	public static void loadPlugins()
 	{
 		pluginsLoaded = true;
 		if (!pluginFolder.exists())

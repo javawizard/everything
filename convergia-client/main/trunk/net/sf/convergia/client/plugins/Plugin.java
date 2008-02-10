@@ -1,4 +1,4 @@
-package net.sf.convergia.client;
+package net.sf.convergia.client.plugins;
 
 import java.awt.Image;
 import java.net.URL;

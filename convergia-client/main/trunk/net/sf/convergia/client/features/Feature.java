@@ -2,12 +2,17 @@ package net.sf.convergia.client.features;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.Properties;
 
 import net.sf.convergia.client.Convergia;
 import net.sf.convergia.client.com.Communicator;
 
 public abstract class Feature
 {
+	private Properties pluginMetadata;
+
+	String typeId;
+
 	private Communicator communicator;
 
 	public Communicator getCommunicator()
@@ -15,7 +20,7 @@ public abstract class Feature
 		return communicator;
 	}
 
-	public void setCommunicator(Communicator communicator)
+	void setCommunicator(Communicator communicator)
 	{
 		this.communicator = communicator;
 	}
@@ -60,10 +65,18 @@ public abstract class Feature
 				+ "|imessage|" + message);
 	}
 
+	void receiveMessage0(String from, String message)
+	{
+		if (message.startsWith("imessage|"))
+			receiveMessage(from, message.substring("imessage|".length()));
+	}
+
 	/**
 	 * same as sendMessage, but it sends it to all online users. Currently, this
 	 * just calls sendMessage() for every member of getOnlineUsers(), so it
-	 * offers no additional data transfer efficiency benefits.
+	 * offers no additional data transfer efficiency benefits. in the future, it
+	 * will actually call a different server command so that the message is only
+	 * sent once to the server.
 	 * 
 	 * @param message
 	 */
@@ -82,16 +95,17 @@ public abstract class Feature
 	}
 
 	/**
-	 * indicates that a user has signed on or off. the user may not be a member
-	 * of this workspace, so no changes may have actually occured that concern
-	 * this workspace.
+	 * indicates that a user has signed on or off. since features don't have a
+	 * specific list of users assigned to them, this method is called when any
+	 * known user signs on or off. a known user is a user used in some part of
+	 * the system. currently, this is the local user's contacts and any users in
+	 * the local user's workspaces.
 	 * 
 	 */
 	public abstract void userStatusChanged();
 
 	/**
-	 * returns this user's username. if this is the same as getCreator(), then
-	 * this is the user who created the workspace.
+	 * returns this user's username.
 	 * 
 	 * @return
 	 */
@@ -101,7 +115,8 @@ public abstract class Feature
 	}
 
 	/**
-	 * lists all members of this workspace.
+	 * lists all users signed up for Convergia. this list could be potentially
+	 * large, so this method should not be called frequently.
 	 * 
 	 * @return
 	 */
@@ -111,7 +126,7 @@ public abstract class Feature
 	}
 
 	/**
-	 * lists all members of this workspace who are online.
+	 * lists all users who are online.
 	 * 
 	 * @return
 	 */
@@ -121,7 +136,7 @@ public abstract class Feature
 	}
 
 	/**
-	 * lists all members of this workspace who are offline.
+	 * lists all users who are offline.
 	 * 
 	 * @return
 	 */
@@ -131,18 +146,21 @@ public abstract class Feature
 	}
 
 	/**
-	 * lists the folder that this workspace can use for data storage. it is not
-	 * required to use this folder (if it is a folder sync workspace, for
-	 * example, it would probably only use this folder to hold configuration
-	 * such as which folder to synchronize)
+	 * returns the folder that the Feature can use for local storage.<br/>
+	 * <Br/> <b>Note:</b> Even if the feature is uninstalled and then
+	 * reinstalled, this folder will still have the same contents. It is
+	 * therefore important to include some sort of option in the UI that allows
+	 * the user to clear all data associated with this Feature.
 	 * 
 	 * @return
 	 */
 	protected File getStorageFile()
 	{
-		// wrapper.getDatastore().mkdirs();
-		// return wrapper.getDatastore();
-		return null;
+		File f = new File(FeatureManager.getBaseStorageFolder(),
+				getRegisteredType());
+		if (!f.exists())
+			f.mkdirs();
+		return f;
 	}
 
 	/**
@@ -160,10 +178,29 @@ public abstract class Feature
 	 * 
 	 * @return
 	 */
-	protected String getRegisteredType()
+	protected final String getRegisteredType()
 	{
-		// return wrapper.getTypeId();
-		return null;
+		return typeId;
+	}
+
+	Properties getPluginMetadata()
+	{
+		return pluginMetadata;
+	}
+
+	void setPluginMetadata(Properties pluginMetadata)
+	{
+		this.pluginMetadata = pluginMetadata;
+	}
+
+	void setTypeId(String typeId)
+	{
+		this.typeId = typeId;
+	}
+
+	protected <T> void registerComponent(String handler, T component)
+	{
+		FeatureManager.registerComponent(handler, component);
 	}
 
 }

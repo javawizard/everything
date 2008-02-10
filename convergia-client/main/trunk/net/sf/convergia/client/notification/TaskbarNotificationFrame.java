@@ -2,6 +2,7 @@ package net.sf.convergia.client.notification;
 
 import java.awt.BorderLayout;
 import java.awt.Color;
+import java.awt.Component;
 import java.awt.Container;
 import java.awt.Cursor;
 import java.awt.Dimension;
@@ -19,6 +20,7 @@ import java.util.Arrays;
 
 import javax.swing.BorderFactory;
 import javax.swing.BoxLayout;
+import javax.swing.JComponent;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JProgressBar;
@@ -29,6 +31,7 @@ import javax.swing.border.Border;
 import javax.swing.border.CompoundBorder;
 import javax.swing.border.EmptyBorder;
 import javax.swing.border.EtchedBorder;
+import javax.swing.border.LineBorder;
 
 import net.sf.convergia.client.Convergia;
 
@@ -350,7 +353,7 @@ public class TaskbarNotificationFrame extends javax.swing.JWindow implements
 		for (TaskbarNotification n : notifications)
 		{
 			System.out.println("has notification");
-			notificationPanel.add(n.getComponent());
+			notificationPanel.add(createNotificationWrapper(n.getComponent()));
 			System.out.println("added");
 		}
 		notificationPanel.invalidate();
@@ -388,6 +391,19 @@ public class TaskbarNotificationFrame extends javax.swing.JWindow implements
 		invalidate();
 		validate();
 		repaint();
+	}
+
+	private JComponent createNotificationWrapper(Component component)
+	{
+		JPanel panel = new JPanel();
+		panel.setLayout(new BorderLayout());
+		panel.add(component, BorderLayout.CENTER);
+		Border innerBorder = new EmptyBorder(1, 1, 1, 1);
+		Border middleBorder = new LineBorder(Color.GRAY, 1);
+		Border outerBorder = new EmptyBorder(1, 2, 1, 2);
+		panel.setBorder(new CompoundBorder(outerBorder, new CompoundBorder(
+				middleBorder, innerBorder)));
+		return panel;
 	}
 
 	public void mouseClicked(MouseEvent e)

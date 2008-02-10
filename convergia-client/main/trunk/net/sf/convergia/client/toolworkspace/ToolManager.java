@@ -6,8 +6,8 @@ import java.util.List;
 
 import javax.swing.JOptionPane;
 
-import net.sf.convergia.client.Plugin;
-import net.sf.convergia.client.PluginManager;
+import net.sf.convergia.client.plugins.Plugin;
+import net.sf.convergia.client.plugins.PluginManager;
 import net.sf.convergia.client.workspace.SetList;
 
 

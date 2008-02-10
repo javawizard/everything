@@ -44,6 +44,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
+import java.util.Queue;
 
 import javax.imageio.ImageIO;
 import javax.net.ssl.SSLSocket;
@@ -55,6 +56,8 @@ import net.sf.convergia.client.com.AuthenticationException;
 import net.sf.convergia.client.com.Communicator;
 import net.sf.convergia.client.com.LowLevelCommunicator;
 import net.sf.convergia.client.download.PluginDownloadManager;
+import net.sf.convergia.client.features.FeatureComponentHandler;
+import net.sf.convergia.client.features.FeatureManager;
 import net.sf.convergia.client.frames.ChooseLAFDialog;
 import net.sf.convergia.client.frames.ConfigureConvergiaDialog;
 import net.sf.convergia.client.frames.ConfigureWorkspaceDialog;
@@ -64,6 +67,8 @@ import net.sf.convergia.client.frames.InviteToWorkspaceDialog;
 import net.sf.convergia.client.help.HelpViewer;
 import net.sf.convergia.client.notification.NotificationAdapter;
 import net.sf.convergia.client.notification.TaskbarNotificationFrame;
+import net.sf.convergia.client.plugins.Plugin;
+import net.sf.convergia.client.plugins.PluginManager;
 import net.sf.convergia.client.text.TextManager;
 import net.sf.convergia.client.workspace.WorkspaceManager;
 import net.sf.convergia.client.workspace.WorkspaceWrapper;
@@ -212,6 +217,19 @@ public class Convergia
 		}
 		try
 		{
+			// the thread below solves a bug in swing where the first
+			// JFileChooser
+			// created takes about a minute to create. By doing this in a
+			// thread, then by the time we need to actually create a
+			// JFileChooser, this one will have finished creating and we won't
+			// have to worry about the delay anymore.
+			new Thread()
+			{
+				public void run()
+				{
+					new JFileChooser();
+				}
+			}.start();
 			sfile.mkdirs();
 			System.setProperty("sun.java2d.noddraw", "true");
 			Storage.initStorage(sfile);
@@ -323,6 +341,7 @@ public class Convergia
 			lcom = new LowLevelCommunicator(getConnectHost(), getConnectPort(),
 					true);
 			com = new Communicator(lcom);
+			loadFeatures();
 			boolean successfulAuth = false;
 			if (Storage.getUsers().length == 0)
 			{
@@ -669,6 +688,11 @@ public class Convergia
 			Thread.sleep(2000);
 			e.printStackTrace();
 		}
+	}
+
+	private static void loadFeatures()
+	{
+		FeatureManager.loadFeatures();
 	}
 
 	private static HashMap<String, Class<LookAndFeel>> lookAndFeelClasses = new HashMap<String, Class<LookAndFeel>>();
@@ -1326,7 +1350,7 @@ public class Convergia
 	{
 		JMenuBar bar = new JMenuBar();
 		launchbar.setJMenuBar(bar);
-		final JMenu toolsMenu = new IMenu("Convergia", new IMenuItem[]
+		final JMenu convergiaMenu = new IMenu("Convergia", new IMenuItem[]
 		{ new IMenuItem("Check for updates")
 		{
 
@@ -1359,7 +1383,7 @@ public class Convergia
 			}
 		} });
 		JMenu lafMenu = new JMenu("Choose look and feel");
-		toolsMenu.add(lafMenu);
+		convergiaMenu.add(lafMenu);
 		final LookAndFeelInfo[] availableLafs = UIManager
 				.getInstalledLookAndFeels();
 		final JRadioButtonMenuItem[] rButtons = new JRadioButtonMenuItem[availableLafs.length];
@@ -1453,7 +1477,7 @@ public class Convergia
 				}
 			}
 		});
-		toolsMenu.add(alwaysOnTopItem);
+		convergiaMenu.add(alwaysOnTopItem);
 
 		final JCheckBoxMenuItem useWindowTransparencyItem = new JCheckBoxMenuItem(
 				"Use window transparency");
@@ -1494,11 +1518,20 @@ public class Convergia
 				}
 			}
 		});
-		toolsMenu.add(useWindowTransparencyItem);
+		convergiaMenu.add(useWindowTransparencyItem);
+		FeatureManager.registerComponentHandler("launchbarConvergiaMenuItem",
+				new FeatureComponentHandler<JMenuItem>()
+				{
+
+					public void registerComponent(String id, JMenuItem component)
+					{
+						convergiaMenu.add(component);
+					}
+				});
 		if (Storage.getSystemConfigProperty("autologinuser") != null
 				&& Storage.getSystemConfigProperty("autologinpass") != null)
 		{
-			toolsMenu.add(new IMenuItem("Don't auto log me in")
+			convergiaMenu.add(new IMenuItem("Don't auto log me in")
 			{
 
 				public void actionPerformed(ActionEvent e)
@@ -1511,10 +1544,10 @@ public class Convergia
 					{
 						Storage.setSystemConfigProperty("autologinuser", null);
 						Storage.setSystemConfigProperty("autologinpass", null);
-						toolsMenu.remove(this);
-						toolsMenu.invalidate();
-						toolsMenu.validate();
-						toolsMenu.repaint();
+						convergiaMenu.remove(this);
+						convergiaMenu.invalidate();
+						convergiaMenu.validate();
+						convergiaMenu.repaint();
 					}
 				}
 			});
@@ -1544,7 +1577,7 @@ public class Convergia
 				showAboutWindow();
 			}
 		} });
-		bar.add(toolsMenu);
+		bar.add(convergiaMenu);
 		bar.add(helpMenu);
 	}
 

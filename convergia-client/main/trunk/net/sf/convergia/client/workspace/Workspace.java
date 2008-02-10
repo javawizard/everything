@@ -10,10 +10,10 @@ import javax.swing.JComponent;
 import javax.swing.JFrame;
 
 import net.sf.convergia.client.Convergia;
-import net.sf.convergia.client.Plugin;
 import net.sf.convergia.client.Storage;
 import net.sf.convergia.client.com.Communicator;
 import net.sf.convergia.client.notification.TaskbarNotification;
+import net.sf.convergia.client.plugins.Plugin;
 
 import base64.Base64Coder;
 

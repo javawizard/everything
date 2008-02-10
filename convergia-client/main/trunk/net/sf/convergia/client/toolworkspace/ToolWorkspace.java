@@ -36,10 +36,10 @@ import javax.swing.border.EtchedBorder;
 import javax.swing.border.LineBorder;
 
 import net.sf.convergia.client.Convergia;
-import net.sf.convergia.client.Plugin;
-import net.sf.convergia.client.PluginManager;
 import net.sf.convergia.client.UserInformationLink;
 import net.sf.convergia.client.notification.TaskbarNotification;
+import net.sf.convergia.client.plugins.Plugin;
+import net.sf.convergia.client.plugins.PluginManager;
 import net.sf.convergia.client.workspace.SetList;
 import net.sf.convergia.client.workspace.Workspace;
 

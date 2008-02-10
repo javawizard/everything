@@ -68,7 +68,6 @@ public abstract class SynchronizingTool extends Tool
 	@Override
 	protected void sendMessage(String to, String message)
 	{
-		// TODO Auto-generated method stub
 		super.sendMessage(to, "i|" + message);
 	}
 

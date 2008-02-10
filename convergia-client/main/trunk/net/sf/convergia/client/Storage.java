@@ -19,7 +19,6 @@ import java.util.HashMap;
 
 import net.sf.convergia.client.workspace.WorkspaceWrapper;
 
-
 import base64.Base64Coder;
 
 /**
@@ -62,6 +61,12 @@ public class Storage
 		workspaces = iItem(tbase, "workspaces");
 		workspaceDataStore = iItem(tbase, "workspacedstore");
 		config = iItem(tbase, "config");
+		featureStorage = iItem(tbase, "featuremanager");
+	}
+	
+	public static File getFeatureStorage()
+	{
+		return featureStorage;
 	}
 
 	private static File iItem(File tbase, String itemname)
@@ -89,6 +94,8 @@ public class Storage
 	private static File mAttachments;
 
 	private static File contacts;
+
+	private static File featureStorage;
 
 	public static String[] getUsers()
 	{
