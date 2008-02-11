@@ -1,5 +1,10 @@
 package net.sf.convergia.client.plugins;
 
+import java.awt.BorderLayout;
+import java.awt.Container;
+import java.awt.FlowLayout;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileFilter;
@@ -17,9 +22,22 @@ import java.util.jar.Manifest;
 import java.util.jar.Attributes.Name;
 
 import javax.imageio.ImageIO;
+import javax.swing.BoxLayout;
+import javax.swing.JDialog;
+import javax.swing.JFrame;
+import javax.swing.JLabel;
+import javax.swing.JPanel;
+import javax.swing.JScrollPane;
+import javax.swing.SwingConstants;
+import javax.swing.border.CompoundBorder;
+import javax.swing.border.EmptyBorder;
+import javax.swing.border.EtchedBorder;
+
+import com.l2fprod.common.swing.JLinkButton;
 
 import net.sf.convergia.client.Convergia;
 import net.sf.convergia.client.SubversionFileFilter;
+import net.sf.convergia.client.download.PluginDownloadManager;
 
 /**
  * NOTES TO ME: the update site of a plugin is the URL that should be used to
@@ -167,6 +185,8 @@ public class PluginManager
 	private static Map<String, Plugin> pluginsById = new HashMap<String, Plugin>();
 
 	private static ArrayList<String> failedPlugins = new ArrayList<String>();
+
+	private static ArrayList<Plugin> disabledPlugins = new ArrayList<Plugin>();
 
 	/*
 	 * for (File file : pluginFolder.listFiles()) { try { Properties p = new
@@ -322,11 +342,23 @@ public class PluginManager
 					continue;
 				}
 				System.out.println("which is " + type);
-				String implClass = attributes.getValue("it3-class");
-				URLClassLoader loader = new URLClassLoader(new URL[]
-				{ file.getAbsoluteFile().toURI().toURL() }, PluginManager.class
-						.getClassLoader());
-				Class cz = Class.forName(implClass, true, loader);
+				boolean isDisabled = attributes.getValue("it3-disabled") != null
+						&& attributes.getValue("it3-disabled").trim()
+								.toLowerCase().equals("true");
+				System.out.println("this plugin "
+						+ (isDisabled ? "IS" : "is NOT") + " disabled.");
+				Class cz;
+				if (isDisabled)
+				{
+					cz = null;
+				} else
+				{
+					String implClass = attributes.getValue("it3-class");
+					URLClassLoader loader = new URLClassLoader(new URL[]
+					{ file.getAbsoluteFile().toURI().toURL() },
+							PluginManager.class.getClassLoader());
+					cz = Class.forName(implClass, true, loader);
+				}
 				Plugin plugin = new Plugin(cz);
 				plugin.setId(file.getName().substring(0,
 						file.getName().length() - PLUGIN_EXTENTION.length()));
@@ -364,14 +396,20 @@ public class PluginManager
 				}
 				plugin.setMetadata(p);
 				plugin.setType(type);
-				pluginsById.put(plugin.getId(), plugin);
-				ArrayList<Plugin> l = pluginsByType.get(type);
-				if (l == null)
+				if (isDisabled)
 				{
-					l = new ArrayList<Plugin>();
-					pluginsByType.put(type, l);
+					disabledPlugins.add(plugin);
+				} else
+				{
+					pluginsById.put(plugin.getId(), plugin);
+					ArrayList<Plugin> l = pluginsByType.get(type);
+					if (l == null)
+					{
+						l = new ArrayList<Plugin>();
+						pluginsByType.put(type, l);
+					}
+					l.add(plugin);
 				}
-				l.add(plugin);
 			} catch (Exception e)
 			{
 				e.printStackTrace();
@@ -471,7 +509,7 @@ public class PluginManager
 						.getProperty("versionindex")));
 			if (properties.getProperty("versionstring") != null)
 				site.setVersionString(properties.getProperty("versionstring"));
-			if (properties.getProperty("websiteurl") != null)
+			if (properties.getProperty("websiteurl") == null)
 				properties.setProperty("websiteurl", properties
 						.getProperty("websiteUrl"));
 			if (properties.getProperty("websiteurl") != null)
@@ -484,5 +522,52 @@ public class PluginManager
 			ex1.printStackTrace();
 			return null;
 		}
+	}
+
+	public static void showManageInstalledPluginsDialog(final JFrame parent)
+	{
+		final JDialog dialog = new JDialog(parent, true);
+		dialog.setDefaultCloseOperation(JDialog.HIDE_ON_CLOSE);
+		dialog.setTitle("Manage plugins - Convergia");
+		dialog.setSize(400, 300);
+		dialog.setLocationRelativeTo(parent);
+		Container content = dialog.getContentPane();
+		content.setLayout(new BorderLayout());
+		JLinkButton downloadNewLink = new JLinkButton(
+				"<html><font color='#0000ff'><u>Find new plugins</u></font>");
+		downloadNewLink.setHorizontalAlignment(SwingConstants.RIGHT);// right-justify
+		downloadNewLink.setFocusable(false);
+		downloadNewLink.addActionListener(new ActionListener()
+		{
+
+			public void actionPerformed(ActionEvent e)
+			{
+				dialog.hide();
+				Convergia.findNewTools(parent, null);
+			}
+		});
+		content.add(Convergia.pad(downloadNewLink, 10, 10), BorderLayout.SOUTH);
+		JPanel mainPanelWrapper = new JPanel();
+		FlowLayout wrapperLayout = new FlowLayout();
+		wrapperLayout.setAlignment(FlowLayout.LEFT);
+		mainPanelWrapper.setLayout(wrapperLayout);
+		JScrollPane mainPanelScrollPane = new JScrollPane(mainPanelWrapper);
+		mainPanelScrollPane.setBorder(new CompoundBorder(new EmptyBorder(10,
+				10, 0, 10), new EtchedBorder()));
+		content.add(mainPanelScrollPane);
+		JPanel p = new JPanel();
+		p.setLayout(new BoxLayout(p, BoxLayout.Y_AXIS));
+		mainPanelWrapper.add(p);
+		p
+				.add(new JLabel(
+						"We are still working on the Manage plugins utility. Please check back later, or click on the Find new plugins like below."));
+		new Thread()
+		{
+			public void run()
+			{
+				dialog.show();
+				dialog.dispose();
+			}
+		}.start();
 	}
 }

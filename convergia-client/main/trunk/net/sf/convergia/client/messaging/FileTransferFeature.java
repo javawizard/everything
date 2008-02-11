@@ -24,7 +24,14 @@ public class FileTransferFeature extends Feature
 
 			public void actionPerformed(ActionEvent e)
 			{
-				promptToSendFile(SwingUtilities.getWindowAncestor(menuitem));
+				new Thread()
+				{
+					public void run()
+					{
+						promptToSendFile(SwingUtilities
+								.getWindowAncestor(menuitem));
+					}
+				}.start();
 			}
 		});
 		registerComponent("launchbarConvergiaMenuItem", menuitem);
@@ -76,13 +83,12 @@ public class FileTransferFeature extends Feature
 							"Convergia can't read that file. Try placing it somewhere else on your system.");
 			return;
 		}
-		//FIXME: actually add code for sending the file here
+		// FIXME: actually add code for sending the file here
 	}
 
 	@Override
 	public void receiveMessage(String from, String message)
 	{
-		// TODO Auto-generated method stub
 
 	}
 

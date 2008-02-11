@@ -1374,12 +1374,14 @@ public class Convergia
 			{
 				showOptionsWindow();
 			}
-		}, new IMenuItem("Get new plugins")
+		} });
+		final JMenu pluginsMenu = new IMenu("Plugins", new IMenuItem[]
+		{ new IMenuItem("Manage plugins")
 		{
 
 			public void actionPerformed(ActionEvent e)
 			{
-				findNewTools(launchbar, null);
+				PluginManager.showManageInstalledPluginsDialog(launchbar);
 			}
 		} });
 		JMenu lafMenu = new JMenu("Choose look and feel");
@@ -1578,15 +1580,17 @@ public class Convergia
 			}
 		} });
 		bar.add(convergiaMenu);
+		bar.add(pluginsMenu);
 		bar.add(helpMenu);
 	}
 
-	protected static void findNewTools(JFrame frame, String[] types)
+	public static void findNewTools(JFrame frame, String[] types)
 	{
 		try
 		{
 			PluginDownloadManager.promptForDownload(frame, types,
-					PluginManager.pluginFolder.list());
+					PluginManager.pluginFolder
+							.list(new SubversionFilenameFilter()));
 		} catch (MalformedURLException e)
 		{
 			e.printStackTrace();

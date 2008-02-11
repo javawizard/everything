@@ -1,2 +1,2 @@
 cd "%INSTALLDIR%"
-javaw.exe -cp bin;examples.jar;jna.jar net.sf.convergia.client.Loader
+javaw.exe -cp "bin;*" net.sf.convergia.client.Loader

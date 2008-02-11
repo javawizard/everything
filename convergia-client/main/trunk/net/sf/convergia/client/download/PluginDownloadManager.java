@@ -1,6 +1,7 @@
 package net.sf.convergia.client.download;
 
 import java.awt.BorderLayout;
+import java.awt.Dimension;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.IOException;
@@ -16,6 +17,7 @@ import javax.swing.JDialog;
 import javax.swing.JEditorPane;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
+import javax.swing.JProgressBar;
 import javax.swing.JScrollPane;
 import javax.swing.event.HyperlinkEvent;
 import javax.swing.event.HyperlinkListener;
@@ -46,6 +48,7 @@ public class PluginDownloadManager
 			String[] alreadyInstalled) throws MalformedURLException
 	{
 		JDialog dialog = new JDialog(parent, true);
+		dialog.setTitle("Get new plugins - Convergia");
 		dialog.getContentPane().setLayout(new BorderLayout());
 		dialog.setSize(450, 550);
 		dialog.setLocationRelativeTo(parent);
@@ -62,6 +65,8 @@ public class PluginDownloadManager
 		backButton.setIcon(new ImageIcon(Convergia.Icons.BACK_BUTTON_32
 				.getImage()));
 		topControls.add(backButton, BorderLayout.WEST);
+		final JProgressBar pbar = new JProgressBar(0, 100);
+		topControls.add(pbar, BorderLayout.CENTER);
 		dialog.getContentPane().add(topControls, BorderLayout.NORTH);
 		backButton.setEnabled(false);
 		backButton.addActionListener(new ActionListener()
@@ -82,6 +87,7 @@ public class PluginDownloadManager
 				{
 					backButton.setEnabled(true);
 				}
+				pbar.setIndeterminate(true);
 				try
 				{
 					p.setPage(trail.get(trail.size() - 1));
@@ -90,6 +96,7 @@ public class PluginDownloadManager
 					e1.printStackTrace();
 					setErrorPage(p);
 				}
+				pbar.setIndeterminate(false);
 			}
 		});
 		((HTMLEditorKit) p.getEditorKit()).setAutoFormSubmission(false);
@@ -114,6 +121,7 @@ public class PluginDownloadManager
 					{
 						public void run()
 						{
+							pbar.setIndeterminate(true);
 							System.out.println("link activated, url is " + url);
 							trail.add(url);
 							if (trail.size() >= 2)
@@ -126,13 +134,15 @@ public class PluginDownloadManager
 								e1.printStackTrace();
 								setErrorPage(p);
 							}
+							pbar.setIndeterminate(false);
 						}
 					}.start();
 				}
 			}
 		});
 		p.setContentType("text/html");
-		p.setText("<html><body><b>Please wait...</b></body></html>");
+		p
+				.setText("<html><body align='center'><b>Please wait...</b></body></html>");
 		new Thread()
 		{
 			public void run()
@@ -156,9 +166,7 @@ public class PluginDownloadManager
 	{
 		p.setContentType("text/html");
 		p
-				.setText("<html><body><h1>An error has occued</h1>"
-						+ "An error occured while loading the page. Check to "
-						+ "make sure that you are connected to the internet.</body></html>");
+				.setText("<html><body align='center'><b>An error has occured. Check to make sure you are connected to the internet, and then try again.</b></body></html>");
 	}
 
 	private static URL createMainUrl(String[] types, String[] alreadyInstalled)
