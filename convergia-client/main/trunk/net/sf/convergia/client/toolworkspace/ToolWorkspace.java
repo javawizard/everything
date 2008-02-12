@@ -535,16 +535,8 @@ public class ToolWorkspace extends Workspace
 
 					public void actionPerformed(ActionEvent e)
 					{
-						if (!isCreator())
-						{
-							JOptionPane
-									.showMessageDialog(
-											frame,
-											"Currently, you must be the workspace creator to find new tools for this workspace.");
-							return;
-						}
-						JOptionPane.showMessageDialog(frame,
-								"This operation is not supported right now.");
+						Convergia.findNewPlugins(frame, new String[]
+						{ "tool" });
 					}
 				});
 		frame.getAdvancedOptionsCommonTask().addActionListener(

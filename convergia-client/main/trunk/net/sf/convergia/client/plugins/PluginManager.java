@@ -1,8 +1,11 @@
 package net.sf.convergia.client.plugins;
 
 import java.awt.BorderLayout;
+import java.awt.Color;
 import java.awt.Container;
 import java.awt.FlowLayout;
+import java.awt.Font;
+import java.awt.Window;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.ByteArrayOutputStream;
@@ -23,15 +26,18 @@ import java.util.jar.Attributes.Name;
 
 import javax.imageio.ImageIO;
 import javax.swing.BoxLayout;
+import javax.swing.JButton;
 import javax.swing.JDialog;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.SwingConstants;
 import javax.swing.border.CompoundBorder;
 import javax.swing.border.EmptyBorder;
 import javax.swing.border.EtchedBorder;
+import javax.swing.border.LineBorder;
 
 import com.l2fprod.common.swing.JLinkButton;
 
@@ -334,6 +340,16 @@ public class PluginManager
 					System.out.println("v:|" + attributes.getValue("" + s)
 							+ "|");
 				}
+				System.out.println("it3-uninstall is "
+						+ attributes.getValue("it3-uninstall"));
+				if (attributes.getValue("it3-uninstall") != null
+						&& attributes.getValue("it3-uninstall").equals("true"))
+				{
+					System.out.println("deleting plugin");
+					jarfile.close();
+					System.out.println(file.delete());
+					continue;
+				}
 				System.out.println("contains a type attributes");
 				String type = attributes.getValue("it3-type");
 				if (type == null)
@@ -363,6 +379,8 @@ public class PluginManager
 				plugin.setId(file.getName().substring(0,
 						file.getName().length() - PLUGIN_EXTENTION.length()));
 				plugin.setImplClass(cz);
+				plugin.setInternal(false);
+				plugin.setFile(file);
 				String updateSite = attributes.getValue("it3-update-site");
 				if (updateSite != null)
 					plugin.setUpdateSite(new URL(updateSite));
@@ -434,6 +452,7 @@ public class PluginManager
 				plugin.setImplClass(cz);
 				plugin.setMetadata(p);
 				plugin.setType(type);
+				plugin.setInternal(true);
 				String largeIconPath = p.getProperty("largeIcon");
 				String mediumIconPath = p.getProperty("mediumIcon");
 				String smallIconPath = p.getProperty("smallIcon");
@@ -483,7 +502,7 @@ public class PluginManager
 		return downloadUpdateSite(plugin.getUpdateSite());
 	}
 
-	public Plugin[] getAllPlugins()
+	public static Plugin[] getAllPlugins()
 	{
 		return pluginsById.values().toArray(new Plugin[0]);
 	}
@@ -529,7 +548,7 @@ public class PluginManager
 		final JDialog dialog = new JDialog(parent, true);
 		dialog.setDefaultCloseOperation(JDialog.HIDE_ON_CLOSE);
 		dialog.setTitle("Manage plugins - Convergia");
-		dialog.setSize(400, 300);
+		dialog.setSize(600, 600);
 		dialog.setLocationRelativeTo(parent);
 		Container content = dialog.getContentPane();
 		content.setLayout(new BorderLayout());
@@ -543,13 +562,12 @@ public class PluginManager
 			public void actionPerformed(ActionEvent e)
 			{
 				dialog.hide();
-				Convergia.findNewTools(parent, null);
+				Convergia.findNewPlugins(parent, null);
 			}
 		});
 		content.add(Convergia.pad(downloadNewLink, 10, 10), BorderLayout.SOUTH);
 		JPanel mainPanelWrapper = new JPanel();
-		FlowLayout wrapperLayout = new FlowLayout();
-		wrapperLayout.setAlignment(FlowLayout.LEFT);
+		BorderLayout wrapperLayout = new BorderLayout();
 		mainPanelWrapper.setLayout(wrapperLayout);
 		JScrollPane mainPanelScrollPane = new JScrollPane(mainPanelWrapper);
 		mainPanelScrollPane.setBorder(new CompoundBorder(new EmptyBorder(10,
@@ -557,10 +575,40 @@ public class PluginManager
 		content.add(mainPanelScrollPane);
 		JPanel p = new JPanel();
 		p.setLayout(new BoxLayout(p, BoxLayout.Y_AXIS));
-		mainPanelWrapper.add(p);
-		p
-				.add(new JLabel(
-						"We are still working on the Manage plugins utility. Please check back later, or click on the Find new plugins like below."));
+		mainPanelWrapper.add(p, BorderLayout.NORTH);
+		JLabel eLabel = new JLabel("<html><b><big>Enabled:</big></b>");
+		JLabel dLabel = new JLabel("<html><b><big>Disabled:</big></b>");
+		JLabel nLabel = new JLabel(
+				"<html><b><big>You have no plugins installed.<Br/>"
+						+ "Click find new plugins below to download plugins!</big></b>");
+		eLabel.setHorizontalAlignment(0);
+		dLabel.setHorizontalAlignment(0);
+		nLabel.setHorizontalAlignment(0);
+		Plugin[] enabledPlugins = getAllPlugins();
+		Plugin[] disabledPlugins = PluginManager.disabledPlugins
+				.toArray(new Plugin[0]);
+		if (enabledPlugins.length == 0 && disabledPlugins.length == 0)
+		{
+			p.add(nLabel);
+		}
+		if (enabledPlugins.length > 0)
+		{
+			p.add(eLabel);
+			for (Plugin plugin : enabledPlugins)
+			{
+				JPanel pluginPanel = createPluginPanel(dialog, plugin, true);
+				p.add(pluginPanel);
+			}
+		}
+		if (disabledPlugins.length > 0)
+		{
+			p.add(dLabel);
+			for (Plugin plugin : disabledPlugins)
+			{
+				JPanel pluginPanel = createPluginPanel(dialog, plugin, false);
+				p.add(pluginPanel);
+			}
+		}
 		new Thread()
 		{
 			public void run()
@@ -569,5 +617,98 @@ public class PluginManager
 				dialog.dispose();
 			}
 		}.start();
+	}
+
+	private static JPanel createPluginPanel(final Window parent,
+			final Plugin plugin, boolean isEnabled)
+	{
+		JPanel pluginPanel = new JPanel();
+		pluginPanel.setLayout(new BorderLayout());
+		JPanel lowerPanel = new JPanel();
+		lowerPanel.setLayout(new BorderLayout());
+		pluginPanel.add(lowerPanel, BorderLayout.SOUTH);
+		JPanel upperPanel = new JPanel();
+		upperPanel.setLayout(new BorderLayout());
+		pluginPanel.add(upperPanel, BorderLayout.NORTH);
+		JLabel pluginName = new JLabel(plugin.getMetadata().getProperty("name"));
+		JLabel pluginDesc = new JLabel(plugin.getMetadata().getProperty(
+				"description"));
+		pluginDesc.setFont(pluginDesc.getFont().deriveFont(Font.PLAIN));
+		JLabel pluginType = new JLabel(plugin.getType());
+		// now set the first letter of the plugin type to be upper case
+		// a plugin type will have at least one letter, so there is no
+		// need
+		// to check to make sure that getText() is 1 char or longer
+		pluginType.setText(pluginType.getText().substring(0, 1).toUpperCase()
+				+ pluginType.getText().substring(1));
+		if (pluginType.getText().equals("Lookandfeel"))
+			pluginType.setText("Look and feel");
+		upperPanel.add(pluginName, BorderLayout.WEST);
+		upperPanel.add(pluginType, BorderLayout.EAST);
+		pluginPanel.add(pluginDesc, BorderLayout.CENTER);
+		JPanel controlsPanel = new JPanel();
+		controlsPanel.setLayout(new BoxLayout(controlsPanel, BoxLayout.X_AXIS));
+		lowerPanel.add(controlsPanel, BorderLayout.EAST);
+		if (plugin.isInternal())
+		{
+			controlsPanel.add(new JLabel("This is a built-in plugin"));
+		} else
+		{
+			JButton otherControlButton2 = null;
+			if (isEnabled)
+			{
+				JButton disableButton = new JButton("Disable");
+				otherControlButton2 = disableButton;
+				controlsPanel.add(disableButton);
+			} else
+			{
+			}
+			final JButton otherControlButton = otherControlButton2;
+			final JButton uninstallButton = new JButton("Uninstall");
+			uninstallButton.addActionListener(new ActionListener()
+			{
+
+				public void actionPerformed(ActionEvent e)
+				{
+					if (JOptionPane
+							.showConfirmDialog(
+									parent,
+									"<html>Are you sure you want to uninstall this<br/>"
+											+ "plugin? You should delete anything that uses<br/>"
+											+ "this plugin. For example, if this is a workspace<br/>"
+											+ "plugin, you should delete all workspaces of this plugin's type.",
+									null, JOptionPane.YES_NO_OPTION) == JOptionPane.YES_OPTION)
+					{
+						try
+						{
+							JarFile jarfile = new JarFile(plugin.getFile());
+							Manifest manifest = jarfile.getManifest();
+							Attributes attributes = manifest
+									.getMainAttributes();
+							attributes.putValue("it3-uninstall", "true");
+							Convergia.saveJarFile(plugin.getFile(), jarfile,
+									manifest);
+							JOptionPane
+									.showMessageDialog(parent,
+											"The plugin will be uninstalled the next time Convergia restarts.");
+						} catch (Exception ex1)
+						{
+							ex1.printStackTrace();
+							JOptionPane
+									.showMessageDialog(parent,
+											"An error occured while uninstalling the plugin. Please restart Convergia.");
+						}
+						uninstallButton.setEnabled(false);
+						if (otherControlButton != null)
+							otherControlButton.setEnabled(false);
+					}
+				}
+			});
+			controlsPanel.add(uninstallButton);
+		}
+		pluginPanel.setBorder(new CompoundBorder(new CompoundBorder(
+				new EmptyBorder(3, 6, 3, 6), new LineBorder(Color.GRAY)),
+				new EmptyBorder(5, 5, 5, 5)));
+		return pluginPanel;
 	}
 }

@@ -1,2 +1,3 @@
 cd "%INSTALLDIR%"
 javaw.exe -cp "bin;*" net.sf.convergia.client.Loader
+rem If you change the classpath above, you will also need to change the value of net.sf.convergia.client.Convergia.RESTART_CLASSPATH

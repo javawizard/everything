@@ -1,6 +1,7 @@
 package net.sf.convergia.client.plugins;
 
 import java.awt.Image;
+import java.io.File;
 import java.net.URL;
 import java.util.Properties;
 
@@ -28,6 +29,10 @@ public class Plugin<E>
 	private Image mediumImage;
 
 	private Image smallImage;
+
+	private boolean internal;
+
+	private File file;
 
 	public String getType()
 	{
@@ -135,5 +140,37 @@ public class Plugin<E>
 	public void setSmallImage(Image smallImage)
 	{
 		this.smallImage = smallImage;
+	}
+
+	boolean isInternal()
+	{
+		return internal;
+	}
+
+	void setInternal(boolean internal)
+	{
+		this.internal = internal;
+	}
+
+	/**
+	 * returns the file that was used to load the plugin. this file will end
+	 * with .jar . if the plugin is an internal plugin, this file will be null.
+	 * 
+	 * @return
+	 */
+	File getFile()
+	{
+		return file;
+	}
+
+	/**
+	 * sets the file that this plugin was loaded from. this file should end with
+	 * .jar
+	 * 
+	 * @param file
+	 */
+	void setFile(File file)
+	{
+		this.file = file;
 	}
 }

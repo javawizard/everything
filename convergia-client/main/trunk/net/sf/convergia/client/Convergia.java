@@ -19,6 +19,8 @@ import java.awt.TrayIcon;
 import java.awt.Window;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.ComponentEvent;
+import java.awt.event.ComponentListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
@@ -26,6 +28,7 @@ import java.awt.event.MouseMotionAdapter;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.FileFilter;
+import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -39,12 +42,18 @@ import java.net.URL;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 import java.util.Queue;
+import java.util.jar.JarEntry;
+import java.util.jar.JarFile;
+import java.util.jar.JarOutputStream;
+import java.util.jar.Manifest;
+import java.util.zip.ZipEntry;
 
 import javax.imageio.ImageIO;
 import javax.net.ssl.SSLSocket;
@@ -196,24 +205,77 @@ public class Convergia
 
 	private static final String SYSTEM_UPDATE_SITE = "http://trivergia.com:8080/convergiaupdates.properties";
 
+	private static final int LOCK_PORT = 64779;
+
+	private static final String RESTART_CLASSPATH = "bin;*";
+
+	// FIXME: needs to be localized to the user's operating system and java vm
+	private static final String[] restartExecutableString = new String[]
+	{ "javaw.exe", "-cp", RESTART_CLASSPATH, "net.sf.convergia.client.Loader",
+			"wfl" };
+
+	public static void restartConvergia()
+	{
+		try
+		{
+			if (true)
+				throw new RuntimeException(
+						"due to problems with the code below, restarting is disabled.");
+			System.out.println("running rt.exec");
+			Runtime.getRuntime().exec(restartExecutableString);
+			System.out.println("waiting");
+			Thread.sleep(3000);
+			System.out.println("exiting");
+			System.exit(0);
+			System.out.println("exited (this should never be printed)");
+		} catch (Exception e)
+		{
+			e.printStackTrace();
+			JOptionPane
+					.showMessageDialog(
+							launchbar,
+							"Convergia could not be restarted. You will need to manually restart convergia.");
+
+		}
+
+	}
+
 	/**
 	 * @param args
 	 */
 	public static void main(String[] args) throws Throwable
 	{
-		try
+		boolean waitForLock = args.length > 0 && args[0].equals("wfl");
+		if (waitForLock)
 		{
-			ss = new ServerSocket(64779);
-		} catch (Exception e)
+			while (true)
+			{
+				try
+				{
+					ss = new ServerSocket(LOCK_PORT);
+					break;
+				} catch (Exception e)
+				{
+					e.printStackTrace();
+					Thread.sleep(3000);
+				}
+			}
+		} else
 		{
-			e.printStackTrace();
-			JFrame frame = new JFrame("Convergia");
-			frame.setLocationRelativeTo(null);
-			frame.show();
-			JOptionPane
-					.showMessageDialog(frame,
-							"Convergia is already running. You cannot start Convergia multiple times.");
-			System.exit(0);
+			try
+			{
+				ss = new ServerSocket(LOCK_PORT);
+			} catch (Exception e)
+			{
+				e.printStackTrace();
+				JFrame frame = new JFrame("Convergia");
+				frame.setLocationRelativeTo(null);
+				frame.show();
+				JOptionPane
+						.showMessageDialog(frame,
+								"Convergia is already running. You cannot start Convergia multiple times.");
+				System.exit(0);
+			}
 		}
 		try
 		{
@@ -1333,6 +1395,49 @@ public class Convergia
 		p.add(pad(wrap(importWorkspaceButton), 2, 2));
 		p.add(pad(workspacePanel, 2, 6));
 		launchbar.setDefaultCloseOperation(WindowConstants.HIDE_ON_CLOSE);
+		if (Storage.getConfigProperty("launchbarx") != null
+				&& Storage.getConfigProperty("launchbary") != null)
+		{
+			launchbar.setLocation(Integer.parseInt(Storage
+					.getConfigProperty("launchbarx")), Integer.parseInt(Storage
+					.getConfigProperty("launchbary")));
+		}
+		if (Storage.getConfigProperty("launchbarwidth") != null
+				&& Storage.getConfigProperty("launchbarheight") != null)
+		{
+			launchbar.setSize(Integer.parseInt(Storage
+					.getConfigProperty("launchbarwidth")), Integer
+					.parseInt(Storage.getConfigProperty("launchbarheight")));
+		}
+		launchbar.addComponentListener(new ComponentListener()
+		{
+
+			public void componentHidden(ComponentEvent e)
+			{
+				// TODO Auto-generated method stub
+
+			}
+
+			public void componentMoved(ComponentEvent e)
+			{
+				Storage.setConfigProperty("launchbarx", "" + launchbar.getX());
+				Storage.setConfigProperty("launchbary", "" + launchbar.getY());
+			}
+
+			public void componentResized(ComponentEvent e)
+			{
+				Storage.setConfigProperty("launchbarwidth", ""
+						+ launchbar.getWidth());
+				Storage.setConfigProperty("launchbarheight", ""
+						+ launchbar.getHeight());
+			}
+
+			public void componentShown(ComponentEvent e)
+			{
+				// TODO Auto-generated method stub
+
+			}
+		});
 	}
 
 	protected static void runAddContactWizard()
@@ -1443,10 +1548,10 @@ public class Convergia
 											launchbar,
 											"The look and feel has been changed. It is\n"
 													+ "reccomended that you restart Convergia. Would\n"
-													+ "you like to exit Convergia now? You will need\n"
-													+ "to manually start Convergia again after exiting.",
+													+ "you like to restart Convergia now?",
 											null, JOptionPane.YES_NO_OPTION) == JOptionPane.YES_OPTION)
-								System.exit(0);
+								restartConvergia();
+
 						}
 					}.start();
 				}
@@ -1584,7 +1689,7 @@ public class Convergia
 		bar.add(helpMenu);
 	}
 
-	public static void findNewTools(JFrame frame, String[] types)
+	public static void findNewPlugins(JFrame frame, String[] types)
 	{
 		try
 		{
@@ -2567,5 +2672,79 @@ public class Convergia
 		if (size < (1000 * 1000 * 1000))
 			return "" + (size / (1000 * 1000)) + "MB";
 		return "" + (size / (1000 * 1000 * 1000)) + "GB";
+	}
+
+	public static void saveJarFile(File target, JarFile source, Manifest mf)
+	{
+		File tempDiscard = null;
+		try
+		{
+			File tempWrite = File.createTempFile("convergiatemp", ".jar");
+			System.out.println("tempwrite:" + tempWrite);
+			tempWrite.deleteOnExit();
+			JarOutputStream output = new JarOutputStream(new FileOutputStream(
+					tempWrite));
+			output.putNextEntry(new ZipEntry("META-INF/MANIFEST.MF"));
+			mf.write(output);
+			System.out.println("manifest:");
+			mf.write(System.out);
+			System.out.println("---end manifest");
+			output.closeEntry();
+			for (JarEntry entry : Collections.list(source.entries()))
+			{
+				if (entry.getName().equals("META-INF/MANIFEST.MF")
+						|| entry.getName().equals("META-INF/MANIFEST.MF"))
+				{
+					System.out.println("entry is a manifest");
+					continue;
+				}
+				output.putNextEntry(entry);
+				Storage.copy(source.getInputStream(entry), output);
+				output.closeEntry();
+			}
+			output.flush();
+			output.close();
+			System.out.println("source is " + source.getName());
+			System.out.println("target is " + target.getPath());
+			if (source.getName() != null
+					&& source.getName().equals(target.getPath()))
+			{
+				System.out.println("names are the same");
+				source.close();
+			}
+			if (target.exists())
+			{
+				System.out.println("about to rename");
+				tempDiscard = File.createTempFile("convergiatemp", ".jar");
+				System.out.println(tempDiscard.delete());
+				tempDiscard.deleteOnExit();
+				System.out.println("renaming target " + target
+						+ " to tempdiscard " + tempDiscard);
+				longRename(target, tempDiscard);
+			}
+			System.out.println("renaming tempwrite " + tempWrite
+					+ " to target " + target);
+			longRename(tempWrite, target);
+			tempDiscard.delete();
+		} catch (Exception e)
+		{
+			e.printStackTrace();
+			if (tempDiscard != null && tempDiscard.exists() && !target.exists())
+				tempDiscard.renameTo(target);
+			throw new RuntimeException("couldn't save to the jar file", e);
+		}
+	}
+
+	public static void longRename(File src, File target) throws IOException
+	{
+		if (target.exists())
+			target.delete();
+		FileInputStream in = new FileInputStream(src);
+		FileOutputStream out = new FileOutputStream(target);
+		Storage.copy(in, out);
+		out.flush();
+		out.close();
+		in.close();
+		src.delete();
 	}
 }
