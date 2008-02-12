@@ -218,13 +218,15 @@ public class Convergia
 	{
 		try
 		{
-			if (true)
+			if (false)
 				throw new RuntimeException(
 						"due to problems with the code below, restarting is disabled.");
 			System.out.println("running rt.exec");
 			Runtime.getRuntime().exec(restartExecutableString);
 			System.out.println("waiting");
 			Thread.sleep(3000);
+			System.out.println("closing socket");
+			ss.close();
 			System.out.println("exiting");
 			System.exit(0);
 			System.out.println("exited (this should never be printed)");
@@ -245,6 +247,8 @@ public class Convergia
 	 */
 	public static void main(String[] args) throws Throwable
 	{
+		JFrame frame3 = new JFrame("convergiamain");
+		frame3.show();
 		boolean waitForLock = args.length > 0 && args[0].equals("wfl");
 		if (waitForLock)
 		{
@@ -252,10 +256,14 @@ public class Convergia
 			{
 				try
 				{
+					frame3.setTitle("accepting");
 					ss = new ServerSocket(LOCK_PORT);
+					frame3.setTitle("breaking");
 					break;
 				} catch (Exception e)
 				{
+					frame3.setTitle("exception," + e.getClass() + " : "
+							+ e.getMessage());
 					e.printStackTrace();
 					Thread.sleep(3000);
 				}
@@ -276,6 +284,10 @@ public class Convergia
 								"Convergia is already running. You cannot start Convergia multiple times.");
 				System.exit(0);
 			}
+		}
+		if (waitForLock)
+		{
+			Thread.sleep(6000);
 		}
 		try
 		{
