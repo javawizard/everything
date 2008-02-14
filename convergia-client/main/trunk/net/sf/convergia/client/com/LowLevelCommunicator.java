@@ -5,11 +5,19 @@ import java.io.EOFException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.net.InetAddress;
 import java.net.Socket;
+import java.net.UnknownHostException;
+import java.security.cert.X509Certificate;
 import java.util.ArrayList;
 import java.util.HashMap;
 
+import javax.net.ssl.HostnameVerifier;
+import javax.net.ssl.SSLContext;
+import javax.net.ssl.SSLSession;
 import javax.net.ssl.SSLSocketFactory;
+import javax.net.ssl.TrustManager;
+import javax.net.ssl.X509TrustManager;
 
 /**
  * this class is a low-level communicator for communicating with an Convergia
@@ -369,8 +377,40 @@ public class LowLevelCommunicator
 		{
 			connectedHost = host;
 			if (useSSL)
-				socket = SSLSocketFactory.getDefault().createSocket(host, port);
-			else
+			{
+				TrustManager[] trustAllCerts = new TrustManager[]
+				{ new X509TrustManager()
+				{
+					public X509Certificate[] getAcceptedIssuers()
+					{
+						return null;
+					}
+
+					public void checkClientTrusted(X509Certificate[] certs,
+							String authType)
+					{
+						// Trust always
+					}
+
+					public void checkServerTrusted(X509Certificate[] certs,
+							String authType)
+					{
+						// Trust always
+					}
+				} };
+
+				// Install the all-trusting trust manager
+				try
+				{
+					SSLContext sc = SSLContext.getInstance("SSL");
+					sc.init(null, trustAllCerts,
+							new java.security.SecureRandom());
+					socket = sc.getSocketFactory().createSocket(host, port);
+				} catch (Exception e)
+				{
+					throw new RuntimeException(e);
+				}
+			} else
 				socket = new Socket(host, port);
 			in = socket.getInputStream();
 			out = socket.getOutputStream();

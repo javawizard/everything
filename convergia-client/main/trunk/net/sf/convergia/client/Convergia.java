@@ -218,15 +218,13 @@ public class Convergia
 	{
 		try
 		{
-			if (false)
-				throw new RuntimeException(
-						"due to problems with the code below, restarting is disabled.");
+			System.out.println("closing socket");
+			ss.close();
+			Thread.sleep(3000);
 			System.out.println("running rt.exec");
 			Runtime.getRuntime().exec(restartExecutableString);
 			System.out.println("waiting");
-			Thread.sleep(3000);
-			System.out.println("closing socket");
-			ss.close();
+			Thread.sleep(1000);
 			System.out.println("exiting");
 			System.exit(0);
 			System.out.println("exited (this should never be printed)");
@@ -248,7 +246,10 @@ public class Convergia
 	public static void main(String[] args) throws Throwable
 	{
 		JFrame frame3 = new JFrame("convergiamain");
-		frame3.show();
+		frame3.setSize(800, 10);
+		// frame3.show();
+		// the above frame was used for debugging the restart feature of
+		// convergia, it needs to be removed some time soon
 		boolean waitForLock = args.length > 0 && args[0].equals("wfl");
 		if (waitForLock)
 		{
@@ -599,15 +600,15 @@ public class Convergia
 						exit();
 				}
 			});
-			trayimage = ImageIO.read(new File("trayicon.png"));
-			trayofflineimage = ImageIO.read(new File("trayoffline.png"));
+			trayimage = ImageIO.read(new File("trayicon.gif"));
+			trayofflineimage = ImageIO.read(new File("trayoffline.gif"));
 			File[] trayfiles = new File(".").listFiles(new FileFilter()
 			{
 
 				public boolean accept(File pathname)
 				{
 					return pathname.getName().startsWith("traynotify")
-							&& pathname.getName().endsWith(".png");
+							&& pathname.getName().endsWith(".gif");
 				}
 			});
 			Arrays.sort(trayfiles);
@@ -635,7 +636,7 @@ public class Convergia
 				public boolean accept(File pathname)
 				{
 					return pathname.getName().startsWith("trayofflinenotify")
-							&& pathname.getName().endsWith(".png");
+							&& pathname.getName().endsWith(".gif");
 				}
 			});
 			Arrays.sort(trayofflinefiles);

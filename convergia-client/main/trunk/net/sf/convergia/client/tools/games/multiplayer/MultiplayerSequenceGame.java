@@ -27,6 +27,7 @@ import javax.swing.JScrollPane;
 import javax.swing.border.Border;
 import javax.swing.border.EtchedBorder;
 
+import net.sf.convergia.client.CustomLoaderObjectReader;
 import net.sf.convergia.client.IMenu;
 import net.sf.convergia.client.IMenuItem;
 import net.sf.convergia.client.Convergia;
@@ -37,33 +38,34 @@ import net.sf.convergia.client.toolworkspace.Tool;
 import base64.Base64Coder;
 
 /**
- * A class providing additional functionality for multiplayer sequence games,
- * such as Tic-Tac-Toe, Pente, Othello, Blokus, Monopoly, Pentago, Billiards,
- * Chess, Checkers, Arimaa, etc. <br/><br/> A multiplayer sequence game is a
- * game where multiple players (optionally with a minimum and maximum number of
- * participants) participate in the game, and each one takes a "turn", usually
- * in sequence, although turns can be skipped. players are allowed to join the
- * game, when the game is reset, and when there is enough players, the game will
- * start. any players that are not participating can (usually) see the game in
- * progress. <br/><br/> this class allows it's subclasses to set a serializable
- * Object that represents the board. for example, in Chess, this could be an
- * int[][] representing the board, where each element in the array is a number
- * corresponding to a specific type of chess piece. anyway, the player who's
- * current turn it is can set this object, but players who are just observing or
- * who are participating in the game but do not have the current turn cannot
- * modify this object. whenever new updates to the object are received or set,
- * render(Object) is called, which should take the given object and update the
- * component returned from getGameComponent(). the object returned from
- * getGameComponent() should be complete with any mouse listeners or the like
- * needed to play the game, but these should only have effect if isMyTurn()
- * returns true. the component should not change over invocations, similar to
- * getComponent() in regular tools. see the javadoc on getComponent() in class
- * Tool for more info on what I mean. anyway, myTurn() will be called when play
- * passes to this player. you can also call isMyTurn() to see if it is your
- * turn. myTurn() should not wait very long to return, IE if it won't return
- * until the player is done moving then it should be wrapped in a Thread.
- * subclasses can call getGameParticipants() which returns all participants in
- * the current game, or null if the game is not in progress. sublasses can call
+ * A class providing additional functionality (functionality in addition to the
+ * Tool class) for multiplayer sequence games, such as Tic-Tac-Toe, Pente,
+ * Othello, Blokus, Monopoly, Pentago, Billiards, Chess, Checkers, Arimaa, etc.
+ * <br/><br/> A multiplayer sequence game is a game where multiple players
+ * (optionally with a minimum and maximum number of participants) participate in
+ * the game, and each one takes a "turn", usually in sequence, although turns
+ * can be skipped. players are allowed to join the game. when there is enough
+ * players, a user can start the game. any players that are not participating
+ * can (usually) see the game in progress. <br/><br/> this class allows it's
+ * subclasses to set a serializable Object that represents the board. for
+ * example, in Chess, this could be an int[][] representing the board, where
+ * each element in the array is a number corresponding to a specific type of
+ * chess piece. anyway, the player who's current turn it is can set this object,
+ * but players who are just observing or who are participating in the game but
+ * do not have the current turn cannot modify this object. whenever new updates
+ * to the object are received or set, render(Object) is called, which should
+ * take the given object and update the component returned from
+ * getGameComponent(). the object returned from getGameComponent() should be
+ * complete with any mouse listeners or the like needed to play the game, but
+ * these should only have effect if isMyTurn() returns true. the component
+ * should not change over invocations, similar to getComponent() in regular
+ * tools. see the javadoc on getComponent() in class Tool for more info on what
+ * I mean. anyway, myTurn() will be called when play passes to this player. you
+ * can also call isMyTurn() to see if it is your turn. myTurn() should not wait
+ * very long to return, IE if it won't return until the player is done moving
+ * then the contents should be wrapped in a Thread. subclasses can call
+ * getGameParticipants() which returns all participants in the current game, or
+ * an empty array if the game is not in progress. sublasses can call
  * isGameRunning() to see if ithe game is in progress. when it is a player's
  * turn, the player can call winGame() to alert the rest of the players that
  * this player has won the game. the game is over at that point. when it is a
@@ -925,12 +927,13 @@ public abstract class MultiplayerSequenceGame extends Tool
 		}
 	}
 
-	private static Serializable deserializeFromString(String s)
+	private Serializable deserializeFromString(String s)
 	{
 		try
 		{
-			ObjectInputStream ois = new ObjectInputStream(
-					new ByteArrayInputStream(Base64Coder.decode(s)));
+			ObjectInputStream ois = new CustomLoaderObjectReader(
+					new ByteArrayInputStream(Base64Coder.decode(s)), getClass()
+							.getClassLoader());
 			Object object = ois.readObject();
 			ois.close();
 			return (Serializable) object;

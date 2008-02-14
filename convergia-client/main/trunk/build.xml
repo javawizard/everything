@@ -20,9 +20,11 @@
 			<fileset dir=".">
 				<include name="**/*" />
 				<exclude name="convergiaupdates.jar" />
-				<exclude name="intouch3updates.jar"/>
+				<exclude name="intouch3updates.jar" />
 				<exclude name="appdata/**/*" />
 				<exclude name="plugins/**/*" />
+				<exclude name="bin/devplugins/**/*" />
+				<exclude name="devplugins/**/*" />
 				<exclude name="bin/plugins/**/*" />
 				<exclude name="bin/appdata/**/*" />
 				<exclude name="docs/**/*" />

@@ -16,6 +16,7 @@ import java.io.InputStream;
 import java.net.URL;
 import java.net.URLClassLoader;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Properties;
@@ -237,9 +238,12 @@ public class PluginManager
 	 * treat this situation as if the plugin had no new updates available. it
 	 * will not show an error message to the user.
 	 * 
+	 * <br/><br/>If a plugin is disabled, no updates will be downloaded for
+	 * that plugin.
+	 * 
 	 */
 	public static void downloadPluginUpdates(boolean autoDownload,
-			boolean showProgress, boolean notifyOnComplete)
+			boolean notifyOnComplete)
 	{
 		HashMap<Plugin, Properties> pluginsWithUpdates = new HashMap<Plugin, Properties>();
 		// map of plugins to be updated and the properties file corresponding to
@@ -277,6 +281,9 @@ public class PluginManager
 			confirmedPlugins = pluginsWithUpdates;
 		else
 			confirmedPlugins = askUserAboutDownloading(pluginsWithUpdates);
+		if (confirmedPlugins == null)
+			// the user selected none of the plugins or they clicked cancel
+			return;
 		for (Plugin p : pluginsWithUpdates.keySet())
 		{
 			Properties up = pluginsWithUpdates.get(p);
@@ -286,8 +293,17 @@ public class PluginManager
 	private static HashMap<Plugin, Properties> askUserAboutDownloading(
 			HashMap<Plugin, Properties> pluginsWithUpdates)
 	{
-		// PluginUpdateDialog dialog = new
-		// PluginUpdateDialog(Convergia.launchbar);
+		JDialog dialog = new JDialog(Convergia.launchbar, true);
+		dialog.getContentPane().setLayout(new BorderLayout());
+		dialog.setTitle("Updates - Convergia");
+		JPanel p = new JPanel();
+		p.setLayout(new BoxLayout(p, BoxLayout.Y_AXIS));
+		dialog.getContentPane().add(p, BorderLayout.NORTH);
+		p.add(new JLabel(
+				"<html>The following plugins have updates available. Select<br/>"
+						+ "the ones you want to update, then click OK."));
+		p.add(new JLabel("<html>&nbsp;"));
+		JButton okButton = new JButton();
 		return pluginsWithUpdates;
 	}
 
@@ -434,9 +450,13 @@ public class PluginManager
 				failedPlugins.add(file.getName());
 			}
 		}
-
-		for (File file : internalPluginFolder
-				.listFiles(new SubversionFileFilter()))
+		ArrayList<File> l2 = new ArrayList<File>();
+		l2.addAll(Arrays.asList(internalPluginFolder
+				.listFiles(new SubversionFileFilter())));
+		if (new File("devplugins").exists())
+			l2.addAll(Arrays.asList(new File("devplugins")
+					.listFiles(new SubversionFileFilter())));
+		for (File file : l2.toArray(new File[0]))
 		{
 			try
 			{

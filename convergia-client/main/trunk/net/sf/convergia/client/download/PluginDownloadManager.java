@@ -14,6 +14,9 @@ import java.net.URLConnection;
 import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.jar.Attributes;
+import java.util.jar.JarFile;
+import java.util.jar.Manifest;
 
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
@@ -132,79 +135,117 @@ public class PluginDownloadManager
 										"Are you sure you want to download and install this plugin?",
 										null, JOptionPane.YES_NO_OPTION) == JOptionPane.YES_OPTION)
 						{
-							new Thread()
+							int slashIndex = targetUrl.getPath().lastIndexOf(
+									"/");
+							final String newFileName = targetUrl.getPath()
+									.substring(slashIndex + 1);
+							System.out.println("newfilename is " + newFileName);
+							if ((!new File(PluginManager.pluginFolder,
+									newFileName).exists())
+									|| JOptionPane
+											.showConfirmDialog(
+													dialog,
+													"This plugin is already installed. Would you like to reinstall it?",
+													null,
+													JOptionPane.YES_NO_OPTION) == JOptionPane.YES_OPTION)
 							{
-								public void run()
-								{
-									try
-									{
-										p.setEnabled(false);
-										pbar.setStringPainted(true);
-										pbar.setString("Downloading plugin...");
-										pbar.setIndeterminate(false);
-										pbar.setMinimum(0);
-										pbar.setValue(0);
-										URLConnection connection = targetUrl
-												.openConnection();
-										int totalSize = connection
-												.getContentLength();
-										if (totalSize < 0)
-											pbar.setIndeterminate(true);
-										else
-											pbar.setMaximum(totalSize / 1024);
-										int countSoFar = 0;
-										byte[] buffer = new byte[1024];
-										int amount;
-										InputStream stream = connection
-												.getInputStream();
-										File tmpfile = File.createTempFile(
-												"convergiadownload", ".jar");
-										tmpfile.deleteOnExit();
-										FileOutputStream fos = new FileOutputStream(
-												tmpfile);
-										while ((amount = stream.read(buffer)) != -1)
 
-										{
-											fos.write(buffer, 0, amount);
-											countSoFar += amount;
-											if (totalSize >= 0)
-											{
-												pbar
-														.setValue(countSoFar / 1024);
-												pbar.repaint();
-											}
-										}
-										fos.flush();
-										fos.close();
-										pbar.setValue(pbar.getMaximum());
-										pbar.setString("Installing plugin...");
-										int slashIndex = targetUrlString
-												.lastIndexOf("/");
-										String newFileName = targetUrlString
-												.substring(slashIndex + 1);
-										tmpfile.renameTo(new File(
-												PluginManager.pluginFolder,
-												newFileName));
-										pbar.setString("");
-										pbar.setValue(0);
-										pbar.setMinimum(0);
-										pbar.setMaximum(0);
-										if (JOptionPane
-												.showConfirmDialog(
-														dialog,
-														"<html>The plugin has been successfully installed.<br/>"
-																+ "You will need to restart Convergia for the plugin to work.<br/>"
-																+ "Would you like to restart Convergia now?",
-														null,
-														JOptionPane.YES_NO_OPTION) == JOptionPane.YES_OPTION)
-											Convergia.restartConvergia();
-										dialog.dispose();
-									} catch (Exception e)
+								new Thread()
+								{
+									public void run()
 									{
-										throw new RuntimeException(e);
+										try
+										{
+											p.setEnabled(false);
+											pbar.setStringPainted(true);
+											pbar
+													.setString("Downloading plugin...");
+											pbar.setIndeterminate(false);
+											pbar.setMinimum(0);
+											pbar.setValue(0);
+											URLConnection connection = targetUrl
+													.openConnection();
+											int totalSize = connection
+													.getContentLength();
+											if (totalSize < 0)
+												pbar.setIndeterminate(true);
+											else
+												pbar
+														.setMaximum(totalSize / 1024);
+											int countSoFar = 0;
+											byte[] buffer = new byte[1024];
+											int amount;
+											InputStream stream = connection
+													.getInputStream();
+											File tmpfile = File
+													.createTempFile(
+															"convergiadownload",
+															".jar");
+											tmpfile.deleteOnExit();
+											FileOutputStream fos = new FileOutputStream(
+													tmpfile);
+											while ((amount = stream
+													.read(buffer)) != -1)
+
+											{
+												fos.write(buffer, 0, amount);
+												countSoFar += amount;
+												if (totalSize >= 0)
+												{
+													pbar
+															.setValue(countSoFar / 1024);
+													pbar.repaint();
+												}
+											}
+											fos.flush();
+											fos.close();
+											pbar.setValue(pbar.getMaximum());
+											pbar
+													.setString("Installing plugin...");
+											if (new File(
+													PluginManager.pluginFolder,
+													newFileName).exists())
+											{
+												new File(
+														PluginManager.pluginFolder,
+														newFileName).delete();
+											}
+											tmpfile.renameTo(new File(
+													PluginManager.pluginFolder,
+													newFileName));
+											JarFile jarfile = new JarFile(
+													new File(
+															PluginManager.pluginFolder,
+															newFileName));
+											Manifest manifest = jarfile
+													.getManifest();
+											Attributes attributes = manifest
+													.getMainAttributes();
+											Convergia.saveJarFile(new File(
+													PluginManager.pluginFolder,
+													newFileName), jarfile,
+													manifest);
+											pbar.setString("");
+											pbar.setValue(0);
+											pbar.setMinimum(0);
+											pbar.setMaximum(0);
+											if (JOptionPane
+													.showConfirmDialog(
+															dialog,
+															"<html>The plugin has been successfully installed.<br/>"
+																	+ "You will need to restart Convergia for the plugin to work.<br/>"
+																	+ "Would you like to restart Convergia now?",
+															null,
+															JOptionPane.YES_NO_OPTION) == JOptionPane.YES_OPTION)
+												Convergia.restartConvergia();
+											dialog.dispose();
+										} catch (Exception e)
+										{
+											throw new RuntimeException(e);
+										}
 									}
-								}
-							}.start();
+								}.start();
+							}
 						}
 					} catch (Exception e1)
 					{
