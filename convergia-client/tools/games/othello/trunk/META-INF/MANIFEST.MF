@@ -1,0 +1,6 @@
+Manifest-Version: 1.2
+it3-type: tool
+it3-class: net.sf.convergia.client.tools.games.othello.Othello
+it3-name: Othello
+it3-description: <html>A game of Othello. Also known as Reversi.
+
