@@ -48,8 +48,7 @@ public class PluginDownloadManager
 	 * this method prompts the user to select plugins on the ptl that they wish
 	 * to download. this method should only be called by Convergia. If you are a
 	 * developer creating your own plugin, consider using
-	 * Convergia.promptForPluginDownload(), as it handles generating a lot of
-	 * arguments that have to be passed into here.
+	 * Convergia.findNewPlugins() instead.
 	 * 
 	 * @throws MalformedURLException
 	 */
@@ -59,7 +58,7 @@ public class PluginDownloadManager
 		final JDialog dialog = new JDialog(parent, true);
 		dialog.setTitle("Get new plugins - Convergia");
 		dialog.getContentPane().setLayout(new BorderLayout());
-		dialog.setSize(450, 550);
+		dialog.setSize(470, 590);
 		dialog.setLocationRelativeTo(parent);
 		final JEditorPane p = new JEditorPane();
 		p.setContentType("text/html");

@@ -394,6 +394,7 @@ public class ToolWorkspace extends Workspace
 					return;
 				}
 				final AddToolDialog dialog = new AddToolDialog(frame);
+				dialog.setLocationRelativeTo(frame);
 				JPanel p = dialog.getToolsPanel();
 				p.setLayout(new BoxLayout(p, BoxLayout.Y_AXIS));
 				final Plugin[] plugins = PluginManager.getByType("tool")

@@ -576,7 +576,7 @@ public class Communicator
 	 */
 	private synchronized String execCommand(String command, String arguments)
 	{
-		System.out.println("executing " + command + " with arguments " + (arguments.length() > 256 ? arguments.substring(0,255) : arguments));
+//		System.out.println("executing " + command + " with arguments " + (arguments.length() > 256 ? arguments.substring(0,255) : arguments));
 		execCommand = command;
 		execCache = null;
 		if (!communicator.isActive())
@@ -608,7 +608,7 @@ public class Communicator
 								+ e.getMessage(), e);
 			}
 		}
-		System.out.println("finished waiting. response was " + (execCache.length() > 256 ? execCache.substring(0,255) : execCache));
+//		System.out.println("finished waiting. response was " + (execCache.length() > 64 ? execCache.substring(0,63) : execCache) + " (possibly truncated)");
 		if (execCache == null)
 			throw new RuntimeException(
 					"A response was not received within 5 seconds");

@@ -13,7 +13,6 @@ import javax.swing.SwingUtilities;
 
 import net.sf.convergia.client.Convergia;
 
-
 public class PoppableTabbedPane extends JPanel
 {
 	private volatile static int nextId = 0;
@@ -303,6 +302,7 @@ public class PoppableTabbedPane extends JPanel
 		tab.setTitle(name);
 		tab.setContent(component);
 		JFrame frame = new JFrame(name);
+		frame.setIconImage(Convergia.getWindowIcon());
 		frame.setSize(600, 450);
 		if (SwingUtilities.getWindowAncestor(this) != null)
 			frame.setLocationRelativeTo(SwingUtilities.getWindowAncestor(this));

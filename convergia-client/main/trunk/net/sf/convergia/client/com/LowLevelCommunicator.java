@@ -428,6 +428,10 @@ public class LowLevelCommunicator
 				System.out.println("redirecting to host " + host + " on port "
 						+ port);
 			}
+			else
+			{
+				throw new RuntimeException("invalid greeting received while handshaking with the server");
+			}
 		}
 		in = socket.getInputStream();
 		out = socket.getOutputStream();

@@ -587,6 +587,15 @@ public class Convergia
 					showLaunchBar();
 				}
 			});
+			pp.add(new AMenuItem("Restart Convergia")
+			{
+
+				@Override
+				public void run(ActionEvent e)
+				{
+					restartConvergia();
+				}
+			});
 			pp.add(new AMenuItem(tm("trayicon.menu.exit"))
 			{
 
@@ -1702,6 +1711,23 @@ public class Convergia
 		bar.add(helpMenu);
 	}
 
+	/**
+	 * shows a dialog to the user where they can select plugins from the ptl to
+	 * download. (ptl stands for Public Tool List, which is somewhat of a
+	 * misnomer because it contains lots of types of plugins, not just tools)
+	 * this method will return once the user has closed the dialog. if the user
+	 * chooses to restart Convergia after installing the plugin, then this
+	 * method will not return normally.hb
+	 * 
+	 * @param frame
+	 *            the frame to pass to the dialog's constructor. the dialog will
+	 *            be shown on top of this frame.
+	 * @param types
+	 *            the types of plugins to show in the list, or null to show all
+	 *            plugins. for example, if you only wanted the user to download
+	 *            tools, you could pass a String[] that contains one string,
+	 *            "tool".
+	 */
 	public static void findNewPlugins(JFrame frame, String[] types)
 	{
 		try
@@ -2647,24 +2673,6 @@ public class Convergia
 	}
 
 	public static final String PUBLIC_ADDON_LIST_URL = "http://trivergia.com:8080/ptl.properties";
-
-	public static void showDownloadAddonsDialog(JFrame parent)
-	{
-		try
-		{
-
-		} catch (Exception ex1)
-		{
-			ex1.printStackTrace();
-			JOptionPane
-					.showMessageDialog(
-							parent,
-							"You are not connected to the internet, or another problem happened.\n"
-									+ "Make sure you are connected to the internet, then try again.\n"
-									+ "If the problem persists, use the contact us item on the help menu\n"
-									+ "to contact us.");
-		}
-	}
 
 	private static long lastUsedTime = 0;
 
