@@ -700,6 +700,8 @@ public class ToolWorkspace extends Workspace
 						{
 							ex1.printStackTrace();
 						}
+						receiveMessage(getUsername(), "chatmessage|"
+								+ message.getTransmitString());
 						broadcastMessage("chatmessage|"
 								+ message.getTransmitString());
 					} catch (Exception ex1)
@@ -832,55 +834,59 @@ public class ToolWorkspace extends Workspace
 			chatArea.append(toAdd);
 			chatArea.setCaretPosition(chatArea.getDocument().getLength());
 			frame.show();
-			frame.getChatPanel().setBorder(
-					new CompoundBorder(new EtchedBorder(EtchedBorder.RAISED,
-							Color.RED.brighter(), Color.RED.darker()),
-							new EmptyBorder(1, 1, 1, 1)));
-			new Thread()
+			if (!getUsername().equals(from))
 			{
-				private boolean isBorderDarker = false;
-
-				public void run()
+				frame.getChatPanel().setBorder(
+						new CompoundBorder(new EtchedBorder(
+								EtchedBorder.RAISED, Color.RED.brighter(),
+								Color.RED.darker()),
+								new EmptyBorder(1, 1, 1, 1)));
+				new Thread()
 				{
-					while (true)
+					private boolean isBorderDarker = false;
+
+					public void run()
 					{
-						try
+						while (true)
 						{
-							Thread.sleep(1000);
-						} catch (InterruptedException e)
-						{
-							e.printStackTrace();
+							try
+							{
+								Thread.sleep(1000);
+							} catch (InterruptedException e)
+							{
+								e.printStackTrace();
+							}
+							if (frame.getChatPanel().hasFocus()
+									|| frame.getChatScrollPane().hasFocus()
+									|| frame.getChatTextArea().hasFocus()
+									|| frame.getChatTextField().hasFocus()
+									|| frame.getChatGroup().hasFocus()
+									|| frame.getSendChatButton().hasFocus())
+								break;
+							if (isBorderDarker)
+							{
+								isBorderDarker = false;
+								frame.getChatPanel().setBorder(
+										new CompoundBorder(new EtchedBorder(
+												EtchedBorder.RAISED, Color.RED
+														.brighter(), Color.RED
+														.darker()),
+												new EmptyBorder(1, 1, 1, 1)));
+							} else
+							{
+								isBorderDarker = true;
+								frame.getChatPanel().setBorder(
+										new CompoundBorder(new EtchedBorder(
+												EtchedBorder.RAISED, Color.CYAN
+														.brighter(), Color.CYAN
+														.darker()),
+												new EmptyBorder(1, 1, 1, 1)));
+							}
 						}
-						if (frame.getChatPanel().hasFocus()
-								|| frame.getChatScrollPane().hasFocus()
-								|| frame.getChatTextArea().hasFocus()
-								|| frame.getChatTextField().hasFocus()
-								|| frame.getChatGroup().hasFocus()
-								|| frame.getSendChatButton().hasFocus())
-							break;
-						if (isBorderDarker)
-						{
-							isBorderDarker = false;
-							frame.getChatPanel().setBorder(
-									new CompoundBorder(new EtchedBorder(
-											EtchedBorder.RAISED, Color.RED
-													.brighter(), Color.RED
-													.darker()),
-											new EmptyBorder(1, 1, 1, 1)));
-						} else
-						{
-							isBorderDarker = true;
-							frame.getChatPanel().setBorder(
-									new CompoundBorder(new EtchedBorder(
-											EtchedBorder.RAISED, Color.CYAN
-													.brighter(), Color.CYAN
-													.darker()),
-											new EmptyBorder(1, 1, 1, 1)));
-						}
+						frame.getChatPanel().setBorder(null);
 					}
-					frame.getChatPanel().setBorder(null);
-				}
-			}.start();
+				}.start();
+			}
 		}
 	}
 
@@ -1056,6 +1062,9 @@ public class ToolWorkspace extends Workspace
 		frame.getToolsTabbedPane().validate();
 		frame.getToolsTabbedPane().repaint();
 		if (wereTabsChanged)
+		{
+			System.out.println("tabbs were changed, there are now "
+					+ frame.getToolsTabbedPane().getTabCount() + " tabs");
 			try
 			{
 				Thread.sleep(500);
@@ -1067,6 +1076,7 @@ public class ToolWorkspace extends Workspace
 								+ e.getClass().getName() + " - "
 								+ e.getMessage(), e);
 			}
+		}
 		System.out.println("*****DONE CHECK NEEDS UPDATE TABS");
 	}
 
@@ -1092,6 +1102,13 @@ public class ToolWorkspace extends Workspace
 				l.setFont(l.getFont().deriveFont(Font.PLAIN));
 				p.add(l);
 			}
+			if (listOnlineUsers().length < 1)
+			{
+				JLabel label = new JLabel("   none");
+				label.setFont(label.getFont().deriveFont(Font.PLAIN));
+				label.setForeground(new Color(128, 128, 128));
+				p.add(label);
+			}
 			p.add(offlineLabel);
 			for (String u : listOfflineUsers())
 			{
@@ -1099,9 +1116,20 @@ public class ToolWorkspace extends Workspace
 				l.setFont(l.getFont().deriveFont(Font.PLAIN));
 				p.add(l);
 			}
+			if (listOfflineUsers().length < 1)
+			{
+				JLabel label = new JLabel("   none");
+				label.setFont(label.getFont().deriveFont(Font.PLAIN));
+				label.setForeground(new Color(128, 128, 128));
+				p.add(label);
+			}
 		} else
 		{
 			p.add(onlineLabel);
+			JLabel label = new JLabel("   none");
+			label.setFont(label.getFont().deriveFont(Font.PLAIN));
+			label.setForeground(new Color(140, 140, 140));
+			p.add(label);
 			p.add(offlineLabel);
 			for (String u : listUsers())
 			{

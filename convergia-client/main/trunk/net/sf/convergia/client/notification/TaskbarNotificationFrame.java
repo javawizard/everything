@@ -335,7 +335,7 @@ public class TaskbarNotificationFrame extends javax.swing.JWindow implements
 		return arraylist.toArray((T[]) Array.newInstance(c, 0));
 	}
 
-	private void reloadNotifications()
+	private synchronized void reloadNotifications()
 	{
 		System.out.println("removing all");
 		notificationPanel.removeAll();

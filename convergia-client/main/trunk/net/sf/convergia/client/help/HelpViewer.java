@@ -99,9 +99,10 @@ public class HelpViewer extends javax.swing.JFrame
 			public boolean accept(File pathname)
 			{
 				// TODO Auto-generated method stub
-				return pathname.isDirectory()
-						|| (pathname.getName().endsWith(".html") && !pathname
-								.getName().equalsIgnoreCase("default.html"));
+				return (!pathname.getName().equals(".svn"))
+						&& (pathname.isDirectory() || (pathname.getName()
+								.endsWith(".html") && !pathname.getName()
+								.equalsIgnoreCase("default.html")));
 			}
 		}))
 		{
@@ -126,7 +127,8 @@ public class HelpViewer extends javax.swing.JFrame
 				id = id.toLowerCase();
 				HelpContent content = new HelpContent(label, id, defaultFile,
 						null);
-				System.out.println("setting module with path " + path + "/" + id); 
+				System.out.println("setting module with path " + path + "/"
+						+ id);
 				modulesByPath.put(path + "/" + id, content);
 				DefaultMutableTreeNode subnode = new DefaultMutableTreeNode(
 						content, true);
@@ -151,7 +153,8 @@ public class HelpViewer extends javax.swing.JFrame
 				}
 				id = id.toLowerCase();
 				HelpContent content = new HelpContent(label, id, file, null);
-				System.out.println("setting module with path " + path + "/" + id); 
+				System.out.println("setting module with path " + path + "/"
+						+ id);
 				modulesByPath.put(path + "/" + id, content);
 				DefaultMutableTreeNode subnode = new DefaultMutableTreeNode(
 						content);
@@ -204,6 +207,9 @@ public class HelpViewer extends javax.swing.JFrame
 			jSplitPane1.setPreferredSize(new java.awt.Dimension(550, 441));
 			// START >> helpTree
 			helpTree = new JTree();
+			helpTree.setToggleClickCount(2);
+			helpTree.setShowsRootHandles(true);
+			helpTree.setRootVisible(false);
 			HelpContent rootContent = new HelpContent("Help", "help", new File(
 					helpFolder, "default.html"), null);
 			rootNode = new DefaultMutableTreeNode(rootContent, true);

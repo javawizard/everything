@@ -221,7 +221,7 @@ public class WorkspaceStorage
 		}
 	}
 
-	public static final int MAX_CHAT_MESSAGES_LENGTH = 500;
+	public static final int MAX_CHAT_MESSAGES_LENGTH = 800;
 
 	public void trimChatMessagesToMaxLength()
 	{

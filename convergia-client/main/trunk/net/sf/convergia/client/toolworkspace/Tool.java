@@ -565,7 +565,5 @@ public abstract class Tool
 			throw new RuntimeException(
 					"The tool is not a member of any tool workspace");
 		tp.setSelectedIndex(index);
-		if (!tp.getPopFrame(index).isShowing())
-			Convergia.bringToFront(getWrapper().getWorkspace().getFrame());
 	}
 }

@@ -145,6 +145,11 @@ public class PoppableTabbedPane extends JPanel
 		{
 			this.id = id;
 		}
+
+		public String toString()
+		{
+			return "(ComponentWrapper with id " + id + ")";
+		}
 	}
 
 	private JTabbedPane tabbedPane;
@@ -180,12 +185,16 @@ public class PoppableTabbedPane extends JPanel
 
 	private int getTabIndex(int id)
 	{
+		System.out.println("searching for id " + id);
 		for (int i = 0; i < tabbedPane.getTabCount(); i++)
 		{
+			System.out.println("matching with " + tabbedPane.getComponentAt(i));
 			if (tabbedPane.getComponentAt(i) instanceof ComponentWrapper
 					&& ((ComponentWrapper) tabbedPane.getComponentAt(i))
 							.getId() == id)
+			{
 				return i;
+			}
 		}
 		return -1;
 	}
@@ -224,7 +233,8 @@ public class PoppableTabbedPane extends JPanel
 	{
 		if (getTabIndex(index) != -1)
 			tabbedPane.setSelectedIndex(getTabIndex(index));
-		else if (index >= 0 && index < tabs.size())
+		else if (index >= 0 && index < tabs.size()
+				&& tabs.get(index).getFrame().isShowing())
 			Convergia.bringToFront(tabs.get(index).getFrame());
 		else
 			throw new IndexOutOfBoundsException("The index specifed (" + index
@@ -240,7 +250,9 @@ public class PoppableTabbedPane extends JPanel
 	 */
 	public void removeTabAt(int i)
 	{
+		System.out.println("removing " + i);
 		int internalIndex = getTabIndex(i);
+		System.out.println("removing ii " + internalIndex);
 		if (internalIndex != -1)
 			tabbedPane.removeTabAt(internalIndex);
 		tabs.get(i).getFrame().dispose();

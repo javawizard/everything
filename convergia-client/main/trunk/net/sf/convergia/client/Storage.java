@@ -126,7 +126,7 @@ public class Storage
 	 * @param file.
 	 * @return
 	 */
-	static String readFile(File file)
+	public static String readFile(File file)
 	{
 		try
 		{
@@ -148,7 +148,7 @@ public class Storage
 		}
 	}
 
-	static void writeFile(String string, File file)
+	public static void writeFile(String string, File file)
 	{
 		try
 		{
@@ -260,7 +260,7 @@ public class Storage
 		}
 	}
 
-	static void recursiveDelete(File transmissionFolder)
+	public static void recursiveDelete(File transmissionFolder)
 	{
 		if (transmissionFolder.isDirectory())
 		{

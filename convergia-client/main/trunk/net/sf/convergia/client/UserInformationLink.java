@@ -27,6 +27,6 @@ public class UserInformationLink extends JLinkButton
 
 	public UserInformationLink(String username)
 	{
-		this(username, username);
+		this(username, "   " + username);
 	}
 }

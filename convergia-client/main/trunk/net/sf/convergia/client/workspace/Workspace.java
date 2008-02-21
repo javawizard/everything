@@ -86,8 +86,8 @@ public abstract class Workspace implements Serializable
 	}
 
 	/**
-	 * same as sendMessage, but it sends it to all online users. Currently, this
-	 * just calls sendMessage() for every member of getOnlineUsers(), so it
+	 * same as sendMessage, but it sends it to all online users (excluding yourself). Currently, this
+	 * just calls sendMessage() for every member of getOnlineUsers() that is not equal to getUsername(), so it
 	 * offers no additional data transfer efficiency benefits.
 	 * 
 	 * @param message
@@ -96,6 +96,7 @@ public abstract class Workspace implements Serializable
 	{
 		for (String u : listOnlineUsers())
 		{
+			if(!u.equals(getUsername()))
 			try
 			{
 				sendMessage(u, message);
