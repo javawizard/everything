@@ -367,7 +367,7 @@ public class ToolWorkspace extends Workspace
 		setFrameTitle();
 		frame.getChatPopOutButton().setText("");
 		frame.getChatPopOutButton().setIcon(
-				new ImageIcon(Convergia.Icons.POP_OUT.getImage()));
+				new ImageIcon(Convergia.Icons.POP_OUT_16.getImage()));
 		frame.invalidate();
 		frame.validate();
 		frame.repaint();
@@ -833,7 +833,10 @@ public class ToolWorkspace extends Workspace
 						chatArea.getText().length() - MAX_CHAT_FIELD_LENGTH));
 			chatArea.append(toAdd);
 			chatArea.setCaretPosition(chatArea.getDocument().getLength());
-			frame.show();
+			if (frame.getChatPopoutFrame().isShowing())
+				Convergia.bringToFront(frame.getChatPopoutFrame());
+			else
+				Convergia.bringToFront(frame);
 			if (!getUsername().equals(from))
 			{
 				frame.getChatPanel().setBorder(
@@ -1011,7 +1014,7 @@ public class ToolWorkspace extends Workspace
 			toolLabelPanel.setLayout(new BorderLayout());
 			toolLabelPanel.add(toolLabel, BorderLayout.CENTER);
 			JLinkButton popLabel = new JLinkButton(new ImageIcon(
-					Convergia.Icons.POP_OUT.getImage()));
+					Convergia.Icons.POP_OUT_16.getImage()));
 			popLabel.setFocusable(false);
 			popLabel.setBorder(new EmptyBorder(1, 1, 1, 1));
 			toolLabelPanel.setOpaque(false);

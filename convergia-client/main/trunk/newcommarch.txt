@@ -1,0 +1,52 @@
+This document describes a new communications architecture for Convergia, and completely revises the communications protocols.
+
+In the old architecture, there is a single server, and multiple clients. the clients authenticate using password-based authentication.
+the server relays packets, called messages in this document, between clients.
+
+Just a terminology note: in this document, i refer to 3 different components to the communications between clients. those are
+online messaging, offline messaging, and storage. online messaging is using the client SENDMESSAGE command to send a message
+to another client that is signed on. offline messaging is using the client commands INITOFFLINEMESSAGE, APPENDOFFLINEMESSAGE,
+and SENDOFFLINEMESSAGE to construct a (potentially large) set of data to send to a user when they come online. storage is
+using the client commands CREATEFOLDER, DELETEFOLDER, SETPERMISSIONS, CREATEFILE, WRITEFILE, DELETEFILE, LISTFOLDER, GETINFO,
+and READFILE to read and write files.
+
+There are a few different types of nodes:
+
+Management server: There is only one of these running. This is the server in charge of all of the other servers. It manages user accounts
+and authentication between all of the other servers. It also manages connections to the communications servers, to minimize data transfer
+between communications servers. This is a mandatory node, IE if it goes down, the entire Convergia server system goes down along with it.
+
+Data management server: There is only one of these running. This is the server that is in charge of transferring stored data, such as
+offline messaging and workspace storage. It also manages organizing data between data servers. all data reading and writing is routed
+through this server. If this server goes down, the Convergia communications system will continue to function, but will not be able to
+store any data. This means that the only component functioning will be online messaging. user metadata, in particular, will not function.
+
+Data server: There are generally multiple of these in the system, although only one is required. Data servers, as their names imply, store
+data. They usually have a large hard disk attached to which they can store a specified amount of data. Data servers can be marked (by
+configuration on the management server) as volatile or non-volatile. Volatile data servers do not need to be online constantly, or even
+most of the time. Data stored on volatile servers will be stored on at least 3 of them. If one of them goes offline, the data will be
+copied to another one by the data management server. non-volatile data servers are data servers that will be online all of the time. data
+that is stored on a non-volatile data server will only be stored there once.
+
+Main Server: There are generally multiple of these in the system, although only one is required. The client nodes connect to these. At
+least one must be accessible outside of a firewall, and as many as all of the others can be behind a firewall, servicing clients within
+the firewall. Each main server maintains a direct connection with each other main server that it can connect to (IE main servers in a firewall
+won't be able to connect to main servers inside of a different firewall), and tells the management server which servers those are. the
+management server can then plot routes between servers, which are used when a cross-server message is sent by the client. 
+
+Client: These are the actual Convergia clients, the clients that end users use. When a client comes online, it first connects to the
+management server and asks it for a list of main servers, which it then attempts to connect to. It then reports the information back
+to the management server. the management server then tells the client which one it should connect to. The client attempts to connect
+to that server. if the connect attempt fails after 5 tries, it starts over with the process just described. this will generally only
+happen is the client has gone offline in that time or the server has gone offline.
+
+Anyway, the actual protocol for communications has been revised. Each connection established is authenticated through the management server.
+I'll get to that in a minute. With the new protocol, the ~ character is interpreted specially. specifically, a ~ means that the character after
+that should be interpreted literally. The protocol is line-based, so this character comes in useful.
+
+When a client wants to connect to the Convergia server system, it contacts the management server, and provides it's username. 
+
+When a client connects to a server,
+the client receives the server's certificate, and then connects to the management server and asks it if the key is valid. If the key is,
+then the connection is made with the main server. If the key is not valid, the client will try to connect to another server. Once the client
+has connected, it sends it's username, a newline, and it's password.

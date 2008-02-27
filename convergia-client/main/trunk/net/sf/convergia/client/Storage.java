@@ -63,7 +63,7 @@ public class Storage
 		config = iItem(tbase, "config");
 		featureStorage = iItem(tbase, "featuremanager");
 	}
-	
+
 	public static File getFeatureStorage()
 	{
 		return featureStorage;
@@ -422,6 +422,26 @@ public class Storage
 		if (!new File(config, key).exists())
 			return null;
 		return readFile(new File(config, key));
+	}
+
+	/**
+	 * same as getConfigProperty, but if getConfigProperty(key) returns null,
+	 * then setConfigProperty(key,defaultValue) is called, and defaultValue is
+	 * returned.
+	 * 
+	 * @param key
+	 * @param defaultValue
+	 * @return
+	 */
+	public static String getConfigProperty(String key, String defaultValue)
+	{
+		String p = getConfigProperty(key);
+		if(p == null)
+		{
+			setConfigProperty(key,defaultValue);
+			return defaultValue;
+		}
+		return p;
 	}
 
 	public static void setConfigProperty(String key, String value)

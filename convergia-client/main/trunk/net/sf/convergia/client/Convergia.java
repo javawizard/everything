@@ -152,12 +152,13 @@ public class Convergia
 
 	public static enum Icons
 	{
-		CONFIGURE_WORKSPACE("configure-workspace.png", 16), DELETE_WORKSPACE(
-				"delete-workspace.png", 16), INVITE_TO_WORKSPACE(
-				"invite-to-workspace.png", 16), POP_OUT("pop-out.png", 16), WORKSPACE_INFO(
-				"workspace-info.png", 16), WORKSPACE_WARNING(
+		CONFIGURE_WORKSPACE_16("configure-workspace.png", 16), DELETE_WORKSPACE_16(
+				"delete-workspace.png", 16), INVITE_TO_WORKSPACE_16(
+				"invite-to-workspace.png", 16), POP_OUT_16("pop-out.png", 16), WORKSPACE_INFO_16(
+				"workspace-info.png", 16), WORKSPACE_WARNING_16(
 				"workspace-warning.png", 16), BACK_BUTTON_32("back-button.png",
-				32);
+				32), FOLDER_DOCS_16("folder-docs.png", 16), EDIT_16(
+				"edit16.gif", 16), NOTES_16("notes16.gif", 16);
 		private int size;
 
 		private Icons(String iconPath, int size)
@@ -678,6 +679,19 @@ public class Convergia
 			// trayicon.displayMessage("Convergia - Please wait",
 			// "Convergia is initializing. Please wait...",
 			// TrayIcon.MessageType.NONE);
+			ToolTipManager.sharedInstance().setDismissDelay(
+					Integer.parseInt(Storage.getConfigProperty(
+							"tooltipdismiss", "" + (1000 * 60 * 60 * 24))));
+			ToolTipManager.sharedInstance().setReshowDelay(
+					Integer.parseInt(Storage.getConfigProperty("tooltipreshow",
+							""
+									+ ToolTipManager.sharedInstance()
+											.getReshowDelay())));
+			ToolTipManager.sharedInstance().setInitialDelay(
+					Integer.parseInt(Storage.getConfigProperty(
+							"tooltipinitial", ""
+									+ ToolTipManager.sharedInstance()
+											.getInitialDelay())));
 			loadLaunchBar();
 			trayicon.addMouseMotionListener(new MouseMotionAdapter()
 			{
@@ -1050,12 +1064,12 @@ public class Convergia
 				mainButton.setFocusable(false);
 				System.out.println("***got to 6");
 				JLinkButton configureButton = new JLinkButton(new ImageIcon(
-						Icons.CONFIGURE_WORKSPACE.getImage()));
+						Icons.CONFIGURE_WORKSPACE_16.getImage()));
 				System.out.println("***got to 7");
 				JLinkButton deleteButton = new JLinkButton(new ImageIcon(
-						Icons.DELETE_WORKSPACE.getImage()));
+						Icons.DELETE_WORKSPACE_16.getImage()));
 				JLinkButton inviteToButton = new JLinkButton(new ImageIcon(
-						Icons.INVITE_TO_WORKSPACE.getImage()));
+						Icons.INVITE_TO_WORKSPACE_16.getImage()));
 				System.out.println("***got to 8");
 				deleteButton.setFocusable(false);
 				configureButton.setFocusable(false);
@@ -1249,10 +1263,10 @@ public class Convergia
 					}
 				});
 				if (w.getWorkspace().isNeedsAttention())
-					p.add(pad(new JLabel(new ImageIcon(Icons.WORKSPACE_WARNING
-							.getImage())), 1, 1));
+					p.add(pad(new JLabel(new ImageIcon(
+							Icons.WORKSPACE_WARNING_16.getImage())), 1, 1));
 				if (w.getWorkspace().isHasNewInformation())
-					p.add(pad(new JLabel(new ImageIcon(Icons.WORKSPACE_INFO
+					p.add(pad(new JLabel(new ImageIcon(Icons.WORKSPACE_INFO_16
 							.getImage())), 1, 1));
 				p.setAlignmentX(0);
 				p.setAlignmentY(0);

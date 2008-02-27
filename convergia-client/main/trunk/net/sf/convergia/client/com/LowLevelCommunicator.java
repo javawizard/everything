@@ -312,7 +312,13 @@ public class LowLevelCommunicator
 					} catch (Exception e)
 					{
 						isActive = false;
-						e.printStackTrace();
+						if (e instanceof NullPointerException && in == null)
+						{
+							System.out.println("NPE while reading from socket, this means that a connection to the server has not been established");
+						} else
+						{
+							e.printStackTrace();
+						}
 						if (isOpened)
 						{
 							socket = null;
@@ -427,10 +433,10 @@ public class LowLevelCommunicator
 				socket = null;
 				System.out.println("redirecting to host " + host + " on port "
 						+ port);
-			}
-			else
+			} else
 			{
-				throw new RuntimeException("invalid greeting received while handshaking with the server");
+				throw new RuntimeException(
+						"invalid greeting received while handshaking with the server");
 			}
 		}
 		in = socket.getInputStream();

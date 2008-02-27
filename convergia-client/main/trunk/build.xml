@@ -29,7 +29,7 @@
 				<exclude name="bin/appdata/**/*" />
 				<exclude name="docs/**/*" />
 				<exclude name="bin/docs/**/*" />
-				<exclude name="bin/convesrgiaupdates.jar" />
+				<exclude name="bin/convergiaupdates.jar" />
 				<exclude name="bin/intouch3updates.jar" />
 			</fileset>
 		</jar>
