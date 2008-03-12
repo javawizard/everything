@@ -1,20 +1,31 @@
 package net.sf.convergia.client.tools.business.todolist;
 
 import java.awt.BorderLayout;
+import java.awt.Color;
+import java.awt.Font;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.File;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashMap;
 
+import javax.swing.Box;
 import javax.swing.BoxLayout;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
 import javax.swing.JComponent;
+import javax.swing.JDialog;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
+import javax.swing.JTextArea;
+import javax.swing.border.CompoundBorder;
 import javax.swing.border.EmptyBorder;
+import javax.swing.border.LineBorder;
+import javax.swing.border.TitledBorder;
 
 import com.l2fprod.common.swing.JLinkButton;
 
@@ -132,26 +143,121 @@ public class TodoList extends Tool
 			final JCheckBox checkbox = new JCheckBox();
 			checkbox.setFocusable(false);
 			JLinkButton deleteButton = new JLinkButton(new ImageIcon(
-					Convergia.Icons.DELETE_WORKSPACE.getImage()));
-			deleteButton.setBorder(new EmptyBorder(1, 1, 1, 10));
+					Convergia.Icons.DELETE_WORKSPACE_16.getImage()));
+			deleteButton.setBorder(new EmptyBorder(1, 1, 1, 13));
 			JLinkButton editButton = new JLinkButton(new ImageIcon(
-					Convergia.Icons.CONFIGURE_WORKSPACE.getImage()));
+					Convergia.Icons.CONFIGURE_WORKSPACE_16.getImage()));
 			editButton.setBorder(new EmptyBorder(1, 1, 1, 1));
+			JLinkButton changeGroupButton = new JLinkButton(new ImageIcon(
+					Convergia.Icons.FOLDER_DOCS_16.getImage()));
+			JLinkButton notesButton = new JLinkButton(new ImageIcon(
+					Convergia.Icons.NOTES_16.getImage()));
+			notesButton.setBorder(new EmptyBorder(1, 1, 1, 1));
+			changeGroupButton.setBorder(new EmptyBorder(1, 1, 1, 1));
 			deleteButton.setFocusable(false);
 			editButton.setFocusable(false);
-			setLayout(new BoxLayout(this, BoxLayout.X_AXIS));
+			changeGroupButton.setFocusable(false);
+			notesButton.setFocusable(false);
+			setLayout(new BorderLayout());
+			JPanel mp = new JPanel();
+			mp.setLayout(new BorderLayout());
+			add(mp, BorderLayout.WEST);
+			JPanel controlsPanel = new JPanel();
+			JPanel textPanel = new JPanel();
+			controlsPanel.setLayout(new BoxLayout(controlsPanel,
+					BoxLayout.X_AXIS));
+			textPanel.setLayout(new BorderLayout());
+			JPanel cw1 = new JPanel();
+			cw1.setLayout(new BorderLayout());
+			cw1.add(controlsPanel, BorderLayout.NORTH);
+			mp.add(cw1, BorderLayout.WEST);
+			mp.add(textPanel, BorderLayout.CENTER);
 			final LiveProperties properties = new LiveProperties(new File(
 					itemsFolder, id));
 			JLabel taskLabel = new JLabel();
 			taskLabel.setText(properties.getProperty("name"));
+			final String notes = properties.getProperty("notes");
+			String tooltip;
+			if (notes == null || "".equals(notes.trim()))
+			{
+				tooltip = "No notes";
+			} else
+			{
+				System.out.println("notes are " + notes);
+				System.out.println("replaced, we have "
+						+ notes.replace("\n", "<br/>"));
+				tooltip = "<html>" + notes.replace("\n", "<br/>");
+			}
+			taskLabel.setToolTipText(notes);
 			if (properties.getProperty("completed") == null)
 				properties.setProperty("completed", "false");
 			checkbox.setSelected(properties.getProperty("completed")
 					.equalsIgnoreCase("true"));
-			add(editButton);
-			add(deleteButton);
-			add(checkbox);
-			add(taskLabel);
+			controlsPanel.add(editButton);
+			controlsPanel.add(changeGroupButton);
+			controlsPanel.add(deleteButton);
+			controlsPanel.add(checkbox);
+			controlsPanel.add(notesButton);
+			taskLabel.setAlignmentX(0);
+			taskLabel.setAlignmentY(0);
+			textPanel.add(taskLabel, BorderLayout.NORTH);
+			JLabel notesLabel = new JLabel(notes);
+			notesLabel.setAlignmentX(0);
+			notesLabel.setAlignmentY(0);
+			taskLabel.setHorizontalAlignment(2);
+			notesLabel.setHorizontalAlignment(2);
+			notesLabel.setFont(notesLabel.getFont().deriveFont(Font.PLAIN));
+			if (notes != null)
+				textPanel.add(notesLabel, BorderLayout.SOUTH);
+			notesButton.addActionListener(new ActionListener()
+			{
+
+				@Override
+				public void actionPerformed(ActionEvent e)
+				{
+					final JDialog dialog = new JDialog(getParentFrame(), true);
+					dialog.setSize(300, 400);
+					dialog.setLocationRelativeTo(getParentFrame());
+					dialog.getContentPane().setLayout(new BorderLayout());
+					dialog.setTitle("Type some notes for this task");
+					final JTextArea textarea = new JTextArea();
+					dialog.getContentPane().add(new JScrollPane(textarea));
+					JButton done = new JButton("Save");
+					JButton cancel = new JButton("Cancel");
+					JPanel lowerPanel = new JPanel();
+					lowerPanel.setLayout(new BorderLayout());
+					dialog.getContentPane().add(lowerPanel, BorderLayout.SOUTH);
+					JPanel lowerRightPanel = new JPanel();
+					lowerRightPanel.setLayout(new BorderLayout());
+					lowerPanel.add(lowerRightPanel, BorderLayout.EAST);
+					lowerRightPanel.add(done, BorderLayout.WEST);
+					lowerRightPanel.add(cancel, BorderLayout.EAST);
+					if (notes != null)
+						textarea.setText(notes);
+					cancel.addActionListener(new ActionListener()
+					{
+
+						@Override
+						public void actionPerformed(ActionEvent e)
+						{
+							dialog.hide();
+						}
+					});
+					done.addActionListener(new ActionListener()
+					{
+
+						@Override
+						public void actionPerformed(ActionEvent e)
+						{
+							dialog.hide();
+							properties.setProperty("notes", textarea.getText());
+							reloadTasks();
+						}
+					});
+					dialog.setDefaultCloseOperation(dialog.DO_NOTHING_ON_CLOSE);
+					dialog.show();
+				}
+			});
 			checkbox.addActionListener(new ActionListener()
 			{
 
@@ -167,6 +273,37 @@ public class TodoList extends Tool
 						properties.setProperty("completed", ""
 								+ checkbox.isSelected());
 					}
+					reloadTasks();
+				}
+			});
+			changeGroupButton.addActionListener(new ActionListener()
+			{
+
+				@Override
+				public void actionPerformed(ActionEvent e)
+				{
+					ArrayList<String> displayGroups = new ArrayList<String>(
+							knownGroups);
+					displayGroups.add("Create a group");
+					String newGroup = (String) JOptionPane.showInputDialog(
+							TaskComponent.this,
+							"Choose a new group for this task.", null,
+							JOptionPane.PLAIN_MESSAGE, null, displayGroups
+									.toArray(new String[0]), properties
+									.getProperty("group"));
+					if (newGroup == null)
+						return;
+					if (newGroup.equals("Create a group"))
+					{
+						newGroup = JOptionPane.showInputDialog(
+								TaskComponent.this,
+								"Type the name of the new group.");
+						if (newGroup == null
+								|| newGroup.equals("Create a group")
+								|| newGroup.equals("No group"))
+							return;
+					}
+					properties.setProperty("group", newGroup);
 					reloadTasks();
 				}
 			});
@@ -202,15 +339,65 @@ public class TodoList extends Tool
 		}
 	}
 
+	private ArrayList<String> knownGroups = new ArrayList<String>();
+
 	private void reloadTasks()
 	{
 		taskListPanel.removeAll();
-		for (File file : itemsFolder.listFiles(new SubversionFileFilter()))
+		HashMap<String, JPanel> groups = new HashMap<String, JPanel>();
+		knownGroups.clear();
+		knownGroups.add("No group");
+		File[] files = itemsFolder.listFiles(new SubversionFileFilter());
+		Arrays.sort(files, new java.util.Comparator<File>()
 		{
-			taskListPanel.add(new TaskComponent(file.getName()));
+
+			public int compare(File o1, File o2)
+			{
+				LiveProperties o1p = new LiveProperties(o1);
+				LiveProperties o2p = new LiveProperties(o2);
+				if (o1p.getProperty("completed") == null)
+					o1p.setProperty("completed", "false");
+				if (o2p.getProperty("completed") == null)
+					o2p.setProperty("completed", "false");
+				if (o1p.getProperty("completed").equals("true")
+						&& o2p.getProperty("completed").equals("false"))
+					return 1;
+				if (o2p.getProperty("completed").equals("true")
+						&& o1p.getProperty("completed").equals("false"))
+					return -1;
+				else
+					return 0;
+			}
+		});
+		for (File file : files)
+		{
+			LiveProperties lp = new LiveProperties(file);
+			if (lp.getProperty("group") == null)
+				lp.setProperty("group", "No group");
+			if (!knownGroups.contains(lp.getProperty("group")))
+			{
+				knownGroups.add(lp.getProperty("group"));
+			}
+			JPanel groupPanel = groups.get(lp.getProperty("group"));
+			if (groupPanel == null)
+			{
+				groupPanel = new JPanel();
+				groupPanel
+						.setLayout(new BoxLayout(groupPanel, BoxLayout.Y_AXIS));
+				groupPanel.setBorder(new CompoundBorder(new CompoundBorder(
+						new EmptyBorder(3, 3, 3, 3), new TitledBorder(lp
+								.getProperty("group"))), new EmptyBorder(3, 3,
+						3, 3)));
+				taskListPanel.add(groupPanel);
+				groups.put(lp.getProperty("group"), groupPanel);
+			}
+			groupPanel.add(new TaskComponent(file.getName()));
 			taskListPanel.invalidate();
 			taskListPanel.validate();
 			taskListPanel.repaint();
+			groupPanel.invalidate();
+			groupPanel.validate();
+			groupPanel.repaint();
 		}
 		taskListPanel.invalidate();
 		taskListPanel.validate();
