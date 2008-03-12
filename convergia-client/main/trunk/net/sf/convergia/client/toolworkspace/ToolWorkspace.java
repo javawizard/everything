@@ -42,6 +42,7 @@ import net.sf.convergia.client.plugins.Plugin;
 import net.sf.convergia.client.plugins.PluginManager;
 import net.sf.convergia.client.workspace.SetList;
 import net.sf.convergia.client.workspace.Workspace;
+import net.sf.convergia.utils.ItemChooser;
 
 import com.l2fprod.common.swing.JLinkButton;
 
@@ -393,122 +394,59 @@ public class ToolWorkspace extends Workspace
 									"Currently, you must be the workspace creator to add tools.");
 					return;
 				}
-				final AddToolDialog dialog = new AddToolDialog(frame);
-				dialog.setLocationRelativeTo(frame);
-				JPanel p = dialog.getToolsPanel();
-				p.setLayout(new BoxLayout(p, BoxLayout.Y_AXIS));
 				final Plugin[] plugins = PluginManager.getByType("tool")
 						.toArray(new Plugin[0]);
-				final JRadioButton[] buttons = new JRadioButton[plugins.length];
-				ButtonGroup group = new ButtonGroup();
-				for (int i = 0; i < buttons.length; i++)
+				final String[] pluginStrings = new String[plugins.length];
+				for (int i = 0; i < plugins.length; i++)
 				{
-					JPanel op = new JPanel();
-					op.setLayout(new BorderLayout());
-					JPanel ip = new JPanel();
-					ip.setLayout(new BorderLayout());
-					op.add(ip, BorderLayout.CENTER);
-					JPanel lp = new JPanel();
-					lp.setLayout(new BorderLayout());
-					op.add(lp, BorderLayout.WEST);
-					final JRadioButton b = new JRadioButton("");
-					group.add(b);
-					if (i == 0)
-						b.setSelected(true);
-					lp.add(b, BorderLayout.NORTH);
-					JLabel mainLabel = new JLabel(plugins[i].getMetadata()
-							.getProperty("name"));
-					JLabel descriptionLabel = new JLabel(plugins[i]
-							.getMetadata().getProperty("description"));
-					MouseListener ls = new MouseAdapter()
-					{
-
-						@Override
-						public void mousePressed(MouseEvent e)
-						{
-							b.setSelected(true);
-						}
-					};
-					descriptionLabel.addMouseListener(ls);
-					mainLabel.addMouseListener(ls);
-					Convergia.setPlainFont(descriptionLabel);
-					ip.add(mainLabel, BorderLayout.NORTH);
-					ip.add(descriptionLabel, BorderLayout.CENTER);
-					buttons[i] = b;
-					p.add(Convergia.pad(op, 1, 12));
+					String s = "<html><b>"
+							+ plugins[i].getMetadata().getProperty("name")
+							+ "</b><br/>";
+					s += plugins[i].getMetadata().getProperty("description")
+							.replace("<html>", "");
+					pluginStrings[i] = s;
 				}
-				new Thread()
+				Plugin p = ItemChooser.showItemChooser(frame, "Choose the type of tool you want to add.", plugins,
+						pluginStrings, true);
+				if (p == null)
+					return;
+				ToolWrapper w = new ToolWrapper();
+				w.setId(Convergia.generateId());
+				w.setDatastore(new File(storage.getToolDatastore(), w.getId()
+						+ "-" + System.currentTimeMillis()));
+				w.setIndex(0);// not implemented yet
+				w
+						.setName(p.getMetadata().getProperty("name") == null ? "unnamed tool"
+								: p.getMetadata().getProperty("name"));
+				w.setTypeId(p.getId());
+				try
 				{
-					public void run()
+					storage.addOrUpdateTool(w);
+					try
 					{
+						manager.reloadTools();
+					} catch (Exception ex1)
+					{
+						ex1.printStackTrace();
+					}
+					checkNeedsUpdateTabs();
+					buildAndSetInfo();
+					for (String u : listOnlineUsers())
 						try
 						{
-							System.out.println("showing add dialog");
-							dialog.show();
-							System.out.println("done showing");
-							dialog.dispose();
-							System.out.println("disposed");
-							if (!dialog.isClickedOk())
-								return;
-							System.out.println("adding");
-							Plugin p = null;
-							for (int i = 0; i < plugins.length; i++)
-							{
-								if (buttons[i].isSelected())
-									p = plugins[i];
-							}
-							if (p == null)// should never happen unless
-								// something is wrong
-								// with swing or there are no workspace
-								// plugins
-								// to begin with
-								return;
-							ToolWrapper w = new ToolWrapper();
-							w.setId(Convergia.generateId());
-							w.setDatastore(new File(storage.getToolDatastore(),
-									w.getId() + "-"
-											+ System.currentTimeMillis()));
-							w.setIndex(0);// not implemented yet
-							w
-									.setName(p.getMetadata()
-											.getProperty("name") == null ? "unnamed tool"
-											: p.getMetadata().getProperty(
-													"name"));
-							w.setTypeId(p.getId());
-							try
-							{
-								storage.addOrUpdateTool(w);
-								try
-								{
-									manager.reloadTools();
-								} catch (Exception ex1)
-								{
-									ex1.printStackTrace();
-								}
-								checkNeedsUpdateTabs();
-								buildAndSetInfo();
-								for (String u : listOnlineUsers())
-									try
-									{
-										if (!u.equals(getUsername()))
-											sendMessage(u,
-													"toolmanager|reloadtoolsfromcreator");
-									} catch (Exception ex1)
-									{
-										ex1.printStackTrace();
-									}
-							} catch (Exception e)
-							{
-								e.printStackTrace();
-							}
-							JOptionPane.showMessageDialog(frame,
-									"The tool was successfully created.");
+							if (!u.equals(getUsername()))
+								sendMessage(u,
+										"toolmanager|reloadtoolsfromcreator");
 						} catch (Exception ex1)
 						{
 							ex1.printStackTrace();
 						}
-					}
-				}.start();
+				} catch (Exception e2)
+				{
+					e2.printStackTrace();
+				}
+				JOptionPane.showMessageDialog(frame,
+						"The tool was successfully created.");
 
 			}
 		});

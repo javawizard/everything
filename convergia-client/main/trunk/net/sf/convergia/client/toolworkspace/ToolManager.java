@@ -10,7 +10,6 @@ import net.sf.convergia.client.plugins.Plugin;
 import net.sf.convergia.client.plugins.PluginManager;
 import net.sf.convergia.client.workspace.SetList;
 
-
 public class ToolManager
 {
 	private ToolWorkspace workspace;
@@ -99,7 +98,8 @@ public class ToolManager
 				infoParts = new String[0];
 			ArrayList<ToolWrapper> remoteTools = new ArrayList<ToolWrapper>();
 			ToolWrapper[] storageTools = storage.listTools();
-			List<ToolWrapper> storageToolsList = new ArrayList<ToolWrapper>(Arrays.asList(storageTools));
+			List<ToolWrapper> storageToolsList = new ArrayList<ToolWrapper>(
+					Arrays.asList(storageTools));
 			for (String part : infoParts)
 			{
 				String[] subparts = part.split("\\|");
@@ -242,6 +242,13 @@ public class ToolManager
 		} catch (Exception ex1)
 		{
 			ex1.printStackTrace();
+			workspace.frame.show();
+			JOptionPane
+					.showMessageDialog(
+							workspace.frame,
+							"<html>An error occured while loading the tool "
+									+ fst.getName()
+									+ ". Please use<br/>the contact us menu item on the help menu of the launchbar to tell us about the problem.");
 		}
 		tools.add(fst);
 	}

@@ -12,6 +12,7 @@ import java.awt.Frame;
 import java.awt.Graphics2D;
 import java.awt.GridLayout;
 import java.awt.Image;
+import java.awt.MenuItem;
 import java.awt.PopupMenu;
 import java.awt.RenderingHints;
 import java.awt.SystemTray;
@@ -204,9 +205,11 @@ public class Convergia
 
 	private static JPanel contactsPanel;
 
+	private static PopupMenu workspacesSubMenu;
+
 	private static final String SYSTEM_UPDATE_SITE = "http://trivergia.com:8080/convergiaupdates.properties";
 
-	private static final int LOCK_PORT = 64779;
+	private static final int LOCK_PORT = 61116;
 
 	private static final String RESTART_CLASSPATH = "bin;*";
 
@@ -342,6 +345,7 @@ public class Convergia
 					{
 						try
 						{
+							Thread.sleep(3100);
 							if (trayicon != null)
 							{
 								if (isNotificationAlertShowing)
@@ -369,6 +373,13 @@ public class Convergia
 									} catch (Exception ex1)
 									{
 										ex1.printStackTrace();
+										try
+										{
+											Thread.sleep(3000);
+										} catch (Exception ex12)
+										{
+											ex12.printStackTrace();
+										}
 									}
 									if (++currentNotificationIndex >= notificationTrayImages.length)
 										currentNotificationIndex = 0;
@@ -388,6 +399,13 @@ public class Convergia
 						} catch (Exception ex1)
 						{
 							ex1.printStackTrace();
+							try
+							{
+								Thread.sleep(5000);
+							} catch (Exception ex12)
+							{
+								ex12.printStackTrace();
+							}
 						}
 					}
 				}
@@ -568,17 +586,20 @@ public class Convergia
 			}
 			authDialog.hide();
 			PopupMenu pp = new PopupMenu();
-			pp
-					.add(new AMenuItem(
-							tm("trayicon.menu.show.about.intouch3.window"))
-					{
+			workspacesSubMenu = new PopupMenu("Workspaces");
+			MenuItem aboutConvergiaItem = new AMenuItem(
+					tm("trayicon.menu.show.about.intouch3.window"))
+			{
 
-						@Override
-						public void run(ActionEvent e)
-						{
-							showAboutWindow();
-						}
-					});
+				@Override
+				public void run(ActionEvent e)
+				{
+					showAboutWindow();
+				}
+			};
+
+			pp.add(aboutConvergiaItem);
+			pp.add(workspacesSubMenu);
 			pp.add(new AMenuItem(tm("trayicon.menu.show.launchbar"))
 			{
 
@@ -1051,6 +1072,7 @@ public class Convergia
 			System.out.println("repainting workspace panel");
 			WorkspaceWrapper[] workspaces = WorkspaceManager.getAll();
 			workspacePanel.removeAll();
+			workspacesSubMenu.removeAll();
 			for (final WorkspaceWrapper w : workspaces)
 			{
 				System.out.println("**got to 5");
@@ -1104,6 +1126,11 @@ public class Convergia
 						w.getWorkspace().userActivate();
 					}
 				});
+				MenuItem item = new MenuItem(w.getName());
+				workspacesSubMenu.add(item);
+				item
+						.addActionListener(mainButton.getActionListeners()[mainButton
+								.getActionListeners().length - 1]);
 				inviteToButton.addActionListener(new ActionListener()
 				{
 

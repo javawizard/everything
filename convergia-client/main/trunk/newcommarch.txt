@@ -46,13 +46,28 @@ that should be interpreted literally. The protocol is line-based, so this charac
 without authentication. There are only 2 right now, REGISTERACCOUNT and CONFIRMREGISTERACCOUNT. more on those later. (note: reigster account
 sends a captcha the user must fill out, and confirm register account checks to make sure the captcha was entered correctly.)
 
-When a client wants to connect to the Convergia server system, it contacts the management server, and requests a list of main servers that are
-currently connected. This is done by following the client authentication steps for the protocol, and then executing the command 
+The communications protocol now has more of a concept of packets. A packet is some data, ended by a newline. If newlines
+need to be in the data, then the last character before the newline should be a ~, as per what was discussed above. A packet
+starts with the id for the packet, a space, the name of the packet's command, a space, and any data. if a packet is sent in
+strict response to another packet received, it should use the same packet id. otherwise, it should use a new packet id.
 
-When a client connects to a main server,
-the client receives the server's certificate, and then connects to the management server and asks it if the key is valid. If the key is,
-then the connection is made with the main server. If the key is not valid, the client will try to connect to another server. Once the client
-has connected, it sends it's username, a newline, and it's password.
+the management server maintains a route table, which it regenerates whenever a main server comes online or goes offline, and partly
+regenerates whenever a client signs on, signs off, or switches main servers. only portions of the route table are downloaded to each
+main server. the route table contains a list of routes that messages can follow to get from one main server to another. at first
+glance, this may seem pointless, as you would think, since every main server has a connection to one another, message can be sent
+directly from one server to another, but, as per the specification above, servers can be behind firewalls, so if a messages needs
+to be transferred between to servers that are behind firewalls, the route table will contain an entry that instructs the sending
+server to route it's message through a server outside of a firewall and to the other server inside of a different firewall, since
+that other server would have a connection to a server outside of the firewall.
+
+the route table also contains a list of which users are signed on to which servers. this is the part that gets updated whenever a user
+signs on or off. whenever the route table is updated in this manner, the portion of the table that was updated is sent to all of the
+main servers, along with a checksum for the new route table. if the checksums match, no further action is taken. if they do not match,
+that server suspends communication and updates it's entire route table from the main server. it then resumes communication.
+
+authentication of the management server is done using the server's SSL key. therefore, the management server MUST have a certificate
+signed by a well-known certificate provider. The management server is intended to be hosted on trivergia.com, so it will use Trivergia's
+Thawte-signed SSL certificate, with permission from Matt (the president of Trivergia Technologies, LLC).
 
 
 
@@ -60,19 +75,106 @@ has connected, it sends it's username, a newline, and it's password.
 
 -------------------------------------------------
 
-Here's a full reference of the commands available.
+Here's a full reference of the commands available. The ports it can be used on are noted in parenthesis with the command. 644 should be prepended
+to each of those port numbers, for example, if a command can be used on port 79, it should be used when connected to the data management
+server on TCP/IP port 64479 by a data server. Port mappings are discussed later in this document.
+
+This is the list of request-response commands (ones where, for every request, there will be a corresponding numbered response, see earlier in
+this document).
 
 
-REGISTERACCOUNT: requests to register a new Convergia account.  It takes the user's username, a newline, and the user's requested password.
+REGISTERACCOUNT (74): requests to register a new Convergia account.  It takes the user's username, a newline, and the user's requested password.
 It responds with "OK", a space, a string representing this registration request, a newline, and a JPEG image of a captcha image. The user should enter the
 word in the captcha, at which point CONFIRMREGISTERACCOUNT will be called. The response would be FAIL instead of OK if the username
 specified already exists.
 
-CONFIRMREGISTERACCOUNT: confirms account registration. it takes the registration request id, a newline, and the text that the captcha contained.
+CONFIRMREGISTERACCOUNT (74): confirms account registration. it takes the registration request id, a newline, and the text that the captcha contained.
 This must be called within one minute of the corresponding REGISTERACCOUNT command to work. If the captcha was correct, and the time was still
 valid, the account will be created, and OK will be the response. If not, FAIL will be called, with the reason for the failure. (IE you took
-too long, You entered an incorrect captcha, etc.)
+too long, You entered an incorrect captcha, etc.) After this returns OK, users should wait
 
-GETSERVERMAP: returns the "map" of the server connections, including client connections. The full list of clients, and their connectivity status 
-(online or offline) can be derived from this. This replaces LISTONLINE, LISTOFFLINE, and LISTALL from the old protocol. TODO: what is the format
-of the response? 
+GETSERVERMAP (73): returns the "map" of the server connections, including client connections. The full list of clients, and their connectivity status 
+(online or offline) can be derived from this. This replaces LISTONLINE, LISTOFFLINE, and LISTALL from the old protocol. The response is a newline
+separated list of nodes, their type, their status, and their connectivity. each line starts with an id representing the node, which can be
+anything so long as it uniquely ideintifies that node, and is the same
+each time this command is called. then there is pipe, then the name of the node, which, for clients, is the client's username, and for servers,
+can be anything. then another pipe, then the type, which
+is one of managementserver, mainserver, datamanagementserver, dataserver, or client. then a pipe, then online or offline which is it's status,
+then a pipe, then any notes related to this server, then a pipe, then, if the status was offline, the empty string, and if the status is 
+online, a pipe separated list of ids of nodes that this node is connected to.
+
+
+
+This is a list of orphaned response commands (ones where there is no command sent, just a response received).
+
+RECEIVEMESSAGE ():
+
+SERVERMAPUPDATE ():
+
+OFFLINEMESSAGEAVAILABLE (): 
+
+
+-------------------------------------------------
+
+Here's a list of port mappings, what listens on them, and what should connect to them. The intent of having multiple ports is that
+each port serves only one function.
+
+64473: client to server port
+64474: management server unauthenticated port
+64475: client to management server port
+64476: (for future use) client-to-client port
+64477: server to server port
+64478: server to management server port
+64479: data server to data mangement server port
+64480: (for future use) data server to data server port
+64481: server to data management server port
+64482: management server key validation port
+64483: data management server to management server port
+
+In the more detailed description below, I'll refer to each port by it's last 2 digits only, sincce the first 3 digits are all
+the same. For example, if I refer to port 82, I'm talking about the management server key validation port.
+
+73: This is the port that clients use to connect to main servers.
+
+74: This is the port that clients can use to connect to the management server to perform unauthenticated commands, such as registering
+for a new user account, or requesting public server resources.
+
+75: This is the port that clients can use to connect to the management server to perform authenticated commands. The main use of this
+is to obtain a list of servers to attempt to connect to, and to ask the management server which one to connect to of all that the client
+could connect to.
+
+76: (for future use) This port will be a port that clients can use to connect to each other, if such a connection is possible. For
+example, let's assume that Bob wants to send a file to Tom. normally, this file would be sent (as online messages) through the
+main server that they are connected to (and if they are on different main servers, between the main servers), but, with the addition
+of this port, if they are behind the same firewall, such as at work, the file will be directly transferred. Basically, online
+messages will be sent directly over this port in the future, where possible. offline messages WILL NOT be sent over this port, even
+if the other user is online and could establish a connection to this user's computer. this port will use strong cryptographic keys
+to prevent against man-in-the-middle attacks.
+
+77: This port is used by servers to connect to each other. Each server maintains a connection to each other server that it can connect
+to. Cross-server messages are then sent accross this port.
+
+78: This is the port that is used by main servers to connect to the management server.
+it serves to inform the management server of who's connected to that main server, which main servers it can connect to, etc. The
+management server can also send a command to a main server through this port, telling it to disconnect one of it's clients. 
+
+79: This is the port that data servers use to connect to the data management server, and actually exchange data. In the future, it will
+also be used to connect directly to any main servers possible to avoid having data relayed through the data management server.
+
+80: (for future use) This port will be used to directly transfer data between data servers, where possible. Data would be directly
+transferred between data servers to improve redundant copying effeciency (when there are enough data servers, all data is stored redundantly)
+so that data can be copied directly between data servers instead of having to go through the data management server.
+
+81: This port is used for the main servers to connect to the data management server. They use this port to access data. They see data
+through this port as just one hierarchy, and the data management server takes care of spanning that across multiple data servers.
+
+82: This port is used by all clients and servers to connect to the management server to validate authentcation nonces when establishing
+a connection to other nodes. in the future, when the server architecture is switched to use cryptographic keys instead of nonces (nonces
+do not prevent man-in-the-middle attacks whereas cryptographic keys do), this port will authenticate cryptographic keys with the
+management server.
+
+83: This port is used by the data management server to connect to the management server. it's used to coordinate data storage with 
+the management server.
+
+ 
+
