@@ -14,12 +14,16 @@ There are a few different types of nodes:
 
 Management server: There is only one of these running. This is the server in charge of all of the other servers. It manages user accounts
 and authentication between all of the other servers. It also manages connections to the communications servers, to minimize data transfer
-between communications servers. This is a mandatory node, IE if it goes down, the entire Convergia server system goes down along with it.
+between communications servers. This is the only mandatory node, IE if it goes down, the entire Convergia server system goes down along 
+with it. Sometime in the future the other nodes will be changed so that they can function without the management server, but no users
+will be able to sign up, or connect to a different main server, while the management server is down.
 
 Data management server: There is only one of these running. This is the server that is in charge of transferring stored data, such as
 offline messaging and workspace storage. It also manages organizing data between data servers. all data reading and writing is routed
 through this server. If this server goes down, the Convergia communications system will continue to function, but will not be able to
-store any data. This means that the only component functioning will be online messaging. user metadata, in particular, will not function.
+store any data. This means that the only component functioning will be online messaging. offline messaging and storage will not function.
+In the future, this and the data servers will be changed so that they can use the (coming in the future) relay servers, thereby removing
+this server as the data systems bottleneck.
 
 Data server: There are generally multiple of these in the system, although only one is required. Data servers, as their names imply, store
 data. They usually have a large hard disk attached to which they can store a specified amount of data. Data servers can be marked (by
@@ -34,11 +38,17 @@ the firewall. Each main server maintains a direct connection with each other mai
 won't be able to connect to main servers inside of a different firewall), and tells the management server which servers those are. the
 management server can then plot routes between servers, which are used when a cross-server message is sent by the client. 
 
+Relay Server (future, will not be added until the entire structure of other servers is done): This server would connect to the management
+server and serve as a relay where needed in the system. The main point for use would be the (coming in the future) socket relay system
+and relaying between data servers behind a firewall and main servers.
+
 Client: These are the actual Convergia clients, the clients that end users use. When a client comes online, it first connects to the
 management server and asks it for a list of main servers, which it then attempts to connect to. It then reports the information back
 to the management server. the management server then tells the client which one it should connect to. The client attempts to connect
 to that server. if the connect attempt fails after 5 tries, it starts over with the process just described. this will generally only
 happen is the client has gone offline in that time or the server has gone offline.
+UPDATE TO ABOVE: The client will, by default, report to the management server that it has already tried recently to connect to all
+servers, and give the management server it's list of servers that it could connect to. It will also report the lag on each server.
 
 Anyway, the actual protocol for communications has been revised. Each connection established is authenticated through the management server.
 I'll get to that in a minute. With the new protocol, the ~ character is interpreted specially. specifically, a ~ means that the character after
@@ -67,7 +77,10 @@ that server suspends communication and updates it's entire route table from the 
 
 authentication of the management server is done using the server's SSL key. therefore, the management server MUST have a certificate
 signed by a well-known certificate provider. The management server is intended to be hosted on trivergia.com, so it will use Trivergia's
-Thawte-signed SSL certificate, with permission from Matt (the president of Trivergia Technologies, LLC).
+Thawte-signed SSL certificate.
+
+The file system accessible to users is addressed by paths, which start with a forward slash, and separate each folder with a forward
+slash, NOT a back slash. 
 
 
 
@@ -105,6 +118,7 @@ online, a pipe separated list of ids of nodes that this node is connected to.
 
 
 
+
 This is a list of orphaned response commands (ones where there is no command sent, just a response received).
 
 RECEIVEMESSAGE ():
@@ -137,7 +151,7 @@ the same. For example, if I refer to port 82, I'm talking about the management s
 73: This is the port that clients use to connect to main servers.
 
 74: This is the port that clients can use to connect to the management server to perform unauthenticated commands, such as registering
-for a new user account, or requesting public server resources.
+for a new user account, or requesting public server resources. This is the port connected to when an it3sr:// url is used.
 
 75: This is the port that clients can use to connect to the management server to perform authenticated commands. The main use of this
 is to obtain a list of servers to attempt to connect to, and to ask the management server which one to connect to of all that the client
@@ -152,7 +166,8 @@ if the other user is online and could establish a connection to this user's comp
 to prevent against man-in-the-middle attacks.
 
 77: This port is used by servers to connect to each other. Each server maintains a connection to each other server that it can connect
-to. Cross-server messages are then sent accross this port.
+to. Cross-server messages are then sent across this port. The list of which servers have a connection to which other servers is in the
+route table.
 
 78: This is the port that is used by main servers to connect to the management server.
 it serves to inform the management server of who's connected to that main server, which main servers it can connect to, etc. The
@@ -162,13 +177,16 @@ management server can also send a command to a main server through this port, te
 also be used to connect directly to any main servers possible to avoid having data relayed through the data management server.
 
 80: (for future use) This port will be used to directly transfer data between data servers, where possible. Data would be directly
-transferred between data servers to improve redundant copying effeciency (when there are enough data servers, all data is stored redundantly)
+transferred between data servers to improve redundant copying efficiency (when there are enough data servers, all data is stored redundantly)
 so that data can be copied directly between data servers instead of having to go through the data management server.
 
 81: This port is used for the main servers to connect to the data management server. They use this port to access data. They see data
-through this port as just one hierarchy, and the data management server takes care of spanning that across multiple data servers.
+through this port as just one hierarchy, and the data management server takes care of spanning that across multiple data servers. In
+the future, servers will just ask the data management server what data server stores a particular piece of data, or a list of servers
+that store a particular piece of data in the case of redundant storage, and then directly connect to the data server, or, if the data
+server is behind a firewall, connect through a relay server, and directly transfer the data between the data server and the main server. 
 
-82: This port is used by all clients and servers to connect to the management server to validate authentcation nonces when establishing
+82: This port is used by all clients and servers to connect to the management server to validate authentication nonces when establishing
 a connection to other nodes. in the future, when the server architecture is switched to use cryptographic keys instead of nonces (nonces
 do not prevent man-in-the-middle attacks whereas cryptographic keys do), this port will authenticate cryptographic keys with the
 management server.
