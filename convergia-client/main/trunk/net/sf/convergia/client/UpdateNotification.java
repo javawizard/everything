@@ -15,7 +15,7 @@ public class UpdateNotification implements TaskbarNotification
 		progress = new JProgressBar();
 		progress.setBorderPainted(false);
 		progress.setStringPainted(true);
-		progress.setString("Convergia is downloading updates...");
+		progress.setString("OpenGroove is downloading updates...");
 	}
 	
 	public JProgressBar getProgressBar()

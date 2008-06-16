@@ -240,6 +240,7 @@ public class ItemChooser<E> extends JDialog
         String message, T[] choices, boolean showCancel)
     {
         JButton button = new JButton("Cancel");
+        button.setFocusable(false);
         final ItemChooser<T> chooser = new ItemChooser<T>(
             parent, message, choices,
             showCancel ? new JButton[] { button } : null,

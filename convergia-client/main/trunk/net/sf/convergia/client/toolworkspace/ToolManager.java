@@ -225,9 +225,9 @@ public class ToolManager
 										+ fst.getTypeId()
 										+ " . please download<br/>"
 										+ "and install this tool. if you need help, send an<br/>"
-										+ "email to webmaster@trivergia.com<br/><br/>"
+										+ "email to javawizard@opengroove.org<br/><br/>"
 										+ "this message will not be shown again for this<br/>"
-										+ "tool until you restart Convergia.");
+										+ "tool until you restart OpenGroove.");
 			}
 			return;
 		}

@@ -40,14 +40,14 @@ public class Loader
 				File versionFile = new File(updatefolder, "version");
 				if (updateJarFile.exists() && versionFile.exists())
 				{
-					JFrame frame = new JFrame("Convergia Updating");
+					JFrame frame = new JFrame("OpenGroove Updating");
 					frame.setSize(350, 80);
 					frame.setLocationRelativeTo(null);
 					frame
 							.getContentPane()
 							.add(
 									new JLabel(
-											"Convergia is updating and will start in a moment"));
+											"OpenGroove is updating and will start in a moment"));
 					frame.setDefaultCloseOperation(frame.DO_NOTHING_ON_CLOSE);
 					frame.show();
 					frame.invalidate();

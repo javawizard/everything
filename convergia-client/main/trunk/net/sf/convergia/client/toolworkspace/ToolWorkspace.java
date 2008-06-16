@@ -347,9 +347,9 @@ public class ToolWorkspace extends Workspace
 
 	private void setFrameTitle()
 	{
-		frame.setTitle(getName() + " - Convergia");
+		frame.setTitle(getName() + " - OpenGroove");
 		frame.getChatPopoutFrame().setTitle(
-				"Chat - " + getName() + " - Convergia");
+				"Chat - " + getName() + " - OpenGroove");
 	}
 
 	@Override

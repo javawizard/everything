@@ -567,7 +567,7 @@ public class PluginManager
 	{
 		final JDialog dialog = new JDialog(parent, true);
 		dialog.setDefaultCloseOperation(JDialog.HIDE_ON_CLOSE);
-		dialog.setTitle("Manage plugins - Convergia");
+		dialog.setTitle("Manage plugins - OpenGroove");
 		dialog.setSize(600, 600);
 		dialog.setLocationRelativeTo(parent);
 		Container content = dialog.getContentPane();
@@ -710,13 +710,13 @@ public class PluginManager
 									manifest);
 							JOptionPane
 									.showMessageDialog(parent,
-											"The plugin will be uninstalled the next time Convergia restarts.");
+											"The plugin will be uninstalled the next time OpenGroove restarts.");
 						} catch (Exception ex1)
 						{
 							ex1.printStackTrace();
 							JOptionPane
 									.showMessageDialog(parent,
-											"An error occured while uninstalling the plugin. Please restart Convergia.");
+											"An error occured while uninstalling the plugin. Please restart OpenGroove.");
 						}
 						uninstallButton.setEnabled(false);
 						if (otherControlButton != null)

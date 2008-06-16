@@ -175,6 +175,7 @@ management server can also send a command to a main server through this port, te
 
 79: This is the port that data servers use to connect to the data management server, and actually exchange data. In the future, it will
 also be used to connect directly to any main servers possible to avoid having data relayed through the data management server.
+NOTE: this will take the place of the relay servers in relaying data from data servers to main servers.
 
 80: (for future use) This port will be used to directly transfer data between data servers, where possible. Data would be directly
 transferred between data servers to improve redundant copying efficiency (when there are enough data servers, all data is stored redundantly)
@@ -184,7 +185,8 @@ so that data can be copied directly between data servers instead of having to go
 through this port as just one hierarchy, and the data management server takes care of spanning that across multiple data servers. In
 the future, servers will just ask the data management server what data server stores a particular piece of data, or a list of servers
 that store a particular piece of data in the case of redundant storage, and then directly connect to the data server, or, if the data
-server is behind a firewall, connect through a relay server, and directly transfer the data between the data server and the main server. 
+server is behind a firewall, connect through a relay server, and directly transfer the data between the data server and the main server.
+NOTE: see comment on 79, this effectively renders ineffective the above line.
 
 82: This port is used by all clients and servers to connect to the management server to validate authentication nonces when establishing
 a connection to other nodes. in the future, when the server architecture is switched to use cryptographic keys instead of nonces (nonces

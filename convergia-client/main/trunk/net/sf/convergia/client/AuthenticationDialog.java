@@ -224,7 +224,7 @@ public class AuthenticationDialog extends JFrame
 		// START >> autoLoginCheckbox
 		autoLoginCheckbox = new JCheckBox();
 		getContentPane().add(getAutoLoginCheckbox());
-		autoLoginCheckbox.setText("Log me in when Convergia starts");
+		autoLoginCheckbox.setText("Log me in when OpenGroove starts");
 		autoLoginCheckbox.setBounds(83, 116, 221, 24);
 		// END << autoLoginCheckbox
 		{

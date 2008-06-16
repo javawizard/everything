@@ -110,7 +110,7 @@ public class TaskbarNotificationFrame extends javax.swing.JWindow implements
 		topPanel.setBackground(new Color(200, 212, 245));
 		content.add(notificationPanel, BorderLayout.CENTER);
 		content.add(topPanel, BorderLayout.NORTH);
-		final JLabel mainLabel = new JLabel("  Convergia Alerts    ");
+		final JLabel mainLabel = new JLabel("  OpenGroove           ");
 		final JProgressBar pbar = new JProgressBar(0,
 				defaultNumVisibleSeconds * 10);
 		pbar.setValue(defaultNumVisibleSeconds * 10);

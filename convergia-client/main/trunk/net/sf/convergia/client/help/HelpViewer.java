@@ -281,7 +281,7 @@ public class HelpViewer extends javax.swing.JFrame
 							.getSelectionPath().getLastPathComponent();
 					HelpContent content = (HelpContent) selectedNode
 							.getUserObject();
-					setTitle(content.name + " - Help - Convergia");
+					setTitle(content.name + " - Help - OpenGroove");
 					File contentFile = content.content;
 					if (contentFile == null)
 						helpViewPane.setText("");

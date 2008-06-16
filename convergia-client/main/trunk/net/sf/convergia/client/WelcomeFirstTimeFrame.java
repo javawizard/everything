@@ -51,7 +51,7 @@ public class WelcomeFirstTimeFrame extends javax.swing.JFrame {
 			{
 				mainLabel = new JLabel();
 				getContentPane().add(mainLabel);
-				mainLabel.setText("<html>Welcome to Convergia! Before you<br/>can start using Convergia, you need to create an<br/>account. After you click OK, a window will open, asking<br/>you for your account information. If you already<br/>have an account, just enter your username and<br/>password. If you don't have an account, follow<br/>the directions for creating a new account.<br/><br/>NOTE: You must <u>not</u> use one account accross<br/>multiple computers. ");
+				mainLabel.setText("<html>Welcome to OpenGroove! Before you<br/>can start using OpenGroove, you need to create an<br/>account. After you click OK, a window will open, asking<br/>you for your account information. If you already<br/>have an account, just enter your username and<br/>password. If you don't have an account, follow<br/>the directions for creating a new account.<br/><br/>NOTE: You must <u>not</u> use one account accross<br/>multiple computers. ");
 				mainLabel.setBounds(12, 12, 360, 204);
 				mainLabel.setHorizontalAlignment(SwingConstants.CENTER);
 			}
