@@ -1,0 +1,2 @@
+This file contains the commands to be implemented in the 1-instance version of the main server. When I get around to writing the multi-server system, client/newcommarch.txt will supersede this document.
+
