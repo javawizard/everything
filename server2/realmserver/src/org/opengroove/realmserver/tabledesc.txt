@@ -1,0 +1,4 @@
+This document describes all of the tables that the realm server uses in it's database.
+
+
+webusers:
