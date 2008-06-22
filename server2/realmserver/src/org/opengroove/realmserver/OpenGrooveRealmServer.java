@@ -14,7 +14,19 @@ public class OpenGrooveRealmServer
      */
     public static void main(String[] args)
     {
-        
+        /*
+         * Configuration that needs to be gathered before we can get up and
+         * running:
+         * 
+         * Database type (use internal or connect to external), coming later
+         * 
+         * Database url, username, and password if external, see above, coming
+         * later
+         * 
+         * web admin username and password
+         * 
+         * 
+         */
     }
     
 }
