@@ -1,4 +1,4 @@
-package net.sf.convergia.utils;
+package net.sf.opengroove.utils;
 
 import java.awt.BorderLayout;
 import java.awt.Color;

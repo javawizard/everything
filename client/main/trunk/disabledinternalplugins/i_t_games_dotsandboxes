@@ -1,5 +1,5 @@
 type=tool
-class=net.sf.convergia.client.tools.games.dotsandboxes.DotsAndBoxes
+class=net.sf.opengroove.client.tools.games.dotsandboxes.DotsAndBoxes
 name=Dots and Boxes
 description=\
 <html>\

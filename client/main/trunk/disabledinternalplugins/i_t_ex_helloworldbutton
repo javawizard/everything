@@ -1,5 +1,5 @@
 type=tool
-class=net.sf.convergia.client.example.HelloWorldTool
+class=net.sf.opengroove.client.example.HelloWorldTool
 name=Hello World Button tool
 description=<html>a simple tool that presents the user with a<br/>\
 button. when someone in the workspace clicks the button, it<br/>\

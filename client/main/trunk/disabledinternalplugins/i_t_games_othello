@@ -1,5 +1,5 @@
 type=tool
-class=net.sf.convergia.client.tools.games.othello.Othello
+class=net.sf.opengroove.client.tools.games.othello.Othello
 name=Othello
 description=\
 <html>\

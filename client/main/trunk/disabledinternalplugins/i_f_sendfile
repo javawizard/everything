@@ -1,5 +1,5 @@
 type=feature
-class=net.sf.convergia.client.messaging.FileTransferFeature
+class=net.sf.opengroove.client.messaging.FileTransferFeature
 name=File Transfer
 description=\
 <html>\
