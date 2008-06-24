@@ -1,3 +1,5 @@
+THIS DOCUMENT HAS BEEN SUPERSEDED BY newca2.txt
+
 This document describes a new communications architecture for Convergia, and completely revises the communications protocols.
 
 In the old architecture, there is a single server, and multiple clients. the clients authenticate using password-based authentication.
@@ -79,10 +81,15 @@ authentication of the management server is done using the server's SSL key. ther
 signed by a well-known certificate provider. The management server is intended to be hosted on trivergia.com, so it will use Trivergia's
 Thawte-signed SSL certificate.
 
-The file system accessible to users is addressed by paths, which start with a forward slash, and separate each folder with a forward
-slash, NOT a back slash. 
+UPDATE: The route table will no longer be used. A map of what connects to what can still be obtained through commands to the main server or the management server, but this map is used more for information presenting to the user.
 
+====> New updates here started 6/17/08
 
+The data servers are seen as a database that allows any sql statement to be executed on it. 
+
+The management server is in charge of user registration, user authentication (users authenticate to the management server, which tells them a main server to connect to, and they re-authenticate to the main server which relays their information to the management server), main server management ()
+
+<==== End of updates started 6/17/08
 
 
 
