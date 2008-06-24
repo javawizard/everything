@@ -29,7 +29,7 @@ import net.sf.opengroove.client.workspace.Workspace;
  * JFrame that contains a textarea (non-editable) and a text field. you type in
  * the text field, then hit enter, and your chat message is sent to all online
  * members of the workspace. when a chat message is received, it shows up in the
- * text area. whenever you restart Convergia, the text area is cleared (meaning
+ * text area. whenever you restart OpenGroove, the text area is cleared (meaning
  * that it stores the current chat info in memory).
  * 
  * it has one configuration

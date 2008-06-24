@@ -8,7 +8,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Properties;
 
-import net.sf.opengroove.client.Convergia;
+import net.sf.opengroove.client.OpenGroove;
 import net.sf.opengroove.client.frames.ConfigureWorkspaceDialog;
 
 
@@ -63,7 +63,7 @@ public class WorkspaceWrapper implements Serializable
 	public boolean isMine()
 	{
 		return WorkspaceManager.getWorkspaceCreator(id).equals(
-				Convergia.username);
+				OpenGroove.username);
 	}
 
 	public String getTypeId()

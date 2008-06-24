@@ -1,6 +1,6 @@
 package tests;
 
-import net.sf.opengroove.client.Convergia;
+import net.sf.opengroove.client.OpenGroove;
 
 public class Test003
 {
@@ -11,8 +11,8 @@ public class Test003
 	public static void main(String[] args)
 	{
 		// generates an id.
-		Convergia.username = "testuser";
-		System.out.println(Convergia.generateId());
+		OpenGroove.username = "testuser";
+		System.out.println(OpenGroove.generateId());
 	}
 
 }

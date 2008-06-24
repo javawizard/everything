@@ -27,7 +27,7 @@ import javax.swing.JScrollPane;
 import javax.swing.border.Border;
 import javax.swing.border.EtchedBorder;
 
-import net.sf.opengroove.client.Convergia;
+import net.sf.opengroove.client.OpenGroove;
 import net.sf.opengroove.client.CustomLoaderObjectReader;
 import net.sf.opengroove.client.IMenu;
 import net.sf.opengroove.client.IMenuItem;
@@ -396,7 +396,7 @@ public abstract class MultiplayerSequenceGame extends Tool
 
 			public void actionPerformed(ActionEvent e)
 			{
-				Convergia
+				OpenGroove
 						.showHelpTopic("/help/workspaces/toolworkspaces/builtInTools/games/msgHowto");
 			}
 		});

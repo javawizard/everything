@@ -34,7 +34,7 @@ public class FileTransferFeature extends Feature
 				}.start();
 			}
 		});
-		registerComponent("launchbarConvergiaMenuItem", menuitem);
+		registerComponent("launchbarOpenGrooveMenuItem", menuitem);
 	}
 
 	protected void promptToSendFile(Window window)
@@ -80,7 +80,7 @@ public class FileTransferFeature extends Feature
 		{
 			JOptionPane
 					.showMessageDialog(window,
-							"Convergia can't read that file. Try placing it somewhere else on your system.");
+							"OpenGroove can't read that file. Try placing it somewhere else on your system.");
 			return;
 		}
 		// FIXME: actually add code for sending the file here

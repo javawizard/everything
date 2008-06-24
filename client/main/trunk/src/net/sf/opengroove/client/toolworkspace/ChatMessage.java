@@ -3,7 +3,7 @@ package net.sf.opengroove.client.toolworkspace;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
-import net.sf.opengroove.client.Convergia;
+import net.sf.opengroove.client.OpenGroove;
 
 public class ChatMessage
 {
@@ -12,7 +12,7 @@ public class ChatMessage
 	private String message;
 
 	private static final SimpleDateFormat dateformat = new SimpleDateFormat(
-			Convergia.getDateFormatString());
+			OpenGroove.getDateFormatString());
 
 	public String getId()
 	{

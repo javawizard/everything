@@ -33,7 +33,7 @@ import javax.swing.border.EmptyBorder;
 import javax.swing.border.EtchedBorder;
 import javax.swing.border.LineBorder;
 
-import net.sf.opengroove.client.Convergia;
+import net.sf.opengroove.client.OpenGroove;
 
 import com.sun.jna.examples.WindowUtils;
 
@@ -142,7 +142,7 @@ public class TaskbarNotificationFrame extends javax.swing.JWindow implements
 							tensOfSecondsUntilHide = defaultNumVisibleSeconds * 10;
 							isFadingToVisible = true;
 							currentVisibilityLevel = 64;
-							if (Convergia.useWindowTransparency())// FIXME:
+							if (OpenGroove.useWindowTransparency())// FIXME:
 								// setWindowAlpha
 								// only
 								// works
@@ -167,7 +167,7 @@ public class TaskbarNotificationFrame extends javax.swing.JWindow implements
 						{
 							pbar.setValue(defaultNumVisibleSeconds * 10);
 							currentVisibilityLevel++;
-							if (Convergia.useWindowTransparency())// FIXME:
+							if (OpenGroove.useWindowTransparency())// FIXME:
 							// setWindowAlpha
 							// only
 							// works
@@ -206,7 +206,7 @@ public class TaskbarNotificationFrame extends javax.swing.JWindow implements
 						{
 							pbar.setValue(0);
 							currentVisibilityLevel--;
-							if (Convergia.useWindowTransparency())// FIXME:
+							if (OpenGroove.useWindowTransparency())// FIXME:
 							// setWindowAlpha
 							// only
 							// works
@@ -229,7 +229,7 @@ public class TaskbarNotificationFrame extends javax.swing.JWindow implements
 												((currentVisibilityLevel * 1.0f) / 64f));
 								Thread.sleep(25);
 							}
-							if (Convergia.useWindowTransparency()
+							if (OpenGroove.useWindowTransparency()
 									&& currentVisibilityLevel == 0)// FIXME:
 							// setWindowAlpha
 							// only

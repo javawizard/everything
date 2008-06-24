@@ -19,7 +19,7 @@ public class UserInformationLink extends JLinkButton
 
 			public void actionPerformed(ActionEvent e)
 			{
-				Convergia.showUserInformationDialog(username,
+				OpenGroove.showUserInformationDialog(username,
 						(JFrame) getTopLevelAncestor());
 			}
 		});

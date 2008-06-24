@@ -11,7 +11,7 @@ import javax.swing.JPanel;
 import javax.swing.JTabbedPane;
 import javax.swing.SwingUtilities;
 
-import net.sf.opengroove.client.Convergia;
+import net.sf.opengroove.client.OpenGroove;
 
 public class PoppableTabbedPane extends JPanel
 {
@@ -235,7 +235,7 @@ public class PoppableTabbedPane extends JPanel
 			tabbedPane.setSelectedIndex(getTabIndex(index));
 		else if (index >= 0 && index < tabs.size()
 				&& tabs.get(index).getFrame().isShowing())
-			Convergia.bringToFront(tabs.get(index).getFrame());
+			OpenGroove.bringToFront(tabs.get(index).getFrame());
 		else
 			throw new IndexOutOfBoundsException("The index specifed (" + index
 					+ ") is not within 0 - " + tabs.size() + ", max-exclusive");
@@ -314,7 +314,7 @@ public class PoppableTabbedPane extends JPanel
 		tab.setTitle(name);
 		tab.setContent(component);
 		JFrame frame = new JFrame(name);
-		frame.setIconImage(Convergia.getWindowIcon());
+		frame.setIconImage(OpenGroove.getWindowIcon());
 		frame.setSize(600, 450);
 		if (SwingUtilities.getWindowAncestor(this) != null)
 			frame.setLocationRelativeTo(SwingUtilities.getWindowAncestor(this));

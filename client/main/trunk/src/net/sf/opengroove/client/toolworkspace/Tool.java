@@ -11,7 +11,7 @@ import javax.swing.JFrame;
 import javax.swing.JTabbedPane;
 import javax.swing.SwingUtilities;
 
-import net.sf.opengroove.client.Convergia;
+import net.sf.opengroove.client.OpenGroove;
 import net.sf.opengroove.client.notification.TaskbarNotification;
 import net.sf.opengroove.client.workspace.WorkspaceManager;
 import net.sf.opengroove.client.workspace.WorkspaceNotification;
@@ -33,7 +33,7 @@ public abstract class Tool
 
 	/**
 	 * this method returns true if this computer has an active connection to the
-	 * Convergia server, false otherwise.
+	 * OpenGroove server, false otherwise.
 	 * 
 	 * @return
 	 */
@@ -101,8 +101,8 @@ public abstract class Tool
 	/**
 	 * this method should shut down this tool and release any resources used by
 	 * it. this is called when the tool is deleted (or the workspace owning this
-	 * tool is deleted), but currently not when Convergia shuts down. in the
-	 * future, this will be called when Convergia shuts down.
+	 * tool is deleted), but currently not when OpenGroove shuts down. in the
+	 * future, this will be called when OpenGroove shuts down.
 	 */
 	public abstract void shutdown();
 
@@ -341,7 +341,7 @@ public abstract class Tool
 	 * change will be available soon.<br/><br/>
 	 * 
 	 * storage properties are not cached, so this method will throw an exception
-	 * if an active connection to the Convergia server is not available. if you
+	 * if an active connection to the OpenGroove server is not available. if you
 	 * need data to be available offline, consider using getStorageFile() to
 	 * store data.
 	 * 
@@ -428,7 +428,7 @@ public abstract class Tool
 
 	/**
 	 * saves any changes to this workspace's information to the file system.
-	 * this usually is called by Convergia, and should not be called directly by
+	 * this usually is called by OpenGroove, and should not be called directly by
 	 * the tool implementation.
 	 * 
 	 */
@@ -439,7 +439,7 @@ public abstract class Tool
 	}
 
 	/**
-	 * gets the plugin metadata. this is usually called by Convergia, and should
+	 * gets the plugin metadata. this is usually called by OpenGroove, and should
 	 * not be called directly by the tool implementation.
 	 * 
 	 * @return
@@ -450,7 +450,7 @@ public abstract class Tool
 	}
 
 	/**
-	 * this is usually called by Convergia, and should not be called directly by
+	 * this is usually called by OpenGroove, and should not be called directly by
 	 * the tool implementation.
 	 * 
 	 * @param pluginMetadata
@@ -466,7 +466,7 @@ public abstract class Tool
 	 * created, and added using this method. The component supplied by the
 	 * taskbar notification shows up in a special window that is shown in the
 	 * lower right corner of the screen. if the notification is an alert (see
-	 * TaskbarNotification.isAlert()) then the Convergia taskbar icon will flash
+	 * TaskbarNotification.isAlert()) then the OpenGroove taskbar icon will flash
 	 * while this notification is added.<br/><br/>
 	 * 
 	 * The best way to start off with Taskbar Notifications is to try them out

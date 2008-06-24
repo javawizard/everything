@@ -1,4 +1,4 @@
-MORE RAMBLE ON HOW CONVERGIA WORKS
+MORE RAMBLE ON HOW OPENGROOVE WORKS
 
 specifically, how net.sf.opengroove.client.toolworkspace.sync.SynchronizingTool works.
 
@@ -33,7 +33,7 @@ possible.
 the system waits until 5 seconds have passed without modifications to chunks before beginning synchronization.
 chunks may also be manually locked from synchronization via the lock() method. you can see if a chunk is locked
 by calling isLocked(). to unlock a chunk, you can call unlock(). chunks should generally not remain locked
-throughout invocations of Convergia. A tool should check to see if any chunks are locked when initialize() is
+throughout invocations of OpenGroove. A tool should check to see if any chunks are locked when initialize() is
 called, and if they are, figure out why they are still locked and unlock them. If a chunk is locked, no
 synchronizations will be performed on the chunk. Additionally, when a chunk is unlocked, it will be synchronized,
 or, if no internet connection is available, be marked as needing synchronization.

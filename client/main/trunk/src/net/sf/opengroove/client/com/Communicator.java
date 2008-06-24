@@ -15,7 +15,7 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 
-import net.sf.opengroove.client.Convergia;
+import net.sf.opengroove.client.OpenGroove;
 import net.sf.opengroove.client.SubversionFileFilter;
 import net.sf.opengroove.client.workspace.SetList;
 
@@ -625,7 +625,7 @@ public class Communicator
 	public void setWorkspacePermissions(String workspaceId, String[] users)
 	{
 		String commandString = workspaceId + " "
-				+ Convergia.delimited(Arrays.asList(users), " ");
+				+ OpenGroove.delimited(Arrays.asList(users), " ");
 		if (!execCommand("SETWORKSPACEPERMISSIONS", commandString).startsWith(
 				"OK"))
 			throw new RuntimeException("Setting permissions failed");

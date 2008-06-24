@@ -33,12 +33,12 @@ import javax.swing.event.HyperlinkEvent.EventType;
 import javax.swing.text.html.FormSubmitEvent;
 import javax.swing.text.html.HTMLEditorKit;
 
-import net.sf.opengroove.client.Convergia;
+import net.sf.opengroove.client.OpenGroove;
 import net.sf.opengroove.client.plugins.PluginManager;
 
 public class PluginDownloadManager
 {
-    public static final String PLUGIN_DOWNLOAD_URL = "http://trivergia.com:8080/convergiaptl.jsp";
+    public static final String PLUGIN_DOWNLOAD_URL = "http://trivergia.com:8080/opengrooveptl.jsp";
     
     // parameters are installedplugins which is comma-separated, and plugintypes
     // which is the type
@@ -46,9 +46,9 @@ public class PluginDownloadManager
     // all plugin types
     /**
      * this method prompts the user to select plugins on the ptl that they wish
-     * to download. this method should only be called by Convergia. If you are a
+     * to download. this method should only be called by OpenGroove. If you are a
      * developer creating your own plugin, consider using
-     * Convergia.findNewPlugins() instead.
+     * OpenGroove.findNewPlugins() instead.
      * 
      * @throws MalformedURLException
      */
@@ -74,7 +74,7 @@ public class PluginDownloadManager
         trail.add(createMainUrl(types, alreadyInstalled));
         final JButton backButton = new JButton();
         backButton.setIcon(new ImageIcon(
-            Convergia.Icons.BACK_BUTTON_32.getImage()));
+            OpenGroove.Icons.BACK_BUTTON_32.getImage()));
         topControls.add(backButton, BorderLayout.WEST);
         final JProgressBar pbar = new JProgressBar(0, 100);
         topControls.add(pbar, BorderLayout.CENTER);
@@ -199,7 +199,7 @@ public class PluginDownloadManager
                                                 .getInputStream();
                                             File tmpfile = File
                                                 .createTempFile(
-                                                    "convergiadownload",
+                                                    "opengroovedownload",
                                                     ".jar");
                                             tmpfile
                                                 .deleteOnExit();
@@ -251,7 +251,7 @@ public class PluginDownloadManager
                                                 .getManifest();
                                             Attributes attributes = manifest
                                                 .getMainAttributes();
-                                            Convergia
+                                            OpenGroove
                                                 .saveJarFile(
                                                     new File(
                                                         PluginManager.pluginFolder,
@@ -274,8 +274,8 @@ public class PluginDownloadManager
                                                         + "Would you like to restart OpenGroove now?",
                                                     null,
                                                     JOptionPane.YES_NO_OPTION) == JOptionPane.YES_OPTION)
-                                                Convergia
-                                                    .restartConvergia();
+                                                OpenGroove
+                                                    .restartOpenGroove();
                                             dialog
                                                 .dispose();
                                         }
@@ -373,11 +373,11 @@ public class PluginDownloadManager
         throws MalformedURLException
     {
         String queryString = "?installedplugins="
-            + URLEncoder.encode(Convergia.delimited(Arrays
+            + URLEncoder.encode(OpenGroove.delimited(Arrays
                 .asList(alreadyInstalled), ","));
         if (types != null)
             queryString += "&plugintypes="
-                + URLEncoder.encode(Convergia.delimited(
+                + URLEncoder.encode(OpenGroove.delimited(
                     Arrays.asList(types), ","));
         return new URL(PLUGIN_DOWNLOAD_URL + queryString);
     }

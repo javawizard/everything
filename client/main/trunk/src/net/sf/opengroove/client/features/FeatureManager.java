@@ -4,7 +4,7 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.HashMap;
 
-import net.sf.opengroove.client.Convergia;
+import net.sf.opengroove.client.OpenGroove;
 import net.sf.opengroove.client.Storage;
 import net.sf.opengroove.client.com.MessageSink;
 import net.sf.opengroove.client.plugins.Plugin;
@@ -37,7 +37,7 @@ public class FeatureManager
 				Feature feature = plugin.create();
 				feature.setPluginMetadata(plugin.getMetadata());
 				feature.setTypeId(plugin.getId());
-				feature.setCommunicator(Convergia.com);
+				feature.setCommunicator(OpenGroove.com);
 				features.add(feature);
 				feature.initialize();
 			} catch (Exception ex1)
@@ -45,7 +45,7 @@ public class FeatureManager
 				ex1.printStackTrace();
 			}
 		}
-		Convergia.com.addSink(new MessageSink()
+		OpenGroove.com.addSink(new MessageSink()
 		{
 
 			public void process(String from, String message)

@@ -69,7 +69,7 @@ import net.sf.opengroove.client.download.PluginDownloadManager;
 import net.sf.opengroove.client.features.FeatureComponentHandler;
 import net.sf.opengroove.client.features.FeatureManager;
 import net.sf.opengroove.client.frames.ChooseLAFDialog;
-import net.sf.opengroove.client.frames.ConfigureConvergiaDialog;
+import net.sf.opengroove.client.frames.ConfigureOpenGrooveDialog;
 import net.sf.opengroove.client.frames.ConfigureWorkspaceDialog;
 import net.sf.opengroove.client.frames.CreateWorkspaceDialog;
 import net.sf.opengroove.client.frames.ImportWorkspaceDialog;
@@ -99,7 +99,7 @@ import com.l2fprod.common.swing.JLinkButton;
  * 
  */
 @SuppressWarnings("deprecation")
-public class Convergia
+public class OpenGroove
 {
     public static LowLevelCommunicator lcom;
     
@@ -221,7 +221,7 @@ public class Convergia
         "javaw.exe", "-cp", RESTART_CLASSPATH,
         "net.sf.opengroove.client.Loader", "wfl" };
     
-    public static void restartConvergia()
+    public static void restartOpenGroove()
     {
         try
         {
@@ -681,7 +681,7 @@ public class Convergia
                             launchbar,
                             "Are you sure you want to restart OpenGroove? You will lose any usaved information.",
                             null, JOptionPane.YES_NO_OPTION) == JOptionPane.YES_OPTION)
-                        restartConvergia();
+                        restartOpenGroove();
                 }
             });
             pp.add(new AMenuItem(tm("trayicon.menu.exit"))
@@ -1869,7 +1869,7 @@ public class Convergia
                                             + "you like to restart OpenGroove now?",
                                         null,
                                         JOptionPane.YES_NO_OPTION) == JOptionPane.YES_OPTION)
-                                    restartConvergia();
+                                    restartOpenGroove();
                                 
                             }
                         }.start();
@@ -2064,7 +2064,7 @@ public class Convergia
     
     protected static void showOptionsWindow()
     {
-        final ConfigureConvergiaDialog dialog = new ConfigureConvergiaDialog(
+        final ConfigureOpenGrooveDialog dialog = new ConfigureOpenGrooveDialog(
             launchbar);
         showStatusInfo(dialog);
         new Thread()
@@ -2078,7 +2078,7 @@ public class Convergia
     }
     
     private static void showStatusInfo(
-        ConfigureConvergiaDialog dialog)
+        ConfigureOpenGrooveDialog dialog)
     {
         Socket socket = com.getCommunicator().getSocket();
         dialog.getMConnectedServerLabel().setText(
@@ -2823,7 +2823,7 @@ public class Convergia
                             for (String u : allowedUsers)
                             {
                                 if (u
-                                    .equals(Convergia.username))
+                                    .equals(OpenGroove.username))
                                     allowed = true;
                             }
                             if (!allowed)

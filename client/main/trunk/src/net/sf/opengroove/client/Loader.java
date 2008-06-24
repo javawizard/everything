@@ -70,8 +70,8 @@ public class Loader
 
 	private static void doRun(String[] s) throws Throwable
 	{
-		Convergia.updatesEnabled = true;
-		Convergia.main(s);
+		OpenGroove.updatesEnabled = true;
+		OpenGroove.main(s);
 	}
 
 	public static void extractUpdates(File updatejar, File dest)

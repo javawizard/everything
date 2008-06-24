@@ -20,7 +20,7 @@ import javax.swing.JTabbedPane;
 import javax.swing.SwingConstants;
 import javax.swing.SwingUtilities;
 
-import net.sf.opengroove.client.Convergia;
+import net.sf.opengroove.client.OpenGroove;
 import net.sf.opengroove.client.com.StatisticsListener;
 import net.sf.opengroove.client.notification.NotificationAdapter;
 
@@ -34,7 +34,7 @@ import net.sf.opengroove.client.notification.NotificationAdapter;
  * PURCHASED FOR THIS MACHINE, SO JIGLOO OR THIS CODE CANNOT BE USED LEGALLY FOR
  * ANY CORPORATE OR COMMERCIAL PURPOSE.
  */
-public class ConfigureConvergiaDialog extends javax.swing.JDialog
+public class ConfigureOpenGrooveDialog extends javax.swing.JDialog
 {
 	private JTabbedPane optionsTabbedPane;
 
@@ -109,14 +109,14 @@ public class ConfigureConvergiaDialog extends javax.swing.JDialog
 			public void run()
 			{
 				JFrame frame = new JFrame();
-				ConfigureConvergiaDialog inst = new ConfigureConvergiaDialog(
+				ConfigureOpenGrooveDialog inst = new ConfigureOpenGrooveDialog(
 						frame);
 				inst.setVisible(true);
 			}
 		});
 	}
 
-	public ConfigureConvergiaDialog(JFrame frame)
+	public ConfigureOpenGrooveDialog(JFrame frame)
 	{
 		super(frame, true);
 		initGUI();
@@ -292,26 +292,26 @@ public class ConfigureConvergiaDialog extends javax.swing.JDialog
 						{
 							System.out
 									.println("configure convergia window disposed, removing stat listener");
-							Convergia.com.communicator
+							OpenGroove.com.communicator
 									.removeStatisticsListener(this);
 							return;
 						}
-						for (Map.Entry<String, Long> e : Convergia.com.communicator.commandAmounts
+						for (Map.Entry<String, Long> e : OpenGroove.com.communicator.commandAmounts
 								.entrySet())
 						{
 							String command = e.getKey();
 							long amount = e.getValue();
-							long size = Convergia.com.communicator.commandSizes
+							long size = OpenGroove.com.communicator.commandSizes
 									.get(command);
 							if (commandAmountLabels.get(command) == null)
 							{
 								JLabel label = new JLabel(command.toLowerCase()
 										+ ":");
-								Convergia.setPlainFont(label);
+								OpenGroove.setPlainFont(label);
 								JLabel amountLabel = new JLabel();
-								Convergia.setPlainFont(amountLabel);
+								OpenGroove.setPlainFont(amountLabel);
 								JLabel sizeLabel = new JLabel();
-								Convergia.setPlainFont(sizeLabel);
+								OpenGroove.setPlainFont(sizeLabel);
 								commandAmountLabels.put(command, amountLabel);
 								commandSizeLabels.put(command, sizeLabel);
 								commandStatPanel.add(label);
@@ -324,25 +324,25 @@ public class ConfigureConvergiaDialog extends javax.swing.JDialog
 							commandAmountLabels.get(command).setText(
 									"" + amount + "|");
 							commandSizeLabels.get(command).setText(
-									Convergia.formatDataSize(size));
+									OpenGroove.formatDataSize(size));
 						}
-						for (Map.Entry<String, Long> e : Convergia.com.communicator.responseAmounts
+						for (Map.Entry<String, Long> e : OpenGroove.com.communicator.responseAmounts
 								.entrySet())
 						{
 							String response = e.getKey();
 							long amount = e.getValue();
-							long size = Convergia.com.communicator.responseSizes
+							long size = OpenGroove.com.communicator.responseSizes
 									.get(response);
 							if (responseAmountLabels.get(response) == null)
 							{
 								JLabel label = new JLabel(response
 										.toLowerCase()
 										+ ":");
-								Convergia.setPlainFont(label);
+								OpenGroove.setPlainFont(label);
 								JLabel amountLabel = new JLabel();
-								Convergia.setPlainFont(amountLabel);
+								OpenGroove.setPlainFont(amountLabel);
 								JLabel sizeLabel = new JLabel();
-								Convergia.setPlainFont(sizeLabel);
+								OpenGroove.setPlainFont(sizeLabel);
 								responseAmountLabels.put(response, amountLabel);
 								responseSizeLabels.put(response, sizeLabel);
 								responseStatPanel.add(label);
@@ -356,12 +356,12 @@ public class ConfigureConvergiaDialog extends javax.swing.JDialog
 							responseAmountLabels.get(response).setText(
 									"" + amount + "|");
 							responseSizeLabels.get(response).setText(
-									Convergia.formatDataSize(size));
+									OpenGroove.formatDataSize(size));
 						}
 					}
 				};
 				statListener.statsUpdated();
-				Convergia.com.communicator.addStatisticsListener(statListener);
+				OpenGroove.com.communicator.addStatisticsListener(statListener);
 			} catch (Exception ex1)
 			{
 				ex1.printStackTrace();
@@ -385,14 +385,14 @@ public class ConfigureConvergiaDialog extends javax.swing.JDialog
 
 						public void actionPerformed(ActionEvent e)
 						{
-							Convergia.notificationFrame.addNotification(
+							OpenGroove.notificationFrame.addNotification(
 									new NotificationAdapter(new JLabel(
 											"test notification at "
 													+ new Date()), true, false)
 									{
 										public void clicked()
 										{
-											Convergia.notificationFrame
+											OpenGroove.notificationFrame
 													.removeNotification(this);
 										}
 									}, false);
@@ -410,7 +410,7 @@ public class ConfigureConvergiaDialog extends javax.swing.JDialog
 
 						public void actionPerformed(ActionEvent e)
 						{
-							Convergia.notificationFrame
+							OpenGroove.notificationFrame
 									.addNotification(
 											new NotificationAdapter(new JLabel(
 													"test notification at "

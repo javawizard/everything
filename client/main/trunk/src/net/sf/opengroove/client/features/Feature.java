@@ -4,7 +4,7 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.Properties;
 
-import net.sf.opengroove.client.Convergia;
+import net.sf.opengroove.client.OpenGroove;
 import net.sf.opengroove.client.com.Communicator;
 
 public abstract class Feature
@@ -111,11 +111,11 @@ public abstract class Feature
 	 */
 	protected String getUsername()
 	{
-		return Convergia.username;
+		return OpenGroove.username;
 	}
 
 	/**
-	 * lists all users signed up for Convergia. this list could be potentially
+	 * lists all users signed up for OpenGroove. this list could be potentially
 	 * large, so this method should not be called frequently.
 	 * 
 	 * @return
@@ -165,7 +165,7 @@ public abstract class Feature
 
 	/**
 	 * initializes this workspace. this is called for each workspace that the
-	 * user is a member of when the user runs Convergia. if this method throws
+	 * user is a member of when the user runs OpenGroove. if this method throws
 	 * an exception, the exception will be printed to stderr, but the workspace
 	 * will continue to be used.
 	 * 

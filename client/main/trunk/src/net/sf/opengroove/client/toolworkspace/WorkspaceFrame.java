@@ -26,7 +26,7 @@ import javax.swing.WindowConstants;
 import javax.swing.SwingUtilities;
 import javax.swing.border.EmptyBorder;
 
-import net.sf.opengroove.client.Convergia;
+import net.sf.opengroove.client.OpenGroove;
 
 /**
  * This code was edited or generated using CloudGarden's Jigloo SWT/Swing GUI
@@ -127,7 +127,7 @@ public class WorkspaceFrame extends javax.swing.JFrame
 			chatPopoutFrame.getContentPane().setLayout(new BorderLayout());
 			chatPopoutFrame.setSize(300, 400);
 			chatPopoutFrame.setLocationRelativeTo(null);
-			chatPopoutFrame.setIconImage(Convergia.getWindowIcon());
+			chatPopoutFrame.setIconImage(OpenGroove.getWindowIcon());
 			chatPopoutFrame
 					.setDefaultCloseOperation(chatPopoutFrame.DO_NOTHING_ON_CLOSE);
 			chatPopoutFrame.addWindowListener(new WindowAdapter()

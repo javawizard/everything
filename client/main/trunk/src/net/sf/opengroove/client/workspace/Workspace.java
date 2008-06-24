@@ -9,7 +9,7 @@ import java.util.Properties;
 import javax.swing.JComponent;
 import javax.swing.JFrame;
 
-import net.sf.opengroove.client.Convergia;
+import net.sf.opengroove.client.OpenGroove;
 import net.sf.opengroove.client.Storage;
 import net.sf.opengroove.client.com.Communicator;
 import net.sf.opengroove.client.notification.TaskbarNotification;
@@ -133,7 +133,7 @@ public abstract class Workspace implements Serializable
 	 */
 	protected String getUsername()
 	{
-		return Convergia.username;
+		return OpenGroove.username;
 	}
 
 	/**
@@ -211,7 +211,7 @@ public abstract class Workspace implements Serializable
 
 	/**
 	 * initializes this workspace. this is called for each workspace that the
-	 * user is a member of when the user runs Convergia. if this method throws
+	 * user is a member of when the user runs OpenGroove. if this method throws
 	 * an exception, the exception will be printed to stderr, but the workspace
 	 * will continue to be used.
 	 * 
@@ -231,7 +231,7 @@ public abstract class Workspace implements Serializable
 	protected void setAttentionStatus(boolean attention)
 	{
 		this.needsAttention = attention;
-		Convergia.reloadLaunchbarWorkspaces();
+		OpenGroove.reloadLaunchbarWorkspaces();
 	}
 
 	/**
@@ -249,7 +249,7 @@ public abstract class Workspace implements Serializable
 	protected void setNewInformationStatus(boolean newInfo)
 	{
 		this.hasNewInformation = newInfo;
-		Convergia.reloadLaunchbarWorkspaces();
+		OpenGroove.reloadLaunchbarWorkspaces();
 	}
 
 	/**
@@ -304,7 +304,7 @@ public abstract class Workspace implements Serializable
 	 */
 	protected boolean showConfigurationWindow()
 	{
-		return Convergia.showConfigWindow(wrapper);
+		return OpenGroove.showConfigWindow(wrapper);
 	}
 
 	/**
@@ -324,7 +324,7 @@ public abstract class Workspace implements Serializable
 	 */
 	protected boolean showConfigurationWindow(JFrame frame)
 	{
-		return Convergia.showConfigWindow(wrapper, frame);
+		return OpenGroove.showConfigWindow(wrapper, frame);
 	}
 
 	/**
@@ -354,7 +354,7 @@ public abstract class Workspace implements Serializable
 
 	/**
 	 * returns the name of this workspace. this may be configured by setName, or
-	 * the user can configure it using an option in Convergia.
+	 * the user can configure it using an option in OpenGroove.
 	 * 
 	 * @return
 	 */
@@ -365,7 +365,7 @@ public abstract class Workspace implements Serializable
 
 	/**
 	 * sets the name of this workspace. this is the name that shows up in the
-	 * launchbar. usually, this is configured by the user (Convergia takes care
+	 * launchbar. usually, this is configured by the user (OpenGroove takes care
 	 * of that), but if the workspace is unnamed (see isUnnamed()), then this
 	 * method could check what the creator named it and set it's name to that.
 	 * 
@@ -376,13 +376,13 @@ public abstract class Workspace implements Serializable
 	protected void setName(String name)
 	{
 		wrapper.setName(name);
-		Convergia.reloadLaunchbarWorkspaces();
+		OpenGroove.reloadLaunchbarWorkspaces();
 		save();
 	}
 
 	/**
 	 * stores this workspace's info to disk. this generally should be called
-	 * only from within Convergia itself, and not by the workspace
+	 * only from within OpenGroove itself, and not by the workspace
 	 * implementation.
 	 * 
 	 */
@@ -400,7 +400,7 @@ public abstract class Workspace implements Serializable
 	protected boolean isUnnamed()
 	{
 		return wrapper.getName().equalsIgnoreCase(
-				Convergia.WORKSPACE_DEFAULT_NAME);
+				OpenGroove.WORKSPACE_DEFAULT_NAME);
 	}
 
 	/**
@@ -421,16 +421,16 @@ public abstract class Workspace implements Serializable
 	 * sets the info for this workspace. this is your personal info, and any
 	 * member of the workspace can read it. actually, anyone, with a bit of
 	 * skill at coding, can read this even if they are not a member of a
-	 * workspace, as long as they have an Convergia account.
+	 * workspace, as long as they have an OpenGroove account.
 	 * 
 	 * @param info
 	 */
 	protected void setInfo(String info)
 	{
 		info = Base64Coder.encodeString(info);
-		wrapper.setInfo(Convergia.username, info);
+		wrapper.setInfo(OpenGroove.username, info);
 		save();
-		Convergia.updateMetadata();
+		OpenGroove.updateMetadata();
 	}
 
 	protected String getProperty(String key)
@@ -508,7 +508,7 @@ public abstract class Workspace implements Serializable
 
 	/**
 	 * shuts down this workspace. there is no guarantee that this will be
-	 * called, in particular, if Convergia exits as a result of the computer
+	 * called, in particular, if OpenGroove exits as a result of the computer
 	 * shutting down, then this will not be called. it is only guaranteed that
 	 * it will be called if the workspace is to be shut down but the vm will
 	 * continue running, such as if the workspace is deleted.
@@ -522,7 +522,7 @@ public abstract class Workspace implements Serializable
 		WorkspaceNotification nWrapper = new WorkspaceNotification(wrapper
 				.getId(), notification);
 		System.out.println("adding W");
-		Convergia.notificationFrame.addNotification(nWrapper, requestDisplay);
+		OpenGroove.notificationFrame.addNotification(nWrapper, requestDisplay);
 
 		System.out.println("added W");
 	}
@@ -533,13 +533,13 @@ public abstract class Workspace implements Serializable
 				.getId(), notification);
 		// this works because nWrapper.equals() is true if the workspaceId of
 		// the wrapper and the wrapper notification are the same
-		Convergia.notificationFrame.removeNotification(nWrapper);
+		OpenGroove.notificationFrame.removeNotification(nWrapper);
 	}
 
 	protected TaskbarNotification[] listNotifications()
 	{
 		ArrayList<TaskbarNotification> notifications = new ArrayList<TaskbarNotification>();
-		for (WorkspaceNotification notification : Convergia.notificationFrame
+		for (WorkspaceNotification notification : OpenGroove.notificationFrame
 				.listNotificationsByClass(WorkspaceNotification.class))
 		{
 			if (notification.getWorkspaceId().equals(getWrapper().getId()))
@@ -556,7 +556,7 @@ public abstract class Workspace implements Serializable
 	 * be switched to a server that does not have many people on it. this should
 	 * be called before a lot of messages will be exchanged, for example, if
 	 * this workspace implements a 3D game, then when the game is about to
-	 * start, this method should be called to alert Convergia that a lot of
+	 * start, this method should be called to alert OpenGroove that a lot of
 	 * messages will be exchanged between the workspaces about where each person
 	 * is in the 3D world.
 	 * 

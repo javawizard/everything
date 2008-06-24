@@ -35,7 +35,7 @@ import javax.swing.border.EmptyBorder;
 import javax.swing.border.EtchedBorder;
 import javax.swing.border.LineBorder;
 
-import net.sf.opengroove.client.Convergia;
+import net.sf.opengroove.client.OpenGroove;
 import net.sf.opengroove.client.UserInformationLink;
 import net.sf.opengroove.client.notification.TaskbarNotification;
 import net.sf.opengroove.client.plugins.Plugin;
@@ -363,12 +363,12 @@ public class ToolWorkspace extends Workspace
 	public void initialize()
 	{
 		frame = new WorkspaceFrame();
-		frame.setIconImage(Convergia.getWindowIcon());
+		frame.setIconImage(OpenGroove.getWindowIcon());
 		creatorInfoUpdaterThread.start();
 		setFrameTitle();
 		frame.getChatPopOutButton().setText("");
 		frame.getChatPopOutButton().setIcon(
-				new ImageIcon(Convergia.Icons.POP_OUT_16.getImage()));
+				new ImageIcon(OpenGroove.Icons.POP_OUT_16.getImage()));
 		frame.invalidate();
 		frame.validate();
 		frame.repaint();
@@ -411,7 +411,7 @@ public class ToolWorkspace extends Workspace
 				if (p == null)
 					return;
 				ToolWrapper w = new ToolWrapper();
-				w.setId(Convergia.generateId());
+				w.setId(OpenGroove.generateId());
 				w.setDatastore(new File(storage.getToolDatastore(), w.getId()
 						+ "-" + System.currentTimeMillis()));
 				w.setIndex(0);// not implemented yet
@@ -474,7 +474,7 @@ public class ToolWorkspace extends Workspace
 
 					public void actionPerformed(ActionEvent e)
 					{
-						Convergia.findNewPlugins(frame, new String[]
+						OpenGroove.findNewPlugins(frame, new String[]
 						{ "tool" });
 					}
 				});
@@ -623,7 +623,7 @@ public class ToolWorkspace extends Workspace
 					try
 					{
 						String chatMessageId = ""
-								+ Convergia.com.getServerTime() + "-"
+								+ OpenGroove.com.getServerTime() + "-"
 								+ getUsername();
 						ChatMessage message = new ChatMessage();
 						message.setId(chatMessageId);
@@ -772,9 +772,9 @@ public class ToolWorkspace extends Workspace
 			chatArea.append(toAdd);
 			chatArea.setCaretPosition(chatArea.getDocument().getLength());
 			if (frame.getChatPopoutFrame().isShowing())
-				Convergia.bringToFront(frame.getChatPopoutFrame());
+				OpenGroove.bringToFront(frame.getChatPopoutFrame());
 			else
-				Convergia.bringToFront(frame);
+				OpenGroove.bringToFront(frame);
 			if (!getUsername().equals(from))
 			{
 				frame.getChatPanel().setBorder(
@@ -863,7 +863,7 @@ public class ToolWorkspace extends Workspace
 			if (!f)
 				toolsBuilder.append("||");
 			f = false;
-			String toolString = Convergia.delimited(Arrays.asList(new String[]
+			String toolString = OpenGroove.delimited(Arrays.asList(new String[]
 			{ w.getId(), w.getTypeId(), "" + w.getIndex(),
 					w.getName().length() == 0 ? " " : w.getName() }), "|");
 			toolsBuilder.append(toolString);
@@ -952,7 +952,7 @@ public class ToolWorkspace extends Workspace
 			toolLabelPanel.setLayout(new BorderLayout());
 			toolLabelPanel.add(toolLabel, BorderLayout.CENTER);
 			JLinkButton popLabel = new JLinkButton(new ImageIcon(
-					Convergia.Icons.POP_OUT_16.getImage()));
+					OpenGroove.Icons.POP_OUT_16.getImage()));
 			popLabel.setFocusable(false);
 			popLabel.setBorder(new EmptyBorder(1, 1, 1, 1));
 			toolLabelPanel.setOpaque(false);

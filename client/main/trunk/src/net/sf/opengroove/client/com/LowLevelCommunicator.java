@@ -20,7 +20,7 @@ import javax.net.ssl.TrustManager;
 import javax.net.ssl.X509TrustManager;
 
 /**
- * this class is a low-level communicator for communicating with an Convergia
+ * this class is a low-level communicator for communicating with an OpenGroove
  * server. it simply allows you to send lines to and from the server, and deals
  * with authentication and re-establishing lost connections.
  * 
