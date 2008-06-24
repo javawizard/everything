@@ -2,7 +2,7 @@ package tests;
 
 import javax.swing.JFrame;
 
-import net.sf.convergia.utils.ItemChooser;
+import net.sf.opengroove.utils.ItemChooser;
 
 public class Test019
 {

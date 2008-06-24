@@ -4,7 +4,7 @@ import java.awt.BorderLayout;
 
 import javax.swing.*;
 
-import net.sf.convergia.client.IMenu;
+import net.sf.opengroove.client.IMenu;
 
 
 public class Test013

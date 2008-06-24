@@ -1,6 +1,6 @@
 package tests;
 
-import net.sf.convergia.client.Convergia;
+import net.sf.opengroove.client.Convergia;
 
 public class Test003
 {

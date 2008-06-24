@@ -2,8 +2,8 @@ package tests;
 
 import java.io.File;
 
-import net.sf.convergia.client.Storage;
-import net.sf.convergia.client.workspace.WorkspaceWrapper;
+import net.sf.opengroove.client.Storage;
+import net.sf.opengroove.client.workspace.WorkspaceWrapper;
 
 
 public class Test009

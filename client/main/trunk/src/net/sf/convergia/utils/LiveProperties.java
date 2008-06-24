@@ -2,7 +2,7 @@ package net.sf.convergia.utils;
 
 import java.io.File;
 
-import net.sf.convergia.client.Storage;
+import net.sf.opengroove.client.Storage;
 
 public class LiveProperties
 {

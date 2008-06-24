@@ -1,7 +1,7 @@
 package tests;
 
-import net.sf.convergia.client.com.Communicator;
-import net.sf.convergia.client.com.LowLevelCommunicator;
+import net.sf.opengroove.client.com.Communicator;
+import net.sf.opengroove.client.com.LowLevelCommunicator;
 
 public class Test001
 {
