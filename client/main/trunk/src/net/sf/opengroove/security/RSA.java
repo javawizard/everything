@@ -72,8 +72,7 @@ public class RSA
             privateKey = publicKey.modInverse(phi);
         }
         while ((!phi.gcd(publicKey).equals(one))
-            || (modulus.bitLength() < (N - 10)));// allow 10-bit tolerance in
-        // terms of key length
+            || (modulus.bitLength() < (N-1)));
     }
     
     BigInteger encrypt(BigInteger message)
@@ -108,10 +107,11 @@ public class RSA
             int N = 3072;
             System.out.println("generating key");
             RSA key = new RSA(N);
+            System.out.println("***mod " + key.modulus.bitLength());
             System.out.println(key);
             ctimes[i] = System.currentTimeMillis()
                 - current;
-            BigInteger message = new BigInteger(2045,
+            BigInteger message = new BigInteger(N-15,
                 random);
             current = System.currentTimeMillis();
             // create random message, encrypt and decrypt

@@ -214,13 +214,21 @@ public class OpenGroove
     
     private static final int LOCK_PORT = 61116;
     
-    private static final String RESTART_CLASSPATH = "bin;*";
+    private static final String RESTART_CLASSPATH = "bin;*;lib/*";
     
     // FIXME: needs to be localized to the user's operating system and java vm
     private static final String[] restartExecutableString = new String[] {
         "javaw.exe", "-cp", RESTART_CLASSPATH,
         "net.sf.opengroove.client.Loader", "wfl" };
     
+    /**
+     * restarts OpenGroove. This method takes a few seconds to run before
+     * terminating this vm. This method should never return normally. It also
+     * doesn't ask the user if they want to save changes to anything, although
+     * in the future some sort of API for allowing things to register something
+     * like ExitingListeners that check to see if it's ok to exit and save if
+     * necessary could be added.
+     */
     public static void restartOpenGroove()
     {
         try
@@ -251,6 +259,9 @@ public class OpenGroove
     }
     
     /**
+     * Starts OpenGroove, without updates. Run the main method of
+     * net.sf.opengroove.client.Loader if you want OpenGroove to update itself.
+     * 
      * @param args
      */
     public static void main(String[] args) throws Throwable
@@ -332,7 +343,8 @@ public class OpenGroove
             helpviewer = new HelpViewer(helpFolder);
             notificationFrame = new TaskbarNotificationFrame();
             NotificationAdapter authenticatingNotification = new NotificationAdapter(
-                new JLabel("OpenGroove is logging you in..."),
+                new JLabel(
+                    "OpenGroove is logging you in..."),
                 false, true);
             new Thread("notification status updater")
             {
@@ -773,8 +785,8 @@ public class OpenGroove
                 notificationTrayOfflineDelays[i] = Integer
                     .parseInt(delayString);
             }
-            trayicon = new TrayIcon(trayimage, "OpenGroove",
-                pp);
+            trayicon = new TrayIcon(trayimage,
+                "OpenGroove", pp);
             SystemTray.getSystemTray().add(trayicon);
             NotificationAdapter loadingNotification = new NotificationAdapter(
                 new JLabel("OpenGroove is initializing..."),
@@ -911,6 +923,11 @@ public class OpenGroove
         }
     }
     
+    /**
+     * Loads all of the feature plugins and gets them up and running. The
+     * PluginManager is responsible for actually loading the feature classes,
+     * but the feature manager initializes them.
+     */
     private static void loadFeatures()
     {
         FeatureManager.loadFeatures();
@@ -965,6 +982,12 @@ public class OpenGroove
         }
     }
     
+    /**
+     * Loads and applies the user's look and feel. Currently, this is always
+     * called right after OpenGroove starts up. In the future, it could be
+     * configured not to do anything if OpenGroove is started in safe mode, so
+     * that if the look and feel messes up part of the ui it's not permanent.
+     */
     private static void loadCurrentUserLookAndFeel()
     {
         String lookAndFeel = Storage
@@ -996,6 +1019,10 @@ public class OpenGroove
         swingUIReload();
     }
     
+    /**
+     * Asks the user to select a new look and feel to use for OpenGroove. This
+     * method returns immediately, but a dialog will be open over the launchbar.
+     */
     private static void promptForUserLookAndFeel()
     {
         final ChooseLAFDialog dialog = new ChooseLAFDialog(
@@ -1041,6 +1068,12 @@ public class OpenGroove
         }.start();
     }
     
+    /**
+     * gets the port to connect to the OpenGroove server on. This is obsolete
+     * with the addition of realm servers, and will be removed shortly.
+     * 
+     * @return
+     */
     private static int getConnectPort()
     {
         if (Storage.getConfigProperty("icport") == null)
@@ -1049,6 +1082,12 @@ public class OpenGroove
             .getConfigProperty("icport"));
     }
     
+    /**
+     * not used right now, I'm not sure what it was for but it will be removed
+     * once I'm absolutely sure it's not going to mess anything up.
+     * 
+     * @return
+     */
     private static boolean getUseFirstConnect()
 
     {
@@ -1060,6 +1099,12 @@ public class OpenGroove
             "t");
     }
     
+    /**
+     * gets the hostname or ip address to connect to. This is obsolete with the
+     * addition of realm servers, and will be removed shortly.
+     * 
+     * @return
+     */
     private static String getConnectHost()
     {
         if (Storage.getConfigProperty("ichost") == null)
@@ -1068,6 +1113,11 @@ public class OpenGroove
         return Storage.getConfigProperty("ichost");
     }
     
+    /**
+     * Shows an about window that describes OpenGroove and it's current version.
+     * In the future, this will also show the about screens for any plugins that
+     * have an about screen.
+     */
     protected static void showAboutWindow()
     {
         showLaunchBar();
@@ -1088,6 +1138,14 @@ public class OpenGroove
     
     private static final Object updateCheckLock = new Object();
     
+    /**
+     * checks for updates to OpenGroove, and downloads them if available. In the
+     * future, this will be changed so that the user can choose whether to
+     * download them automatically or prompt the user first. It will also be
+     * changed to show a changelog to the user.
+     * 
+     * @return
+     */
     public static boolean checkForUpdates()
     {
         if (updatesEnabled)
@@ -1209,6 +1267,9 @@ public class OpenGroove
         return false;
     }
     
+    /**
+     * reloads the panel in the launchbar that shows the user's workspaces.
+     */
     public static void reloadLaunchbarWorkspaces()
     {
         synchronized (workspacePanel)
@@ -1535,12 +1596,24 @@ public class OpenGroove
         System.out.println("workspace panel repainted.");
     }
     
+    /**
+     * Shows the Options window (more appropriately dialog) to the user, so that
+     * they can configure how OpenGroove works.
+     * 
+     * @param w
+     * @return
+     */
     public static boolean showConfigWindow(
         WorkspaceWrapper w)
     {
         return showConfigWindow(w, launchbar);
     }
     
+    /**
+     * gets a string that represents the version of OpenGroove.
+     * 
+     * @return
+     */
     protected static String getDisplayableVersion()
     {
         String buildNumberString;
@@ -1557,18 +1630,32 @@ public class OpenGroove
             + "." + Version.UPDATE + buildNumberString;
     }
     
+    /**
+     * Exits OpenGroove. currently, this just calls System.exit(0), but it will
+     * check for unsaved changes (via an API to register ExitingListeners or
+     * such) in the future.
+     */
     protected static void exit()
     {
         System.exit(0);
     }
     
+    /**
+     * shows the launchbar. If it's not showing (IE hidden) it will be shown. If
+     * it's showing, it will be focused. This method does not deiconify the
+     * window right now, this will be added later.
+     */
     protected static void showLaunchBar()
     {
         launchbar.show();
     }
     
+    /**
+     * Loads the launchbar. This is called when OpenGroove first starts.
+     */
     private static void loadLaunchBar()
     {
+        // TODO: move the icon loading into it's own method
         try
         {
             for (Icons icon : Icons.values())
@@ -1755,6 +1842,9 @@ public class OpenGroove
         
     }
     
+    /**
+     * Loads the menu bar on the launchbar.
+     */
     private static void loadLaunchbarMenus()
     {
         JMenuBar bar = new JMenuBar();
@@ -1846,7 +1936,7 @@ public class OpenGroove
                                 catch (InterruptedException e)
                                 {
                                 }// give time to validate and repaint before
-                                    // we
+                                // we
                                 // start updating the look and feel
                                 new Thread()
                                 {
@@ -2077,6 +2167,14 @@ public class OpenGroove
         }.start();
     }
     
+    /**
+     * adds status concerning OpenGroove's connectivity to the
+     * ConfigureOpenGrooveDialog specified. This needs to be made less
+     * hard-coded, and will change significantly with the addition of realm
+     * servers.
+     * 
+     * @param dialog
+     */
     private static void showStatusInfo(
         ConfigureOpenGrooveDialog dialog)
     {
@@ -2095,11 +2193,31 @@ public class OpenGroove
                     : "non-secure"));
     }
     
+    /**
+     * Does nothing. I can't remember why it's here, but I'll remove it once I'm
+     * sure it won't mess anything up.
+     * 
+     * @param c
+     * @return
+     */
     private static JComponent wrap(JComponent c)
     {
         return c;
     }
     
+    /**
+     * Scales the image specified to the size specified, discarding aspect
+     * ratio.
+     * 
+     * @param image
+     *            the image to scale
+     * @param width
+     *            the new width
+     * @param height
+     *            the new height
+     * @return a new image, which is the original image scaled to the width and
+     *         height specified
+     */
     private static Image scaleImage(Image image, int width,
         int height)
     {
@@ -2113,6 +2231,13 @@ public class OpenGroove
         return b;
     }
     
+    /**
+     * loads the image specified from the file specified. The string passed in
+     * is relative to the icons folder.
+     * 
+     * @param string
+     * @return
+     */
     private static Image loadImage(String string)
     {
         System.out.println("********about to load "
@@ -2139,11 +2264,26 @@ public class OpenGroove
         }
     }
     
+    /**
+     * sets the font on the component specified to the plain font (IE a font
+     * that is not bold).
+     * 
+     * @param c
+     */
     public static void setPlainFont(JComponent c)
     {
         c.setFont(c.getFont().deriveFont(Font.PLAIN));
     }
     
+    /**
+     * Adds an EmptyBorder to the component specified and returns it.
+     * 
+     * @param <T>
+     * @param c
+     * @param w
+     * @param h
+     * @return
+     */
     public static <T extends JComponent> T pad(T c, int w,
         int h)
     {
@@ -2152,6 +2292,11 @@ public class OpenGroove
         return c;
     }
     
+    /**
+     * Shows a screen welcoming the user to OpenGroove. This is obsolete, and
+     * will be replaced by the wizard-style introduction that is coming with the
+     * addition of realm servers.
+     */
     private static void showWelcomeToInTouchScreen()
     {
         WelcomeFirstTimeFrame wframe = new WelcomeFirstTimeFrame();
@@ -2352,9 +2497,14 @@ public class OpenGroove
     private static long nextGenId = 0;
     
     /**
-     * creates a new id. the id should be unique for the whole Convergia
-     * communicator system. the first part of the id, up until the first hyphen,
-     * is this user's username.
+     * creates a new id. the id should be unique for the whole OpenGroove
+     * system. the first part of the id, up until the first hyphen, is this
+     * user's username.
+     * 
+     * TODO: work out what defines the user's "username" with the addition of
+     * realm servers, IE is it the user's userid (probably) or just their
+     * username. This would result in a colon ( : ) character in their username
+     * which may cause problems.
      * 
      * @return
      */
@@ -2367,11 +2517,24 @@ public class OpenGroove
             + d.substring(1, Math.min(d.length(), 7));
     }
     
+    /**
+     * shorthand for TextManager.text(key);
+     * 
+     * @param key
+     * @return
+     */
     public static String tm(String key)
     {
         return TextManager.text(key);
     }
     
+    /**
+     * shorthand for TextManager.tm(key,params);
+     * 
+     * @param key
+     * @param params
+     * @return
+     */
     public static String tm(String key, String... params)
     {
         return TextManager.text(key, params);
@@ -2488,6 +2651,12 @@ public class OpenGroove
         return true;
     }
     
+    /**
+     * converts the contents of this DefaultListModel to an ArrayList.
+     * 
+     * @param allowedMembersModel
+     * @return
+     */
     protected static ArrayList modelToList(
         DefaultListModel allowedMembersModel)
     {
@@ -2499,6 +2668,12 @@ public class OpenGroove
         return list;
     }
     
+    /**
+     * creates the user's public metadata. This is obsolete with the addition of
+     * realm servers and will be removed.
+     * 
+     * @return
+     */
     private static Properties createMetadata()
     {
         Properties p = new Properties();
@@ -2571,7 +2746,7 @@ public class OpenGroove
     /**
      * returns a string containing each of the items in the list specified,
      * separated by <code>delimiter</code>. if there are no items, the empty
-     * string is returned. this method is designed to approximately be the
+     * string is returned. this method is designed to be approximately the
      * opposite of String.split, except that split uses regex instead of literal
      * strings.
      * 
@@ -2592,6 +2767,12 @@ public class OpenGroove
         return s;
     }
     
+    /**
+     * adds the contents of the List specified to the list model specified.
+     * 
+     * @param allowedMembersModel
+     * @param allowedUsers
+     */
     private static void addAllToModel(
         DefaultListModel allowedMembersModel,
         List allowedUsers)
@@ -2603,7 +2784,8 @@ public class OpenGroove
     }
     
     /**
-     * regenerates this user's metadata, and sends it to the server.
+     * regenerates this user's metadata, and sends it to the server. This is
+     * obsolete with the addition of realm servers, and will be removed shortly.
      * 
      */
     public static void updateMetadata()
@@ -2628,6 +2810,12 @@ public class OpenGroove
         }
     }
     
+    /**
+     * Shows the user a wizard for creating a new workspace. This is expected to
+     * undergo heavy modification with the addition of realm servers.
+     * 
+     * @return
+     */
     public static boolean runNewWorkspaceWizard()
     {
         if (!com.getCommunicator().isActive())
@@ -2765,6 +2953,16 @@ public class OpenGroove
         return true;
     }
     
+    /**
+     * This method shows a wizard for participating in a workspace where the
+     * creator of the workspace has given you permission to participate but has
+     * not sent you an invitation. Workspaces are moving towards cryptographic
+     * keys for security, which will make it impossible for this method to serve
+     * it's intended function, and so it will be removed once the transition is
+     * complete.
+     * 
+     * @return
+     */
     public static boolean runImportWorkspaceWizard()
     {
         if (currentDialog != null
@@ -2936,11 +3134,24 @@ public class OpenGroove
         return true;
     }
     
+    /**
+     * Opens the help viewer, if it is not already open, and shows the specified
+     * help topic. Shorthand for helpviewer.showHelpTopic(path) where helpviewer
+     * is OpenGroove's singleton HelpViewer.
+     * 
+     * @param path
+     */
     public static void showHelpTopic(String path)
     {
         helpviewer.showHelpTopic(path);
     }
     
+    /**
+     * Shows information about the user specified. This method is expected to
+     * undergo heavy modification with the addition of realm servers.
+     * 
+     * @param username
+     */
     public static void showUserInformationDialog(
         String username)
     {
@@ -2960,6 +3171,12 @@ public class OpenGroove
         new String[] { "", "" }, new String[] { "", "" },
         new String[] { "", "" } };
     
+    /**
+     * see showUserInformationDialog(username).
+     * 
+     * @param username
+     * @param parent
+     */
     public static void showUserInformationDialog(
         String username, JFrame parent)
     {
@@ -2976,7 +3193,8 @@ public class OpenGroove
             BorderLayout.NORTH);
         Properties md = WorkspaceManager.parseMetadata(com
             .getUserMetadata(username));
-        properties.add(new JLabel("OpenGroove Version:   "));
+        properties
+            .add(new JLabel("OpenGroove Version:   "));
         properties.add(new JLabel(md
             .getProperty("stat_version_string")));
         properties.add(new JLabel("Last Online:   "));
@@ -3007,18 +3225,42 @@ public class OpenGroove
         }.start();
     }
     
+    /**
+     * gets the user's preferred date format, suitable for passing into
+     * <code>new SimpleDateFormat(String)</code>.
+     * 
+     * @return
+     */
     public static String getDateFormatString()
     {
-        // TODO change this so that the user can select their date format.
+        // TODO change this so that the user can select their date format,
+        // possibly using SettingsManager.
         return "yyyy.MM.dd h:mm:ss aa";
     }
     
+    /**
+     * formats a date into a string using the format specified by
+     * getDateFormatString().
+     * 
+     * @param date
+     * @return
+     */
     public static String formatDate(Date date)
     {
         return new SimpleDateFormat(getDateFormatString())
             .format(date);
     }
     
+    /**
+     * The values of the window transparency setting. This is expected to be
+     * moved to SettingsManager, and will be removed then. It's also expected
+     * that other things besides fading (such as window slide, just appearing,
+     * spinning in, random, etc) will be added, especially since fading is only
+     * supported on Windows.
+     * 
+     * @author Alexander Boyd
+     * 
+     */
     private static enum WindowTransparencyMode
     {
         ENABLED, DISABLED, UNKNOWN
@@ -3026,6 +3268,11 @@ public class OpenGroove
     
     private static WindowTransparencyMode useWindowTransparency = WindowTransparencyMode.UNKNOWN;
     
+    /**
+     * returns true if window transparency is to be used, false otherwise.
+     * 
+     * @return
+     */
     public static boolean useWindowTransparency()
     {
         if (useWindowTransparency
@@ -3038,6 +3285,12 @@ public class OpenGroove
             return getDefaultTransparencyMode();
     }
     
+    /**
+     * returns whether or not transparency is to be used on windows. This is
+     * mostly for the fading effect of the TaskbarNotificationFrame.
+     * 
+     * @return
+     */
     private static boolean getDefaultTransparencyMode()
     {
         // return System.getProperty("os.name").contains("Vista");
@@ -3128,6 +3381,12 @@ public class OpenGroove
     
     private static long lastUsedTime = 0;
     
+    /**
+     * if the frame is hidden. shows it. If the frame is showing, brings it to
+     * the front, and if it's iconified, deiconifies it.
+     * 
+     * @param frame
+     */
     public static void bringToFront(JFrame frame)
     {
         frame.show();
@@ -3136,6 +3395,14 @@ public class OpenGroove
         // focused
     }
     
+    /**
+     * returns a formatted string indicating the size of the data specified.
+     * String look like 1B, 500B, 350KB, 250GB, etc. Strings only go up to
+     * gigabytes, so 2 terabytes (2000 gigabytes) shows up as 2000GB.
+     * 
+     * @param size
+     * @return
+     */
     public static String formatDataSize(double size)
     {
         if (size < 1000)
@@ -3154,7 +3421,7 @@ public class OpenGroove
         try
         {
             File tempWrite = File.createTempFile(
-                "convergiatemp", ".jar");
+                "opengroovetemp", ".jar");
             System.out.println("tempwrite:" + tempWrite);
             tempWrite.deleteOnExit();
             JarOutputStream output = new JarOutputStream(
@@ -3224,6 +3491,16 @@ public class OpenGroove
         }
     }
     
+    /**
+     * renames the source file to the target file, but using pure java to do so
+     * as opposed to the File.renameTo() method. It essentially opens a
+     * FileInputStream and FileOutputStream for the source and target files,
+     * streams the data from one to the other, and then deletes the source file.
+     * 
+     * @param src
+     * @param target
+     * @throws IOException
+     */
     public static void longRename(File src, File target)
         throws IOException
     {
