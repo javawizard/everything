@@ -75,6 +75,13 @@ public class OldConvergiaServer extends Thread
      * the watchdog does nothing to the socket's output stream (it only affects
      * the input stream).
      * 
+     * The watchdog exists for two reasons, to make sure that a client can still
+     * reconnect if their internet connection goes down (and the server doesn't
+     * realize they've disconnected) and to prevent against denial-of-service
+     * attacks where someone connects a bunch of times but doesn't send the
+     * TCP/IP-related shutdown packets, and so the server still thinks it has an
+     * active connection to the client.
+     * 
      * @author Alexander Boyd
      * 
      */

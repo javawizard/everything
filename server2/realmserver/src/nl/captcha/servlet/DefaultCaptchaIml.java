@@ -76,7 +76,7 @@ public class DefaultCaptchaIml implements CaptchaProducer  {
 	/**
 	 *  The width image in pixels. 
 	 */
-	private int w = 350;
+	private int w = 250;
     
 	/**
 	 * The heigth image in pixels. 

@@ -83,6 +83,9 @@ public class DefaultTextCreator implements TextProducer
         for (int i = 0; i < capLength; i++)
         {
             capText += captchars[generator.nextInt(car) + 1];
+            if(capText.length() > 1 && capText.charAt(0) == capText.charAt(1))
+                //eliminate duplicate letters
+                return getText();
         }
         
         return capText;
