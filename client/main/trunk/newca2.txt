@@ -12,6 +12,14 @@ Realms are a concept of a provider that a user can register with. A user's useri
 
 the first thing sent by the connecting entity in any opengroove connection, be it from a client to a server or from a server to another server, is the word OpenGroove (case insensitive, but the capitalization just previously used is recommended), followed by a newline. In the OpenGroove protocol, a newline can be either a carriage return, a line feed, or a carriage return and a line feed, all of them work, and all entities should be prepared to handle all of those.
 
+Here are the ports used by OpenGroove and their uses:
+
+63745/TCP: Client to Realm Server and Realm Server to Realm Server
+63746/TCP: Client to Management Server
+63747/TCP: Realm server to Management Server
+63748/TCP: Client to Client
+63749/UDP: Client multicast, used for finding clients on the same network
+
 When a realm server starts up, it loads up it's database, and starts up a web server. 
 
 
