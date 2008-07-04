@@ -31,14 +31,3 @@ create table computers (
 username varchar(64),
 computername varchar(64)
 );
-
-create table storedmessages (
-id varchar(128),
-sender varchar(64),
-recipient varchar(64),
-fromcomputer varchar(64),
-tocomputer varchar(64),
-finalized boolean,
-accessed boolean,
-metadata varchar(1192)
-);

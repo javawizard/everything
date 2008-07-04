@@ -1,5 +1,6 @@
 package tests;
 
+import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.sql.Connection;
 import java.sql.DriverManager;
@@ -15,12 +16,21 @@ public class Test02
     {
         Class.forName("smallsql.database.SSDriver");
         Connection con = DriverManager
-            .getConnection("jdbc:smallsql:appdata/testdb?create=true");
-        PreparedStatement st = con
-            .prepareStatement("insert into testtable values (12345, 'Hello, world!')");
-        st.execute();
-        st.close();
+            .getConnection("jdbc:smallsql:lib/testdb");
+        for (int i = 0; i < 10000; i++)
+        {
+            if ((i % 100) == 0)
+                System.out.println("" + i);
+            PreparedStatement st = con
+                .prepareStatement("insert into testtable values (?, ?)");
+            st.setInt(1, i);
+            st.setBlob(2, new ByteArrayInputStream(
+                ("This is some test text for index " + i)
+                    .getBytes()));
+            st.execute();
+            st.close();
+            con.close();
+        }
         con.close();
     }
-    
 }

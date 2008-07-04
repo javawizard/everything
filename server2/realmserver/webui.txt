@@ -1,0 +1,15 @@
+This document describes the web ui visible when a user logs into the web administration interface for OpenGroove Realm Server.
+
+The tasks that need to be acomplished are:
+
+Creating, editing, and deleting web users
+Creating, editing, configuring, and deleting OpenGroove users
+Configuring settings about the server (allowing the user to apply for public registration of the server, choosing a short name, editing the long name and description, whether open registration is allowed, how much disk space is allowed per user for various options, what port it listens on, what port the web interface listens on, how many computers each user may have (can be configured on a user-by-user basis), etc)
+Viewing information on currently queued messages
+Viewing information on current performance information, such as current amount of memory available (free, total, and max), number of channels currently active and their types (single or multicast, inter-realm), number of users currently connected, number of users running over an encrypted connection, etc
+Viewing history graphs on performance, such as amount of data transferred in the last week, number of stored messages and collective size sent, number of stored messages within the realm server sent, number of inter-realm messages sent, number of inter-realm messages received, number of channels set up in the last week, number of bytes transferred via these channels, a particular user's bandwidth, a particular user's message usage, a comparative graph of the top few users as lines for message count, bandwidth, or others, etc)
+Shutting down and restarting the server, with an option to send a notification to all users that the server is going to be restarted
+Sending notifications to all of the users (via the USERNOTIFICATION method), both immediate (sent to all users currently online) and persistant (sent to all users the next time they sign on, until a particular time from now)
+Sending notifications to a single user or groups of users
+Viewing a list of setting change subscriptions
+The interface is divided into a number of tabs.

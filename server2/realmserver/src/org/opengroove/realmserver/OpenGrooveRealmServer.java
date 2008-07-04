@@ -8,13 +8,34 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.io.PrintWriter;
+import java.io.StringWriter;
+import java.net.URLEncoder;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.Properties;
 
+import javax.servlet.Filter;
+import javax.servlet.FilterChain;
+import javax.servlet.FilterConfig;
+import javax.servlet.ServletException;
+import javax.servlet.ServletRequest;
+import javax.servlet.ServletResponse;
+import javax.servlet.http.HttpServlet;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
+import org.apache.jasper.servlet.JspServlet;
+import org.mortbay.jetty.Server;
+import org.mortbay.jetty.servlet.Context;
+import org.mortbay.jetty.servlet.DefaultServlet;
+import org.mortbay.jetty.servlet.FilterHolder;
+import org.mortbay.jetty.servlet.ServletHolder;
 import org.opengroove.util.Hash;
 
 import DE.knp.MicroCrypt.Sha512;
@@ -27,10 +48,25 @@ public class OpenGrooveRealmServer
 {
     protected static final File HTTPD_RES_FOLDER = new File(
         "httpdres");
+    /**
+     * The connection to the persistant database
+     */
+    public static Connection pdb;
+    /**
+     * The connection to the large database
+     */
+    public static Connection ldb;
+    /**
+     * The prefix string for tables in the persistant database
+     */
+    public static String pfix;
+    /**
+     * The prefix string for tables in the large database
+     */
+    public static String lfix;
     
-    private static Connection db;
-    
-    private static File dbFolder = new File("appdata/db");
+    private static final File configFile = new File(
+        "config.properties");
     
     private static boolean setupStillRunning = true;
     
@@ -38,13 +74,15 @@ public class OpenGrooveRealmServer
     
     private static HandlerServer webserver;
     
+    private static Properties config = new Properties();
+    
+    protected static boolean doneSettingUp = false;
+    
     /**
      * @param args
-     * @throws IOException
-     * @throws InterruptedException
+     * @throws Exception
      */
-    public static void main(String[] args)
-        throws IOException, InterruptedException
+    public static void main(String[] args) throws Exception
     {
         System.out.println("OpenGroove Realm Server");
         System.out.println("www.opengroove.org");
@@ -67,7 +105,7 @@ public class OpenGrooveRealmServer
          * not to make publicly available this realm's description, whether or
          * not to make publicly available this realm's list of users,
          */
-        if (!dbFolder.exists())
+        if (!configFile.exists())
         {
             // OpenGroove Realm Server hasn't been initialized for the first
             // time yet, so all we need to do is start a web server listening
@@ -88,101 +126,231 @@ public class OpenGrooveRealmServer
             // FIXME: A new captcha should probably be generated every few
             // minutes, so that
             // the user only has one guess at a captcha
-            new NanoHTTPD(53828)
+            Server server = new Server(34567);
+            Context context = createServerContext(server,
+                "webinit");
+            context.addFilter(new FilterHolder(new Filter()
             {
                 
                 @Override
-                public synchronized Response serve(
-                    String uri, String method,
-                    Properties header, Properties parms)
+                public void destroy()
                 {
-                    if (!setupStillAllowed)
+                    // TODO Auto-generated method stub
+                    
+                }
+                
+                @Override
+                public synchronized void doFilter(
+                    ServletRequest sRequest,
+                    ServletResponse sResponse,
+                    FilterChain chain) throws IOException,
+                    ServletException
+                {
+                    HttpServletRequest request = (HttpServletRequest) sRequest;
+                    HttpServletResponse response = (HttpServletResponse) sResponse;
+                    if (request.getRequestURI().startsWith(
+                        "/bypass/"))
                     {
-                        return serveFile(
-                            "/setup/done.html",
-                            new Properties(),
-                            HTTPD_RES_FOLDER, false);
+                        chain.doFilter(request, response);
+                        return;
                     }
-                    if (uri
-                        .equalsIgnoreCase("/setup/start.html")
-                        || uri
-                            .equalsIgnoreCase("/setup/badpassword.html")
-                        || uri
-                            .equalsIgnoreCase("/setup/shortpassword.html")
-                        || uri
-                            .equalsIgnoreCase("/setup/captcha.png"))
+                    else if (doneSettingUp)
                     {
-                        return serveFile(uri,
-                            new Properties(),
-                            HTTPD_RES_FOLDER, false);
+                        response
+                            .sendRedirect("/bypass/done.jsp");
+                        return;
                     }
-                    else if (uri
-                        .equalsIgnoreCase("/setup/s2.html"))
+                    else if (request.getRequestURI()
+                        .equals("/setup"))
                     {
-                        String password = parms
-                            .getProperty("password");
-                        String passwordAgain = parms
-                            .getProperty("passwordagain");
-                        String username = parms
-                            .getProperty("username");
-                        // check for matching passwords
-                        if (!password.equals(passwordAgain))
+                        // build url containing all of the parameters in case
+                        // the user mis-entered something
+                        String redoUrl = "/bypass/start.jsp?";
+                        for (String param : (Collection<String>) Collections
+                            .list(request
+                                .getParameterNames()))
                         {
-                            return redirect("/setup/badpassword.html");
+                            for (String value : request
+                                .getParameterValues(param))
+                            {
+                                redoUrl += ""
+                                    + URLEncoder
+                                        .encode(param)
+                                    + "="
+                                    + URLEncoder
+                                        .encode(value)
+                                    + "&";
+                            }
                         }
-                        else if (password.length() < 5)
+                        redoUrl += "errormessage=";
+                        // load parameters into variables
+                        String username = request
+                            .getParameter("username");
+                        String password = request
+                            .getParameter("password");
+                        String passwordagain = request
+                            .getParameter("passwordagain");
+                        String pdbclass = request
+                            .getParameter("pdbclass");
+                        String pdburl = request
+                            .getParameter("pdburl");
+                        String pdbprefix = request
+                            .getParameter("pdbprefix");
+                        String pdbusername = request
+                            .getParameter("pdbusername");
+                        String pdbpassword = request
+                            .getParameter("pdbpassword");
+                        String ldbclass = request
+                            .getParameter("ldbclass");
+                        String ldburl = request
+                            .getParameter("ldburl");
+                        String ldbprefix = request
+                            .getParameter("ldbprefix");
+                        String ldbusername = request
+                            .getParameter("ldbusername");
+                        String ldbpassword = request
+                            .getParameter("ldbpassword");
+                        String serverport = request
+                            .getParameter("serverport");
+                        String webport = request
+                            .getParameter("webport");
+                        String serverhostname = request
+                            .getParameter("serverhostname");
+                        // template error message:
+                        //
+                        // setuperror(redoUrl, response, "");
+                        // return;
+                        //
+                        // check to see if the passwords match
+                        if (!password.equals(passwordagain))
                         {
-                            return redirect("/setup/shortpassword.html");
+                            setuperror(redoUrl, response,
+                                "The passwords you entered didn't match.");
+                            return;
                         }
+                        // make sure that password is at least 5 characters long
+                        if (password.length() < 5)
+                        {
+                            setuperror(
+                                redoUrl,
+                                response,
+                                "The password you entered for your "
+                                    + "web administration password "
+                                    + "isn't long enough. The password needs to be "
+                                    + "at least 5 characters long.");
+                            return;
+                        }
+                        if (username.length() < 1)
+                        {
+                            setuperror(
+                                redoUrl,
+                                response,
+                                "The username you entered for your"
+                                    + "web administration username "
+                                    + "isn't long enough. The username needs to be"
+                                    + " at least 1 character long.");
+                            return;
+                        }
+                        // create connections to the persistant and large
+                        // databases, and test them out
                         try
                         {
-                            Class
-                                .forName("smallsql.database.SSDriver");
-                            db = DriverManager
-                                .getConnection("jdbc:smallsql:"
-                                    + dbFolder.getPath()
-                                    + "?create=true");
-                            runLongSql(readFile(new File(
-                                "init.sql")));
-                            runLongSql("insert into webusers values ('"
-                                + username
-                                + "','admin', '"
-                                + Hash.hash(password
-                                    .getBytes()) + "')");
-                            db.close();
+                            Class.forName(pdbclass);
+                            pdb = DriverManager
+                                .getConnection(pdburl,
+                                    pdbusername,
+                                    pdbpassword);
                         }
                         catch (Exception e)
                         {
-                            throw new RuntimeException(e);
+                            StringWriter sw = new StringWriter();
+                            e
+                                .printStackTrace(new PrintWriter(
+                                    sw));
+                            setuperror(
+                                redoUrl,
+                                response,
+                                "An error occured when trying to initialize"
+                                    + " the persistant database. Here's the stack trace:<br/><br/><pre>"
+                                    + sw.toString()
+                                    + "</pre>");
+                            return;
                         }
-                        setupStillAllowed = false;
-                        return redirect("/setup/done.html");
+                        try
+                        {
+                            Class.forName(ldbclass);
+                            pdb = DriverManager
+                                .getConnection(pdburl,
+                                    pdbusername,
+                                    pdbpassword);
+                        }
+                        catch (Exception e)
+                        {
+                            StringWriter sw = new StringWriter();
+                            e
+                                .printStackTrace(new PrintWriter(
+                                    sw));
+                            setuperror(
+                                redoUrl,
+                                response,
+                                "An error occured when trying to initialize"
+                                    + " the persistant database. Here's the stack trace:<br/><br/><pre>"
+                                    + sw.toString()
+                                    + "</pre>");
+                            return;
+                        }
+                        doneSettingUp = true;
+                        response.sendRedirect("/");
+                        return;
                     }
                     else
                     {
-                        return redirect("/setup/start.html");
+                        response
+                            .sendRedirect("/bypass/start.jsp?pdbclass=org.h2.Driver&"
+                                + "pdburl="
+                                + URLEncoder
+                                    .encode("jdbc:h2:appdata/db/persistant")
+                                + "&"
+                                + "pdbprefix=opengroove_&pdbusername=sa"
+                                + "&ldbclass=org.h2.Driver&"
+                                + "ldburl="
+                                + URLEncoder
+                                    .encode("jdbc:h2:appdata/db/large")
+                                + "&"
+                                + "ldbprefix=opengroove_&ldbusername=sa"
+                                + "&serverport=63745&webport=34567");
+                        return;
                     }
                 }
-            };
+                
+                private void setuperror(String redoUrl,
+                    HttpServletResponse response,
+                    String string) throws IOException
+                {
+                    response.sendRedirect(redoUrl
+                        + URLEncoder.encode(string));
+                }
+                
+                @Override
+                public void init(FilterConfig filterConfig)
+                    throws ServletException
+                {
+                    // TODO Auto-generated method stub
+                    
+                }
+            }), "/*", Context.ALL);
+            finishContext(context);
+            server.start();
+            Thread.sleep(200);
             System.out
                 .println("This is the first time you've run OpenGroove Realm Server, so you'll "
                     + "need to provide some information so that the server can be "
-                    + "configured. Open a browser and go to http://localhost:53828 to"
+                    + "configured. Open a browser and go to http://localhost:34567 to"
                     + " get OpenGroove Realm Server up and running.");
-            while (setupStillRunning)
-            {
-                try
-                {
-                    Thread.sleep(1000);
-                }
-                catch (InterruptedException e)
-                {
-                    // TODO Auto-generated catch block
-                    e.printStackTrace();
-                }
-            }
+            server.join();
             return;
         }
+        config.load(new FileInputStream(configFile));
         // If we get here then OpenGroove has been set up, so get everything up
         // and running
         System.out.println("loading web server");
@@ -191,8 +359,8 @@ public class OpenGrooveRealmServer
             Thread.sleep(500);
     }
     
-    protected static void runLongSql(String sql)
-        throws SQLException
+    protected static void runLongSql(String sql,
+        Connection con) throws SQLException
     {
         String[] statements = sql.split("\\;");
         int i = 1;
@@ -202,7 +370,7 @@ public class OpenGrooveRealmServer
                 + " of " + statements.length);
             if (!s.trim().equals(""))
             {
-                PreparedStatement st = db
+                PreparedStatement st = con
                     .prepareStatement(s);
                 st.execute();
                 st.close();
@@ -268,6 +436,28 @@ public class OpenGrooveRealmServer
         {
             out.write(buffer, 0, amount);
         }
+    }
+    
+    private static Context createServerContext(
+        Server server, String webroot)
+    {
+        Context context = new Context(server, "/",
+            Context.SESSIONS);
+        context.setResourceBase(webroot);
+        context.setErrorHandler(new DefaultErrorHandler());
+        return context;
+    }
+    
+    private static void finishContext(Context context)
+    {
+        ServletHolder jsp = new ServletHolder(
+            new JspServlet());
+        jsp.setInitParameter("classpath", "classes;lib/*");
+        jsp.setInitParameter("scratchdir", "classes");
+        context.addServlet(jsp, "*.jsp");
+        ServletHolder resource = new ServletHolder(
+            new DefaultServlet());
+        context.addServlet(resource, "/");
     }
     
 }
