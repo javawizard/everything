@@ -2,5 +2,6 @@
 <body>
 <b>You have successfully finished setting up your OpenGroove Realm Server. 
 Restart your server (by terminating it's process and then starting it again),
- and then go to http://localhost:34567 to further configure your server.</b>
+ then go to http://localhost:${applicationScope.serverport} to add users and
+ further configure your server.</b>
  </body></html>

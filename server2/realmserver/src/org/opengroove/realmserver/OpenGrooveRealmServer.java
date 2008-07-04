@@ -127,8 +127,8 @@ public class OpenGrooveRealmServer
             // minutes, so that
             // the user only has one guess at a captcha
             Server server = new Server(34567);
-            Context context = createServerContext(server,
-                "webinit");
+            final Context context = createServerContext(
+                server, "webinit");
             context.addFilter(new FilterHolder(new Filter()
             {
                 
@@ -192,28 +192,50 @@ public class OpenGrooveRealmServer
                             .getParameter("passwordagain");
                         String pdbclass = request
                             .getParameter("pdbclass");
+                        config.setProperty("pdbclass",
+                            pdbclass);
                         String pdburl = request
                             .getParameter("pdburl");
+                        config
+                            .setProperty("pdburl", pdburl);
                         String pdbprefix = request
                             .getParameter("pdbprefix");
+                        config.setProperty("pdbprefix",
+                            pdbprefix);
                         String pdbusername = request
                             .getParameter("pdbusername");
+                        config.setProperty("pdbusername",
+                            pdbusername);
                         String pdbpassword = request
                             .getParameter("pdbpassword");
+                        config.setProperty("pdbpassword",
+                            pdbpassword);
                         String ldbclass = request
                             .getParameter("ldbclass");
+                        config.setProperty("ldbclass",
+                            ldbclass);
                         String ldburl = request
                             .getParameter("ldburl");
+                        config
+                            .setProperty("ldburl", ldburl);
                         String ldbprefix = request
                             .getParameter("ldbprefix");
+                        config.setProperty("ldbprefix",
+                            ldbprefix);
                         String ldbusername = request
                             .getParameter("ldbusername");
+                        config.setProperty("ldbusername",
+                            ldbusername);
                         String ldbpassword = request
                             .getParameter("ldbpassword");
+                        config.setProperty("ldbpassword",
+                            ldbpassword);
                         String serverport = request
                             .getParameter("serverport");
                         String webport = request
                             .getParameter("webport");
+                        context.setAttribute("serverport",
+                            webport);
                         String serverhostname = request
                             .getParameter("serverhostname");
                         // template error message:
@@ -253,6 +275,8 @@ public class OpenGrooveRealmServer
                         }
                         // create connections to the persistant and large
                         // databases, and test them out
+                        pfix = pdbprefix;
+                        lfix = ldbprefix;
                         try
                         {
                             Class.forName(pdbclass);
@@ -279,10 +303,10 @@ public class OpenGrooveRealmServer
                         try
                         {
                             Class.forName(ldbclass);
-                            pdb = DriverManager
-                                .getConnection(pdburl,
-                                    pdbusername,
-                                    pdbpassword);
+                            ldb = DriverManager
+                                .getConnection(ldburl,
+                                    ldbusername,
+                                    ldbpassword);
                         }
                         catch (Exception e)
                         {
@@ -299,6 +323,11 @@ public class OpenGrooveRealmServer
                                     + "</pre>");
                             return;
                         }
+                        // create the tables
+                        // store the configuration settings in the tables
+                        // add the web user
+                        // generate the RSA keys for the server
+                        // We're done!
                         doneSettingUp = true;
                         response.sendRedirect("/");
                         return;
@@ -309,13 +338,13 @@ public class OpenGrooveRealmServer
                             .sendRedirect("/bypass/start.jsp?pdbclass=org.h2.Driver&"
                                 + "pdburl="
                                 + URLEncoder
-                                    .encode("jdbc:h2:appdata/db/persistant")
+                                    .encode("jdbc:h2:appdata/dbp/persistant")
                                 + "&"
                                 + "pdbprefix=opengroove_&pdbusername=sa"
                                 + "&ldbclass=org.h2.Driver&"
                                 + "ldburl="
                                 + URLEncoder
-                                    .encode("jdbc:h2:appdata/db/large")
+                                    .encode("jdbc:h2:appdata/dbl/large")
                                 + "&"
                                 + "ldbprefix=opengroove_&ldbusername=sa"
                                 + "&serverport=63745&webport=34567");
@@ -343,10 +372,12 @@ public class OpenGrooveRealmServer
             server.start();
             Thread.sleep(200);
             System.out
-                .println("This is the first time you've run OpenGroove Realm Server, so you'll "
-                    + "need to provide some information so that the server can be "
-                    + "configured. Open a browser and go to http://localhost:34567 to"
-                    + " get OpenGroove Realm Server up and running.");
+                .println(""
+                    + "This is the first time you've run OpenGroove Realm Server,\r\n"
+                    + "so you'll need to provide some information so that the\r\n"
+                    + "server can be configured. Open a browser and go to\r\n"
+                    + "http://localhost:34567 to get OpenGroove Realm Server\r\n"
+                    + "up and running.");
             server.join();
             return;
         }
