@@ -8,11 +8,12 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import net.sf.opengroove.realmserver.DefaultErrorHandler;
+
 import org.apache.jasper.servlet.JspServlet;
 import org.mortbay.jetty.Server;
 import org.mortbay.jetty.servlet.Context;
 import org.mortbay.jetty.servlet.ServletHolder;
-import org.opengroove.realmserver.DefaultErrorHandler;
 
 public class Test03
 {

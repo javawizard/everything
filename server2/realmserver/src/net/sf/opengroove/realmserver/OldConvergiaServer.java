@@ -1,4 +1,4 @@
-package org.opengroove.realmserver;
+package net.sf.opengroove.realmserver;
 
 import java.util.Map;
 import java.io.BufferedReader;

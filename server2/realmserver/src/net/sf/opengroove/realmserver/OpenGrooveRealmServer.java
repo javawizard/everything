@@ -1,4 +1,4 @@
-package org.opengroove.realmserver;
+package net.sf.opengroove.realmserver;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
@@ -14,6 +14,7 @@ import java.net.URLEncoder;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
+import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.Collection;
@@ -238,6 +239,8 @@ public class OpenGrooveRealmServer
                             webport);
                         String serverhostname = request
                             .getParameter("serverhostname");
+                        boolean forceEncryption = request
+                            .getParameter("forceencryption") != null;
                         // template error message:
                         //
                         // setuperror(redoUrl, response, "");
@@ -275,6 +278,8 @@ public class OpenGrooveRealmServer
                         }
                         // create connections to the persistant and large
                         // databases, and test them out
+                        System.out
+                            .println("connecting to persistant database...");
                         pfix = pdbprefix;
                         lfix = ldbprefix;
                         try
@@ -300,6 +305,8 @@ public class OpenGrooveRealmServer
                                     + "</pre>");
                             return;
                         }
+                        System.out
+                            .println("connecting to large database...");
                         try
                         {
                             Class.forName(ldbclass);
@@ -323,10 +330,108 @@ public class OpenGrooveRealmServer
                                     + "</pre>");
                             return;
                         }
+                        System.out
+                            .println("loading sql files for table creation...");
                         // create the tables
+                        String psql = readFile(new File(
+                            "pinit.sql"));
+                        String lsql = readFile(new File(
+                            "linit.sql"));
+                        psql = psql.replace("$$prefix$$",
+                            pfix);
+                        lsql = lsql.replace("$$prefix$$",
+                            lfix);
+                        System.out
+                            .println("creating persistant tables...");
+                        try
+                        {
+                            runLongSql(psql, pdb);
+                        }
+                        catch (SQLException e)
+                        {
+                            StringWriter sw = new StringWriter();
+                            e
+                                .printStackTrace(new PrintWriter(
+                                    sw));
+                            setuperror(
+                                redoUrl,
+                                response,
+                                "An error occured when trying to initialize"
+                                    + " the persistant database. Some data may have"
+                                    + "already been inserted into the database. "
+                                    + "Here's the stack trace:<br/><br/><pre>"
+                                    + sw.toString()
+                                    + "</pre>");
+                            return;
+                        }
+                        // TODO: what if it fails in the middle of creating
+                        // tables? should we try to roll back and delete those
+                        // tables? perhaps put the table creates all within one
+                        // transaction?
+                        System.out
+                            .println("creating large tables...");
+                        try
+                        {
+                            runLongSql(lsql, ldb);
+                        }
+                        catch (SQLException e)
+                        {
+                            StringWriter sw = new StringWriter();
+                            e
+                                .printStackTrace(new PrintWriter(
+                                    sw));
+                            setuperror(
+                                redoUrl,
+                                response,
+                                "An error occured when trying to initialize"
+                                    + " the large database. Some data may have"
+                                    + "already been inserted into the database. "
+                                    + "Here's the stack trace:<br/><br/><pre>"
+                                    + sw.toString()
+                                    + "</pre>");
+                            return;
+                        }
                         // store the configuration settings in the tables
-                        // add the web user
+                        System.out.println("setting configuration settings...");
+                        try
+                        {
+                            setConfig("serverport",
+                                serverport);
+                            setConfig("webport", webport);
+                            setConfig("serverhostname",
+                                serverhostname);
+                            setConfig("forceencryption",
+                                forceEncryption ? "true"
+                                    : "false");
+                            PreparedStatement st = pdb
+                                .prepareStatement("insert into "
+                                    + pfix
+                                    + "webusers (username,role,password)"
+                                    + " values (?,?,?)");
+                            st.setString(1, username);
+                            st.setString(2, "admin");
+                            st.setString(3, Hash
+                                .hash(password));
+                            st.executeUpdate();
+                            st.close();
+                        }
+                        catch (SQLException e)
+                        {
+                            StringWriter sw = new StringWriter();
+                            e
+                                .printStackTrace(new PrintWriter(
+                                    sw));
+                            setuperror(
+                                redoUrl,
+                                response,
+                                "An error occured while setting up the server's initial"
+                                    + "configuration. Here's the stack trace:<br/><br/><pre>"
+                                    + sw.toString()
+                                    + "</pre>");
+                            return;
+                        }
                         // generate the RSA keys for the server
+                        RSA rsa = new RSA();
                         // We're done!
                         doneSettingUp = true;
                         response.sendRedirect("/");
@@ -489,6 +594,45 @@ public class OpenGrooveRealmServer
         ServletHolder resource = new ServletHolder(
             new DefaultServlet());
         context.addServlet(resource, "/");
+    }
+    
+    private String getConfig(String key)
+        throws SQLException
+    {
+        PreparedStatement st = pdb
+            .prepareStatement("select value from " + pfix
+                + "configuration where name = ?");
+        st.setString(1, key);
+        ResultSet rs = st.executeQuery();
+        String value = null;
+        if (rs.next())
+            value = rs.getString("value");
+        st.close();
+        return value;
+    }
+    
+    private static void setConfig(String key, String value)
+        throws SQLException
+    {
+        PreparedStatement st;
+        if (getConfig(key) == null)
+        {
+            st = pdb.prepareStatement("insert into " + pfix
+                + "configuration "
+                + "(name,value) values (?,?)");
+            st.setString(1, key);
+            st.setString(2, value);
+        }
+        else
+        {
+            st = pdb.prepareStatement("update " + lfix
+                + "configuration set value = ?"
+                + " where name = ?");
+            st.setString(1, value);
+            st.setString(2, key);
+        }
+        st.executeUpdate();
+        st.close();
     }
     
 }

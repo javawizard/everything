@@ -1,4 +1,4 @@
-package org.opengroove.realmserver.web;
+package net.sf.opengroove.realmserver.web;
 
 import java.io.IOException;
 

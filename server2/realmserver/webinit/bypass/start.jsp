@@ -52,6 +52,9 @@ Unless noted, these settings <i>cannot</i> be changed later.</td></tr>
 <tr><td>Public server hostname<sup><a target="_blank"
 href="http://www.opengroove.org/help/public-server-hostname">?</a></sup>:</td>
 <td><input type="text" name="serverhostname" value="${param.serverhostname}"/></td></tr>
+<tr><td>Force all connections to use encryption<sup><a target="_blank"
+href="http://www.opengroove.org/help/force-encryption">?</a></sup>:</td><td><input
+type="checkbox" checked="checked" name="forceencryption" value="true"/></td>
 <tr><td colspan="2"><hr/></td></tr>
 <tr><td colspan="2">You're ready to set up your server! Click Setup to begin!
 <tr><td>&nbsp;</td><td><input type="submit" 

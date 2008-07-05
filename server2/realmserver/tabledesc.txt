@@ -28,7 +28,7 @@ users:
 This table holds the users that are signed up with this realm server.
 
 username varchar(64) The username of this user.
-password varchar(50) The hex representation of the SHA-512 of the password for this user. It should only need to be 32 chars long but for good measure it's longer
+password varchar(200) The hex representation of the SHA-512 of the password for this user. It should only need to be 128 chars long but it's longer just in case.
 
 
 
@@ -59,6 +59,7 @@ This table holds the computers that are registered for each user.
 
 username varchar(64) The username of the user that this computer is registered to
 computername varchar(64) The name of this computer
+type varchar(32) The type of computer. When a computer is created, it's type is specified, and it's type cannot change thereafter. Currently, the valid types are pc, pda, and mobile.
 
 
 

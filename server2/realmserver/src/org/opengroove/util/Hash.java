@@ -13,10 +13,14 @@ public class Hash
         return hexcode(encoder.finish());
     }
     
+    public static String hash(String string)
+    {
+        return hash(string.getBytes());
+    }
+    
     public static String hexcode(byte[] bytes)
     {
-        BigInteger i = new BigInteger(bytes);
-        return i.toString(16);
+        return new BigInteger(bytes).toString(16);
     }
     
 }
