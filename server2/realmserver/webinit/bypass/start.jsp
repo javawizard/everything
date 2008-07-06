@@ -2,6 +2,7 @@
 <body>
 <%if(request.getParameter("errormessage") != null){%>
 <b><span style='color: red'>${param.errormessage}</span></b><br/>
+<span style='color: red'>If you need help solving problems with setting up your server, visit <a href="http://www.opengroove.org/help/server-setup-problems">www.opengroove.org/help/server-setup-problems</a></span><br/>
 <%}%>
 <b>You've successfully started up an OpenGroove Realm Server. 
 We need to collect some information from you so that the server can be configured.

@@ -37,12 +37,14 @@ import org.mortbay.jetty.servlet.Context;
 import org.mortbay.jetty.servlet.DefaultServlet;
 import org.mortbay.jetty.servlet.FilterHolder;
 import org.mortbay.jetty.servlet.ServletHolder;
-import org.opengroove.util.Hash;
 
 import DE.knp.MicroCrypt.Sha512;
 
 import nanohttpd.NanoHTTPD;
 import nanohttpd.NanoHTTPD.Response;
+import net.sf.opengroove.realmserver.web.LoginFilter;
+import net.sf.opengroove.security.Hash;
+import net.sf.opengroove.security.RSA;
 import nl.captcha.servlet.DefaultCaptchaIml;
 
 public class OpenGrooveRealmServer
@@ -392,7 +394,8 @@ public class OpenGrooveRealmServer
                             return;
                         }
                         // store the configuration settings in the tables
-                        System.out.println("setting configuration settings...");
+                        System.out
+                            .println("setting configuration settings...");
                         try
                         {
                             setConfig("serverport",
@@ -431,8 +434,51 @@ public class OpenGrooveRealmServer
                             return;
                         }
                         // generate the RSA keys for the server
-                        RSA rsa = new RSA();
+                        try
+                        {
+                            System.out
+                                .println("generating rsa security keys for encryption...");
+                            RSA rsaEnc = new RSA(3072);
+                            setConfig("rsa-enc-pub", rsaEnc
+                                .getPublicKey()
+                                .toString(16));
+                            setConfig("rsa-enc-prv", rsaEnc
+                                .getPrivateKey().toString(
+                                    16));
+                            setConfig("rsa-enc-mod", rsaEnc
+                                .getModulus().toString(16));
+                            System.out
+                                .println("generating rsa security keys for signing...");
+                            RSA rsaSgn = new RSA(3072);
+                            setConfig("rsa-sgn-pub", rsaSgn
+                                .getPublicKey()
+                                .toString(16));
+                            setConfig("rsa-sgn-prv", rsaSgn
+                                .getPrivateKey().toString(
+                                    16));
+                            setConfig("rsa-sgn-mod", rsaSgn
+                                .getModulus().toString(16));
+                        }
+                        catch (Exception e)
+                        {
+                            StringWriter sw = new StringWriter();
+                            e
+                                .printStackTrace(new PrintWriter(
+                                    sw));
+                            setuperror(
+                                redoUrl,
+                                response,
+                                "An error occured while generating RSA security keys"
+                                    + "for the server. Here's the stack trace:<br/><br/><pre>"
+                                    + sw.toString()
+                                    + "</pre>");
+                            return;
+                        }
+                        config.store(new FileOutputStream(
+                            configFile), "");
                         // We're done!
+                        System.out
+                            .println("Server configuration complete.");
                         doneSettingUp = true;
                         response.sendRedirect("/");
                         return;
@@ -486,13 +532,44 @@ public class OpenGrooveRealmServer
             server.join();
             return;
         }
+        System.out
+            .println("loading configuration files...");
         config.load(new FileInputStream(configFile));
+        String pdbclass = config.getProperty("pdbclass");
+        String pdburl = config.getProperty("pdburl");
+        String pdbprefix = config.getProperty("pdbprefix");
+        String pdbusername = config
+            .getProperty("pdbusername");
+        String pdbpassword = config
+            .getProperty("pdbpassword");
+        String ldbclass = config.getProperty("ldbclass");
+        String ldburl = config.getProperty("ldburl");
+        String ldbprefix = config.getProperty("ldbprefix");
+        String ldbusername = config
+            .getProperty("ldbusername");
+        String ldbpassword = config
+            .getProperty("ldbpassword");
         // If we get here then OpenGroove has been set up, so get everything up
         // and running
-        System.out.println("loading web server");
-        webserver = new HandlerServer(53828);
-        while (true)
-            Thread.sleep(500);
+        System.out
+            .println("connecting to persistant database...");
+        Class.forName(pdbclass);
+        pfix = pdbprefix;
+        pdb = DriverManager.getConnection(pdburl,
+            pdbusername, pdbpassword);
+        System.out
+            .println("connecting to large database...");
+        Class.forName(ldbclass);
+        lfix = ldbprefix;
+        ldb = DriverManager.getConnection(ldburl,
+            ldbusername, ldbpassword);
+        System.out.println("loading web server...");
+        Server server = new Server(Integer.parseInt(config
+            .getProperty("webport")));
+        Context context = createServerContext(server, "web");
+        context.addFilter(new FilterHolder(new LoginFilter()), "/*", Context.ALL);
+        finishContext(context);
+        server.start();
     }
     
     protected static void runLongSql(String sql,
@@ -596,7 +673,7 @@ public class OpenGrooveRealmServer
         context.addServlet(resource, "/");
     }
     
-    private String getConfig(String key)
+    private static String getConfig(String key)
         throws SQLException
     {
         PreparedStatement st = pdb

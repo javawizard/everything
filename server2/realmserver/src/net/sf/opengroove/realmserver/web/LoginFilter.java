@@ -15,11 +15,9 @@ import javax.servlet.http.HttpSession;
 
 public class LoginFilter implements Filter
 {
-    private Connection db;
     
-    public LoginFilter(Connection db)
+    public LoginFilter()
     {
-        this.db = db;
     }
     
     @Override
@@ -40,13 +38,21 @@ public class LoginFilter implements Filter
         if (request.getRequestURI().equals("/login"))
         {
             login(request, response, chain);
+            return;
         }
-        if (request.getRequestURI().startsWith("/bypass/"))
+        else if (request.getRequestURI().equals("/logout"))
+        {
+            logout(request, response, chain);
+            return;
+        }
+        else if (request.getRequestURI().startsWith(
+            "/bypass/"))
         {
             routeNormally(request, response, chain);
             return;
         }
-        else if (session == null)
+        else if (session == null
+            || session.getAttribute("username") == null)
         {
             routeToLogin(request, response, chain);
             return;
@@ -54,10 +60,16 @@ public class LoginFilter implements Filter
         routeNormally(request, response, chain);
     }
     
+    private void logout(HttpServletRequest request,
+        HttpServletResponse response, FilterChain chain) throws IOException
+    {
+        request.getSession().removeAttribute("username");
+        response.sendRedirect("/");
+    }
+    
     private void login(HttpServletRequest request,
         HttpServletResponse response, FilterChain chain)
     {
-        // TODO Auto-generated method stub
         
     }
     
