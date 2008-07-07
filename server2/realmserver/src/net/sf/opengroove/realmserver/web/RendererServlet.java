@@ -3,6 +3,8 @@ package net.sf.opengroove.realmserver.web;
 import java.io.IOException;
 import java.io.StringReader;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
+import java.util.Map;
 import java.util.Properties;
 import java.util.Set;
 
@@ -16,28 +18,29 @@ public class RendererServlet extends HttpServlet
     /**
      * map of handlers by url component
      */
-    private HashMap<String, Handler> handlers = new HashMap<String, Handler>();
+    private Map<String, Handler> handlers = new LinkedHashMap<String, Handler>();
     /**
      * map of page paths (within web/pages) by url component
      */
-    private HashMap<String, String> pages = new HashMap<String, String>();
+    private Map<String, String> pages = new LinkedHashMap<String, String>();
     /**
      * map of parent tab names by page url
      */
-    private HashMap<String, String> parentTabs = new HashMap<String, String>();
+    private Map<String, String> parentTabs = new LinkedHashMap<String, String>();
     /**
      * map of tab url components by tab name
      */
-    private HashMap<String, String> tabs = new HashMap<String, String>();
+    private Map<String, String> tabs = new LinkedHashMap<String, String>();
     /**
      * the page url of the default page, or null if none was specified
      */
-    private String defaultPage = null;
+    private String defaultTab = null;
     
     public RendererServlet(String descriptor)
         throws IOException
     {
-        String[] components = descriptor.split("\\[tab\\]");
+        String[] components = descriptor
+            .split("\\[next\\]");
         for (String component : components)
         {
             component = component.trim();
@@ -59,10 +62,12 @@ public class RendererServlet extends HttpServlet
                     .length() - 5);
                 if (props.getProperty(url + ".default") != null)
                 {
-                    defaultPage = url;
+                    defaultTab = url;
                 }
                 String handlerClass = props.getProperty(url
                     + ".handler");
+                // System.out.println("adding page with url "
+                // + url + " and page " + page);
                 pages.put(url, page);
                 parentTabs.put(url, name);
                 if (handlerClass != null)
@@ -89,47 +94,69 @@ public class RendererServlet extends HttpServlet
         HttpServletResponse response)
         throws ServletException, IOException
     {
-        String url = request.getPathInfo();
-        if (url.length() > 0)
-            url = url.substring(1);
-        if (url.trim().equals("") && defaultPage != null)
+        try
         {
-            response.sendRedirect(request.getServletPath()
-                + "/" + defaultPage);
+            response.setHeader("Pragma", "no-cache");
+            response.setHeader("Expires", "0");
+            String url = request.getPathInfo();
+            if (url == null)
+                url = "/";
+            if (url.length() > 0)
+                url = url.substring(1);
+            url = url.trim();
+            // System.err.println("url is " + url);
+            if (url.trim().equals("") && defaultTab != null)
+            {
+                response.sendRedirect(request
+                    .getServletPath()
+                    + "/" + defaultTab);
+                return;
+            }
+            String page = pages.get(url);
+            if (page == null)
+            {
+                response.sendError(response.SC_NOT_FOUND);
+                return;
+            }
+            Handler handler = handlers.get(url);
+            HandlerContext context = new HandlerContext();
+            context.setRequest(request);
+            if (handler != null)
+                handler.handle(context);
+            if (context.getRedirect() != null)
+            {
+                response.sendRedirect(request
+                    .getServletPath()
+                    + "/" + context.getRedirect());
+                return;
+            }
+            HashMap<String, String> actions = new HashMap<String, String>();
+            for (String pageurl : pages.keySet())
+            {
+                actions.put(pageurl, request
+                    .getServletPath()
+                    + "/" + pageurl);
+            }
+            request.setAttribute("actions", actions);
+            // System.out.println("tabcount: " + tabs.size());
+            request.setAttribute("tabs", tabs);
+            request.setAttribute("pageName", parentTabs
+                .get(url));
+            request.setAttribute("selectedTab", parentTabs
+                .get(url));
+            request.setAttribute("rendererPath", request
+                .getServletPath());
+            if (context.getMessage() != null)
+                request.setAttribute("alertMessage",
+                    context.getMessage());
+            request.setAttribute("page", pages.get(url));
+            request.getRequestDispatcher("/renderer.jsp")
+                .forward(request, response);
         }
-        String page = pages.get(url);
-        if (page == null)
+        catch (Exception e)
         {
-            response.sendError(response.SC_NOT_FOUND);
-            return;
+            throw new ServletException(e);
         }
-        Handler handler = handlers.get(url);
-        HandlerContext context = new HandlerContext();
-        context.setRequest(request);
-        if (handler != null)
-            handler.handle(context);
-        if (context.getRedirect() != null)
-        {
-            response.sendRedirect(request.getServletPath()
-                + "/" + context.getRedirect());
-            return;
-        }
-        HashMap<String, String> actions = new HashMap<String, String>();
-        for (String pageurl : pages.keySet())
-        {
-            actions.put(pageurl, request.getServletPath()
-                + "/" + pages.get(pageurl));
-        }
-        request.setAttribute("actions", actions);
-        request.setAttribute("tabs", tabs);
-        request.setAttribute("pageName", parentTabs
-            .get(url));
-        request.setAttribute("selectedTab", parentTabs
-            .get(url));
-        request.setAttribute("rendererPath", request
-            .getServletPath());
-        request.getRequestDispatcher("/renderer.jsp")
-            .forward(request, response);
     }
     
 }

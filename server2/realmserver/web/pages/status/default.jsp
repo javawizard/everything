@@ -1,0 +1,9 @@
+<%@taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
+This page shows the current status of your OpenGroove Realm Server.<br/>
+<br/>
+<table border="0" cellspacing="0" cellpadding="3">
+<tr><td colspan="2"><b>Memory:</b></td></tr>
+<tr><td>Free memory:</td><td><%= Runtime.getRuntime().freeMemory()/1024 %>KB</td></tr>
+<tr><td>Total memory:</td><td><%= Runtime.getRuntime().totalMemory()/1024 %>KB</td></tr>
+<tr><td>Max memory:</td><td><%= Runtime.getRuntime().maxMemory()/1024 %>KB</td></tr>
+</table>

@@ -8,6 +8,7 @@ public class HandlerContext
 {
     private HttpServletRequest request;
     private String redirect;
+    private String message;
     private HashMap<String, Object> model = new HashMap<String, Object>();
     
     public HttpServletRequest getRequest()
@@ -28,5 +29,15 @@ public class HandlerContext
     public void setRedirect(String redirect)
     {
         this.redirect = redirect;
+    }
+
+    public String getMessage()
+    {
+        return message;
+    }
+
+    public void setMessage(String message)
+    {
+        this.message = message;
     }
 }

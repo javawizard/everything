@@ -47,6 +47,7 @@ import DE.knp.MicroCrypt.Sha512;
 import nanohttpd.NanoHTTPD;
 import nanohttpd.NanoHTTPD.Response;
 import net.sf.opengroove.realmserver.web.LoginFilter;
+import net.sf.opengroove.realmserver.web.RendererServlet;
 import net.sf.opengroove.security.Hash;
 import net.sf.opengroove.security.RSA;
 import nl.captcha.servlet.DefaultCaptchaIml;
@@ -572,7 +573,7 @@ public class OpenGrooveRealmServer
         writeFile(psqlmaptext, new File(
             "classes/persistantsqlmap.xml"));
         writeFile(lsqlmaptext, new File(
-            "classes/largesqlmap.txt"));
+            "classes/largesqlmap.xml"));
         System.out
             .println("connecting to persistant database...");
         Class.forName(pdbclass);
@@ -612,13 +613,21 @@ public class OpenGrooveRealmServer
             .buildSqlMapClient(new StringReader(
                 lsqlconfigtext));
         System.out.println("loading web server...");
-        Server server = new Server(Integer.parseInt(config
-            .getProperty("webport")));
+        Server server = new Server(Integer
+            .parseInt(getConfig("webport")));
         Context context = createServerContext(server, "web");
         context.addFilter(new FilterHolder(
             new LoginFilter()), "/*", Context.ALL);
+        context.addServlet(new ServletHolder(
+            new RendererServlet(readFile(new File(
+                "webconfig/layout.properties")))),
+            "/layout/*");
         finishContext(context);
         server.start();
+        Thread.sleep(300);// so that stdout and stderr don't get mixed up
+        System.out.println("loading opengroove server...");
+        System.out
+            .println("opengroove realm server is up and running.");
     }
     
     protected static void runLongSql(String sql,
@@ -706,7 +715,6 @@ public class OpenGrooveRealmServer
         Context context = new Context(server, "/",
             Context.SESSIONS);
         context.setResourceBase(webroot);
-        context.setErrorHandler(new DefaultErrorHandler());
         return context;
     }
     
