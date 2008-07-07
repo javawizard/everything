@@ -28,7 +28,7 @@ users:
 This table holds the users that are signed up with this realm server.
 
 username varchar(64) The username of this user.
-password varchar(200) The hex representation of the SHA-512 of the password for this user. It should only need to be 128 chars long but it's longer just in case.
+password varchar(200) The hex representation of the SHA-512 of the password for this user. It should only need to be 32 chars long but it's longer just in case.
 
 
 
@@ -59,7 +59,7 @@ This table holds the computers that are registered for each user.
 
 username varchar(64) The username of the user that this computer is registered to
 computername varchar(64) The name of this computer
-type varchar(32) The type of computer. When a computer is created, it's type is specified, and it's type cannot change thereafter. Currently, the valid types are pc, pda, and mobile.
+type varchar(32) The type of computer. When a computer is created, it's type is specified, and it's type cannot change thereafter. Currently, the valid types are pc (the normal OpenGroove Client), pda (for OpenGroove PDA clients), mobile (for OpenGroove mobile clients, these run on mobile phones and have an extremely reduced interface), and web (if a user signs on to their account using the web interface. only one user of this type is usually created).
 
 
 
@@ -72,13 +72,12 @@ This table holds the list of stored messages that are queued on this realm serve
 
 id varchar(128) The id of the message. It's recommended that this start with the userid of the sender of the message, to avoid message id collisions.
 sender varchar(64) The username (or userid if the message is from a user not on this realm server) of the message's sender.
-recipient varchar(64) The username (or userid if the message is from a user not on this realm server) of the message's intended recipient.
+recipient varchar(64) The username (or userid if the message is for a user not on this realm server) of the message's intended recipient.
 fromcomputer varchar(64)  The name of the computer that sent this message, the empty string if unavailable
 tocomputer varchar(64) The name of the computer that the message is intended for, the empty string to indicate that it's for all computers of the user specified. If a target computer is specified, all computers of that user will still have access to the message, but they can see that the message is not directly intended for them, and the message will be deleted if the intended computer soft-deletes it instead of requiring all online computers of that user to soft-delete it.
-hasdata boolean True if this message has any data, false otherwise. This is used because the large database (where message contents are stored) is volatile, so the server needs some way of distinguishing
-finalized boolean True if the message is finalized, false if it is not. If the sender is a user from a different realm server, then this should always be true. If a message is finalized, this means that the complete contents of the message have been uploaded and the message is ready to be sent off on it's way, or, if the recipient is on this realm server, that the message has been downloaded from the sending realm server and is available for download.
+finalized boolean True if the message is finalized, false if it is not. If a message is finalized, this means that the complete contents of the message have been uploaded and the message is ready to be sent off on it's way, or, if the recipient is on this realm server and the sender is not, that the message has been downloaded from the sending realm server and is available for download.
 accessed boolean True if the recipient of the message has accessed it at least once, usually indicating that it's trying to receive it.
-metadata varchar(1192) the metadata of the message, in the format of Properties.store(). The metadata itself should be restricted to 1024B, but java adds a bunch of comments and stuff into the properties file format so the extra space (1192 bytes) is to allow for that.
+metadata varchar(4096) the metadata of the message, in the format of Properties.store().
 
 
 

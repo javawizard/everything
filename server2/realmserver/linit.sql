@@ -6,7 +6,7 @@ fromcomputer varchar(64),
 tocomputer varchar(64),
 finalized boolean,
 accessed boolean,
-metadata varchar(1192)
+metadata varchar(4096)
 );
 
 create table $$prefix$$softdeletes (
