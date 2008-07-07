@@ -9,6 +9,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.PrintWriter;
+import java.io.StringReader;
 import java.io.StringWriter;
 import java.net.URLEncoder;
 import java.sql.Connection;
@@ -38,6 +39,9 @@ import org.mortbay.jetty.servlet.DefaultServlet;
 import org.mortbay.jetty.servlet.FilterHolder;
 import org.mortbay.jetty.servlet.ServletHolder;
 
+import com.ibatis.sqlmap.client.SqlMapClient;
+import com.ibatis.sqlmap.client.SqlMapClientBuilder;
+
 import DE.knp.MicroCrypt.Sha512;
 
 import nanohttpd.NanoHTTPD;
@@ -59,6 +63,8 @@ public class OpenGrooveRealmServer
      * The connection to the large database
      */
     public static Connection ldb;
+    public static SqlMapClient pdbclient;
+    public static SqlMapClient ldbclient;
     /**
      * The prefix string for tables in the persistant database
      */
@@ -74,8 +80,6 @@ public class OpenGrooveRealmServer
     private static boolean setupStillRunning = true;
     
     private static boolean setupStillAllowed = true;
-    
-    private static HandlerServer webserver;
     
     private static Properties config = new Properties();
     
@@ -532,6 +536,8 @@ public class OpenGrooveRealmServer
             server.join();
             return;
         }
+        // If we get here then OpenGroove has been set up, so get everything up
+        // and running
         System.out
             .println("loading configuration files...");
         config.load(new FileInputStream(configFile));
@@ -549,25 +555,68 @@ public class OpenGrooveRealmServer
             .getProperty("ldbusername");
         String ldbpassword = config
             .getProperty("ldbpassword");
-        // If we get here then OpenGroove has been set up, so get everything up
-        // and running
+        pfix = pdbprefix;
+        lfix = ldbprefix;
+        System.out
+            .println("loading database template files...");
+        // copy persistantsqlmap.xml and largesqlmap.xml to the classes folder
+        // with $$prefix$$ replaced as necessary
+        String psqlmaptext = readFile(new File(
+            "persistantsqlmap.xml"));
+        String lsqlmaptext = readFile(new File(
+            "largesqlmap.xml"));
+        psqlmaptext = psqlmaptext.replace("$$prefix$$",
+            pfix);
+        lsqlmaptext = lsqlmaptext.replace("$$prefix$$",
+            lfix);
+        writeFile(psqlmaptext, new File(
+            "classes/persistantsqlmap.xml"));
+        writeFile(lsqlmaptext, new File(
+            "classes/largesqlmap.txt"));
         System.out
             .println("connecting to persistant database...");
         Class.forName(pdbclass);
         pfix = pdbprefix;
         pdb = DriverManager.getConnection(pdburl,
             pdbusername, pdbpassword);
+        String psqlconfigtext = readFile(new File(
+            "persistantsql.xml"));
+        psqlconfigtext = psqlconfigtext.replace(
+            "$$driver$$", pdbclass);
+        psqlconfigtext = psqlconfigtext.replace("$$url$$",
+            pdburl);
+        psqlconfigtext = psqlconfigtext.replace(
+            "$$username$$", pdbusername);
+        psqlconfigtext = psqlconfigtext.replace(
+            "$$password$$", pdbpassword);
+        pdbclient = SqlMapClientBuilder
+            .buildSqlMapClient(new StringReader(
+                psqlconfigtext));
         System.out
             .println("connecting to large database...");
         Class.forName(ldbclass);
         lfix = ldbprefix;
         ldb = DriverManager.getConnection(ldburl,
             ldbusername, ldbpassword);
+        String lsqlconfigtext = readFile(new File(
+            "largesql.xml"));
+        lsqlconfigtext = lsqlconfigtext.replace(
+            "$$driver$$", ldbclass);
+        lsqlconfigtext = lsqlconfigtext.replace("$$url$$",
+            ldburl);
+        lsqlconfigtext = lsqlconfigtext.replace(
+            "$$username$$", ldbusername);
+        lsqlconfigtext = lsqlconfigtext.replace(
+            "$$password$$", ldbpassword);
+        ldbclient = SqlMapClientBuilder
+            .buildSqlMapClient(new StringReader(
+                lsqlconfigtext));
         System.out.println("loading web server...");
         Server server = new Server(Integer.parseInt(config
             .getProperty("webport")));
         Context context = createServerContext(server, "web");
-        context.addFilter(new FilterHolder(new LoginFilter()), "/*", Context.ALL);
+        context.addFilter(new FilterHolder(
+            new LoginFilter()), "/*", Context.ALL);
         finishContext(context);
         server.start();
     }

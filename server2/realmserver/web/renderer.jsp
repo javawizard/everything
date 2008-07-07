@@ -10,12 +10,13 @@
 <tr><td style="border-bottom: thin solid black">&nbsp;&nbsp;</td>
 <c:forEach items="${requestScope.tabs}" var="tab">
 <td style="border: thin solid black<c:if
-test="${tab.isSelected}">;border-bottom: none</c:if>">&nbsp;${tab.name}&nbsp;</td>
+test="${requestScope.selectedTab==tab.key}">;border-bottom: none</c:if>">
+&nbsp;<a href="${requestScope.rendererPath}/${tab.value}">${tab.key}</a>&nbsp;</td>
 <td style="border-bottom: thin solid black">&nbsp;&nbsp;</td>
 </c:forEach>
 </tr>
 </table></td>
-<td style="border-bottom: small solid black"><a href="logout">Log out</a></td>
+<td style="border-bottom: small solid black"><a href="/logout">Log out</a></td>
 </tr>
 <tr><td style="border-right: small solid black">&nbsp;</td>
 <td><jsp:include page="${requestScope.page}"/></td>
