@@ -4,8 +4,14 @@ sender varchar(64),
 recipient varchar(64),
 fromcomputer varchar(64),
 tocomputer varchar(64),
+maxchunks int,
+maxchunksize int,
+lifecycle int,
+lifecycleprogress int,
+lifecycletotal int,
+needslifecycleupdate boolean,
 finalized boolean,
-accessed boolean,
+approved boolean,
 metadata varchar(4096)
 );
 

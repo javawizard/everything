@@ -28,7 +28,17 @@ users:
 This table holds the users that are signed up with this realm server.
 
 username varchar(64) The username of this user.
-password varchar(200) The hex representation of the SHA-512 of the password for this user. It should only need to be 32 chars long but it's longer just in case.
+password varchar(200) The hex representation of the SHA-512 of the password for this user. It should only need to be 128 chars long but it's longer just in case.
+publiclylisted boolean true if the user should be listed in the public directory (in which case results from searchusers could return this user as a result), false otherwise.
+
+
+
+userquotas:
+
+This table holds the quotas that apply to a user.
+
+key varchar(32) the name of the quota
+value int the value of the quota
 
 
 
@@ -60,6 +70,28 @@ This table holds the computers that are registered for each user.
 username varchar(64) The username of the user that this computer is registered to
 computername varchar(64) The name of this computer
 type varchar(32) The type of computer. When a computer is created, it's type is specified, and it's type cannot change thereafter. Currently, the valid types are pc (the normal OpenGroove Client), pda (for OpenGroove PDA clients), mobile (for OpenGroove mobile clients, these run on mobile phones and have an extremely reduced interface), and web (if a user signs on to their account using the web interface. only one user of this type is usually created).
+lastonline bigint the time that this computer was last online, in milliseconds since january 1, 1970 utc
+
+
+
+subscriptions:
+
+This table holds the list of subscriptions that users have created.
+
+type varchar(64) the type of subscription.
+username varchar(64) the username of the user who created this subscription.
+onusername varchar(64) the username, or userid if the user is not of this realm server, of the user who's changes are to be subscribed to. If the subscription type is not for a particular user, then this is the empty string.
+properties varchar(1024) the properties of this subscription, specific to the subscription type, in the properties file format.
+
+
+
+imessagequotas
+
+This table contains the quotas applied by a user on how many imessages may be received from another user.
+
+username varchar(64) the username of the user that has applied the quota
+onusername varchar(64) the username or userid (if the user is not of this realm server) that the quota applies to
+messagecount int the number of messages per minute that onusername can send to username
 
 
 
@@ -75,8 +107,14 @@ sender varchar(64) The username (or userid if the message is from a user not on 
 recipient varchar(64) The username (or userid if the message is for a user not on this realm server) of the message's intended recipient.
 fromcomputer varchar(64)  The name of the computer that sent this message, the empty string if unavailable
 tocomputer varchar(64) The name of the computer that the message is intended for, the empty string to indicate that it's for all computers of the user specified. If a target computer is specified, all computers of that user will still have access to the message, but they can see that the message is not directly intended for them, and the message will be deleted if the intended computer soft-deletes it instead of requiring all online computers of that user to soft-delete it.
+maxchunks int The maximum number of chunks that will be in this message. This is used for space allocation.
+maxchunksize int The maximum chunk size, in bytes, for all chunks that will be in this message. This is used for space allocation.
+lifecycle int The message's current lifecycle status.
+lifecycleprogress int for lifecycle statuses that have a total progress amount so far, this is the progress so far.
+lifecycletotal int for lifecycle statuses that have a total progress amount so far, this is the progress level at which the task will be complete.
+needslifecycleupdate boolean true if info about the current lifecycle has changed and updates need to be sent to the sender of the message.
 finalized boolean True if the message is finalized, false if it is not. If a message is finalized, this means that the complete contents of the message have been uploaded and the message is ready to be sent off on it's way, or, if the recipient is on this realm server and the sender is not, that the message has been downloaded from the sending realm server and is available for download.
-accessed boolean True if the recipient of the message has accessed it at least once, usually indicating that it's trying to receive it.
+approved boolean true if the user has approved the message for receiving, false if they haven't. If the message is from this realm server, then the message is counted towards the sender's message quota until approved it set to true by the receiver, at which point it's counted towards the receiver's quota. If the message is not from this realm server, and if this realm server is the sending realm server, then this is set to true when the receiving realm server tells this realm server that it is willing to receive the message now. If the message is not from this realm server, and if this realm server is the receiving realm server, this is set to true when the recipient of the message approves it, at which point the message can be downloaded from the sending realm server.
 metadata varchar(4096) the metadata of the message, in the format of Properties.store().
 
 

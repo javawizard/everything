@@ -2,15 +2,21 @@ package net.sf.opengroove.realmserver;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
+import java.io.DataInputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
+import java.io.FilterInputStream;
+import java.io.FilterOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.PrintWriter;
 import java.io.StringReader;
 import java.io.StringWriter;
+import java.math.BigInteger;
+import java.net.ServerSocket;
+import java.net.Socket;
 import java.net.URLEncoder;
 import java.sql.Connection;
 import java.sql.DriverManager;
@@ -18,9 +24,17 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.AbstractQueue;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Properties;
+import java.util.concurrent.BlockingQueue;
+import java.util.concurrent.LinkedBlockingQueue;
+import java.util.concurrent.ScheduledThreadPoolExecutor;
+import java.util.concurrent.SynchronousQueue;
+import java.util.concurrent.ThreadPoolExecutor;
+import java.util.concurrent.TimeUnit;
 
 import javax.servlet.Filter;
 import javax.servlet.FilterChain;
@@ -42,6 +56,7 @@ import org.mortbay.jetty.servlet.ServletHolder;
 import com.ibatis.sqlmap.client.SqlMapClient;
 import com.ibatis.sqlmap.client.SqlMapClientBuilder;
 
+import DE.knp.MicroCrypt.Aes256;
 import DE.knp.MicroCrypt.Sha512;
 
 import nanohttpd.NanoHTTPD;
@@ -54,6 +69,7 @@ import nl.captcha.servlet.DefaultCaptchaIml;
 
 public class OpenGrooveRealmServer
 {
+    
     protected static final File HTTPD_RES_FOLDER = new File(
         "httpdres");
     /**
@@ -85,6 +101,362 @@ public class OpenGrooveRealmServer
     private static Properties config = new Properties();
     
     protected static boolean doneSettingUp = false;
+    public static ServerSocket serverSocket;
+    private static ArrayList<ConnectionHandler> connections = new ArrayList<ConnectionHandler>();
+    private static BigInteger rsaEncryptionPublicKey;
+    private static BigInteger rsaEncryptionModulus;
+    private static BigInteger rsaEncryptionPrivateKey;
+    private static BigInteger rsaSignaturePublicKey;
+    private static BigInteger rsaSignatureModulus;
+    private static BigInteger rsaSignaturePrivateKey;
+    
+    public static final ScheduledThreadPoolExecutor internalTasks = new ScheduledThreadPoolExecutor(
+        15);
+    
+    public static final ThreadPoolExecutor tasks = new ThreadPoolExecutor(
+        100, 300, 20, TimeUnit.SECONDS,
+        new LinkedBlockingQueue<Runnable>(10000));
+    /**
+     * The first thing sent by all clients when they connect, followed by a
+     * newline. This is so that an HTTP server could run on the same port as an
+     * OpenGroove server and the server would be able to distinguish between
+     * HTTP connections and OpenGroove connections.
+     */
+    public static final String CONNECTION_HEADER_TEXT = "OpenGroove";
+    
+    public static class TimedInputStream extends
+        FilterInputStream
+    {
+        private long lastTime;
+        
+        protected TimedInputStream(InputStream in)
+        {
+            super(in);
+            lastTime = System.currentTimeMillis();
+        }
+        
+        @Override
+        public int read() throws IOException
+        {
+            // TODO Auto-generated method stub
+            int i = super.read();
+            lastTime = System.currentTimeMillis();
+            return i;
+        }
+        
+        @Override
+        public int read(byte[] b, int off, int len)
+            throws IOException
+        {
+            int i = super.read(b, off, len);
+            lastTime = System.currentTimeMillis();
+            return i;
+        }
+        
+        @Override
+        public int read(byte[] b) throws IOException
+        {
+            // TODO Auto-generated method stub
+            int i = super.read(b);
+            lastTime = System.currentTimeMillis();
+            return i;
+        }
+        
+        public long getLastTime()
+        {
+            return lastTime;
+        }
+        
+        public void resetTime()
+        {
+            lastTime = System.currentTimeMillis();
+        }
+        
+    }
+    
+    public static class TimedOutputStream extends
+        FilterOutputStream
+    {
+        @Override
+        public void write(byte[] b, int off, int len)
+            throws IOException
+        {
+            // TODO Auto-generated method stub
+            super.write(b, off, len);
+            lastTime = System.currentTimeMillis();
+        }
+        
+        @Override
+        public void write(byte[] b) throws IOException
+        {
+            // TODO Auto-generated method stub
+            super.write(b);
+            lastTime = System.currentTimeMillis();
+        }
+        
+        @Override
+        public void write(int b) throws IOException
+        {
+            // TODO Auto-generated method stub
+            super.write(b);
+            lastTime = System.currentTimeMillis();
+        }
+        
+        protected TimedOutputStream(OutputStream out)
+        {
+            super(out);
+            lastTime = System.currentTimeMillis();
+        }
+        
+        private long lastTime;
+        
+        public long getLastTime()
+        {
+            return lastTime;
+        }
+        
+        public void resetTime()
+        {
+            lastTime = System.currentTimeMillis();
+        }
+        
+    }
+    
+    public static class ConnectionHandler extends Thread
+    {
+        private Socket socket;
+        private InputStream internalInputStream;
+        private TimedInputStream in;
+        private OutputStream internalOutputStream;
+        private TimedOutputStream out;
+        private PacketSpooler spooler;
+        private int allowedIdleMilliseconds = 10000;
+        private byte[] securityKeyBytes;
+        private Aes256 securityKey;
+        private boolean completedHandshake;
+        
+        public long getLastInTime()
+        {
+            return in.getLastTime();
+        }
+        
+        public long getLastOutTime()
+        {
+            return out.getLastTime();
+        }
+        
+        public ConnectionHandler(Socket socket)
+            throws IOException
+        {
+            this.socket = socket;
+            internalInputStream = socket.getInputStream();
+            in = new TimedInputStream(internalInputStream);
+            internalOutputStream = socket.getOutputStream();
+            out = new TimedOutputStream(
+                internalOutputStream);
+        }
+        
+        /**
+         * sends a packet to this connection's client. If a security handshake
+         * has not occured yet, an IllegalStateException is thrown.
+         * 
+         * @throws IOException
+         */
+        public boolean sendPacketTo(Packet packet)
+            throws IOException
+        {
+            if (!completedHandshake)
+                throw new IllegalStateException(
+                    "The handshake has not yet completed.");
+            return spooler.send(packet);
+        }
+        
+        public void run()
+        {
+            try
+            {
+                spooler = new PacketSpooler(out, 100);
+                spooler.start();
+                allowedIdleMilliseconds = 10000;
+                in.resetTime();
+                out.resetTime();
+                // Ok, we've set up the connection. Now it's time to do the
+                // handshake.
+                String s = "";
+                for (int i = 0; i < 30; i++)
+                {
+                    int read = in.read();
+                    s += (char) read;
+                    if ((read == '\r' || read == '\n')
+                        && i != 0)
+                        break;
+                }
+                s = s.trim();
+                if (!s.equalsIgnoreCase("OpenGroove"))
+                {
+                    // Incorrect connection, probably an HTTP client or
+                    // something
+                    in.close();
+                    out.close();
+                    connections.remove(this);
+                    return;
+                }
+                // Ok, correct header, now we send back our header
+                out.write("OpenGrooveServer\n".getBytes());
+                out.flush();
+                // The next thing coming from the client should be the hexcoded
+                // security key (possibly preceded by a newline, since the code
+                // that
+                // read the header doesn't check for a newline if it receives a
+                // carriage return)
+                s = "";
+                for (int i = 0; i < 1024; i++)
+                {
+                    int read = in.read();
+                    s += (char) read;
+                    if ((read == '\r' || read == '\n')
+                        && i != 0)
+                        break;
+                }
+                s = s.trim();
+                // this should be the aes-256 key to use, encoded using rsa.
+                // Only the first 32 bytes of the decoded key are significant
+                // and the rest are just random garbage used as secure padding.
+                BigInteger keyEncPub = new BigInteger(s, 16);
+                BigInteger keyDecrypted = RSA.decrypt(
+                    rsaEncryptionPrivateKey,
+                    rsaEncryptionModulus, keyEncPub);
+                byte[] keyWithPadding = keyDecrypted
+                    .toByteArray();
+                securityKeyBytes = new byte[32];
+                System.arraycopy(keyWithPadding, 0,
+                    securityKeyBytes, 0, 32);
+                securityKey = new Aes256(securityKeyBytes);
+                // we now have the aes-256 security key. Now the client will
+                // send us a random number encrypted with the server's rsa
+                // public key, which we must decrypt using our private key and
+                // send back encrypted with aes.
+                s = "";
+                for (int i = 0; i < 1024; i++)
+                {
+                    int read = in.read();
+                    s += (char) read;
+                    if ((read == '\r' || read == '\n')
+                        && i != 0)
+                        break;
+                }
+                s = s.trim();
+                BigInteger challengeRandomEncInteger = new BigInteger(
+                    s, 16);
+                BigInteger challengeRandomInteger = RSA
+                    .decrypt(rsaEncryptionPrivateKey,
+                        rsaEncryptionModulus,
+                        challengeRandomEncInteger);
+                byte[] challengeRandomBytes = new byte[16];
+                System.arraycopy(challengeRandomInteger
+                    .toByteArray(), 0,
+                    challengeRandomBytes, 0, 16);
+                byte[] challengeRandomAes = new byte[16];
+                securityKey.encrypt(challengeRandomBytes,
+                    0, challengeRandomAes, 0);
+                BigInteger challengeRandomAesInteger = new BigInteger(
+                    challengeRandomAes);
+                out.write((""
+                    + challengeRandomAesInteger
+                        .toString(16) + "\n").getBytes());
+                out.flush();
+                // The handshake is now complete. Now we start listening for
+                // packets (using Crypto.dec), and deal with them accordingly.
+                //
+                // TODO: PICK UP HERE JULY 10, 2008
+                // consider using a hash map to map authenticated users and
+                // computers to their connections
+                // have a scheduled thread that watchdogs all connections, and
+                // one that removes dead connections from the username and
+                // computername hash maps
+            }
+            catch (Exception e)
+            {
+                System.err
+                    .println("Connection handler closing due to exception, "
+                        + "stack trace follows");
+                e.printStackTrace();
+            }
+            finally
+            {
+                connections.remove(this);
+                try
+                {
+                    spooler.close();
+                    socket.close();
+                }
+                catch (Exception e)
+                {
+                    e.printStackTrace();
+                }
+            }
+        }
+    }
+    
+    /**
+     * A class that maintains a queue of Packet objects, and streams them to the
+     * output stream specified as the output stream allows.
+     * 
+     * @author Alexander Boyd
+     * 
+     */
+    public static class PacketSpooler extends Thread
+    {
+        private OutputStream out;
+        private BlockingQueue<Packet> queue;
+        
+        public PacketSpooler(OutputStream out, int queueSize)
+        {
+            this.out = out;
+            this.queue = new LinkedBlockingQueue<Packet>(
+                queueSize);
+        }
+        
+        public synchronized boolean send(Packet packet)
+        {
+            return queue.offer(packet);
+        }
+        
+        private boolean closed = false;
+        
+        public void close() throws IOException
+        {
+            closed = true;
+            out.close();
+        }
+        
+        public void run()
+        {
+            try
+            {
+                while (true)
+                {
+                    Packet packet = queue.take();
+                    
+                }
+            }
+            catch (Exception e)
+            {
+                if (closed)
+                {
+                    System.out
+                        .println("Closed packet spooler with exception");
+                }
+                else
+                {
+                    e.printStackTrace();
+                    System.out
+                        .println("Closed packet spooler with the above abnormal exception");
+                }
+            }
+        }
+        
+    }
     
     /**
      * @param args
@@ -625,9 +997,89 @@ public class OpenGrooveRealmServer
         finishContext(context);
         server.start();
         Thread.sleep(300);// so that stdout and stderr don't get mixed up
-        System.out.println("loading opengroove server...");
+        System.out.println("loading OpenGroove server...");
+        rsaEncryptionPublicKey = new BigInteger(
+            getConfig("rsa-enc-pub"), 16);
+        rsaEncryptionModulus = new BigInteger(
+            getConfig("rsa-enc-mod"), 16);
+        rsaEncryptionPrivateKey = new BigInteger(
+            getConfig("rsa-enc-prv"), 16);
+        rsaSignaturePublicKey = new BigInteger(
+            getConfig("rsa-sgn-pub"), 16);
+        rsaSignatureModulus = new BigInteger(
+            getConfig("rsa-sgn-mod"), 16);
+        rsaSignaturePrivateKey = new BigInteger(
+            getConfig("rsa-sgn-prv"), 16);
+        serverSocket = new ServerSocket(Integer
+            .parseInt(getConfig("serverport")));
+        tasks.prestartAllCoreThreads();
+        internalTasks.prestartAllCoreThreads();
         System.out
-            .println("opengroove realm server is up and running.");
+            .println("OpenGroove Realm Server is up and running.");
+        while (!serverSocket.isClosed())
+        {
+            try
+            {
+                Socket socket = serverSocket.accept();
+                ConnectionHandler c = new ConnectionHandler(
+                    socket);
+                connections.add(c);
+                c.start();
+            }
+            catch (Exception e)
+            {
+                e.printStackTrace();
+                Thread.sleep(20);
+            }
+        }
+        System.out
+            .println("OpenGroove Realm Server is shutting down...");
+        System.out.println("Shutting down task pool...");
+        tasks.shutdown();
+        for (int i = 0; i < 6; i++)
+        {
+            if (tasks.awaitTermination(5, TimeUnit.SECONDS))
+            {
+                break;
+            }
+            System.out.println("waited " + ((i + 1) * 5)
+                + " seconds, waiting "
+                + ((6 * 5) - ((i + 1) * 5))
+                + " more seconds");
+            if (i == 5)
+                System.out
+                    .println("Forcing shutdown of task pool...");
+        }
+        tasks.shutdownNow();
+        System.out.println("Disconnecting all users...");
+        System.out
+            .println("Shutting down internal pool...");
+        internalTasks.shutdown();
+        for (int i = 0; i < 6; i++)
+        {
+            if (internalTasks.awaitTermination(5,
+                TimeUnit.SECONDS))
+            {
+                break;
+            }
+            System.out.println("waited " + ((i + 1) * 5)
+                + " seconds, waiting "
+                + ((6 * 5) - ((i + 1) * 5))
+                + " more seconds");
+            if (i == 5)
+                System.out
+                    .println("Forcing shutdown of internal pool...");
+        }
+        internalTasks.shutdownNow();
+        System.out
+            .println("Closing connection to persistant database...");
+        pdb.close();
+        System.out
+            .println("Closing connection to large database...");
+        ldb.close();
+        System.out
+            .println("OpenGroove Realm Server has successfully shut down.");
+        Thread.sleep(1000);
     }
     
     protected static void runLongSql(String sql,

@@ -1153,7 +1153,7 @@ public class OldConvergiaServer extends Thread
     {
         System.out.println("InTouch 3 Server, version "
             + version);
-        System.out.println("Copyright 2007 Alexander Boyd");
+        System.out.println("Copyright 2007-2008 Alexander Boyd");
         System.out
             .println("Send all questions and comments to javawizard@trivergia.com");
         System.out.println();
