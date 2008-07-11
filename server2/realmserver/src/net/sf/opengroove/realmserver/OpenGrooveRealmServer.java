@@ -28,6 +28,8 @@ import java.util.AbstractQueue;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.HashMap;
+import java.util.Hashtable;
 import java.util.Properties;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
@@ -63,12 +65,32 @@ import nanohttpd.NanoHTTPD;
 import nanohttpd.NanoHTTPD.Response;
 import net.sf.opengroove.realmserver.web.LoginFilter;
 import net.sf.opengroove.realmserver.web.RendererServlet;
+import net.sf.opengroove.security.Crypto;
 import net.sf.opengroove.security.Hash;
 import net.sf.opengroove.security.RSA;
 import nl.captcha.servlet.DefaultCaptchaIml;
 
 public class OpenGrooveRealmServer
 {
+    
+    public static abstract class Command
+    {
+        private int mps;
+        
+        public Command(String commandName, int maxPacketSize)
+        {
+            this.mps = maxPacketSize;
+            commands.put(commandName.toLowerCase(), this);
+        }
+        
+        public int maxPacketSize()
+        {
+            return this.mps;
+        }
+        
+        public abstract void handle(String packetId,
+            InputStream data, ConnectionHandler connection);
+    }
     
     protected static final File HTTPD_RES_FOLDER = new File(
         "httpdres");
@@ -103,12 +125,12 @@ public class OpenGrooveRealmServer
     protected static boolean doneSettingUp = false;
     public static ServerSocket serverSocket;
     private static ArrayList<ConnectionHandler> connections = new ArrayList<ConnectionHandler>();
-    private static BigInteger rsaEncryptionPublicKey;
-    private static BigInteger rsaEncryptionModulus;
-    private static BigInteger rsaEncryptionPrivateKey;
-    private static BigInteger rsaSignaturePublicKey;
-    private static BigInteger rsaSignatureModulus;
-    private static BigInteger rsaSignaturePrivateKey;
+    public static BigInteger rsaEncryptionPublicKey;
+    public static BigInteger rsaEncryptionModulus;
+    public static BigInteger rsaEncryptionPrivateKey;
+    public static BigInteger rsaSignaturePublicKey;
+    public static BigInteger rsaSignatureModulus;
+    public static BigInteger rsaSignaturePrivateKey;
     
     public static final ScheduledThreadPoolExecutor internalTasks = new ScheduledThreadPoolExecutor(
         15);
@@ -222,6 +244,8 @@ public class OpenGrooveRealmServer
         
     }
     
+    public static HashMap<String, Command> commands = new HashMap<String, Command>();
+    
     public static class ConnectionHandler extends Thread
     {
         private Socket socket;
@@ -230,10 +254,12 @@ public class OpenGrooveRealmServer
         private OutputStream internalOutputStream;
         private TimedOutputStream out;
         private PacketSpooler spooler;
-        private int allowedIdleMilliseconds = 10000;
+        public int allowedIdleMilliseconds = 10000;
         private byte[] securityKeyBytes;
-        private Aes256 securityKey;
+        public Aes256 securityKey;
         private boolean completedHandshake;
+        public String username;
+        public String computerName;
         
         public long getLastInTime()
         {
@@ -271,6 +297,47 @@ public class OpenGrooveRealmServer
             return spooler.send(packet);
         }
         
+        public boolean sendEncryptedPacket(String id,
+            String command, String responseStatus,
+            byte[] message)
+        {
+            try
+            {
+                ByteArrayOutputStream baos = new ByteArrayOutputStream();
+                baos.write(id.getBytes());
+                baos.write(' ');
+                baos.write(command.getBytes());
+                baos.write(' ');
+                baos.write(responseStatus.getBytes());
+                baos.write(' ');
+                baos.write(message);
+                return sendEncryptedPacket(baos
+                    .toByteArray());
+            }
+            catch (Exception e)
+            {
+                throw new RuntimeException(e);
+            }
+        }
+        
+        public boolean sendEncryptedPacket(byte[] packet)
+        {
+            ByteArrayOutputStream baos = new ByteArrayOutputStream();
+            try
+            {
+                Crypto.enc(securityKey, packet, baos);
+                return sendPacketTo(new Packet(
+                    new ByteArrayInputStream(baos
+                        .toByteArray())));
+            }
+            catch (IOException e)
+            {
+                // TODO Auto-generated catch block
+                e.printStackTrace();
+                throw new RuntimeException(e);
+            }
+        }
+        
         public void run()
         {
             try
@@ -290,16 +357,17 @@ public class OpenGrooveRealmServer
                     if ((read == '\r' || read == '\n')
                         && i != 0)
                         break;
+                    if (i == 29)
+                        throw new ProtocolMismatchException(
+                            "too much initialization data sent by the client");
                 }
                 s = s.trim();
                 if (!s.equalsIgnoreCase("OpenGroove"))
                 {
                     // Incorrect connection, probably an HTTP client or
                     // something
-                    in.close();
-                    out.close();
-                    connections.remove(this);
-                    return;
+                    throw new ProtocolMismatchException(
+                        "Invalid header string sent by client");
                 }
                 // Ok, correct header, now we send back our header
                 out.write("OpenGrooveServer\n".getBytes());
@@ -317,6 +385,9 @@ public class OpenGrooveRealmServer
                     if ((read == '\r' || read == '\n')
                         && i != 0)
                         break;
+                    if (i == 1023)
+                        throw new ProtocolMismatchException(
+                            "too much initialization data sent by the client");
                 }
                 s = s.trim();
                 // this should be the aes-256 key to use, encoded using rsa.
@@ -344,6 +415,9 @@ public class OpenGrooveRealmServer
                     if ((read == '\r' || read == '\n')
                         && i != 0)
                         break;
+                    if (i == 1023)
+                        throw new ProtocolMismatchException(
+                            "too much initialization data sent by the client");
                 }
                 s = s.trim();
                 BigInteger challengeRandomEncInteger = new BigInteger(
@@ -365,8 +439,28 @@ public class OpenGrooveRealmServer
                     + challengeRandomAesInteger
                         .toString(16) + "\n").getBytes());
                 out.flush();
+                for (int i = 0; i < 5; i++)
+                {
+                    if (in.read() == 'c')
+                        break;
+                    if (i == 4)
+                        throw new ProtocolMismatchException(
+                            "no terminating 'c' at end of handshake");
+                }
                 // The handshake is now complete. Now we start listening for
                 // packets (using Crypto.dec), and deal with them accordingly.
+                // Keep attempting to receive packets until an exception is
+                // thrown. (when the quit command is called, the command class
+                // closes the connection, so an exception will be thrown on the
+                // next read)
+                while ((!socket.isClosed())
+                    && (!socket.isInputShutdown())
+                    && (!socket.isOutputShutdown()))
+                {
+                    byte[] packet = Crypto.dec(securityKey,
+                        in, 65535);
+                    processIncomingPacket(packet);
+                }
                 //
                 // TODO: PICK UP HERE JULY 10, 2008
                 // consider using a hash map to map authenticated users and
@@ -395,6 +489,53 @@ public class OpenGrooveRealmServer
                     e.printStackTrace();
                 }
             }
+        }
+        
+        public void processIncomingPacket(byte[] packet)
+            throws IOException
+        {
+            int firstSpaceIndex = -1;
+            for (int i = 0; i < 64 && i < packet.length; i++)
+            {
+                if (packet[i] == ' ')
+                {
+                    firstSpaceIndex = i;
+                    break;
+                }
+            }
+            if (firstSpaceIndex == -1)
+                throw new ProtocolMismatchException(
+                    "no ascii"
+                        + " space in the first 64 positions");
+            int secondSpaceIndex = -1;
+            for (int i = firstSpaceIndex + 1; i < 128
+                && i < packet.length; i++)
+            {
+                if (packet[i] == ' ')
+                {
+                    secondSpaceIndex = i;
+                    break;
+                }
+            }
+            if (secondSpaceIndex == -1)
+                throw new ProtocolMismatchException(
+                    "no ascii"
+                        + " space after the first space in the first 128 characters");
+            String packetId = new String(packet, 0,
+                firstSpaceIndex);
+            String commandName = new String(packet,
+                firstSpaceIndex + 1, secondSpaceIndex);
+            ByteArrayInputStream data = new ByteArrayInputStream(
+                packet, secondSpaceIndex + 1, packet.length
+                    - (secondSpaceIndex + 1));
+            // In the future, the packet could be cached to the file system if
+            // it's larger than, say, 2048 bytes, to avoid memory errors
+            Command command = commands.get(commandName
+                .toLowerCase());
+            if (command == null)
+                throw new ProtocolMismatchException(
+                    "invalid command received from client");
+            command.handle(packetId, data, this);
         }
     }
     
@@ -994,6 +1135,23 @@ public class OpenGrooveRealmServer
             new RendererServlet(readFile(new File(
                 "webconfig/layout.properties")))),
             "/layout/*");
+        context.addServlet(new ServletHolder(
+            new HttpServlet()
+            {
+                
+                @Override
+                protected void service(
+                    HttpServletRequest req,
+                    HttpServletResponse resp)
+                    throws ServletException, IOException
+                {
+                    resp.setHeader("Content-type",
+                        "application/octet-stream");
+                    req.getRequestDispatcher(
+                        "/keydownload.jsp").forward(req,
+                        resp);
+                }
+            }), "/serverkey.ogvs");
         finishContext(context);
         server.start();
         Thread.sleep(300);// so that stdout and stderr don't get mixed up
@@ -1012,6 +1170,7 @@ public class OpenGrooveRealmServer
             getConfig("rsa-sgn-prv"), 16);
         serverSocket = new ServerSocket(Integer
             .parseInt(getConfig("serverport")));
+        loadCommands();
         tasks.prestartAllCoreThreads();
         internalTasks.prestartAllCoreThreads();
         System.out
@@ -1080,6 +1239,35 @@ public class OpenGrooveRealmServer
         System.out
             .println("OpenGroove Realm Server has successfully shut down.");
         Thread.sleep(1000);
+        System.exit(0);
+    }
+    
+    private static void loadCommands()
+    {
+        new Command("authenticate", 512)
+        {
+            
+            @Override
+            public void handle(String packetId,
+                InputStream data,
+                ConnectionHandler connection)
+            {
+                // TODO Auto-generated method stub
+                
+            }
+        };
+        new Command("ping", 128)
+        {
+            
+            @Override
+            public void handle(String packetId,
+                InputStream data,
+                ConnectionHandler connection)
+            {
+                connection.sendEncryptedPacket(packetId,
+                    "ping", "OK", new byte[0]);
+            }
+        };
     }
     
     protected static void runLongSql(String sql,
