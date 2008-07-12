@@ -1,5 +1,6 @@
 package net.sf.opengroove.realmserver;
 
+import java.io.BufferedReader;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.DataInputStream;
@@ -18,6 +19,7 @@ import java.math.BigInteger;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.net.URLEncoder;
+import java.security.SecureRandom;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
@@ -26,10 +28,12 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.AbstractQueue;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Hashtable;
+import java.util.Map;
 import java.util.Properties;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
@@ -63,6 +67,8 @@ import DE.knp.MicroCrypt.Sha512;
 
 import nanohttpd.NanoHTTPD;
 import nanohttpd.NanoHTTPD.Response;
+import net.sf.opengroove.realmserver.data.model.Computer;
+import net.sf.opengroove.realmserver.data.model.User;
 import net.sf.opengroove.realmserver.web.LoginFilter;
 import net.sf.opengroove.realmserver.web.RendererServlet;
 import net.sf.opengroove.security.Crypto;
@@ -72,6 +78,7 @@ import nl.captcha.servlet.DefaultCaptchaIml;
 
 public class OpenGrooveRealmServer
 {
+    public static final SecureRandom random = new SecureRandom();
     
     public static abstract class Command
     {
@@ -89,8 +96,11 @@ public class OpenGrooveRealmServer
         }
         
         public abstract void handle(String packetId,
-            InputStream data, ConnectionHandler connection);
+            InputStream data, ConnectionHandler connection)
+            throws Exception;
     }
+    
+    private static Map<String, Map<String, ConnectionHandler>> connectionsByAuth = new Hashtable<String, Map<String, ConnectionHandler>>();
     
     protected static final File HTTPD_RES_FOLDER = new File(
         "httpdres");
@@ -145,6 +155,8 @@ public class OpenGrooveRealmServer
      * HTTP connections and OpenGroove connections.
      */
     public static final String CONNECTION_HEADER_TEXT = "OpenGroove";
+    
+    protected static final byte[] EMPTY = new byte[0];
     
     public static class TimedInputStream extends
         FilterInputStream
@@ -370,7 +382,9 @@ public class OpenGrooveRealmServer
                         "Invalid header string sent by client");
                 }
                 // Ok, correct header, now we send back our header
-                out.write("OpenGrooveServer\n".getBytes());
+                out
+                    .write("OpenGrooveServer\r\n"
+                        .getBytes());
                 out.flush();
                 // The next thing coming from the client should be the hexcoded
                 // security key (possibly preceded by a newline, since the code
@@ -402,6 +416,8 @@ public class OpenGrooveRealmServer
                 securityKeyBytes = new byte[32];
                 System.arraycopy(keyWithPadding, 0,
                     securityKeyBytes, 0, 32);
+                System.out.println("using aes key "
+                    + Hash.hexcode(securityKeyBytes));
                 securityKey = new Aes256(securityKeyBytes);
                 // we now have the aes-256 security key. Now the client will
                 // send us a random number encrypted with the server's rsa
@@ -422,23 +438,43 @@ public class OpenGrooveRealmServer
                 s = s.trim();
                 BigInteger challengeRandomEncInteger = new BigInteger(
                     s, 16);
+                System.out
+                    .println("challengerandomencinteger "
+                        + challengeRandomEncInteger
+                            .toString(16));
                 BigInteger challengeRandomInteger = RSA
                     .decrypt(rsaEncryptionPrivateKey,
                         rsaEncryptionModulus,
                         challengeRandomEncInteger);
+                System.out
+                    .println("challengerandominteger "
+                        + challengeRandomInteger
+                            .toString(16));
                 byte[] challengeRandomBytes = new byte[16];
                 System.arraycopy(challengeRandomInteger
                     .toByteArray(), 0,
                     challengeRandomBytes, 0, 16);
+                System.out
+                    .println("received as check bytes "
+                        + Hash
+                            .hexcode(challengeRandomBytes));
                 byte[] challengeRandomAes = new byte[16];
                 securityKey.encrypt(challengeRandomBytes,
                     0, challengeRandomAes, 0);
                 BigInteger challengeRandomAesInteger = new BigInteger(
                     challengeRandomAes);
+                System.out
+                    .println("sending as check response "
+                        + challengeRandomAesInteger
+                            .toString(16));
                 out.write((""
                     + challengeRandomAesInteger
-                        .toString(16) + "\n").getBytes());
+                        .toString(16) + "\r\n").getBytes());
                 out.flush();
+                // Now the client should send us the letter 'c' but NOT followed
+                // by a newline. This is used to sync up stream positions, since
+                // we're not sure whether the client ends packets with \r, \n,
+                // or \r\n.
                 for (int i = 0; i < 5; i++)
                 {
                     if (in.read() == 'c')
@@ -447,12 +483,43 @@ public class OpenGrooveRealmServer
                         throw new ProtocolMismatchException(
                             "no terminating 'c' at end of handshake");
                 }
+                // Ok, the client's stream of data to us is in sync. Now we send
+                // the letter 'c' to the client so that the client can
+                // synchronize our data stream.
+                out.write('c');
+                // Now we send a random number, encrypted using aes-256, to the
+                // client, using the Crypto packet notation instead of hexcoded
+                // newline-separated notation. The client should reply with the
+                // number, but hashed, and encoded with aes-256. This is used to
+                // prevent against replay attacks.
+                byte[] randomBytes = new byte[16];
+                random.nextBytes(randomBytes);
+                Crypto.enc(securityKey, randomBytes, out);
+                System.out.println("sent antireplay "
+                    + Hash.hexcode(randomBytes));
+                byte[] randomHashBytes = Crypto.dec(
+                    securityKey, in, 200);
+                String randomHashString = Hash
+                    .hash(randomBytes);
+                byte[] randomHash = randomHashString
+                    .getBytes();
+                System.out.println("hash received "
+                    + Hash.hexcode(randomHashBytes)
+                    + " and correct "
+                    + Hash.hexcode(randomHash));
+                if (!Arrays.equals(randomHashBytes,
+                    randomHash))
+                {
+                    throw new ProtocolMismatchException(
+                        "Incorrect random hash received");
+                }
                 // The handshake is now complete. Now we start listening for
                 // packets (using Crypto.dec), and deal with them accordingly.
                 // Keep attempting to receive packets until an exception is
                 // thrown. (when the quit command is called, the command class
                 // closes the connection, so an exception will be thrown on the
                 // next read)
+                completedHandshake = true;
                 while ((!socket.isClosed())
                     && (!socket.isInputShutdown())
                     && (!socket.isOutputShutdown()))
@@ -492,50 +559,50 @@ public class OpenGrooveRealmServer
         }
         
         public void processIncomingPacket(byte[] packet)
-            throws IOException
+            throws Exception
         {
-            int firstSpaceIndex = -1;
-            for (int i = 0; i < 64 && i < packet.length; i++)
-            {
-                if (packet[i] == ' ')
-                {
-                    firstSpaceIndex = i;
-                    break;
-                }
-            }
-            if (firstSpaceIndex == -1)
+            System.out
+                .println("dealing with packet of length "
+                    + packet.length);
+            byte[] first128bytes = new byte[Math.min(128,
+                packet.length)];
+            System.arraycopy(packet, 0, first128bytes, 0,
+                first128bytes.length);
+            String first128 = new String(first128bytes);
+            String[] first128split = first128.split("\\ ",
+                3);
+            if (first128split.length < 3)
                 throw new ProtocolMismatchException(
-                    "no ascii"
-                        + " space in the first 64 positions");
-            int secondSpaceIndex = -1;
-            for (int i = firstSpaceIndex + 1; i < 128
-                && i < packet.length; i++)
-            {
-                if (packet[i] == ' ')
-                {
-                    secondSpaceIndex = i;
-                    break;
-                }
-            }
-            if (secondSpaceIndex == -1)
-                throw new ProtocolMismatchException(
-                    "no ascii"
-                        + " space after the first space in the first 128 characters");
-            String packetId = new String(packet, 0,
-                firstSpaceIndex);
-            String commandName = new String(packet,
-                firstSpaceIndex + 1, secondSpaceIndex);
+                    "not enough tokens in command");
+            String packetId = first128split[0];
+            String commandName = first128split[1];
+            int startDataIndex = packetId.length()
+                + commandName.length() + 2;
             ByteArrayInputStream data = new ByteArrayInputStream(
-                packet, secondSpaceIndex + 1, packet.length
-                    - (secondSpaceIndex + 1));
+                packet, startDataIndex, packet.length
+                    - (startDataIndex));
             // In the future, the packet could be cached to the file system if
             // it's larger than, say, 2048 bytes, to avoid memory errors
             Command command = commands.get(commandName
                 .toLowerCase());
             if (command == null)
                 throw new ProtocolMismatchException(
-                    "invalid command received from client");
-            command.handle(packetId, data, this);
+                    "invalid command received from client, command is "
+                        + commandName);
+            try
+            {
+                command.handle(packetId, data, this);
+            }
+            catch (FailedResponseException e)
+            {
+                sendEncryptedPacket(
+                    packetId,
+                    commandName,
+                    e.getStatus(),
+                    e.getMessage() == null ? "An error occured while processing this command."
+                        .getBytes()
+                        : e.getMessage().getBytes());
+            }
         }
     }
     
@@ -578,7 +645,10 @@ public class OpenGrooveRealmServer
                 while (true)
                 {
                     Packet packet = queue.take();
-                    
+                    synchronized (this)
+                    {
+                        copy(packet.getStream(), out);
+                    }
                 }
             }
             catch (Exception e)
@@ -1155,7 +1225,9 @@ public class OpenGrooveRealmServer
         finishContext(context);
         server.start();
         Thread.sleep(300);// so that stdout and stderr don't get mixed up
-        System.out.println("loading OpenGroove server...");
+        System.out
+            .println("loading OpenGroove server on port "
+                + getConfig("serverport") + "...");
         rsaEncryptionPublicKey = new BigInteger(
             getConfig("rsa-enc-pub"), 16);
         rsaEncryptionModulus = new BigInteger(
@@ -1242,21 +1314,152 @@ public class OpenGrooveRealmServer
         System.exit(0);
     }
     
+    private static ConnectionHandler getConnectionForComputer(
+        String username, String computer)
+    {
+        Map<String, ConnectionHandler> userMap = connectionsByAuth
+            .get(username);
+        if (userMap == null)
+            return null;
+        ConnectionHandler handler = userMap.get(computer);
+        if (handler == null)
+            return null;
+        if (!connections.contains(handler))
+            return null;
+        return handler;
+    }
+    
+    public static String[] tokenizeByLines(String data)
+    {
+        BufferedReader reader = new BufferedReader(
+            new StringReader(data));
+        ArrayList<String> tokens = new ArrayList<String>();
+        String s;
+        try
+        {
+            while ((s = reader.readLine()) != null)
+                tokens.add(s);
+            reader.close();
+        }
+        catch (IOException e)
+        {
+            // shouldn't happen
+            throw new RuntimeException(e);
+        }
+        return tokens.toArray(new String[0]);
+    }
+    
+    private static void verifyAtLeast(Object[] objects,
+        int minLength)
+    {
+        if (objects.length < minLength)
+            throw new ProtocolMismatchException(
+                "Input too short (expected " + minLength
+                    + ", found " + objects.length + ")");
+    }
+    
+    private static byte[] readToBytes(InputStream input)
+        throws IOException
+    {
+        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+        copy(input, baos);
+        return baos.toByteArray();
+    }
+    
     private static void loadCommands()
     {
         new Command("authenticate", 512)
         {
             
             @Override
-            public void handle(String packetId,
-                InputStream data,
+            public synchronized void handle(
+                String packetId, InputStream data,
                 ConnectionHandler connection)
+                throws IOException, SQLException
             {
-                // TODO Auto-generated method stub
-                
+                if (connection.username != null)
+                {
+                    throw new FailedResponseException(
+                        "You're already authenticated");
+                }
+                String[] tokens = tokenizeByLines(new String(
+                    readToBytes(data)));
+                verifyAtLeast(tokens, 4);
+                String connectionType = tokens[0];
+                String username = tokens[1];
+                String computerName = tokens[2];
+                String password = tokens[3];
+                username = username.trim();
+                computerName = computerName.trim();
+                password = password.trim();
+                connectionType = connectionType.trim();
+                if (connectionType
+                    .equalsIgnoreCase("normal"))
+                {
+                    if ((!computerName.equals(""))
+                        && getConnectionForComputer(
+                            username, computerName) != null)
+                    {
+                        throw new FailedResponseException(
+                            "You already have a connection to this server");
+                    }
+                    else if (computerName.equals(""))
+                    {
+                        // The user isn't signing on with a computer, so we need
+                        // to hand-scan the connections list for a connection
+                        // with this username and no computer to verify that
+                        // such a connection does not exist
+                        for (ConnectionHandler ich : new ArrayList<ConnectionHandler>(
+                            connections))
+                        {
+                            if (ich.username != null
+                                && ich.username
+                                    .equalsIgnoreCase(username)
+                                && (ich.computerName == null || ich.computerName
+                                    .equals("")))
+                            {
+                                throw new FailedResponseException(
+                                    "You already have a connection to this server");
+                            }
+                        }
+                    }
+                    // The user doesn't have a connection, so let's proceed with
+                    // checking their password
+                    String passwordHash = Hash
+                        .hash(password);
+                    User confirmedAuthUser = DataStore
+                        .getUser(username, passwordHash);
+                    if (confirmedAuthUser == null)
+                    {
+                        throw new FailedResponseException(
+                            "BADAUTH",
+                            "Incorrect username and/or password");
+                    }
+                    // The user has successfully authenticated. Now we need to
+                    // check and see if the computer they specified exists, if
+                    // they specified a computer.
+                    if (!computerName.equals(""))
+                    {
+                        Computer computer = DataStore
+                            .getComputer(username,
+                                computerName);
+                        if (computer == null)
+                        {
+                            throw new FailedResponseException(
+                                "BACOMPUTER",
+                                "Nonexistant computer specified");
+                        }
+                    }
+                    connection.username = username;
+                    connection.computerName = (computerName
+                        .equals("") ? null : computerName);
+                    connection.sendEncryptedPacket(
+                        packetId, "authenticate", "OK",
+                        EMPTY);
+                }
             }
         };
-        new Command("ping", 128)
+        new Command("ping", 8)
         {
             
             @Override
@@ -1267,6 +1470,27 @@ public class OpenGrooveRealmServer
                 connection.sendEncryptedPacket(packetId,
                     "ping", "OK", new byte[0]);
             }
+        };
+        new Command("quit", 8)
+        {
+            
+            @Override
+            public void handle(String packetId,
+                InputStream data,
+                ConnectionHandler connection)
+                throws Exception
+            {
+                try
+                {
+                    connection.socket.close();
+                }
+                catch (IOException e)
+                {
+                    // TODO Auto-generated catch block
+                    e.printStackTrace();
+                }
+            }
+            
         };
     }
     

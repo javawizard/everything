@@ -1,6 +1,9 @@
 package net.sf.opengroove.telnet;
 
 import java.awt.BorderLayout;
+import java.awt.Rectangle;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
@@ -11,6 +14,10 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.math.BigInteger;
 import java.net.Socket;
+import java.security.SecureRandom;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 
 import javax.swing.JButton;
 import javax.swing.JFileChooser;
@@ -21,10 +28,20 @@ import javax.swing.JSplitPane;
 import javax.swing.JTextArea;
 import javax.swing.filechooser.FileNameExtensionFilter;
 
+import DE.knp.MicroCrypt.Aes256;
+
 import net.sf.opengroove.realmserver.ProtocolMismatchException;
+import net.sf.opengroove.security.Crypto;
+import net.sf.opengroove.security.Hash;
+import net.sf.opengroove.security.RSA;
 
 public class OpenGrooveTelnet
 {
+    public final static SecureRandom random = new SecureRandom();
+    
+    public static BigInteger rsaPublic;
+    
+    public static BigInteger rsaMod;
     
     /**
      * @param args
@@ -55,9 +72,8 @@ public class OpenGrooveTelnet
             System.out.println("Invalid key");
             System.exit(0);
         }
-        BigInteger publicKey = new BigInteger(keySplit[0],
-            16);
-        BigInteger modulus = new BigInteger(keySplit[1], 16);
+        rsaPublic = new BigInteger(keySplit[0], 16);
+        rsaMod = new BigInteger(keySplit[1], 16);
         String serverId = JOptionPane
             .showInputDialog(
                 frame,
@@ -74,19 +90,23 @@ public class OpenGrooveTelnet
             "Server: " + host + "\nPort: " + port
                 + "\n\nAre you sure?") == JOptionPane.YES_OPTION))
             System.exit(0);
-        JTextArea top = new JTextArea();
-        JTextArea bottom = new JTextArea();
+        final JTextArea top = new JTextArea();
+        final JTextArea bottom = new JTextArea();
         JSplitPane split = new JSplitPane(
             JSplitPane.VERTICAL_SPLIT, true);
         frame.getContentPane()
             .setLayout(new BorderLayout());
         frame.getContentPane().add(split,
             BorderLayout.CENTER);
-        JButton send = new JButton("Send");
-        split.setTopComponent(new JScrollPane(top));
-        split.setBottomComponent(new JScrollPane(bottom));
+        final JButton send = new JButton("Send");
+        send.setEnabled(false);
+        final JScrollPane topScroll = new JScrollPane(top);
+        JScrollPane bottomScroll = new JScrollPane(bottom);
+        split.setTopComponent(topScroll);
+        split.setBottomComponent(bottomScroll);
         split.setDividerLocation(150);
         split.setResizeWeight(0.5);
+        top.setEditable(false);
         frame.getContentPane()
             .add(send, BorderLayout.SOUTH);
         frame.invalidate();
@@ -101,7 +121,7 @@ public class OpenGrooveTelnet
         Socket socket = new Socket(host, port);
         top
             .append("Negotiating handshake with server...\n");
-        OutputStream out = socket.getOutputStream();
+        final OutputStream out = socket.getOutputStream();
         InputStream in = socket.getInputStream();
         out.write("OpenGroove\n".getBytes());
         String s = "";
@@ -113,7 +133,7 @@ public class OpenGrooveTelnet
                 break;
             if (i == 29)
                 throw new ProtocolMismatchException(
-                    "too much initialization data sent by the server");
+                    "too much first initialization data sent by the server");
         }
         s = s.trim();
         if (!s.equalsIgnoreCase("OpenGrooveServer"))
@@ -121,7 +141,161 @@ public class OpenGrooveTelnet
             throw new ProtocolMismatchException(
                 "Invalid initial response sent");
         }
-        BigInteger randomNumber1
+        BigInteger aesRandomNumber = new BigInteger(3060,
+            random);
+        byte[] securityKeyBytes = new byte[32];
+        System.arraycopy(aesRandomNumber.toByteArray(), 0,
+            securityKeyBytes, 0, 32);
+        final Aes256 securityKey = new Aes256(
+            securityKeyBytes);
+        System.out.println("using aes key "
+            + Hash.hexcode(securityKeyBytes));
+        BigInteger securityKeyEncrypted = RSA.encrypt(
+            rsaPublic, rsaMod, aesRandomNumber);
+        out
+            .write((securityKeyEncrypted.toString(16) + "\n")
+                .getBytes());
+        BigInteger randomServerCheckInteger = new BigInteger(
+            3060, random);
+        System.out.println("randomservercheckinteger "
+            + randomServerCheckInteger.toString(16));
+        byte[] randomServerCheckBytes = new byte[16];
+        System.arraycopy(randomServerCheckInteger
+            .toByteArray(), 0, randomServerCheckBytes, 0,
+            16);
+        BigInteger serverCheckEncrypted = RSA.encrypt(
+            rsaPublic, rsaMod, randomServerCheckInteger);
+        System.out.println("servercheckencrypted "
+            + serverCheckEncrypted.toString(16));
+        out
+            .write((serverCheckEncrypted.toString(16) + "\n")
+                .getBytes());
+        out.flush();
+        s = "";
+        for (int i = 0; i < 1024; i++)
+        {
+            int read = in.read();
+            s += (char) read;
+            if ((read == '\r' || read == '\n') && i != 0)
+                break;
+            if (i == 1023)
+                throw new ProtocolMismatchException(
+                    "too much second initialization data sent by the server");
+        }
+        s = s.trim();
+        byte[] confirmServerCheckBytes = new byte[16];
+        securityKey.decrypt(new BigInteger(s, 16)
+            .toByteArray(), 0, confirmServerCheckBytes, 0);
+        if (!Arrays.equals(randomServerCheckBytes,
+            confirmServerCheckBytes))
+            throw new RuntimeException(
+                "Server failed check bytes with sent "
+                    + Hash.hexcode(randomServerCheckBytes)
+                    + " and received "
+                    + Hash.hexcode(confirmServerCheckBytes)
+                    + " and unenc received "
+                    + Hash.hexcode(new BigInteger(s, 16)
+                        .toByteArray()));
+        out.write('c');
+        out.flush();
+        for (int i = 0; i < 5; i++)
+        {
+            if (in.read() == 'c')
+                break;
+            if (i == 4)
+                throw new ProtocolMismatchException(
+                    "no terminating 'c' at end of handshake");
+        }
+        byte[] antiReplayMessage = Crypto.dec(securityKey,
+            in, 200);
+        System.out.println("received antireply "
+            + Hash.hexcode(antiReplayMessage));
+        String antiReplayHash = Hash
+            .hash(antiReplayMessage);
+        System.out.println("sending antireply hash "
+            + Hash.hexcode(antiReplayHash.getBytes()));
+        Crypto.enc(securityKey, antiReplayHash.getBytes(),
+            out);
+        out.flush();
+        top
+            .append("Successfully set up connection to server. Type commands to "
+                + "send in the lower text area\n");
+        System.out.println("packet mode");
+        send.addActionListener(new ActionListener()
+        {
+            
+            @Override
+            public void actionPerformed(ActionEvent e)
+            {
+                send.setEnabled(false);
+                new Thread()
+                {
+                    public void run()
+                    {
+                        String message = bottom.getText();
+                        synchronized (top)
+                        {
+                            top
+                                .append("---------------------------------\n");
+                            top.append(">>>>>\n");
+                            top.append(message + "\n");
+                            top.setCaretPosition(top
+                                .getDocument().getLength());
+                        }
+                        bottom.setEnabled(false);
+                        bottom.setText("Sending...");
+                        try
+                        {
+                            Crypto.enc(securityKey, message
+                                .getBytes(), out);
+                            out.flush();
+                        }
+                        catch (IOException e)
+                        {
+                            System.err
+                                .println("Exception when sending to server, exiting.");
+                            e.printStackTrace();
+                            System.exit(0);
+                        }
+                        bottom.setText("");
+                        bottom.setEnabled(true);
+                        send.setEnabled(true);
+                    }
+                }.start();
+            }
+            
+        });
+        send.setEnabled(true);
+        while (!socket.isClosed())
+        {
+            try
+            {
+                System.out.println("about to decrypt");
+                byte[] message = Crypto.dec(securityKey,
+                    in, 65535);
+                System.out.println("decrypted");
+                String messageString = new String(message);
+                synchronized (top)
+                {
+                    top
+                        .append("---------------------------------\n");
+                    top.append("<<<<<\n");
+                    top.append(messageString + "\n");
+                    top.setCaretPosition(top.getDocument()
+                        .getLength());
+                }
+            }
+            catch (Exception e)
+            {
+                e.printStackTrace();
+                socket.close();
+            }
+        }
+        System.out.println("done.");
+        top.append("---------------------------------\n");
+        top.append("Connection to server has been closed."
+            + "\n");
+        top.setCaretPosition(top.getDocument().getLength());
     }
     
     /**

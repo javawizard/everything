@@ -58,6 +58,8 @@ public class Crypto
         // everything's been encrypted, now we need to write it to the stream
         out.write(enc);
         out.flush();
+        System.out.println("encrypted with length "
+            + message.length);
     }
     
     /**
@@ -76,30 +78,43 @@ public class Crypto
      * @return the decrypted message
      * @throws IOException
      */
-    public static byte[] dec(Aes256 c,
-        InputStream message, int limit) throws IOException
+    public static byte[] dec(Aes256 c, InputStream message,
+        int limit) throws IOException
     {
+        System.out.println("reading length to decrypt");
         DataInputStream in = new DataInputStream(message);
         int length = in.readInt();
+        int tl = length;
+        while ((tl % 16) != 0)
+            tl++;
+        // length is the length of the actual message, tl is the number of bytes
+        // to read, tl will always be greater or equal to length, and the
+        // remaining bytes are just random padding
+        System.out.println("read length " + length
+            + ", receiving data");
         if (length > limit)
             throw new RuntimeException(
                 "The length of the message received ("
                     + length
                     + ") was larger than the limit ("
                     + limit + ")");
-        byte[] toDec = new byte[length];
+        byte[] toDec = new byte[tl];
         int pointer = 0;
-        while (pointer < length)
+        while (pointer < tl)
         {
-            in.read(toDec, pointer, length - pointer);
+            pointer += in
+                .read(toDec, pointer, tl - pointer);
         }
         // toDec is filled with data to be decrypted, now we'll decrypt it.
-        byte[] dec = new byte[length];
+        byte[] dec = new byte[tl];
         for (int i = 0; i < length; i += 16)
         {
             c.decrypt(toDec, i, dec, i);
         }
-        return dec;
+        byte[] returnArray = new byte[length];
+        System.arraycopy(dec, 0, returnArray, 0, length);
+        System.out.println("decrypted data");
+        return returnArray;
     }
     
     public static byte[] intToBytes(int i)

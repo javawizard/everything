@@ -18,4 +18,35 @@
     <delete id="deleteWebUser" parameterClass="java.lang.String">
         delete from $$prefix$$webusers where username = #value#
     </delete>
+    <select id="authUser" parameterClass="net.sf.opengroove.realmserver.data.model.User"
+    resultClass="net.sf.opengroove.realmserver.data.model.User">
+        select * from $$prefix$$users where username = #username# and password = #password#
+    </select>
+    <select id="getUser" parameterClass="java.lang.String"
+    resultClass="net.sf.opengroove.realmserver.data.model.User">
+        select * from $$prefix$$users where username = #value#
+    </select>    
+    <select id="getComputer" parameterClass="net.sf.opengroove.realmserver.data.model.Computer"
+    resultClass="net.sf.opengroove.realmserver.data.model.Computer">
+        select * from $$prefix$$computers where username = #username# and
+        computername = #computername#
+    </select>
+    <select id="listUsers"
+    resultClass="net.sf.opengroove.realmserver.data.model.User">
+        select * from $$prefix$$users;
+    </select>
+    <insert id="addUser"
+    parameterClass="net.sf.opengroove.realmserver.data.model.User">
+        insert into $$prefix$$users (username,password,publiclylisted)
+        values (#username#, #password#, #publiclylisted#)
+    </insert>
+    <update id="updateUser"
+    parameterClass="net.sf.opengroove.realmserver.data.model.User">
+        update $$prefix$$users set password = #password#, publiclylisted = #publiclylisted#
+        where username = #username#
+    </update>
+    <delete id="deleteUser"
+    parameterClass="java.lang.String">
+        delete from $$prefix$$users where username = #value#
+    </delete>
 </sqlMap>
