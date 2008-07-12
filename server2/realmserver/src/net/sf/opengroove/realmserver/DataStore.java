@@ -70,4 +70,48 @@ public class DataStore
     {
         getPdbClient().delete("deleteUser", username);
     }
+    
+    public static Computer[] getComputersForUser(
+        String username) throws SQLException
+    {
+        return (Computer[]) getPdbClient().queryForList(
+            "getComputersForUser", username).toArray(
+            new Computer[0]);
+    }
+    
+    public static void addComputer(String username,
+        String computerName, String type)
+        throws SQLException
+    {
+        Computer computer = new Computer();
+        computer.setUsername(username);
+        computer.setComputername(computerName);
+        computer.setType(type);
+        computer.setLastonline(0);
+        getPdbClient().insert("addComputer", computer);
+    }
+    
+    public static void updateComputer(Computer computer)
+        throws SQLException
+    {
+        getPdbClient().update("updateComputer", computer);
+    }
+    
+    public static void deleteComputer(String username,
+        String computerName) throws SQLException
+    {
+        Computer computer = new Computer();
+        computer.setUsername(username);
+        computer.setComputername(computerName);
+        getPdbClient().delete("deleteComputer", computer);
+    }
+    
+    public static int getUserQuota(String username,
+        String quotaName)
+    {
+        // in the future, this should contact the database
+        if (quotaName.equalsIgnoreCase("computers"))
+            return 8;
+        return -1;
+    }
 }

@@ -31,6 +31,23 @@
         select * from $$prefix$$computers where username = #username# and
         computername = #computername#
     </select>
+    <select id="getComputersForUser" parameterClass="java.lang.String"
+    resultClass="net.sf.opengroove.realmserver.data.model.Computer">
+        select * from $$prefix$$computers where username = #value#
+    </select>
+    <insert id="addComputer" parameterClass="net.sf.opengroove.realmserver.data.model.Computer">
+        insert into $$prefix$$computers (username,computername,type,lastonline)
+        values (#username#,#computername#,#type#,#lastonline#)
+    </insert>
+    <update id="updateComputer"
+    parameterClass="net.sf.opengroove.realmserver.data.model.Computer">
+        update $$prefix$$computers set type = #type#, lastonline = #lastonline#
+        where username = #username# and computername = #computername#
+    </update>
+    <delete id="deleteComputer">
+        delete from $$prefix$$computers where username = #username# and
+        computername = #computername#;
+    </delete>
     <select id="listUsers"
     resultClass="net.sf.opengroove.realmserver.data.model.User">
         select * from $$prefix$$users;

@@ -83,11 +83,27 @@ public class OpenGrooveRealmServer
     public static abstract class Command
     {
         private int mps;
+        private boolean whenUnauth;
+        private boolean whenNoComputer;
         
-        public Command(String commandName, int maxPacketSize)
+        public Command(String commandName,
+            int maxPacketSize, boolean whenUnauth,
+            boolean whenNoComputer)
         {
             this.mps = maxPacketSize;
+            this.whenUnauth = whenUnauth;
+            this.whenNoComputer = whenNoComputer;
             commands.put(commandName.toLowerCase(), this);
+        }
+        
+        public boolean whenUnauth()
+        {
+            return whenUnauth;
+        }
+        
+        public boolean whenNoComputer()
+        {
+            return whenNoComputer;
         }
         
         public int maxPacketSize()
@@ -591,6 +607,14 @@ public class OpenGrooveRealmServer
                         + commandName);
             try
             {
+                if (username == null
+                    && !command.whenUnauth())
+                    throw new FailedResponseException(
+                        "You must run the authenticate command before this one.");
+                if (computerName == null
+                    && !command.whenNoComputer())
+                    throw new FailedResponseException(
+                        "This command can only be run when authenticated as a computer.");
                 command.handle(packetId, data, this);
             }
             catch (FailedResponseException e)
@@ -1368,7 +1392,7 @@ public class OpenGrooveRealmServer
     
     private static void loadCommands()
     {
-        new Command("authenticate", 512)
+        new Command("authenticate", 512, true, true)
         {
             
             @Override
@@ -1459,7 +1483,7 @@ public class OpenGrooveRealmServer
                 }
             }
         };
-        new Command("ping", 8)
+        new Command("ping", 8, true, true)
         {
             
             @Override
@@ -1471,7 +1495,7 @@ public class OpenGrooveRealmServer
                     "ping", "OK", new byte[0]);
             }
         };
-        new Command("quit", 8)
+        new Command("quit", 8, true, true)
         {
             
             @Override
@@ -1489,6 +1513,56 @@ public class OpenGrooveRealmServer
                     // TODO Auto-generated catch block
                     e.printStackTrace();
                 }
+            }
+            
+        };
+        new Command("gettime", 8, true, true)
+        {
+            
+            @Override
+            public void handle(String packetId,
+                InputStream data,
+                ConnectionHandler connection)
+                throws Exception
+            {
+                connection.sendEncryptedPacket(packetId,
+                    "gettime", "OK", ("" + System
+                        .currentTimeMillis()).getBytes());
+            }
+            
+        };
+        new Command("createcomputer", 64, false, true)// ,boolean whenUnauth,
+        // boolean
+        // whenNoComputer
+        {
+            
+            @Override
+            public void handle(String packetId,
+                InputStream data,
+                ConnectionHandler connection)
+                throws Exception
+            {
+                String[] tokens = tokenizeByLines(new String(
+                    readToBytes(data)));
+                verifyAtLeast(tokens, 2);
+                if (DataStore
+                    .getComputersForUser(connection.username).length >= DataStore
+                    .getUserQuota(connection.username,
+                        "computers"))
+                    throw new FailedResponseException(
+                        "QUOTAEXCEEDED",
+                        "You have the maximum number of computers already, which is "
+                            + DataStore.getUserQuota(
+                                connection.username,
+                                "computers"));
+                // Ok, the user is authenticated and is allowed to create a
+                // computer (IE they haven't exceeded their quota yet)
+                String computerName = tokens[0];
+                String computerType = tokens[1];
+                DataStore.addComputer(connection.username,
+                    computerName, computerType);
+                connection.sendEncryptedPacket(packetId,
+                    "createcomputer", "OK", EMPTY);
             }
             
         };
