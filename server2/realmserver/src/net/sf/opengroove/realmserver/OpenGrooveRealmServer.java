@@ -1845,6 +1845,25 @@ public class OpenGrooveRealmServer
                         + "\n" + lastOnline).getBytes());
             }
         };
+        new Command("setvisibility", 10, false, true)
+        {
+            
+            @Override
+            public void handle(String packetId,
+                InputStream data,
+                ConnectionHandler connection)
+                throws Exception
+            {
+                String s = new String(readToBytes(data));
+                User user = DataStore
+                    .getUser(connection.username);
+                user.setPubliclylisted(s.trim()
+                    .equalsIgnoreCase("true"));
+                DataStore.updateUser(user);
+                connection.sendEncryptedPacket(packetId,
+                    "setvisibility", "OK", EMPTY);
+            }
+        };
     }
     
     public static byte[] concat(byte[]... bytes)
