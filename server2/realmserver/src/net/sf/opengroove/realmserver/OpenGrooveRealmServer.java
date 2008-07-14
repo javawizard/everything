@@ -1864,6 +1864,23 @@ public class OpenGrooveRealmServer
                     "setvisibility", "OK", EMPTY);
             }
         };
+        new Command("getvisibility", 10, false, true)
+        {
+            
+            @Override
+            public void handle(String packetId,
+                InputStream data,
+                ConnectionHandler connection)
+                throws Exception
+            {
+                User user = DataStore
+                    .getUser(connection.username);
+                connection.sendEncryptedPacket(packetId,
+                    "getvisibility", "OK", ("" + user
+                        .isPubliclylisted()).getBytes());
+            }
+            
+        };
     }
     
     public static byte[] concat(byte[]... bytes)
