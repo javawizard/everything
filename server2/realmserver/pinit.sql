@@ -16,6 +16,7 @@ publiclylisted boolean
 );
 
 create table $$prefix$$userquotas (
+username varchar(64),
 name varchar(32),
 value int
 );
@@ -37,6 +38,7 @@ create table $$prefix$$computers (
 username varchar(64),
 computername varchar(64),
 type varchar(32),
+capabilities varchar(512),
 lastonline bigint
 );
 
@@ -44,6 +46,9 @@ create table $$prefix$$subscriptions (
 type varchar(64),
 username varchar(64),
 onusername varchar(64),
+oncomputername varchar(64),
+onsettingname varchar(128),
+deletewithtarget boolean,
 properties varchar(1024)
 );
 

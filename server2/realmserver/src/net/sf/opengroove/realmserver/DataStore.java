@@ -26,6 +26,11 @@ public class DataStore
         return OpenGrooveRealmServer.pdbclient;
     }
     
+    private static SqlMapClient getLdbClient()
+    {
+        return OpenGrooveRealmServer.ldbclient;
+    }
+    
     public static Computer getComputer(String username,
         String computerName) throws SQLException
     {
@@ -104,6 +109,13 @@ public class DataStore
         computer.setUsername(username);
         computer.setComputername(computerName);
         getPdbClient().delete("deleteComputer", computer);
+    }
+    
+    public static long getUserLastOnline(String username)
+        throws SQLException
+    {
+        return (Long) getPdbClient().queryForObject(
+            "getUserLastOnline", username);
     }
     
     public static int getUserQuota(String username,

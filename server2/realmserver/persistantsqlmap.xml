@@ -35,6 +35,11 @@
     resultClass="net.sf.opengroove.realmserver.data.model.Computer">
         select * from $$prefix$$computers where username = #value#
     </select>
+    <select id="getUserLastOnline" parameterClass="java.lang.String"
+    resultClass="java.lang.Long">
+        select lastonline from $$prefix$$computers computers where username = #username#
+        order by lastonline desc limit 1
+    </select>
     <insert id="addComputer" parameterClass="net.sf.opengroove.realmserver.data.model.Computer">
         insert into $$prefix$$computers (username,computername,type,lastonline)
         values (#username#,#computername#,#type#,#lastonline#)

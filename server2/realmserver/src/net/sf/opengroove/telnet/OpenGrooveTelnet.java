@@ -184,6 +184,7 @@ public class OpenGrooveTelnet
         }
         s = s.trim();
         byte[] confirmServerCheckBytes = new byte[16];
+        //FIXME: arrayindexoutofboundsexception for small arrays
         securityKey.decrypt(new BigInteger(s, 16)
             .toByteArray(), 0, confirmServerCheckBytes, 0);
         if (!Arrays.equals(randomServerCheckBytes,

@@ -37,7 +37,8 @@ userquotas:
 
 This table holds the quotas that apply to a user.
 
-key varchar(32) the name of the quota
+username varchar(64) The username of the user that this quota applies to. This table is also used to store default quota values, and these have a username that is the empty string.
+name varchar(32) the name of the quota
 value int the value of the quota
 
 
@@ -70,6 +71,7 @@ This table holds the computers that are registered for each user.
 username varchar(64) The username of the user that this computer is registered to
 computername varchar(64) The name of this computer
 type varchar(32) The type of computer. When a computer is created, it's type is specified, and it's type cannot change thereafter. Currently, the valid types are pc (the normal OpenGroove Client), pda (for OpenGroove PDA clients), mobile (for OpenGroove mobile clients, these run on mobile phones and have an extremely reduced interface), and web (if a user signs on to their account using the web interface. only one user of this type is usually created).
+capabilities varchar(512) The capabilities of this computer, delimited by commas. Other users can see the capabilities of a computer, and they can use those when communicating with it. A list of capabilities is still being worked out.
 lastonline bigint the time that this computer was last online, in milliseconds since january 1, 1970 utc
 
 
@@ -81,7 +83,10 @@ This table holds the list of subscriptions that users have created.
 type varchar(64) the type of subscription.
 username varchar(64) the username of the user who created this subscription.
 onusername varchar(64) the username, or userid if the user is not of this realm server, of the user who's changes are to be subscribed to. If the subscription type is not for a particular user, then this is the empty string.
-properties varchar(1024) the properties of this subscription, specific to the subscription type, in the properties file format.
+oncomputername varchar(64) If this subscription type applies to a specific computer, then this is the name of the computer. If not, this is the empty string.
+onsettingname varchar(128) If this subscription type applies to a specific user or computer setting, then this is the name of that setting. If not, this is the empty string.
+deletewithtarget boolean True if this subscription should be deleted when it's target has nothing to be subscribed to (for example, if a computer who's updates have been subscribed to gets deleted), false if not.
+properties varchar(1024) the properties of this subscription, specific to the subscription type, in the properties file format. If the subscription needs no additional properties besides those in the columns of this table, then this can be the empty string.
 
 
 

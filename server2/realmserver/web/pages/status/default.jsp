@@ -6,4 +6,12 @@ This page shows the current status of your OpenGroove Realm Server.<br/>
 <tr><td>Free memory:</td><td><%= Runtime.getRuntime().freeMemory()/1024 %>KB</td></tr>
 <tr><td>Total memory:</td><td><%= Runtime.getRuntime().totalMemory()/1024 %>KB</td></tr>
 <tr><td>Max memory:</td><td><%= Runtime.getRuntime().maxMemory()/1024 %>KB</td></tr>
+<tr><td colspan="2"><b>Connections:</b></td></tr>
+<tr><td>Active connections:</td><td><%= 
+net.sf.opengroove.realmserver.OpenGrooveRealmServer.getNumConnections() %></td></tr>
+<tr><td>Authenticated connections:</td><td><%= 
+net.sf.opengroove.realmserver.OpenGrooveRealmServer.getNumAuthConnections() %></td></tr>
+<tr><td>Computer connections:</td><td><%= 
+net.sf.opengroove.realmserver.OpenGrooveRealmServer.getNumComputerAuthConnections() 
+%></td></tr>
 </table>
