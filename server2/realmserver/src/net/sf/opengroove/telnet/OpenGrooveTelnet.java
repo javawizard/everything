@@ -52,16 +52,13 @@ public class OpenGrooveTelnet
         frame.setSize(500, 300);
         frame.setLocationRelativeTo(null);
         frame.show();
-        JOptionPane
-            .showMessageDialog(
-                frame,
-                "In the file chooser that is about to open, select\n"
-                    + "the file that contains your server's security key.");
-        JFileChooser fc = new JFileChooser();
-        fc.setFileFilter(new FileNameExtensionFilter(
-            "OpenGroove Server Key", "ogvs"));
-        fc.showDialog(null, "Open");
-        File file = fc.getSelectedFile();
+        // JFileChooser fc = new JFileChooser();
+        // fc.setFileFilter(new FileNameExtensionFilter(
+        // "OpenGroove Server Key", "ogvs"));
+        // fc.showDialog(null, "Open");
+        // File file = fc.getSelectedFile();
+        File file = new File(
+            "C:/Users/amboyd/Documents/serverkey.ogvs");
         if (file == null)
             System.exit(0);
         String keyMerged = readFile(file);
@@ -74,11 +71,13 @@ public class OpenGrooveTelnet
         }
         rsaPublic = new BigInteger(keySplit[0], 16);
         rsaMod = new BigInteger(keySplit[1], 16);
-        String serverId = JOptionPane
-            .showInputDialog(
-                frame,
-                "Type the realm server id of the server to connect to. This should be\n"
-                    + "in the form server:port");
+        // String serverId = JOptionPane
+        // .showInputDialog(
+        // frame,
+        // "Type the realm server id of the server to connect to. This should
+        // be\n"
+        // + "in the form server:port", "localhost:63745");
+        String serverId = "localhost:63745";
         if (serverId == null)
         {
             System.exit(0);
@@ -86,10 +85,6 @@ public class OpenGrooveTelnet
         String[] serverIdSplit = serverId.split("\\:");
         String host = serverIdSplit[0];
         int port = Integer.parseInt(serverIdSplit[1]);
-        if (!(JOptionPane.showConfirmDialog(frame,
-            "Server: " + host + "\nPort: " + port
-                + "\n\nAre you sure?") == JOptionPane.YES_OPTION))
-            System.exit(0);
         final JTextArea top = new JTextArea();
         final JTextArea bottom = new JTextArea();
         JSplitPane split = new JSplitPane(
@@ -148,8 +143,8 @@ public class OpenGrooveTelnet
             securityKeyBytes, 0, 32);
         final Aes256 securityKey = new Aes256(
             securityKeyBytes);
-        System.out.println("using aes key "
-            + Hash.hexcode(securityKeyBytes));
+        // System.out.println("using aes key "
+        // + Hash.hexcode(securityKeyBytes));
         BigInteger securityKeyEncrypted = RSA.encrypt(
             rsaPublic, rsaMod, aesRandomNumber);
         out
@@ -157,16 +152,16 @@ public class OpenGrooveTelnet
                 .getBytes());
         BigInteger randomServerCheckInteger = new BigInteger(
             3060, random);
-        System.out.println("randomservercheckinteger "
-            + randomServerCheckInteger.toString(16));
+        // System.out.println("randomservercheckinteger "
+        // + randomServerCheckInteger.toString(16));
         byte[] randomServerCheckBytes = new byte[16];
         System.arraycopy(randomServerCheckInteger
             .toByteArray(), 0, randomServerCheckBytes, 0,
             16);
         BigInteger serverCheckEncrypted = RSA.encrypt(
             rsaPublic, rsaMod, randomServerCheckInteger);
-        System.out.println("servercheckencrypted "
-            + serverCheckEncrypted.toString(16));
+        // System.out.println("servercheckencrypted "
+        // + serverCheckEncrypted.toString(16));
         out
             .write((serverCheckEncrypted.toString(16) + "\n")
                 .getBytes());
@@ -184,7 +179,7 @@ public class OpenGrooveTelnet
         }
         s = s.trim();
         byte[] confirmServerCheckBytes = new byte[16];
-        //FIXME: arrayindexoutofboundsexception for small arrays
+        // FIXME: arrayindexoutofboundsexception for small arrays
         securityKey.decrypt(new BigInteger(s, 16)
             .toByteArray(), 0, confirmServerCheckBytes, 0);
         if (!Arrays.equals(randomServerCheckBytes,
@@ -209,19 +204,20 @@ public class OpenGrooveTelnet
         }
         byte[] antiReplayMessage = Crypto.dec(securityKey,
             in, 200);
-        System.out.println("received antireply "
-            + Hash.hexcode(antiReplayMessage));
+        // System.out.println("received antireply "
+        // + Hash.hexcode(antiReplayMessage));
         String antiReplayHash = Hash
             .hash(antiReplayMessage);
-        System.out.println("sending antireply hash "
-            + Hash.hexcode(antiReplayHash.getBytes()));
+        // System.out.println("sending antireply hash "
+        // + Hash.hexcode(antiReplayHash.getBytes()));
         Crypto.enc(securityKey, antiReplayHash.getBytes(),
             out);
         out.flush();
         top
             .append("Successfully set up connection to server. Type commands to "
                 + "send in the lower text area\n");
-        System.out.println("packet mode");
+        frame.setDefaultCloseOperation(frame.EXIT_ON_CLOSE);
+        // System.out.println("packet mode");
         send.addActionListener(new ActionListener()
         {
             
@@ -271,10 +267,10 @@ public class OpenGrooveTelnet
         {
             try
             {
-                System.out.println("about to decrypt");
+                // System.out.println("about to decrypt");
                 byte[] message = Crypto.dec(securityKey,
                     in, 65535);
-                System.out.println("decrypted");
+                // System.out.println("decrypted");
                 String messageString = new String(message);
                 synchronized (top)
                 {
@@ -292,7 +288,7 @@ public class OpenGrooveTelnet
                 socket.close();
             }
         }
-        System.out.println("done.");
+        // System.out.println("done.");
         top.append("---------------------------------\n");
         top.append("Connection to server has been closed."
             + "\n");

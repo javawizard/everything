@@ -23,5 +23,6 @@ computer varchar(64)
 create table $$prefix$$storedmessagedata (
 id varchar(128),
 block int,
+read boolean,
 contents blob
 );

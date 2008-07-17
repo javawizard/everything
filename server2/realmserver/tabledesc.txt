@@ -139,6 +139,7 @@ This table holds the actual contents of stored messages.
 
 id varchar(128) The id of the message that this data is for.
 block int The block number of this particular data chunk. Usually, block numbering starts at 0, and increments by one for each successive block. However, this is not required. The blocks of the message are assembled in ascending order, but that is the only constraint on block numbering.
+read boolean True if the chunk has been accessed at least once by the recipient, false if not.
 contents blob The actual contents of this block. The contents should be no larger than 64KB.
 
 

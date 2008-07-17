@@ -6,7 +6,9 @@ import java.util.List;
 import com.ibatis.sqlmap.client.SqlMapClient;
 
 import net.sf.opengroove.realmserver.data.model.Computer;
+import net.sf.opengroove.realmserver.data.model.SearchUsers;
 import net.sf.opengroove.realmserver.data.model.User;
+import net.sf.opengroove.realmserver.data.model.UserSetting;
 
 public class DataStore
 {
@@ -125,5 +127,57 @@ public class DataStore
         if (quotaName.equalsIgnoreCase("computers"))
             return 8;
         return -1;
+    }
+    
+    public static User[] searchUsers(String string,
+        int offset, int limit, String[] keysToSearch)
+        throws SQLException
+    {
+        string = string.replace("*", "%");
+        SearchUsers search = new SearchUsers();
+        search.setKeys(keysToSearch);
+        search.setLimit(limit);
+        search.setOffset(offset);
+        search.setSearch(string);
+        search.setSearchkeys(keysToSearch.length > 0);
+        return (User[]) getPdbClient().queryForList(
+            "searchUsers", search).toArray(new User[0]);
+    }
+    
+    public static int searchUsersCount(String string,
+        int parseInt, int parseInft2, String[] keysToSearch)
+        throws SQLException
+    {
+        string = string.replace("*", "%");
+        SearchUsers search = new SearchUsers();
+        search.setKeys(keysToSearch);
+        search.setSearch(string);
+        search.setSearchkeys(keysToSearch.length > 0);
+        return (Integer) getPdbClient().queryForObject(
+            "searchUsersCount", search);
+    }
+    
+    public UserSetting getUserSetting(String username,
+        String name) throws SQLException
+    {
+        UserSetting setting = new UserSetting();
+        setting.setUsername(username);
+        setting.setName(name);
+        return (UserSetting) getPdbClient().queryForObject(
+            "getUserSetting", setting);
+    }
+    
+    public void setUserSetting(String username,
+        String name, String value)
+    {
+        if (value != null && value.equals(""))
+            value = null;
+        UserSetting setting = new UserSetting();
+        setting.setUsername(username);
+        setting.setName(name);
+        setting.setValue(value);
+        if (value == null)
+        {
+        }
     }
 }

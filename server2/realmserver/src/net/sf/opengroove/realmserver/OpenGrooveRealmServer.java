@@ -19,6 +19,7 @@ import java.math.BigInteger;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.net.URLEncoder;
+import java.nio.Buffer;
 import java.security.SecureRandom;
 import java.sql.Connection;
 import java.sql.DriverManager;
@@ -79,6 +80,11 @@ import nl.captcha.servlet.DefaultCaptchaIml;
 
 public class OpenGrooveRealmServer
 {
+    public interface ToString<S>
+    {
+        public String toString(S object);
+    }
+    
     // TODO: consider using SRV records for realm server (or main server)
     // lookups. This has two benefits. First, a user's domain need not run an
     // OpenGroove server on the domain's server itself. This would allow users
@@ -135,6 +141,7 @@ public class OpenGrooveRealmServer
         private int mps;
         private boolean whenUnauth;
         private boolean whenNoComputer;
+        private String commandName;
         
         public Command(String commandName,
             int maxPacketSize, boolean whenUnauth,
@@ -143,7 +150,13 @@ public class OpenGrooveRealmServer
             this.mps = maxPacketSize;
             this.whenUnauth = whenUnauth;
             this.whenNoComputer = whenNoComputer;
+            this.commandName = commandName;
             commands.put(commandName.toLowerCase(), this);
+        }
+        
+        protected String command()
+        {
+            return commandName.toLowerCase();
         }
         
         public boolean whenUnauth()
@@ -242,15 +255,8 @@ public class OpenGrooveRealmServer
         15);
     
     public static final ThreadPoolExecutor tasks = new ThreadPoolExecutor(
-        100, 300, 20, TimeUnit.SECONDS,
-        new LinkedBlockingQueue<Runnable>(10000));
-    /**
-     * The first thing sent by all clients when they connect, followed by a
-     * newline. This is so that an HTTP server could run on the same port as an
-     * OpenGroove server and the server would be able to distinguish between
-     * HTTP connections and OpenGroove connections.
-     */
-    public static final String CONNECTION_HEADER_TEXT = "OpenGroove";
+        100, 400, 20, TimeUnit.SECONDS,
+        new LinkedBlockingQueue<Runnable>(3000));
     
     protected static final byte[] EMPTY = new byte[0];
     
@@ -1355,6 +1361,8 @@ public class OpenGrooveRealmServer
         finishContext(context);
         server.start();
         Thread.sleep(300);// so that stdout and stderr don't get mixed up
+        System.out.println("loading periodic tasks...");
+        loadPeriodicTasks();
         System.out
             .println("loading OpenGroove server on port "
                 + getConfig("serverport") + "...");
@@ -1447,6 +1455,64 @@ public class OpenGrooveRealmServer
             .println("OpenGroove Realm Server has successfully shut down.");
         Thread.sleep(1000);
         System.exit(0);
+    }
+    
+    private static void loadPeriodicTasks()
+    {
+        // task for removing stale connection handlers (connection handlers that
+        // are still in the list of connections or the user maps but are using a
+        // socket that has been closed or dropped)
+        internalTasks.scheduleWithFixedDelay(new Runnable()
+        {
+            
+            @Override
+            public void run()
+            {
+                try
+                {
+                    for (ConnectionHandler handler : new ArrayList<ConnectionHandler>(
+                        connections))
+                    {
+                        if (handler.socket.isClosed()
+                            || handler.socket
+                                .isInputShutdown()
+                            || handler.socket
+                                .isOutputShutdown()
+                            || (!handler.socket
+                                .isConnected()))
+                        {
+                            try
+                            {
+                                handler.socket.close();
+                            }
+                            catch (Exception ex1)
+                            {
+                                ex1.printStackTrace();
+                            }
+                            connections.remove(handler);
+                        }
+                    }
+                    // TODO: stale connection handlers in the connections list
+                    // are handled but not those in the user connection maps
+                }
+                catch (Exception e)
+                {
+                    e.printStackTrace();
+                }
+            }
+        }, 30, 300, TimeUnit.SECONDS);
+        // task for removing idle connection handlers (connection handlers where
+        // nothing has been sent or received within the connection's idle time
+        // limit)
+        internalTasks.scheduleWithFixedDelay(new Runnable()
+        {
+            
+            @Override
+            public void run()
+            {
+                
+            }
+        }, 30, 63, TimeUnit.SECONDS);
     }
     
     private static ConnectionHandler getConnectionForComputer(
@@ -1677,9 +1743,12 @@ public class OpenGrooveRealmServer
                 ConnectionHandler connection)
                 throws Exception
             {
+                long timeMillis = System
+                    .currentTimeMillis();
                 connection.sendEncryptedPacket(packetId,
-                    "gettime", "OK", ("" + System
-                        .currentTimeMillis()).getBytes());
+                    "gettime", "OK",
+                    ("" + timeMillis + " " + new Date(
+                        timeMillis)).getBytes());
             }
             
         };
@@ -1732,8 +1801,7 @@ public class OpenGrooveRealmServer
                     dataBytes, 0,
                     dataBytes.length > 128 ? 128
                         : dataBytes.length);
-                String[] tokens = firstSubsection.split(
-                    " ", 4);
+                String[] tokens = tokenizeByLines(firstSubsection);
                 verifyAtLeast(tokens, 4);
                 String messageId = tokens[0];
                 String recipientUser = tokens[1];
@@ -1881,6 +1949,87 @@ public class OpenGrooveRealmServer
             }
             
         };
+        new Command("searchusers", 768, false, true)
+        {
+            
+            @Override
+            public void handle(String packetId,
+                InputStream data,
+                ConnectionHandler connection)
+                throws Exception
+            {
+                String[] tokens = tokenize(data);
+                verifyAtLeast(tokens, 4);
+                String searchString = tokens[0];
+                String offsetString = tokens[1];
+                String limitString = tokens[2];
+                String searchOtherServersString = tokens[3];
+                String[] keysToSearch = new String[tokens.length - 4];
+                System.arraycopy(tokens, 4, keysToSearch,
+                    0, keysToSearch.length);
+                for (String cKey : keysToSearch)
+                {
+                    if (!cKey.startsWith("public-"))
+                        throw new FailedResponseException(
+                            "FAIL",
+                            "The user settings specified must all start with public-");
+                }
+                // We've got the search criteria, now it's time to do the actual
+                // search
+                User[] users = DataStore.searchUsers("*"
+                    + searchString + "*", Integer
+                    .parseInt(offsetString), Integer
+                    .parseInt(limitString), keysToSearch);
+                int length = DataStore.searchUsersCount("*"
+                    + searchString + "*", Integer
+                    .parseInt(offsetString), Integer
+                    .parseInt(limitString), keysToSearch);
+                connection.sendEncryptedPacket(packetId,
+                    command(), "OK",
+                    ("" + length + "\n" + delimited(users,
+                        new ToString<User>()
+                        {
+                            
+                            @Override
+                            public String toString(
+                                User object)
+                            {
+                                return object.getUsername();
+                            }
+                        }, "\n")).getBytes());
+            }
+            
+        };
+        
+    }
+    
+    public static <T> String delimited(T[] items,
+        ToString<T> generator, String delimiter)
+    {
+        StringBuilder sb = new StringBuilder();
+        for (int i = 0; i < items.length; i++)
+        {
+            if (i != 0)
+                sb.append(delimiter);
+            sb.append(generator.toString(items[i]));
+        }
+        return sb.toString();
+    }
+    
+    /**
+     * shorthand for tokenizeByLine(newString(readToBytes(data)))
+     * 
+     * @param data
+     *            The data to read. This will be read until the end of the
+     *            stream.
+     * @return An array of strings, each string being a line of text taken from
+     *         the input stream passed in
+     * @throws IOException
+     */
+    public static String[] tokenize(InputStream data)
+        throws IOException
+    {
+        return tokenizeByLines(new String(readToBytes(data)));
     }
     
     public static byte[] concat(byte[]... bytes)
