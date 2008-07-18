@@ -1,6 +1,8 @@
 package devutils;
 
 import java.awt.BorderLayout;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.io.File;
 import java.io.FileFilter;
 import java.lang.reflect.Method;
@@ -52,7 +54,8 @@ public class AddToSql
         fa(target);
         controls.add(target);
         JComboBox type = new JComboBox(new String[] {
-            "select", "insert", "update", "delete" });
+            "select", "select list", "insert", "update",
+            "delete" });
         type.setToolTipText("Type of statement");
         fa(type);
         controls.add(type);
@@ -80,6 +83,16 @@ public class AddToSql
         JButton done = new JButton("done");
         frame.getContentPane()
             .add(done, BorderLayout.SOUTH);
+        done.addActionListener(new ActionListener()
+        {
+            
+            @Override
+            public void actionPerformed(ActionEvent e)
+            {
+                // TODO Auto-generated method stub
+                
+            }
+        });
         frame.show();
     }
     
@@ -113,6 +126,18 @@ public class AddToSql
             cc.setType(c);
             classes.add(cc);
         }
+        ClassChoice cc = new ClassChoice();
+        cc.setName("Integer");
+        cc.setType(Integer.class);
+        classes.add(cc);
+        cc = new ClassChoice();
+        cc.setName("Long");
+        cc.setType(Long.class);
+        classes.add(cc);
+        cc = new ClassChoice();
+        cc.setName("String");
+        cc.setType(String.class);
+        classes.add(cc);
     }
     
     private static class ClassChoice
