@@ -152,4 +152,5 @@
         delete from $$prefix$$users where username = #value#
     </delete>
     <!-- !ADDTOSQL -->
+    
 </sqlMap>

@@ -123,13 +123,13 @@ public class AddToSql
                     + "\" "
                     + (parameterChoice.getName() == null ? ""
                         : "parameterClass=\""
-                            + parameterChoice.getClass()
+                            + parameterChoice.getType()
                                 .getName() + "\" ")
                     + (resultChoice.getName() == null ? ""
                         : "resultClass=\""
-                            + resultChoice.getClass()
+                            + resultChoice.getType()
                                 .getName() + "\" ")
-                    + ">\r\n"
+                    + ">\r\n        "
                     + sql.replace("\n", "\n        ")
                     + "\r\n    </" + statementType
                     + ">\r\n";
