@@ -46,7 +46,7 @@ public class AddToSql
     public static void main(String[] args) throws Exception
     {
         loadClasses();
-        JFrame frame = new JFrame(
+        final JFrame frame = new JFrame(
             "AddToSql - OpenGroove Realm Server");
         frame.setSize(350, 550);
         frame.setLocationRelativeTo(null);
@@ -70,12 +70,12 @@ public class AddToSql
         statementId.setToolTipText("Statement name/id");
         fa(statementId);
         controls.add(statementId);
-        JComboBox parameterClass = new JComboBox(classes
-            .toArray());
+        final JComboBox parameterClass = new JComboBox(
+            classes.toArray());
         parameterClass.setToolTipText("Parameter class");
         fa(parameterClass);
         controls.add(parameterClass);
-        JComboBox resultClass = new JComboBox(classes
+        final JComboBox resultClass = new JComboBox(classes
             .toArray());
         resultClass.setToolTipText("Result class");
         fa(resultClass);
@@ -107,6 +107,39 @@ public class AddToSql
                 boolean returnList = type.getSelectedItem()
                     .equals("select list");
                 String sql = statementArea.getText();
+                String sqlMapContents = readFile(sqlFile);
+                ClassChoice parameterChoice = (ClassChoice) parameterClass
+                    .getSelectedItem();
+                ClassChoice resultChoice = (ClassChoice) resultClass
+                    .getSelectedItem();
+                int sqlMapMarkerIndex = sqlMapContents
+                    .indexOf("!ADDTOSQL");
+                int sqlMapAddIndex = sqlMapContents
+                    .indexOf("\n", sqlMapMarkerIndex) + 1;
+                String sqlMapToAdd = "\r\n    <"
+                    + statementType
+                    + " "
+                    + (parameterChoice.getName() == null ? ""
+                        : "parameterClass=\""
+                            + parameterChoice.getClass()
+                                .getName() + "\" ")
+                    + (resultChoice.getName() == null ? ""
+                        : "resultClass=\""
+                            + resultChoice.getClass()
+                                .getName() + "\" ")
+                    + ">\r\n"
+                    + sql.replace("\n", "\n        ")
+                    + "\r\n    </" + statementType
+                    + ">\r\n";
+                sqlMapContents = sqlMapContents.substring(
+                    0, sqlMapAddIndex)
+                    + sqlMapToAdd
+                    + sqlMapContents
+                        .substring(sqlMapAddIndex);
+                writeFile(sqlMapContents, sqlFile);
+                JOptionPane.showMessageDialog(frame,
+                    "Successful.");
+                System.exit(0);
             }
         });
         frame.show();
