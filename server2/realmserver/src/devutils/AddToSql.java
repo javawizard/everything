@@ -75,11 +75,11 @@ public class AddToSql
         parameterClass.setToolTipText("Parameter class");
         fa(parameterClass);
         controls.add(parameterClass);
-        final JComboBox resultClass = new JComboBox(classes
-            .toArray());
-        resultClass.setToolTipText("Result class");
-        fa(resultClass);
-        controls.add(resultClass);
+        final JComboBox resultClassBox = new JComboBox(
+            classes.toArray());
+        resultClassBox.setToolTipText("Result class");
+        fa(resultClassBox);
+        controls.add(resultClassBox);
         final JTextArea statementArea = new JTextArea();
         controls.add(new JLabel("<html>&nbsp;"));
         frame.getContentPane().add(controls,
@@ -96,7 +96,12 @@ public class AddToSql
             @Override
             public void actionPerformed(ActionEvent e)
             {
-                // TODO Auto-generated method stub
+                if (statementId.getText().trim().equals(""))
+                {
+                    JOptionPane.showMessageDialog(frame,
+                        "Enter some info first.");
+                    return;
+                }
                 File sqlFile = new File(target
                     .getSelectedItem()
                     + "sqlmap.xml");
@@ -110,7 +115,7 @@ public class AddToSql
                 String sqlMapContents = readFile(sqlFile);
                 ClassChoice parameterChoice = (ClassChoice) parameterClass
                     .getSelectedItem();
-                ClassChoice resultChoice = (ClassChoice) resultClass
+                ClassChoice resultChoice = (ClassChoice) resultClassBox
                     .getSelectedItem();
                 int sqlMapMarkerIndex = sqlMapContents
                     .indexOf("!ADDTOSQL");
@@ -189,7 +194,12 @@ public class AddToSql
                 writeFile(dataStoreContents, dataStoreFile);
                 JOptionPane.showMessageDialog(frame,
                     "Successful.");
-                System.exit(0);
+                statementId.setText("");
+                parameterClass.setSelectedIndex(0);
+                resultClassBox.setSelectedIndex(0);
+                target.setSelectedIndex(0);
+                type.setSelectedIndex(0);
+                statementArea.setText("");
             }
         });
         frame.show();

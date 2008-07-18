@@ -7,6 +7,9 @@ import com.ibatis.sqlmap.client.SqlMapClient;
 
 import net.sf.opengroove.realmserver.data.model.Computer;
 import net.sf.opengroove.realmserver.data.model.SearchUsers;
+import net.sf.opengroove.realmserver.data.model.SoftDelete;
+import net.sf.opengroove.realmserver.data.model.StoredMessage;
+import net.sf.opengroove.realmserver.data.model.StoredMessageData;
 import net.sf.opengroove.realmserver.data.model.User;
 import net.sf.opengroove.realmserver.data.model.UserSetting;
 
@@ -226,5 +229,123 @@ public class DataStore
     }
     
     // !ADDTOSQL
+    
+    public static StoredMessage[] listOutboundMessageInfo(
+        String v) throws SQLException
+    {
+        return (StoredMessage[]) getLdbClient()
+            .queryForList("listOutboundMessageInfo", v)
+            .toArray(new StoredMessage[0]);
+    }
+    
+    public static StoredMessage[] listUnapprovedMessageInfo(
+        String v) throws SQLException
+    {
+        return (StoredMessage[]) getLdbClient()
+            .queryForList("listUnapprovedMessageInfo", v)
+            .toArray(new StoredMessage[0]);
+    }
+    
+    public static StoredMessage[] listApprovedMessageInfo(
+        String v) throws SQLException
+    {
+        return (StoredMessage[]) getLdbClient()
+            .queryForList("listApprovedMessageInfo", v)
+            .toArray(new StoredMessage[0]);
+    }
+    
+    public static String getMessageMetadata(String v)
+        throws SQLException
+    {
+        return (String) getLdbClient().queryForObject(
+            "getMessageMetadata", v);
+    }
+    
+    public static SoftDelete[] listSoftDeletes(String v)
+        throws SQLException
+    {
+        return (SoftDelete[]) getLdbClient().queryForList(
+            "listSoftDeletes", v)
+            .toArray(new SoftDelete[0]);
+    }
+    
+    public static void deleteSoftDeletesForMessage(String v)
+        throws SQLException
+    {
+        getLdbClient().delete(
+            "deleteSoftDeletesForMessage", v);
+    }
+    
+    public static void deleteSoftDelete(SoftDelete v)
+        throws SQLException
+    {
+        getLdbClient().delete("deleteSoftDelete", v);
+    }
+    
+    public static void insertSoftDelete(SoftDelete v)
+        throws SQLException
+    {
+        getLdbClient().insert("insertSoftDelete", v);
+    }
+    
+    public static StoredMessageData[] listStoredMessageDataForMessage(
+        String v) throws SQLException
+    {
+        return (StoredMessageData[]) getLdbClient()
+            .queryForList(
+                "listStoredMessageDataForMessage", v)
+            .toArray(new StoredMessageData[0]);
+    }
+    
+    public static StoredMessageData getStoredMessageData(
+        StoredMessageData v) throws SQLException
+    {
+        return (StoredMessageData) getLdbClient()
+            .queryForObject("getStoredMessageData", v);
+    }
+    
+    public static StoredMessageData getStoredMessageDataInfo(
+        StoredMessageData v) throws SQLException
+    {
+        return (StoredMessageData) getLdbClient()
+            .queryForObject("getStoredMessageDataInfo", v);
+    }
+    
+    public static void updateStoredMessageData(
+        StoredMessageData v) throws SQLException
+    {
+        getLdbClient().update("updateStoredMessageData", v);
+    }
+    
+    public static void updateStoredMessageDataInfo(
+        StoredMessageData v) throws SQLException
+    {
+        getLdbClient().update(
+            "updateStoredMessageDataInfo", v);
+    }
+    
+    public static void insertStoredMessageData(
+        StoredMessageData v) throws SQLException
+    {
+        getLdbClient().insert("insertStoredMessageData", v);
+    }
+    
+    public static void deleteStoredMessage(String v)
+        throws SQLException
+    {
+        getLdbClient().delete("deleteStoredMessage", v);
+    }
+    
+    public static void updateStoredMessage(StoredMessage v)
+        throws SQLException
+    {
+        getLdbClient().update("updateStoredMessage", v);
+    }
+    
+    public static void insertStoredMessage(StoredMessage v)
+        throws SQLException
+    {
+        getLdbClient().insert("insertStoredMessage", v);
+    }
     
 }
