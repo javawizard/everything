@@ -122,11 +122,11 @@ public class AddToSql
                     + statementId.getText()
                     + "\" "
                     + (parameterChoice.getName() == null ? ""
-                        : "\r\nparameterClass=\""
+                        : "\r\n         parameterClass=\""
                             + parameterChoice.getType()
                                 .getName() + "\" ")
                     + (resultChoice.getName() == null ? ""
-                        : "\r\nresultClass=\""
+                        : "\r\n         resultClass=\""
                             + resultChoice.getType()
                                 .getName() + "\" ")
                     + ">\r\n        "
@@ -184,6 +184,7 @@ public class AddToSql
                     + dataStoreToAdd
                     + dataStoreContents
                         .substring(dataStoreAddIndex);
+                writeFile(dataStoreContents, dataStoreFile);
                 JOptionPane.showMessageDialog(frame,
                     "Successful.");
                 System.exit(0);
