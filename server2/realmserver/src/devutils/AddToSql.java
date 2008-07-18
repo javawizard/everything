@@ -66,7 +66,7 @@ public class AddToSql
         type.setToolTipText("Type of statement");
         fa(type);
         controls.add(type);
-        JTextField statementId = new JTextField();
+        final JTextField statementId = new JTextField();
         statementId.setToolTipText("Statement name/id");
         fa(statementId);
         controls.add(statementId);
@@ -118,7 +118,9 @@ public class AddToSql
                     .indexOf("\n", sqlMapMarkerIndex) + 1;
                 String sqlMapToAdd = "\r\n    <"
                     + statementType
-                    + " "
+                    + " id=\""
+                    + statementId.getText()
+                    + "\" "
                     + (parameterChoice.getName() == null ? ""
                         : "parameterClass=\""
                             + parameterChoice.getClass()
