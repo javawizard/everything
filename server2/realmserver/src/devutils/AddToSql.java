@@ -1,6 +1,12 @@
 package devutils;
 
-import javax.swing.JFrame;
+import java.awt.BorderLayout;
+import java.io.File;
+import java.io.FileFilter;
+import java.lang.reflect.Method;
+import java.util.ArrayList;
+
+import javax.swing.*;
 
 /**
  * A simple utility for adding new mapped statements to persistantsqlmap.xml and
@@ -28,13 +34,145 @@ public class AddToSql
     /**
      * @param args
      */
-    public static void main(String[] args)
+    public static void main(String[] args) throws Exception
     {
+        loadClasses();
         JFrame frame = new JFrame(
             "AddToSql - OpenGroove Realm Server");
         frame.setSize(350, 550);
         frame.setLocationRelativeTo(null);
+        frame.getContentPane()
+            .setLayout(new BorderLayout());
+        JPanel controls = new JPanel();
+        controls.setLayout(new BoxLayout(controls,
+            BoxLayout.Y_AXIS));
+        JComboBox target = new JComboBox(new String[] {
+            "persistant", "large" });
+        target.setToolTipText("Target file");
+        fa(target);
+        controls.add(target);
+        JComboBox type = new JComboBox(new String[] {
+            "select", "insert", "update", "delete" });
+        type.setToolTipText("Type of statement");
+        fa(type);
+        controls.add(type);
+        JTextField statementId = new JTextField();
+        statementId.setToolTipText("Statement name/id");
+        fa(statementId);
+        controls.add(statementId);
+        JComboBox parameterClass = new JComboBox(classes
+            .toArray());
+        parameterClass.setToolTipText("Parameter class");
+        fa(parameterClass);
+        controls.add(parameterClass);
+        JComboBox resultClass = new JComboBox(classes
+            .toArray());
+        resultClass.setToolTipText("Result class");
+        fa(resultClass);
+        controls.add(resultClass);
+        JTextArea statementArea = new JTextArea();
+        controls.add(new JLabel("<html>&nbsp;"));
+        frame.getContentPane().add(controls,
+            BorderLayout.NORTH);
+        frame.getContentPane().add(
+            new JScrollPane(statementArea),
+            BorderLayout.CENTER);
+        JButton done = new JButton("done");
+        frame.getContentPane()
+            .add(done, BorderLayout.SOUTH);
         frame.show();
+    }
+    
+    private static ArrayList<ClassChoice> classes = new ArrayList<ClassChoice>();
+    
+    private static void loadClasses() throws Exception
+    {
+        classes.add(new ClassChoice());
+        File[] files = new File(
+            "src/net/sf/opengroove/realmserver/data/model")
+            .listFiles(new FileFilter()
+            {
+                
+                @Override
+                public boolean accept(File pathname)
+                {
+                    return pathname.getName().endsWith(
+                        ".java");
+                }
+            });
+        for (File file : files)
+        {
+            String name = file.getName().substring(0,
+                file.getName().length() - 5);
+            Class c = Class
+                .forName("net.sf.opengroove.realmserver.data.model."
+                    + name);
+            ClassChoice cc = new ClassChoice();
+            cc.setName(c.getName().substring(
+                c.getName().lastIndexOf(".") + 1));
+            cc.setType(c);
+            classes.add(cc);
+        }
+    }
+    
+    private static class ClassChoice
+    {
+        private Class type;
+        private String name;
+        private String[] properties;
+        private String[] propertyTypes;
+        
+        public String[] getPropertyTypes()
+        {
+            return propertyTypes;
+        }
+        
+        public void setPropertyTypes(String[] propertyTypes)
+        {
+            this.propertyTypes = propertyTypes;
+        }
+        
+        public Class getType()
+        {
+            return type;
+        }
+        
+        public String getName()
+        {
+            return name;
+        }
+        
+        public String toString()
+        {
+            if (getName() == null)
+                return "";
+            return getName();
+        }
+        
+        public String[] getProperties()
+        {
+            return properties;
+        }
+        
+        public void setType(Class type)
+        {
+            this.type = type;
+        }
+        
+        public void setName(String name)
+        {
+            this.name = name;
+        }
+        
+        public void setProperties(String[] properties)
+        {
+            this.properties = properties;
+        }
+    }
+    
+    private static void fa(JComponent c)
+    {
+        c.setAlignmentX(c.LEFT_ALIGNMENT);
     }
     
 }
