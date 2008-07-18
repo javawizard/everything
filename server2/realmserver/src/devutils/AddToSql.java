@@ -162,8 +162,10 @@ public class AddToSql
                     + statementId.getText()
                     + "("
                     + (hasParam ? paramClass + " v" : "")
-                    + "){"
-                    + (hasResult ? "return " : "")
+                    + ")throws SQLException{"
+                    + (hasResult ? "return (" + resultClass
+                        + (returnList ? "[]" : "") + ") "
+                        : "")
                     + "get"
                     + sqlFile.getName().substring(0, 1)
                         .toUpperCase()
