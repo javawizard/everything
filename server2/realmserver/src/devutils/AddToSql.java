@@ -122,11 +122,11 @@ public class AddToSql
                     + statementId.getText()
                     + "\" "
                     + (parameterChoice.getName() == null ? ""
-                        : "parameterClass=\""
+                        : "\r\nparameterClass=\""
                             + parameterChoice.getType()
                                 .getName() + "\" ")
                     + (resultChoice.getName() == null ? ""
-                        : "resultClass=\""
+                        : "\r\nresultClass=\""
                             + resultChoice.getType()
                                 .getName() + "\" ")
                     + ">\r\n        "
@@ -139,6 +139,51 @@ public class AddToSql
                     + sqlMapContents
                         .substring(sqlMapAddIndex);
                 writeFile(sqlMapContents, sqlFile);
+                File dataStoreFile = new File(
+                    "src/net/sf/opengroove/realmserver/DataStore.java");
+                String dataStoreContents = readFile(dataStoreFile);
+                int dataStoreMarkerIndex = dataStoreContents
+                    .indexOf("!ADDTOSQL");
+                int dataStoreAddIndex = dataStoreContents
+                    .indexOf("\n", dataStoreMarkerIndex) + 1;
+                boolean hasParam = parameterChoice
+                    .getName() != null;
+                boolean hasResult = resultChoice.getName() != null;
+                String paramClass = hasParam ? parameterChoice
+                    .getName()
+                    : "";
+                String resultClass = hasResult ? resultChoice
+                    .getName()
+                    : "";
+                String dataStoreToAdd = "\r\npublic static "
+                    + (hasResult ? resultClass
+                        + (returnList ? "[]" : "") : "void")
+                    + " "
+                    + statementId.getText()
+                    + "("
+                    + (hasParam ? paramClass + " v" : "")
+                    + "){"
+                    + (hasResult ? "return " : "")
+                    + "get"
+                    + sqlFile.getName().substring(0, 1)
+                        .toUpperCase()
+                    + "dbClient()."
+                    + (statementType.equals("select") ? (returnList ? "queryForList"
+                        : "queryForObject")
+                        : statementType)
+                    + "(\""
+                    + statementId.getText()
+                    + "\""
+                    + (hasParam ? ",v" : "")
+                    + ")"
+                    + (returnList ? ".toArray(new "
+                        + resultClass + "[0])" : "")
+                    + ";}\r\n";
+                dataStoreContents = dataStoreContents
+                    .substring(0, dataStoreAddIndex)
+                    + dataStoreToAdd
+                    + dataStoreContents
+                        .substring(dataStoreAddIndex);
                 JOptionPane.showMessageDialog(frame,
                     "Successful.");
                 System.exit(0);
