@@ -123,9 +123,13 @@ public class DataStore
     public static int getUserQuota(String username,
         String quotaName)
     {
-        // in the future, this should contact the database
+        // in the future, this should be stored in the database, and be
+        // configurable via the web interface on a per-user basis.
         if (quotaName.equalsIgnoreCase("computers"))
             return 8;
+        else if (quotaName
+            .equalsIgnoreCase("usersettingsize"))
+            return 1024 * 128;
         return -1;
     }
     
@@ -157,8 +161,8 @@ public class DataStore
             "searchUsersCount", search);
     }
     
-    public UserSetting getUserSetting(String username,
-        String name) throws SQLException
+    public static UserSetting getUserSetting(
+        String username, String name) throws SQLException
     {
         UserSetting setting = new UserSetting();
         setting.setUsername(username);
@@ -167,8 +171,8 @@ public class DataStore
             "getUserSetting", setting);
     }
     
-    public void setUserSetting(String username,
-        String name, String value)
+    public static void setUserSetting(String username,
+        String name, String value) throws SQLException
     {
         if (value != null && value.equals(""))
             value = null;
@@ -176,8 +180,48 @@ public class DataStore
         setting.setUsername(username);
         setting.setName(name);
         setting.setValue(value);
-        if (value == null)
+        if (value == null)// delete the setting
         {
+            getPdbClient().delete("deleteUserSetting",
+                setting);
         }
+        else if (getUserSetting(username, name) != null)// update the setting
+        {
+            getPdbClient().update("updateUserSetting",
+                setting);
+        }
+        else
+        // create the setting
+        {
+            getPdbClient().insert("insertUserSetting",
+                setting);
+        }
+        
+    }
+    
+    public static int getUserSettingSize(String username)
+        throws SQLException
+    {
+        Integer i = (Integer) getPdbClient()
+            .queryForObject("getUserSettingSize", username);
+        if (i == null)
+            i = 0;
+        return i;
+    }
+    
+    public static UserSetting[] listUserSettings(
+        String username) throws SQLException
+    {
+        return (UserSetting[]) getPdbClient().queryForList(
+            "listUserSettings", username).toArray(
+            new UserSetting[0]);
+    }
+    
+    public static UserSetting[] listPublicUserSettings(
+        String username) throws SQLException
+    {
+        return (UserSetting[]) getPdbClient().queryForList(
+            "listPublicUserSettings", username).toArray(
+            new UserSetting[0]);
     }
 }

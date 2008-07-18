@@ -71,6 +71,7 @@ import nanohttpd.NanoHTTPD;
 import nanohttpd.NanoHTTPD.Response;
 import net.sf.opengroove.realmserver.data.model.Computer;
 import net.sf.opengroove.realmserver.data.model.User;
+import net.sf.opengroove.realmserver.data.model.UserSetting;
 import net.sf.opengroove.realmserver.web.LoginFilter;
 import net.sf.opengroove.realmserver.web.RendererServlet;
 import net.sf.opengroove.security.Crypto;
@@ -692,33 +693,37 @@ public class OpenGrooveRealmServer
             System.out
                 .println("dealing with packet of length "
                     + packet.length);
-            byte[] first128bytes = new byte[Math.min(128,
-                packet.length)];
-            System.arraycopy(packet, 0, first128bytes, 0,
-                first128bytes.length);
-            String first128 = new String(first128bytes);
-            String[] first128split = first128.split("\\ ",
-                3);
-            if (first128split.length < 3)
-                throw new ProtocolMismatchException(
-                    "not enough tokens in command");
-            String packetId = first128split[0];
-            String commandName = first128split[1];
-            int startDataIndex = packetId.length()
-                + commandName.length() + 2;
-            ByteArrayInputStream data = new ByteArrayInputStream(
-                packet, startDataIndex, packet.length
-                    - (startDataIndex));
-            // In the future, the packet could be cached to the file system if
-            // it's larger than, say, 2048 bytes, to avoid memory errors
-            Command command = commands.get(commandName
-                .toLowerCase());
-            if (command == null)
-                throw new ProtocolMismatchException(
-                    "invalid command received from client, command is "
-                        + commandName);
+            String packetId = "UNKNOWN";
+            String commandName = "UNKNOWN";
             try
             {
+                byte[] first128bytes = new byte[Math.min(
+                    128, packet.length)];
+                System.arraycopy(packet, 0, first128bytes,
+                    0, first128bytes.length);
+                String first128 = new String(first128bytes);
+                String[] first128split = first128.split(
+                    "\\ ", 3);
+                if (first128split.length < 3)
+                    throw new FailedResponseException(
+                        "FAIL",
+                        "no command input (packets should be of"
+                            + " the form packetId commandName arguments)");
+                packetId = first128split[0];
+                commandName = first128split[1];
+                int startDataIndex = packetId.length()
+                    + commandName.length() + 2;
+                ByteArrayInputStream data = new ByteArrayInputStream(
+                    packet, startDataIndex, packet.length
+                        - (startDataIndex));
+                // In the future, the packet could be cached to the file system
+                // if
+                // it's larger than, say, 2048 bytes, to avoid memory errors
+                Command command = commands.get(commandName
+                    .toLowerCase());
+                if (command == null)
+                    throw new FailedResponseException(
+                        "The command specified is not a valid command");
                 if (username == null
                     && !command.whenUnauth())
                     throw new FailedResponseException(
@@ -1565,7 +1570,7 @@ public class OpenGrooveRealmServer
         int minLength)
     {
         if (objects.length < minLength)
-            throw new ProtocolMismatchException(
+            throw new FailedResponseException("FAIL",
                 "Input too short (expected " + minLength
                     + ", found " + objects.length + ")");
     }
@@ -1798,35 +1803,27 @@ public class OpenGrooveRealmServer
             {
                 byte[] dataBytes = readToBytes(data);
                 String firstSubsection = new String(
-                    dataBytes, 0,
-                    dataBytes.length > 128 ? 128
-                        : dataBytes.length);
+                    dataBytes);
                 String[] tokens = tokenizeByLines(firstSubsection);
                 verifyAtLeast(tokens, 4);
                 String messageId = tokens[0];
                 String recipientUser = tokens[1];
                 String recipientComputer = tokens[2];
+                String messageContents = tokens[3];
                 ConnectionHandler recipientConnection = getConnectionForComputer(
                     recipientUser, recipientComputer);
                 if (recipientConnection == null)
                     throw new FailedResponseException(
                         "NOSUCHRECIPIENT",
                         "The recipient does not exist or is offline");
-                byte[] messageContents = new byte[messageId
-                    .length()
-                    + recipientUser.length()
-                    + recipientComputer.length() + 3];
-                System.arraycopy(dataBytes,
-                    dataBytes.length
-                        - messageContents.length,
-                    messageContents, 0,
-                    messageContents.length);
-                recipientConnection.sendEncryptedPacket(
-                    generateId(), "receiveimessage", "OK",
-                    concat(("" + messageId + " "
-                        + connection.username + " "
-                        + connection.computerName + " ")
-                        .getBytes(), messageContents));
+                recipientConnection
+                    .sendEncryptedPacket(generateId(),
+                        "receiveimessage", "OK", (""
+                            + messageId + "\n"
+                            + connection.username + "\n"
+                            + connection.computerName
+                            + "\n" + messageContents)
+                            .getBytes());
                 connection.sendEncryptedPacket(packetId,
                     "sendimessage", "OK", EMPTY);
             }
@@ -2000,7 +1997,457 @@ public class OpenGrooveRealmServer
             }
             
         };
-        
+        new Command("getusersetting", 256, false, true)
+        {
+            
+            @Override
+            public void handle(String packetId,
+                InputStream data,
+                ConnectionHandler connection)
+                throws Exception
+            {
+                String[] tokens = tokenize(data);
+                verifyAtLeast(tokens, 2);
+                String username = tokens[0];
+                String property = tokens[1];
+                boolean isPublic = property
+                    .startsWith("public-");
+                boolean isPrivate = !isPublic;
+                boolean isThisUser = username.equals("");
+                boolean isOtherUser = !isThisUser;
+                if (isThisUser)
+                    username = connection.username;
+                if (isPrivate && isOtherUser)
+                    throw new FailedResponseException(
+                        "FAIL",
+                        "Only properties starting with public- "
+                            + "can be read for other users.");
+                UserSetting setting = DataStore
+                    .getUserSetting(username, property);
+                String value = setting == null ? ""
+                    : setting.getValue();
+                connection.sendEncryptedPacket(packetId,
+                    "getusersetting", "OK", value
+                        .getBytes());
+            }
+            
+        };
+        new Command("listusersettings", 128, false, true)
+        {
+            
+            @Override
+            public void handle(String packetId,
+                InputStream data,
+                ConnectionHandler connection)
+                throws Exception
+            {
+                String[] tokens = tokenize(data);
+                verifyAtLeast(tokens, 1);
+                String username = tokens[0];
+                UserSetting[] settings;
+                if (username.equals(""))
+                    settings = DataStore
+                        .listUserSettings(connection.username);
+                else
+                    settings = DataStore
+                        .listPublicUserSettings(username);
+                connection.sendEncryptedPacket(packetId,
+                    "listusersettings", "OK", delimited(
+                        settings,
+                        new ToString<UserSetting>()
+                        {
+                            
+                            @Override
+                            public String toString(
+                                UserSetting object)
+                            {
+                                return object.getName();
+                            }
+                        }, "\n").getBytes());
+            }
+            
+        };
+        new Command("setusersetting", 2048, false, true)
+        {
+            
+            @Override
+            public void handle(String packetId,
+                InputStream data,
+                ConnectionHandler connection)
+                throws Exception
+            {
+                String[] tokens = tokenize(data);
+                verifyAtLeast(tokens, 2);
+                String name = tokens[0];
+                String value = tokens[1];
+                boolean delete = value.equals("");
+                UserSetting existingSetting = DataStore
+                    .getUserSetting(connection.username,
+                        name);
+                int settingSize = DataStore
+                    .getUserSettingSize(connection.username);
+                if (existingSetting != null)
+                    settingSize = settingSize
+                        - (existingSetting.getName()
+                            .length()
+                            + existingSetting.getValue()
+                                .length() + 10);
+                settingSize += 10 + name.length()
+                    + value.length();
+                if ((!delete)
+                    && settingSize > DataStore
+                        .getUserQuota(connection.username,
+                            "usersettingsize"))
+                    throw new FailedResponseException(
+                        "QUOTAEXCEEDED",
+                        "You have "
+                            + DataStore.getUserQuota(
+                                connection.username,
+                                "usersettingsize")
+                            + "allowed user setting bytes, but with this new property your size would be "
+                            + settingSize);
+                DataStore.setUserSetting(
+                    connection.username, name, value);
+                connection.sendEncryptedPacket(packetId,
+                    "setusersetting", "OK", EMPTY);
+            }
+            
+        };
+        new Command("listcomputers", 128, false, true)
+        {
+            
+            @Override
+            public void handle(String packetId,
+                InputStream data,
+                ConnectionHandler connection)
+                throws Exception
+            {
+                // TODO Auto-generated method stub
+                
+            }
+        };
+        new Command("getcomputersetting", 256, false, false)
+        {
+            
+            @Override
+            public void handle(String packetId,
+                InputStream data,
+                ConnectionHandler connection)
+                throws Exception
+            {
+                // TODO Auto-generated method stub
+                
+            }
+        };
+        new Command("setcomputersetting", 2048, false,
+            false)
+        {
+            
+            @Override
+            public void handle(String packetId,
+                InputStream data,
+                ConnectionHandler connection)
+                throws Exception
+            {
+                // TODO Auto-generated method stub
+                
+            }
+        };
+        new Command("listcomputersettings", 128, false,
+            false)
+        {
+            
+            @Override
+            public void handle(String packetId,
+                InputStream data,
+                ConnectionHandler connection)
+                throws Exception
+            {
+                // TODO Auto-generated method stub
+                
+            }
+        };
+        new Command("createsubscription", 256, false, false)
+        {
+            
+            @Override
+            public void handle(String packetId,
+                InputStream data,
+                ConnectionHandler connection)
+                throws Exception
+            {
+                // TODO Auto-generated method stub
+                
+            }
+        };
+        new Command("listsubscriptions", 128, false, false)
+        {
+            
+            @Override
+            public void handle(String packetId,
+                InputStream data,
+                ConnectionHandler connection)
+                throws Exception
+            {
+                // TODO Auto-generated method stub
+                
+            }
+        };
+        new Command("deletesubscription", 128, false, false)
+        {
+            
+            @Override
+            public void handle(String packetId,
+                InputStream data,
+                ConnectionHandler connection)
+                throws Exception
+            {
+                // TODO Auto-generated method stub
+                
+            }
+        };
+        new Command("createmessage", 256, false, false)
+        {
+            
+            @Override
+            public void handle(String packetId,
+                InputStream data,
+                ConnectionHandler connection)
+                throws Exception
+            {
+                // TODO Auto-generated method stub
+                
+            }
+        };
+        new Command("setmessagesetting", 2048, false, false)
+        {
+            
+            @Override
+            public void handle(String packetId,
+                InputStream data,
+                ConnectionHandler connection)
+                throws Exception
+            {
+                // TODO Auto-generated method stub
+                
+            }
+        };
+        new Command("deletemessagesetting", 256, false,
+            false)
+        {
+            
+            @Override
+            public void handle(String packetId,
+                InputStream data,
+                ConnectionHandler connection)
+                throws Exception
+            {
+                // TODO Auto-generated method stub
+                
+            }
+        };
+        new Command("getmessagesetting", 256, false, false)
+        {
+            
+            @Override
+            public void handle(String packetId,
+                InputStream data,
+                ConnectionHandler connection)
+                throws Exception
+            {
+                // TODO Auto-generated method stub
+                
+            }
+        };
+        new Command("listmessagesettings", 256, false,
+            false)
+        {
+            
+            @Override
+            public void handle(String packetId,
+                InputStream data,
+                ConnectionHandler connection)
+                throws Exception
+            {
+                // TODO Auto-generated method stub
+                
+            }
+        };
+        new Command("setmessagedata", 65535, false, false)
+        {
+            
+            @Override
+            public void handle(String packetId,
+                InputStream data,
+                ConnectionHandler connection)
+                throws Exception
+            {
+                // TODO Auto-generated method stub
+                
+            }
+        };
+        new Command("sendmessage", 256, false, false)
+        {
+            
+            @Override
+            public void handle(String packetId,
+                InputStream data,
+                ConnectionHandler connection)
+                throws Exception
+            {
+                // TODO Auto-generated method stub
+                
+            }
+        };
+        new Command("getmessagelifecycle", 256, false,
+            false)
+        {
+            
+            @Override
+            public void handle(String packetId,
+                InputStream data,
+                ConnectionHandler connection)
+                throws Exception
+            {
+                // TODO Auto-generated method stub
+                
+            }
+        };
+        new Command("listapprovedmessages", 256, false,
+            false)
+        {
+            
+            @Override
+            public void handle(String packetId,
+                InputStream data,
+                ConnectionHandler connection)
+                throws Exception
+            {
+                // TODO Auto-generated method stub
+                
+            }
+        };
+        new Command("listoutboundmessages", 256, false,
+            false)
+        {
+            
+            @Override
+            public void handle(String packetId,
+                InputStream data,
+                ConnectionHandler connection)
+                throws Exception
+            {
+                // TODO Auto-generated method stub
+                
+            }
+        };
+        new Command("listunapprovedmessages", 256, false,
+            false)
+        {
+            
+            @Override
+            public void handle(String packetId,
+                InputStream data,
+                ConnectionHandler connection)
+                throws Exception
+            {
+                // TODO Auto-generated method stub
+                
+            }
+        };
+        new Command("approvemessage", 256, false, false)
+        {
+            
+            @Override
+            public void handle(String packetId,
+                InputStream data,
+                ConnectionHandler connection)
+                throws Exception
+            {
+                // TODO Auto-generated method stub
+                
+            }
+        };
+        new Command("deletemessage", 256, false, false)
+        {
+            
+            @Override
+            public void handle(String packetId,
+                InputStream data,
+                ConnectionHandler connection)
+                throws Exception
+            {
+                // TODO Auto-generated method stub
+                
+            }
+        };
+        new Command("softdeletemessage", 256, false, false)
+        {
+            
+            @Override
+            public void handle(String packetId,
+                InputStream data,
+                ConnectionHandler connection)
+                throws Exception
+            {
+                // TODO Auto-generated method stub
+                
+            }
+        };
+        new Command("getmessageinfo", 256, false, false)
+        {
+            
+            @Override
+            public void handle(String packetId,
+                InputStream data,
+                ConnectionHandler connection)
+                throws Exception
+            {
+                // TODO Auto-generated method stub
+                
+            }
+        };
+        new Command("listmessagedata", 256, false, false)
+        {
+            
+            @Override
+            public void handle(String packetId,
+                InputStream data,
+                ConnectionHandler connection)
+                throws Exception
+            {
+                // TODO Auto-generated method stub
+                
+            }
+        };
+        new Command("getmessagedata", 256, false, false)
+        {
+            
+            @Override
+            public void handle(String packetId,
+                InputStream data,
+                ConnectionHandler connection)
+                throws Exception
+            {
+                // TODO Auto-generated method stub
+                
+            }
+        };
+        new Command("getmessagedatahash", 256, false, false)
+        {
+            
+            @Override
+            public void handle(String packetId,
+                InputStream data,
+                ConnectionHandler connection)
+                throws Exception
+            {
+                // TODO Auto-generated method stub
+                
+            }
+        };
+        System.out.println("loaded " + commands.size()
+            + " commands");
     }
     
     public static <T> String delimited(T[] items,

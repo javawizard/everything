@@ -96,39 +96,39 @@
         delete from $$prefix$$computers where username = #username# and
         computername = #computername#;
     </delete>
-    <select name="listUserSettings"
+    <select id="listUserSettings"
     parameterClass="java.lang.String"
     resultClass="net.sf.opengroove.realmserver.data.model.UserSetting">
         select * from $$prefix$$usersettings where username = #value# 
     </select>
-    <select name="listPublicUserSettings"
+    <select id="listPublicUserSettings"
     parameterClass="java.lang.String"
     resultClass="net.sf.opengroove.realmserver.data.model.UserSetting">
         select * from $$prefix$$usersettings where username = #value#
         and name like 'public-%'
     </select>
-    <select name="getUserSettingSize"
+    <select id="getUserSettingSize"
     parameterClass="java.lang.String" resultClass="java.lang.Integer">
         select sum(character_length(name) + character_length(value) + 10) 
         from $$prefix$$usersettings where username = #value#
     </select>
-    <select name="getUserSetting"
+    <select id="getUserSetting"
     parameterClass="net.sf.opengroove.realmserver.data.model.UserSetting"
     resultClass="net.sf.opengroove.realmserver.data.model.UserSetting">
         select * from $$prefix$$usersettings where username = #username#
         and name = #name#
     </select>
-    <insert name="insertUserSetting"
+    <insert id="insertUserSetting"
     parameterClass="net.sf.opengroove.realmserver.data.model.UserSetting">
         insert into $$prefix$$usersettings (username,name,value)
         values (#username#,#name#,#value#)
     </insert>
-    <update name="setUserSetting"
+    <update id="setUserSetting"
     parameterClass="net.sf.opengroove.realmserver.data.model.UserSetting">
         update $$prefix$$usersettings set value=#value#
         where username=#username# and name=#name#
     </update>
-    <delete name="deleteUserSetting"
+    <delete id="deleteUserSetting"
     parameterClass="net.sf.opengroove.realmserver.data.model.UserSetting">
         delete from $$prefix$$usersettings where username = #username#
         and name=#name#
