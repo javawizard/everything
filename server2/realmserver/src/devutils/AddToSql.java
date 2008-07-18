@@ -3,8 +3,15 @@ package devutils;
 import java.awt.BorderLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileFilter;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 
@@ -48,12 +55,12 @@ public class AddToSql
         JPanel controls = new JPanel();
         controls.setLayout(new BoxLayout(controls,
             BoxLayout.Y_AXIS));
-        JComboBox target = new JComboBox(new String[] {
-            "persistant", "large" });
+        final JComboBox target = new JComboBox(
+            new String[] { "persistant", "large" });
         target.setToolTipText("Target file");
         fa(target);
         controls.add(target);
-        JComboBox type = new JComboBox(new String[] {
+        final JComboBox type = new JComboBox(new String[] {
             "select", "select list", "insert", "update",
             "delete" });
         type.setToolTipText("Type of statement");
@@ -73,7 +80,7 @@ public class AddToSql
         resultClass.setToolTipText("Result class");
         fa(resultClass);
         controls.add(resultClass);
-        JTextArea statementArea = new JTextArea();
+        final JTextArea statementArea = new JTextArea();
         controls.add(new JLabel("<html>&nbsp;"));
         frame.getContentPane().add(controls,
             BorderLayout.NORTH);
@@ -90,10 +97,79 @@ public class AddToSql
             public void actionPerformed(ActionEvent e)
             {
                 // TODO Auto-generated method stub
-                
+                File sqlFile = new File(target
+                    .getSelectedItem()
+                    + "sqlmap.xml");
+                String statementType = (String) (type
+                    .getSelectedItem()
+                    .equals("select list") ? "select"
+                    : type.getSelectedItem());
+                boolean returnList = type.getSelectedItem()
+                    .equals("select list");
+                String sql = statementArea.getText();
             }
         });
         frame.show();
+    }
+    
+    /**
+     * reads the file specified in to a string. the file must not be larger than
+     * 5 MB.
+     * 
+     * @param file.
+     * @return
+     */
+    public static String readFile(File file)
+    {
+        try
+        {
+            if (file.length() > (5 * 1000 * 1000))
+                throw new RuntimeException(
+                    "the file is "
+                        + file.length()
+                        + " bytes. that is too large. it can't be larger than 5000000 bytes.");
+            ByteArrayOutputStream baos = new ByteArrayOutputStream();
+            FileInputStream fis = new FileInputStream(file);
+            copy(fis, baos);
+            fis.close();
+            baos.flush();
+            baos.close();
+            return new String(baos.toByteArray(), "UTF-8");
+        }
+        catch (Exception e)
+        {
+            throw new RuntimeException(e);
+        }
+    }
+    
+    public static void writeFile(String string, File file)
+    {
+        try
+        {
+            ByteArrayInputStream bais = new ByteArrayInputStream(
+                string.getBytes("UTF-8"));
+            FileOutputStream fos = new FileOutputStream(
+                file);
+            copy(bais, fos);
+            bais.close();
+            fos.flush();
+            fos.close();
+        }
+        catch (Exception e)
+        {
+            throw new RuntimeException(e);
+        }
+    }
+    
+    public static void copy(InputStream in, OutputStream out)
+        throws IOException
+    {
+        byte[] buffer = new byte[8192];
+        int amount;
+        while ((amount = in.read(buffer)) != -1)
+        {
+            out.write(buffer, 0, amount);
+        }
     }
     
     private static ArrayList<ClassChoice> classes = new ArrayList<ClassChoice>();
