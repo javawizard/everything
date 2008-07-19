@@ -2163,7 +2163,7 @@ public class OpenGrooveRealmServer
                         }, "\n").getBytes());
             }
         };
-        new Command("getcomputersetting", 256, false, false)
+        new Command("getcomputersetting", 256, false, true)
         {
             
             @Override
@@ -2176,6 +2176,13 @@ public class OpenGrooveRealmServer
                 verifyAtLeast(tokens, 3);
                 String username = tokens[0];
                 String computerName = tokens[1];
+                if (computerName.equals(""))
+                    computerName = connection.computerName;
+                if (computerName == null
+                    || computerName.equals(""))
+                    throw new FailedResponseException(
+                        "FAIL",
+                        "No computer specified and not authenticated as a computer");
                 String name = tokens[2];
                 boolean allowPrivate = username.equals("");
                 if (allowPrivate)
@@ -2199,6 +2206,39 @@ public class OpenGrooveRealmServer
                         : setting.getValue()).getBytes());
             }
         };
+        new Command("help", 256, true, true)
+        {
+            
+            @Override
+            public void handle(String packetId,
+                InputStream data,
+                ConnectionHandler connection)
+                throws Exception
+            {
+                connection
+                    .sendEncryptedPacket(
+                        packetId,
+                        command(),
+                        "OK",
+                        "You're speaking to an OpenGroove Realm Server.\r\n"
+                            + "Visit www.opengroove.org if you have any questions, or you can send\r\n"
+                            + "an email to javawizard@opengroove.org .\r\n\r\n"
+                            + "Here's a list of all of the commands that this server knows:\r\n\r\n"
+                            + delimited(commands.values()
+                                .toArray(new Command[0]),
+                                new ToString<Command>()
+                                {
+                                    
+                                    @Override
+                                    public String toString(
+                                        Command object)
+                                    {
+                                        return object.commandName;
+                                    }
+                                }, "\r\n"));
+            }
+            
+        };
         new Command("getcomputerinfo", 256, false, true)
         {
             
@@ -2208,8 +2248,28 @@ public class OpenGrooveRealmServer
                 ConnectionHandler connection)
                 throws Exception
             {
-                // TODO Auto-generated method stub
-                
+                String[] tokens = tokenize(data);
+                verifyAtLeast(tokens, 2);
+                String username = tokens[0];
+                String computername = tokens[1];
+                if (computername.equals("")
+                    && username.equals(""))
+                    computername = connection.computerName;
+                if (username.equals(""))
+                    username = connection.username;
+                Computer computer = DataStore.getComputer(
+                    username, computername);
+                if (computer == null)
+                    throw new FailedResponseException(
+                        "NOSUCHCOMPUTER",
+                        "The computer specified does not exist");
+                connection
+                    .sendEncryptedPacket(
+                        packetId,
+                        command(),
+                        "OK",
+                        ("" + computer.getType() + "\n" + computer
+                            .getCapabilities()).getBytes());
             }
             
         };
@@ -2223,8 +2283,46 @@ public class OpenGrooveRealmServer
                 ConnectionHandler connection)
                 throws Exception
             {
-                // TODO Auto-generated method stub
-                
+                String[] tokens = tokenize(data);
+                verifyAtLeast(tokens, 3);
+                String computerName = tokens[0];
+                if (computerName.equals(""))
+                    computerName = connection.computerName;
+                String name = tokens[1];
+                String value = tokens[2];
+                boolean delete = value.equals("");
+                ComputerSetting existingSetting = DataStore
+                    .getComputerSetting(
+                        connection.username, computerName,
+                        name);
+                int settingSize = DataStore
+                    .getComputerSettingSize(
+                        connection.username, computerName);
+                if (existingSetting != null)
+                    settingSize = settingSize
+                        - (existingSetting.getName()
+                            .length()
+                            + existingSetting.getValue()
+                                .length() + 10);
+                settingSize += 10 + name.length()
+                    + value.length();
+                if ((!delete)
+                    && settingSize > DataStore
+                        .getUserQuota(connection.username,
+                            "computersettingsize"))
+                    throw new FailedResponseException(
+                        "QUOTAEXCEEDED",
+                        "You have "
+                            + DataStore.getUserQuota(
+                                connection.username,
+                                "computersettingsize")
+                            + "allowed computer setting bytes, but with this new property your size would be "
+                            + settingSize);
+                DataStore.setComputerSetting(
+                    connection.username, computerName,
+                    name, value);
+                connection.sendEncryptedPacket(packetId,
+                    command(), "OK", EMPTY);
             }
         };
         new Command("listcomputersettings", 128, false,
@@ -2237,8 +2335,35 @@ public class OpenGrooveRealmServer
                 ConnectionHandler connection)
                 throws Exception
             {
-                // TODO Auto-generated method stub
                 
+                String[] tokens = tokenize(data);
+                verifyAtLeast(tokens, 2);
+                String username = tokens[0];
+                String computerName = tokens[1];
+                ComputerSetting[] settings;
+                if (computerName.equals(""))
+                    computerName = connection.computerName;
+                if (username.equals(""))
+                    settings = DataStore
+                        .listComputerSettings(
+                            connection.username,
+                            computerName);
+                else
+                    settings = DataStore
+                        .listPublicComputerSettings(
+                            username, computerName);
+                connection.sendEncryptedPacket(packetId,
+                    command(), "OK", delimited(settings,
+                        new ToString<ComputerSetting>()
+                        {
+                            
+                            @Override
+                            public String toString(
+                                ComputerSetting object)
+                            {
+                                return object.getName();
+                            }
+                        }, "\n").getBytes());
             }
         };
         new Command("createsubscription", 256, false, false)
@@ -2250,8 +2375,7 @@ public class OpenGrooveRealmServer
                 ConnectionHandler connection)
                 throws Exception
             {
-                // TODO Auto-generated method stub
-                
+                //TODO: pick up here July 19, 2008
             }
         };
         new Command("listsubscriptions", 128, false, false)
@@ -2553,6 +2677,12 @@ public class OpenGrooveRealmServer
         return tokenizeByLines(new String(readToBytes(data)));
     }
     
+    /**
+     * concatenates a bunch of byte arrays together.
+     * 
+     * @param bytes
+     * @return
+     */
     public static byte[] concat(byte[]... bytes)
     {
         int length = 0;

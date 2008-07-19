@@ -56,7 +56,7 @@
 
     <delete id="deleteSoftDelete" 
          parameterClass="net.sf.opengroove.realmserver.data.model.SoftDelete" >
-        delete from $$prefix$$softdeletes where id = #id and computer
+        delete from $$prefix$$softdeletes where id = #id# and computer
         = #computer#
     </delete>
 
@@ -89,7 +89,7 @@
     <update id="updateStoredMessageData" 
          parameterClass="net.sf.opengroove.realmserver.data.model.StoredMessageData" >
         update $$prefix$$storedmessagedata set contents = #contents#
-        where id = #id and block = #block#
+        where id = #id# and block = #block#
     </update>
 
     <update id="updateStoredMessageDataInfo" 

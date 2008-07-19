@@ -204,6 +204,58 @@
     
     <!-- !ADDTOSQL -->
 
+    <delete id="deleteSubscription" 
+         parameterClass="net.sf.opengroove.realmserver.data.model.Subscription" >
+        delete from $$prefix$$subscriptions where type = #type#
+        and username = #username# and onusername
+        = #onusername# and oncomputername =
+        #oncomputername# and onsettingname =
+        #onsettingname#
+    </delete>
+
+    <select id="getSubscriptionCount" 
+         parameterClass="java.lang.String" 
+         resultClass="java.lang.Integer" >
+        select count(*) from subscriptions where username
+        = #value#
+    </select>
+
+    <select id="listSubscriptionsByTypedTargetUser" 
+         parameterClass="net.sf.opengroove.realmserver.data.model.Subscription" 
+         resultClass="net.sf.opengroove.realmserver.data.model.Subscription" >
+        select * from $$prefix$$subscriptions where onusername
+        = #onusername# and type = #type#
+    </select>
+
+    <select id="listSubscriptionsByTargetSetting" 
+         parameterClass="net.sf.opengroove.realmserver.data.model.Subscription" 
+         resultClass="net.sf.opengroove.realmserver.data.model.Subscription" >
+        select * from $$prefix$$subscriptions where
+        onusername=#onusername# and onsettingname
+        = #onsettingname#
+    </select>
+
+    <select id="listSubscriptionsByTargetUser" 
+         parameterClass="java.lang.String" 
+         resultClass="net.sf.opengroove.realmserver.data.model.Subscription" >
+        select * from $$prefix$$subscriptions where onusername
+        = #value#
+    </select>
+
+    <select id="listSubscriptionsByUser" 
+         parameterClass="java.lang.String" 
+         resultClass="net.sf.opengroove.realmserver.data.model.Subscription" >
+        select * from $$prefix$$subscriptions where username
+        = #value#
+    </select>
+
+    <insert id="insertSubscription" 
+         parameterClass="net.sf.opengroove.realmserver.data.model.Subscription" >
+        insert into $$prefix$$subscriptions values (
+        #type#,#onusername#,#oncomputername#,
+        #onsettingname#,#deletewithtarget#,#properties#)
+    </insert>
+
     <select id="listComputersByUser" 
          parameterClass="java.lang.String" 
          resultClass="net.sf.opengroove.realmserver.data.model.Computer" >

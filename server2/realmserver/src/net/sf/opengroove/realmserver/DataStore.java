@@ -312,6 +312,20 @@ public class DataStore
     }
     
     // !ADDTOSQL
+
+public static void deleteSubscription(Subscription v)throws SQLException{getPdbClient().delete("deleteSubscription",v);}
+
+public static Integer getSubscriptionCount(String v)throws SQLException{return (Integer) getPdbClient().queryForObject("getSubscriptionCount",v);}
+
+public static Subscription[] listSubscriptionsByTypedTargetUser(Subscription v)throws SQLException{return (Subscription[]) getPdbClient().queryForList("listSubscriptionsByTypedTargetUser",v).toArray(new Subscription[0]);}
+
+public static Subscription[] listSubscriptionsByTargetSetting(Subscription v)throws SQLException{return (Subscription[]) getPdbClient().queryForList("listSubscriptionsByTargetSetting",v).toArray(new Subscription[0]);}
+
+public static Subscription[] listSubscriptionsByTargetUser(String v)throws SQLException{return (Subscription[]) getPdbClient().queryForList("listSubscriptionsByTargetUser",v).toArray(new Subscription[0]);}
+
+public static Subscription[] listSubscriptionsByUser(String v)throws SQLException{return (Subscription[]) getPdbClient().queryForList("listSubscriptionsByUser",v).toArray(new Subscription[0]);}
+
+public static void insertSubscription(Subscription v)throws SQLException{getPdbClient().insert("insertSubscription",v);}
     
     public static Computer[] listComputersByUser(String v)
         throws SQLException
