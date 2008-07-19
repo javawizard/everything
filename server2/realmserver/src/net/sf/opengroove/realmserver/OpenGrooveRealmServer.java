@@ -70,6 +70,7 @@ import DE.knp.MicroCrypt.Sha512;
 import nanohttpd.NanoHTTPD;
 import nanohttpd.NanoHTTPD.Response;
 import net.sf.opengroove.realmserver.data.model.Computer;
+import net.sf.opengroove.realmserver.data.model.ComputerSetting;
 import net.sf.opengroove.realmserver.data.model.User;
 import net.sf.opengroove.realmserver.data.model.UserSetting;
 import net.sf.opengroove.realmserver.web.LoginFilter;
@@ -412,6 +413,14 @@ public class OpenGrooveRealmServer
                 throw new IllegalStateException(
                     "The handshake has not yet completed.");
             return spooler.send(packet);
+        }
+        
+        public boolean sendEncryptedPacket(String id,
+            String command, String responseStatus,
+            String message)
+        {
+            return sendEncryptedPacket(id, command,
+                responseStatus, message.getBytes());
         }
         
         public boolean sendEncryptedPacket(String id,
@@ -2122,7 +2131,36 @@ public class OpenGrooveRealmServer
                 ConnectionHandler connection)
                 throws Exception
             {
-                
+                String[] tokens = tokenize(data);
+                verifyAtLeast(tokens, 1);
+                String username = tokens[0];
+                if (username.equals(""))
+                    username = connection.username;
+                Computer[] computers = DataStore
+                    .listComputersByUser(username);
+                if (computers.length == 0)
+                {
+                    if (DataStore.getUser(username) == null)
+                        throw new FailedResponseException(
+                            "NOSUCHUSER",
+                            "The user specified does not exist.");
+                    throw new FailedResponseException(
+                        "NOCOMPUTERS",
+                        "The user specified has not created any computers.");
+                }
+                connection.sendEncryptedPacket(packetId,
+                    command(), "OK", delimited(computers,
+                        new ToString<Computer>()
+                        {
+                            
+                            @Override
+                            public String toString(
+                                Computer object)
+                            {
+                                return object
+                                    .getComputername();
+                            }
+                        }, "\n").getBytes());
             }
         };
         new Command("getcomputersetting", 256, false, false)
@@ -2134,9 +2172,46 @@ public class OpenGrooveRealmServer
                 ConnectionHandler connection)
                 throws Exception
             {
+                String[] tokens = tokenize(data);
+                verifyAtLeast(tokens, 3);
+                String username = tokens[0];
+                String computerName = tokens[1];
+                String name = tokens[2];
+                boolean allowPrivate = username.equals("");
+                if (allowPrivate)
+                    username = connection.username;
+                boolean isPublic = !allowPrivate;
+                boolean isIntendedPublic = name
+                    .startsWith("public-");
+                boolean isIntendedPrivate = !isIntendedPublic;
+                if (isPublic && isIntendedPrivate)
+                {
+                    throw new FailedResponseException(
+                        "FAIL",
+                        "only properties starting with public- "
+                            + "can be read from other computers");
+                }
+                ComputerSetting setting = DataStore
+                    .getComputerSetting(username,
+                        computerName, name);
+                connection.sendEncryptedPacket(packetId,
+                    command(), "OK", (setting == null ? ""
+                        : setting.getValue()).getBytes());
+            }
+        };
+        new Command("getcomputerinfo", 256, false, true)
+        {
+            
+            @Override
+            public void handle(String packetId,
+                InputStream data,
+                ConnectionHandler connection)
+                throws Exception
+            {
                 // TODO Auto-generated method stub
                 
             }
+            
         };
         new Command("setcomputersetting", 2048, false,
             false)

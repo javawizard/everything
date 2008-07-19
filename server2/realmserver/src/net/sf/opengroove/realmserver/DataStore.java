@@ -6,6 +6,7 @@ import java.util.List;
 import com.ibatis.sqlmap.client.SqlMapClient;
 
 import net.sf.opengroove.realmserver.data.model.Computer;
+import net.sf.opengroove.realmserver.data.model.ComputerSetting;
 import net.sf.opengroove.realmserver.data.model.SearchUsers;
 import net.sf.opengroove.realmserver.data.model.SoftDelete;
 import net.sf.opengroove.realmserver.data.model.StoredMessage;
@@ -228,7 +229,97 @@ public class DataStore
             new UserSetting[0]);
     }
     
+    public static ComputerSetting getComputerSetting(
+        String username, String computerName, String name)
+        throws SQLException
+    {
+        ComputerSetting setting = new ComputerSetting();
+        setting.setUsername(username);
+        setting.setName(name);
+        setting.setComputername(computerName);
+        return (ComputerSetting) getPdbClient()
+            .queryForObject("getComputerSetting", setting);
+    }
+    
+    public static void setComputerSetting(String username,
+        String computerName, String name, String value)
+        throws SQLException
+    {
+        if (value != null && value.equals(""))
+            value = null;
+        ComputerSetting setting = new ComputerSetting();
+        setting.setUsername(username);
+        setting.setComputername(computerName);
+        setting.setName(name);
+        setting.setValue(value);
+        if (value == null)// delete the setting
+        {
+            getPdbClient().delete("deleteComputerSetting",
+                setting);
+        }
+        else if (getComputerSetting(username, computerName,
+            name) != null)// update the setting
+        {
+            getPdbClient().update("updateComputerSetting",
+                setting);
+        }
+        else
+        // create the setting
+        {
+            getPdbClient().insert("insertComputerSetting",
+                setting);
+        }
+        
+    }
+    
+    public static int getComputerSettingSize(
+        String username, String computerName)
+        throws SQLException
+    {
+        ComputerSetting setting = new ComputerSetting();
+        setting.setUsername(username);
+        setting.setComputername(computerName);
+        Integer i = (Integer) getPdbClient()
+            .queryForObject("getComputerSettingSize",
+                setting);
+        if (i == null)
+            i = 0;
+        return i;
+    }
+    
+    public static ComputerSetting[] listComputerSettings(
+        String username, String computerName)
+        throws SQLException
+    {
+        ComputerSetting setting = new ComputerSetting();
+        setting.setUsername(username);
+        setting.setComputername(computerName);
+        return (ComputerSetting[]) getPdbClient()
+            .queryForList("listComputerSettings", setting)
+            .toArray(new ComputerSetting[0]);
+    }
+    
+    public static ComputerSetting[] listPublicComputerSettings(
+        String username, String computerName)
+        throws SQLException
+    {
+        ComputerSetting setting = new ComputerSetting();
+        setting.setUsername(username);
+        setting.setComputername(computerName);
+        return (ComputerSetting[]) getPdbClient()
+            .queryForList("listPublicComputerSettings",
+                setting).toArray(new ComputerSetting[0]);
+    }
+    
     // !ADDTOSQL
+    
+    public static Computer[] listComputersByUser(String v)
+        throws SQLException
+    {
+        return (Computer[]) getPdbClient().queryForList(
+            "listComputersByUser", v).toArray(
+            new Computer[0]);
+    }
     
     public static StoredMessage[] listOutboundMessageInfo(
         String v) throws SQLException

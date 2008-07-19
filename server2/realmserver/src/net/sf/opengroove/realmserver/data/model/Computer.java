@@ -5,6 +5,7 @@ public class Computer
     private String username;
     private String computerName;
     private String type;
+    private String capabilities;
     private long lastOnline;
     
     public String getUsername()
@@ -45,5 +46,15 @@ public class Computer
     public void setLastonline(long lastOnline)
     {
         this.lastOnline = lastOnline;
+    }
+    
+    public String getCapabilities()
+    {
+        return capabilities;
+    }
+    
+    public void setCapabilities(String capabilities)
+    {
+        this.capabilities = capabilities;
     }
 }

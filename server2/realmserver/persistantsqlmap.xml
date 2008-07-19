@@ -94,7 +94,7 @@
     </update>
     <delete id="deleteComputer">
         delete from $$prefix$$computers where username = #username# and
-        computername = #computername#;
+        computername = #computername#
     </delete>
     <select id="listUserSettings"
     parameterClass="java.lang.String"
@@ -151,6 +151,64 @@
     parameterClass="java.lang.String">
         delete from $$prefix$$users where username = #value#
     </delete>
+    
+    
+    <!--start computer settings -->
+    
+    
+        <select id="listComputerSettings"
+    parameterClass="net.sf.opengroove.realmserver.data.model.ComputerSetting"
+    resultClass="net.sf.opengroove.realmserver.data.model.ComputerSetting">
+        select * from $$prefix$$computerusersettings where username = #username#
+        and computername = #computername# 
+    </select>
+    <select id="listPublicComputerSettings"
+    parameterClass="net.sf.opengroove.realmserver.data.model.ComputerSetting"
+    resultClass="net.sf.opengroove.realmserver.data.model.ComputerSetting">
+        select * from $$prefix$$computerusersettings where username = #username#
+        and computername = #computername#
+        and name like 'public-%'
+    </select>
+    <select id="getComputerSettingSize"
+    parameterClass="net.sf.opengroove.realmserver.data.model.ComputerSetting"
+    resultClass="java.lang.Integer">
+        select sum(character_length(name) + character_length(value) + 10) 
+        from $$prefix$$computerusersettings where username = #username#
+        and computername = #computername#
+    </select>
+    <select id="getComputerSetting"
+    parameterClass="net.sf.opengroove.realmserver.data.model.ComputerSetting"
+    resultClass="net.sf.opengroove.realmserver.data.model.ComputerSetting">
+        select * from $$prefix$$computerusersettings where username = #username#
+        and computername = #computername#
+        and name = #name#
+    </select>
+    <insert id="insertComputerSetting"
+    parameterClass="net.sf.opengroove.realmserver.data.model.ComputerSetting">
+        insert into $$prefix$$computerusersettings (username,computername,name,value)
+        values (#username#,#computername#,#name#,#value#)
+    </insert>
+    <update id="setComputerSetting"
+    parameterClass="net.sf.opengroove.realmserver.data.model.ComputerSetting">
+        update $$prefix$$computerusersettings set value=#value#
+        where username=#username# and computername=#computername# and name=#name#
+    </update>
+    <delete id="deleteComputerSetting"
+    parameterClass="net.sf.opengroove.realmserver.data.model.ComputerSetting">
+        delete from $$prefix$$computerusersettings where username = #username#
+        and computername = #computername# and name=#name#
+    </delete>
+    
+    <!--end computer settings -->
+    
+    
     <!-- !ADDTOSQL -->
+
+    <select id="listComputersByUser" 
+         parameterClass="java.lang.String" 
+         resultClass="net.sf.opengroove.realmserver.data.model.Computer" >
+        select * from $$prefix$$computers where username
+        = #username#
+    </select>
     
 </sqlMap>
