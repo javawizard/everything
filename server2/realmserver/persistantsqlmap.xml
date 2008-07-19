@@ -204,6 +204,17 @@
     
     <!-- !ADDTOSQL -->
 
+    <select id="getMatchingSubscriptionCount" 
+         parameterClass="net.sf.opengroove.realmserver.data.model.Subscription" 
+         resultClass="java.lang.Integer" >
+        select count(*) from $$prefix$$subscriptions where type
+        = #type# and username = #username# and onusername
+        = #onusername# and oncomputername =
+        #oncomputername# and onsettingname =
+        #onsettingname# and deletewithtarget = #deletewithtarget#
+        and properties = #properties#
+    </select>
+
     <delete id="deleteSubscription" 
          parameterClass="net.sf.opengroove.realmserver.data.model.Subscription" >
         delete from $$prefix$$subscriptions where type = #type#

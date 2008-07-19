@@ -71,6 +71,7 @@ import nanohttpd.NanoHTTPD;
 import nanohttpd.NanoHTTPD.Response;
 import net.sf.opengroove.realmserver.data.model.Computer;
 import net.sf.opengroove.realmserver.data.model.ComputerSetting;
+import net.sf.opengroove.realmserver.data.model.Subscription;
 import net.sf.opengroove.realmserver.data.model.User;
 import net.sf.opengroove.realmserver.data.model.UserSetting;
 import net.sf.opengroove.realmserver.web.LoginFilter;
@@ -131,10 +132,46 @@ public class OpenGrooveRealmServer
         @Override
         public void run()
         {
-            
+            try
+            {
+                Subscription[] subscriptions = DataStore
+                    .listSubscriptionsByTargetUser(this.username);
+                // TODO: change this to two calls of
+                // listSubscriptionsByTypedTargetUser, as this is more effecient
+                // because it doesn't list subscriptions to the user's
+                // properties as
+                // well
+                for (Subscription subscription : subscriptions)
+                {
+                    String sUser = subscription
+                        .getOnusername();
+                    String sComputer = subscription
+                        .getOncomputername();
+                    if ((subscription.getType()
+                        .equalsIgnoreCase("userstatus") && sUser
+                        .equals(username))
+                        || (subscription.getType()
+                            .equalsIgnoreCase(
+                                "computerstatus")
+                            && computer.equals(sComputer) && sUser
+                            .equals(username)))
+                    {
+                        // the subscription is for this user, so let's check to
+                        // see if the subscription's creator is online
+                    }
+                }
+            }
+            catch (Exception e)
+            {
+                e.printStackTrace();
+            }
         }
-        
     }
+    
+    public static enum Status
+    {
+        OK, FAIL, BADAUTH, BADCOMPUTER, QUOTAEXCEEDED, NOSUCHCOMPUTER, NOSUCHUSER, NORESULTS, ALREADYEXISTS, NOSUCHSUBSCRIPTION
+    };
     
     public static final SecureRandom random = new SecureRandom();
     
@@ -257,7 +294,7 @@ public class OpenGrooveRealmServer
         15);
     
     public static final ThreadPoolExecutor tasks = new ThreadPoolExecutor(
-        100, 400, 20, TimeUnit.SECONDS,
+        20, 400, 20, TimeUnit.SECONDS,
         new LinkedBlockingQueue<Runnable>(3000));
     
     protected static final byte[] EMPTY = new byte[0];
@@ -416,16 +453,14 @@ public class OpenGrooveRealmServer
         }
         
         public boolean sendEncryptedPacket(String id,
-            String command, String responseStatus,
-            String message)
+            String command, Status status, String message)
         {
-            return sendEncryptedPacket(id, command,
-                responseStatus, message.getBytes());
+            return sendEncryptedPacket(id, command, status,
+                message.getBytes());
         }
         
         public boolean sendEncryptedPacket(String id,
-            String command, String responseStatus,
-            byte[] message)
+            String command, Status status, byte[] message)
         {
             try
             {
@@ -434,7 +469,7 @@ public class OpenGrooveRealmServer
                 baos.write(' ');
                 baos.write(command.getBytes());
                 baos.write(' ');
-                baos.write(responseStatus.getBytes());
+                baos.write(status.toString().getBytes());
                 baos.write(' ');
                 baos.write(message);
                 return sendEncryptedPacket(baos
@@ -715,7 +750,7 @@ public class OpenGrooveRealmServer
                     "\\ ", 3);
                 if (first128split.length < 3)
                     throw new FailedResponseException(
-                        "FAIL",
+                        Status.FAIL,
                         "no command input (packets should be of"
                             + " the form packetId commandName arguments)");
                 packetId = first128split[0];
@@ -727,7 +762,9 @@ public class OpenGrooveRealmServer
                         - (startDataIndex));
                 // In the future, the packet could be cached to the file system
                 // if
-                // it's larger than, say, 2048 bytes, to avoid memory errors
+                // it's larger than, say, 2048 bytes, to avoid memory errors.
+                // Since the resultant info is passed into the command via an
+                // input stream, this wouldn't be too hard to do.
                 Command command = commands.get(commandName
                     .toLowerCase());
                 if (command == null)
@@ -1579,7 +1616,7 @@ public class OpenGrooveRealmServer
         int minLength)
     {
         if (objects.length < minLength)
-            throw new FailedResponseException("FAIL",
+            throw new FailedResponseException(Status.FAIL,
                 "Input too short (expected " + minLength
                     + ", found " + objects.length + ")");
     }
@@ -1660,7 +1697,7 @@ public class OpenGrooveRealmServer
                     if (confirmedAuthUser == null)
                     {
                         throw new FailedResponseException(
-                            "BADAUTH",
+                            Status.BADAUTH,
                             "Incorrect username and/or password");
                     }
                     // The user has successfully authenticated. Now we need to
@@ -1674,7 +1711,7 @@ public class OpenGrooveRealmServer
                         if (computer == null)
                         {
                             throw new FailedResponseException(
-                                "BACOMPUTER",
+                                Status.BADCOMPUTER,
                                 "Nonexistant computer specified");
                         }
                     }
@@ -1710,8 +1747,8 @@ public class OpenGrooveRealmServer
                         
                     }
                     connection.sendEncryptedPacket(
-                        packetId, "authenticate", "OK",
-                        EMPTY);
+                        packetId, "authenticate",
+                        Status.OK, EMPTY);
                 }
             }
         };
@@ -1724,7 +1761,7 @@ public class OpenGrooveRealmServer
                 ConnectionHandler connection)
             {
                 connection.sendEncryptedPacket(packetId,
-                    "ping", "OK", new byte[0]);
+                    "ping", Status.OK, new byte[0]);
             }
         };
         new Command("quit", 8, true, true)
@@ -1760,9 +1797,9 @@ public class OpenGrooveRealmServer
                 long timeMillis = System
                     .currentTimeMillis();
                 connection.sendEncryptedPacket(packetId,
-                    "gettime", "OK",
-                    ("" + timeMillis + " " + new Date(
-                        timeMillis)).getBytes());
+                    "gettime", Status.OK, ("" + timeMillis
+                        + " " + new Date(timeMillis))
+                        .getBytes());
             }
             
         };
@@ -1785,7 +1822,7 @@ public class OpenGrooveRealmServer
                     .getUserQuota(connection.username,
                         "computers"))
                     throw new FailedResponseException(
-                        "QUOTAEXCEEDED",
+                        Status.QUOTAEXCEEDED,
                         "You have the maximum number of computers already, which is "
                             + DataStore.getUserQuota(
                                 connection.username,
@@ -1797,7 +1834,7 @@ public class OpenGrooveRealmServer
                 DataStore.addComputer(connection.username,
                     computerName, computerType);
                 connection.sendEncryptedPacket(packetId,
-                    "createcomputer", "OK", EMPTY);
+                    "createcomputer", Status.OK, EMPTY);
             }
             
         };
@@ -1823,18 +1860,18 @@ public class OpenGrooveRealmServer
                     recipientUser, recipientComputer);
                 if (recipientConnection == null)
                     throw new FailedResponseException(
-                        "NOSUCHRECIPIENT",
+                        Status.NOSUCHUSER,
                         "The recipient does not exist or is offline");
                 recipientConnection
                     .sendEncryptedPacket(generateId(),
-                        "receiveimessage", "OK", (""
+                        "receiveimessage", Status.OK, (""
                             + messageId + "\n"
                             + connection.username + "\n"
                             + connection.computerName
                             + "\n" + messageContents)
                             .getBytes());
                 connection.sendEncryptedPacket(packetId,
-                    "sendimessage", "OK", EMPTY);
+                    "sendimessage", Status.OK, EMPTY);
             }
             
         };
@@ -1861,7 +1898,7 @@ public class OpenGrooveRealmServer
                 user.setPassword(Hash.hash(newPassword));
                 DataStore.updateUser(user);
                 connection.sendEncryptedPacket(packetId,
-                    "setpassword", "OK", EMPTY);
+                    "setpassword", Status.OK, EMPTY);
             }
         };
         new Command("getuserstatus", 128, false, false)
@@ -1891,7 +1928,7 @@ public class OpenGrooveRealmServer
                         .getComputer(username, computerName);
                     if (computer == null)
                         throw new FailedResponseException(
-                            "NOSUCHCOMPUTER",
+                            Status.NOSUCHCOMPUTER,
                             "The computer specified doesn't exist");
                     lastOnline += computer.getLastonline()
                         + " "
@@ -1903,7 +1940,7 @@ public class OpenGrooveRealmServer
                 {
                     if (DataStore.getUser(username) == null)
                         throw new FailedResponseException(
-                            "NOSUCHUSER",
+                            Status.NOSUCHUSER,
                             "The user specified doesn't exist");
                     long lastOnlineValue = DataStore
                         .getUserLastOnline(username);
@@ -1915,8 +1952,9 @@ public class OpenGrooveRealmServer
                         && userMap.size() > 0;
                 }
                 connection.sendEncryptedPacket(packetId,
-                    "getuserstatus", "OK", ("" + isOnline
-                        + "\n" + lastOnline).getBytes());
+                    "getuserstatus", Status.OK, (""
+                        + isOnline + "\n" + lastOnline)
+                        .getBytes());
             }
         };
         new Command("setvisibility", 10, false, true)
@@ -1935,7 +1973,7 @@ public class OpenGrooveRealmServer
                     .equalsIgnoreCase("true"));
                 DataStore.updateUser(user);
                 connection.sendEncryptedPacket(packetId,
-                    "setvisibility", "OK", EMPTY);
+                    "setvisibility", Status.OK, EMPTY);
             }
         };
         new Command("getvisibility", 10, false, true)
@@ -1950,7 +1988,7 @@ public class OpenGrooveRealmServer
                 User user = DataStore
                     .getUser(connection.username);
                 connection.sendEncryptedPacket(packetId,
-                    "getvisibility", "OK", ("" + user
+                    "getvisibility", Status.OK, ("" + user
                         .isPubliclylisted()).getBytes());
             }
             
@@ -1977,7 +2015,7 @@ public class OpenGrooveRealmServer
                 {
                     if (!cKey.startsWith("public-"))
                         throw new FailedResponseException(
-                            "FAIL",
+                            Status.FAIL,
                             "The user settings specified must all start with public-");
                 }
                 // We've got the search criteria, now it's time to do the actual
@@ -1991,8 +2029,8 @@ public class OpenGrooveRealmServer
                     .parseInt(offsetString), Integer
                     .parseInt(limitString), keysToSearch);
                 connection.sendEncryptedPacket(packetId,
-                    command(), "OK",
-                    ("" + length + "\n" + delimited(users,
+                    command(), Status.OK, ("" + length
+                        + "\n" + delimited(users,
                         new ToString<User>()
                         {
                             
@@ -2028,7 +2066,7 @@ public class OpenGrooveRealmServer
                     username = connection.username;
                 if (isPrivate && isOtherUser)
                     throw new FailedResponseException(
-                        "FAIL",
+                        Status.FAIL,
                         "Only properties starting with public- "
                             + "can be read for other users.");
                 UserSetting setting = DataStore
@@ -2036,7 +2074,7 @@ public class OpenGrooveRealmServer
                 String value = setting == null ? ""
                     : setting.getValue();
                 connection.sendEncryptedPacket(packetId,
-                    "getusersetting", "OK", value
+                    "getusersetting", Status.OK, value
                         .getBytes());
             }
             
@@ -2061,8 +2099,8 @@ public class OpenGrooveRealmServer
                     settings = DataStore
                         .listPublicUserSettings(username);
                 connection.sendEncryptedPacket(packetId,
-                    "listusersettings", "OK", delimited(
-                        settings,
+                    "listusersettings", Status.OK,
+                    delimited(settings,
                         new ToString<UserSetting>()
                         {
                             
@@ -2108,7 +2146,7 @@ public class OpenGrooveRealmServer
                         .getUserQuota(connection.username,
                             "usersettingsize"))
                     throw new FailedResponseException(
-                        "QUOTAEXCEEDED",
+                        Status.QUOTAEXCEEDED,
                         "You have "
                             + DataStore.getUserQuota(
                                 connection.username,
@@ -2118,7 +2156,7 @@ public class OpenGrooveRealmServer
                 DataStore.setUserSetting(
                     connection.username, name, value);
                 connection.sendEncryptedPacket(packetId,
-                    "setusersetting", "OK", EMPTY);
+                    "setusersetting", Status.OK, EMPTY);
             }
             
         };
@@ -2142,15 +2180,15 @@ public class OpenGrooveRealmServer
                 {
                     if (DataStore.getUser(username) == null)
                         throw new FailedResponseException(
-                            "NOSUCHUSER",
+                            Status.NOSUCHUSER,
                             "The user specified does not exist.");
                     throw new FailedResponseException(
-                        "NOCOMPUTERS",
+                        Status.NORESULTS,
                         "The user specified has not created any computers.");
                 }
                 connection.sendEncryptedPacket(packetId,
-                    command(), "OK", delimited(computers,
-                        new ToString<Computer>()
+                    command(), Status.OK, delimited(
+                        computers, new ToString<Computer>()
                         {
                             
                             @Override
@@ -2181,7 +2219,7 @@ public class OpenGrooveRealmServer
                 if (computerName == null
                     || computerName.equals(""))
                     throw new FailedResponseException(
-                        "FAIL",
+                        Status.FAIL,
                         "No computer specified and not authenticated as a computer");
                 String name = tokens[2];
                 boolean allowPrivate = username.equals("");
@@ -2194,7 +2232,7 @@ public class OpenGrooveRealmServer
                 if (isPublic && isIntendedPrivate)
                 {
                     throw new FailedResponseException(
-                        "FAIL",
+                        Status.FAIL,
                         "only properties starting with public- "
                             + "can be read from other computers");
                 }
@@ -2202,8 +2240,9 @@ public class OpenGrooveRealmServer
                     .getComputerSetting(username,
                         computerName, name);
                 connection.sendEncryptedPacket(packetId,
-                    command(), "OK", (setting == null ? ""
-                        : setting.getValue()).getBytes());
+                    command(), Status.OK,
+                    (setting == null ? "" : setting
+                        .getValue()).getBytes());
             }
         };
         new Command("help", 256, true, true)
@@ -2219,7 +2258,7 @@ public class OpenGrooveRealmServer
                     .sendEncryptedPacket(
                         packetId,
                         command(),
-                        "OK",
+                        Status.OK,
                         "You're speaking to an OpenGroove Realm Server.\r\n"
                             + "Visit www.opengroove.org if you have any questions, or you can send\r\n"
                             + "an email to javawizard@opengroove.org .\r\n\r\n"
@@ -2261,13 +2300,13 @@ public class OpenGrooveRealmServer
                     username, computername);
                 if (computer == null)
                     throw new FailedResponseException(
-                        "NOSUCHCOMPUTER",
+                        Status.NOSUCHCOMPUTER,
                         "The computer specified does not exist");
                 connection
                     .sendEncryptedPacket(
                         packetId,
                         command(),
-                        "OK",
+                        Status.OK,
                         ("" + computer.getType() + "\n" + computer
                             .getCapabilities()).getBytes());
             }
@@ -2311,7 +2350,7 @@ public class OpenGrooveRealmServer
                         .getUserQuota(connection.username,
                             "computersettingsize"))
                     throw new FailedResponseException(
-                        "QUOTAEXCEEDED",
+                        Status.QUOTAEXCEEDED,
                         "You have "
                             + DataStore.getUserQuota(
                                 connection.username,
@@ -2322,7 +2361,7 @@ public class OpenGrooveRealmServer
                     connection.username, computerName,
                     name, value);
                 connection.sendEncryptedPacket(packetId,
-                    command(), "OK", EMPTY);
+                    command(), Status.OK, EMPTY);
             }
         };
         new Command("listcomputersettings", 128, false,
@@ -2353,7 +2392,8 @@ public class OpenGrooveRealmServer
                         .listPublicComputerSettings(
                             username, computerName);
                 connection.sendEncryptedPacket(packetId,
-                    command(), "OK", delimited(settings,
+                    command(), Status.OK, delimited(
+                        settings,
                         new ToString<ComputerSetting>()
                         {
                             
@@ -2375,7 +2415,39 @@ public class OpenGrooveRealmServer
                 ConnectionHandler connection)
                 throws Exception
             {
-                //TODO: pick up here July 19, 2008
+                String[] tokens = tokenize(data);
+                verifyAtLeast(tokens, 5);
+                if (DataStore
+                    .getSubscriptionCount(connection.username) >= DataStore
+                    .getUserQuota(connection.username,
+                        "subscriptions"))
+                    throw new FailedResponseException(
+                        Status.QUOTAEXCEEDED,
+                        "You have too many active subscriptions right now.");
+                String type = tokens[0];
+                String onuser = tokens[1];
+                String oncomputer = tokens[2];
+                String onsetting = tokens[3];
+                boolean deletewithtarget = tokens[4]
+                    .equalsIgnoreCase("true");
+                Subscription subscription = new Subscription();
+                subscription.setType(type);
+                subscription
+                    .setUsername(connection.username);
+                subscription.setOnusername(onuser);
+                subscription.setOncomputername(oncomputer);
+                subscription.setOnsettingname(onsetting);
+                subscription
+                    .setDeletewithtarget(deletewithtarget);
+                subscription.setProperties("");
+                if (DataStore
+                    .getMatchingSubscriptionCount(subscription) != 0)
+                    throw new FailedResponseException(
+                        Status.ALREADYEXISTS,
+                        "You already have a subscription with the settings specified.");
+                DataStore.insertSubscription(subscription);
+                connection.sendEncryptedPacket(packetId,
+                    command(), Status.OK, EMPTY);
             }
         };
         new Command("listsubscriptions", 128, false, false)
@@ -2387,8 +2459,36 @@ public class OpenGrooveRealmServer
                 ConnectionHandler connection)
                 throws Exception
             {
-                // TODO Auto-generated method stub
-                
+                Subscription[] subscriptions = DataStore
+                    .listSubscriptionsByUser(connection.username);
+                if (subscriptions.length == 0)
+                    throw new FailedResponseException(
+                        Status.NORESULTS, "");
+                connection.sendEncryptedPacket(packetId,
+                    command(), Status.OK, delimited(
+                        subscriptions,
+                        new ToString<Subscription>()
+                        {
+                            
+                            @Override
+                            public String toString(
+                                Subscription object)
+                            {
+                                return object.getType()
+                                    + " "
+                                    + object
+                                        .getOnusername()
+                                    + " "
+                                    + object
+                                        .getOncomputername()
+                                    + " "
+                                    + object
+                                        .getOnsettingname()
+                                    + " "
+                                    + object
+                                        .isDeletewithtarget();
+                            }
+                        }, "\n"));
             }
         };
         new Command("deletesubscription", 128, false, false)
@@ -2400,7 +2500,6 @@ public class OpenGrooveRealmServer
                 ConnectionHandler connection)
                 throws Exception
             {
-                // TODO Auto-generated method stub
                 
             }
         };
@@ -2413,8 +2512,30 @@ public class OpenGrooveRealmServer
                 ConnectionHandler connection)
                 throws Exception
             {
-                // TODO Auto-generated method stub
-                
+                String[] tokens = tokenize(data);
+                verifyAtLeast(tokens, 5);
+                String type = tokens[0];
+                String onuser = tokens[1];
+                String oncomputer = tokens[2];
+                String onsetting = tokens[3];
+                boolean deletewithtarget = tokens[4]
+                    .equalsIgnoreCase("true");
+                Subscription subscription = new Subscription();
+                subscription.setType(type);
+                subscription
+                    .setUsername(connection.username);
+                subscription.setOnusername(onuser);
+                subscription.setOncomputername(oncomputer);
+                subscription.setOnsettingname(onsetting);
+                subscription
+                    .setDeletewithtarget(deletewithtarget);
+                subscription.setProperties("");
+                if (DataStore
+                    .getMatchingSubscriptionCount(subscription) == 0)
+                    throw new FailedResponseException(
+                        Status.NOSUCHSUBSCRIPTION,
+                        "The subscription specified does not exist");
+                DataStore.deleteSubscription(subscription);
             }
         };
         new Command("setmessagesetting", 2048, false, false)

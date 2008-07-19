@@ -1,5 +1,7 @@
 package net.sf.opengroove.realmserver;
 
+import net.sf.opengroove.realmserver.OpenGrooveRealmServer.Status;
+
 /**
  * An exception that can be thrown from within a command handler to indicate
  * that the command failed, and that the connection handler should send a
@@ -31,14 +33,14 @@ public class FailedResponseException extends
         // TODO Auto-generated constructor stub
     }
     
-    private String status = "FAIL";
+    private Status status = Status.FAIL;
     
-    public String getStatus()
+    public Status getStatus()
     {
         return status;
     }
     
-    public FailedResponseException(String status,
+    public FailedResponseException(Status status,
         String message)
     {
         super(message);
