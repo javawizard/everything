@@ -71,6 +71,7 @@ import nanohttpd.NanoHTTPD;
 import nanohttpd.NanoHTTPD.Response;
 import net.sf.opengroove.realmserver.data.model.Computer;
 import net.sf.opengroove.realmserver.data.model.ComputerSetting;
+import net.sf.opengroove.realmserver.data.model.StoredMessage;
 import net.sf.opengroove.realmserver.data.model.Subscription;
 import net.sf.opengroove.realmserver.data.model.User;
 import net.sf.opengroove.realmserver.data.model.UserSetting;
@@ -304,7 +305,7 @@ public class OpenGrooveRealmServer
     
     public static enum Status
     {
-        OK, FAIL, BADAUTH, BADCOMPUTER, QUOTAEXCEEDED, NOSUCHCOMPUTER, NOSUCHUSER, NORESULTS, ALREADYEXISTS, NOSUCHSUBSCRIPTION
+        OK, FAIL, BADAUTH, BADCOMPUTER, QUOTAEXCEEDED, NOSUCHCOMPUTER, NOSUCHUSER, NORESULTS, ALREADYEXISTS, NOSUCHSUBSCRIPTION, UNAUTHORIZED
     };
     
     public static final SecureRandom random = new SecureRandom();
@@ -2677,6 +2678,72 @@ public class OpenGrooveRealmServer
                 ConnectionHandler connection)
                 throws Exception
             {
+                String[] tokens = tokenize(data);
+                verifyAtLeast(tokens, 5);
+                String messageId = tokens[0];
+                String recipient = tokens[1];
+                String recipientComputer = tokens[2];
+                boolean targetsComputer = !recipientComputer
+                    .equals("");
+                String maxChunksString = tokens[3];
+                String maxChunkSizeString = tokens[4];
+                int maxChunks = Integer
+                    .parseInt(maxChunksString);
+                int maxChunkSize = Integer
+                    .parseInt(maxChunkSizeString);
+                StoredMessage message = new StoredMessage();
+                message.setId(messageId);
+                message.setSender(connection.username);
+                message
+                    .setFromcomputer(connection.computerName);
+                message.setRecipient(recipient);
+                message.setTocomputer(recipientComputer);
+                message.setMaxchunks(maxChunks);
+                message.setMaxchunksize(maxChunkSize);
+                message.setLifecycle(0);
+                message.setLifecycleprogress(0);
+                message.setLifecycletotal(0);
+                message.setNeedslifecycleupdate(false);
+                message.setFinalized(false);
+                message.setApproved(false);
+                message.setMetadata("");
+                if (DataStore.getUser(recipient) == null)
+                    throw new FailedResponseException(
+                        Status.NOSUCHUSER,
+                        "The recipient user specified does not exist.");
+                if (targetsComputer
+                    && DataStore.getComputer(recipient,
+                        recipientComputer) == null)
+                    throw new FailedResponseException(
+                        Status.NOSUCHCOMPUTER,
+                        "The user does not have a computer by that name.");
+                if (DataStore
+                    .getStoredMessageInfo(messageId) != null)
+                    throw new FailedResponseException(
+                        Status.ALREADYEXISTS,
+                        "The message id specified is already in use.");
+                if (!messageId
+                    .startsWith(connection.username + "-"))
+                    throw new FailedResponseException(
+                        Status.FAIL,
+                        "Message ids must start with your username plus a hyphen");
+                if (maxChunks > 65535
+                    || maxChunkSize > 65535)
+                    throw new FailedResponseException(
+                        "Max chunks and max chunk size must be no larger than 65535 each");
+                long existingMessageSize = DataStore
+                    .getStoredMessageTotalSize(connection.username);
+                int thisMessageSize = maxChunks
+                    * maxChunkSize;
+                if (existingMessageSize + thisMessageSize >= (DataStore
+                    .getUserQuota(connection.username,
+                        "messagecache") * 1l) * 1024)
+                    throw new FailedResponseException(
+                        Status.QUOTAEXCEEDED,
+                        "You don't have enough message space left for this message.");
+                DataStore.insertStoredMessage(message);
+                connection.sendEncryptedPacket(packetId,
+                    command(), Status.OK, EMPTY);
             }
         };
         new Command("setmessagesetting", 2048, false, false)
@@ -2688,8 +2755,31 @@ public class OpenGrooveRealmServer
                 ConnectionHandler connection)
                 throws Exception
             {
-                // TODO Auto-generated method stub
-                
+                String[] tokens = tokenize(data);
+                verifyAtLeast(tokens, 3);
+                String messageId = tokens[0];
+                String name = tokens[1];
+                String value = tokens[2];
+                StoredMessage message = DataStore
+                    .getStoredMessageInfo(messageId);
+                verifyCanChange(connection.username,
+                    message);
+                message.setMetadata(DataStore
+                    .getMessageMetadata(messageId));
+                Properties props = new Properties();
+                props.load(new StringReader(message
+                    .getMetadata()));
+                props.setProperty(name, value);
+                StringWriter sw = new StringWriter();
+                props.store(sw, null);
+                message.setMetadata(sw.toString());
+                if (message.getMetadata().length() > 4096)
+                    throw new FailedResponseException(
+                        Status.QUOTAEXCEEDED,
+                        "Too much settings for this message (only 4096 bytes total are allowed)");
+                DataStore.updateStoredMessage(message);
+                connection.sendEncryptedPacket(packetId,
+                    command(), Status.OK, EMPTY);
             }
         };
         new Command("deletemessagesetting", 256, false,
@@ -2702,8 +2792,30 @@ public class OpenGrooveRealmServer
                 ConnectionHandler connection)
                 throws Exception
             {
-                // TODO Auto-generated method stub
-                
+                String[] tokens = tokenize(data);
+                verifyAtLeast(tokens, 2);
+                String messageId = tokens[0];
+                String name = tokens[1];
+                StoredMessage message = DataStore
+                    .getStoredMessageInfo(messageId);
+                verifyCanChange(connection.username,
+                    message);
+                message.setMetadata(DataStore
+                    .getMessageMetadata(messageId));
+                Properties props = new Properties();
+                props.load(new StringReader(message
+                    .getMetadata()));
+                props.remove(name);
+                StringWriter sw = new StringWriter();
+                props.store(sw, null);
+                message.setMetadata(sw.toString());
+                if (message.getMetadata().length() > 4096)
+                    throw new FailedResponseException(
+                        Status.QUOTAEXCEEDED,
+                        "Too much settings for this message (only 4096 bytes total are allowed)");
+                DataStore.updateStoredMessage(message);
+                connection.sendEncryptedPacket(packetId,
+                    command(), Status.OK, EMPTY);
             }
         };
         new Command("getmessagesetting", 256, false, false)
@@ -2715,8 +2827,22 @@ public class OpenGrooveRealmServer
                 ConnectionHandler connection)
                 throws Exception
             {
-                // TODO Auto-generated method stub
-                
+                String[] tokens = tokenize(data);
+                verifyAtLeast(tokens, 2);
+                String messageId = tokens[0];
+                String name = tokens[1];
+                StoredMessage message = DataStore
+                    .getStoredMessageInfo(messageId);
+                verifyCanReadInfo(connection.username,
+                    message);
+                message.setMetadata(DataStore
+                    .getMessageMetadata(messageId));
+                Properties props = new Properties();
+                props.load(new StringReader(message
+                    .getMetadata()));
+                connection.sendEncryptedPacket(packetId,
+                    command(), Status.OK, props
+                        .getProperty(name));
             }
         };
         new Command("listmessagesettings", 256, false,
@@ -2729,8 +2855,31 @@ public class OpenGrooveRealmServer
                 ConnectionHandler connection)
                 throws Exception
             {
-                // TODO Auto-generated method stub
-                
+                String[] tokens = tokenize(data);
+                verifyAtLeast(tokens, 1);
+                String messageId = tokens[0];
+                StoredMessage message = DataStore
+                    .getStoredMessageInfo(messageId);
+                verifyCanReadInfo(connection.username,
+                    message);
+                message.setMetadata(DataStore
+                    .getMessageMetadata(messageId));
+                Properties props = new Properties();
+                props.load(new StringReader(message
+                    .getMetadata()));
+                connection.sendEncryptedPacket(packetId,
+                    command(), Status.OK, delimited(props
+                        .keySet().toArray(new String[0]),
+                        new ToString<String>()
+                        {
+                            
+                            @Override
+                            public String toString(
+                                String object)
+                            {
+                                return object;
+                            }
+                        }, "\n"));
             }
         };
         new Command("setmessagedata", 65535, false, false)
@@ -2743,7 +2892,7 @@ public class OpenGrooveRealmServer
                 throws Exception
             {
                 // TODO Auto-generated method stub
-                
+                // TODO: pick up here July 20, 2008
             }
         };
         new Command("sendmessage", 256, false, false)
@@ -2908,6 +3057,75 @@ public class OpenGrooveRealmServer
         };
         System.out.println("loaded " + commands.size()
             + " commands");
+    }
+    
+    /**
+     * Ensures that the user specified can access and modify this message. This
+     * means that they are the creator of the message, and that the message has
+     * not yet been approved. If the above conditions are not met, a
+     * FailedResponseException is thrown.
+     * 
+     * @param username
+     *            The username of the user that is trying to access the message
+     * @param message
+     *            The message itself
+     */
+    public static void verifyCanChange(String username,
+        StoredMessage message)
+    {
+        if (message == null)
+            throw new FailedResponseException(
+                Status.UNAUTHORIZED, "");
+        if (message == null
+            || (!message.getSender().equals(username))
+            || message.isApproved())
+            throw new FailedResponseException(
+                Status.UNAUTHORIZED, "");
+    }
+    
+    public static void verifyCanReadData(String username,
+        StoredMessage message)
+    {
+        if (message == null)
+            throw new FailedResponseException(
+                Status.UNAUTHORIZED, "");
+        boolean ok = (message.getSender().equalsIgnoreCase(
+            username) && !message.isFinalized())
+            || (message.getRecipient().equalsIgnoreCase(
+                username) && message.isApproved());
+        if (!ok)
+            throw new FailedResponseException(
+                Status.UNAUTHORIZED, "");
+    }
+    
+    public static void verifyCanReadInfo(String username,
+        StoredMessage message)
+    {
+        if (message == null)
+            throw new FailedResponseException(
+                Status.UNAUTHORIZED, "");
+        boolean ok = (message.getSender()
+            .equalsIgnoreCase(username))
+            || (message.getRecipient().equalsIgnoreCase(
+                username) && message.isFinalized());
+        if (!ok)
+            throw new FailedResponseException(
+                Status.UNAUTHORIZED, "");
+    }
+    
+    public static void verifyCanDelete(String username,
+        StoredMessage message)
+    {
+        if (message == null)
+            throw new FailedResponseException(
+                Status.UNAUTHORIZED, "");
+        boolean ok = (message.getSender().equalsIgnoreCase(
+            username) && !message.isApproved())
+            || (message.getRecipient().equalsIgnoreCase(
+                username) && message.isApproved());
+        if (!ok)
+            throw new FailedResponseException(
+                Status.UNAUTHORIZED, "");
     }
     
     public static <T> String delimited(T[] items,

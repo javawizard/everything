@@ -6,6 +6,55 @@
 <sqlMap>
     <!-- !ADDTOSQL -->
 
+    <update id="updateStoredMessageInfo" 
+         parameterClass="net.sf.opengroove.realmserver.data.model.StoredMessage" >
+        update $$prefix$$storedmessages set sender = #sender#,
+        recipient=#recipient#,fromcomputer=#fromcomputer#,
+        tocomputer=#tocomputer#,maxchunks=#maxchunks#,
+        maxchunksize=#maxchunksize#,lifecycle=#lifecycle#,
+        lifecycleprogress=#lifecycleprogress#,needslifecycleupdate
+        =#needslifecycleupdate#,finalized=#finalized#,
+        approved=#approved#
+        where id = #id#
+    </update>
+
+    <select id="getStoredMessageDataSize" 
+         parameterClass="java.lang.String" 
+         resultClass="java.lang.Integer" >
+        select sum(length(contents)) from storedmessagedata
+        where id = #value#
+    </select>
+
+    <select id="getStoredMessageChunkCount" 
+         parameterClass="java.lang.String" 
+         resultClass="java.lang.Integer" >
+        select count(*) from $$prefix$$storedmessagedata
+        where id = #value#
+    </select>
+
+    <select id="getStoredMessageTotalSize" 
+         parameterClass="java.lang.String" 
+         resultClass="java.lang.Long" >
+        select (select sum(length(contents)) from 
+        $$prefix$$storedmessagedata where id in (select id from
+        $$prefix$$storedmessages where (sender = #value# and
+        approved = false) or (recipient = #value# and approved
+        = true) + (select sum(length(metadata)+10) from
+        $$prefix$$storedmessages where (sender = #value# and
+        approved = false) or (recipient = #value# and approved
+        = true))
+    </select>
+
+    <select id="getStoredMessageInfo" 
+         parameterClass="java.lang.String" 
+         resultClass="net.sf.opengroove.realmserver.data.model.StoredMessage" >
+        select id,sender,recipient,fromcomputer,tocomputer,
+        maxchunks,maxchunksize,lifecycle,lifecycleprogress,
+        lifecycletotal,needslifecycleupdate,finalized,approved
+        from $$prefix$$storedmessages
+        where id = #value#
+    </select>
+
     <select id="listOutboundMessageInfo" 
          parameterClass="java.lang.String" 
          resultClass="net.sf.opengroove.realmserver.data.model.StoredMessage" >

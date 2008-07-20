@@ -320,7 +320,41 @@ public class DataStore
     
     // !ADDTOSQL
     
-    public static Integer getMatchingSubscriptionCount(
+    public static void updateStoredMessageInfo(
+        StoredMessage v) throws SQLException
+    {
+        getLdbClient().update("updateStoredMessageInfo", v);
+    }
+    
+    public static Integer getStoredMessageDataSize(String v)
+        throws SQLException
+    {
+        return (Integer) getLdbClient().queryForObject(
+            "getStoredMessageDataSize", v);
+    }
+    
+    public static Integer getStoredMessageChunkCount(
+        String v) throws SQLException
+    {
+        return (Integer) getLdbClient().queryForObject(
+            "getStoredMessageChunkCount", v);
+    }
+    
+    public static long getStoredMessageTotalSize(String v)
+        throws SQLException
+    {
+        return (Long) getLdbClient().queryForObject(
+            "getStoredMessageTotalSize", v);
+    }
+    
+    public static StoredMessage getStoredMessageInfo(
+        String v) throws SQLException
+    {
+        return (StoredMessage) getLdbClient()
+            .queryForObject("getStoredMessageInfo", v);
+    }
+    
+    public static int getMatchingSubscriptionCount(
         Subscription v) throws SQLException
     {
         return (Integer) getPdbClient().queryForObject(
@@ -333,7 +367,7 @@ public class DataStore
         getPdbClient().delete("deleteSubscription", v);
     }
     
-    public static Integer getSubscriptionCount(String v)
+    public static int getSubscriptionCount(String v)
         throws SQLException
     {
         return (Integer) getPdbClient().queryForObject(
