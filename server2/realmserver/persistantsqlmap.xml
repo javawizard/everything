@@ -123,7 +123,7 @@
         insert into $$prefix$$usersettings (username,name,value)
         values (#username#,#name#,#value#)
     </insert>
-    <update id="setUserSetting"
+    <update id="updateUserSetting"
     parameterClass="net.sf.opengroove.realmserver.data.model.UserSetting">
         update $$prefix$$usersettings set value=#value#
         where username=#username# and name=#name#
@@ -188,7 +188,7 @@
         insert into $$prefix$$computerusersettings (username,computername,name,value)
         values (#username#,#computername#,#name#,#value#)
     </insert>
-    <update id="setComputerSetting"
+    <update id="updateComputerSetting"
     parameterClass="net.sf.opengroove.realmserver.data.model.ComputerSetting">
         update $$prefix$$computerusersettings set value=#value#
         where username=#username# and computername=#computername# and name=#name#
@@ -227,7 +227,7 @@
     <select id="getSubscriptionCount" 
          parameterClass="java.lang.String" 
          resultClass="java.lang.Integer" >
-        select count(*) from subscriptions where username
+        select count(*) from $$prefix$$subscriptions where username
         = #value#
     </select>
 
@@ -263,7 +263,7 @@
     <insert id="insertSubscription" 
          parameterClass="net.sf.opengroove.realmserver.data.model.Subscription" >
         insert into $$prefix$$subscriptions values (
-        #type#,#onusername#,#oncomputername#,
+        #type#,#username#,#onusername#,#oncomputername#,
         #onsettingname#,#deletewithtarget#,#properties#)
     </insert>
 

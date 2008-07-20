@@ -158,6 +158,140 @@ public class OpenGrooveRealmServer
                     {
                         // the subscription is for this user, so let's check to
                         // see if the subscription's creator is online
+                        Map<String, ConnectionHandler> userMap = connectionsByAuth
+                            .get(subscription.getUsername());
+                        if (userMap != null)
+                        {
+                            for (ConnectionHandler handler : userMap
+                                .values())
+                            {
+                                if (handler.isAlive())
+                                {
+                                    handler
+                                        .sendEncryptedPacket(
+                                            generateId(),
+                                            "subscriptionevent",
+                                            Status.OK,
+                                            subscription
+                                                .getType()
+                                                + "\n"
+                                                + subscription
+                                                    .getOnusername()
+                                                + "\n"
+                                                + subscription
+                                                    .getOncomputername()
+                                                + "\n"
+                                                + subscription
+                                                    .getOnsettingname()
+                                                + "\n"
+                                                + subscription
+                                                    .isDeletewithtarget());
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+            catch (Exception e)
+            {
+                e.printStackTrace();
+            }
+        }
+    }
+    
+    public static class UserSettingNotifier implements
+        Runnable
+    {
+        private String username;
+        private String computer;
+        private String setting;
+        
+        public UserSettingNotifier(String username,
+            String computer, String setting)
+        {
+            this.username = username;
+            this.computer = computer;
+            this.setting = setting;
+            if (computer != null && computer.equals(""))
+                this.computer = null;
+        }
+        
+        @Override
+        public void run()
+        {
+            if (!setting.startsWith("public-"))
+                // don't allow subscriptions to non-public settings, if a user
+                // needs to be notified of changes to one of it's computer's
+                // settings it should tell the computer that and have the
+                // computer send it an imessage whenever it changes a setting
+                return;
+            try
+            {
+                Subscription[] subscriptions = DataStore
+                    .listSubscriptionsByTargetUser(this.username);
+                // TODO: change this to two calls of
+                // listSubscriptionsByTypedTargetUser, as this is more effecient
+                // because it doesn't list subscriptions to the user's status as
+                // well
+                for (Subscription subscription : subscriptions)
+                {
+                    String sUser = subscription
+                        .getOnusername();
+                    String sComputer = subscription
+                        .getOncomputername();
+                    String sSetting = subscription
+                        .getOnsettingname();
+                    boolean isUserSetting = computer == null;
+                    boolean isComputerSetting = !isUserSetting;
+                    boolean isSubscriberUserSetting = subscription
+                        .getType().equalsIgnoreCase(
+                            "usersetting");
+                    boolean isSubscriberComputerSetting = !isSubscriberUserSetting;
+                    if ((isUserSetting
+                        && isSubscriberUserSetting && subscription
+                        .getOnsettingname()
+                        .equalsIgnoreCase(setting))
+                        || (isComputerSetting
+                            && isSubscriberComputerSetting
+                            && subscription
+                                .getOncomputername()
+                                .equalsIgnoreCase(computer) && subscription
+                            .getOnsettingname()
+                            .equalsIgnoreCase(setting)))
+                    {
+                        // the subscription is for this setting, so send a
+                        // subscription event to the user
+                        Map<String, ConnectionHandler> userMap = connectionsByAuth
+                            .get(subscription.getUsername());
+                        if (userMap != null)
+                        {
+                            for (ConnectionHandler handler : userMap
+                                .values())
+                            {
+                                if (handler.isAlive())
+                                {
+                                    handler
+                                        .sendEncryptedPacket(
+                                            generateId(),
+                                            "subscriptionevent",
+                                            Status.OK,
+                                            subscription
+                                                .getType()
+                                                + "\n"
+                                                + subscription
+                                                    .getOnusername()
+                                                + "\n"
+                                                + subscription
+                                                    .getOncomputername()
+                                                + "\n"
+                                                + subscription
+                                                    .getOnsettingname()
+                                                + "\n"
+                                                + subscription
+                                                    .isDeletewithtarget());
+                                }
+                            }
+                        }
                     }
                 }
             }
@@ -2155,6 +2289,8 @@ public class OpenGrooveRealmServer
                             + settingSize);
                 DataStore.setUserSetting(
                     connection.username, name, value);
+                tasks.execute(new UserSettingNotifier(
+                    connection.username, null, name));
                 connection.sendEncryptedPacket(packetId,
                     "setusersetting", Status.OK, EMPTY);
             }
@@ -2360,6 +2496,10 @@ public class OpenGrooveRealmServer
                 DataStore.setComputerSetting(
                     connection.username, computerName,
                     name, value);
+                tasks
+                    .execute(new UserSettingNotifier(
+                        connection.username, computerName,
+                        name));
                 connection.sendEncryptedPacket(packetId,
                     command(), Status.OK, EMPTY);
             }
