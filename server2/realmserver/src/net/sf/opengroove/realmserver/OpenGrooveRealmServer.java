@@ -2640,18 +2640,6 @@ public class OpenGrooveRealmServer
                 ConnectionHandler connection)
                 throws Exception
             {
-                
-            }
-        };
-        new Command("createmessage", 256, false, false)
-        {
-            
-            @Override
-            public void handle(String packetId,
-                InputStream data,
-                ConnectionHandler connection)
-                throws Exception
-            {
                 String[] tokens = tokenize(data);
                 verifyAtLeast(tokens, 5);
                 String type = tokens[0];
@@ -2676,6 +2664,19 @@ public class OpenGrooveRealmServer
                         Status.NOSUCHSUBSCRIPTION,
                         "The subscription specified does not exist");
                 DataStore.deleteSubscription(subscription);
+                connection.sendEncryptedPacket(packetId,
+                    command(), Status.OK, EMPTY);
+            }
+        };
+        new Command("createmessage", 256, false, false)
+        {
+            
+            @Override
+            public void handle(String packetId,
+                InputStream data,
+                ConnectionHandler connection)
+                throws Exception
+            {
             }
         };
         new Command("setmessagesetting", 2048, false, false)
