@@ -2717,16 +2717,16 @@ public class OpenGrooveRealmServer
                     throw new FailedResponseException(
                         Status.NOSUCHCOMPUTER,
                         "The user does not have a computer by that name.");
-                if (DataStore
-                    .getStoredMessageInfo(messageId) != null)
-                    throw new FailedResponseException(
-                        Status.ALREADYEXISTS,
-                        "The message id specified is already in use.");
                 if (!messageId
                     .startsWith(connection.username + "-"))
                     throw new FailedResponseException(
                         Status.FAIL,
                         "Message ids must start with your username plus a hyphen");
+                if (DataStore
+                    .getStoredMessageInfo(messageId) != null)
+                    throw new FailedResponseException(
+                        Status.ALREADYEXISTS,
+                        "The message id specified is already in use.");
                 if (maxChunks > 65535
                     || maxChunkSize > 65535)
                     throw new FailedResponseException(
@@ -2891,8 +2891,56 @@ public class OpenGrooveRealmServer
                 ConnectionHandler connection)
                 throws Exception
             {
-                // TODO Auto-generated method stub
-                // TODO: pick up here July 20, 2008
+                // This command is a bit tricky, as we only want to read up to
+                // the number of tokens we need (2, messageid and chunk number)
+                // plus one additional space, and the rest of the data is the
+                // actual contents of the chunk.
+                StringBuffer messageIdBuffer = new StringBuffer();
+                StringBuffer chunkNumberBuffer = new StringBuffer();
+                int pointer = 0;
+                while (pointer++ < 128)
+                {
+                    if (pointer == 127)
+                        throw new ProtocolMismatchException(
+                            "Too much data received in the packet");
+                    int i = data.read();
+                    if (i == ' ')
+                        break;
+                    messageIdBuffer.append((char) i);
+                }
+                while (pointer++ < 128)
+                {
+                    if (pointer == 127)
+                        throw new ProtocolMismatchException(
+                            "Too much data received in the packet");
+                    int i = data.read();
+                    if (i == ' ')
+                        break;
+                    chunkNumberBuffer.append((char) i);
+                }
+                // at this point we have the message id and chunk number, and
+                // the input stream (data) is positioned at the start of the
+                // chunk's actual data
+                StoredMessage message = DataStore
+                    .getStoredMessageInfo(messageIdBuffer
+                        .toString());
+                verifyCanChange(connection.username,
+                    message);
+                if (DataStore
+                    .getStoredMessageChunkCount(message
+                        .getId()) > message.getMaxchunks())
+                    throw new FailedResponseException(
+                        Status.QUOTAEXCEEDED,
+                        "The message already has the maximum number of chunks");
+                byte[] contents = readToBytes(data);
+                if (contents.length > message
+                    .getMaxchunksize())
+                    throw new FailedResponseException(
+                        Status.QUOTAEXCEEDED,
+                        "The chunk specified is larger than the maximum "
+                            + "chunk size for this message");
+                verifyWithinMessageQuota(
+                    connection.username, contents.length);
             }
         };
         new Command("sendmessage", 256, false, false)
@@ -3057,6 +3105,32 @@ public class OpenGrooveRealmServer
         };
         System.out.println("loaded " + commands.size()
             + " commands");
+    }
+    
+    /**
+     * verifies that the user has enough space in their message cache to add the
+     * specified amount of data to it.
+     * 
+     * @param username
+     *            The user's username
+     * @param thisMessageSize
+     *            The amount of new data to add to the user's cache
+     * @throws SQLException
+     *             If an SQL error occures while querying the database
+     * @throws FailedResponseException
+     *             If the user does not have enough space in their message cache
+     *             to add the specified amount of data
+     */
+    public static void verifyWithinMessageQuota(
+        String username, int thisMessageSize)
+        throws SQLException
+    {
+        if (DataStore.getStoredMessageTotalSize(username)
+            + thisMessageSize >= (DataStore.getUserQuota(
+            username, "messagecache") * 1l) * 1024)
+            throw new FailedResponseException(
+                Status.QUOTAEXCEEDED,
+                "You don't have enough message space left");
     }
     
     /**
