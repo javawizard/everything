@@ -15,25 +15,29 @@ alert("${requestScope.alertMessage}");
 <tr><td>
 <table border="0" cellspacing="0" cellpadding="0">
 <tr><td colspan="3"><h2 style="display:inline">&nbsp;&nbsp;&nbsp;OpenGroove Realm Server</h2><br/>&nbsp;</td></tr>
-<tr><td style="border-bottom: thin solid black"><%for(int i=0;i<10;i++){%>&nbsp;<%}%></td>
-<td
-style="border-bottom: thin solid black">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-<a href="/logout"
+<tr><td><%for(int i=0;i<10;i++){%>&nbsp;<%}%></td>
+<td>&nbsp;</td>
+<td><a href="/logout"
  style="text-decoration: none;color:black;border:thin none">Log out</a>&nbsp;&nbsp;
 </td>
-<td>&nbsp;</td>
 </tr>
-<tr><td><table border="0" cellspacing="0" cellpadding="0">
+<tr><td valign="top">
+<table width="100" border="0" cellspacing="0" cellpadding="1"
+style="border-right:thin solid black">
 <c:forEach items="${requestScope.tabs}" var="tab">
-<tr><td style="border: thin solid black;border-top:none<c:if
-test="${requestScope.selectedTab==tab.key}">;border-right: none</c:if>">
-&nbsp;<a href="${requestScope.rendererPath}/${tab.value}"
-style="text-decoration: none;color:black;border:thin none">${tab.key}</a>&nbsp;</td>
+<tr><td>
+&nbsp;<c:if
+test="${requestScope.selectedTab==tab.key}"><b></c:if>
+<a href="${requestScope.rendererPath}/${tab.value}"
+style="text-decoration: none;color:black;border:thin none">${tab.key}</a>&nbsp;
+<c:if test="${requestScope.selectedTab==tab.key}"></b></c:if>
+</td></tr>
 </c:forEach></table></td>
-<td><table border="0" cellspacing="0" cellpadding="12"><tr>
-<td><jsp:include page="pages/${requestScope.page}"/></td></tr></table></td>
+<td valign="top"><table border="0" cellspacing="0" cellpadding="12"><tr>
+<td valing="top"><jsp:include page="pages/${requestScope.page}"/>
+</td></tr></table></td>
 <td>&nbsp;</td></tr>
-<tr><td>&nbsp;</td><td style="border-top: thin solid black"
+<tr><td>&nbsp;</td><td
  colspan="2">&nbsp;&nbsp;&nbsp;&nbsp;<small><a 
 href="http://www.opengroove.org" style="text-decoration: none">OpenGroove</a>
 </small></td></tr>
