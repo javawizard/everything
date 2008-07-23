@@ -72,6 +72,7 @@ import nanohttpd.NanoHTTPD.Response;
 import net.sf.opengroove.realmserver.data.model.Computer;
 import net.sf.opengroove.realmserver.data.model.ComputerSetting;
 import net.sf.opengroove.realmserver.data.model.StoredMessage;
+import net.sf.opengroove.realmserver.data.model.StoredMessageData;
 import net.sf.opengroove.realmserver.data.model.Subscription;
 import net.sf.opengroove.realmserver.data.model.User;
 import net.sf.opengroove.realmserver.data.model.UserSetting;
@@ -2926,6 +2927,12 @@ public class OpenGrooveRealmServer
                         .toString());
                 verifyCanChange(connection.username,
                     message);
+                StoredMessageData dataParam = new StoredMessageData();
+                dataParam.setId(message.getId());
+                dataParam
+                    .setBlock(Integer
+                        .parseInt(chunkNumberBuffer
+                            .toString()));
                 if (DataStore
                     .getStoredMessageChunkCount(message
                         .getId()) > message.getMaxchunks())
@@ -2941,6 +2948,25 @@ public class OpenGrooveRealmServer
                             + "chunk size for this message");
                 verifyWithinMessageQuota(
                     connection.username, contents.length);
+                // This doesn't allow the last 64K of message cache to be used
+                // if we're replacing a chunk in the message instead of adding a
+                // new one, this shouldn't be a huge issue for now as message
+                // caches are usually more like 100MB
+                // 
+                // Ok, we're ready to add the message chunk to the database.
+                dataParam.setRead(false);
+                dataParam.setContents(contents);
+                if (DataStore
+                    .getStoredMessageDataInfo(dataParam) == null)
+                    // insert as a new chunk
+                    DataStore
+                        .insertStoredMessageData(dataParam);
+                else
+                    // not null, replace the chunk
+                    DataStore
+                        .updateStoredMessageData(dataParam);
+                connection.sendEncryptedPacket(packetId,
+                    command(), Status.OK, "");
             }
         };
         new Command("sendmessage", 256, false, false)
@@ -2952,8 +2978,20 @@ public class OpenGrooveRealmServer
                 ConnectionHandler connection)
                 throws Exception
             {
-                // TODO Auto-generated method stub
-                
+                String[] tokens = tokenize(data);
+                verifyAtLeast(tokens, 1);
+                String messageId = tokens[0];
+                StoredMessage message = DataStore
+                    .getStoredMessageInfo(messageId);
+                verifyCanChange(connection.username,
+                    message);
+                // If we get here then the user is the sender of the message and
+                // the message has not been sent (finalized) yet, so go ahead
+                // and perform the finalization
+                message.setFinalized(true);
+                DataStore.updateStoredMessageInfo(message);
+                connection.sendEncryptedPacket(packetId,
+                    command(), Status.OK, "");
             }
         };
         new Command("getmessagelifecycle", 256, false,
@@ -2966,7 +3004,6 @@ public class OpenGrooveRealmServer
                 ConnectionHandler connection)
                 throws Exception
             {
-                // TODO Auto-generated method stub
                 
             }
         };
@@ -2980,7 +3017,8 @@ public class OpenGrooveRealmServer
                 ConnectionHandler connection)
                 throws Exception
             {
-                // TODO Auto-generated method stub
+                StoredMessage[] messages = DataStore
+                    .listApprovedMessageInfo(connection.username);
                 
             }
         };
@@ -3136,7 +3174,7 @@ public class OpenGrooveRealmServer
     /**
      * Ensures that the user specified can access and modify this message. This
      * means that they are the creator of the message, and that the message has
-     * not yet been approved. If the above conditions are not met, a
+     * not yet been finalized. If the above conditions are not met, a
      * FailedResponseException is thrown.
      * 
      * @param username
@@ -3152,7 +3190,7 @@ public class OpenGrooveRealmServer
                 Status.UNAUTHORIZED, "");
         if (message == null
             || (!message.getSender().equals(username))
-            || message.isApproved())
+            || message.isFinalized())
             throw new FailedResponseException(
                 Status.UNAUTHORIZED, "");
     }
