@@ -5,7 +5,7 @@ import java.util.ArrayList;
 import java.util.Properties;
 
 import net.sf.opengroove.client.OpenGroove;
-import net.sf.opengroove.client.com.Communicator;
+import net.sf.opengroove.client.com.OldCommunicator;
 
 public abstract class Feature
 {
@@ -13,14 +13,14 @@ public abstract class Feature
 
 	String typeId;
 
-	private Communicator communicator;
+	private OldCommunicator communicator;
 
-	public Communicator getCommunicator()
+	public OldCommunicator getCommunicator()
 	{
 		return communicator;
 	}
 
-	void setCommunicator(Communicator communicator)
+	void setCommunicator(OldCommunicator communicator)
 	{
 		this.communicator = communicator;
 	}

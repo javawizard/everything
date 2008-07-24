@@ -13,17 +13,17 @@ public interface StatusListener
 	/**
 	 * called when the list of all users is updated.
 	 */
-	public void allUsersUpdated(Communicator c);
+	public void allUsersUpdated(OldCommunicator c);
 
 	/**
 	 * called when the list of online users has been updated.
 	 */
-	public void onlineUsersUpdated(Communicator c);
+	public void onlineUsersUpdated(OldCommunicator c);
 
 	/**
 	 * called when the list of offline users has been updated.
 	 */
-	public void offlineUsersUpdated(Communicator c);
+	public void offlineUsersUpdated(OldCommunicator c);
 
 	/**
 	 * called when any of the user lists are updated. this means that this
@@ -31,13 +31,13 @@ public interface StatusListener
 	 * onlineUsersChanged(), and offlineUsersChanged().
 	 * 
 	 */
-	public void anyUsersUpdated(Communicator c);
+	public void anyUsersUpdated(OldCommunicator c);
 
 	/**
 	 * called when the user status hash has been updated.
 	 * 
 	 */
-	public void userStatusHashUpdated(Communicator c);
+	public void userStatusHashUpdated(OldCommunicator c);
 
 	/**
 	 * called when the user status hash has changed. this means that the
@@ -45,7 +45,7 @@ public interface StatusListener
 	 * last one it had received.
 	 * 
 	 */
-	public void userStatusHashChanged(Communicator c);
+	public void userStatusHashChanged(OldCommunicator c);
 
 	/**
 	 * indicates that a user has signed on. in the future, this method will show
@@ -54,7 +54,7 @@ public interface StatusListener
 	 * @param c
 	 * @param arguments
 	 */
-	public void userHere(Communicator c, String arguments);
+	public void userHere(OldCommunicator c, String arguments);
 
 	/**
 	 * indicates that a user has signed off. in the future, this mtehod will
@@ -63,5 +63,5 @@ public interface StatusListener
 	 * @param c
 	 * @param arguments
 	 */
-	public void userGone(Communicator c, String arguments);
+	public void userGone(OldCommunicator c, String arguments);
 }

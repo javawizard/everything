@@ -11,7 +11,7 @@ import javax.swing.JFrame;
 
 import net.sf.opengroove.client.OpenGroove;
 import net.sf.opengroove.client.Storage;
-import net.sf.opengroove.client.com.Communicator;
+import net.sf.opengroove.client.com.OldCommunicator;
 import net.sf.opengroove.client.notification.TaskbarNotification;
 import net.sf.opengroove.client.plugins.Plugin;
 
@@ -23,7 +23,7 @@ public abstract class Workspace implements Serializable
 
 	private WorkspaceWrapper wrapper;
 
-	private Communicator communicator;
+	private OldCommunicator communicator;
 
 	private boolean needsAttention;
 
@@ -456,12 +456,12 @@ public abstract class Workspace implements Serializable
 		return communicator.listWorkspaceProperties(wrapper.getId(), prefix);
 	}
 
-	Communicator getCommunicator()
+	OldCommunicator getCommunicator()
 	{
 		return communicator;
 	}
 
-	void setCommunicator(Communicator communicator)
+	void setCommunicator(OldCommunicator communicator)
 	{
 		this.communicator = communicator;
 	}

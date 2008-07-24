@@ -27,7 +27,7 @@ import net.sf.opengroove.client.workspace.SetList;
  * @author Alexander Boyd
  * 
  */
-public class Communicator
+public class OldCommunicator
 {
 	public LowLevelCommunicator communicator;
 
@@ -48,7 +48,7 @@ public class Communicator
 	private static File userMdCache = new File(cacheFile, "hUserMetadataCache")
 			.getAbsoluteFile();
 
-	public Communicator(LowLevelCommunicator communicator)
+	public OldCommunicator(LowLevelCommunicator communicator)
 	{
 		cacheFile.mkdirs();
 		allUsersCache.mkdirs();
@@ -98,8 +98,8 @@ public class Communicator
 					setFolderContents(allUsersCache, allUsers);
 					for (StatusListener listener : listStatusListeners())
 					{
-						listener.allUsersUpdated(Communicator.this);
-						listener.anyUsersUpdated(Communicator.this);
+						listener.allUsersUpdated(OldCommunicator.this);
+						listener.anyUsersUpdated(OldCommunicator.this);
 					}
 				} else if (command.equalsIgnoreCase("LISTONLINE"))
 				{
@@ -114,8 +114,8 @@ public class Communicator
 					onlineUsers.retainAll(newUsers);
 					for (StatusListener listener : listStatusListeners())
 					{
-						listener.onlineUsersUpdated(Communicator.this);
-						listener.anyUsersUpdated(Communicator.this);
+						listener.onlineUsersUpdated(OldCommunicator.this);
+						listener.anyUsersUpdated(OldCommunicator.this);
 					}
 				} else if (command.equalsIgnoreCase("LISTOFFLINE"))
 				{
@@ -130,8 +130,8 @@ public class Communicator
 					offlineUsers.retainAll(newUsers);
 					for (StatusListener listener : listStatusListeners())
 					{
-						listener.offlineUsersUpdated(Communicator.this);
-						listener.anyUsersUpdated(Communicator.this);
+						listener.offlineUsersUpdated(OldCommunicator.this);
+						listener.anyUsersUpdated(OldCommunicator.this);
 					}
 				} else if (command.equalsIgnoreCase("GETUSERSTATUSHASH"))
 				{
@@ -139,12 +139,12 @@ public class Communicator
 					userStatusHash = arguments;
 					for (StatusListener listener : listStatusListeners())
 					{
-						listener.userStatusHashUpdated(Communicator.this);
+						listener.userStatusHashUpdated(OldCommunicator.this);
 					}
 					if (!oldHash.equals(arguments))
 						for (StatusListener listener : listStatusListeners())
 						{
-							listener.userStatusHashChanged(Communicator.this);
+							listener.userStatusHashChanged(OldCommunicator.this);
 						}
 				} else if (command.equalsIgnoreCase("GETUSERMETADATA"))
 				{
@@ -157,13 +157,13 @@ public class Communicator
 				{
 					for (StatusListener listener : listStatusListeners())
 					{
-						listener.userHere(Communicator.this, arguments);
+						listener.userHere(OldCommunicator.this, arguments);
 					}
 				} else if (command.equalsIgnoreCase("USERGONE"))
 				{
 					for (StatusListener listener : listStatusListeners())
 					{
-						listener.userGone(Communicator.this, arguments);
+						listener.userGone(OldCommunicator.this, arguments);
 					}
 				}
 			}

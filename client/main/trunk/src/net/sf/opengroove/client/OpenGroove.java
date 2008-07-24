@@ -63,7 +63,7 @@ import javax.swing.UIManager.LookAndFeelInfo;
 import javax.swing.border.EmptyBorder;
 
 import net.sf.opengroove.client.com.AuthenticationException;
-import net.sf.opengroove.client.com.Communicator;
+import net.sf.opengroove.client.com.OldCommunicator;
 import net.sf.opengroove.client.com.LowLevelCommunicator;
 import net.sf.opengroove.client.download.PluginDownloadManager;
 import net.sf.opengroove.client.features.FeatureComponentHandler;
@@ -103,7 +103,7 @@ public class OpenGroove
 {
     public static LowLevelCommunicator lcom;
     
-    public static Communicator com;
+    public static OldCommunicator com;
     
     static boolean updatesEnabled = false;
     
@@ -479,7 +479,7 @@ public class OpenGroove
             }.start();
             lcom = new LowLevelCommunicator(
                 getConnectHost(), getConnectPort(), true);
-            com = new Communicator(lcom);
+            com = new OldCommunicator(lcom);
             loadFeatures();
             boolean successfulAuth = false;
             if (Storage.getUsers().length == 0)

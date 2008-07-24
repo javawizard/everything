@@ -15,7 +15,7 @@ import javax.swing.JTabbedPane;
 
 import net.sf.opengroove.client.OpenGroove;
 import net.sf.opengroove.client.Storage;
-import net.sf.opengroove.client.com.Communicator;
+import net.sf.opengroove.client.com.OldCommunicator;
 import net.sf.opengroove.client.com.MessageSink;
 import net.sf.opengroove.client.com.StatusListener;
 import net.sf.opengroove.client.frames.ReceiveWorkspaceInviteFrame;
@@ -53,7 +53,7 @@ public class WorkspaceManager
         public abstract String getStatusString();
     }
     
-    private static Communicator communicator;
+    private static OldCommunicator communicator;
     
     private static long lastInviteTime = 0;
     
@@ -158,7 +158,7 @@ public class WorkspaceManager
      *            the communicator to use
      */
     public synchronized static void init(
-        final Communicator communicator)
+        final OldCommunicator communicator)
     {
         if (WorkspaceManager.communicator != null)
             throw new IllegalStateException(
@@ -519,31 +519,31 @@ public class WorkspaceManager
         communicator.addStatusListener(new StatusListener()
         {
             
-            public void allUsersUpdated(Communicator c)
+            public void allUsersUpdated(OldCommunicator c)
             {
                 // TODO Auto-generated method stub
                 
             }
             
-            public void anyUsersUpdated(Communicator c)
+            public void anyUsersUpdated(OldCommunicator c)
             {
                 // TODO Auto-generated method stub
                 
             }
             
-            public void offlineUsersUpdated(Communicator c)
+            public void offlineUsersUpdated(OldCommunicator c)
             {
                 // TODO Auto-generated method stub
                 
             }
             
-            public void onlineUsersUpdated(Communicator c)
+            public void onlineUsersUpdated(OldCommunicator c)
             {
                 // TODO Auto-generated method stub
                 
             }
             
-            public void userGone(Communicator c, String u)
+            public void userGone(OldCommunicator c, String u)
             {
                 notifyUserChanged(u, UserStatus.GONE);
                 communicator.reloadUserStatusHash();
@@ -552,7 +552,7 @@ public class WorkspaceManager
                 communicator.reloadOfflineUsers();
             }
             
-            public void userHere(Communicator c, String u)
+            public void userHere(OldCommunicator c, String u)
             {
                 notifyUserChanged(u, UserStatus.HERE);
                 communicator.reloadUserStatusHash();
@@ -561,14 +561,14 @@ public class WorkspaceManager
                 communicator.reloadOfflineUsers();
             }
             
-            public void userStatusHashChanged(Communicator c)
+            public void userStatusHashChanged(OldCommunicator c)
             {
                 communicator.reloadAllUsers();
                 communicator.reloadOnlineUsers();
                 communicator.reloadOfflineUsers();
             }
             
-            public void userStatusHashUpdated(Communicator c)
+            public void userStatusHashUpdated(OldCommunicator c)
             {
                 // TODO Auto-generated method stub
                 
