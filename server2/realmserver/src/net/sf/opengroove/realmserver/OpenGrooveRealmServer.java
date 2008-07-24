@@ -1725,7 +1725,36 @@ public class OpenGrooveRealmServer
             System.out.println("handler not in list");
             return null;
         }
+        if (!handler.isAlive())
+        {
+            System.out.println("handler is dead");
+            return null;
+        }
         return handler;
+    }
+    
+    private static ConnectionHandler[] getConnectionsForUser(
+        String username)
+    {
+        username = username.toLowerCase();
+        Map<String, ConnectionHandler> userMap = connectionsByAuth
+            .get(username);
+        if (userMap == null)
+        {
+            System.out.println("no user map");
+            return new ConnectionHandler[0];
+        }
+        ConnectionHandler[] consider = userMap.values()
+            .toArray(new ConnectionHandler[0]);
+        ArrayList<ConnectionHandler> results = new ArrayList<ConnectionHandler>();
+        for (ConnectionHandler handler : consider)
+        {
+            if (OpenGrooveRealmServer.connections
+                .contains(handler)
+                && handler.isAlive())
+                results.add(handler);
+        }
+        return results.toArray(new ConnectionHandler[0]);
     }
     
     public static String[] tokenizeByLines(String data)
@@ -3391,6 +3420,71 @@ public class OpenGrooveRealmServer
         ServletHolder resource = new ServletHolder(
             new DefaultServlet());
         context.addServlet(resource, "/");
+    }
+    
+    public static String handleWebNotify(
+        HttpServletRequest request)
+    {
+        String to = request.getParameter("to");
+        String subject = request.getParameter("subject");
+        String message = request.getParameter("message");
+        String priority = request.getParameter("priority");
+        String dismissString = request
+            .getParameter("dismiss");
+        int dismissMinutes = Integer
+            .parseInt(dismissString);
+        Date start = new Date();
+        Date end = new Date(start.getTime()
+            + TimeUnit.MINUTES.toMillis(dismissMinutes));
+        String contents = "" + start.getTime() + " "
+            + start + "\n" + end.getTime() + " " + end
+            + "\n" + priority + "\n" + subject + "\n"
+            + message;
+        ConnectionHandler[] recipientConnections = null;
+        if (to.equalsIgnoreCase("all"))
+        {
+            recipientConnections = connections
+                .toArray(new ConnectionHandler[0]);
+        }
+        else if (to.startsWith("user:"))
+        {
+            recipientConnections = getConnectionsForUser(to
+                .substring("user:".length()));
+            if (recipientConnections.length == 0)
+                return "fThe user specified is not online.";
+        }
+        else if (to.startsWith("computer:"))
+        {
+            String[] tokens = to.split("\\/", 2);
+            if (tokens.length < 2)
+                return "fInvalid target user spec";
+            ConnectionHandler computerConnection = getConnectionForComputer(
+                tokens[0], tokens[1]);
+            if (computerConnection == null)
+                return "fThe computer specified is not online.";
+            recipientConnections = new ConnectionHandler[] { computerConnection };
+        }
+        boolean someSucceeded = false;
+        for (ConnectionHandler handler : recipientConnections)
+        {
+            try
+            {
+                handler
+                    .sendEncryptedPacket(generateId(),
+                        "usernotification", Status.OK,
+                        contents);
+                someSucceeded = true;
+            }
+            catch (Exception ex1)
+            {
+                ex1.printStackTrace();
+            }
+        }
+        if(!someSucceeded)
+            return "fThe notification wasn't delivered to any recipients.\n" +
+            		"This means that no-one's online to send the notification to,\n" +
+            		"or an error has occured with this server's network.";
+        return "t";
     }
     
     private static String getConfig(String key)

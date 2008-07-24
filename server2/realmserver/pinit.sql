@@ -57,3 +57,17 @@ username varchar(64),
 onusername varchar(64),
 messagecount int
 );
+
+create table $$prefix$$help (
+pathname varchar(512),
+contents varchar(64511)
+);
+
+create table $$prefix$$predefinednotifications (
+name varchar(128),
+type varchar(128),
+subject varchar(512),
+message varchar(4096),
+notes varchar(8192),
+warnings varchar(1024)
+);

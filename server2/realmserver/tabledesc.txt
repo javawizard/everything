@@ -100,6 +100,60 @@ messagecount int the number of messages per minute that onusername can send to u
 
 
 
+help
+
+This table contains the help pages visible to OpenGroove users.
+
+pathname varchar(512) The pathname (starting wtih a forward slash) of this help topic.
+contents varchar(64511) The contents of this help topic, in html format.
+
+
+
+predefinednotifications
+
+This table holds predefined user notifications. When a notification is to be sent, the user of the web interface can choose a predefined notification to populate the subject and message fields with. This makes it so that the user doesn't have to write down a bunch of predefined notifications and paste them into the message or subject field. 
+
+name varchar(128) The name of this notification. This is what shows in the dropdown list for selecting the notification when sending a notification.
+type varchar(128) The fixed type of the notification. This is normally empty, but in the future I'm planning on adding functionality for the server to send out notifications when it needs to do a particular task, such as download and install updates (which would require the server to shut down for some time while it does this). A notification with a type of, say, installingupdates, could be created, which the server will send to all users when it is going to do that.
+subject varchar(512) The subject of the notification.
+message varchar(4096) The actual message contents of the notification.
+notes varchar(8192) Some notes for the notification. These are only used when creating and editing notifications to write down information about what they are for, when to use them, etc.
+warnings varchar(1024) Some warning notes that, if not empty, will be shown to a user in a javascript alert box when they choose this particular notification as one to send. This could be used to make suggestions as to the length that the notification should persist for, or it's usual priority.
+
+
+
+workspaces:
+
+This table contains a list of workspaces.
+
+columns TBD
+
+
+
+workspacemembers
+
+This table contains a list of members of a workspace.
+
+columns TBD
+
+
+
+workspaceproperties
+
+This table contains the properties for the workspaces.
+
+columns TBD
+
+
+
+workspacecomputers
+
+This table contains which computers of a particular workspace user are participants in the workspace.
+
+columns TBD
+
+
+
 These tables reside in the large database:
 
 
@@ -141,6 +195,20 @@ id varchar(128) The id of the message that this data is for.
 block int The block number of this particular data chunk. Usually, block numbering starts at 0, and increments by one for each successive block. However, this is not required. The blocks of the message are assembled in ascending order, but that is the only constraint on block numbering.
 read boolean True if the chunk has been accessed at least once by the recipient, false if not.
 contents blob The actual contents of this block. The contents should be no larger than 64KB.
+
+
+
+workspaceitems:
+
+This table contains items posted to a workspace.
+
+columns TBD
+
+
+
+workspaceitemdeletes:
+
+This table contains the list of users that have deleted a particular workspace item.
 
 
 

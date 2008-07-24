@@ -1,6 +1,9 @@
 <%@taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
-<c:if test="${not empty param.helpPage}"><a 
-href="${requestScope.actions.help}">Back to list</a><br/>
+<c:if test="${not empty param.helpPage}">
+<a 
+href="${requestScope.actions.help}"><<</a> <big>
+<big><%= request.getParameter("helpPage").replace("_"," ").substring(0,request
+.getParameter("helpPage").length()-".jsp".length()) %></big></big><br/><br/>
 <jsp:include page="/pages/help/contents/${param.helpPage}"/>
 </c:if>
 <c:if test="${empty param.helpPage}">
