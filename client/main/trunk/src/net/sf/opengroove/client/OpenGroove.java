@@ -266,11 +266,11 @@ public class OpenGroove
      */
     public static void main(String[] args) throws Throwable
     {
-        JFrame frame3 = new JFrame("convergiamain");
+        JFrame frame3 = new JFrame("opengroovemain");
         frame3.setSize(800, 10);
         // frame3.show();
         // the above frame was used for debugging the restart feature of
-        // convergia, it needs to be removed some time soon
+        // opengroove, it needs to be removed some time soon
         boolean waitForLock = args.length > 0
             && args[0].equals("wfl");
         if (waitForLock)
@@ -335,6 +335,8 @@ public class OpenGroove
             sfile.mkdirs();
             System
                 .setProperty("sun.java2d.noddraw", "true");
+            // used to avoid problems with the fade effect for the taskbar
+            // notification frame
             Storage.initStorage(sfile);
             PluginManager.loadPlugins();
             postPluginLoad();
@@ -468,7 +470,10 @@ public class OpenGroove
                             // often updates are
                             // checked for.
                             // we probably should raise this to something like
-                            // 30*60*1000 for a half an hour
+                            // 30*60*1000 for a half an hour, or make it
+                            // user-configurable but with a minimum limit to
+                            // avoid overloading the server with update
+                            // requests
                         }
                         catch (Exception e)
                         {

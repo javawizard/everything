@@ -30,8 +30,7 @@ public class ColorConverter
      */
     public static void main(String[] args) throws Throwable
     {
-        File src = new File(
-            "icons/sandbox/presence/user.png");
+        File src = new File("icons/users/user-normal.png");
         final BufferedImage image = ImageIO.read(src);
         final JFrame frame = new JFrame();
         frame.getContentPane()
@@ -54,15 +53,19 @@ public class ColorConverter
         slider.setLabelTable(lTable);
         final JSlider satSlider = new JSlider(0, 360);
         satSlider.setValue(360);
+        final JSlider lumSlider = new JSlider(0, 360);
+        lumSlider.setValue(360);
         final JLabel imageLabel = new JLabel();
         imageLabel.setIcon(new ImageIcon(setHue(image,
             (slider.getValue() * 1f) / 360, (satSlider
+                .getValue() * 1f) / 360, (lumSlider
                 .getValue() * 1f) / 360)));
         frame.getContentPane().add(imageLabel,
             BorderLayout.CENTER);
         JPanel panel = new JPanel(new BorderLayout());
         panel.add(slider, BorderLayout.SOUTH);
-        panel.add(satSlider, BorderLayout.NORTH);
+        panel.add(satSlider, BorderLayout.CENTER);
+        panel.add(lumSlider, BorderLayout.NORTH);
         frame.getContentPane().add(panel,
             BorderLayout.SOUTH);
         frame.setSize(800, 500);
@@ -79,13 +82,13 @@ public class ColorConverter
                         "Choose a name (don't include .png)");
                 if (filename == null)
                     return;
-                File file = new File(
-                    "icons/sandbox/presence/" + filename
-                        + ".png");
+                File file = new File("icons/users/"
+                    + filename + ".png");
                 try
                 {
                     ImageIO.write(setHue(image, (slider
                         .getValue() * 1f) / 360, (satSlider
+                        .getValue() * 1f) / 360, (lumSlider
                         .getValue() * 1f) / 360), "PNG",
                         file);
                 }
@@ -106,16 +109,18 @@ public class ColorConverter
             {
                 imageLabel.setIcon(new ImageIcon(setHue(
                     image, (slider.getValue() * 1f) / 360,
-                    (satSlider.getValue() * 1f) / 360)));
+                    (satSlider.getValue() * 1f) / 360,
+                    (lumSlider.getValue() * 1f) / 360)));
             }
         };
         slider.addChangeListener(listener);
         satSlider.addChangeListener(listener);
+        lumSlider.addChangeListener(listener);
         frame.show();
     }
     
     public static BufferedImage setHue(BufferedImage image,
-        float hue, float btMul)
+        float hue, float satMul, float lumMul)
     {
         BufferedImage result = new BufferedImage(image
             .getWidth(), image.getHeight(),
@@ -130,10 +135,20 @@ public class ColorConverter
                     .getRed(), srcColor.getGreen(),
                     srcColor.getBlue(), null);
                 Color destColor = Color.getHSBColor(hue,
-                    hsb[1], hsb[2] * btMul);
+                    hsb[1], hsb[2] * lumMul);
                 destColor = new Color(destColor.getRed(),
                     destColor.getGreen(), destColor
                         .getBlue(), srcColor.getAlpha());
+                int avg = (destColor.getRed()
+                    + destColor.getGreen() + destColor
+                    .getBlue()) / 3;
+                int rdif = (int) ((destColor.getRed() - avg) * (1 - satMul));
+                int gdif = (int) ((destColor.getGreen() - avg) * (1 - satMul));
+                int bdif = (int) ((destColor.getBlue() - avg) * (1 - satMul));
+                destColor = new Color(destColor.getRed()
+                    - rdif, destColor.getGreen() - gdif,
+                    destColor.getBlue() - bdif, destColor
+                        .getAlpha());
                 result.setRGB(x, y, destColor.getRGB());
             }
         }
