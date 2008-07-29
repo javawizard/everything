@@ -3,7 +3,6 @@ package net.sf.opengroove.realmserver;
 import java.io.BufferedReader;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
-import java.io.DataInputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
@@ -19,15 +18,12 @@ import java.math.BigInteger;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.net.URLEncoder;
-import java.nio.Buffer;
 import java.security.SecureRandom;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.sql.Statement;
-import java.util.AbstractQueue;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -40,7 +36,6 @@ import java.util.Properties;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.ScheduledThreadPoolExecutor;
-import java.util.concurrent.SynchronousQueue;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 
@@ -54,21 +49,6 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.apache.jasper.servlet.JspServlet;
-import org.mortbay.jetty.Server;
-import org.mortbay.jetty.servlet.Context;
-import org.mortbay.jetty.servlet.DefaultServlet;
-import org.mortbay.jetty.servlet.FilterHolder;
-import org.mortbay.jetty.servlet.ServletHolder;
-
-import com.ibatis.sqlmap.client.SqlMapClient;
-import com.ibatis.sqlmap.client.SqlMapClientBuilder;
-
-import DE.knp.MicroCrypt.Aes256;
-import DE.knp.MicroCrypt.Sha512;
-
-import nanohttpd.NanoHTTPD;
-import nanohttpd.NanoHTTPD.Response;
 import net.sf.opengroove.realmserver.data.model.Computer;
 import net.sf.opengroove.realmserver.data.model.ComputerSetting;
 import net.sf.opengroove.realmserver.data.model.StoredMessage;
@@ -81,7 +61,18 @@ import net.sf.opengroove.realmserver.web.RendererServlet;
 import net.sf.opengroove.security.Crypto;
 import net.sf.opengroove.security.Hash;
 import net.sf.opengroove.security.RSA;
-import nl.captcha.servlet.DefaultCaptchaIml;
+
+import org.apache.jasper.servlet.JspServlet;
+import org.mortbay.jetty.Server;
+import org.mortbay.jetty.servlet.Context;
+import org.mortbay.jetty.servlet.DefaultServlet;
+import org.mortbay.jetty.servlet.FilterHolder;
+import org.mortbay.jetty.servlet.ServletHolder;
+
+import DE.knp.MicroCrypt.Aes256;
+
+import com.ibatis.sqlmap.client.SqlMapClient;
+import com.ibatis.sqlmap.client.SqlMapClientBuilder;
 
 public class OpenGrooveRealmServer
 {
@@ -108,7 +99,13 @@ public class OpenGrooveRealmServer
     // are too busy servicing other users, they can reject the connection in
     // such a way that servers with a higher weight could be tried.
     //
-    // TODO:
+    // TODO: Ok, I just read up on what SRV weights are intended for. Instead of
+    // trying the server with the lowest weight, it generates a random number,
+    // and from that chooses (based on weights) which server to connect to. This
+    // means that if a particular server has a weight of 10, and another server
+    // has a weight of 20, the server with a weigh of 20 will get approximately
+    // 2/3 of requests, and the server with a weight of 10 will get
+    // approximately 1/3 of requests.
     /**
      * This class is a Runnable designed to be added to the task thread queue.
      * It sends notifications to all users that have subscriptions for this
@@ -3480,10 +3477,10 @@ public class OpenGrooveRealmServer
                 ex1.printStackTrace();
             }
         }
-        if(!someSucceeded)
-            return "fThe notification wasn't delivered to any recipients.\n" +
-            		"This means that no-one's online to send the notification to,\n" +
-            		"or an error has occured with this server's network.";
+        if (!someSucceeded)
+            return "fThe notification wasn't delivered to any recipients.\n"
+                + "This means that no-one's online to send the notification to,\n"
+                + "or an error has occured with this server's network.";
         return "t";
     }
     
