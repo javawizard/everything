@@ -1,7 +1,18 @@
 package net.sf.opengroove.client.com;
 
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.math.BigInteger;
 import java.net.Socket;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.concurrent.BlockingQueue;
+import java.util.concurrent.LinkedBlockingQueue;
+import java.util.concurrent.TimeUnit;
+
+import net.sf.opengroove.security.Crypto;
 
 /**
  * This class can be used to communicate with an OpenGroove server. It takes
@@ -45,30 +56,120 @@ public class Communicator
         10, 10, 10, 10, 10, 10, 20, 20 };
     private BigInteger serverRsaPublic;
     private BigInteger serverRsaMod;
-    private String serverHost;
-    private int serverPort;
-    private Socket socket;
+    private String realm;
     private boolean authenticateOnConnect = false;
     private String connectionType;
     private String connectionUsername;
     private String connectionComputer;
     private String connectionPassword;
-    //TODO: add some sort of list of blocking queues, where the calling blocker method
-    //blocks until an item is on the queue. The object type of the queue could contain
-    //either the contents of the response, or a boolean flag indicating that the response
-    //couldn't be received, either because a certain timeout for the response expired, or
-    //because the communicator lost it's connection to the server.
+    private Socket socket;
+    private InputStream in;
+    private OutputStream out;
+    private Thread coordinator;
+    // TODO: add some sort of list of blocking queues, where the calling blocker
+    // method
+    // blocks until an item is on the queue. The object type of the queue could
+    // contain
+    // either the contents of the response, or a boolean flag indicating that
+    // the response
+    // couldn't be received, either because a certain timeout for the response
+    // expired, or
+    // because the communicator lost it's connection to the server.
+    /**
+     * This map is used to store a list of queues that correspond to
+     * currently-blocking invocations of the synchronous communication methods.
+     * The key is the packet id to watch for, and the value is a queue that an
+     * incoming response should be placed into.
+     */
+    private Map<String, BlockingQueue<Packet>> syncBlocks = Collections
+        .synchronizedMap(new HashMap<String, BlockingQueue<Packet>>());
+    /**
+     * This packet is added to all queues in the field <code>syncBlocks</code>
+     * if a stream error occures while communicating with the server.
+     * Synchronous methods for receiving packets can check to see if the packet
+     * received is identity equal to this packet, and, if so, throw an
+     * exception.
+     */
+    private static final Packet CONNECTION_ERROR = new Packet();
     
-    public Communicator(String serverHost, int serverPort,
+    public Communicator(String realm,
         BigInteger serverRsaPublic, BigInteger serverRsaMod)
     {
-        this.serverHost = serverHost;
-        this.serverPort = serverPort;
+        this.realm = realm;
         this.serverRsaPublic = serverRsaPublic;
         this.serverRsaMod = serverRsaMod;
+        coordinator = new Thread()
+        {
+            public void run()
+            {
+            }
+        };
+        coordinator.start();
+    }
+    /**
+     * Returns true if this communicator is still alive. If a communicator has died (IE this method returns false), then this communicator can no longer be used, and a new one must be constructed.
+     * @return
+     */
+    public boolean isAlive()
+    {
+        return coordinator.isAlive();
     }
     
-    private void performHandshake()
+    /**
+     * Sends the packet specified to the server, and waits the specified number
+     * of milliseconds for a response to the packet.
+     * 
+     * @param packet
+     *            The packet to send
+     * @param timeout
+     *            The number of milliseconds to wait for a response before
+     *            throwing a TimeoutException
+     * @return
+     */
+    public Packet query(Packet packet, int timeout)
+        throws IOException
+    {
+        try
+        {
+            BlockingQueue<Packet> queue = new LinkedBlockingQueue<Packet>(
+                1);
+            syncBlocks.put(packet.getPacketId(), queue);
+            send(packet);
+            Packet responsePacket = queue.poll(timeout,
+                TimeUnit.MILLISECONDS);
+            if (responsePacket == CONNECTION_ERROR)
+                throw new IOException(
+                    "A connection error was encountered "
+                        + "while waiting for a response.");
+            if (responsePacket == null)
+                throw new TimeoutException(
+                    "The specified timeout expired before "
+                        + "a response was received.");
+            return responsePacket;
+        }
+        catch (IOException e)
+        {
+            throw e;
+        }
+        catch (Exception e)
+        {
+            throw new RuntimeException(e);
+        }
+        finally
+        {
+            syncBlocks.remove(packet.getPacketId());
+        }
+    }
+    
+    public synchronized void send(Packet packet)
+        throws IOException
+    {
+        // TODO: instead of this method being synchronized, have it push packets
+        // on to a packet spooler, which then forwards them to the server.
+        
+    }
+    
+    private synchronized void performHandshake()
     {
         
     }
