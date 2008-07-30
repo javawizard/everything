@@ -64,6 +64,8 @@ public class DefaultProgressItem implements ProgressItem
             i = EMPTY_IMAGE;
         statusComponent = new AnimatedImage(i);
         ((AnimatedImage) statusComponent).setVExpand(true);
+        ((AnimatedImage) statusComponent).setMinWidth(24);
+        ((AnimatedImage) statusComponent).setMinHeight(24);
         if (parent != null)
             parent.refresh();
         else

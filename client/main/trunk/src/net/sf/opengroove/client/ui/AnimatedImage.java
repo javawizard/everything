@@ -41,26 +41,29 @@ public class AnimatedImage extends JComponent
          */
         private WeakReference<AnimatedImage> componentRef;
         protected boolean stopWorking;
+        private static volatile int threadIndex = 0;
         
         public AnimatedThread(AnimatedImage component)
         {
+            super("Animator-" + threadIndex++);
             this.componentRef = new WeakReference<AnimatedImage>(
                 component);
         }
         
         public void run()
         {
-            while (true)
+            try
             {
-                try
+                // Thread.sleep(200);
+                while (true)
                 {
                     Thread.sleep(50);
                     imageUpdate();
                 }
-                catch (Exception e)
-                {
-                    throw new RuntimeException(e);
-                }
+            }
+            catch (Exception e)
+            {
+                return;
             }
         }
         
@@ -72,24 +75,21 @@ public class AnimatedImage extends JComponent
                     .get();
                 if (component == null)
                 {
-                    System.out.println("lost reference");
                     throw new RuntimeException();
                 }
                 if ((!component.isRunning) || stopWorking)
                 {
                     componentRef.clear();
-                    System.out
-                        .println("component shutdown");
                     throw new RuntimeException();
                 }
                 if (component.getParent() != null)
+                {
                     component.repaint();
+                }
             }
             catch (Exception e)
             {
-                System.err
-                    .println("caught exception in animated observer");
-                e.printStackTrace();
+                throw new RuntimeException(e);
             }
         }
     }
@@ -104,39 +104,6 @@ public class AnimatedImage extends JComponent
             imageFile.getAbsolutePath()));
         // FIXME: adding an anonymous inner class as a listener will prevent
         // this class (IE AnimatedImage) from being finalized
-        addAncestorListener(new AncestorListener()
-        {
-            
-            @Override
-            public synchronized void ancestorAdded(
-                AncestorEvent event)
-            {
-                if (thread == null || !thread.isAlive())
-                {
-                    thread = new AnimatedThread(
-                        AnimatedImage.this);
-                    thread.start();
-                }
-            }
-            
-            @Override
-            public void ancestorMoved(AncestorEvent event)
-            {
-                // TODO Auto-generated method stub
-                
-            }
-            
-            @Override
-            public synchronized void ancestorRemoved(
-                AncestorEvent event)
-            {
-                if (thread != null && thread.isAlive())
-                {
-                    thread.stopWorking = true;
-                    thread = null;
-                }
-            }
-        });
     }
     
     private boolean isRunning = true;
@@ -149,12 +116,37 @@ public class AnimatedImage extends JComponent
     public AnimatedImage(Image image)
     {
         this.image = image;
+        thread = new AnimatedThread(AnimatedImage.this);
+        thread.start();
     }
     
     public void finalize() throws Throwable
     {
         isRunning = false;
         super.finalize();
+    }
+    
+    private int minWidth = 0;
+    private int minHeight = 0;
+    
+    public int getMinWidth()
+    {
+        return minWidth;
+    }
+    
+    public int getMinHeight()
+    {
+        return minHeight;
+    }
+    
+    public void setMinWidth(int minWidth)
+    {
+        this.minWidth = minWidth;
+    }
+    
+    public void setMinHeight(int minHeight)
+    {
+        this.minHeight = minHeight;
     }
     
     public void paintComponent(Graphics g)
@@ -180,7 +172,8 @@ public class AnimatedImage extends JComponent
         {
             return super.getPreferredSize();
         }
-        return new Dimension(width, height);
+        return new Dimension(Math.max(minWidth, width),
+            Math.max(minHeight, height));
     }
     
     public Dimension getMinimumSize()
@@ -191,7 +184,8 @@ public class AnimatedImage extends JComponent
         {
             return super.getMinimumSize();
         }
-        return new Dimension(width, height);
+        return new Dimension(Math.max(minWidth, width),
+            Math.max(minHeight, height));
     }
     
     private boolean hExpand = false;
