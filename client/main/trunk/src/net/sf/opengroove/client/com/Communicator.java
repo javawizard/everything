@@ -92,6 +92,8 @@ public class Communicator
      */
     private static final Packet CONNECTION_ERROR = new Packet();
     
+    private boolean isRunning = true;
+    
     public Communicator(String realm,
         BigInteger serverRsaPublic, BigInteger serverRsaMod)
     {
@@ -102,17 +104,37 @@ public class Communicator
         {
             public void run()
             {
+                while(isRunning)
+                {
+                    
+                }
             }
         };
         coordinator.start();
     }
+    
     /**
-     * Returns true if this communicator is still alive. If a communicator has died (IE this method returns false), then this communicator can no longer be used, and a new one must be constructed.
+     * Returns true if this communicator is still alive. If a communicator has
+     * died (IE this method returns false), then this communicator can no longer
+     * be used, and a new one must be constructed.
+     * 
      * @return
      */
     public boolean isAlive()
     {
         return coordinator.isAlive();
+    }
+    
+    /**
+     * Stops this communicator. After this is called, isAlive() should be polled
+     * until it returns false, which indicates that the communicator has
+     * finished shutting down.
+     * 
+     * @return
+     */
+    public void shutdown()
+    {
+        
     }
     
     /**
