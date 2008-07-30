@@ -37,10 +37,14 @@ public class Test023
         Thread.sleep(100);
         for (int i = 0; i < items.length; i++)
         {
-            items[i] = new DefaultProgressItem("Test item "
-                + (i + 1)
-                + (i == 4 ? " (This item will fail)" : ""),
-                null);
+            items[i] = new DefaultProgressItem(
+                "Test item "
+                    + (i + 1)
+                    + (i == 4 ? " (This item will fail)"
+                        : ""),
+                "This is a description about item " + (i+1),
+                (i == 7 ? new JLabel(
+                    "These are the details") : null));
             if (i == 0)
                 items[i]
                     .setStatus(ProgressItem.Status.ACTIVE);

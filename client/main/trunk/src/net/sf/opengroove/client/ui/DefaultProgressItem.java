@@ -22,9 +22,10 @@ public class DefaultProgressItem implements ProgressItem
     private ProgressPane parent;
     
     public DefaultProgressItem(String name,
-        Component details)
+        String description, Component details)
     {
         this.nameLabel = new JLabel(name);
+        nameLabel.setToolTipText(description);
         this.nameLabel.setMaximumSize(new Dimension(
             Integer.MAX_VALUE, Integer.MAX_VALUE));
         this.details = details;
