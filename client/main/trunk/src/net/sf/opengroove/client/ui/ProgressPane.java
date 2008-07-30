@@ -1,11 +1,18 @@
 package net.sf.opengroove.client.ui;
 
+import java.awt.Component;
+import java.awt.Image;
 import java.awt.TextArea;
 import java.util.ArrayList;
 
+import javax.swing.JComponent;
+import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JTextArea;
+import javax.swing.Spring;
 import javax.swing.SpringLayout;
+
+import net.sf.opengroove.client.ui.ProgressItem.Status;
 
 /**
  * This class is a progress pane. It shows a bunch of items in it, where each
@@ -25,6 +32,7 @@ import javax.swing.SpringLayout;
  */
 public class ProgressPane extends JPanel
 {
+    private static final Spring PAD = 5;
     private ArrayList<ProgressItem> tasks = new ArrayList<ProgressItem>();
     
     /**
@@ -35,12 +43,51 @@ public class ProgressPane extends JPanel
         removeAll();
         SpringLayout layout = new SpringLayout();
         setLayout(layout);
+        Component lowestActive = null;
+        
         for (int i = 0; i < tasks.size(); i++)
         {
             ProgressItem task = tasks.get(i);
-            
+            Component nameComponent = task
+                .getNameComponent();
+            Component detailsComponent = task
+                .getDetailsComponent();
+            JComponent statusComponent;
+            Status status = task.getStatus();
+            Image statusImage = status.getImage();
+            if (statusImage == null)
+                statusComponent = new JLabel();
+            else
+            {
+                statusComponent = new AnimatedImage(
+                    statusImage);
+                ((AnimatedImage) statusComponent)
+                    .setVExpand(true);
+            }
+            add(statusComponent);
+            add(nameComponent);
+            layout.putConstraint(layout.WEST,
+                statusComponent, PAD, layout.WEST, this);
+            layout.putConstraint(layout.WEST,
+                nameComponent, PAD, layout.EAST,
+                statusComponent);
+            layout.putConstraint(layout.EAST, this, PAD,
+                layout.EAST, nameComponent);
         }
-        new JTextArea().setCaretPosition(0);
+        invalidate();
+        validate();
+        repaint();
+        if (lowestActive != null)
+        {
+            scrollRectToVisible(lowestActive.getBounds());
+        }
+    }
+    
+    public void finalize() throws Throwable
+    {
+        tasks.clear();
+        removeAll();
+        super.finalize();
     }
     
     public ProgressPane()

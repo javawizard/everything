@@ -82,9 +82,10 @@ public class AnimatedImage extends JComponent
         image.getWidth(new AnimatedObserver(this));
     }
     
-    public void finalize()
+    public void finalize() throws Throwable
     {
         isRunning = false;
+        super.finalize();
     }
     
     public void paintComponent(Graphics g)
@@ -97,9 +98,7 @@ public class AnimatedImage extends JComponent
             imageWidth = 0;
         if (imageHeight == -1)
             imageHeight = 0;
-        g.drawImage(image, (getWidth() / 2)
-            - (imageWidth / 2), (getHeight() / 2)
-            - (imageHeight / 2), null);
+        g.drawImage(image, 0, 0, null);
     }
     
     public Dimension getPreferredSize()
@@ -124,8 +123,34 @@ public class AnimatedImage extends JComponent
         return new Dimension(width, height);
     }
     
+    private boolean hExpand = false;
+    private boolean vExpand = false;
+    
+    public boolean isHExpand()
+    {
+        return hExpand;
+    }
+    
+    public boolean isVExpand()
+    {
+        return vExpand;
+    }
+    
+    public void setHExpand(boolean expand)
+    {
+        hExpand = expand;
+    }
+    
+    public void setVExpand(boolean expand)
+    {
+        vExpand = expand;
+    }
+    
     public Dimension getMaximumSize()
     {
-        return getPreferredSize();
+        Dimension preferred = getPreferredSize();
+        return new Dimension(hExpand ? Integer.MAX_VALUE
+            : preferred.width, vExpand ? Integer.MAX_VALUE
+            : preferred.height);
     }
 }
