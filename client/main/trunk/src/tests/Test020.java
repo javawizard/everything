@@ -31,6 +31,8 @@ public class Test020
         InstantiationException, IllegalAccessException,
         UnsupportedLookAndFeelException
     {
+        // A class for testing wizard navigation and how to restrict going
+        // forward or backward
         Wizard wizard = new Wizard((JFrame) null);
         DefaultWizardPageDescriptor p1 = new DefaultWizardPageDescriptor(
             "title1");

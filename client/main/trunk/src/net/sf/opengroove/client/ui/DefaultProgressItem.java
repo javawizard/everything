@@ -2,11 +2,16 @@ package net.sf.opengroove.client.ui;
 
 import java.awt.Component;
 import java.awt.Dimension;
+import java.awt.Image;
+import java.awt.image.BufferedImage;
 
+import javax.swing.JComponent;
 import javax.swing.JLabel;
 
 public class DefaultProgressItem implements ProgressItem
 {
+    private static final Image EMPTY_IMAGE = new BufferedImage(
+        16, 16, BufferedImage.TYPE_INT_ARGB);
     private JLabel nameLabel;
     private Component details;
     private Status status;
@@ -19,7 +24,7 @@ public class DefaultProgressItem implements ProgressItem
         this.nameLabel.setMaximumSize(new Dimension(
             Integer.MAX_VALUE, Integer.MAX_VALUE));
         this.details = details;
-        this.status = Status.PENDING;
+        setStatus(Status.PENDING);
     }
     
     @Override
@@ -37,6 +42,32 @@ public class DefaultProgressItem implements ProgressItem
     public Status getStatus()
     {
         return status;
+    }
+    
+    private JComponent statusComponent;
+    
+    public JComponent getStatusComponent()
+    {
+        return statusComponent;
+    }
+    
+    public synchronized void setStatus(Status newStatus)
+    {
+        this.status = newStatus;
+        if (statusComponent != null
+            && statusComponent instanceof AnimatedImage)
+        {
+            ((AnimatedImage) statusComponent).stop();
+        }
+        Image i = status.getImage();
+        if (i == null)
+            i = EMPTY_IMAGE;
+        statusComponent = new AnimatedImage(i);
+        ((AnimatedImage) statusComponent).setVExpand(true);
+        if (parent != null)
+            parent.refresh();
+        else
+            System.out.println("parent null");
     }
     
     @Override

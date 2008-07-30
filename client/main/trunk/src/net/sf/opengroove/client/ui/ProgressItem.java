@@ -5,6 +5,8 @@ import java.awt.Image;
 import java.awt.Toolkit;
 import java.io.File;
 
+import javax.swing.JComponent;
+
 public interface ProgressItem
 {
     public static enum Status
@@ -28,6 +30,8 @@ public interface ProgressItem
             return image;
         }
     };
+    
+    public JComponent getStatusComponent();
     
     public Component getNameComponent();
     

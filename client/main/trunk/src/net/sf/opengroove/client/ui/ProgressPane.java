@@ -32,7 +32,7 @@ import net.sf.opengroove.client.ui.ProgressItem.Status;
  */
 public class ProgressPane extends JPanel
 {
-    private static final Spring PAD = Spring.constant(5);
+    private static final Spring PAD = Spring.constant(2,5,20);
     private ArrayList<ProgressItem> tasks = new ArrayList<ProgressItem>();
     
     /**
@@ -59,16 +59,7 @@ public class ProgressPane extends JPanel
             Status status = task.getStatus();
             if (status.equals(Status.ACTIVE))
                 lowestActive = nameComponent;
-            Image statusImage = status.getImage();
-            if (statusImage == null)
-                statusComponent = new JLabel();
-            else
-            {
-                statusComponent = new AnimatedImage(
-                    statusImage);
-                ((AnimatedImage) statusComponent)
-                    .setVExpand(true);
-            }
+            statusComponent = task.getStatusComponent();
             add(statusComponent);
             add(nameComponent);
             layout.putConstraint(layout.WEST,
@@ -79,10 +70,13 @@ public class ProgressPane extends JPanel
             layout.putConstraint(layout.EAST, this, PAD,
                 layout.EAST, nameComponent);
             layout.putConstraint(layout.NORTH,
-                statusComponent, PAD, layout.SOUTH,
-                lastStatus);
+                statusComponent, PAD,
+                lastStatus == this ? layout.NORTH
+                    : layout.SOUTH, lastStatus);
             layout.putConstraint(layout.NORTH,
-                nameComponent, PAD, layout.SOUTH, lastName);
+                nameComponent, PAD,
+                lastStatus == this ? layout.NORTH
+                    : layout.SOUTH, lastName);
             lastStatus = statusComponent;
             lastName = nameComponent;
             if (detailsComponent != null)
@@ -119,15 +113,17 @@ public class ProgressPane extends JPanel
     {
     }
     
-    public void add(ProgressItem task)
+    public void addItem(ProgressItem task)
     {
+        task.setParent(this);
         tasks.add(task);
         refresh();
     }
     
-    public void remove(ProgressItem task)
+    public void removeItem(ProgressItem task)
     {
         tasks.remove(task);
+        task.setParent(null);
         refresh();
     }
     

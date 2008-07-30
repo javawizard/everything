@@ -15,6 +15,7 @@ public class Test022
      */
     public static void main(String[] args)
     {
+        // A test for showing an animated gif inside a frame.
         JFrame frame = new JFrame();
         frame.getContentPane().add(
             new AnimatedImage(

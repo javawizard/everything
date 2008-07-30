@@ -2,6 +2,7 @@ package net.sf.opengroove.client.ui;
 
 import java.applet.Applet;
 import java.awt.Color;
+import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.Graphics;
 import java.awt.Image;
@@ -11,6 +12,11 @@ import java.io.File;
 import java.lang.ref.WeakReference;
 
 import javax.swing.JComponent;
+import javax.swing.SwingUtilities;
+import javax.swing.event.AncestorEvent;
+import javax.swing.event.AncestorListener;
+
+import org.h2.server.ShutdownHandler;
 
 /**
  * This class is a component that shows an animated image. It takes care of
@@ -21,8 +27,7 @@ import javax.swing.JComponent;
  */
 public class AnimatedImage extends JComponent
 {
-    public static class AnimatedObserver implements
-        ImageObserver
+    public static class AnimatedThread extends Thread
     {
         /**
          * We're using a WeakReference because anonymous inner class instances
@@ -35,41 +40,106 @@ public class AnimatedImage extends JComponent
          * observer.
          */
         private WeakReference<AnimatedImage> componentRef;
+        protected boolean stopWorking;
         
-        public AnimatedObserver(AnimatedImage component)
+        public AnimatedThread(AnimatedImage component)
         {
             this.componentRef = new WeakReference<AnimatedImage>(
                 component);
         }
         
-        @Override
-        public boolean imageUpdate(Image img,
-            int infoflags, int x, int y, int width,
-            int height)
+        public void run()
         {
-            AnimatedImage component = componentRef.get();
-            if (component == null)
-                return false;
-            if (!component.isRunning)
+            while (true)
             {
-                componentRef.clear();
-                return false;
+                try
+                {
+                    Thread.sleep(50);
+                    imageUpdate();
+                }
+                catch (Exception e)
+                {
+                    throw new RuntimeException(e);
+                }
             }
-            component.repaint();
-            return true;
         }
         
+        public void imageUpdate()
+        {
+            try
+            {
+                final AnimatedImage component = componentRef
+                    .get();
+                if (component == null)
+                {
+                    System.out.println("lost reference");
+                    throw new RuntimeException();
+                }
+                if ((!component.isRunning) || stopWorking)
+                {
+                    componentRef.clear();
+                    System.out
+                        .println("component shutdown");
+                    throw new RuntimeException();
+                }
+                if (component.getParent() != null)
+                    component.repaint();
+            }
+            catch (Exception e)
+            {
+                System.err
+                    .println("caught exception in animated observer");
+                e.printStackTrace();
+            }
+        }
     }
     
     private Image image;
+    
+    private AnimatedThread thread;
     
     public AnimatedImage(File imageFile)
     {
         this(Toolkit.getDefaultToolkit().createImage(
             imageFile.getAbsolutePath()));
+        // FIXME: adding an anonymous inner class as a listener will prevent
+        // this class (IE AnimatedImage) from being finalized
+        addAncestorListener(new AncestorListener()
+        {
+            
+            @Override
+            public synchronized void ancestorAdded(
+                AncestorEvent event)
+            {
+                if (thread == null || !thread.isAlive())
+                {
+                    thread = new AnimatedThread(
+                        AnimatedImage.this);
+                    thread.start();
+                }
+            }
+            
+            @Override
+            public void ancestorMoved(AncestorEvent event)
+            {
+                // TODO Auto-generated method stub
+                
+            }
+            
+            @Override
+            public synchronized void ancestorRemoved(
+                AncestorEvent event)
+            {
+                if (thread != null && thread.isAlive())
+                {
+                    thread.stopWorking = true;
+                    thread = null;
+                }
+            }
+        });
     }
     
-    private boolean isRunning;
+    private boolean isRunning = true;
     
     public void stop()
     {
@@ -79,7 +149,6 @@ public class AnimatedImage extends JComponent
     public AnimatedImage(Image image)
     {
         this.image = image;
-        image.getWidth(new AnimatedObserver(this));
     }
     
     public void finalize() throws Throwable
@@ -98,7 +167,9 @@ public class AnimatedImage extends JComponent
             imageWidth = 0;
         if (imageHeight == -1)
             imageHeight = 0;
-        g.drawImage(image, 0, 0, null);
+        g.drawImage(image, (getWidth() / 2)
+            - (imageWidth / 2), (getHeight() / 2)
+            - (imageHeight / 2), null);
     }
     
     public Dimension getPreferredSize()
