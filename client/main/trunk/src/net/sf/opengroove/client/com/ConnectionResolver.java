@@ -62,13 +62,30 @@ public class ConnectionResolver
     /**
      * This is the time that results will be cached for, in milliseconds.
      */
-    public static int cacheTime = 1000 * 60 * 60;
+    public static int cacheTime = 1000 * 60 * 60 * 4;// 4 hours
     
     public static synchronized void clearCache()
     {
         cache.clear();
     }
     
+    /**
+     * Returns a list of server contexts, one for each of this realm's servers.
+     * The items returned from this list are cached for the time specified by
+     * the field cacheTime, which is, by default, four hours. The returned list
+     * is ordered by server preference, IE, the server at index 0 of the
+     * returned array should be tried first, then the server at index 1, etc.
+     * 
+     * FIXME: the caching caches failed responses as well. It probably shouldn't
+     * do that, because that means that if the user isn't online when they start
+     * opengroove, then opengroove won't connect until the cache expires.
+     * Perhaps failed responses should be marked as such, and only cached for,
+     * say, a minute.
+     * 
+     * @param realm
+     *            The realm to look up
+     * @return The servers for the realm specified.
+     */
     public static synchronized ServerContext[] lookup(
         String realm)
     {
@@ -92,6 +109,13 @@ public class ConnectionResolver
         return results;
     }
     
+    /**
+     * Actually does the lookup. This methods icalled by lookup(String) when it
+     * has determined that there is no suitable cached result.
+     * 
+     * @param realm
+     * @return
+     */
     private static ServerContext[] connectLookup(
         String realm)
     {

@@ -61,7 +61,7 @@ public class Communicator
 {
     private static final SecureRandom random = new SecureRandom();
     public static final int[] WAIT_TIMES = { 0, 0, 2, 3, 5,
-        10, 10, 10, 10, 10, 10, 20, 20 };
+        10, 10, 10, 10, 10, 10, 20, 20, 20, 20, 30, 30, 30 };
     private int waitIndex = 0;
     private BigInteger serverRsaPublic;
     private BigInteger serverRsaMod;
@@ -120,6 +120,17 @@ public class Communicator
             {
                 while (isRunning)
                 {
+                    // If the wait index is greater than 2, clear the cache.
+                    // This is used so that old lookup entries that would
+                    // otherwise prevent new ones from being downloaded (because
+                    // of the cache) don't block up connections to the server.
+                    // This also makes it so that every time the client is
+                    // disconnected from the internet, and then re-connects, the
+                    // dns lookup is performed again, which is a bit of a
+                    // performance hit, but I can't think of any better way to
+                    // do it right now.
+                    if (waitIndex > 2)
+                        ConnectionResolver.clearCache();
                     try
                     {
                         Thread
@@ -129,17 +140,24 @@ public class Communicator
                     {
                         ex1.printStackTrace();
                     }
-                    // First, we create a socket, and perform the handshake. We
-                    // don't want to put the socket in the field socket until
-                    // the handshake is complete and the initial authenticate
-                    // command sent, to avoid packet conflicts.
+                    // First, we get a list of servers to connect to from the
+                    // ConnectionResolver class. Then, for each server, in the
+                    // order returned, we try to connect. If connecting to a
+                    // particular server fails (even if a connection is
+                    // established but the handshake fails), we advance to the
+                    // next server.
                     try
                     {
+                        ServerContext[] servers = ConnectionResolver
+                            .lookup(Communicator.this.realm);
                         
                     }
                     catch (Exception e)
                     {
-                        
+                        System.err
+                            .println("Exception while establishing connection to server");
+                        e.printStackTrace();
+                        continue;
                     }
                 }
             }
