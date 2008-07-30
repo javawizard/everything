@@ -1,4 +1,4 @@
-package net.sf.opengroove.client.frames;
+package net.sf.opengroove.client.ui;
 import java.awt.BorderLayout;
 import javax.swing.JButton;
 import javax.swing.JLabel;

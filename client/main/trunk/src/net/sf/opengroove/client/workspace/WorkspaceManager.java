@@ -18,10 +18,10 @@ import net.sf.opengroove.client.Storage;
 import net.sf.opengroove.client.com.OldCommunicator;
 import net.sf.opengroove.client.com.MessageSink;
 import net.sf.opengroove.client.com.StatusListener;
-import net.sf.opengroove.client.frames.ReceiveWorkspaceInviteFrame;
 import net.sf.opengroove.client.notification.NotificationAdapter;
 import net.sf.opengroove.client.plugins.Plugin;
 import net.sf.opengroove.client.plugins.PluginManager;
+import net.sf.opengroove.client.ui.ReceiveWorkspaceInviteFrame;
 
 import base64.Base64Coder;
 

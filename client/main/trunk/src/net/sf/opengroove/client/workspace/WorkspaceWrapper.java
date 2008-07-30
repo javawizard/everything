@@ -9,7 +9,7 @@ import java.util.List;
 import java.util.Properties;
 
 import net.sf.opengroove.client.OpenGroove;
-import net.sf.opengroove.client.frames.ConfigureWorkspaceDialog;
+import net.sf.opengroove.client.ui.ConfigureWorkspaceDialog;
 
 
 public class WorkspaceWrapper implements Serializable

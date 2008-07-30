@@ -1,4 +1,4 @@
-package net.sf.opengroove.client.frames;
+package net.sf.opengroove.client.ui;
 import javax.swing.JButton;
 
 import javax.swing.JFrame;

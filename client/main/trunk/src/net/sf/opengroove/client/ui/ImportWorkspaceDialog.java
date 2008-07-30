@@ -1,4 +1,4 @@
-package net.sf.opengroove.client.frames;
+package net.sf.opengroove.client.ui;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
