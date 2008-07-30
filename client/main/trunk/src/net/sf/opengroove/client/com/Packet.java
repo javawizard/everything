@@ -1,12 +1,10 @@
 package net.sf.opengroove.client.com;
 
-import java.io.InputStream;
-
 public class Packet
 {
     private String packetId;
     private String command;
-    private InputStream contents;
+    private byte[] contents;
     
     public String getPacketId()
     {
@@ -18,7 +16,7 @@ public class Packet
         return command;
     }
     
-    public InputStream getContents()
+    public byte[] getContents()
     {
         return contents;
     }
@@ -33,7 +31,7 @@ public class Packet
         this.command = command;
     }
     
-    public void setContents(InputStream contents)
+    public void setContents(byte[] contents)
     {
         this.contents = contents;
     }

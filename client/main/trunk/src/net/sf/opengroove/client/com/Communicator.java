@@ -1,10 +1,12 @@
 package net.sf.opengroove.client.com;
 
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.math.BigInteger;
 import java.net.Socket;
+import java.security.SecureRandom;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
@@ -15,7 +17,6 @@ import java.util.concurrent.TimeUnit;
 
 import DE.knp.MicroCrypt.Aes256;
 
-import net.sf.opengroove.realmserver.ProtocolMismatchException;
 import net.sf.opengroove.security.Crypto;
 import net.sf.opengroove.security.Hash;
 import net.sf.opengroove.security.RSA;
@@ -58,6 +59,7 @@ import net.sf.opengroove.security.RSA;
  */
 public class Communicator
 {
+    private static final SecureRandom random = new SecureRandom();
     public static final int[] WAIT_TIMES = { 0, 0, 2, 3, 5,
         10, 10, 10, 10, 10, 10, 20, 20 };
     private BigInteger serverRsaPublic;
@@ -99,6 +101,11 @@ public class Communicator
     private static final Packet CONNECTION_ERROR = new Packet();
     
     private boolean isRunning = true;
+    /**
+     * The security key for the current connection. Information sent across the
+     * connection is encrypted and decrypted with this key.
+     */
+    private Aes256 securityKey;
     
     public Communicator(String realm,
         BigInteger serverRsaPublic, BigInteger serverRsaMod)
@@ -192,12 +199,45 @@ public class Communicator
         }
     }
     
+    /**
+     * concatenates a bunch of byte arrays together.
+     * 
+     * @param bytes
+     * @return
+     */
+    private static byte[] concat(byte[]... bytes)
+    {
+        int length = 0;
+        for (byte[] cb : bytes)
+        {
+            length += cb.length;
+        }
+        byte[] result = new byte[length];
+        int pointer = 0;
+        for (byte[] cb : bytes)
+        {
+            System.arraycopy(cb, 0, result, pointer,
+                cb.length);
+            pointer += cb.length;
+        }
+        return result;
+    }
+    
     public synchronized void send(Packet packet)
         throws IOException
     {
         // TODO: instead of this method being synchronized, have it push packets
         // on to a packet spooler, which then forwards them to the server.
-        
+        if (out == null || socket == null
+            || socket.isClosed()
+            || socket.isOutputShutdown())
+            throw new IllegalStateException(
+                "The communicator doesn't have an active "
+                    + "connection to the server right now.");
+        Crypto.enc(securityKey, concat((""
+            + packet.getPacketId() + " "
+            + packet.getCommand() + " ").getBytes(), packet
+            .getContents()), out);
     }
     
     /**
@@ -207,8 +247,15 @@ public class Communicator
      * and Crypto.dc() to send and receive packets.
      * 
      * @param socket
+     *            The socket on which to perform the handshake
+     * @return An AES-256 security key generated during the handshake. This
+     *         should be passed to all calls of Crypto.ec() and Crypto.dc() used
+     *         to communicate with this socket.
+     * @throws IOException
+     *             if an I/O error occures
      */
-    private synchronized void performHandshake(Socket socket)
+    private synchronized Aes256 performHandshake(
+        Socket socket) throws IOException
     {
         final OutputStream out = socket.getOutputStream();
         InputStream in = socket.getInputStream();
@@ -240,7 +287,7 @@ public class Communicator
         // System.out.println("using aes key "
         // + Hash.hexcode(securityKeyBytes));
         BigInteger securityKeyEncrypted = RSA.encrypt(
-            rsaPublic, rsaMod, aesRandomNumber);
+            serverRsaPublic, serverRsaMod, aesRandomNumber);
         out
             .write((securityKeyEncrypted.toString(16) + "\n")
                 .getBytes());
@@ -253,7 +300,8 @@ public class Communicator
             .toByteArray(), 0, randomServerCheckBytes, 0,
             16);
         BigInteger serverCheckEncrypted = RSA.encrypt(
-            rsaPublic, rsaMod, randomServerCheckInteger);
+            serverRsaPublic, serverRsaMod,
+            randomServerCheckInteger);
         // System.out.println("servercheckencrypted "
         // + serverCheckEncrypted.toString(16));
         out
@@ -298,7 +346,7 @@ public class Communicator
         }
         byte[] antiReplayMessage = Crypto.dec(securityKey,
             in, 200);
-        // System.out.println("received antireply "
+        // System.out.println("received antireplay "
         // + Hash.hexcode(antiReplayMessage));
         String antiReplayHash = Hash
             .hash(antiReplayMessage);
@@ -307,6 +355,6 @@ public class Communicator
         Crypto.enc(securityKey, antiReplayHash.getBytes(),
             out);
         out.flush();
-        
+        return securityKey;
     }
 }
