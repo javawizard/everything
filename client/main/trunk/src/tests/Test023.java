@@ -4,6 +4,8 @@ import java.awt.BorderLayout;
 
 import javax.swing.JFrame;
 import javax.swing.JLabel;
+import javax.swing.JPanel;
+import javax.swing.JScrollPane;
 
 import net.sf.opengroove.client.ui.DefaultProgressItem;
 import net.sf.opengroove.client.ui.ProgressItem;
@@ -20,11 +22,14 @@ public class Test023
         // A class for showing a ProgressPane with some items in it.
         JFrame frame = new JFrame();
         ProgressPane progress = new ProgressPane();
-        DefaultProgressItem[] items = new DefaultProgressItem[7];
+        JPanel panel = new JPanel();
+        panel.setLayout(new BorderLayout());
+        DefaultProgressItem[] items = new DefaultProgressItem[15];
         frame.getContentPane().add(
             new JLabel("<html><b>Some items to do:</b>"),
             BorderLayout.NORTH);
-        frame.getContentPane().add(progress);
+        frame.getContentPane().add(new JScrollPane(panel));
+        panel.add(progress, BorderLayout.NORTH);
         frame.setSize(400, 500);
         frame.setLocationRelativeTo(null);
         frame.setDefaultCloseOperation(frame.EXIT_ON_CLOSE);
@@ -34,7 +39,7 @@ public class Test023
         {
             items[i] = new DefaultProgressItem("Test item "
                 + (i + 1)
-                + (i == 2 ? " (This item will fail)" : ""),
+                + (i == 4 ? " (This item will fail)" : ""),
                 null);
             if (i == 0)
                 items[i]
@@ -43,8 +48,8 @@ public class Test023
         }
         for (int i = 0; i < items.length; i++)
         {
-            Thread.sleep(1500);
-            if (i != 2)
+            Thread.sleep(700);
+            if (i != 4)
                 items[i]
                     .setStatus(ProgressItem.Status.SUCCESSFUL);
             else

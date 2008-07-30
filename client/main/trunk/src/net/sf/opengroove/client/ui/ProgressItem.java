@@ -40,4 +40,14 @@ public interface ProgressItem
     public Status getStatus();
     
     public void setParent(ProgressPane parent);
+    
+    /**
+     * This method should return a component with the same width as
+     * getStatusComponent(), which will be used as an empty placeholder to the
+     * left of the details component. This method usually won't be called if
+     * this component doesn't have a details component.
+     * 
+     * @return
+     */
+    public Component getEmptyStatus();
 }

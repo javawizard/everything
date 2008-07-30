@@ -5,13 +5,17 @@ import java.awt.Dimension;
 import java.awt.Image;
 import java.awt.image.BufferedImage;
 
+import javax.swing.ImageIcon;
 import javax.swing.JComponent;
 import javax.swing.JLabel;
 
 public class DefaultProgressItem implements ProgressItem
 {
+    private static final int STATUS_WIDTH = 24;
+    private static final int STATUS_HEIGHT = 18;
     private static final Image EMPTY_IMAGE = new BufferedImage(
-        16, 16, BufferedImage.TYPE_INT_ARGB);
+        STATUS_WIDTH, STATUS_HEIGHT,
+        BufferedImage.TYPE_INT_ARGB);
     private JLabel nameLabel;
     private Component details;
     private Status status;
@@ -64,8 +68,10 @@ public class DefaultProgressItem implements ProgressItem
             i = EMPTY_IMAGE;
         statusComponent = new AnimatedImage(i);
         ((AnimatedImage) statusComponent).setVExpand(true);
-        ((AnimatedImage) statusComponent).setMinWidth(24);
-        ((AnimatedImage) statusComponent).setMinHeight(24);
+        ((AnimatedImage) statusComponent)
+            .setMinWidth(STATUS_WIDTH);
+        ((AnimatedImage) statusComponent)
+            .setMinHeight(STATUS_HEIGHT);
         if (parent != null)
             parent.refresh();
         else
@@ -76,5 +82,15 @@ public class DefaultProgressItem implements ProgressItem
     public void setParent(ProgressPane parent)
     {
         this.parent = parent;
+    }
+    
+    @Override
+    public Component getEmptyStatus()
+    {
+        JLabel label = new JLabel(
+            new ImageIcon(EMPTY_IMAGE));
+        label.setMaximumSize(new Dimension(
+            Integer.MAX_VALUE, Integer.MAX_VALUE));
+        return label;
     }
 }

@@ -1,10 +1,14 @@
 package net.sf.opengroove.client.ui;
 
+import java.awt.BorderLayout;
 import java.awt.Component;
+import java.awt.Dimension;
+import java.awt.FlowLayout;
 import java.awt.Image;
 import java.awt.TextArea;
 import java.util.ArrayList;
 
+import javax.swing.BoxLayout;
 import javax.swing.JComponent;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
@@ -32,7 +36,8 @@ import net.sf.opengroove.client.ui.ProgressItem.Status;
  */
 public class ProgressPane extends JPanel
 {
-    private static final Spring PAD = Spring.constant(2,5,20);
+    private static final Spring PAD = Spring.constant(2, 5,
+        5);
     private ArrayList<ProgressItem> tasks = new ArrayList<ProgressItem>();
     
     /**
@@ -41,8 +46,7 @@ public class ProgressPane extends JPanel
     public synchronized void refresh()
     {
         removeAll();
-        SpringLayout layout = new SpringLayout();
-        setLayout(layout);
+        setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
         Component lowestActive = null;
         // holds the component to pin the status component's top to
         Component lastStatus = this;
@@ -57,39 +61,18 @@ public class ProgressPane extends JPanel
                 .getDetailsComponent();
             JComponent statusComponent;
             Status status = task.getStatus();
-            if (status.equals(Status.ACTIVE))
-                lowestActive = nameComponent;
             statusComponent = task.getStatusComponent();
-            add(statusComponent);
-            add(nameComponent);
-            layout.putConstraint(layout.WEST,
-                statusComponent, PAD, layout.WEST, this);
-            layout.putConstraint(layout.WEST,
-                nameComponent, PAD, layout.EAST,
-                statusComponent);
-            layout.putConstraint(layout.EAST, this, PAD,
-                layout.EAST, nameComponent);
-            layout.putConstraint(layout.NORTH,
-                statusComponent, PAD,
-                lastStatus == this ? layout.NORTH
-                    : layout.SOUTH, lastStatus);
-            layout.putConstraint(layout.NORTH,
-                nameComponent, PAD,
-                lastStatus == this ? layout.NORTH
-                    : layout.SOUTH, lastName);
+            JPanel leftBox = createLeftBox(statusComponent,
+                nameComponent);
+            if (status.equals(Status.ACTIVE))
+                lowestActive = leftBox;
+            add(leftBox);
             lastStatus = statusComponent;
             lastName = nameComponent;
             if (detailsComponent != null)
             {
-                add(detailsComponent);
-                layout.putConstraint(layout.WEST,
-                    detailsComponent, PAD, layout.EAST,
-                    statusComponent);
-                layout.putConstraint(layout.NORTH,
-                    detailsComponent, PAD, layout.SOUTH,
-                    nameComponent);
-                layout.putConstraint(layout.EAST, this,
-                    PAD, layout.EAST, detailsComponent);
+                add(createLeftBox(task.getEmptyStatus(),
+                    detailsComponent));
                 lastName = detailsComponent;
             }
         }
@@ -100,6 +83,16 @@ public class ProgressPane extends JPanel
         {
             scrollRectToVisible(lowestActive.getBounds());
         }
+    }
+    
+    private JPanel createLeftBox(Component left,
+        Component center)
+    {
+        JPanel panel = new JPanel();
+        panel.setLayout(new BorderLayout());
+        panel.add(left, BorderLayout.WEST);
+        panel.add(center, BorderLayout.CENTER);
+        return panel;
     }
     
     public void finalize() throws Throwable
