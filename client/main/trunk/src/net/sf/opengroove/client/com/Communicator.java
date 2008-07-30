@@ -5,6 +5,7 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.math.BigInteger;
 import java.net.Socket;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
@@ -12,7 +13,12 @@ import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.TimeUnit;
 
+import DE.knp.MicroCrypt.Aes256;
+
+import net.sf.opengroove.realmserver.ProtocolMismatchException;
 import net.sf.opengroove.security.Crypto;
+import net.sf.opengroove.security.Hash;
+import net.sf.opengroove.security.RSA;
 
 /**
  * This class can be used to communicate with an OpenGroove server. It takes
@@ -104,9 +110,12 @@ public class Communicator
         {
             public void run()
             {
-                while(isRunning)
+                while (isRunning)
                 {
-                    
+                    // First, we create a socket, and perform the handshake. We
+                    // don't want to put the socket in the field socket until
+                    // the handshake is complete and the initial authenticate
+                    // command sent, to avoid packet conflicts.
                 }
             }
         };
@@ -191,8 +200,113 @@ public class Communicator
         
     }
     
-    private synchronized void performHandshake()
+    /**
+     * This method performs a handshake with the server. This does not include
+     * running the authenticate command, it only includes negotiating security
+     * keys with the server, and everything up to where you can use Crypto.ec()
+     * and Crypto.dc() to send and receive packets.
+     * 
+     * @param socket
+     */
+    private synchronized void performHandshake(Socket socket)
     {
+        final OutputStream out = socket.getOutputStream();
+        InputStream in = socket.getInputStream();
+        out.write("OpenGroove\n".getBytes());
+        String s = "";
+        for (int i = 0; i < 30; i++)
+        {
+            int read = in.read();
+            s += (char) read;
+            if ((read == '\r' || read == '\n') && i != 0)
+                break;
+            if (i == 29)
+                throw new ProtocolMismatchException(
+                    "too much first initialization data sent by the server");
+        }
+        s = s.trim();
+        if (!s.equalsIgnoreCase("OpenGrooveServer"))
+        {
+            throw new ProtocolMismatchException(
+                "Invalid initial response sent");
+        }
+        BigInteger aesRandomNumber = new BigInteger(3060,
+            random);
+        byte[] securityKeyBytes = new byte[32];
+        System.arraycopy(aesRandomNumber.toByteArray(), 0,
+            securityKeyBytes, 0, 32);
+        final Aes256 securityKey = new Aes256(
+            securityKeyBytes);
+        // System.out.println("using aes key "
+        // + Hash.hexcode(securityKeyBytes));
+        BigInteger securityKeyEncrypted = RSA.encrypt(
+            rsaPublic, rsaMod, aesRandomNumber);
+        out
+            .write((securityKeyEncrypted.toString(16) + "\n")
+                .getBytes());
+        BigInteger randomServerCheckInteger = new BigInteger(
+            3060, random);
+        // System.out.println("randomservercheckinteger "
+        // + randomServerCheckInteger.toString(16));
+        byte[] randomServerCheckBytes = new byte[16];
+        System.arraycopy(randomServerCheckInteger
+            .toByteArray(), 0, randomServerCheckBytes, 0,
+            16);
+        BigInteger serverCheckEncrypted = RSA.encrypt(
+            rsaPublic, rsaMod, randomServerCheckInteger);
+        // System.out.println("servercheckencrypted "
+        // + serverCheckEncrypted.toString(16));
+        out
+            .write((serverCheckEncrypted.toString(16) + "\n")
+                .getBytes());
+        out.flush();
+        s = "";
+        for (int i = 0; i < 1024; i++)
+        {
+            int read = in.read();
+            s += (char) read;
+            if ((read == '\r' || read == '\n') && i != 0)
+                break;
+            if (i == 1023)
+                throw new ProtocolMismatchException(
+                    "too much second initialization data sent by the server");
+        }
+        s = s.trim();
+        byte[] confirmServerCheckBytes = new byte[16];
+        // FIXME: arrayindexoutofboundsexception for small arrays
+        securityKey.decrypt(new BigInteger(s, 16)
+            .toByteArray(), 0, confirmServerCheckBytes, 0);
+        if (!Arrays.equals(randomServerCheckBytes,
+            confirmServerCheckBytes))
+            throw new RuntimeException(
+                "Server failed check bytes with sent "
+                    + Hash.hexcode(randomServerCheckBytes)
+                    + " and received "
+                    + Hash.hexcode(confirmServerCheckBytes)
+                    + " and unenc received "
+                    + Hash.hexcode(new BigInteger(s, 16)
+                        .toByteArray()));
+        out.write('c');
+        out.flush();
+        for (int i = 0; i < 5; i++)
+        {
+            if (in.read() == 'c')
+                break;
+            if (i == 4)
+                throw new ProtocolMismatchException(
+                    "no terminating 'c' at end of handshake");
+        }
+        byte[] antiReplayMessage = Crypto.dec(securityKey,
+            in, 200);
+        // System.out.println("received antireply "
+        // + Hash.hexcode(antiReplayMessage));
+        String antiReplayHash = Hash
+            .hash(antiReplayMessage);
+        // System.out.println("sending antireply hash "
+        // + Hash.hexcode(antiReplayHash.getBytes()));
+        Crypto.enc(securityKey, antiReplayHash.getBytes(),
+            out);
+        out.flush();
         
     }
 }
