@@ -62,6 +62,7 @@ public class Communicator
     private static final SecureRandom random = new SecureRandom();
     public static final int[] WAIT_TIMES = { 0, 0, 2, 3, 5,
         10, 10, 10, 10, 10, 10, 20, 20 };
+    private int waitIndex = 0;
     private BigInteger serverRsaPublic;
     private BigInteger serverRsaMod;
     private String realm;
@@ -119,10 +120,27 @@ public class Communicator
             {
                 while (isRunning)
                 {
+                    try
+                    {
+                        Thread
+                            .sleep(WAIT_TIMES[waitIndex++] * 1000);
+                    }
+                    catch (Exception ex1)
+                    {
+                        ex1.printStackTrace();
+                    }
                     // First, we create a socket, and perform the handshake. We
                     // don't want to put the socket in the field socket until
                     // the handshake is complete and the initial authenticate
                     // command sent, to avoid packet conflicts.
+                    try
+                    {
+                        
+                    }
+                    catch (Exception e)
+                    {
+                        
+                    }
                 }
             }
         };
@@ -284,8 +302,6 @@ public class Communicator
             securityKeyBytes, 0, 32);
         final Aes256 securityKey = new Aes256(
             securityKeyBytes);
-        // System.out.println("using aes key "
-        // + Hash.hexcode(securityKeyBytes));
         BigInteger securityKeyEncrypted = RSA.encrypt(
             serverRsaPublic, serverRsaMod, aesRandomNumber);
         out
@@ -293,8 +309,6 @@ public class Communicator
                 .getBytes());
         BigInteger randomServerCheckInteger = new BigInteger(
             3060, random);
-        // System.out.println("randomservercheckinteger "
-        // + randomServerCheckInteger.toString(16));
         byte[] randomServerCheckBytes = new byte[16];
         System.arraycopy(randomServerCheckInteger
             .toByteArray(), 0, randomServerCheckBytes, 0,
@@ -302,8 +316,6 @@ public class Communicator
         BigInteger serverCheckEncrypted = RSA.encrypt(
             serverRsaPublic, serverRsaMod,
             randomServerCheckInteger);
-        // System.out.println("servercheckencrypted "
-        // + serverCheckEncrypted.toString(16));
         out
             .write((serverCheckEncrypted.toString(16) + "\n")
                 .getBytes());
@@ -346,12 +358,8 @@ public class Communicator
         }
         byte[] antiReplayMessage = Crypto.dec(securityKey,
             in, 200);
-        // System.out.println("received antireplay "
-        // + Hash.hexcode(antiReplayMessage));
         String antiReplayHash = Hash
             .hash(antiReplayMessage);
-        // System.out.println("sending antireply hash "
-        // + Hash.hexcode(antiReplayHash.getBytes()));
         Crypto.enc(securityKey, antiReplayHash.getBytes(),
             out);
         out.flush();
