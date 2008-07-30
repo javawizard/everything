@@ -32,7 +32,7 @@ import net.sf.opengroove.client.ui.ProgressItem.Status;
  */
 public class ProgressPane extends JPanel
 {
-    private static final Spring PAD = 5;
+    private static final Spring PAD = Spring.constant(5);
     private ArrayList<ProgressItem> tasks = new ArrayList<ProgressItem>();
     
     /**
@@ -44,7 +44,10 @@ public class ProgressPane extends JPanel
         SpringLayout layout = new SpringLayout();
         setLayout(layout);
         Component lowestActive = null;
-        
+        // holds the component to pin the status component's top to
+        Component lastStatus = this;
+        // hold the component to pin the name component's top to
+        Component lastName = this;
         for (int i = 0; i < tasks.size(); i++)
         {
             ProgressItem task = tasks.get(i);
@@ -54,6 +57,8 @@ public class ProgressPane extends JPanel
                 .getDetailsComponent();
             JComponent statusComponent;
             Status status = task.getStatus();
+            if (status.equals(Status.ACTIVE))
+                lowestActive = nameComponent;
             Image statusImage = status.getImage();
             if (statusImage == null)
                 statusComponent = new JLabel();
@@ -73,6 +78,26 @@ public class ProgressPane extends JPanel
                 statusComponent);
             layout.putConstraint(layout.EAST, this, PAD,
                 layout.EAST, nameComponent);
+            layout.putConstraint(layout.NORTH,
+                statusComponent, PAD, layout.SOUTH,
+                lastStatus);
+            layout.putConstraint(layout.NORTH,
+                nameComponent, PAD, layout.SOUTH, lastName);
+            lastStatus = statusComponent;
+            lastName = nameComponent;
+            if (detailsComponent != null)
+            {
+                add(detailsComponent);
+                layout.putConstraint(layout.WEST,
+                    detailsComponent, PAD, layout.EAST,
+                    statusComponent);
+                layout.putConstraint(layout.NORTH,
+                    detailsComponent, PAD, layout.SOUTH,
+                    nameComponent);
+                layout.putConstraint(layout.EAST, this,
+                    PAD, layout.EAST, detailsComponent);
+                lastName = detailsComponent;
+            }
         }
         invalidate();
         validate();
@@ -92,5 +117,32 @@ public class ProgressPane extends JPanel
     
     public ProgressPane()
     {
+    }
+    
+    public void add(ProgressItem task)
+    {
+        tasks.add(task);
+        refresh();
+    }
+    
+    public void remove(ProgressItem task)
+    {
+        tasks.remove(task);
+        refresh();
+    }
+    
+    public ProgressItem[] listItems()
+    {
+        return tasks.toArray(new ProgressItem[0]);
+    }
+    
+    public ProgressItem getItem(int i)
+    {
+        return tasks.get(i);
+    }
+    
+    public int countItems()
+    {
+        return tasks.size();
     }
 }
