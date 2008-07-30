@@ -40,9 +40,9 @@ import net.sf.opengroove.client.UserInformationLink;
 import net.sf.opengroove.client.notification.TaskbarNotification;
 import net.sf.opengroove.client.plugins.Plugin;
 import net.sf.opengroove.client.plugins.PluginManager;
+import net.sf.opengroove.client.ui.ItemChooser;
 import net.sf.opengroove.client.workspace.SetList;
 import net.sf.opengroove.client.workspace.Workspace;
-import net.sf.opengroove.utils.ItemChooser;
 
 import com.l2fprod.common.swing.JLinkButton;
 

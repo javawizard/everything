@@ -1,5 +1,12 @@
 package tests;
 
+import java.awt.BorderLayout;
+import java.io.File;
+
+import javax.swing.JFrame;
+
+import net.sf.opengroove.client.ui.AnimatedImage;
+
 public class Test022
 {
     
@@ -8,8 +15,15 @@ public class Test022
      */
     public static void main(String[] args)
     {
-        // TODO Auto-generated method stub
-        
+        JFrame frame = new JFrame();
+        frame.getContentPane().add(
+            new AnimatedImage(
+                new File("icons/thinking.gif")),
+            BorderLayout.CENTER);
+        frame.pack();
+        frame.setLocationRelativeTo(null);
+        frame
+            .setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        frame.show();
     }
-    
 }

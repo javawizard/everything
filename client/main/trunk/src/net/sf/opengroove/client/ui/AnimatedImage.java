@@ -38,7 +38,6 @@ public class AnimatedImage extends JComponent
                 return true;
             }
         });
-        new Applet().getImage(null);
     }
     
     public void paintComponent(Graphics g)

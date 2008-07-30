@@ -1,4 +1,4 @@
-package net.sf.opengroove.utils;
+package net.sf.opengroove.client.ui;
 
 import java.awt.BorderLayout;
 import java.awt.Color;

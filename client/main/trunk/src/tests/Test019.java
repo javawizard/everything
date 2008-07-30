@@ -2,7 +2,7 @@ package tests;
 
 import javax.swing.JFrame;
 
-import net.sf.opengroove.utils.ItemChooser;
+import net.sf.opengroove.client.ui.ItemChooser;
 
 public class Test019
 {
