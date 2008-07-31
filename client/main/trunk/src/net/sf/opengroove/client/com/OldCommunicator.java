@@ -96,7 +96,7 @@ public class OldCommunicator
 					allUsers.addAll(newUsers);
 					allUsers.retainAll(newUsers);
 					setFolderContents(allUsersCache, allUsers);
-					for (StatusListener listener : listStatusListeners())
+					for (OldStatusListener listener : listStatusListeners())
 					{
 						listener.allUsersUpdated(OldCommunicator.this);
 						listener.anyUsersUpdated(OldCommunicator.this);
@@ -112,7 +112,7 @@ public class OldCommunicator
 					}
 					onlineUsers.addAll(newUsers);
 					onlineUsers.retainAll(newUsers);
-					for (StatusListener listener : listStatusListeners())
+					for (OldStatusListener listener : listStatusListeners())
 					{
 						listener.onlineUsersUpdated(OldCommunicator.this);
 						listener.anyUsersUpdated(OldCommunicator.this);
@@ -128,7 +128,7 @@ public class OldCommunicator
 					}
 					offlineUsers.addAll(newUsers);
 					offlineUsers.retainAll(newUsers);
-					for (StatusListener listener : listStatusListeners())
+					for (OldStatusListener listener : listStatusListeners())
 					{
 						listener.offlineUsersUpdated(OldCommunicator.this);
 						listener.anyUsersUpdated(OldCommunicator.this);
@@ -137,12 +137,12 @@ public class OldCommunicator
 				{
 					String oldHash = userStatusHash;
 					userStatusHash = arguments;
-					for (StatusListener listener : listStatusListeners())
+					for (OldStatusListener listener : listStatusListeners())
 					{
 						listener.userStatusHashUpdated(OldCommunicator.this);
 					}
 					if (!oldHash.equals(arguments))
-						for (StatusListener listener : listStatusListeners())
+						for (OldStatusListener listener : listStatusListeners())
 						{
 							listener.userStatusHashChanged(OldCommunicator.this);
 						}
@@ -155,13 +155,13 @@ public class OldCommunicator
 							- Long.parseLong(arguments);
 				} else if (command.equalsIgnoreCase("USERHERE"))
 				{
-					for (StatusListener listener : listStatusListeners())
+					for (OldStatusListener listener : listStatusListeners())
 					{
 						listener.userHere(OldCommunicator.this, arguments);
 					}
 				} else if (command.equalsIgnoreCase("USERGONE"))
 				{
-					for (StatusListener listener : listStatusListeners())
+					for (OldStatusListener listener : listStatusListeners())
 					{
 						listener.userGone(OldCommunicator.this, arguments);
 					}
@@ -280,21 +280,21 @@ public class OldCommunicator
 		return sinks.toArray(new MessageSink[0]);
 	}
 
-	private ArrayList<StatusListener> statusListeners = new ArrayList<StatusListener>();
+	private ArrayList<OldStatusListener> statusListeners = new ArrayList<OldStatusListener>();
 
-	public void addStatusListener(StatusListener listener)
+	public void addStatusListener(OldStatusListener listener)
 	{
 		statusListeners.add(listener);
 	}
 
-	public void removeStatusListener(StatusListener listener)
+	public void removeStatusListener(OldStatusListener listener)
 	{
 		statusListeners.remove(listener);
 	}
 
-	public StatusListener[] listStatusListeners()
+	public OldStatusListener[] listStatusListeners()
 	{
-		return statusListeners.toArray(new StatusListener[0]);
+		return statusListeners.toArray(new OldStatusListener[0]);
 	}
 
 	private String userCacheMetadata = null;

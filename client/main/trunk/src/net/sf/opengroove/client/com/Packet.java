@@ -4,6 +4,7 @@ public class Packet
 {
     private String packetId;
     private String command;
+    private String response;
     private byte[] contents;
     
     public String getPacketId()
@@ -34,5 +35,39 @@ public class Packet
     public void setContents(byte[] contents)
     {
         this.contents = contents;
+    }
+    
+    public Packet(String packetId, String command,
+        byte[] contents)
+    {
+        super();
+        this.packetId = packetId;
+        this.command = command;
+        this.contents = contents;
+    }
+    
+    public Packet(String packetId, String command,
+        String response, byte[] contents)
+    {
+        super();
+        this.packetId = packetId;
+        this.command = command;
+        this.response = response;
+        this.contents = contents;
+    }
+    
+    public Packet()
+    {
+        super();
+    }
+    
+    public String getResponse()
+    {
+        return response;
+    }
+    
+    public void setResponse(String response)
+    {
+        this.response = response;
     }
 }

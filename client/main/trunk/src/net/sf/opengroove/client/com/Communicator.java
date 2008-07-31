@@ -7,6 +7,7 @@ import java.io.OutputStream;
 import java.math.BigInteger;
 import java.net.Socket;
 import java.security.SecureRandom;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
@@ -59,6 +60,13 @@ import net.sf.opengroove.security.RSA;
  */
 public class Communicator
 {
+    private interface Notifier<T>
+    {
+        
+        public void notify(T listener);
+        
+    }
+    
     private static final SecureRandom random = new SecureRandom();
     public static final int[] WAIT_TIMES = { 0, 0, 2, 3, 5,
         10, 10, 10, 10, 10, 10, 20, 20, 20, 20, 30, 30, 30 };
@@ -67,6 +75,13 @@ public class Communicator
     private BigInteger serverRsaMod;
     private String realm;
     private boolean authenticateOnConnect = false;
+    /**
+     * This is the status of the last auto-auth. If it's null, then the server
+     * isn't connected right now, or an auto-auth wasn't requested. If it's not
+     * null, then it's value is either "OK" or one of the response codes
+     * returned by the server in response to an authenticate command.
+     */
+    private String lastAuthStatus = null;
     private String connectionType;
     private String connectionUsername;
     private String connectionComputer;
@@ -75,15 +90,39 @@ public class Communicator
     private InputStream in;
     private OutputStream out;
     private Thread coordinator;
-    // TODO: add some sort of list of blocking queues, where the calling blocker
-    // method
-    // blocks until an item is on the queue. The object type of the queue could
-    // contain
-    // either the contents of the response, or a boolean flag indicating that
-    // the response
-    // couldn't be received, either because a certain timeout for the response
-    // expired, or
-    // because the communicator lost it's connection to the server.
+    /**
+     * This is a list of all status listeners registered to this communicator
+     * instance.
+     */
+    private ArrayList<NewStatusListener> statusListeners = new ArrayList<NewStatusListener>();
+    
+    public void addStatusListener(NewStatusListener listener)
+    {
+        statusListeners.add(listener);
+    }
+    
+    public void removeStatusListener(
+        NewStatusListener listener)
+    {
+        statusListeners.remove(listener);
+    }
+    
+    /**
+     * This is a list of all status listeners registered to this communicator
+     * instance.
+     */
+    private ArrayList<PacketListener> packetListeners = new ArrayList<PacketListener>();
+    
+    public void addPacketListener(PacketListener listener)
+    {
+        packetListeners.add(listener);
+    }
+    
+    public void removePacketListener(PacketListener listener)
+    {
+        packetListeners.remove(listener);
+    }
+    
     /**
      * This map is used to store a list of queues that correspond to
      * currently-blocking invocations of the synchronous communication methods.
@@ -108,16 +147,25 @@ public class Communicator
      */
     private Aes256 securityKey;
     
-    public Communicator(String realm,
+    public Communicator(String realm, boolean auth,
+        String connectionType, String connectionUsername,
+        String connectionComputer,
+        String connectionPassword,
         BigInteger serverRsaPublic, BigInteger serverRsaMod)
     {
         this.realm = realm;
         this.serverRsaPublic = serverRsaPublic;
         this.serverRsaMod = serverRsaMod;
-        coordinator = new Thread()
+        this.authenticateOnConnect = auth;
+        this.connectionType = connectionType;
+        this.connectionComputer = connectionComputer;
+        this.connectionUsername = connectionUsername;
+        this.connectionPassword = connectionPassword;
+        coordinator = new Thread("Communicator-Manager")
         {
             public void run()
             {
+                boolean isFirst = true;
                 while (isRunning)
                 {
                     // If the wait index is greater than 2, clear the cache.
@@ -129,6 +177,20 @@ public class Communicator
                     // dns lookup is performed again, which is a bit of a
                     // performance hit, but I can't think of any better way to
                     // do it right now.
+                    if (!isFirst)
+                        notifyStatusListeners(new Notifier<NewStatusListener>()
+                        {
+                            
+                            @Override
+                            public void notify(
+                                NewStatusListener listener)
+                            {
+                                listener
+                                    .connectionLost(Communicator.this);
+                            }
+                        });
+                    isFirst = false;
+                    lastAuthStatus = null;
                     if (waitIndex > 2)
                         ConnectionResolver.clearCache();
                     try
@@ -145,24 +207,256 @@ public class Communicator
                     // order returned, we try to connect. If connecting to a
                     // particular server fails (even if a connection is
                     // established but the handshake fails), we advance to the
-                    // next server.
+                    // next server. If we've cycled through all of the servers
+                    // without a successful connection, then we continue with
+                    // the next while loop.
                     try
                     {
-                        ServerContext[] servers = ConnectionResolver
+                        final ServerContext[] servers = ConnectionResolver
                             .lookup(Communicator.this.realm);
-                        
+                        boolean setupConnection = false;
+                        Socket tSocket = null;
+                        for (int i = 0; i < servers.length; i++)
+                        {
+                            final int fI = i;
+                            try
+                            {
+                                tSocket = new Socket(
+                                    servers[i]
+                                        .getHostname(),
+                                    servers[i].getPort());
+                                notifyStatusListeners(new Notifier<NewStatusListener>()
+                                {
+                                    
+                                    @Override
+                                    public void notify(
+                                        NewStatusListener listener)
+                                    {
+                                        listener
+                                            .connectionEstablished(
+                                                Communicator.this,
+                                                servers[fI]);
+                                    }
+                                });
+                                securityKey = performHandshake(tSocket);
+                                setupConnection = true;
+                                break;
+                            }
+                            catch (Exception e)
+                            {
+                                e.printStackTrace();
+                                try
+                                {
+                                    tSocket.close();
+                                }
+                                catch (Exception e2)
+                                {
+                                }
+                            }
+                        }
+                        if (!setupConnection)
+                        {
+                            System.err
+                                .println("Failed to set up a connection.");
+                            continue;
+                        }
+                        if (authenticateOnConnect)
+                        {
+                            Packet authPacket = new Packet(
+                                "_auth",
+                                "authenticate",
+                                (Communicator.this.connectionType
+                                    + "\n"
+                                    + Communicator.this.connectionUsername
+                                    + "\n" + Communicator.this.connectionPassword)
+                                    .getBytes());
+                            send(authPacket, tSocket);
+                        }
+                        notifyStatusListeners(new Notifier<NewStatusListener>()
+                        {
+                            
+                            @Override
+                            public void notify(
+                                NewStatusListener listener)
+                            {
+                                listener
+                                    .connectionReady(Communicator.this);
+                            }
+                            
+                        });
+                        // Ok, we have a connection to the server, we've
+                        // performed a handshake, and we've sent an
+                        // authentication request if the user wanted one to be
+                        // sent. Now we inject the streams into the in and out
+                        // fields, inject the socket into the socket field, and
+                        // start listening for response packets.
+                        in = tSocket.getInputStream();
+                        out = tSocket.getOutputStream();
+                        socket = tSocket;
+                        // Now the actual listening stuff.
+                        boolean b = true;
+                        while (b)
+                        {
+                            byte[] packet = Crypto.dec(
+                                securityKey, in, 65535);
+                            byte[] first128bytes = new byte[Math
+                                .min(128, packet.length)];
+                            System.arraycopy(packet, 0,
+                                first128bytes, 0,
+                                first128bytes.length);
+                            String first128 = new String(
+                                first128bytes);
+                            String[] first128split = first128
+                                .split("\\ ", 4);
+                            if (first128split.length < 4)
+
+                            {
+                                System.err
+                                    .println("Packet received that was too short");
+                                continue;
+                            }
+                            String packetId = first128split[0];
+                            String commandName = first128split[1];
+                            String responseName = first128split[2];
+                            int startDataIndex = packetId
+                                .length()
+                                + commandName.length()
+                                + responseName.length() + 3;
+                            byte[] data = new byte[packet.length
+                                - (startDataIndex)];
+                            System.arraycopy(packet,
+                                startDataIndex, data, 0,
+                                data.length);
+                            final Packet iPacket = new Packet(
+                                packetId, commandName,
+                                responseName, data);
+                            // We have a valid packet. Now we need to process
+                            // it. First, if it's packetid is _auth, then we
+                            // check to see if it was successful, and notify the
+                            // status listeners about this. If it's packetid is
+                            // not _auth, we then check to see if it has a sync
+                            // block queue in the syncBlocks map, and if it
+                            // does, we post the packet to the sync block queue.
+                            // Then (regardless of whether there was or wasn't a
+                            // sync block queue), we scan through all of the
+                            // packetlisteners and hand them the packet.
+                            if (packetId
+                                .equalsIgnoreCase("_auth"))
+                            {
+                                // This is the response to the auto-auth packet.
+                                // If it was successful, we stick that value
+                                // into lastAuthStatus and notify all
+                                // StatusListeners. If it failed, we pretty much
+                                // do the same thing.
+                                lastAuthStatus = responseName;
+                                notifyStatusListeners(new Notifier<NewStatusListener>()
+                                {
+                                    
+                                    @Override
+                                    public void notify(
+                                        NewStatusListener listener)
+                                    {
+                                        if (lastAuthStatus
+                                            .equalsIgnoreCase("OK"))
+                                            listener
+                                                .authenticationSuccessful(Communicator.this);
+                                        else
+                                            listener
+                                                .authenticationFailed(
+                                                    Communicator.this,
+                                                    iPacket);
+                                    }
+                                });
+                            }
+                            else
+                            {
+                                BlockingQueue<Packet> syncQueue = syncBlocks
+                                    .get(packetId);
+                                if (syncQueue != null)
+                                {
+                                    // A sync block queue for this packet was
+                                    // found, so we'll send the packet to it.
+                                    syncQueue
+                                        .offer(iPacket);
+                                }
+                                // Now we'll loop through all of the
+                                // PacketHandlers and send the packet to them.
+                                notifyPacketListeners(new Notifier<PacketListener>()
+                                {
+                                    
+                                    @Override
+                                    public void notify(
+                                        PacketListener listener)
+                                    {
+                                        listener
+                                            .receive(iPacket);
+                                    }
+                                });
+                            }
+                        }
                     }
                     catch (Exception e)
                     {
                         System.err
-                            .println("Exception while establishing connection to server");
+                            .println("Uncategorized exception while connecting to server");
                         e.printStackTrace();
-                        continue;
+                        try
+                        {
+                            socket.close();
+                        }
+                        catch (Exception e2)
+                        {
+                            
+                        }
+                        finally
+                        {
+                            socket = null;
+                            in = null;
+                            out = null;
+                        }
+                        try
+                        {
+                            for (BlockingQueue<Packet> queue : new ArrayList<BlockingQueue<Packet>>(
+                                syncBlocks.values()))
+                            {
+                                try
+                                {
+                                    queue
+                                        .offer(CONNECTION_ERROR);
+                                }
+                                catch (Exception exception)
+                                {
+                                    exception
+                                        .printStackTrace();
+                                }
+                            }
+                        }
+                        catch (Exception e2)
+                        {
+                            
+                        }
                     }
                 }
             }
         };
         coordinator.start();
+    }
+    
+    private void notifyPacketListeners(
+        Notifier<PacketListener> notifier)
+    {
+        for (PacketListener listener : new ArrayList<PacketListener>(
+            packetListeners))
+        {
+            try
+            {
+                notifier.notify(listener);
+            }
+            catch (Exception exception)
+            {
+                exception.printStackTrace();
+            }
+        }
     }
     
     /**
@@ -191,24 +485,34 @@ public class Communicator
     
     /**
      * Sends the packet specified to the server, and waits the specified number
-     * of milliseconds for a response to the packet.
+     * of milliseconds for a response to the packet. The packet's id will be set
+     * to a unique id, and the response packet's id will be the same.
      * 
      * @param packet
      *            The packet to send
      * @param timeout
      *            The number of milliseconds to wait for a response before
      *            throwing a TimeoutException
-     * @return
+     * @return The response from the server to this packet
+     * @throws IOException
+     *             if an I/O exception occurs.
      */
     public Packet query(Packet packet, int timeout)
         throws IOException
     {
+        return query(packet, timeout, socket);
+    }
+    
+    public Packet query(Packet packet, int timeout,
+        Socket socket) throws IOException
+    {
         try
         {
+            packet.setPacketId(generateRuntimeId());
             BlockingQueue<Packet> queue = new LinkedBlockingQueue<Packet>(
                 1);
             syncBlocks.put(packet.getPacketId(), queue);
-            send(packet);
+            send(packet, socket);
             Packet responsePacket = queue.poll(timeout,
                 TimeUnit.MILLISECONDS);
             if (responsePacket == CONNECTION_ERROR)
@@ -259,8 +563,23 @@ public class Communicator
         return result;
     }
     
-    public synchronized void send(Packet packet)
-        throws IOException
+    /**
+     * Sends the specified packet asynchronously. A PacketListener must be
+     * registered in order to receive responses for this packet. Unlike query(),
+     * this method does not generate a unique id for the packet. If a unique id
+     * is desired, it must be generated by calling a method such as
+     * generateRuntimeId().
+     * 
+     * @param packet
+     * @throws IOException
+     */
+    public void send(Packet packet) throws IOException
+    {
+        send(packet, socket);
+    }
+    
+    private synchronized void send(Packet packet,
+        Socket socket) throws IOException
     {
         // TODO: instead of this method being synchronized, have it push packets
         // on to a packet spooler, which then forwards them to the server.
@@ -382,5 +701,36 @@ public class Communicator
             out);
         out.flush();
         return securityKey;
+    }
+    
+    private static volatile long cid = 1;
+    
+    /**
+     * Generates a unique id. The id is only guaranteed to be unique throughout
+     * this JVM instance, so it should only be used for stuff such as generating
+     * unique packet ids.
+     * 
+     * @return
+     */
+    public static String generateRuntimeId()
+    {
+        return "p" + (cid++);
+    }
+    
+    private void notifyStatusListeners(
+        Notifier<NewStatusListener> notifier)
+    {
+        for (NewStatusListener listener : new ArrayList<NewStatusListener>(
+            statusListeners))
+        {
+            try
+            {
+                notifier.notify(listener);
+            }
+            catch (Exception exception)
+            {
+                exception.printStackTrace();
+            }
+        }
     }
 }

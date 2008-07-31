@@ -8,7 +8,7 @@ package net.sf.opengroove.client.com;
  * 
  * @author Alexander Boyd
  */
-public interface StatusListener
+public interface OldStatusListener
 {
 	/**
 	 * called when the list of all users is updated.
