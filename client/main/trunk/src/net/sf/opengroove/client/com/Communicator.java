@@ -94,15 +94,15 @@ public class Communicator
      * This is a list of all status listeners registered to this communicator
      * instance.
      */
-    private ArrayList<NewStatusListener> statusListeners = new ArrayList<NewStatusListener>();
+    private ArrayList<StatusListener> statusListeners = new ArrayList<StatusListener>();
     
-    public void addStatusListener(NewStatusListener listener)
+    public void addStatusListener(StatusListener listener)
     {
         statusListeners.add(listener);
     }
     
     public void removeStatusListener(
-        NewStatusListener listener)
+        StatusListener listener)
     {
         statusListeners.remove(listener);
     }
@@ -178,12 +178,12 @@ public class Communicator
                     // performance hit, but I can't think of any better way to
                     // do it right now.
                     if (!isFirst)
-                        notifyStatusListeners(new Notifier<NewStatusListener>()
+                        notifyStatusListeners(new Notifier<StatusListener>()
                         {
                             
                             @Override
                             public void notify(
-                                NewStatusListener listener)
+                                StatusListener listener)
                             {
                                 listener
                                     .connectionLost(Communicator.this);
@@ -225,12 +225,12 @@ public class Communicator
                                     servers[i]
                                         .getHostname(),
                                     servers[i].getPort());
-                                notifyStatusListeners(new Notifier<NewStatusListener>()
+                                notifyStatusListeners(new Notifier<StatusListener>()
                                 {
                                     
                                     @Override
                                     public void notify(
-                                        NewStatusListener listener)
+                                        StatusListener listener)
                                     {
                                         listener
                                             .connectionEstablished(
@@ -272,12 +272,12 @@ public class Communicator
                                     .getBytes());
                             send(authPacket, tSocket);
                         }
-                        notifyStatusListeners(new Notifier<NewStatusListener>()
+                        notifyStatusListeners(new Notifier<StatusListener>()
                         {
                             
                             @Override
                             public void notify(
-                                NewStatusListener listener)
+                                StatusListener listener)
                             {
                                 listener
                                     .connectionReady(Communicator.this);
@@ -349,12 +349,12 @@ public class Communicator
                                 // StatusListeners. If it failed, we pretty much
                                 // do the same thing.
                                 lastAuthStatus = responseName;
-                                notifyStatusListeners(new Notifier<NewStatusListener>()
+                                notifyStatusListeners(new Notifier<StatusListener>()
                                 {
                                     
                                     @Override
                                     public void notify(
-                                        NewStatusListener listener)
+                                        StatusListener listener)
                                     {
                                         if (lastAuthStatus
                                             .equalsIgnoreCase("OK"))
@@ -718,9 +718,9 @@ public class Communicator
     }
     
     private void notifyStatusListeners(
-        Notifier<NewStatusListener> notifier)
+        Notifier<StatusListener> notifier)
     {
-        for (NewStatusListener listener : new ArrayList<NewStatusListener>(
+        for (StatusListener listener : new ArrayList<StatusListener>(
             statusListeners))
         {
             try

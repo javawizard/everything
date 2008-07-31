@@ -1,6 +1,6 @@
 package net.sf.opengroove.client.com;
 
-public interface NewStatusListener
+public interface StatusListener
 {
     /**
      * Called when the communicator specified loses it's connection to the
