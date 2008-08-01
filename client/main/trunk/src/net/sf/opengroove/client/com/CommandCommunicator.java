@@ -4,6 +4,7 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.StringReader;
 import java.util.ArrayList;
+import java.util.Date;
 
 /**
  * This class wraps the Communicator class, and provides methods for doing
@@ -94,10 +95,8 @@ public class CommandCommunicator
                             {
                                 listener
                                     .receive(
-                                        Long
-                                            .parseLong(dateIssuedString),
-                                        Long
-                                            .parseLong(dateExpiresString),
+                                        parseDateString(dateIssuedString),
+                                        parseDateString(dateExpiresString),
                                         UserNotificationListener.Priority
                                             .valueOf(priorityString
                                                 .trim()
@@ -172,6 +171,107 @@ public class CommandCommunicator
         return response.getResponse();
     }
     
+    /**
+     * Pings the server. This command sends a ping command and waits until it
+     * receives a response before returning.
+     * 
+     * @throws IOException
+     */
+    public void ping() throws IOException
+    {
+        // This must be communicator.query, not communicator.send!
+        communicator.query(new Packet(null, "ping",
+            new byte[0]), defaultTimeout);
+    }
+    
+    /**
+     * Queries the server for it's current time. The result is the server's time
+     * in milliseconds since January 1, 1970 UTC.
+     * 
+     * @return The server's current time, in milliseconds since January 1, 1970
+     *         UTC
+     * @throws IOException
+     */
+    public long getTime() throws IOException
+    {
+        Packet response = communicator.query(new Packet(
+            null, "gettime", new byte[0]), defaultTimeout);
+        return parseDateString(new String(response
+            .getContents()));
+    }
+    
+    /**
+     * Searches for users.
+     * 
+     * @param searchText
+     *            The text to search for. If this text is present in either the
+     *            user's username or one of the user settings specified, and the
+     *            user is {@link #setVisibility(boolean) visible}, then the
+     *            user will be included in this list.
+     * @param offset
+     *            The offset to return results from. This can be used to only
+     *            download a page of search results at a time from the server.
+     * @param limit
+     *            The maximum number of results that will be returned at a time.
+     * @param searchOtherRealms
+     *            true to search other realm servers (in which case the search
+     *            may be slow), false to only search this realm server.
+     * @param userSettings
+     *            A list of user settings to search in addition to the user's
+     *            username. If this is the empty array, only the user's username
+     *            will be searched.
+     * @param timeout
+     *            The timeout to wait for the results to come back. If it's -1,
+     *            then the {@link #setDefaultTimeout(int) default timeout} is
+     *            used. Generally, the timeout should be higher than that if
+     *            other realm servers are searched.
+     * @return
+     * @throws IOException
+     */
+    public UserSearch searchUsers(String searchText,
+        int offset, int limit, boolean searchOtherRealms,
+        String[] userSettings, int timeout)
+        throws IOException
+    {
+        String contents = searchText + "\n" + offset + "\n"
+            + limit + "\n" + searchOtherRealms + "\n";
+        for (String s : userSettings)
+        {
+            contents += s + "\n";
+        }
+        Packet response = communicator.query(new Packet(
+            null, "searchusers", contents.getBytes()),
+            defaultTimeout);
+        String[] tokens = tokenizeByLines(new String(
+            response.getContents()));
+        String[] results = new String[tokens.length - 1];
+        int totalResults = Integer.parseInt(tokens[0]);
+        System.arraycopy(tokens, 1, results, 0,
+            results.length);
+        UserSearch search = new UserSearch();
+        search.setResults(results);
+        search.setTotal(totalResults);
+        return search;
+    }
+    
+    /**
+     * Sets your visibility. When your account is created, this is, by default,
+     * false. If this is false, then you won't be returned as part of any
+     * searchUsers requests. If this is true, then you can be returned as part
+     * of a searchUsers request. Changes to this may take a few minutes to
+     * propegate through all of the realm servers, although the change will
+     * generally be available to other users on your realm server immediately.
+     * 
+     * @param visible
+     *            True to make you visible to other users, so that your username
+     *            can be searched for using the searchUsers command, false to
+     *            hide your information
+     */
+    public void setVisibility(boolean visible)
+    {
+        communicator.query(new Packet(), defaultTimeout);
+    }
+    
     private ListenerManager<ImmediateMessageListener> imessageListeners = new ListenerManager<ImmediateMessageListener>();
     
     public void addImmediateMessageListener(
@@ -198,6 +298,35 @@ public class CommandCommunicator
         UserNotificationListener listener)
     {
         userNotificationListeners.removeListener(listener);
+    }
+    
+    /**
+     * Parses the specified date string, in the format returned by the
+     * OpenGroove Realm Server, into a long representing the number of
+     * milliseconds since January 1, 1970. The standard date format in the
+     * server protocol is the number of milliseconds since january 1, 1970, a
+     * space, and the text-readable date in the format returned by
+     * {@link java.util.Date#toString()}
+     * 
+     * @param dateString
+     *            The string representing the date to parse
+     * @return a long indicating the value of the date specified
+     */
+    public static long parseDateString(String dateString)
+    {
+        return Long.parseLong(dateString.split("\\ ", 2)[0]
+            .trim());
+    }
+    
+    /**
+     * Formats the specified long into a date that the server can recognize.
+     * 
+     * @param date
+     * @return
+     */
+    public static String formatDateString(long date)
+    {
+        return "" + date + " " + new Date(date).toString();
     }
     
 }

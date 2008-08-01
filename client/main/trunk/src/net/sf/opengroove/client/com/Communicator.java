@@ -499,7 +499,7 @@ public class Communicator
         return query(packet, timeout, socket);
     }
     
-    public Packet query(Packet packet, int timeout,
+    private Packet query(Packet packet, int timeout,
         Socket socket) throws IOException
     {
         try
