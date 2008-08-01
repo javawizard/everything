@@ -29,7 +29,78 @@ public class CommandCommunicator
                 if (packet.getCommand().equalsIgnoreCase(
                     "receiveimessage"))
                 {
-                    
+                    String firstSubsection = new String(
+                        packet.getContents(), 0, Math.min(
+                            128,
+                            packet.getContents().length));
+                    String[] tokens = firstSubsection
+                        .split(" ", 4);
+                    final String messageId = tokens[0];
+                    final String sendingUsername = tokens[1];
+                    final String sendingComputer = tokens[2];
+                    int dataIndex = messageId.length()
+                        + sendingUsername.length()
+                        + sendingComputer.length() + 3;
+                    final byte[] messageContents = new byte[packet
+                        .getContents().length
+                        - dataIndex];
+                    System.arraycopy(packet.getContents(),
+                        dataIndex, messageContents, 0,
+                        messageContents.length);
+                    // Ok, we've put the message together. Now we notify all
+                    // imessage listeners of the message.
+                    imessageListeners
+                        .notify(new Notifier<ImmediateMessageListener>()
+                        {
+                            
+                            @Override
+                            public void notify(
+                                ImmediateMessageListener listener)
+                            {
+                                listener.receive(messageId,
+                                    sendingUsername,
+                                    sendingComputer,
+                                    messageContents);
+                            }
+                        });
+                }
+                else if (packet.getCommand().equalsIgnoreCase(
+                    "usernotification"))
+                {
+                    String firstSubsection = new String(
+                        packet.getContents(), 0, Math.min(
+                            128,
+                            packet.getContents().length));
+                    String[] tokens = firstSubsection
+                        .split(" ", 4);
+                    final String messageId = tokens[0];
+                    final String sendingUsername = tokens[1];
+                    final String sendingComputer = tokens[2];
+                    int dataIndex = messageId.length()
+                        + sendingUsername.length()
+                        + sendingComputer.length() + 3;
+                    final byte[] messageContents = new byte[packet
+                        .getContents().length
+                        - dataIndex];
+                    System.arraycopy(packet.getContents(),
+                        dataIndex, messageContents, 0,
+                        messageContents.length);
+                    // Ok, we've put the message together. Now we notify all
+                    // imessage listeners of the message.
+                    imessageListeners
+                        .notify(new Notifier<ImmediateMessageListener>()
+                        {
+                            
+                            @Override
+                            public void notify(
+                                ImmediateMessageListener listener)
+                            {
+                                listener.receive(messageId,
+                                    sendingUsername,
+                                    sendingComputer,
+                                    messageContents);
+                            }
+                        });
                 }
             }
         });
@@ -89,6 +160,20 @@ public class CommandCommunicator
         ImmediateMessageListener listener)
     {
         imessageListeners.removeListener(listener);
+    }
+    
+    private ListenerManager<UserNotificationListener> userNotificationListeners = new ListenerManager<UserNotificationListener>();
+    
+    public void addUserNotificationListener(
+        UserNotificationListener listener)
+    {
+        userNotificationListeners.addListener(listener);
+    }
+    
+    public void removeUserNotificationListener(
+        UserNotificationListener listener)
+    {
+        userNotificationListeners.removeListener(listener);
     }
     
 }
