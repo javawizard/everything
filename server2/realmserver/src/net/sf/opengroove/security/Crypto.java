@@ -4,6 +4,7 @@ import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
+import java.io.EOFException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -102,8 +103,11 @@ public class Crypto
         int pointer = 0;
         while (pointer < tl)
         {
-            pointer += in
-                .read(toDec, pointer, tl - pointer);
+            int px;
+            pointer += (px = in.read(toDec, pointer, tl
+                - pointer));
+            if (px == -1)
+                throw new EOFException();
         }
         // toDec is filled with data to be decrypted, now we'll decrypt it.
         byte[] dec = new byte[tl];
