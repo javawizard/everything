@@ -1,5 +1,7 @@
 package net.sf.opengroove.client.com;
 
+import java.io.IOException;
+
 /**
  * This class wraps the Communicator class, and provides methods for doing
  * common interaction tasks with the server.
@@ -9,7 +11,11 @@ package net.sf.opengroove.client.com;
  */
 public class CommandCommunicator
 {
+    private static final int GLOBAL_DEFAULT_TIMEOUT = 5000;
+    
     private Communicator communicator;
+    
+    private int defaultTimeout = GLOBAL_DEFAULT_TIMEOUT;
     
     public CommandCommunicator(Communicator communicator)
     {
@@ -21,8 +27,13 @@ public class CommandCommunicator
         return communicator;
     }
     
+    public void setDefaultTimeout(int timeout)
+    {
+        this.defaultTimeout = timeout;
+    }
+    
     /**
-     * Sends an immediate message (or imessage) to the user specified.
+     * Sends an immediate message to the user specified.
      * 
      * @param id
      *            An id for the imessage. This can be anything that the
@@ -42,7 +53,16 @@ public class CommandCommunicator
      */
     public String sendImmediateMessage(String id,
         String username, String computer, byte[] message)
+        throws IOException
     {
-        
+        Packet packet = new Packet(null, "sendimessage",
+            Communicator
+                .concat(("" + id + " " + username + " "
+                    + computer + " ").getBytes(), message));
+        Packet response = communicator.query(packet,
+            defaultTimeout);
+        return response.getResponse();
     }
+    
+    private ListenerManager<ImmediateMessageListener> imessageListeners = new ListenerManager<ImmediateMessageListener>();
 }

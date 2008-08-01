@@ -60,13 +60,6 @@ import net.sf.opengroove.security.RSA;
  */
 public class Communicator
 {
-    private interface Notifier<T>
-    {
-        
-        public void notify(T listener);
-        
-    }
-    
     private static final SecureRandom random = new SecureRandom();
     public static final int[] WAIT_TIMES = { 0, 0, 2, 3, 5,
         10, 10, 10, 10, 10, 10, 20, 20, 20, 20, 30, 30, 30 };
@@ -101,8 +94,7 @@ public class Communicator
         statusListeners.add(listener);
     }
     
-    public void removeStatusListener(
-        StatusListener listener)
+    public void removeStatusListener(StatusListener listener)
     {
         statusListeners.remove(listener);
     }
@@ -543,9 +535,12 @@ public class Communicator
      * concatenates a bunch of byte arrays together.
      * 
      * @param bytes
-     * @return
+     *            the byte arrays to concatenate
+     * @return a byte array. who's length is the length of all of the input byte
+     *         arrays added together, and who's contents are the contents of the
+     *         input byte arrays, one after another.
      */
-    private static byte[] concat(byte[]... bytes)
+    static byte[] concat(byte[]... bytes)
     {
         int length = 0;
         for (byte[] cb : bytes)
@@ -586,7 +581,7 @@ public class Communicator
         if (out == null || socket == null
             || socket.isClosed()
             || socket.isOutputShutdown())
-            throw new IllegalStateException(
+            throw new IOException(
                 "The communicator doesn't have an active "
                     + "connection to the server right now.");
         Crypto.enc(securityKey, concat((""
