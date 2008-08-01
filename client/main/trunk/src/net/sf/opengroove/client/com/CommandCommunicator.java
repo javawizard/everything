@@ -20,6 +20,19 @@ public class CommandCommunicator
     public CommandCommunicator(Communicator communicator)
     {
         this.communicator = communicator;
+        communicator.addPacketListener(new PacketListener()
+        {
+            
+            @Override
+            public void receive(Packet packet)
+            {
+                if (packet.getCommand().equalsIgnoreCase(
+                    "receiveimessage"))
+                {
+                    
+                }
+            }
+        });
     }
     
     public Communicator getCommunicator()
@@ -65,4 +78,17 @@ public class CommandCommunicator
     }
     
     private ListenerManager<ImmediateMessageListener> imessageListeners = new ListenerManager<ImmediateMessageListener>();
+    
+    public void addImmediateMessageListener(
+        ImmediateMessageListener listener)
+    {
+        imessageListeners.addListener(listener);
+    }
+    
+    public void removeImmediateMessageListener(
+        ImmediateMessageListener listener)
+    {
+        imessageListeners.removeListener(listener);
+    }
+    
 }
