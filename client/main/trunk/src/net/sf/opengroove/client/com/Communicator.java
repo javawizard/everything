@@ -53,7 +53,11 @@ import net.sf.opengroove.security.RSA;
  * re-connect. This goes on until a connection is established. If the last
  * element of the array is encountered, it will continue to wait that number of
  * seconds and then attempt to re-connect, as if the array's length was infinite
- * and the remaining items were equal to the last item in the previous array.
+ * and the remaining items were equal to the last item in the previous array.<br/><br/>
+ * 
+ * It should be noted that this class does <i>not</i> automatically send ping
+ * commands to keep the connection to the server alive, so classes that user
+ * this class will need to take care of that themselves.
  * 
  * @author Alexander Boyd
  * 

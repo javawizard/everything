@@ -1,6 +1,9 @@
 package net.sf.opengroove.client.com;
 
+import java.io.BufferedReader;
 import java.io.IOException;
+import java.io.StringReader;
+import java.util.ArrayList;
 
 /**
  * This class wraps the Communicator class, and provides methods for doing
@@ -64,46 +67,67 @@ public class CommandCommunicator
                             }
                         });
                 }
-                else if (packet.getCommand().equalsIgnoreCase(
-                    "usernotification"))
+                else if (packet.getCommand()
+                    .equalsIgnoreCase("usernotification"))
                 {
-                    String firstSubsection = new String(
-                        packet.getContents(), 0, Math.min(
-                            128,
-                            packet.getContents().length));
-                    String[] tokens = firstSubsection
-                        .split(" ", 4);
-                    final String messageId = tokens[0];
-                    final String sendingUsername = tokens[1];
-                    final String sendingComputer = tokens[2];
-                    int dataIndex = messageId.length()
-                        + sendingUsername.length()
-                        + sendingComputer.length() + 3;
-                    final byte[] messageContents = new byte[packet
-                        .getContents().length
-                        - dataIndex];
-                    System.arraycopy(packet.getContents(),
-                        dataIndex, messageContents, 0,
-                        messageContents.length);
-                    // Ok, we've put the message together. Now we notify all
-                    // imessage listeners of the message.
-                    imessageListeners
-                        .notify(new Notifier<ImmediateMessageListener>()
+                    String packetContents = new String(
+                        packet.getContents());
+                    String[] tokens = tokenizeByLines(packetContents);
+                    final String dateIssuedString = tokens[0];
+                    final String dateExpiresString = tokens[1];
+                    final String priorityString = tokens[2];
+                    final String subject = tokens[3];
+                    String message = tokens[4];
+                    // Now append the remaining lines of the notification
+                    for (int i = 5; i < tokens.length; i++)
+                    {
+                        message += "\n" + tokens[i];
+                    }
+                    final String fMessage = message;
+                    userNotificationListeners
+                        .notify(new Notifier<UserNotificationListener>()
                         {
                             
                             @Override
                             public void notify(
-                                ImmediateMessageListener listener)
+                                UserNotificationListener listener)
                             {
-                                listener.receive(messageId,
-                                    sendingUsername,
-                                    sendingComputer,
-                                    messageContents);
+                                listener
+                                    .receive(
+                                        Long
+                                            .parseLong(dateIssuedString),
+                                        Long
+                                            .parseLong(dateExpiresString),
+                                        UserNotificationListener.Priority
+                                            .valueOf(priorityString
+                                                .trim()
+                                                .toUpperCase()),
+                                        subject, fMessage);
                             }
                         });
                 }
             }
         });
+    }
+    
+    public static String[] tokenizeByLines(String data)
+    {
+        BufferedReader reader = new BufferedReader(
+            new StringReader(data));
+        ArrayList<String> tokens = new ArrayList<String>();
+        String s;
+        try
+        {
+            while ((s = reader.readLine()) != null)
+                tokens.add(s);
+            reader.close();
+        }
+        catch (IOException e)
+        {
+            // shouldn't happen
+            throw new RuntimeException(e);
+        }
+        return tokens.toArray(new String[0]);
     }
     
     public Communicator getCommunicator()
