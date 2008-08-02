@@ -521,10 +521,16 @@ public class CommandCommunicator
      *            The name of the user to list computers for, or null or the
      *            empty string to list this user's computers
      * @return A list of the computer names
+     * @throws IOException
      */
     public String[] listComputers(String username)
+        throws IOException
     {
-        
+        return tokenizeByLines(new String(communicator
+            .query(
+                new Packet(null, "listcomputers", username
+                    .getBytes()), defaultTimeout)
+            .getContents()));
     }
     
     /**
@@ -536,11 +542,15 @@ public class CommandCommunicator
      *            The type of the new computer, which cannot be changed. As of
      *            the writing of this document, the standard values for the type
      *            are pc, pda, and mobile.
+     * @throws IOException
      */
     public void createComputer(String computerName,
-        String computerType)
+        String computerType) throws IOException
     {
-        
+        communicator.query(
+            new Packet(null, "createcomputer",
+                (computerName + "\n" + computerType)
+                    .getBytes()), defaultTimeout);
     }
     
     /**
@@ -554,11 +564,16 @@ public class CommandCommunicator
      * @param key
      *            the key, or name, of the setting to get
      * @return the setting's value
+     * @throws IOException
      */
     public String getComputerSetting(String username,
-        String computer, String key)
+        String computer, String key) throws IOException
     {
-        
+        return new String(communicator.query(
+            new Packet(null, "getcomputersetting",
+                (username + "\n" + computer + "\n" + key)
+                    .getBytes()), defaultTimeout)
+            .getContents());
     }
     
     /**
@@ -569,11 +584,18 @@ public class CommandCommunicator
      * @param computer
      *            the name of the computer
      * @return the settings for the computer specified
+     * @throws IOException
      */
     public String[] listComputerSettings(String username,
-        String computer)
+        String computer) throws IOException
     {
-        
+        return tokenizeByLines(new String(
+            communicator
+                .query(
+                    new Packet(null,
+                        "listcomputersettings", (username
+                            + "\n" + computer).getBytes()),
+                    defaultTimeout).getContents()));
     }
     
     /**
@@ -585,11 +607,15 @@ public class CommandCommunicator
      *            the key, or name, of the setting
      * @param value
      *            the value to set for the setting
+     * @throws IOException
      */
     public void setComputerSetting(String computer,
-        String key, String value)
+        String key, String value) throws IOException
     {
-        
+        communicator
+            .query(new Packet(null, "setcomputersetting",
+                (computer + "\n" + key + "\n" + value)
+                    .getBytes()), defaultTimeout);
     }
     
     /**
@@ -600,20 +626,25 @@ public class CommandCommunicator
      * may take anywhere from a few minutes to an hour or more for resources
      * related to the computer (such as pending workspace items or message cache
      * space) to be reclaimed. The only guarantee about this method is that
-     * calls to listComputers that happen after this method is called will not
-     * return this computer.<br/><br/>
+     * calls to listComputers by this user that happen after this method is
+     * called will not return this computer.<br/><br/>
      * 
      * Due to the fact that the server usually batches up tasks related to
      * deleting a computer, a new computer with the same name as an old one
      * should not be created for at least 24 hours after the old one was
-     * deleted.
+     * deleted. Otherwise, the new computer, or some of it's data, could be
+     * sporadically delete.
      * 
      * @param computer
      *            The name of the computer to delete.
+     * @throws IOException
      */
     public void deleteComputer(String computer)
+        throws IOException
     {
-        
+        communicator.query(new Packet(null,
+            "deletecomputer", computer.getBytes()),
+            defaultTimeout);
     }
     
     private ListenerManager<SubscriptionListener> subscriptionListeners = new ListenerManager<SubscriptionListener>();

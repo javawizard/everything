@@ -536,10 +536,6 @@ public class Communicator
         {
             throw e;
         }
-        catch (FailedResponseException e)
-        {
-            throw e;
-        }
         catch (Exception e)
         {
             throw new RuntimeException(e);

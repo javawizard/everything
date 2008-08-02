@@ -1,7 +1,8 @@
 package net.sf.opengroove.client.com;
 
-public class FailedResponseException extends
-    RuntimeException
+import java.io.IOException;
+
+public class FailedResponseException extends IOException
 {
     private String responseCode;
     
