@@ -387,10 +387,14 @@ public class CommandCommunicator
      *            The key, or name, of the user setting to set
      * @param value
      *            The value that the user setting is to have
+     * @throws IOException
      */
     public void setUserSetting(String key, String value)
+        throws IOException
     {
-        communicator.query(new Packet(), defaultTimeout);
+        communicator.query(new Packet(null,
+            "setusersetting", (key + "\n" + value)
+                .getBytes()), defaultTimeout);
     }
     
     /**
@@ -400,6 +404,33 @@ public class CommandCommunicator
      *            The new subscription to create.
      */
     public void createSubscription(Subscription subscription)
+    {
+        
+    }
+    
+    /**
+     * Converts the subscription specified into a string, with each field
+     * delimited by the delimiter specified.
+     * 
+     * @param delimiter
+     * @return
+     */
+    private String subscriptionToString(
+        Subscription subscription, String delimiter)
+    {
+        
+    }
+    
+    /**
+     * Converts the string specified into a subscription object, assuming the
+     * delimiter specified is used to delimit fields.
+     * 
+     * @param string
+     * @param delimiter
+     * @return
+     */
+    private Subscription stringToSubscription(
+        String string, String delimiter)
     {
         
     }
