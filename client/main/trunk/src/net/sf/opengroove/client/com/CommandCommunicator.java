@@ -346,6 +346,19 @@ public class CommandCommunicator
         
     }
     
+    /**
+     * Lists the settings for the user specified. If the username is null or the
+     * empty string, then all properties for this user will be returned. If the
+     * username is not null or the empty string, then only properties that begin
+     * with public- and are for the user specified will be returned.
+     * 
+     * @param username
+     *            The name of the user to get properties for, or null or the
+     *            empty string for this user
+     * @return The list of user properties for the user specified, which will
+     *         all start with public- unless the username is null or the empty
+     *         string
+     */
     public String[] listUserSettings(String username)
     {
         
@@ -376,22 +389,26 @@ public class CommandCommunicator
         
     }
     
-    public void createComputer(String computerName, String computerType)
+    public void createComputer(String computerName,
+        String computerType)
     {
         
     }
     
-    public String getComputerSetting(String username, String computer, String key)
+    public String getComputerSetting(String username,
+        String computer, String key)
     {
         
     }
     
-    public String[] listComputerSettings(String username, String computer)
+    public String[] listComputerSettings(String username,
+        String computer)
     {
         
     }
     
-    public void setComputerSetting(String computer, String key, String value)
+    public void setComputerSetting(String computer,
+        String key, String value)
     {
         
     }
@@ -400,8 +417,6 @@ public class CommandCommunicator
     {
         
     }
-    
-    
     
     private ListenerManager<SubscriptionListener> subscriptionListeners = new ListenerManager<SubscriptionListener>();
     
