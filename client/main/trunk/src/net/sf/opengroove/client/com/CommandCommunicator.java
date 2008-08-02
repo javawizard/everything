@@ -402,10 +402,15 @@ public class CommandCommunicator
      * 
      * @param subscription
      *            The new subscription to create.
+     * @throws IOException
      */
     public void createSubscription(Subscription subscription)
+        throws IOException
     {
-        
+        communicator.query(new Packet(null,
+            "createsubscription", subscriptionToString(
+                subscription, "\n").getBytes()),
+            defaultTimeout);
     }
     
     /**
@@ -418,7 +423,11 @@ public class CommandCommunicator
     private String subscriptionToString(
         Subscription subscription, String delimiter)
     {
-        
+        return subscription.getType() + delimiter
+            + subscription.getOnUser() + delimiter
+            + subscription.getOnComputer() + delimiter
+            + subscription.getOnSetting() + delimiter
+            + subscription.isDeleteWithTarget();
     }
     
     /**
@@ -432,17 +441,41 @@ public class CommandCommunicator
     private Subscription stringToSubscription(
         String string, String delimiter)
     {
-        
+        String[] tokens = string.split("\\" + delimiter);
+        Subscription subscription = new Subscription();
+        subscription.setType(tokens[0]);
+        subscription.setOnUser(tokens[1]);
+        subscription.setOnComputer(tokens[2]);
+        subscription.setOnSetting(tokens[3]);
+        subscription.setDeleteWithTarget(tokens[4].trim()
+            .equalsIgnoreCase("true"));
+        return subscription;
     }
     
     /**
      * Lists all of this user's subscriptions.
      * 
      * @return All of this user's subscriptions.
+     * @throws IOException
      */
     public Subscription[] listSubscriptions()
+        throws IOException
     {
-        
+        Packet response = communicator.query(new Packet(
+            null, "listsubscriptions", new byte[0]),
+            defaultTimeout);
+        String[] responseTokens = tokenizeByLines(new String(
+            response.getContents()));
+        ArrayList<Subscription> subscriptions = new ArrayList<Subscription>();
+        for (String responseToken : responseTokens)
+        {
+            if (!responseToken.trim().equals(""))
+            {
+                subscriptions.add(stringToSubscription(
+                    responseToken.trim(), " "));
+            }
+        }
+        return subscriptions.toArray(new Subscription[0]);
     }
     
     /**
