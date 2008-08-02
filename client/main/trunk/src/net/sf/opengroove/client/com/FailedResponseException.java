@@ -10,7 +10,7 @@ public class FailedResponseException extends
      */
     public String getResponseCode()
     {
-        return responseCodel
+        return responseCode;
     }
     
     public FailedResponseException(String responseCode)
