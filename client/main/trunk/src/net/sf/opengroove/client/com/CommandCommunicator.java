@@ -74,6 +74,25 @@ public class CommandCommunicator
                         });
                 }
                 else if (packet.getCommand()
+                    .equalsIgnoreCase("subscriptionevent"))
+                {
+                    final Subscription subscription = stringToSubscription(
+                        new String(packet.getContents()),
+                        "\n");
+                    subscriptionListeners
+                        .notify(new Notifier<SubscriptionListener>()
+                        {
+                            
+                            @Override
+                            public void notify(
+                                SubscriptionListener listener)
+                            {
+                                listener
+                                    .event(subscription);
+                            }
+                        });
+                }
+                else if (packet.getCommand()
                     .equalsIgnoreCase("usernotification"))
                 {
                     String packetContents = new String(
@@ -441,7 +460,8 @@ public class CommandCommunicator
     private Subscription stringToSubscription(
         String string, String delimiter)
     {
-        String[] tokens = string.split("\\" + delimiter);
+        String[] tokens = string.trim().split(
+            "\\" + delimiter);
         Subscription subscription = new Subscription();
         subscription.setType(tokens[0]);
         subscription.setOnUser(tokens[1]);
@@ -483,10 +503,15 @@ public class CommandCommunicator
      * 
      * @param subscription
      *            The information of the subscription to delete.
+     * @throws IOException
      */
     public void deleteSubscription(Subscription subscription)
+        throws IOException
     {
-        
+        communicator.query(new Packet(null,
+            "deletesubscription", subscriptionToString(
+                subscription, "\n").getBytes()),
+            defaultTimeout);
     }
     
     /**
