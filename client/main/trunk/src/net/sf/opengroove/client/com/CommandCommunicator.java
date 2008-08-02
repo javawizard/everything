@@ -364,55 +364,147 @@ public class CommandCommunicator
         
     }
     
+    /**
+     * Sets the user setting specified, for this user.
+     * 
+     * @param key
+     *            The key, or name, of the user setting to set
+     * @param value
+     *            The value that the user setting is to have
+     */
     public void setUserSetting(String key, String value)
     {
         
     }
     
+    /**
+     * Creates a subscription with the properties specified.
+     * 
+     * @param subscription
+     *            The new subscription to create.
+     */
     public void createSubscription(Subscription subscription)
     {
         
     }
     
+    /**
+     * Lists all of this user's subscriptions.
+     * 
+     * @return All of this user's subscriptions.
+     */
     public Subscription[] listSubscriptions()
     {
         
     }
     
+    /**
+     * Deletes a subscription.
+     * 
+     * @param subscription
+     *            The information of the subscription to delete.
+     */
     public void deleteSubscription(Subscription subscription)
     {
         
     }
     
+    /**
+     * Lists all of the computers for the user specified.
+     * 
+     * @param username
+     *            The name of the user to list computers for, or null or the
+     *            empty string to list this user's computers
+     * @return A list of the computer names
+     */
     public String[] listComputers(String username)
     {
         
     }
     
+    /**
+     * Creates a new computer.
+     * 
+     * @param computerName
+     *            The name of the computer
+     * @param computerType
+     *            The type of the new computer, which cannot be changed. As of
+     *            the writing of this document, the standard values for the type
+     *            are pc, pda, and mobile.
+     */
     public void createComputer(String computerName,
         String computerType)
     {
         
     }
     
+    /**
+     * Gets a particular setting for a computer.
+     * 
+     * @param username
+     *            the username of the user who owns the computer to get a
+     *            setting for
+     * @param computer
+     *            the computer to get the setting for.
+     * @param key
+     *            the key, or name, of the setting to get
+     * @return the setting's value
+     */
     public String getComputerSetting(String username,
         String computer, String key)
     {
         
     }
     
+    /**
+     * lists all of the settings for the computer specified.
+     * 
+     * @param username
+     *            the username of the user to check
+     * @param computer
+     *            the name of the computer
+     * @return the settings for the computer specified
+     */
     public String[] listComputerSettings(String username,
         String computer)
     {
         
     }
     
+    /**
+     * sets the specified computer setting on a computer owned by this user.
+     * 
+     * @param computer
+     *            the name of the computer to set the settig on
+     * @param key
+     *            the key, or name, of the setting
+     * @param value
+     *            the value to set for the setting
+     */
     public void setComputerSetting(String computer,
         String key, String value)
     {
         
     }
     
+    /**
+     * deletes the computer specified. This deletes all of the computer's data,
+     * so care should be taken when running this method.<br/><br/>
+     * 
+     * The server usually batches up tasks related to deleting a computer, so it
+     * may take anywhere from a few minutes to an hour or more for resources
+     * related to the computer (such as pending workspace items or message cache
+     * space) to be reclaimed. The only guarantee about this method is that
+     * calls to listComputers that happen after this method is called will not
+     * return this computer.<br/><br/>
+     * 
+     * Due to the fact that the server usually batches up tasks related to
+     * deleting a computer, a new computer with the same name as an old one
+     * should not be created for at least 24 hours after the old one was
+     * deleted.
+     * 
+     * @param computer The name of the computer to delete.
+     */
     public void deleteComputer(String computer)
     {
         
