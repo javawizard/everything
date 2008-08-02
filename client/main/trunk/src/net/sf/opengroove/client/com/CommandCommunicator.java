@@ -15,7 +15,12 @@ import java.util.Date;
  */
 public class CommandCommunicator
 {
-    private static final int GLOBAL_DEFAULT_TIMEOUT = 5000;
+    private static final int GLOBAL_DEFAULT_TIMEOUT = 10 * 1000;
+    // 10 seconds, this should bwe re-thought, as a value too low would prevent
+    // uploading large message chunks on a slow network, and a value too high
+    // could cause application freezing upon a dropped connection. Actually, a
+    // UI should probably be added into OpenGroove for allowing the user to
+    // configure this.
     
     private Communicator communicator;
     
@@ -340,10 +345,15 @@ public class CommandCommunicator
      *            public- unless the username specified is null or the empty
      *            string
      * @return The value of the user setting specified
+     * @throws IOException
      */
     public String getUserSetting(String username, String key)
+        throws IOException
     {
-        
+        Packet response = communicator.query(new Packet(
+            null, "getusersetting", (username + "\n" + key)
+                .getBytes()), defaultTimeout);
+        return new String(response.getContents());
     }
     
     /**
@@ -358,10 +368,16 @@ public class CommandCommunicator
      * @return The list of user properties for the user specified, which will
      *         all start with public- unless the username is null or the empty
      *         string
+     * @throws IOException
      */
     public String[] listUserSettings(String username)
+        throws IOException
     {
-        
+        Packet response = communicator.query(new Packet(
+            null, "listusersettings", username.getBytes()),
+            defaultTimeout);
+        return tokenizeByLines(new String(response
+            .getContents()));
     }
     
     /**
@@ -374,7 +390,7 @@ public class CommandCommunicator
      */
     public void setUserSetting(String key, String value)
     {
-        
+        communicator.query(new Packet(), defaultTimeout);
     }
     
     /**
@@ -503,7 +519,8 @@ public class CommandCommunicator
      * should not be created for at least 24 hours after the old one was
      * deleted.
      * 
-     * @param computer The name of the computer to delete.
+     * @param computer
+     *            The name of the computer to delete.
      */
     public void deleteComputer(String computer)
     {
@@ -511,6 +528,18 @@ public class CommandCommunicator
     }
     
     private ListenerManager<SubscriptionListener> subscriptionListeners = new ListenerManager<SubscriptionListener>();
+    
+    public void addSubscriptionListener(
+        SubscriptionListener listener)
+    {
+        subscriptionListeners.addListener(listener);
+    }
+    
+    public void removeSubscriptionListener(
+        SubscriptionListener listener)
+    {
+        subscriptionListeners.removeListener(listener);
+    }
     
     private ListenerManager<ImmediateMessageListener> imessageListeners = new ListenerManager<ImmediateMessageListener>();
     

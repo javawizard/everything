@@ -482,7 +482,10 @@ public class Communicator
     /**
      * Sends the packet specified to the server, and waits the specified number
      * of milliseconds for a response to the packet. The packet's id will be set
-     * to a unique id, and the response packet's id will be the same.
+     * to a unique id, and the response packet's id will be the same.<br/><br/>
+     * 
+     * Currently, if the response status code is anything other than OK, a
+     * FailedResponseException is thrown.
      * 
      * @param packet
      *            The packet to send
@@ -492,6 +495,8 @@ public class Communicator
      * @return The response from the server to this packet
      * @throws IOException
      *             if an I/O exception occurs.
+     * @throws FailedResponseException
+     *             If the response status code is anything other than OK
      */
     public Packet query(Packet packet, int timeout)
         throws IOException
@@ -519,9 +524,19 @@ public class Communicator
                 throw new TimeoutException(
                     "The specified timeout expired before "
                         + "a response was received.");
+            if (!responsePacket.getResponse().trim()
+                .equalsIgnoreCase("OK"))
+                throw new FailedResponseException(
+                    responsePacket.getResponse(),
+                    "For response code: "
+                        + responsePacket.getResponse());
             return responsePacket;
         }
         catch (IOException e)
+        {
+            throw e;
+        }
+        catch (FailedResponseException e)
         {
             throw e;
         }
