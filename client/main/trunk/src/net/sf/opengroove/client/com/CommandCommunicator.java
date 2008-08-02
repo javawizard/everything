@@ -351,17 +351,59 @@ public class CommandCommunicator
         
     }
     
-    public void setUserSetting(String key, Strin value)
+    public void setUserSetting(String key, String value)
     {
         
     }
     
-    public void createSubscription(String type,
-        String onUser, String onComputer, String onSetting,
-        boolean deleteWithTarget)
+    public void createSubscription(Subscription subscription)
     {
         
     }
+    
+    public Subscription[] listSubscriptions()
+    {
+        
+    }
+    
+    public void deleteSubscription(Subscription subscription)
+    {
+        
+    }
+    
+    public String[] listComputers(String username)
+    {
+        
+    }
+    
+    public void createComputer(String computerName, String computerType)
+    {
+        
+    }
+    
+    public String getComputerSetting(String username, String computer, String key)
+    {
+        
+    }
+    
+    public String[] listComputerSettings(String username, String computer)
+    {
+        
+    }
+    
+    public void setComputerSetting(String computer, String key, String value)
+    {
+        
+    }
+    
+    public void deleteComputer(String computer)
+    {
+        
+    }
+    
+    
+    
+    private ListenerManager<SubscriptionListener> subscriptionListeners = new ListenerManager<SubscriptionListener>();
     
     private ListenerManager<ImmediateMessageListener> imessageListeners = new ListenerManager<ImmediateMessageListener>();
     
