@@ -266,10 +266,101 @@ public class CommandCommunicator
      *            True to make you visible to other users, so that your username
      *            can be searched for using the searchUsers command, false to
      *            hide your information
+     * @throws IOException
      */
     public void setVisibility(boolean visible)
+        throws IOException
     {
-        communicator.query(new Packet(), defaultTimeout);
+        communicator.query(new Packet(null,
+            "setvisibility", ("" + visible).getBytes()),
+            defaultTimeout);
+    }
+    
+    /**
+     * Returns whether or not this user is publicly listed.
+     * 
+     * @return True if this user is publicly listed, false if not. See
+     *         {@link #setVisibility(boolean)} for more info.
+     * @throws IOException
+     */
+    public boolean getVisibility() throws IOException
+    {
+        return new String(communicator.query(
+            new Packet(null, "getvisibility", new byte[0]),
+            defaultTimeout).getContents()).trim()
+            .equalsIgnoreCase("true");
+    }
+    
+    /**
+     * Gets the current status of the user specified. If <code>computer</code>
+     * is null or the empty string, the resulting user status will reflect all
+     * of the user's computers. This means that if any of the computers are
+     * online, then isOnline(), when called on the returned object, will return
+     * true, and getLastOnline() will return the last online time of the
+     * computer that was most recently online.
+     * 
+     * @param username
+     *            The username of the user to check
+     * @param computer
+     *            The name of the computer to get status for, or the empty
+     *            string to get the status of all of the user's computers
+     * @return A UserStatus object that reflects the status of the user
+     * @throws IOException
+     *             If an I/O error occurs
+     */
+    public UserStatus getUserStatus(String username,
+        String computer) throws IOException
+    {
+        if (computer == null)
+            computer = "";
+        Packet response = communicator.query(new Packet(
+            null, "getuserstatus",
+            (username + "\n" + computer).getBytes()),
+            defaultTimeout);
+        UserStatus status = new UserStatus();
+        String[] tokens = tokenizeByLines(new String(
+            response.getContents()));
+        status.setOnline(tokens[0].trim().equalsIgnoreCase(
+            "true"));
+        status.setLastOnline(parseDateString(tokens[1]));
+        return status;
+    }
+    
+    /**
+     * Gets a setting from the user specified. If the username is null or the
+     * empty string, then the setting is for this user, and the key can be
+     * anything. If the username is not null or the empty string, then
+     * <code>key</code> can only start with public- .
+     * 
+     * @param username
+     *            The username of the user to get the setting for, or null or
+     *            the empty string for this user
+     * @param key
+     *            The key of the property to get, which must only start with
+     *            public- unless the username specified is null or the empty
+     *            string
+     * @return The value of the user setting specified
+     */
+    public String getUserSetting(String username, String key)
+    {
+        
+    }
+    
+    public String[] listUserSettings(String username)
+    {
+        
+    }
+    
+    public void setUserSetting(String key, Strin value)
+    {
+        
+    }
+    
+    public void createSubscription(String type,
+        String onUser, String onComputer, String onSetting,
+        boolean deleteWithTarget)
+    {
+        
     }
     
     private ListenerManager<ImmediateMessageListener> imessageListeners = new ListenerManager<ImmediateMessageListener>();
