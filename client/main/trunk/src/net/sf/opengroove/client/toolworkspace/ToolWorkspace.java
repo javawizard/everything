@@ -623,7 +623,7 @@ public class ToolWorkspace extends Workspace
 					try
 					{
 						String chatMessageId = ""
-								+ OpenGroove.com.getServerTime() + "-"
+								+ OpenGroove.ocom.getServerTime() + "-"
 								+ getUsername();
 						ChatMessage message = new ChatMessage();
 						message.setId(chatMessageId);

@@ -292,16 +292,16 @@ public class ConfigureOpenGrooveDialog extends javax.swing.JDialog
 						{
 							System.out
 									.println("configure convergia window disposed, removing stat listener");
-							OpenGroove.com.communicator
+							OpenGroove.ocom.communicator
 									.removeStatisticsListener(this);
 							return;
 						}
-						for (Map.Entry<String, Long> e : OpenGroove.com.communicator.commandAmounts
+						for (Map.Entry<String, Long> e : OpenGroove.ocom.communicator.commandAmounts
 								.entrySet())
 						{
 							String command = e.getKey();
 							long amount = e.getValue();
-							long size = OpenGroove.com.communicator.commandSizes
+							long size = OpenGroove.ocom.communicator.commandSizes
 									.get(command);
 							if (commandAmountLabels.get(command) == null)
 							{
@@ -326,12 +326,12 @@ public class ConfigureOpenGrooveDialog extends javax.swing.JDialog
 							commandSizeLabels.get(command).setText(
 									OpenGroove.formatDataSize(size));
 						}
-						for (Map.Entry<String, Long> e : OpenGroove.com.communicator.responseAmounts
+						for (Map.Entry<String, Long> e : OpenGroove.ocom.communicator.responseAmounts
 								.entrySet())
 						{
 							String response = e.getKey();
 							long amount = e.getValue();
-							long size = OpenGroove.com.communicator.responseSizes
+							long size = OpenGroove.ocom.communicator.responseSizes
 									.get(response);
 							if (responseAmountLabels.get(response) == null)
 							{
@@ -361,7 +361,7 @@ public class ConfigureOpenGrooveDialog extends javax.swing.JDialog
 					}
 				};
 				statListener.statsUpdated();
-				OpenGroove.com.communicator.addStatisticsListener(statListener);
+				OpenGroove.ocom.communicator.addStatisticsListener(statListener);
 			} catch (Exception ex1)
 			{
 				ex1.printStackTrace();

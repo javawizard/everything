@@ -276,7 +276,7 @@ public class WorkspaceManager
                                                 null,
                                                 JOptionPane.YES_NO_OPTION) == JOptionPane.YES_OPTION)
                                         {
-                                            if (!OpenGroove.com
+                                            if (!OpenGroove.ocom
                                                 .getCommunicator()
                                                 .isActive())
                                             {
@@ -307,7 +307,7 @@ public class WorkspaceManager
                                             {
                                                 String creator = WorkspaceManager
                                                     .getWorkspaceCreator(id);
-                                                String mdString = OpenGroove.com
+                                                String mdString = OpenGroove.ocom
                                                     .getUserMetadata(creator);
                                                 if (mdString != null)
                                                 {
@@ -381,7 +381,7 @@ public class WorkspaceManager
                                                                 {
                                                                     try
                                                                     {
-                                                                        OpenGroove.com
+                                                                        OpenGroove.ocom
                                                                             .sendMessage(
                                                                                 u,
                                                                                 "wsi|reloadusers");

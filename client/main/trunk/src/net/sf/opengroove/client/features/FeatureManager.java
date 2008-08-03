@@ -37,7 +37,7 @@ public class FeatureManager
 				Feature feature = plugin.create();
 				feature.setPluginMetadata(plugin.getMetadata());
 				feature.setTypeId(plugin.getId());
-				feature.setCommunicator(OpenGroove.com);
+				feature.setCommunicator(OpenGroove.ocom);
 				features.add(feature);
 				feature.initialize();
 			} catch (Exception ex1)
@@ -45,7 +45,7 @@ public class FeatureManager
 				ex1.printStackTrace();
 			}
 		}
-		OpenGroove.com.addSink(new MessageSink()
+		OpenGroove.ocom.addSink(new MessageSink()
 		{
 
 			public void process(String from, String message)

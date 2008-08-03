@@ -103,7 +103,9 @@ public class OpenGroove
 {
     public static LowLevelCommunicator lcom;
     
-    public static OldCommunicator com;
+    public static OldCommunicator ocom;
+    
+    public static CommandCommunicator com;
     
     static boolean updatesEnabled = false;
     
@@ -338,11 +340,11 @@ public class OpenGroove
             // used to avoid problems with the fade effect for the taskbar
             // notification frame
             Storage.initStorage(sfile);
-            PluginManager.loadPlugins();
-            postPluginLoad();
+            // PluginManager.loadPlugins();
+            // postPluginLoad();
             System.out.println("storage path is "
                 + sfile.getCanonicalPath());
-            helpviewer = new HelpViewer(helpFolder);
+            // helpviewer = new HelpViewer(helpFolder);
             notificationFrame = new TaskbarNotificationFrame();
             NotificationAdapter authenticatingNotification = new NotificationAdapter(
                 new JLabel(
@@ -382,7 +384,7 @@ public class OpenGroove
                                 {
                                     Image[] nimages;
                                     int[] ndelays;
-                                    if (com
+                                    if (ocom
                                         .getCommunicator()
                                         .isActive())
                                     {
@@ -425,7 +427,7 @@ public class OpenGroove
                                 else
                                 {
                                     currentNotificationIndex = 0;
-                                    if (com
+                                    if (ocom
                                         .getCommunicator()
                                         .isActive())
                                     {
@@ -465,7 +467,7 @@ public class OpenGroove
                         try
                         {
                             Thread.sleep(10 * 1000);
-                            checkForUpdates();
+                            // checkForUpdates();
                             Thread.sleep(4 * 60 * 1000);// TODO: this is how
                             // often updates are
                             // checked for.
@@ -484,8 +486,12 @@ public class OpenGroove
             }.start();
             lcom = new LowLevelCommunicator(
                 getConnectHost(), getConnectPort(), true);
-            com = new OldCommunicator(lcom);
-            loadFeatures();
+            ocom = new OldCommunicator(lcom);
+            /*
+             * FIXME: This needs to be changed to create a CommandCommunicator
+             * and stick it into the com field
+             */
+//            loadFeatures();
             boolean successfulAuth = false;
             if (Storage.getUsers().length == 0)
             {
@@ -586,8 +592,9 @@ public class OpenGroove
                     {
                         System.out
                             .println("network validating");
-                        com.getCommunicator().authenticate(
-                            eUsername, ePassword);
+                        ocom.getCommunicator()
+                            .authenticate(eUsername,
+                                ePassword);
                         System.out
                             .println("network validated");
                         authed = true;
@@ -892,7 +899,7 @@ public class OpenGroove
                     
                 }
             });
-            WorkspaceManager.init(com);
+            WorkspaceManager.init(ocom);
             System.out.println("***got to 1");
             WorkspaceManager.reloadWorkspaces();
             System.out.println("***got to 2");
@@ -1400,7 +1407,7 @@ public class OpenGroove
                                             String toUser = dialog
                                                 .getUserTextField()
                                                 .getText();
-                                            if (!com
+                                            if (!ocom
                                                 .getCommunicator()
                                                 .isActive())
                                             {
@@ -1409,7 +1416,7 @@ public class OpenGroove
                                                         dialog,
                                                         "You are not connected to the internet.");
                                             }
-                                            else if (!com.allUsers
+                                            else if (!ocom.allUsers
                                                 .contains(toUser))
                                             {
                                                 JOptionPane
@@ -1417,7 +1424,7 @@ public class OpenGroove
                                                         dialog,
                                                         "The username specified is not a valid username.");
                                             }
-                                            else if (!com.onlineUsers
+                                            else if (!ocom.onlineUsers
                                                 .contains(toUser))
                                             {
                                                 JOptionPane
@@ -1453,7 +1460,7 @@ public class OpenGroove
                                                     .getId();
                                                 try
                                                 {
-                                                    com
+                                                    ocom
                                                         .sendMessage(
                                                             toUser,
                                                             "wsi|workspaceinvite|"
@@ -1535,7 +1542,7 @@ public class OpenGroove
                                     w.getWorkspace()
                                         .shutdown();
                                     if (w.isMine())
-                                        com
+                                        ocom
                                             .deleteWorkspace(w
                                                 .getId());
                                 }
@@ -2183,13 +2190,15 @@ public class OpenGroove
     private static void showStatusInfo(
         ConfigureOpenGrooveDialog dialog)
     {
-        Socket socket = com.getCommunicator().getSocket();
+        Socket socket = ocom.getCommunicator().getSocket();
         dialog.getMConnectedServerLabel().setText(
-            socket == null ? "N/A" : com.getCommunicator()
+            socket == null ? "N/A" : ocom.getCommunicator()
                 .getConnectedHost());
-        dialog.getMConnectedPortLabel().setText(
-            socket == null ? "N/A" : ""
-                + com.getCommunicator().getConnectedPort());
+        dialog.getMConnectedPortLabel()
+            .setText(
+                socket == null ? "N/A" : ""
+                    + ocom.getCommunicator()
+                        .getConnectedPort());
         dialog.getMConnectivityStatus().setText(
             socket == null ? "offline" : "online");
         dialog.getMConnectionSecurityStatus().setText(
@@ -2571,7 +2580,7 @@ public class OpenGroove
         dialog.getTypeLabel().setText(
             PluginManager.getById(workspace.getTypeId())
                 .getMetadata().getProperty("name"));
-        dialog.setAllUsers(com.allUsers
+        dialog.setAllUsers(ocom.allUsers
             .toArray(new String[0]));
         currentDialog = dialog;
         Map<String, JComponent> customComponents = workspace
@@ -2714,7 +2723,7 @@ public class OpenGroove
         p.setProperty("stat_java_vendor", System
             .getProperty("java.vendor"));
         p.setProperty("stat_last_online", ""
-            + com.getServerTime());
+            + ocom.getServerTime());
         ArrayList<String> myWorkspaces = new ArrayList<String>();
         List<WorkspaceWrapper> allW = Arrays
             .asList(WorkspaceManager.getAll());
@@ -2795,7 +2804,7 @@ public class OpenGroove
      */
     public static void updateMetadata()
     {
-        com.setUserMetadata(WorkspaceManager
+        ocom.setUserMetadata(WorkspaceManager
             .generateMetadata(createMetadata()));
         for (WorkspaceWrapper workspace : WorkspaceManager
             .getAll())
@@ -2803,7 +2812,7 @@ public class OpenGroove
             if (workspace.isMine())
                 try
                 {
-                    com.setWorkspacePermissions(workspace
+                    ocom.setWorkspacePermissions(workspace
                         .getId(), workspace
                         .getAllowedUsers().toArray(
                             new String[0]));
@@ -2823,7 +2832,7 @@ public class OpenGroove
      */
     public static boolean runNewWorkspaceWizard()
     {
-        if (!com.getCommunicator().isActive())
+        if (!ocom.getCommunicator().isActive())
         {
             JOptionPane
                 .showMessageDialog(
@@ -2911,8 +2920,8 @@ public class OpenGroove
                 w.getParticipants().add(username);
                 try
                 {
-                    com.createWorkspace(w.getId());
-                    com.checkAccess(w.getId());
+                    ocom.createWorkspace(w.getId());
+                    ocom.checkAccess(w.getId());
                 }
                 catch (Exception e)
                 {
@@ -2986,7 +2995,7 @@ public class OpenGroove
                 dialog.dispose();
                 if (!dialog.isWasOkClicked())
                     return;
-                if (!com.getCommunicator().isActive())
+                if (!ocom.getCommunicator().isActive())
                 {
                     launchbar.show();
                     JOptionPane
@@ -3009,7 +3018,7 @@ public class OpenGroove
                 {
                     String creator = WorkspaceManager
                         .getWorkspaceCreator(id);
-                    String mdString = com
+                    String mdString = ocom
                         .getUserMetadata(creator);
                     if (mdString != null)
                     {
@@ -3077,7 +3086,7 @@ public class OpenGroove
                                     {
                                         try
                                         {
-                                            com
+                                            ocom
                                                 .sendMessage(
                                                     u,
                                                     "wsi|reloadusers");
@@ -3196,7 +3205,7 @@ public class OpenGroove
         wrapper.add(properties, BorderLayout.CENTER);
         wrapper.add(new JLabel(username),
             BorderLayout.NORTH);
-        Properties md = WorkspaceManager.parseMetadata(com
+        Properties md = WorkspaceManager.parseMetadata(ocom
             .getUserMetadata(username));
         properties
             .add(new JLabel("OpenGroove Version:   "));
