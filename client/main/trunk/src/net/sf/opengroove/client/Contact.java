@@ -8,6 +8,10 @@ public class Contact implements Serializable
 {
     private static final long serialVersionUID = -2910467169227988997L;
     
+    // TODO: what to do about a contact's computers? They should probably be
+    // listed here (so that the user can choose to send a message to just a
+    // particular computer if they want)
+    
     private String realm;
     private String username;
     private String realName;
