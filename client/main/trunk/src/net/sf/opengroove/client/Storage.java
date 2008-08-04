@@ -37,6 +37,14 @@ public class Storage
     
     private static File systemConfig;
     
+    /**
+     * Initializes the Storage class. This should only be called once per JVM
+     * instance.
+     * 
+     * @param file
+     *            The file that the storage class should use to store all of
+     *            it's data
+     */
     public static void initStorage(File file)
     {
         if (base != null)
@@ -53,6 +61,15 @@ public class Storage
     
     private String userid;
     
+    /**
+     * Creates a storage object for the specified user id. The Storage class
+     * maintins singleton instances of storage instances which are lazily
+     * initialized.
+     * 
+     * @param userid
+     *            the userid of the user to create the storage object for.
+     *            Userids are of the form realm:username
+     */
     protected Storage(String userid)
     {
         this.userid = userid;
@@ -218,7 +235,7 @@ public class Storage
             .equals(Hash.hash(pass));
     }
     
-    public static Contact[] getAllContacts()
+    public synchronized Contact[] getAllContacts()
     {
         File[] contactEntries = contacts.listFiles();
         Contact[] contactArray = new Contact[contactEntries.length];
@@ -229,12 +246,14 @@ public class Storage
         return contactArray;
     }
     
-    public static Contact getContact(String username)
+    public synchronized Contact getContact(String realm,
+        String username)
     {
-        if (!new File(contacts, username).exists())
+        if (!new File(contacts, realm + ":" + username)
+            .exists())
             return null;
         return (Contact) readObjectFromFile(new File(
-            contacts, username));
+            contacts, realm + ":" + username));
     }
     
     /**
@@ -243,19 +262,21 @@ public class Storage
      * @param contact
      */
     
-    public static void setContact(Contact contact)
+    public synchronized void setContact(Contact contact)
     {
         File contactFile = new File(contacts, contact
-            .getUsername());
+            .getRealm()
+            + ":" + contact.getUsername());
         if (contactFile.exists())
             contactFile.delete();
         writeObjectToFile(contact, contactFile);
     }
     
-    public static void deleteContact(String username)
+    public synchronized void deleteContact(String realm,
+        String username)
     {
-        if (!new File(contacts, username.replace("/", "")
-            .replace("\\", "")).delete())
+        if (!new File(contacts, (realm + ":" + username)
+            .replace("/", "").replace("\\", "")).delete())
             System.err
                 .println("contact could not be deleted.");
     }
@@ -306,7 +327,7 @@ public class Storage
         transmissionFolder.delete();
     }
     
-    private static int cIdVar = 0;
+    private static volatile int cIdVar = 0;
     
     public static synchronized String createIdentifier()
     {
