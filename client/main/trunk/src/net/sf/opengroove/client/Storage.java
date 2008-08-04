@@ -572,13 +572,18 @@ public class Storage
             .toArray((T[]) Array.newInstance(c, 0));
     }
     
-    public static WorkspaceWrapper[] listWorkspaces()
+    /**
+     * Lists the workspace information for all workspaces that this user has.
+     * 
+     * @return
+     */
+    public synchronized WorkspaceWrapper[] listWorkspaces()
     {
         return listObjectContentsAsArray(workspaces,
             WorkspaceWrapper.class);
     }
     
-    public static synchronized void addOrUpdateWorkspace(
+    public synchronized void addOrUpdateWorkspace(
         WorkspaceWrapper workspace)
     {
         if (!deletedWorkspaces.contains(workspace.getId()))
@@ -586,26 +591,25 @@ public class Storage
                 workspaces, workspace.getId()));
     }
     
-    public static synchronized void removeWorkspace(
+    public synchronized void removeWorkspace(
         WorkspaceWrapper workspace)
     {
         new File(workspaces, workspace.getId()).delete();
         deletedWorkspaces.add(workspace.getId());
     }
     
-    public static WorkspaceWrapper getWorkspaceById(
-        String id)
+    public WorkspaceWrapper getWorkspaceById(String id)
     {
         return (WorkspaceWrapper) readObjectFromFile(new File(
             workspaces, id));
     }
     
-    public static File getWorkspaceDataStore()
+    public File getWorkspaceDataStore()
     {
         return workspaceDataStore;
     }
     
-    public static String getConfigProperty(String key)
+    public String getConfigProperty(String key)
     {
         if (!new File(config, key).exists())
             return null;
@@ -621,7 +625,7 @@ public class Storage
      * @param defaultValue
      * @return
      */
-    public static String getConfigProperty(String key,
+    public String getConfigProperty(String key,
         String defaultValue)
     {
         String p = getConfigProperty(key);
@@ -633,8 +637,7 @@ public class Storage
         return p;
     }
     
-    public static void setConfigProperty(String key,
-        String value)
+    public void setConfigProperty(String key, String value)
     {
         if (value == null)
             new File(config, key).delete();
