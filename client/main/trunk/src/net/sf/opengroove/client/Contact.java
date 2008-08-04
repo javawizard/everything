@@ -2,6 +2,7 @@ package net.sf.opengroove.client;
 
 import java.io.Serializable;
 import java.math.BigInteger;
+import java.util.ArrayList;
 import java.util.HashMap;
 
 public class Contact implements Serializable
@@ -20,8 +21,10 @@ public class Contact implements Serializable
     private BigInteger rasEncMod;
     private BigInteger rsaSigPub;
     private BigInteger rsaSigMod;
+    private boolean hasKeys;
     private boolean isUserContact;
     private boolean isUserVerified;
+    private ArrayList<ContactComputer> computers = new ArrayList<ContactComputer>();
     
     public String getRealm()
     {
