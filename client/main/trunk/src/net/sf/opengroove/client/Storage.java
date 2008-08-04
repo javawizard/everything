@@ -90,6 +90,16 @@ public class Storage
     
     private static final Hashtable<String, Storage> singletons = new Hashtable<String, Storage>();
     
+    /**
+     * Gets the singleton storage object for the specified user. Storage objects
+     * are lazily initialized.
+     * 
+     * @param realm
+     *            The realm of the user
+     * @param username
+     *            The user's username
+     * @return A storage object for the user specified
+     */
     public static synchronized Storage get(String realm,
         String username)
     {
@@ -136,24 +146,38 @@ public class Storage
     
     private File featureStorage;
     
+    /**
+     * Gets the list of users.
+     * 
+     * @return The list of users.
+     */
     public static LocalUser[] getUsers()
     {
         return listObjectContentsAsArray(auth,
             LocalUser.class);
     }
     
-    public static void storeUser(String realm,
-        String username, String password)
+    /**
+     * Adds a new user, or updates an existing one if there is a user stored
+     * with the same realm and username.
+     * 
+     * @param user
+     *            The user to store
+     */
+    public static void storeUser(LocalUser user)
     {
-        File userFile = new File(auth, username);
-        LocalUser user = new LocalUser();
-        user.setRealm(realm);
-        user.setUsername(username);
-        user.setEncPassword(Hash.hash(password));
-        writeObjectToFile(user, new File(auth, realm + ":"
-            + username));
+        File userFile = new File(auth, user.getRealm()
+            + ":" + user.getUsername());
+        writeObjectToFile(user, new File(auth, user
+            .getRealm()
+            + ":" + user.getUsername()));
     }
     
+    /**
+     * Gets the user object for the user that this Storage instance is for.
+     * 
+     * @return
+     */
     public LocalUser getLocalUser()
     {
         return (LocalUser) readObjectFromFile(new File(
@@ -190,6 +214,14 @@ public class Storage
         }
     }
     
+    /**
+     * Writes the string specified to the file specified.
+     * 
+     * @param string
+     *            A string to write
+     * @param file
+     *            The file to write <code>string</code> to
+     */
     public static void writeFile(String string, File file)
     {
         try
@@ -209,6 +241,18 @@ public class Storage
         }
     }
     
+    /**
+     * Copies the contents of one stream to another. Bytes from the source
+     * stream are read until it is empty, and written to the destination stream.
+     * Neither the source nor the destination streams are flushed or closed.
+     * 
+     * @param in
+     *            The source stream
+     * @param out
+     *            The destination stream
+     * @throws IOException
+     *             if an I/O error occurs
+     */
     public static void copy(InputStream in, OutputStream out)
         throws IOException
     {
@@ -220,6 +264,15 @@ public class Storage
         }
     }
     
+    /**
+     * Returns the local user for the realm and user specified.
+     * 
+     * @param realm
+     *            The realm of the user to look up
+     * @param user
+     *            The username of the user to look up
+     * @return The user's information
+     */
     public static LocalUser getLocalUser(String realm,
         String user)
     {
@@ -227,6 +280,19 @@ public class Storage
             auth, realm + ":" + user));
     }
     
+    /**
+     * Checks to make sure that the specified user's password matches the
+     * specified password. This can be used to authenticate a user.
+     * 
+     * @param realm
+     *            the user's realm
+     * @param username
+     *            the user's username
+     * @param pass
+     *            the password that the user entered
+     * @return <code>true</code> if the password entered matches the password
+     *         stored to the file system, false otherwise.
+     */
     public static boolean checkPassword(String realm,
         String username, String pass)
     {
@@ -235,6 +301,12 @@ public class Storage
             .equals(Hash.hash(pass));
     }
     
+    /**
+     * Gets a list of contacts for this user. This list may be a bit large, so
+     * it's best not to over-use this method.
+     * 
+     * @return a list of contacts for this user.
+     */
     public synchronized Contact[] getAllContacts()
     {
         File[] contactEntries = contacts.listFiles();
@@ -246,6 +318,17 @@ public class Storage
         return contactArray;
     }
     
+    /**
+     * Gets a particular contact by the realm and username specified, returning
+     * null if the contact specified does not exist.
+     * 
+     * @param realm
+     *            The user's realm
+     * @param username
+     *            The user's username
+     * @return The contact, or null if the contact does not exist on this
+     *         computer
+     */
     public synchronized Contact getContact(String realm,
         String username)
     {
@@ -257,7 +340,10 @@ public class Storage
     }
     
     /**
-     * adds or updates a contact.
+     * adds or updates a contact. If the contact already exists (IE a contact
+     * with the same username and realm is present on the file system), the
+     * contact's information will be updated. If not, the contact will be
+     * created.
      * 
      * @param contact
      */
@@ -272,15 +358,31 @@ public class Storage
         writeObjectToFile(contact, contactFile);
     }
     
+    /**
+     * Deletes the contact specified, throwing a RuntimeException if the
+     * operation failed.
+     * 
+     * @param realm
+     *            the realm of the contact to delete
+     * @param username
+     *            the username of the contact to delete
+     */
     public synchronized void deleteContact(String realm,
         String username)
     {
         if (!new File(contacts, (realm + ":" + username)
             .replace("/", "").replace("\\", "")).delete())
-            System.err
-                .println("contact could not be deleted.");
+            throw new RuntimeException(
+                "The contact could not be deleted.");
     }
     
+    /**
+     * Writes the specified object to the specified file, using the class
+     * {@link java.io.ObjectOutputStream}
+     * 
+     * @param object The object to write
+     * @param file The file to write the object to
+     */
     private static void writeObjectToFile(
         Serializable object, File file)
     {
