@@ -380,8 +380,10 @@ public class Storage
      * Writes the specified object to the specified file, using the class
      * {@link java.io.ObjectOutputStream}
      * 
-     * @param object The object to write
-     * @param file The file to write the object to
+     * @param object
+     *            The object to write
+     * @param file
+     *            The file to write the object to
      */
     private static void writeObjectToFile(
         Serializable object, File file)
@@ -400,6 +402,15 @@ public class Storage
         }
     }
     
+    /**
+     * Reads an object from the file specified.
+     * 
+     * @param file
+     *            The file to read an object from
+     * @return An object, read from the file specified. Only the first object is
+     *         read, so if the file contains multiple objects, they will not be
+     *         returned.
+     */
     private static Serializable readObjectFromFile(File file)
     {
         try
@@ -416,6 +427,15 @@ public class Storage
         }
     }
     
+    /**
+     * Recursively deletes a folder. This method first iterates over the
+     * folder's contents, deleting each file and folder within that folder,
+     * recursively. Then, it deletes the folder passed in. If a particular file
+     * or folder couldn't be deleted, a RuntimeException is thrown. If this
+     * happens, then some of the tree may still have been deleted.
+     * 
+     * @param transmissionFolder
+     */
     public static void recursiveDelete(
         File transmissionFolder)
     {
@@ -426,7 +446,10 @@ public class Storage
                 recursiveDelete(file);
             }
         }
-        transmissionFolder.delete();
+        if (!transmissionFolder.delete())
+            throw new RuntimeException(
+                "Couldn't delete the file "
+                    + transmissionFolder.getAbsolutePath());
     }
     
     private static volatile int cIdVar = 0;
