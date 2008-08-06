@@ -3529,4 +3529,10 @@ public class OpenGroove
         in.close();
         src.delete();
     }
+    
+    public static String toUserid(String realm,
+        String username)
+    {
+        return realm + ":" + username;
+    }
 }
