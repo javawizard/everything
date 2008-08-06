@@ -63,6 +63,7 @@ import javax.swing.UIManager.LookAndFeelInfo;
 import javax.swing.border.EmptyBorder;
 
 import net.sf.opengroove.client.com.AuthenticationException;
+import net.sf.opengroove.client.com.CommandCommunicator;
 import net.sf.opengroove.client.com.OldCommunicator;
 import net.sf.opengroove.client.com.LowLevelCommunicator;
 import net.sf.opengroove.client.download.PluginDownloadManager;
@@ -491,7 +492,7 @@ public class OpenGroove
              * FIXME: This needs to be changed to create a CommandCommunicator
              * and stick it into the com field
              */
-//            loadFeatures();
+            // loadFeatures();
             boolean successfulAuth = false;
             if (Storage.getUsers().length == 0)
             {

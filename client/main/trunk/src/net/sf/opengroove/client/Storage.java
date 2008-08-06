@@ -63,7 +63,7 @@ public class Storage
     
     /**
      * Creates a storage object for the specified user id. The Storage class
-     * maintins singleton instances of storage instances which are lazily
+     * maintains singleton instances of storage instances which are lazily
      * initialized.
      * 
      * @param userid
@@ -86,6 +86,7 @@ public class Storage
         workspaceDataStore = iItem(tbase, "workspacedstore");
         config = iItem(tbase, "config");
         featureStorage = iItem(tbase, "featuremanager");
+        pluginStore = iItem(tbase, "plugins");
     }
     
     private static final Hashtable<String, Storage> singletons = new Hashtable<String, Storage>();
@@ -145,6 +146,8 @@ public class Storage
     private File contacts;
     
     private File featureStorage;
+    
+    private File pluginStore;
     
     /**
      * Gets the list of users.
@@ -607,6 +610,17 @@ public class Storage
     public File getWorkspaceDataStore()
     {
         return workspaceDataStore;
+    }
+    
+    /**
+     * This method is used to get the folder that holds all of this user's
+     * installed plugins.
+     * 
+     * @return
+     */
+    public File getPluginStore()
+    {
+        return pluginStore;
     }
     
     public String getConfigProperty(String key)
