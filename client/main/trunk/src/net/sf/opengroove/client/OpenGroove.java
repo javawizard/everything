@@ -46,6 +46,7 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.Hashtable;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
@@ -108,13 +109,7 @@ public class OpenGroove
     
     public static final String WORKSPACE_DEFAULT_NAME = "Unnamed workspace";
     
-    public static String username;
-    
-    public static String password;
-    
     public static AuthenticationDialog authDialog;
-    
-    private static JTabbedPane launchbarTabbedPane;
     
     private static BufferedImage trayimage;
     
@@ -131,9 +126,16 @@ public class OpenGroove
         return trayimage;
     }
     
-    private static File helpFolder = new File("help");
-    
-    private static HelpViewer helpviewer;
+    /**
+     * Each user has their own help folder, which can be retrieved via the
+     * Storage.getHelpStore() method. This folder contains the built-in help
+     * files that should be copied over to the user's internal help folder upon
+     * OpenGroove startup. This makes it so that each user has the internal help
+     * pages, as well as any help pages provided by the user's server and the
+     * user's plugins.
+     */
+    public static final File INTERNAL_HELP_FOLDER = new File(
+        "help");
     
     private static BufferedImage[] notificationTrayImages;
     

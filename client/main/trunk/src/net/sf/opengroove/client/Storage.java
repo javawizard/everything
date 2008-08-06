@@ -87,6 +87,7 @@ public class Storage
         config = iItem(tbase, "config");
         featureStorage = iItem(tbase, "featuremanager");
         pluginStore = iItem(tbase, "plugins");
+        helpStore = iItem(tbase, "help");
     }
     
     private static final Hashtable<String, Storage> singletons = new Hashtable<String, Storage>();
@@ -148,6 +149,13 @@ public class Storage
     private File featureStorage;
     
     private File pluginStore;
+    
+    private File helpStore;
+    
+    public File getHelpStore()
+    {
+        return helpStore;
+    }
     
     /**
      * Gets the list of users.
