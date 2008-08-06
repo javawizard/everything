@@ -11,5 +11,31 @@ package net.sf.opengroove.client;
  */
 public class UserContext
 {
+    private String userid;
     
+    private CommandCommunicator com;
+    
+    private String password;
+    
+    
+    
+    public String getUserid()
+    {
+        return userid;
+    }
+    
+    public void setUserid(String userid)
+    {
+        this.userid = userid;
+    }
+    
+    public String getUsername()
+    {
+        return UserIds.toUsername(userid);
+    }
+    
+    public String getRealm()
+    {
+        return UserIds.toRealm(userid);
+    }
 }

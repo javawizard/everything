@@ -102,12 +102,6 @@ import com.l2fprod.common.swing.JLinkButton;
 @SuppressWarnings("deprecation")
 public class OpenGroove
 {
-    public static LowLevelCommunicator lcom;
-    
-    public static OldCommunicator ocom;
-    
-    public static CommandCommunicator com;
-    
     static boolean updatesEnabled = false;
     
     public static final File sfile = new File("appdata");
@@ -123,6 +117,8 @@ public class OpenGroove
     private static JTabbedPane launchbarTabbedPane;
     
     private static BufferedImage trayimage;
+    
+    public static final Hashtable<String, UserContext> userContextMap = new Hashtable<String, UserContext>();
     
     /**
      * This is the icon that should be used as the icon for all Convergia
