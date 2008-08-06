@@ -3556,7 +3556,7 @@ public class OpenGroove
      */
     public static String toRealm(String userid)
     {
-        
+        return userid.split("\\:")[0];
     }
     
     /**
@@ -3568,6 +3568,6 @@ public class OpenGroove
      */
     public static String toUsername(String userid)
     {
-        
+        return userid.split("\\:")[1];
     }
 }
