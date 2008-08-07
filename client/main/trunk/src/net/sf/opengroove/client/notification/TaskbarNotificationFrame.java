@@ -167,7 +167,24 @@ public class TaskbarNotificationFrame extends
                                 .useWindowTransparency())
                                 // FIXME: setWindowAlpha only works on windows
                                 // vista, what should be done is to move show
-                                // and hide animations into plugins
+                                // and hide animations into plugins. An
+                                // animation plugin could tell the taskbar
+                                // notification frame how many animation frames
+                                // it uses, and then the taskbar notification
+                                // frame could ask it for a component that wraps
+                                // the taskbar notification's panel. It would
+                                // also provide the plugin with the window
+                                // itself. Then, when it's time to animate, it
+                                // would repeatedly call some sort of update()
+                                // method on the plugin that accepts a number
+                                // which is the current frame to render, and the
+                                // plugin updates the taskbar notification frame
+                                // accordingly. The opengroove user could set in
+                                // a setting ui the amount of time that the
+                                // animation should last for, and the taskbar
+                                // notification frame will divide the time to
+                                // the number of animation frames it's plugin
+                                // needs.
                                 //
                                 // Also, setWindowAlpha only works on windows
                                 // vista, find a version that works on most, if
