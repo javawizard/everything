@@ -3,6 +3,7 @@ package net.sf.opengroove.client;
 import javax.swing.JTabbedPane;
 
 import net.sf.opengroove.client.com.CommandCommunicator;
+import net.sf.opengroove.client.help.HelpViewer;
 
 /**
  * A user context object is created for each user that logs in, and is passed

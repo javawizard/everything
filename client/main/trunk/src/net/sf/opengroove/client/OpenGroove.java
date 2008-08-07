@@ -136,7 +136,16 @@ public class OpenGroove
      */
     public static final File INTERNAL_HELP_FOLDER = new File(
         "help");
-    
+    /*
+     * I hit an unexpected snag while converting over to multi-user: all users
+     * need to share the same taskbar notification frame and task tray icon. The
+     * main problem with this was listing and managing items on the taskbar
+     * notification frame independantly. What I'm thinking of doing to solve
+     * this is changing the taskbar notification frame to have a concept of
+     * groups, where you specify a group to add a taskbar notification to when
+     * you add it to the taskbar notification frame. Each frame has a
+     * GroupLabelGenerator that supplies the labels for each group's name. Currently, the 
+     */
     private static BufferedImage[] notificationTrayImages;
     
     private static int[] notificationTrayDelays;

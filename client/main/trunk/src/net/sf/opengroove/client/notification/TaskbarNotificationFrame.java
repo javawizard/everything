@@ -17,6 +17,8 @@ import java.awt.event.MouseListener;
 import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Hashtable;
+import java.util.Map;
 
 import javax.swing.BorderFactory;
 import javax.swing.BoxLayout;
@@ -51,7 +53,7 @@ import com.sun.jna.examples.WindowUtils;
 public class TaskbarNotificationFrame extends
     javax.swing.JWindow implements MouseListener
 {
-    private ArrayList<TaskbarNotification> notifications = new ArrayList<TaskbarNotification>();
+    private Map<String, TaskbarNotification> notifications = new Hashtable<String, TaskbarNotification>();
     
     private float tensOfSecondsUntilHide = 0;
     
@@ -72,7 +74,8 @@ public class TaskbarNotificationFrame extends
      */
     public boolean containsAlerts()
     {
-        for (TaskbarNotification notification : notifications)
+        for (TaskbarNotification notification : notifications
+            .values())
         {
             if (notification.isAlert())
                 return true;
@@ -161,22 +164,14 @@ public class TaskbarNotificationFrame extends
                             isFadingToVisible = true;
                             currentVisibilityLevel = 64;
                             if (OpenGroove
-                                .useWindowTransparency())// FIXME:
-                                // setWindowAlpha
-                                // only
-                                // works
-                                // on
-                                // Windows
-                                // Vista,
-                                // find
-                                // a
-                                // version
-                                // that
-                                // works
-                                // on
-                                // all
-                                // windows
-                                // versions
+                                .useWindowTransparency())
+                                // FIXME: setWindowAlpha only works on windows
+                                // vista, what should be done is to move show
+                                // and hide animations into plugins
+                                //
+                                // Also, setWindowAlpha only works on windows
+                                // vista, find a version that works on most, if
+                                // not all, operating systems
                                 WindowUtils
                                     .setWindowAlpha(
                                         TaskbarNotificationFrame.this,
@@ -192,22 +187,7 @@ public class TaskbarNotificationFrame extends
                                 .setValue(defaultNumVisibleSeconds * 10);
                             currentVisibilityLevel++;
                             if (OpenGroove
-                                .useWindowTransparency())// FIXME:
-                            // setWindowAlpha
-                            // only
-                            // works
-                            // on
-                            // Windows
-                            // Vista,
-                            // find
-                            // a
-                            // version
-                            // that
-                            // works
-                            // on
-                            // all
-                            // windows
-                            // versions
+                                .useWindowTransparency())
                             {
                                 WindowUtils
                                     .setWindowAlpha(
