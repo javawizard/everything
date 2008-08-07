@@ -179,8 +179,10 @@ import net.sf.opengroove.client.download.PluginDownloadManager;
  * workspace.<br/><br/>
  * 
  * <b>UPDATE:</b>Each user has their own plugin manager instance which manages
- * their personal plugins. The plugin manager also maintains static referneces
- * to plugins which are internal plugin stuff. TBD.
+ * their personal plugins. The folder that stores the user's personal plugins
+ * can be retrieved from the user's Storage instance. Additionally, the
+ * PluginManager maintains (via static fields) a list of internal plugins, which
+ * are those who's code is part of the OpenGroove codebase.
  * 
  * @author Alexander Boyd
  * 
