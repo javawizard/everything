@@ -17,6 +17,7 @@ import java.awt.event.MouseListener;
 import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.Hashtable;
 import java.util.Map;
 
@@ -56,7 +57,18 @@ import com.sun.jna.examples.WindowUtils;
 public class TaskbarNotificationFrame extends
     javax.swing.JWindow implements MouseListener
 {
-    private Map<String, TaskbarNotification> notifications = new Hashtable<String, TaskbarNotification>();
+    private Map<String, ArrayList<TaskbarNotification>> notifications = new Hashtable<String, ArrayList<TaskbarNotification>>();
+    
+    private ArrayList<TaskbarNotification> internalAllNotifications()
+    {
+        ArrayList<TaskbarNotification> all = new ArrayList<TaskbarNotification>();
+        for (Collection<TaskbarNotification> c : new ArrayList<Collection<TaskbarNotification>>(
+            notifications.values()))
+        {
+            all.addAll(c);
+        }
+        return all;
+    }
     
     private float tensOfSecondsUntilHide = 0;
     
@@ -77,8 +89,7 @@ public class TaskbarNotificationFrame extends
      */
     public boolean containsAlerts()
     {
-        for (TaskbarNotification notification : notifications
-            .values())
+        for (TaskbarNotification notification : internalAllNotifications())
         {
             if (notification.isAlert())
                 return true;
@@ -349,17 +360,16 @@ public class TaskbarNotificationFrame extends
         TaskbarNotification notification,
         boolean requestDisplay)
     {
-        System.out.println("checking for rqd");
         if (!Arrays
             .asList(
                 notification.getComponent()
                     .getMouseListeners()).contains(this))
             notification.getComponent().addMouseListener(
                 this);
-        if (!notifications.values().contains(notification))
+        if (!internalAllNotifications().contains(
+            notification))
         {
-            notifications.put(notifications.size(),
-                notification);
+            internalPutNotification(group, notification);
         }
         else
         {
@@ -372,27 +382,62 @@ public class TaskbarNotificationFrame extends
             requestDisplay();
     }
     
+    private synchronized void internalPutNotification(
+        String group, TaskbarNotification notification)
+    {
+        ArrayList<TaskbarNotification> list = notifications
+            .get(group);
+        if (list == null)
+        {
+            list = new ArrayList<TaskbarNotification>();
+            notifications.put(group, list);
+        }
+        list.add(notification);
+    }
+    
+    private synchronized void internalDeleteNotification(
+        TaskbarNotification notification)
+    {
+        for (ArrayList<TaskbarNotification> list : new ArrayList<ArrayList<TaskbarNotification>>(
+            notifications.values()))
+        {
+            if (list.contains(notification))
+                list.remove(notification);
+        }
+    }
+    
     public synchronized void removeNotification(
         TaskbarNotification notification)
     {
-        notifications.remove(notification);
+        internalDeleteNotification(notification);
         reloadNotifications();
     }
     
-    public synchronized TaskbarNotification[] listAllNotifications()
+    public synchronized TaskbarNotification[] listNotifications(
+        String group)
     {
-        return listNotificationsByClass(TaskbarNotification.class);
+        return listNotificationsByClass(
+            TaskbarNotification.class, group);
     }
     
     public synchronized <T extends TaskbarNotification> T[] listNotificationsByClass(
-        Class<? extends T> c)
+        Class<? extends T> c, String group)
     {
         ArrayList<T> arraylist = new ArrayList<T>();
-        for (TaskbarNotification notification : notifications)
+        for (Map.Entry<String, ArrayList<TaskbarNotification>> entry : new ArrayList<Map.Entry<String, ArrayList<TaskbarNotification>>>(
+            notifications.entrySet()))
         {
-            if (c.isInstance(notification))
+            if (group == null
+                || group.equals(entry.getKey()))
             {
-                arraylist.add((T) notification);
+                for (TaskbarNotification notification : entry
+                    .getValue())
+                {
+                    if (c.isInstance(notification))
+                    {
+                        arraylist.add((T) notification);
+                    }
+                }
             }
         }
         return arraylist.toArray((T[]) Array.newInstance(c,
