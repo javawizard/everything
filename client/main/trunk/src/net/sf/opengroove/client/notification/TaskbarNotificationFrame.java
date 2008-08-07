@@ -47,6 +47,9 @@ import com.sun.jna.examples.WindowUtils;
  * reversed the action to hide the window (such as mouseovering while it's in
  * the process of fading away), and that it will be shown again.
  * 
+ * NOTE: the above comment has been superseded by a comment later on in the
+ * page.
+ * 
  * @author Alexander Boyd
  * 
  */
@@ -94,6 +97,22 @@ public class TaskbarNotificationFrame extends
     private Border hoverExitBorder;
     
     private Border clickExitBorder;
+    
+    private GroupLabelResolver labels = new GroupLabelResolver()
+    {
+        
+        @Override
+        public String resolveLabel(String group)
+        {
+            return group;
+        }
+    };
+    
+    public void setGroupLabelResolver(
+        GroupLabelResolver resolver)
+    {
+        this.labels = resolver;
+    }
     
     /**
      * creates a new taskbar notification frame. currently, this constructor
@@ -326,7 +345,7 @@ public class TaskbarNotificationFrame extends
         tensOfSecondsUntilHide = defaultNumVisibleSeconds * 10;
     }
     
-    public synchronized void addNotification(
+    public synchronized void addNotification(String group,
         TaskbarNotification notification,
         boolean requestDisplay)
     {
@@ -337,15 +356,16 @@ public class TaskbarNotificationFrame extends
                     .getMouseListeners()).contains(this))
             notification.getComponent().addMouseListener(
                 this);
-        if (!notifications.contains(notification))
+        if (!notifications.values().contains(notification))
         {
-            System.out.println("adding notification");
-            notifications.add(notifications.size(),
+            notifications.put(notifications.size(),
                 notification);
         }
         else
         {
-            System.out.println("not adding notification");
+            System.out
+                .println("not adding notification because "
+                    + "it's already in the list");
         }
         reloadNotifications();
         if (requestDisplay)
