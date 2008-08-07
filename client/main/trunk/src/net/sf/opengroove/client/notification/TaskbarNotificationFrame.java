@@ -12,6 +12,8 @@ import java.awt.GraphicsDevice;
 import java.awt.GraphicsEnvironment;
 import java.awt.Insets;
 import java.awt.Toolkit;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.lang.reflect.Array;
@@ -23,6 +25,7 @@ import java.util.Map;
 
 import javax.swing.BorderFactory;
 import javax.swing.BoxLayout;
+import javax.swing.JButton;
 import javax.swing.JComponent;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
@@ -56,7 +59,8 @@ import com.sun.jna.examples.WindowUtils;
  * 
  */
 public class TaskbarNotificationFrame extends
-    javax.swing.JWindow implements MouseListener
+    javax.swing.JWindow implements MouseListener,
+    ActionListener
 {
     private Map<String, ArrayList<TaskbarNotification>> notifications = new Hashtable<String, ArrayList<TaskbarNotification>>();
     
@@ -100,7 +104,7 @@ public class TaskbarNotificationFrame extends
     
     private JPanel notificationPanel;
     
-    private JLabel exitLabel;
+    private JButton exitButton;
     
     private JLabel mainLabel;
     
@@ -170,16 +174,20 @@ public class TaskbarNotificationFrame extends
             BevelBorder.RAISED);
         clickExitBorder = new BevelBorder(
             BevelBorder.LOWERED);
-        exitLabel = new JLabel("X");
-        exitLabel.setBorder(normalExitBorder);
-        exitLabel.addMouseListener(this);
-        exitLabel.setCursor(Cursor
+        exitButton = new JButton("X");
+        exitButton.setBorder(new CompoundBorder(
+            new CompoundBorder(new LineBorder(new Color(
+                200, 212, 245), 2), new LineBorder(
+                Color.GRAY, 1)),
+            new EmptyBorder(0, 2, 0, 2)));
+        exitButton.addActionListener(this);
+        exitButton.setCursor(Cursor
             .getPredefinedCursor(Cursor.HAND_CURSOR));
         Border topPanelBorder = BorderFactory
             .createMatteBorder(0, 0, 1, 0, Color.GRAY);
         topPanel.setBorder(topPanelBorder);
         topPanel.add(mainLabel, BorderLayout.CENTER);
-        topPanel.add(exitLabel, BorderLayout.EAST);
+        topPanel.add(exitButton, BorderLayout.EAST);
         content.add(pbar, BorderLayout.SOUTH);
         new Thread()
         {
@@ -475,6 +483,7 @@ public class TaskbarNotificationFrame extends
                     TitledBorder.LEFT, TitledBorder.TOP)),
                 new EmptyBorder(1, 2, 1, 2)));
             cpanel.setOpaque(false);
+            notificationPanel.add(cpanel);
             for (TaskbarNotification n : new ArrayList<TaskbarNotification>(
                 entry.getValue()))
             {
@@ -544,15 +553,6 @@ public class TaskbarNotificationFrame extends
         System.out.println("clicked");
         System.out.println(e.getComponent().getClass()
             .getName());
-        if (e.getComponent().equals(exitLabel))
-        {
-            System.out.println("exitLabel");
-            isFadingToVisible = false;
-            tensOfSecondsUntilHide = 0;
-            ignoreMouseOver = true;
-            isMouseOver = false;
-            return;
-        }
         for (TaskbarNotification n : new ArrayList<TaskbarNotification>(
             internalAllNotifications()))
         {
@@ -565,12 +565,6 @@ public class TaskbarNotificationFrame extends
     {
         if (!ignoreMouseOver)
             isMouseOver = true;
-        if (e.getComponent() == exitLabel)
-        {
-            exitLabel.setForeground(Color.RED.darker()
-                .darker());
-            exitLabel.setBorder(hoverExitBorder);
-        }
         else
         {
             for (TaskbarNotification n : new ArrayList<TaskbarNotification>(
@@ -586,36 +580,33 @@ public class TaskbarNotificationFrame extends
     public void mouseExited(MouseEvent e)
     {
         isMouseOver = false;
-        if (e.getComponent() == exitLabel)
+        for (TaskbarNotification n : new ArrayList<TaskbarNotification>(
+            internalAllNotifications()))
         {
-            exitLabel.setForeground(Color.BLACK);
-            exitLabel.setBorder(normalExitBorder);
-        }
-        else
-        {
-            for (TaskbarNotification n : new ArrayList<TaskbarNotification>(
-                internalAllNotifications()))
-            {
-                if (n.getComponent().equals(
-                    e.getComponent()))
-                    n.mouseOut();
-            }
+            if (n.getComponent().equals(e.getComponent()))
+                n.mouseOut();
         }
     }
     
     public void mousePressed(MouseEvent e)
     {
-        if (e.getComponent() == exitLabel)
-        {
-            exitLabel.setBorder(clickExitBorder);
-        }
     }
     
     public void mouseReleased(MouseEvent e)
     {
-        if (e.getComponent() == exitLabel)
+    }
+    
+    @Override
+    public void actionPerformed(ActionEvent e)
+    {
+        if (e.getSource() == exitButton)
         {
-            exitLabel.setBorder(normalExitBorder);
+            System.out.println("exitLabel");
+            isFadingToVisible = false;
+            tensOfSecondsUntilHide = 0;
+            ignoreMouseOver = true;
+            isMouseOver = false;
+            return;
         }
     }
     
