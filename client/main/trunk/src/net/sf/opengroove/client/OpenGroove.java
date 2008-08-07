@@ -128,24 +128,16 @@ public class OpenGroove
     
     /**
      * Each user has their own help folder, which can be retrieved via the
-     * Storage.getHelpStore() method. This folder contains the built-in help
-     * files that should be copied over to the user's internal help folder upon
+     * Storage.getHelpStore() method. This folder (the one in this field, not
+     * the one in the method previously mentioned) contains the built-in help
+     * files that should be copied over to the user's own help folder upon
      * OpenGroove startup. This makes it so that each user has the internal help
      * pages, as well as any help pages provided by the user's server and the
      * user's plugins.
      */
     public static final File INTERNAL_HELP_FOLDER = new File(
         "help");
-    /*
-     * I hit an unexpected snag while converting over to multi-user: all users
-     * need to share the same taskbar notification frame and task tray icon. The
-     * main problem with this was listing and managing items on the taskbar
-     * notification frame independantly. What I'm thinking of doing to solve
-     * this is changing the taskbar notification frame to have a concept of
-     * groups, where you specify a group to add a taskbar notification to when
-     * you add it to the taskbar notification frame. Each frame has a
-     * GroupLabelGenerator that supplies the labels for each group's name. Currently, the 
-     */
+    
     private static BufferedImage[] notificationTrayImages;
     
     private static int[] notificationTrayDelays;
