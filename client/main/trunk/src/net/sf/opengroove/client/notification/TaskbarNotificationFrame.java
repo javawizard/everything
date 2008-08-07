@@ -35,6 +35,7 @@ import javax.swing.border.CompoundBorder;
 import javax.swing.border.EmptyBorder;
 import javax.swing.border.EtchedBorder;
 import javax.swing.border.LineBorder;
+import javax.swing.border.TitledBorder;
 
 import net.sf.opengroove.client.OpenGroove;
 
@@ -316,7 +317,7 @@ public class TaskbarNotificationFrame extends
                             {
                                 TaskbarNotificationFrame.this
                                     .hide();
-                                for (TaskbarNotification n : listAllNotifications())
+                                for (TaskbarNotification n : internalAllNotifications())
                                 {
                                     if (n.isOneTimeOnly())
                                         removeNotification(n);
@@ -460,13 +461,28 @@ public class TaskbarNotificationFrame extends
             ignoreMouseOver = true;
             isMouseOver = false;
         }
-        for (TaskbarNotification n : notifications)
+        for (Map.Entry<String, ArrayList<TaskbarNotification>> entry : new ArrayList<Map.Entry<String, ArrayList<TaskbarNotification>>>(
+            notifications.entrySet()))
         {
-            System.out.println("has notification");
-            notificationPanel
-                .add(createNotificationWrapper(n
+            JPanel cpanel = new JPanel();
+            cpanel.setLayout(new BoxLayout(cpanel,
+                BoxLayout.Y_AXIS));
+            cpanel.setBorder(new CompoundBorder(
+                new CompoundBorder(new EmptyBorder(1, 1, 1,
+                    1), new TitledBorder(new LineBorder(
+                    Color.DARK_GRAY, 1), labels
+                    .resolveLabel(entry.getKey()),
+                    TitledBorder.LEFT, TitledBorder.TOP)),
+                new EmptyBorder(1, 2, 1, 2)));
+            cpanel.setOpaque(false);
+            for (TaskbarNotification n : new ArrayList<TaskbarNotification>(
+                entry.getValue()))
+            {
+                System.out.println("has notification");
+                cpanel.add(createNotificationWrapper(n
                     .getComponent()));
-            System.out.println("added");
+                System.out.println("added");
+            }
         }
         notificationPanel.invalidate();
         notificationPanel.validate();
@@ -538,7 +554,7 @@ public class TaskbarNotificationFrame extends
             return;
         }
         for (TaskbarNotification n : new ArrayList<TaskbarNotification>(
-            notifications))
+            internalAllNotifications()))
         {
             if (n.getComponent().equals(e.getComponent()))
                 n.clicked();
@@ -558,7 +574,7 @@ public class TaskbarNotificationFrame extends
         else
         {
             for (TaskbarNotification n : new ArrayList<TaskbarNotification>(
-                notifications))
+                internalAllNotifications()))
             {
                 if (n.getComponent().equals(
                     e.getComponent()))
@@ -578,7 +594,7 @@ public class TaskbarNotificationFrame extends
         else
         {
             for (TaskbarNotification n : new ArrayList<TaskbarNotification>(
-                notifications))
+                internalAllNotifications()))
             {
                 if (n.getComponent().equals(
                     e.getComponent()))
