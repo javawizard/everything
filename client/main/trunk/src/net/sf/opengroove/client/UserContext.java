@@ -1,5 +1,7 @@
 package net.sf.opengroove.client;
 
+import java.awt.PopupMenu;
+
 import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.JTabbedPane;
@@ -22,6 +24,10 @@ import net.sf.opengroove.client.help.HelpViewer;
 public class UserContext
 {
     private String userid;
+    
+    private static JPanel contactsPanel;
+    
+    private static PopupMenu workspacesSubMenu;
     
     public static JFrame launchbar;
     

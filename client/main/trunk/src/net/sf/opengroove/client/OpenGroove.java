@@ -146,8 +146,17 @@ public class OpenGroove
     
     private static TrayIcon trayicon;
     
-    // used to ensure that only one Convergia is running at a time
+    // used to ensure that only one OpenGroove Client is running at a time
     private static ServerSocket ss;
+    
+    /**
+     * This enum represents all of the icons available to OpenGroove classes.
+     * Sometime in the future the actual icon paths will be moved to
+     * configuration, so that the user can change the icons used by OpenGroove.
+     * 
+     * @author Alexander Boyd
+     * 
+     */
     
     public static enum Icons
     {
@@ -204,11 +213,7 @@ public class OpenGroove
     
     private static int[] notificationTrayOfflineDelays;
     
-    private static JPanel contactsPanel;
-    
-    private static PopupMenu workspacesSubMenu;
-    
-    private static final String SYSTEM_UPDATE_SITE = "http://trivergia.com:8080/convergiaupdates.properties";
+    private static final String SYSTEM_UPDATE_SITE = "http://sysup.ogis.opengroove.org";
     
     private static final int LOCK_PORT = 61116;
     
