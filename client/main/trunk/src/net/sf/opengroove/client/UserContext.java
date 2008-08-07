@@ -1,5 +1,7 @@
 package net.sf.opengroove.client;
 
+import javax.swing.JFrame;
+import javax.swing.JPanel;
 import javax.swing.JTabbedPane;
 
 import net.sf.opengroove.client.com.CommandCommunicator;
@@ -21,11 +23,16 @@ public class UserContext
 {
     private String userid;
     
+    public static JFrame launchbar;
+    
+    private static JPanel workspacePanel;
+    
     private CommandCommunicator com;
     
     private String password;
     
     private JTabbedPane launchbarTabbedPane;
+    
     private HelpViewer helpViewer;
     
     public String getUserid()

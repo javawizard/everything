@@ -146,10 +146,6 @@ public class OpenGroove
     
     private static TrayIcon trayicon;
     
-    public static JFrame launchbar;
-    
-    private static JPanel workspacePanel;
-    
     // used to ensure that only one Convergia is running at a time
     private static ServerSocket ss;
     
