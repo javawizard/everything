@@ -176,7 +176,11 @@ import net.sf.opengroove.client.download.PluginDownloadManager;
  * versionIndex are not supported on internal plugins, as their code is updated
  * when the main OpenGroove system is updated. examples of internal plugins are
  * tool workspace and file sharing workspace, which are both plugins of type
- * workspace.
+ * workspace.<br/><br/>
+ * 
+ * <b>UPDATE:</b>Each user has their own plugin manager instance which manages
+ * their personal plugins. The plugin manager also maintains static referneces
+ * to plugins which are internal plugin stuff. TBD.
  * 
  * @author Alexander Boyd
  * 

@@ -8,6 +8,7 @@ import javax.swing.JTabbedPane;
 
 import net.sf.opengroove.client.com.CommandCommunicator;
 import net.sf.opengroove.client.help.HelpViewer;
+import net.sf.opengroove.client.plugins.PluginManager;
 
 /**
  * A user context object is created for each user that logs in, and is passed
@@ -25,13 +26,15 @@ public class UserContext
 {
     private String userid;
     
-    private static JPanel contactsPanel;
+    private JPanel contactsPanel;
     
-    private static PopupMenu workspacesSubMenu;
+    private PluginManager plugins;
     
-    public static JFrame launchbar;
+    private PopupMenu workspacesSubMenu;
     
-    private static JPanel workspacePanel;
+    private JFrame launchbar;
+    
+    private JPanel workspacePanel;
     
     private CommandCommunicator com;
     
@@ -59,5 +62,97 @@ public class UserContext
     public String getRealm()
     {
         return UserIds.toRealm(userid);
+    }
+    
+    public JPanel getContactsPanel()
+    {
+        return contactsPanel;
+    }
+    
+    public PluginManager getPlugins()
+    {
+        return plugins;
+    }
+    
+    public PopupMenu getWorkspacesSubMenu()
+    {
+        return workspacesSubMenu;
+    }
+    
+    public JFrame getLaunchbar()
+    {
+        return launchbar;
+    }
+    
+    public JPanel getWorkspacePanel()
+    {
+        return workspacePanel;
+    }
+    
+    public CommandCommunicator getCom()
+    {
+        return com;
+    }
+    
+    public String getPassword()
+    {
+        return password;
+    }
+    
+    public JTabbedPane getLaunchbarTabbedPane()
+    {
+        return launchbarTabbedPane;
+    }
+    
+    public HelpViewer getHelpViewer()
+    {
+        return helpViewer;
+    }
+    
+    public void setContactsPanel(JPanel contactsPanel)
+    {
+        this.contactsPanel = contactsPanel;
+    }
+    
+    public void setPlugins(PluginManager plugins)
+    {
+        this.plugins = plugins;
+    }
+    
+    public void setWorkspacesSubMenu(
+        PopupMenu workspacesSubMenu)
+    {
+        this.workspacesSubMenu = workspacesSubMenu;
+    }
+    
+    public void setLaunchbar(JFrame launchbar)
+    {
+        this.launchbar = launchbar;
+    }
+    
+    public void setWorkspacePanel(JPanel workspacePanel)
+    {
+        this.workspacePanel = workspacePanel;
+    }
+    
+    public void setCom(CommandCommunicator com)
+    {
+        this.com = com;
+    }
+    
+    public void setPassword(String password)
+    {
+        this.password = password;
+    }
+    
+    public void setLaunchbarTabbedPane(
+        JTabbedPane launchbarTabbedPane)
+    {
+        this.launchbarTabbedPane = launchbarTabbedPane;
+    }
+    
+    public void setHelpViewer(HelpViewer helpViewer)
+    {
+        this.helpViewer = helpViewer;
     }
 }

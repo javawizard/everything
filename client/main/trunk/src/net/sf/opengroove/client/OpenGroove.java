@@ -63,6 +63,8 @@ import javax.swing.*;
 import javax.swing.UIManager.LookAndFeelInfo;
 import javax.swing.border.EmptyBorder;
 
+import org.awl.Wizard;
+
 import net.sf.opengroove.client.com.AuthenticationException;
 import net.sf.opengroove.client.com.CommandCommunicator;
 import net.sf.opengroove.client.com.OldCommunicator;
@@ -104,7 +106,9 @@ import com.l2fprod.common.swing.JLinkButton;
 public class OpenGroove
 {
     static boolean updatesEnabled = false;
-    
+    /**
+     * This file object is a folder that contains opengroove's data.
+     */
     public static final File sfile = new File("appdata");
     
     public static final String WORKSPACE_DEFAULT_NAME = "Unnamed workspace";
@@ -231,8 +235,13 @@ public class OpenGroove
      * in the future some sort of API for allowing things to register something
      * like ExitingListeners that check to see if it's ok to exit and save if
      * necessary could be added.
+     * 
+     * @param parent
+     *            The window that should be used as the parent of any dialogs
+     *            that report error messages. This can be null, but it's highly
+     *            recommended not to do so.
      */
-    public static void restartOpenGroove()
+    public static void restartOpenGroove(Window parent)
     {
         try
         {
@@ -254,13 +263,50 @@ public class OpenGroove
             e.printStackTrace();
             JOptionPane
                 .showMessageDialog(
-                    launchbar,
+                    parent,
                     "OpenGroove could not be restarted. You will need to manually restart OpenGroove.");
             
         }
         
     }
     
+    /*
+     * More rambling by me on converting this stuff over to multiple users
+     * logged in at a time...
+     * 
+     * The loop that logs a user in, that's part of the main method, and the
+     * stuff following it that initializes a workspace manager, plugins, etc.
+     * should be moved into it's own method. There should be a method that shows
+     * an authentication dialog, which should probably be not a dialog but a
+     * singleton window. When a button to log in is clicked on it, it does stuff
+     * like make sure that the user's not already logged in, then hides itself
+     * and runs the authentication loop. The method that shows the auth dialog
+     * and the section that occurs when the auth button is clicked should be
+     * synchronized on the same lock, so that the auth dialog will never be
+     * shown if the system's currently logging a user in. It should be sync'd
+     * until at least it sticks the user context into the map of user contexts
+     * in OpenGroove, so that future authentications with the auth dialog won't
+     * accidentally try to log the same user in twice.
+     * 
+     * The wizard for new registrations is a dialog, so it should either be
+     * shown on top of the auth singleton window if the user clicks a button to
+     * select another account, or on top of the splash screen window if, upon
+     * startup, opengroove realizes the user doesn't have any accounts. If the
+     * user cancels the wizard, opengroove will still continue running, but it
+     * will appear in the taskbar as that no user is logged in, and when the
+     * user shows the auth frame, it will show the dialog on top of the auth
+     * frame since the user doesn't have any accounts yet.
+     * 
+     * Essentially, then, the main method of opengroove just loads the taskbar
+     * and any global internal plugins, and shows the auth dialog once, and
+     * loads the tray icon and notification frame. It then just sits there until
+     * someone logs in, at which point the method that handles authenticating
+     * gets stuff up and running, or until it gets exited. For every known user,
+     * there's a menu item under the launchbar. It's submenu is either one that
+     * contains stuff related to, for example, wokspaces or showing a launchbar,
+     * or one that has an item for logging in as that user if the user is not
+     * currently logged in.
+     */
     /**
      * Starts OpenGroove, without updates. Run the main method of
      * net.sf.opengroove.client.Loader if you want OpenGroove to update itself.
@@ -336,10 +382,10 @@ public class OpenGroove
                 }
             }.start();
             sfile.mkdirs();
+            // the setProperty call below is used to avoid problems with the
+            // fade effect for the taskbar notification frame
             System
                 .setProperty("sun.java2d.noddraw", "true");
-            // used to avoid problems with the fade effect for the taskbar
-            // notification frame
             Storage.initStorage(sfile);
             // PluginManager.loadPlugins();
             // postPluginLoad();
