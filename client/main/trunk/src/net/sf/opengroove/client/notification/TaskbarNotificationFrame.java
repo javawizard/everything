@@ -420,6 +420,7 @@ public class TaskbarNotificationFrame extends
             TaskbarNotification.class, group);
     }
     
+    @SuppressWarnings("unchecked")
     public synchronized <T extends TaskbarNotification> T[] listNotificationsByClass(
         Class<? extends T> c, String group)
     {
