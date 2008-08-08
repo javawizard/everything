@@ -43,4 +43,14 @@ public class LanguageContext
     {
         return null;
     }
+    
+    /**
+     * Returns all of the keys currently known.
+     * 
+     * @return
+     */
+    public String[] listKeys()
+    {
+        
+    }
 }
