@@ -13,7 +13,7 @@ import java.io.File;
 public class PluginContext
 {
     /**
-     * Gets the id of this plugin declared in the plugin's file.
+     * Gets the id of this plugin, declared in the plugin's file.
      * 
      * @return
      */
@@ -28,6 +28,11 @@ public class PluginContext
     }
     
     public File getPersistantStorage()
+    {
+        
+    }
+    
+    public PluginInfo getPluginInfo()
     {
         
     }
