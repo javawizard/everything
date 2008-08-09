@@ -1,6 +1,18 @@
 package net.sf.opengroove.client.ui;
 
+import java.awt.BorderLayout;
+import java.awt.Point;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.awt.event.AdjustmentEvent;
+import java.awt.event.AdjustmentListener;
+import java.awt.event.ComponentEvent;
+import java.awt.event.ComponentListener;
+
+import javax.swing.BoxLayout;
+import javax.swing.JButton;
 import javax.swing.JPanel;
+import javax.swing.JViewport;
 
 import net.sf.opengroove.client.com.ListenerManager;
 
@@ -16,7 +28,102 @@ import net.sf.opengroove.client.com.ListenerManager;
  * @author Alexander Boyd
  * 
  */
-public class Breadcrumb extends JPanel
+public class Breadcrumb extends JPanel implements
+    AdjustmentListener, ComponentListener
 {
-    private ListenerManager<BreadcrumbListener> listeners;
+    private ListenerManager<BreadcrumbListener> listeners = new ListenerManager<BreadcrumbListener>();
+    
+    private String[] items = new String[0];
+    private JPanel inner = new JPanel();
+    private JViewport viewport;
+    private ScrollButtons scroll;
+    
+    public void addListener(BreadcrumbListener listener)
+    {
+        listeners.add(listener);
+    }
+    
+    public void removeListener(BreadcrumbListener listener)
+    {
+        listeners.remove(listener);
+    }
+    
+    public Breadcrumb()
+    {
+        setLayout(new BorderLayout());
+        inner.setLayout(new BoxLayout(inner,
+            BoxLayout.X_AXIS));
+        viewport = new JViewport();
+        viewport.setView(ComponentUtils.pad(inner, 0, 0, 0,
+            5));
+        viewport.setViewPosition(new Point(0, 0));
+        add(viewport, BorderLayout.CENTER);
+        scroll = new ScrollButtons(
+            ScrollButtons.Orientation.HORIZONTAL, 10);
+        add(scroll, BorderLayout.EAST);
+        viewport.addComponentListener(this);
+        scroll.addAdjustmentListener(this);
+    }
+    
+    public void setItems(String[] items)
+    {
+        this.items = items;
+        inner.removeAll();
+        for (int i = 0; i < items.length; i++)
+        {
+            JButton button = new JButton(items[i]);
+            inner.add(button);
+            final int fI = i;
+            button.addActionListener(new ActionListener()
+            {
+                
+                @Override
+                public void actionPerformed(ActionEvent e)
+                {
+                    
+                }
+            });
+        }
+        inner.invalidate();
+        inner.validate();
+        inner.repaint();
+        componentResized(null);
+    }
+    
+    @Override
+    public void adjustmentValueChanged(AdjustmentEvent e)
+    {
+        viewport.setViewPosition(new Point(scroll
+            .getValue(), 0));
+    }
+    
+    @Override
+    public void componentHidden(ComponentEvent e)
+    {
+        // TODO Auto-generated method stub
+        
+    }
+    
+    @Override
+    public void componentMoved(ComponentEvent e)
+    {
+        // TODO Auto-generated method stub
+        
+    }
+    
+    @Override
+    public void componentResized(ComponentEvent e)
+    {
+        scroll.setMaximum(inner.getWidth()
+            - viewport.getWidth());
+        viewport.setViewPosition(new Point(scroll
+            .getValue(), 0));
+    }
+    
+    @Override
+    public void componentShown(ComponentEvent e)
+    {
+        // TODO Auto-generated method stub
+        
+    }
 }

@@ -163,6 +163,8 @@ public class ScrollButtons extends JPanel implements
         max = i;
         if (value > max)
             value = max;
+        increaseButton.setEnabled(value < max);
+        decreaseButton.setEnabled(value > min);
     }
     
     public void setValue(int i)
@@ -172,6 +174,8 @@ public class ScrollButtons extends JPanel implements
         else if (i < min)
             i = min;
         value = i;
+        increaseButton.setEnabled(value < max);
+        decreaseButton.setEnabled(value > min);
         listeners.notify(new Notifier<AdjustmentListener>()
         {
             
