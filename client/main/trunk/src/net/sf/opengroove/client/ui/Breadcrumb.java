@@ -1,6 +1,7 @@
 package net.sf.opengroove.client.ui;
 
 import java.awt.BorderLayout;
+import java.awt.Color;
 import java.awt.Point;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -9,6 +10,7 @@ import java.awt.event.AdjustmentListener;
 import java.awt.event.ComponentEvent;
 import java.awt.event.ComponentListener;
 
+import javax.swing.BorderFactory;
 import javax.swing.BoxLayout;
 import javax.swing.JButton;
 import javax.swing.JPanel;
@@ -73,6 +75,8 @@ public class Breadcrumb extends JPanel implements
         for (int i = 0; i < items.length; i++)
         {
             JButton button = new JButton(items[i]);
+            button.setBorder(BorderFactory
+                .createLineBorder(Color.GRAY, 1));
             inner.add(button);
             final int fI = i;
             button.addActionListener(new ActionListener()
