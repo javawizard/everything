@@ -15,6 +15,7 @@ import javax.swing.JPanel;
 import javax.swing.JViewport;
 
 import net.sf.opengroove.client.com.ListenerManager;
+import net.sf.opengroove.client.com.Notifier;
 
 /**
  * This class shows a simple breadcrumb component. An application can hand it a
@@ -80,7 +81,20 @@ public class Breadcrumb extends JPanel implements
                 @Override
                 public void actionPerformed(ActionEvent e)
                 {
-                    
+                    listeners
+                        .notify(new Notifier<BreadcrumbListener>()
+                        {
+                            
+                            @Override
+                            public void notify(
+                                BreadcrumbListener listener)
+                            {
+                                listener.itemClicked(
+                                    Breadcrumb.this,
+                                    Breadcrumb.this.items,
+                                    fI);
+                            }
+                        });
                 }
             });
         }
