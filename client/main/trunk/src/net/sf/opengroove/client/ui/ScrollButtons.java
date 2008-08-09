@@ -167,6 +167,11 @@ public class ScrollButtons extends JPanel implements
         decreaseButton.setEnabled(value > min);
     }
     
+    public int getMaximum()
+    {
+        return max;
+    }
+    
     public void setValue(int i)
     {
         if (i > max)

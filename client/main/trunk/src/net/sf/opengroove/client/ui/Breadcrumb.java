@@ -41,12 +41,14 @@ public class Breadcrumb extends JPanel implements
     private JViewport viewport;
     private ScrollButtons scroll;
     
-    public void addListener(BreadcrumbListener listener)
+    public void addBreadcrumbListener(
+        BreadcrumbListener listener)
     {
         listeners.add(listener);
     }
     
-    public void removeListener(BreadcrumbListener listener)
+    public void removeBreadcrumbListener(
+        BreadcrumbListener listener)
     {
         listeners.remove(listener);
     }
@@ -58,14 +60,16 @@ public class Breadcrumb extends JPanel implements
             BoxLayout.X_AXIS));
         viewport = new JViewport();
         viewport.setView(ComponentUtils.pad(inner, 0, 0, 0,
-            5));
+            4));
         viewport.setViewPosition(new Point(0, 0));
         add(viewport, BorderLayout.CENTER);
         scroll = new ScrollButtons(
-            ScrollButtons.Orientation.HORIZONTAL, 10);
+            ScrollButtons.Orientation.HORIZONTAL, 4);
         add(scroll, BorderLayout.EAST);
         viewport.addComponentListener(this);
+        addComponentListener(this);
         scroll.addAdjustmentListener(this);
+        componentResized(null);
     }
     
     public void setItems(String[] items)
@@ -76,7 +80,10 @@ public class Breadcrumb extends JPanel implements
         {
             JButton button = new JButton(items[i]);
             button.setBorder(BorderFactory
-                .createLineBorder(Color.GRAY, 1));
+                .createCompoundBorder(BorderFactory
+                    .createLineBorder(Color.GRAY, 1),
+                    BorderFactory.createEmptyBorder(0, 2,
+                        0, 2)));
             inner.add(button);
             final int fI = i;
             button.addActionListener(new ActionListener()
@@ -105,7 +112,14 @@ public class Breadcrumb extends JPanel implements
         inner.invalidate();
         inner.validate();
         inner.repaint();
+        invalidate();
+        validate();
+        repaint();
         componentResized(null);
+        scroll.setValue(scroll.getMaximum());
+        invalidate();
+        validate();
+        repaint();
     }
     
     @Override
