@@ -27,6 +27,16 @@ public class ListenerManager<T>
         listeners.remove(listener);
     }
     
+    public void add(T listener)
+    {
+        listeners.add(listener);
+    }
+    
+    public void remove(T listener)
+    {
+        listeners.remove(listener);
+    }
+    
     public void notify(Notifier<T> notifier)
     {
         for (T listener : listeners)

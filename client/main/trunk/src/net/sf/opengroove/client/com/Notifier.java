@@ -3,7 +3,7 @@
  */
 package net.sf.opengroove.client.com;
 
-interface Notifier<T>
+public interface Notifier<T>
 {
     
     public void notify(T listener);

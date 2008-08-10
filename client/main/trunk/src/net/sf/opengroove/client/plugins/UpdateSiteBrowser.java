@@ -1,6 +1,7 @@
 package net.sf.opengroove.client.plugins;
 
 import java.awt.Frame;
+import java.util.ArrayList;
 
 import javax.swing.JDialog;
 
@@ -23,7 +24,10 @@ public class UpdateSiteBrowser extends JDialog
     private Breadcrumb breadcrumb;
     /**
      * Contains the actual breadcrumb trail. <code>breadcrumb</code> is set to
-     * reflect this whenever it changes.
+     * reflect this whenever it changes. This should always have at least one
+     * element. If the user is viewing the toplevel (IE they are currently
+     * viewing the list of available update sites), then this list should have
+     * only one element, which is an UpdatePath with it's update site and folders set to null, and it's name set to 
      */
     private ArrayList<UpdatePath> trail = new ArrayList<UpdatePath>();
     

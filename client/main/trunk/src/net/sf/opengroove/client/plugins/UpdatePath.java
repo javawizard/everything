@@ -19,18 +19,29 @@ public class UpdatePath
      * refers directly to the update site.
      */
     private String[] folders;
+    /**
+     * The name of this path. For folders, this is the last element in the
+     * folders array. For update sites, this is the name of the update site
+     * (present in the update site's xml file), or the string "Loading..." if
+     * the update site's name has not yet been downloaded.
+     */
+    private String name;
+    
     public String getUpdateSite()
     {
         return updateSite;
     }
+    
     public String[] getFolders()
     {
         return folders;
     }
+    
     public void setUpdateSite(String updateSite)
     {
         this.updateSite = updateSite;
     }
+    
     public void setFolders(String[] folders)
     {
         this.folders = folders;
