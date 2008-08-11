@@ -16,6 +16,8 @@ public class Test030
     {
         // This class is for testing out what happens when an XML attribute
         // contains a newline. I'm assuming some sort of entity will be added.
+        //
+        // My guess was correct.
         Document document = new Document();
         Element e = new Element("testelement");
         e
