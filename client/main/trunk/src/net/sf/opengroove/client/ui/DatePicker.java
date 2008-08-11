@@ -1,6 +1,7 @@
 package net.sf.opengroove.client.ui;
 
 import java.awt.Color;
+import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.FontMetrics;
 import java.awt.Graphics;
@@ -47,28 +48,26 @@ public class DatePicker extends JPanel
         }
         
         private ListenerManager<ClockListener> listeners = new ListenerManager<ClockListener>();
-        private int hour = 12;
-        private int minute = 0;
-        private int second = 0;
+        private int time = 0;
         private Hand selected;
         private Hand hovered;
         private int original;
-        private double notchMin = 0.93;
+        private double notchMin = 0.92;
         private Color borderColor = Color.BLACK;
         private Color fillColor = Color.WHITE;
         private Color textColor = Color.BLACK;
         private Color notchColor = Color.DARK_GRAY;
         private Color hourColor = Color.BLUE.darker();
         private double hourLength = 0.5;
-        private int hourWidthAdd = 12;
+        private double hourWidthAdd = 4;
         private double hourWidthMul = 0;
         private Color minuteColor = Color.GREEN.darker();
         private double minuteLength = 0.65;
-        private int minuteWidthAdd = 8;
+        private double minuteWidthAdd = 3;
         private double minuteWidthMul = 0;
         private Color secondColor = Color.RED.darker();
         private double secondLength = 0.75;
-        private int secondWidthAdd = 3;
+        private double secondWidthAdd = 2;
         private int secondWidthMul = 0;
         
         private enum Hand
@@ -76,11 +75,20 @@ public class DatePicker extends JPanel
             HOUR, MINUTE, SECOND
         }
         
-        public Clock(int hour, int minute, int second)
+        /**
+         * Creates a new clock.
+         * 
+         * @param time
+         *            The time that the clock should display, in seconds. 0 is
+         *            12:00. 3600 is 1:00.
+         */
+        public Clock(int time)
         {
-            this.hour = hour;
-            this.minute = minute;
-            this.second = second;
+            this.time = (time % 43200);
+            setMinimumSize(new Dimension(100, 100));
+            setPreferredSize(new Dimension(200, 200));
+            setMaximumSize(new Dimension(Integer.MAX_VALUE,
+                Integer.MAX_VALUE));
             setOpaque(false);
         }
         
@@ -102,10 +110,13 @@ public class DatePicker extends JPanel
                 double iy = ComponentUtils.toY(i
                     * (360 / 12));
                 g.setColor(this.notchColor);
-                g.drawLine((int) (ix * size),
-                    (int) (iy * size),
-                    (int) ((ix * size) * notchMin),
-                    (int) ((iy * size) * notchMin));
+                g
+                    .drawLine(
+                        (int) ((ix * (size / 2)) + size / 2),
+                        (int) ((iy * (size / 2)) + size / 2),
+                        (int) (((ix * (size / 2)) * notchMin) + size / 2),
+                        (int) (((iy * (size / 2)) * notchMin))
+                            + size / 2);
             }
             g.setColor(this.textColor);
             Font font = new Font("Dialog", Font.BOLD, 24);
@@ -124,8 +135,8 @@ public class DatePicker extends JPanel
             drawHand(
                 size,
                 g,
-                (hour % 12) * (360 / 12),
-                (int) hourLength,
+                (int) ((getHours(time)) * (360.0 / 12.0)),
+                (int) (hourLength * (size / 2)),
                 (int) (hourWidthAdd + (hourWidthMul * size)),
                 selected == Hand.HOUR ? hourColor.darker()
                     : ((selected == null && hovered == Hand.HOUR) ? hourColor
@@ -163,6 +174,11 @@ public class DatePicker extends JPanel
             return new Point((int) (ComponentUtils
                 .toX(angle) * length),
                 (int) (ComponentUtils.toY(angle) * length));
+        }
+        
+        private double getHours(int time)
+        {
+            return ((time * 1.0d) % 43200) / (43200.0 / 12);
         }
     }
 }
