@@ -2,9 +2,14 @@ package net.sf.opengroove.client.ui;
 
 import java.awt.Color;
 import java.awt.Graphics;
+import java.awt.Polygon;
+import java.awt.event.ActionListener;
 
 import javax.swing.JComponent;
 import javax.swing.JPanel;
+
+import net.sf.opengroove.client.com.ListenerManager;
+import net.sf.opengroove.client.ui.DatePicker.Clock.ClockListener;
 
 /**
  * A component that allows a user to pick a date, a time, or both.
@@ -21,8 +26,24 @@ public class DatePicker extends JPanel
      * @author Alexander Boyd
      * 
      */
-    private static class Clock extends JComponent
+    public static class Clock extends JComponent
     {
+        public interface ClockListener
+        {
+            public void timeChanged(Clock clock);
+        }
+        
+        public void addClockListener(ClockListener l)
+        {
+            listeners.add(l);
+        }
+        
+        public void removeClockListener(ClockListener l)
+        {
+            listeners.remove(l);
+        }
+        
+        private ListenerManager<ClockListener> listeners = new ListenerManager<ClockListener>();
         private int hour = 12;
         private int minute = 0;
         private int second = 0;
@@ -61,13 +82,46 @@ public class DatePicker extends JPanel
         
         public void paintComponent(Graphics g)
         {
-            int width = getWidth();
-            int height = getHeight();
-            width = height = Math.min(width, height);
-            if (width < 2 || height < 2)
+            
+            int size = Math.min(getWidth(), getHeight());
+            if (size < 4)
                 return;
-            int radius = width / 2;
-            g.setColor()
+            int radius = size / 2;
+            g.setColor(this.fillColor);
+            g.fillOval(1, 1, size - 2, size - 2);
+            g.setColor(this.borderColor);
+            g.drawOval(1, 1, size - 2, size - 2);
+            for (int i = 0; i < 12; i++)
+            {
+                double ix = ComponentUtils.toX(i
+                    * (360 / 12));
+                double iy = ComponentUtils.toY(i
+                    * (360 / 12));
+            }
+            drawHand(
+                g,
+                (hour % 12) * (360 / 12),
+                (int) hourLength,
+                (int) (hourWidthAdd + (hourWidthMul * size)),
+                selected == Hand.HOUR ? hourColor.darker()
+                    : ((selected == null && hovered == Hand.HOUR) ? hourColor
+                        .brighter()
+                        : hourColor));
+        }
+        
+        private void drawHand(Graphics g, int angle,
+            int length, int width, Color color)
+        {
+            Polygon polygon = generatePolygon(angle,
+                length, width);
+            g.setColor(color);
+            g.fillPolygon(polygon);
+        }
+        
+        private Polygon generatePolygon(int angle,
+            int length, int width)
+        {
+            
         }
     }
 }
