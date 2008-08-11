@@ -4,6 +4,7 @@ import java.io.StringWriter;
 
 import org.jdom.Document;
 import org.jdom.Element;
+import org.jdom.output.Format;
 import org.jdom.output.XMLOutputter;
 
 public class Test030
@@ -24,7 +25,9 @@ public class Test030
             .setAttribute("testname",
                 "line 1, ending with rn\r\nline 2, ending with n\nline 3");
         document.addContent(e);
-        XMLOutputter generator = new XMLOutputter();
+        Format format = Format.getPrettyFormat();
+        format.setIndent("    ");
+        XMLOutputter generator = new XMLOutputter(format);
         StringWriter sw = new StringWriter();
         generator.output(document, sw);
         System.out.println(sw.toString());
