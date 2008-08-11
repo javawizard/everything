@@ -1,9 +1,13 @@
 package net.sf.opengroove.client.plugins;
 
+import java.awt.BorderLayout;
 import java.awt.Frame;
+import java.io.File;
 import java.util.ArrayList;
 
 import javax.swing.JDialog;
+import javax.swing.JPanel;
+import javax.swing.border.EmptyBorder;
 
 import net.sf.opengroove.client.ui.Breadcrumb;
 
@@ -27,9 +31,12 @@ public class UpdateSiteBrowser extends JDialog
      * reflect this whenever it changes. This should always have at least one
      * element. If the user is viewing the toplevel (IE they are currently
      * viewing the list of available update sites), then this list should have
-     * only one element, which is an UpdatePath with it's update site and folders set to null, and it's name set to 
+     * only one element, which is an UpdatePath with it's update site and
+     * folders set to null, and it's name set to
      */
     private ArrayList<UpdatePath> trail = new ArrayList<UpdatePath>();
+    private String[] fixedUpdateSites;
+    private File userUpdateSites;
     
     /**
      * Creates a new modal UpdateSiteBrowser.
@@ -44,8 +51,11 @@ public class UpdateSiteBrowser extends JDialog
      *            update site.
      */
     public UpdateSiteBrowser(Frame parent,
-        String[] fixedUpdateSites)
+        String[] fixedUpdateSites, File userUpdateSites)
     {
         super(parent, true);
+        setLayout(new BorderLayout());
+        JPanel contents = new JPanel();
+        contents.setBorder(new EmptyBorder(10, 10, 10, 10));
     }
 }
