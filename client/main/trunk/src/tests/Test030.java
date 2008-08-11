@@ -15,5 +15,6 @@ public class Test030
         // contains a newline. I'm assuming some sort of entity will be added.
         Document document = new Document();
         Element e = new Element("testelement");
+        document.addContent(e);
     }
 }
