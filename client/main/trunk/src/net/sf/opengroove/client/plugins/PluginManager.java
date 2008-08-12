@@ -264,6 +264,7 @@ public class PluginManager
             {
                 e.printStackTrace();
                 failedPlugins.add(file.getName());
+                //
             }
         }
         ArrayList<File> l2 = new ArrayList<File>();
