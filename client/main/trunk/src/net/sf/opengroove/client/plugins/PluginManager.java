@@ -259,6 +259,12 @@ public class PluginManager
                 System.out
                     .println("loading external plugin");
                 JarFile jarfile = new JarFile(file);
+            }
+            catch (Exception e)
+            {
+                e.printStackTrace();
+                failedPlugins.add(file.getName());
+            }
         }
         ArrayList<File> l2 = new ArrayList<File>();
         l2.addAll(Arrays.asList(internalPluginFolder
