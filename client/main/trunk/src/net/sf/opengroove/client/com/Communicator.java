@@ -743,4 +743,21 @@ public class Communicator
             }
         }
     }
+    
+    public boolean isActive()
+    {
+        try
+        {
+            if (socket == null)
+                return false;
+            return (!socket.isClosed())
+                && socket.isConnected();
+        }
+        // Catch an NPE in addition to if/else test for null to solve concurrent
+        // threading issues
+        catch (NullPointerException e)
+        {
+            return false;
+        }
+    }
 }

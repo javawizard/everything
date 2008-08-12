@@ -11,6 +11,12 @@ public class LocalUser implements Serializable
     private String realm;
     private String username;
     private String encPassword;
+    /**
+     * If this is not null, then this is the plain-text value of the user's
+     * password, and they should be automatically logged in upon startup of
+     * OpenGroove
+     */
+    private String autoPassword;
     
     public String getRealm()
     {

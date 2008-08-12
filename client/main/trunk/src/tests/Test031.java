@@ -14,7 +14,7 @@ public class Test031
     {
         // A class to test out the DatePicker class
         JFrame frame = new JFrame();
-        Clock clock = new Clock(12, 0, 0);
+        Clock clock = new Clock(3600);
         frame.getContentPane().add(clock);
         frame.pack();
         frame.show();

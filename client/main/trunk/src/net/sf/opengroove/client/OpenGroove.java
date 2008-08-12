@@ -223,6 +223,8 @@ public class OpenGroove
     
     private static final String RESTART_CLASSPATH = "bin;*;lib/*";
     
+    private static final Hashtable<String, UserContext> currentUsers = new Hashtable<String, UserContext>();
+    
     // FIXME: needs to be localized to the user's operating system and java vm
     private static final String[] restartExecutableString = new String[] {
         "javaw.exe", "-cp", RESTART_CLASSPATH,
@@ -431,9 +433,7 @@ public class OpenGroove
                                 {
                                     Image[] nimages;
                                     int[] ndelays;
-                                    if (ocom
-                                        .getCommunicator()
-                                        .isActive())
+                                    if (anyServerConnections())
                                     {
                                         nimages = notificationTrayImages;
                                         ndelays = notificationTrayDelays;
@@ -474,9 +474,7 @@ public class OpenGroove
                                 else
                                 {
                                     currentNotificationIndex = 0;
-                                    if (ocom
-                                        .getCommunicator()
-                                        .isActive())
+                                    if (anyServerConnections())
                                     {
                                         trayicon
                                             .setImage(trayimage);
@@ -531,6 +529,11 @@ public class OpenGroove
                     }
                 }
             }.start();
+            /*
+             * FIXME: pick up here August 12, 2008, pretty much the rest of the
+             * main method needs to be split into it's own method that runs
+             * per-user, and replaced with the auto-login checks
+             */
             lcom = new LowLevelCommunicator(
                 getConnectHost(), getConnectPort(), true);
             ocom = new OldCommunicator(lcom);
@@ -980,6 +983,19 @@ public class OpenGroove
             Thread.sleep(2000);
             e.printStackTrace();
         }
+    }
+    
+    protected static boolean anyServerConnections()
+    {
+        for (UserContext context : currentUsers.values())
+        {
+            if (context.getCom() != null
+                && context.getCom().getCommunicator() != null
+                && context.getCom().getCommunicator()
+                    .isActive())
+                return true;
+        }
+        return false;
     }
     
     /**
