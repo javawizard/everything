@@ -43,7 +43,9 @@ import javax.swing.border.LineBorder;
 import com.l2fprod.common.swing.JLinkButton;
 
 import net.sf.opengroove.client.OpenGroove;
+import net.sf.opengroove.client.Storage;
 import net.sf.opengroove.client.SubversionFileFilter;
+import net.sf.opengroove.client.UserIds;
 import net.sf.opengroove.client.download.PluginDownloadManager;
 
 /**
@@ -192,8 +194,6 @@ public class PluginManager
     public static final File internalPluginFolder = new File(
         "internalplugins");
     
-    private Map<String, ArrayList<Plugin>> pluginsByType = new HashMap<String, ArrayList<Plugin>>();
-    
     private static Map<String, Plugin> pluginsById = new HashMap<String, Plugin>();
     
     private static ArrayList<String> failedPlugins = new ArrayList<String>();
@@ -215,132 +215,29 @@ public class PluginManager
 
     public static final String PLUGIN_EXTENTION = ".ogvp";
     
-    public static final File UPDATE_DOWNLOAD_FOLDER = new File(
-        OpenGroove.sfile, "pluginupdates");
-    static
-    {
-        UPDATE_DOWNLOAD_FOLDER.mkdirs();
-    }
+    private File pluginFolder;
+    
+    private Storage storage;
+    
+    private String userid;
     
     /**
-     * checks for updates for all of the external plugins currently installed.
-     * if no new updates are found, this method will return. if autoDownload is
-     * false, the user will then be prompted to select the ones to download.
-     * this method will block while the user is doing so. then, after prompting,
-     * the updates selected, or all updates if autoDownload is true, will be
-     * downloaded, one at a time. if showProgress is true, a (non-closeable)
-     * window will pop open, displaying the progress of downloading the updates.
-     * updates will be downloaded to a temporary folder, then moved to
-     * UPDATE_DOWNLOAD_FOLDER. this means that if OpenGroove exits or crashes
-     * while updates are being downloaded, only completed updates will be
-     * installed when OpenGroove starts the next time. after updates have
-     * finished downloading, the progress window is disposed, and if
-     * notifyOnComplete is true, a dialog opens on top of the OpenGroove
-     * launchbar telling the user that updates have been successfully downloaded
-     * and the user should restart OpenGroove to install the updates. right now,
-     * if downloading updates fails because of a problem such as no internet
-     * connection, 404 when the server was contacted, etc. this method will
-     * treat this situation as if the plugin had no new updates available. it
-     * will not show an error message to the user.
+     * Creates a plugin manager for the userid specified. Only one of these
+     * should exist at a time.
      * 
-     * <br/><br/>If a plugin is disabled, no updates will be downloaded for
-     * that plugin.
-     * 
+     * @param userid
      */
-    public static void downloadPluginUpdates(
-        boolean autoDownload, boolean notifyOnComplete)
+    public PluginManager(String userid)
     {
-        HashMap<Plugin, Properties> pluginsWithUpdates = new HashMap<Plugin, Properties>();
-        // map of plugins to be updated and the properties file corresponding to
-        // the
-        // download from the update site
-        for (Plugin p : pluginsById.values())
-        {
-            System.out.println("checking for plugin "
-                + p.getId());
-            if (p.getUpdateSite() == null)
-                continue;
-            try
-            {
-                System.out
-                    .println("plugin has an update site");
-                URL updateUrl = p.getUpdateSite();
-                Properties updateProperties = new Properties();
-                updateProperties.load(updateUrl
-                    .openStream());
-                int localVersionIndex = p.getVersionIndex();
-                int remoteVersionIndex = Integer
-                    .parseInt(updateProperties
-                        .getProperty("versionindex"));
-                if (localVersionIndex >= remoteVersionIndex)// we already have
-                    // the latest
-                    // version
-                    continue;
-                // if we get here then we do not have the latest version so we
-                // should update
-                System.out
-                    .println("plugin needs to be updated");
-                pluginsWithUpdates.put(p, updateProperties);
-            }
-            catch (Exception ex1)
-            {
-                ex1.printStackTrace();
-            }
-        }
-        HashMap<Plugin, Properties> confirmedPlugins;
-        if (autoDownload)
-            confirmedPlugins = pluginsWithUpdates;
-        else
-            confirmedPlugins = askUserAboutDownloading(pluginsWithUpdates);
-        if (confirmedPlugins == null)
-            // the user selected none of the plugins or they clicked cancel
-            return;
-        for (Plugin p : pluginsWithUpdates.keySet())
-        {
-            Properties up = pluginsWithUpdates.get(p);
-        }
+        this.storage = Storage.get(UserIds.toRealm(userid),
+            UserIds.toUsername(userid));
+        pluginFolder = new File(storage.getPluginStore(),
+            "code");
     }
     
-    private static HashMap<Plugin, Properties> askUserAboutDownloading(
-        HashMap<Plugin, Properties> pluginsWithUpdates)
-    {
-        JDialog dialog = new JDialog(OpenGroove.launchbar,
-            true);
-        dialog.getContentPane().setLayout(
-            new BorderLayout());
-        dialog.setTitle("Updates - OpenGroove");
-        JPanel p = new JPanel();
-        p.setLayout(new BoxLayout(p, BoxLayout.Y_AXIS));
-        dialog.getContentPane().add(p, BorderLayout.NORTH);
-        p
-            .add(new JLabel(
-                "<html>The following plugins have updates available. Select<br/>"
-                    + "the ones you want to update, then click OK."));
-        p.add(new JLabel("<html>&nbsp;"));
-        JButton okButton = new JButton();
-        return pluginsWithUpdates;
-    }
+    private boolean pluginsLoaded = false;
     
-    /**
-     * installs any updates that have been downloaded using
-     * downloadPluginUpdates. this cannot be called after loadPlugins has been
-     * called. if there are no plugins to install, this method returns.
-     * 
-     * @param autoInstall
-     * @param showProgress
-     */
-    public static void installPluginUpdates(
-        boolean autoInstall, boolean showProgress)
-    {
-        if (pluginsLoaded)
-            throw new IllegalStateException(
-                "loadPlugins() has already been called, installPluginUpdates "
-                    + "cannot be called after loadPlugins is called");
-    }
-    
-    private static boolean pluginsLoaded = false;
-    
-    public static void loadPlugins()
+    public void loadPlugins()
     {
         pluginsLoaded = true;
         if (!pluginFolder.exists())
@@ -362,147 +259,6 @@ public class PluginManager
                 System.out
                     .println("loading external plugin");
                 JarFile jarfile = new JarFile(file);
-                Manifest manifest = jarfile.getManifest();
-                Attributes attributes = manifest
-                    .getMainAttributes();
-                System.out.println("attributes:");
-                for (Object s : attributes.keySet())
-                {
-                    System.out.println("k:|" + s + "|");
-                    System.out.println(("" + s)
-                        .startsWith("it3-"));
-                    System.out.println(("" + s)
-                        .equals("it3-type"));
-                    System.out
-                        .println("v:|"
-                            + attributes.getValue("" + s)
-                            + "|");
-                }
-                System.out.println("it3-uninstall is "
-                    + attributes.getValue("it3-uninstall"));
-                if (attributes.getValue("it3-uninstall") != null
-                    && attributes.getValue("it3-uninstall")
-                        .equals("true"))
-                {
-                    System.out.println("deleting plugin");
-                    jarfile.close();
-                    System.out.println(file.delete());
-                    continue;
-                }
-                System.out
-                    .println("contains a type attributes");
-                String type = attributes
-                    .getValue("it3-type");
-                if (type == null)
-                {
-                    System.out.println("type was null");
-                    continue;
-                }
-                System.out.println("which is " + type);
-                boolean isDisabled = attributes
-                    .getValue("it3-disabled") != null
-                    && attributes.getValue("it3-disabled")
-                        .trim().toLowerCase()
-                        .equals("true");
-                System.out.println("this plugin "
-                    + (isDisabled ? "IS" : "is NOT")
-                    + " disabled.");
-                Class cz;
-                if (isDisabled)
-                {
-                    cz = null;
-                }
-                else
-                {
-                    String implClass = attributes
-                        .getValue("it3-class");
-                    URLClassLoader loader = new URLClassLoader(
-                        new URL[] { file.getAbsoluteFile()
-                            .toURI().toURL() },
-                        PluginManager.class
-                            .getClassLoader());
-                    cz = Class.forName(implClass, true,
-                        loader);
-                }
-                Plugin plugin = new Plugin(cz);
-                plugin.setId(file.getName().substring(
-                    0,
-                    file.getName().length()
-                        - PLUGIN_EXTENTION.length()));
-                plugin.setImplClass(cz);
-                plugin.setInternal(false);
-                plugin.setFile(file);
-                String updateSite = attributes
-                    .getValue("it3-update-site");
-                if (updateSite != null)
-                    plugin
-                        .setUpdateSite(new URL(updateSite));
-                String versionIndex = attributes
-                    .getValue("it3-version-index");
-                if (versionIndex == null
-                    && updateSite != null)
-                    throw new RuntimeException(
-                        "The plugin declares an update site but not a version index");
-                else if (versionIndex != null)
-                    plugin.setVersionIndex(Integer
-                        .parseInt(versionIndex));
-                String largeIconPath = attributes
-                    .getValue("it3-large-icon");
-                String mediumIconPath = attributes
-                    .getValue("it3-medium-icon");
-                String smallIconPath = attributes
-                    .getValue("it3-small-icon");
-                if (largeIconPath != null
-                    && mediumIconPath != null
-                    && smallIconPath != null)
-                {
-                    plugin.setLargeImage(ImageIO
-                        .read(jarfile
-                            .getInputStream(jarfile
-                                .getEntry(largeIconPath))));
-                    plugin
-                        .setMediumImage(ImageIO
-                            .read(jarfile
-                                .getInputStream(jarfile
-                                    .getEntry(mediumIconPath))));
-                    plugin.setSmallImage(ImageIO
-                        .read(jarfile
-                            .getInputStream(jarfile
-                                .getEntry(smallIconPath))));
-                }
-                Properties p = new Properties();
-                for (Object oKey : attributes.keySet())
-                {
-                    Name key = (Name) oKey;
-                    if (!key.toString().startsWith("it3-"))
-                        continue;
-                    p.setProperty(key.toString().substring(
-                        4), attributes.getValue(key));
-                }
-                plugin.setMetadata(p);
-                plugin.setType(type);
-                if (isDisabled)
-                {
-                    disabledPlugins.add(plugin);
-                }
-                else
-                {
-                    pluginsById.put(plugin.getId(), plugin);
-                    ArrayList<Plugin> l = pluginsByType
-                        .get(type);
-                    if (l == null)
-                    {
-                        l = new ArrayList<Plugin>();
-                        pluginsByType.put(type, l);
-                    }
-                    l.add(plugin);
-                }
-            }
-            catch (Exception e)
-            {
-                e.printStackTrace();
-                failedPlugins.add(file.getName());
-            }
         }
         ArrayList<File> l2 = new ArrayList<File>();
         l2.addAll(Arrays.asList(internalPluginFolder
