@@ -56,7 +56,7 @@ import net.sf.opengroove.client.download.PluginDownloadManager;
  * OpenGroove itself.
  * 
  * while OpenGroove is running, updates for plugins will be checked once every
- * hour, or when the user comes online and it has been an hour or more before
+ * day, or when the user comes online and it has been an hour or more before
  * last checking for plugins. in the future, the user will be allowed to change
  * this setting. anyway, the user can also manually initiate a check for
  * updates. when updates are detected, the user is presented with the list of
@@ -192,7 +192,7 @@ public class PluginManager
     public static final File internalPluginFolder = new File(
         "internalplugins");
     
-    private static Map<String, ArrayList<Plugin>> pluginsByType = new HashMap<String, ArrayList<Plugin>>();
+    private Map<String, ArrayList<Plugin>> pluginsByType = new HashMap<String, ArrayList<Plugin>>();
     
     private static Map<String, Plugin> pluginsById = new HashMap<String, Plugin>();
     
@@ -213,7 +213,7 @@ public class PluginManager
      * e.printStackTrace(); failedPlugins.add(file.getName()); } }
      */
 
-    public static final String PLUGIN_EXTENTION = ".jar";
+    public static final String PLUGIN_EXTENTION = ".ogvp";
     
     public static final File UPDATE_DOWNLOAD_FOLDER = new File(
         OpenGroove.sfile, "pluginupdates");
