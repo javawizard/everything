@@ -239,6 +239,16 @@ public class PluginManager
     
     public void loadPlugins()
     {
+        /*
+         * Here's what needs to happen in this order: We load the list of
+         * plugins and parse each plugin's information. Then, we instantiate
+         * each plugin's supervisor and initialize it. We then instantiate all
+         * of the extension points and register them to their plugins. Once this
+         * is done, we create all of the extensions and register them to their
+         * plugins and to their extension points. (TODO: register to supervisor
+         * or extension points first?) Then, once this is complete, we tell the
+         * supervisors that their plugins have finished loading.
+         */
         pluginsLoaded = true;
         if (!pluginFolder.exists())
             pluginFolder.mkdirs();
