@@ -248,7 +248,6 @@ public class PluginManager
                 
                 public boolean accept(File pathname)
                 {
-                    // TODO Auto-generated method stub
                     return pathname.getName().endsWith(
                         PLUGIN_EXTENTION);
                 }
