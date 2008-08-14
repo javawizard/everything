@@ -239,7 +239,7 @@ public class PluginManager
     
     public synchronized void loadPlugins()
     {
-        if (pluginsLoaded)//already loaded
+        if (pluginsLoaded)// already loaded
             return;
         /*
          * Here's what needs to happen in this order: We load the list of
@@ -251,6 +251,9 @@ public class PluginManager
          * or extension points first?) Then, once this is complete, we tell the
          * supervisors that their plugins have finished loading.
          * 
+         * Plugin Infos should be provided via an ExtensionInfo to every
+         * extension point, off of which plugin names, descrtiptions, and icons
+         * can be retrieved.
          */
         pluginsLoaded = true;
         if (!pluginFolder.exists())
