@@ -295,6 +295,7 @@ public class PluginManager
          * built on top of OpenGroove, and use OpenGroove's communications to
          * sync it's data.
          */
+        
     }
     
     public static Plugin getById(String id)
