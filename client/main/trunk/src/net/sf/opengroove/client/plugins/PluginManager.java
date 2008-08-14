@@ -237,8 +237,10 @@ public class PluginManager
     
     private boolean pluginsLoaded = false;
     
-    public void loadPlugins()
+    public synchronized void loadPlugins()
     {
+        if (pluginsLoaded)//already loaded
+            return;
         /*
          * Here's what needs to happen in this order: We load the list of
          * plugins and parse each plugin's information. Then, we instantiate
