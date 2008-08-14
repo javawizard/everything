@@ -316,48 +316,6 @@ public class PluginManager
         return pluginsById.values().toArray(new Plugin[0]);
     }
     
-    public PluginUpdateSite downloadUpdateSite(
-        URL updateSiteUrl)
-    {
-        if (updateSiteUrl == null)
-            return null;
-        try
-        {
-            InputStream in = updateSiteUrl.openStream();
-            Properties properties = new Properties();
-            properties.load(in);
-            PluginUpdateSite site = new PluginUpdateSite();
-            if (properties.getProperty("description") != null)
-                site.setDescription(properties
-                    .getProperty("description"));
-            if (properties.getProperty("name") != null)
-                site
-                    .setName(properties.getProperty("name"));
-            if (properties.getProperty("url") != null)
-                site.setUrl(new URL(properties
-                    .getProperty("url")));
-            if (properties.getProperty("versionindex") != null)
-                site.setVersionIndex(Integer
-                    .parseInt(properties
-                        .getProperty("versionindex")));
-            if (properties.getProperty("versionstring") != null)
-                site.setVersionString(properties
-                    .getProperty("versionstring"));
-            if (properties.getProperty("websiteurl") == null)
-                properties.setProperty("websiteurl",
-                    properties.getProperty("websiteUrl"));
-            if (properties.getProperty("websiteurl") != null)
-                site.setWebsiteUrl(new URL(properties
-                    .getProperty("websiteurl")));
-            return site;
-        }
-        catch (Exception ex1)
-        {
-            ex1.printStackTrace();
-            return null;
-        }
-    }
-    
     public static void showManageInstalledPluginsDialog(
         final JFrame parent)
     {
