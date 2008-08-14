@@ -214,10 +214,23 @@ public class PluginManager
      */
 
     public static final String PLUGIN_EXTENTION = ".ogvp";
-    
+    /**
+     * The folder that holds all of the .ogvp files for the user's installed
+     * plugins.
+     */
     private File pluginFolder;
-    
+    /**
+     * The folder that holds the configuration for all of the user's installed
+     * plugins. It contains one folder for each installed plugin (including
+     * internal plugins), who's name is the plugin's id. For example, if
+     * pluginFolder contains 2 files, com.example.myplugin.ogvp and
+     * com.example.anotherplugin.ogvp, and there are 2 files present in
+     * internalFolder, i_test.xml and i_another.xml, then dataFolder will
+     * contain the folders com.example.myplugin, com.example.anotherplugin,
+     * i_test, and i_another.
+     */
     private File dataFolder;
+    private File internalFolder;
     
     private Storage storage;
     
