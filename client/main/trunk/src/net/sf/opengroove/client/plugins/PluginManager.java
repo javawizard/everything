@@ -230,6 +230,11 @@ public class PluginManager
      * i_test, and i_another.
      */
     private File dataFolder;
+    /**
+     * The folder that contains the plugin files for all of the internal
+     * plugins. There should be one file within this folder for each plugin. The
+     * file's name is the plugin's id plus .xml .
+     */
     private File internalFolder;
     
     private Storage storage;
