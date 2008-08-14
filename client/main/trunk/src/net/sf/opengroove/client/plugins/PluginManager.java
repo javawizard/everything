@@ -250,6 +250,7 @@ public class PluginManager
          * plugins and to their extension points. (TODO: register to supervisor
          * or extension points first?) Then, once this is complete, we tell the
          * supervisors that their plugins have finished loading.
+         * 
          */
         pluginsLoaded = true;
         if (!pluginFolder.exists())
