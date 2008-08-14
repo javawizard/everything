@@ -302,15 +302,6 @@ public class PluginManager
         return pluginsById.get(id);
     }
     
-    public PluginUpdateSite downloadUpdateSite(Plugin plugin)
-    {
-        if (plugin == null)
-            return null;
-        if (plugin.getUpdateSite() == null)
-            return null;
-        return downloadUpdateSite(plugin.getUpdateSite());
-    }
-    
     public static Plugin[] getAllPlugins()
     {
         return pluginsById.values().toArray(new Plugin[0]);
