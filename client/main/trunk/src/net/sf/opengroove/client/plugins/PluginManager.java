@@ -255,7 +255,7 @@ public class PluginManager
          * extension point, off of which plugin names, descrtiptions, and icons
          * can be retrieved.
          * 
-         * When the plugin manager is creatd, it should be passed a user
+         * When the plugin manager is created, it should be passed a user
          * context. It can get info about the user for it's plugins that way.
          * Messaging and contact retrival, however, should be implemented as
          * extension points themselves, as well as help. A plugin could register
@@ -267,7 +267,11 @@ public class PluginManager
          * only provides the server connectivity and the wizard for establishing
          * an account, and everything else (such as the tray icon, the
          * launchbar, workspaces, contacts, the workspace tab in the launchbar,
-         * the contacts tab, etc) would be a plugin.
+         * the contacts tab, etc) would be a plugin. This would further allow
+         * such applications as an Evaluation Portal (another project I'm
+         * working on, see http://evaluationportal.com) laptop surveyer to be
+         * built on top of OpenGroove, and use OpenGroove's communications to
+         * sync it's data.
          */
         pluginsLoaded = true;
         if (!pluginFolder.exists())
