@@ -217,13 +217,15 @@ public class PluginManager
     
     private File pluginFolder;
     
+    private File dataFolder;
+    
     private Storage storage;
     
     private String userid;
     
     /**
-     * Creates a plugin manager for the userid specified. Only one of these
-     * should exist at a time.
+     * Creates a plugin manager for the user context specified. Only one of
+     * these should exist at a time.
      * 
      * @param userid
      */
@@ -273,90 +275,6 @@ public class PluginManager
          * built on top of OpenGroove, and use OpenGroove's communications to
          * sync it's data.
          */
-        pluginsLoaded = true;
-        if (!pluginFolder.exists())
-            pluginFolder.mkdirs();
-        for (File file : pluginFolder
-            .listFiles(new FileFilter()
-            {
-                
-                public boolean accept(File pathname)
-                {
-                    return pathname.getName().endsWith(
-                        PLUGIN_EXTENTION);
-                }
-            }))
-        {
-            try
-            {
-                System.out
-                    .println("loading external plugin");
-                JarFile jarfile = new JarFile(file);
-            }
-            catch (Exception e)
-            {
-                e.printStackTrace();
-                failedPlugins.add(file.getName());
-                //
-            }
-        }
-        ArrayList<File> l2 = new ArrayList<File>();
-        l2.addAll(Arrays.asList(internalPluginFolder
-            .listFiles(new SubversionFileFilter())));
-        if (new File("devplugins").exists())
-            l2.addAll(Arrays.asList(new File("devplugins")
-                .listFiles(new SubversionFileFilter())));
-        for (File file : l2.toArray(new File[0]))
-        {
-            try
-            {
-                Properties p = new Properties();
-                p.load(new FileInputStream(file));
-                String type = p.getProperty("type");
-                String implClass = p.getProperty("class");
-                p.remove("type");
-                p.remove("class");
-                Class cz = Class.forName(implClass);
-                Plugin plugin = new Plugin(cz);
-                plugin.setId(file.getName());
-                plugin.setImplClass(cz);
-                plugin.setMetadata(p);
-                plugin.setType(type);
-                plugin.setInternal(true);
-                String largeIconPath = p
-                    .getProperty("largeIcon");
-                String mediumIconPath = p
-                    .getProperty("mediumIcon");
-                String smallIconPath = p
-                    .getProperty("smallIcon");
-                if (largeIconPath != null
-                    && mediumIconPath != null
-                    && smallIconPath != null)
-                {
-                    plugin.setLargeImage(ImageIO
-                        .read(new File(largeIconPath)));
-                    plugin.setMediumImage(ImageIO
-                        .read(new File(mediumIconPath)));
-                    plugin.setSmallImage(ImageIO
-                        .read(new File(smallIconPath)));
-                }
-                pluginsById.put(plugin.getId(), plugin);
-                ArrayList<Plugin> l = pluginsByType
-                    .get(type);
-                if (l == null)
-                {
-                    l = new ArrayList<Plugin>();
-                    pluginsByType.put(type, l);
-                }
-                l.add(plugin);
-            }
-            catch (Exception e)
-            {
-                e.printStackTrace();
-                failedPlugins.add(file.getName());
-            }
-        }
-        
     }
     
     public static Plugin getById(String id)
