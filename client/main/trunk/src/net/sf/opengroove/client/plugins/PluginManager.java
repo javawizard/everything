@@ -254,6 +254,20 @@ public class PluginManager
          * Plugin Infos should be provided via an ExtensionInfo to every
          * extension point, off of which plugin names, descrtiptions, and icons
          * can be retrieved.
+         * 
+         * When the plugin manager is creatd, it should be passed a user
+         * context. It can get info about the user for it's plugins that way.
+         * Messaging and contact retrival, however, should be implemented as
+         * extension points themselves, as well as help. A plugin could register
+         * an extension point to those services and be provided with a context
+         * object that it could use to send messages to instances of itself on
+         * another computer. At some future date, this could allow for the
+         * workspace functionality, and maybe even the contact functionality, to
+         * be split out into their own plugins, so that opengroove by itself
+         * only provides the server connectivity and the wizard for establishing
+         * an account, and everything else (such as the tray icon, the
+         * launchbar, workspaces, contacts, the workspace tab in the launchbar,
+         * the contacts tab, etc) would be a plugin.
          */
         pluginsLoaded = true;
         if (!pluginFolder.exists())
