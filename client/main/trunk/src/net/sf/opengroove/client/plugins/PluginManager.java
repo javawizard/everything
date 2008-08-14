@@ -45,6 +45,7 @@ import com.l2fprod.common.swing.JLinkButton;
 import net.sf.opengroove.client.OpenGroove;
 import net.sf.opengroove.client.Storage;
 import net.sf.opengroove.client.SubversionFileFilter;
+import net.sf.opengroove.client.UserContext;
 import net.sf.opengroove.client.UserIds;
 import net.sf.opengroove.client.download.PluginDownloadManager;
 
@@ -239,7 +240,7 @@ public class PluginManager
     
     private Storage storage;
     
-    private String userid;
+    private UserContext userContext;
     
     /**
      * Creates a plugin manager for the user context specified. Only one of
@@ -247,10 +248,11 @@ public class PluginManager
      * 
      * @param userid
      */
-    public PluginManager(String userid)
+    public PluginManager(UserContext userContext)
     {
-        this.storage = Storage.get(UserIds.toRealm(userid),
-            UserIds.toUsername(userid));
+        this.userContext = userContext;
+        this.storage = Storage.get(userContext.getRealm(),
+            userContext.getUsername());
         pluginFolder = new File(storage.getPluginStore(),
             "code");
     }
@@ -298,13 +300,6 @@ public class PluginManager
     public static Plugin getById(String id)
     {
         return pluginsById.get(id);
-    }
-    
-    public static ArrayList<Plugin> getByType(String type)
-    {
-        if (pluginsByType.get(type) == null)
-            return new ArrayList<Plugin>();
-        return pluginsByType.get(type);
     }
     
     public PluginUpdateSite downloadUpdateSite(Plugin plugin)
