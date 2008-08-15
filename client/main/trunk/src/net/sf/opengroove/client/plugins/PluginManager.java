@@ -567,7 +567,9 @@ public class PluginManager
             Element[] extensionNodes = (Element[]) root
                 .getChildren("extension").toArray(
                     new Element[0]);
-            Element[] dependencyNodes = (Element[]) root.getChildren("dependency")
+            Element[] dependencyNodes = (Element[]) root
+                .getChildren("dependency").toArray(
+                    new Element[0]);
         }
         catch (IOException e)
         {
