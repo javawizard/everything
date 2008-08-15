@@ -379,6 +379,10 @@ public class PluginManager
         PluginModel[] models = pluginModelList
             .toArray(new PluginModel[0]);
         Plugin[] plugins = new Plugin[models.length];
+        for(int i = 0; i < plugins.length; i++)
+        {
+            
+        }
     }
     
     public static Plugin getById(String id)
