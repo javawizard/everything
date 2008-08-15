@@ -208,11 +208,7 @@ public class PluginManager
     public static final File internalPluginFolder = new File(
         "internalplugins");
     
-    private static Map<String, Plugin> pluginsById = new HashMap<String, Plugin>();
-    
     private ArrayList<PluginModel> failedPlugins = new ArrayList<PluginModel>();
-    
-    private static ArrayList<Plugin> disabledPlugins = new ArrayList<Plugin>();
     
     /*
      * for (File file : pluginFolder.listFiles()) { try { Properties p = new
@@ -380,6 +376,9 @@ public class PluginManager
         // Ok, we've loaded all of the models. Now we create plugin objects for
         // each model, attach the model to the plugin object, and instantiate
         // it's supervisor.
+        PluginModel[] models = pluginModelList
+            .toArray(new PluginModel[0]);
+        Plugin[] plugins = new Plugin[models.length];
     }
     
     public static Plugin getById(String id)
