@@ -12,8 +12,12 @@ import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileFilter;
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.FilenameFilter;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.PrintWriter;
+import java.io.StringWriter;
 import java.net.URL;
 import java.net.URLClassLoader;
 import java.util.ArrayList;
@@ -206,7 +210,7 @@ public class PluginManager
     
     private static Map<String, Plugin> pluginsById = new HashMap<String, Plugin>();
     
-    private static ArrayList<String> failedPlugins = new ArrayList<String>();
+    private ArrayList<PluginModel> failedPlugins = new ArrayList<PluginModel>();
     
     private static ArrayList<Plugin> disabledPlugins = new ArrayList<Plugin>();
     
@@ -222,8 +226,6 @@ public class PluginManager
      * pluginsByType.put(type, l); } l.add(plugin); } catch (Exception e) {
      * e.printStackTrace(); failedPlugins.add(file.getName()); } }
      */
-
-    public static final String PLUGIN_EXTENTION = ".ogvp";
     /**
      * The folder that holds all of the .ogvp files for the user's installed
      * plugins.
@@ -263,6 +265,7 @@ public class PluginManager
     private boolean pluginsLoaded = false;
     
     public synchronized void loadPlugins()
+        throws FileNotFoundException, IOException
     {
         if (pluginsLoaded)// already loaded
             return;
@@ -299,11 +302,84 @@ public class PluginManager
          * sync it's data.
          */
         ArrayList<PluginModel> pluginModelList = new ArrayList<PluginModel>();
-        for (File file : internal)
-            for (File file : pluginFolder.listFiles())
+        for (File file : internalPluginFolder
+            .listFiles(new FilenameFilter()
             {
                 
+                @Override
+                public boolean accept(File dir, String name)
+                {
+                    return name.endsWith(".xml");
+                }
+            }))
+        {
+            PluginModel model = new PluginModel();
+            model.setConfigFile(file);
+            model.setId(file.getName()
+                .substring(
+                    0,
+                    file.getName().length()
+                        - (".xml".length())));
+            model.setInternal(true);
+            try
+            {
+                loadModel(new FileInputStream(file), model);
+                pluginModelList.add(model);
             }
+            catch (Exception e)
+            {
+                StringWriter sw = new StringWriter();
+                e
+                    .printStackTrace(new PrintWriter(sw,
+                        true));
+                model.setFailureReason(sw.toString());
+                failedPlugins.add(model);
+            }
+        }
+        for (File file : pluginFolder
+            .listFiles(new FilenameFilter()
+            {
+                
+                @Override
+                public boolean accept(File dir, String name)
+                {
+                    return name.endsWith(".ogvp");
+                }
+            }))
+        {
+            PluginModel model = new PluginModel();
+            JarFile jarfile = new JarFile(file);
+            model.setJarFile(jarfile);
+            model.setJarSource(file);
+            model.setId(file.getName().substring(
+                0,
+                file.getName().length()
+                    - (".ogvp".length())));
+            if (model.getId().startsWith("i_"))
+                throw new RuntimeException(
+                    "The plugin's id starts with i_, "
+                        + "but it is not an internal "
+                        + "plugin. This is not allowed.");
+            model.setInternal(false);
+            try
+            {
+                loadModel(jarfile.getInputStream(jarfile
+                    .getEntry("plugin.xml")), model);
+                pluginModelList.add(model);
+            }
+            catch (Exception e)
+            {
+                StringWriter sw = new StringWriter();
+                e
+                    .printStackTrace(new PrintWriter(sw,
+                        true));
+                model.setFailureReason(sw.toString());
+                failedPlugins.add(model);
+            }
+        }
+        // Ok, we've loaded all of the models. Now we create plugin objects for
+        // each model, attach the model to the plugin object, and instantiate
+        // it's supervisor.
     }
     
     public static Plugin getById(String id)
@@ -523,8 +599,8 @@ public class PluginManager
         return pluginPanel;
     }
     
-    private PluginModel loadModel(InputStream file)
-        throws IOException
+    private void loadModel(InputStream file,
+        PluginModel model) throws IOException
     {
         try
         {
@@ -534,7 +610,6 @@ public class PluginManager
                 throw new IOException(
                     "The root of the plugin descriptor "
                         + "was not a <plugin> tag");
-            PluginModel model = new PluginModel();
             String name = root.getAttributeValue("name");
             String description = root
                 .getAttributeValue("description");
@@ -674,7 +749,6 @@ public class PluginManager
             model.setExtensions(extensions);
             model.setIcons(icons);
             model.setPermissions(permissions);
-            return model;
         }
         catch (IOException e)
         {

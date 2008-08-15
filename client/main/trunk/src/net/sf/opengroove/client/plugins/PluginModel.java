@@ -1,6 +1,7 @@
 package net.sf.opengroove.client.plugins;
 
 import java.io.File;
+import java.util.jar.JarFile;
 
 public class PluginModel
 {
@@ -24,11 +25,13 @@ public class PluginModel
     private String supervisorClass;
     private String updateSite;
     private Version version;
+    private File jarSource;
     private DependencyModel[] dependencies;
     private IconModel[] icons;
     private PermissionModel[] permissions;
     private ExtensionModel[] extensions;
     private ExtensionPointModel[] extensionPoints;
+    private String failureReason;
     /**
      * True if this is an internal plugin, false if it's an external plugin
      */
@@ -36,7 +39,7 @@ public class PluginModel
     /**
      * The plugin's jar file location, null for internal plugins
      */
-    private File jarFile;
+    private JarFile jarFile;
     /**
      * The plugin's config file location, null for external plugins
      */
@@ -82,7 +85,7 @@ public class PluginModel
         return internal;
     }
     
-    public File getJarFile()
+    public JarFile getJarFile()
     {
         return jarFile;
     }
@@ -132,7 +135,7 @@ public class PluginModel
         this.internal = internal;
     }
     
-    public void setJarFile(File jarFile)
+    public void setJarFile(JarFile jarFile)
     {
         this.jarFile = jarFile;
     }
@@ -182,14 +185,35 @@ public class PluginModel
     {
         this.extensionPoints = extensionPoints;
     }
-
+    
     public DependencyModel[] getDependencies()
     {
         return dependencies;
     }
-
-    public void setDependencies(DependencyModel[] dependencies)
+    
+    public void setDependencies(
+        DependencyModel[] dependencies)
     {
         this.dependencies = dependencies;
+    }
+    
+    public File getJarSource()
+    {
+        return jarSource;
+    }
+    
+    public void setJarSource(File jarSource)
+    {
+        this.jarSource = jarSource;
+    }
+    
+    public String getFailureReason()
+    {
+        return failureReason;
+    }
+    
+    public void setFailureReason(String failureReason)
+    {
+        this.failureReason = failureReason;
     }
 }
