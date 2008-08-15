@@ -592,12 +592,89 @@ public class PluginManager
             Element[] extensionPointNodes = (Element[]) root
                 .getChildren("extension-point").toArray(
                     new Element[0]);
+            ExtensionPointModel[] extensionPoints = new ExtensionPointModel[extensionPointNodes.length];
+            for (int i = 0; i < extensionPoints.length; i++)
+            {
+                extensionPoints[i] = new ExtensionPointModel();
+                extensionPoints[i]
+                    .setId(extensionPointNodes[i]
+                        .getAttributeValue("id"));
+                extensionPoints[i]
+                    .setExtensionInterface(extensionPointNodes[i]
+                        .getAttributeValue("interface"));
+                extensionPoints[i]
+                    .setExtensionPointClass(extensionPointNodes[i]
+                        .getAttributeValue("class"));
+            }
             Element[] extensionNodes = (Element[]) root
                 .getChildren("extension").toArray(
                     new Element[0]);
+            ExtensionModel[] extensions = new ExtensionModel[extensionNodes.length];
+            for (int i = 0; i < extensionNodes.length; i++)
+            {
+                extensions[i] = new ExtensionModel();
+                extensions[i].setId(extensionNodes[i]
+                    .getAttributeValue("id"));
+                extensions[i].setPlugin(extensionNodes[i]
+                    .getAttributeValue("plugin"));
+                extensions[i]
+                    .setExtensionClass(extensionNodes[i]
+                        .getAttributeValue("class"));
+                extensions[i].setPoint(extensionNodes[i]
+                    .getAttributeValue("point"));
+                Element[] properties = (Element[]) extensionNodes[i]
+                    .getChildren("property").toArray(
+                        new Element[0]);
+                for (int p = 0; p < properties.length; p++)
+                {
+                    extensions[i]
+                        .getExtensionPointProperties()
+                        .put(
+                            properties[p]
+                                .getAttributeValue("name"),
+                            properties[p]
+                                .getAttributeValue("value"));
+                }
+                Element[] extensionProperties = (Element[]) extensionNodes[i]
+                    .getChildren("extension-property")
+                    .toArray(new Element[0]);
+                for (int p = 0; p < extensionProperties.length; p++)
+                {
+                    extensions[i]
+                        .getExtensionProperties()
+                        .put(
+                            extensionProperties[p]
+                                .getAttributeValue("name"),
+                            extensionProperties[p]
+                                .getAttributeValue("value"));
+                }
+            }
             Element[] dependencyNodes = (Element[]) root
                 .getChildren("dependency").toArray(
                     new Element[0]);
+            DependencyModel[] dependencies = new DependencyModel[dependencyNodes.length];
+            for (int i = 0; i < dependencies.length; i++)
+            {
+                dependencies[i] = new DependencyModel();
+                dependencies[i]
+                    .setPlugin(dependencyNodes[i]
+                        .getAttributeValue("plugin"));
+                dependencies[i]
+                    .setDetails(dependencyNodes[i]
+                        .getAttributeValue("details"));
+                dependencies[i]
+                    .setRequired(dependencyNodes[i]
+                        .getAttributeValue("required") != null);
+                dependencies[i]
+                    .setUpdateSite(dependencyNodes[i]
+                        .getAttributeValue("update-site"));
+            }
+            model.setDependencies(dependencies);
+            model.setExtensionPoints(extensionPoints);
+            model.setExtensions(extensions);
+            model.setIcons(icons);
+            model.setPermissions(permissions);
+            return model;
         }
         catch (IOException e)
         {
