@@ -24,6 +24,7 @@ public class PluginModel
     private String supervisorClass;
     private String updateSite;
     private Version version;
+    private DependencyModel[] dependencies;
     private IconModel[] icons;
     private PermissionModel[] permissions;
     private ExtensionModel[] extensions;
@@ -180,5 +181,15 @@ public class PluginModel
         ExtensionPointModel[] extensionPoints)
     {
         this.extensionPoints = extensionPoints;
+    }
+
+    public DependencyModel[] getDependencies()
+    {
+        return dependencies;
+    }
+
+    public void setDependencies(DependencyModel[] dependencies)
+    {
+        this.dependencies = dependencies;
     }
 }

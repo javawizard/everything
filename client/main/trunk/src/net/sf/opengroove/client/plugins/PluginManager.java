@@ -558,9 +558,37 @@ public class PluginManager
             Element[] permissionNodes = (Element[]) root
                 .getChildren("permission").toArray(
                     new Element[0]);
+            PermissionModel[] permissions = new PermissionModel[permissionNodes.length];
+            for (int i = 0; i < permissions.length; i++)
+            {
+                permissions[i] = new PermissionModel();
+                permissions[i].setName(permissionNodes[i]
+                    .getAttributeValue("name"));
+                permissions[i]
+                    .setDescription(permissionNodes[i]
+                        .getAttributeValue("description"));
+                permissions[i]
+                    .setRequired(permissionNodes[i]
+                        .getAttributeValue("required") != null);
+            }
             Element[] iconNodes = (Element[]) root
                 .getChildren("icon")
                 .toArray(new Element[0]);
+            IconModel[] icons = new IconModel[iconNodes.length];
+            for (int i = 0; i < icons.length; i++)
+            {
+                icons[i] = new IconModel();
+                icons[i].setName(iconNodes[i]
+                    .getAttributeValue("name"));
+                icons[i].setLocation(iconNodes[i]
+                    .getAttributeValue("location"));
+                icons[i].setWidth(Integer
+                    .parseInt(iconNodes[i]
+                        .getAttributeValue("width")));
+                icons[i].setHeight(Integer
+                    .parseInt(iconNodes[i]
+                        .getAttributeValue("height")));
+            }
             Element[] extensionPointNodes = (Element[]) root
                 .getChildren("extension-point").toArray(
                     new Element[0]);
