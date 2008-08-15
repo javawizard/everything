@@ -12,6 +12,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileFilter;
 import java.io.FileInputStream;
+import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
 import java.net.URLClassLoader;
@@ -39,6 +40,10 @@ import javax.swing.border.CompoundBorder;
 import javax.swing.border.EmptyBorder;
 import javax.swing.border.EtchedBorder;
 import javax.swing.border.LineBorder;
+
+import org.jdom.Document;
+import org.jdom.Element;
+import org.jdom.input.SAXBuilder;
 
 import com.l2fprod.common.swing.JLinkButton;
 
@@ -191,7 +196,11 @@ import net.sf.opengroove.client.download.PluginDownloadManager;
  */
 public class PluginManager
 {
-    
+    /**
+     * The folder that contains the plugin files for all of the internal
+     * plugins. There should be one file within this folder for each plugin. The
+     * file's name is the plugin's id plus .xml .
+     */
     public static final File internalPluginFolder = new File(
         "internalplugins");
     
@@ -231,12 +240,6 @@ public class PluginManager
      * i_test, and i_another.
      */
     private File dataFolder;
-    /**
-     * The folder that contains the plugin files for all of the internal
-     * plugins. There should be one file within this folder for each plugin. The
-     * file's name is the plugin's id plus .xml .
-     */
-    private File internalFolder;
     
     private Storage storage;
     
@@ -295,7 +298,12 @@ public class PluginManager
          * built on top of OpenGroove, and use OpenGroove's communications to
          * sync it's data.
          */
-        
+        ArrayList<PluginModel> pluginModelList = new ArrayList<PluginModel>();
+        for (File file : internal)
+            for (File file : pluginFolder.listFiles())
+            {
+                
+            }
     }
     
     public static Plugin getById(String id)
@@ -513,5 +521,68 @@ public class PluginManager
                 new LineBorder(Color.GRAY)),
             new EmptyBorder(5, 5, 5, 5)));
         return pluginPanel;
+    }
+    
+    private PluginModel loadModel(InputStream file)
+        throws IOException
+    {
+        try
+        {
+            Document doc = new SAXBuilder().build(file);
+            Element root = doc.getRootElement();
+            if (!root.getName().equals("plugin"))
+                throw new IOException(
+                    "The root of the plugin descriptor "
+                        + "was not a <plugin> tag");
+            PluginModel model = new PluginModel();
+            String name = root.getAttributeValue("name");
+            String description = root
+                .getAttributeValue("description");
+            String license = root
+                .getAttributeValue("license");
+            String supervisorClass = root
+                .getAttributeValue("class");
+            String updateSite = root
+                .getAttributeValue("update-site");
+            String versionString = root
+                .getAttributeValue("version");
+            checkPresent(name);
+            checkPresent(supervisorClass);
+            checkPresent(versionString);
+            model.setName(name);
+            model.setDescription(description);
+            model.setLicense(license);
+            model.setSupervisorClass(supervisorClass);
+            model.setUpdateSite(updateSite);
+            model.setVersion(new Version(versionString));
+            Element[] permissionNodes = (Element[]) root
+                .getChildren("permission").toArray(
+                    new Element[0]);
+            Element[] iconNodes = (Element[]) root
+                .getChildren("icon")
+                .toArray(new Element[0]);
+            Element[] extensionPointNodes = (Element[]) root
+                .getChildren("extension-point").toArray(
+                    new Element[0]);
+            Element[] extensionNodes = (Element[]) root
+                .getChildren("extension").toArray(
+                    new Element[0]);
+            Element[] dependencyNodes = (Element[]) root.getChildren("dependency")
+        }
+        catch (IOException e)
+        {
+            throw e;
+        }
+        catch (Exception e)
+        {
+            throw new IOException(e);
+        }
+    }
+    
+    private void checkPresent(String versionString)
+    {
+        if (versionString == null)
+            throw new IllegalArgumentException(
+                "Invalid null encountered");
     }
 }
