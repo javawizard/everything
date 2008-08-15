@@ -24,6 +24,10 @@ public class PluginModel
     private String supervisorClass;
     private String updateSite;
     private Version version;
+    private IconModel[] icons;
+    private PermissionModel[] permissions;
+    private ExtensionModel[] extensions;
+    private ExtensionPointModel[] extensionPoints;
     /**
      * True if this is an internal plugin, false if it's an external plugin
      */
@@ -135,5 +139,46 @@ public class PluginModel
     public void setConfigFile(File configFile)
     {
         this.configFile = configFile;
+    }
+    
+    public IconModel[] getIcons()
+    {
+        return icons;
+    }
+    
+    public PermissionModel[] getPermissions()
+    {
+        return permissions;
+    }
+    
+    public ExtensionModel[] getExtensions()
+    {
+        return extensions;
+    }
+    
+    public ExtensionPointModel[] getExtensionPoints()
+    {
+        return extensionPoints;
+    }
+    
+    public void setIcons(IconModel[] icons)
+    {
+        this.icons = icons;
+    }
+    
+    public void setPermissions(PermissionModel[] permissions)
+    {
+        this.permissions = permissions;
+    }
+    
+    public void setExtensions(ExtensionModel[] extensions)
+    {
+        this.extensions = extensions;
+    }
+    
+    public void setExtensionPoints(
+        ExtensionPointModel[] extensionPoints)
+    {
+        this.extensionPoints = extensionPoints;
     }
 }
