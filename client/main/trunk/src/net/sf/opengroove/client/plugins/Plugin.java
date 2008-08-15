@@ -3,6 +3,7 @@ package net.sf.opengroove.client.plugins;
 import java.awt.Image;
 import java.io.File;
 import java.net.URL;
+import java.net.URLClassLoader;
 import java.util.Properties;
 
 /**
@@ -17,8 +18,6 @@ public class Plugin
     private String id;
     
     private Properties metadata;
-    
-    private Class<E> implClass;
     
     private String type;
     
@@ -68,6 +67,7 @@ public class Plugin
     
     public Properties getMetadata()
     {
+        URLClassLoader loader;
         return metadata;
     }
     
