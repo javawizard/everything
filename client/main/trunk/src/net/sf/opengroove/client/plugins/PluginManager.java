@@ -596,7 +596,9 @@ public class PluginManager
                 .getAttributeValue("version");
             checkPresent(name);
             checkPresent(supervisorClass);
-            checkPresent(versionString);
+            if (versionString == null
+                || versionString.equals(""))
+                versionString = "0.0";
             model.setName(name);
             model.setDescription(description);
             model.setLicense(license);
