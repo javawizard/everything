@@ -260,8 +260,7 @@ public class PluginManager
     
     private boolean pluginsLoaded = false;
     
-    public synchronized void loadPlugins()
-        throws FileNotFoundException, IOException
+    public synchronized void loadPlugins() throws Exception
     {
         if (pluginsLoaded)// already loaded
             return;
@@ -379,10 +378,23 @@ public class PluginManager
         PluginModel[] models = pluginModelList
             .toArray(new PluginModel[0]);
         Plugin[] plugins = new Plugin[models.length];
-        for(int i = 0; i < plugins.length; i++)
+        for (int i = 0; i < plugins.length; i++)
         {
-            
+            plugins[i] = new Plugin();
+            plugins[i].setModel(models[i]);
+            ClassLoader loader = new PluginClassLoader(
+                plugins, plugins[i]);
+            plugins[i].setClassLoader(loader);
+            Supervisor supervisor = ((Class<? extends Supervisor>) Class
+                .forName(models[i].getSupervisorClass(),
+                    true, loader)).newInstance();
+            plugins[i].setSupervisor(supervisor);
+            PluginContext context = new PluginContext(
+                plugins[i], this);
+            plugins[i].setContext(context);
+            supervisor.init(context);
         }
+        // The supervisors have been instantiated, and we have the models.
     }
     
     public static Plugin getById(String id)
@@ -768,5 +780,10 @@ public class PluginManager
         if (versionString == null)
             throw new IllegalArgumentException(
                 "Invalid null encountered");
+    }
+    
+    File getDataFolder()
+    {
+        return dataFolder;
     }
 }

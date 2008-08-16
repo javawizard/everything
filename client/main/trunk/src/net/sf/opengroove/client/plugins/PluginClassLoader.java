@@ -1,5 +1,13 @@
 package net.sf.opengroove.client.plugins;
 
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.util.jar.JarEntry;
+import java.util.jar.JarFile;
+
+import net.sf.opengroove.client.OpenGroove;
+import net.sf.opengroove.client.Storage;
+
 /**
  * This class is used to load plugin classes. A PluginClassLoader is created for
  * each plugin (except for internal ones), and this class loader is used to load
@@ -32,4 +40,81 @@ package net.sf.opengroove.client.plugins;
  */
 public class PluginClassLoader extends ClassLoader
 {
+    private Plugin[] allPlugins;
+    private Plugin plugin;
+    
+    public PluginClassLoader(Plugin[] plugins, Plugin plugin)
+    {
+        super(PluginClassLoader.class.getClassLoader());
+        this.allPlugins = plugins;
+        this.plugin = plugin;
+    }
+    
+    private Class resolveInternal(String className)
+    {
+        JarFile file = plugin.getModel().getJarFile();
+        JarEntry entry = file.getJarEntry(className
+            .replace(".", "/")
+            + ".class");
+        if (entry == null)
+            return null;
+        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+        try
+        {
+            Storage.copy(file.getInputStream(entry), baos);
+        }
+        catch (IOException e)
+        {
+            e.printStackTrace();
+            return null;
+        }
+        byte[] bytes = baos.toByteArray();
+        Class c = defineClass(className, bytes, 0,
+            bytes.length);
+        return c;
+    }
+    
+    @Override
+    protected Class<?> findClass(String name)
+        throws ClassNotFoundException
+    {
+        /*
+         * When this is called, the vm classes and the opengroove classes have
+         * already been searched. At this point, we need to search the plugin's
+         * jar file.
+         */
+        Class c = resolveInternal(name);
+        if (c != null)
+            return c;
+        /*
+         * OpenGroove's classes, the vm classes, and this plugin's classes have
+         * been searched, without success. Now we search the plugin's
+         * dependencies. We start at the first dependency, and attempt to find
+         * it's corresponding plugin in the plugin list. If it is found, and has
+         * a plugin class loader, we call resolveInternal. We do this for each
+         * dependency declared.
+         */
+        for (DependencyModel dependency : plugin.getModel()
+            .getDependencies())
+        {
+            Plugin dependedPlugin = null;
+            for (Plugin p : allPlugins)
+            {
+                if (p.getModel().getId().equals(
+                    dependency.getPlugin()))
+                {
+                    dependedPlugin = p;
+                    break;
+                }
+            }
+            if (dependedPlugin == null)
+                /*
+                 * This means that the dependency is not present. This usually
+                 * occurs if the dependency is optional and the user has not
+                 * chosen to install it.
+                 */
+                continue;
+        }
+    }
+    
 }

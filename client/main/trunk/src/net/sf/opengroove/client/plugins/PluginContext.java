@@ -12,6 +12,15 @@ import java.io.File;
  */
 public class PluginContext
 {
+    private Plugin plugin;
+    private PluginManager manager;
+    
+    PluginContext(Plugin plugin, PluginManager manager)
+    {
+        this.plugin = plugin;
+        this.manager = manager;
+    }
+    
     /**
      * Gets the id of this plugin, declared in the plugin's file.
      * 
@@ -19,21 +28,25 @@ public class PluginContext
      */
     public String getId()
     {
-        
+        return plugin.getModel().getId();
     }
     
     public LanguageContext getLanguageContext()
     {
-        
+        return null;
     }
     
     public File getPersistantStorage()
     {
-        
+        File file = new File(manager.getDataFolder(),
+            getId());
+        if (!file.exists())
+            file.mkdirs();
+        return file;
     }
     
     public PluginInfo getPluginInfo()
     {
-        
+        return null;
     }
 }
