@@ -434,6 +434,7 @@ public class PluginManager
             ExtensionPointModel[] pointModels = plugin
                 .getModel().getExtensionPoints();
             ExtensionPointContext[] pointContexts = new ExtensionPointContext[pointModels.length];
+            plugin.setExtensionPoints(pointContexts);
             for (int p = 0; p < pointModels.length; p++)
             {
                 pointContexts[p] = new ExtensionPointContext();
@@ -442,9 +443,24 @@ public class PluginManager
                 Class<ExtensionPoint> pointClass = (Class<ExtensionPoint>) Class
                     .forName(className, true, plugin
                         .getClassLoader());
-                
+                ExtensionPoint point = pointClass
+                    .newInstance();
+                pointContexts[p].setExtensionPoint(point);
+                pointContexts[p].setModel(pointModels[p]);
+                pointContexts[p].setPluginContext(plugin
+                    .getContext());
+                pointContexts[p].setSupervisor(plugin
+                    .getSupervisor());
+                point.init(pointContexts[p]);
+                plugin.getSupervisor()
+                    .registerExtensionPoint(point);
             }
         }
+        /*
+         * We've loaded all of the extension points and registered them to the
+         * plugin supervisors. Now we create the extensions, and register them
+         * to the extension point that they specify.
+         */
     }
     
     public static Plugin getById(String id)
