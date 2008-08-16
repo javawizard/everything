@@ -14,27 +14,7 @@ import java.util.Hashtable;
  */
 public class AccumulatingSupervisor implements Supervisor
 {
-    public static class AccumulatingExtensionPoint
-        implements ExtensionPoint
-    {
-        
-        @Override
-        public void init(ExtensionPointContext context)
-        {
-            // TODO Auto-generated method stub
-            
-        }
-        
-        @Override
-        public void registerExtension(PluginInfo info,
-            ExtensionInfo info2, Extension extension)
-        {
-            // TODO Auto-generated method stub
-            
-        }
-        
-    }
-    
+
     private Hashtable<String, ArrayList<AccumulatingExtensionWrapper>> extensions = new Hashtable<String, ArrayList<AccumulatingExtensionWrapper>>();
     
     private PluginContext context;
