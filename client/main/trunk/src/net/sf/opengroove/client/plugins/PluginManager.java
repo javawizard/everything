@@ -461,6 +461,68 @@ public class PluginManager
          * plugin supervisors. Now we create the extensions, and register them
          * to the extension point that they specify.
          */
+        for (int i = 0; i < plugins.length; i++)
+        {
+            Plugin plugin = plugins[i];
+            ExtensionModel[] extensionModels = plugin
+                .getModel().getExtensions();
+            ExtensionContext[] extensionContexts = new ExtensionContext[extensionModels.length];
+            plugin.setExtensions(extensionContexts);
+            for (int p = 0; p < extensionModels.length; p++)
+            {
+                extensionContexts[p] = new ExtensionContext();
+                String className = extensionModels[p]
+                    .getExtensionClass();
+                Class<Extension> extensionClass = (Class<Extension>) Class
+                    .forName(className, true, plugin
+                        .getClassLoader());
+                Extension extension = extensionClass
+                    .newInstance();
+                extensionContexts[p]
+                    .setExtension(extension);
+                extensionContexts[p]
+                    .setModel(extensionModels[p]);
+                extensionContexts[p]
+                    .setPluginContext(plugin.getContext());
+                extensionContexts[p].setSupervisor(plugin
+                    .getSupervisor());
+                extension.init(extensionContexts[p]);
+                plugin.getSupervisor()
+                    .registerLocalExtension(extension);
+                /*
+                 * Now we find the extension point that this extension should be
+                 * registered to, and register it.
+                 */
+                String targetPlugin = extensionModels[p]
+                    .getPlugin();
+                String targetPoint = extensionModels[p]
+                    .getPoint();
+                for (Plugin testPlugin : plugins)
+                {
+                    if (testPlugin.getModel().getId()
+                        .equals(targetPlugin))
+                    {
+                        for (ExtensionPointContext testPoint : testPlugin
+                            .getExtensionPoints())
+                        {
+                            if (testPoint.getModel()
+                                .getId()
+                                .equals(targetPoint))
+                            {
+                                testPoint
+                                    .getExtensionPoint()
+                                    .registerExtension(
+                                        new PluginInfo(
+                                            testPlugin),
+                                        new ExtensionInfo(
+                                            extensionModel),
+                                        extension);
+                            }
+                        }
+                    }
+                }
+            }
+        }
     }
     
     public static Plugin getById(String id)
