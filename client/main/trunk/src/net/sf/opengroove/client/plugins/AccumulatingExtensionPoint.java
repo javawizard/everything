@@ -3,20 +3,21 @@ package net.sf.opengroove.client.plugins;
 public class AccumulatingExtensionPoint implements
     ExtensionPoint
 {
+    private AccumulatingSupervisor supervisor;
+    private String id;
     
     @Override
     public void init(ExtensionPointContext context)
     {
-        // TODO Auto-generated method stub
-        
+        this.supervisor = (AccumulatingSupervisor) context
+            .getSupervisor();
+        this.id = context.getModel().getId();
     }
     
     @Override
-    public void registerExtension(PluginInfo info,
-        ExtensionInfo info2, Extension extension)
+    public void registerExtension(PluginInfo pInfo,
+        ExtensionInfo info, Extension extension)
     {
-        // TODO Auto-generated method stub
-        
+        supervisor.addExtension(id, extension, info);
     }
-    
 }
