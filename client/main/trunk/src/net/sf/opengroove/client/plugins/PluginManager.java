@@ -238,7 +238,14 @@ public class PluginManager
      * i_test, and i_another.
      */
     private File dataFolder;
-    
+    /**
+     * The folder that cont
+     */
+    private File languageFolder;
+    /**
+     * 
+     */
+    private File internalLanguageFolder;
     private Storage storage;
     
     private UserContext userContext;
@@ -382,17 +389,28 @@ public class PluginManager
         {
             plugins[i] = new Plugin();
             plugins[i].setModel(models[i]);
-            ClassLoader loader = new PluginClassLoader(
+            PluginClassLoader loader = new PluginClassLoader(
                 plugins, plugins[i]);
             plugins[i].setClassLoader(loader);
+            PluginContext context = new PluginContext(
+                plugins[i], this);
+            plugins[i].setContext(context);
+        }
+        /*
+         * The following step is separate from the step above it so that all
+         * plugin class loaders are loaded even before we start initializing.
+         * This way, plugin supervisor classes can reference plugin dependencies
+         * without throwing a ClassNotFoundException.
+         */
+        for (int i = 0; i < plugins.length; i++)
+        {
+            PluginClassLoader loader = plugins[i]
+                .getClassLoader();
             Supervisor supervisor = ((Class<? extends Supervisor>) Class
                 .forName(models[i].getSupervisorClass(),
                     true, loader)).newInstance();
             plugins[i].setSupervisor(supervisor);
-            PluginContext context = new PluginContext(
-                plugins[i], this);
-            plugins[i].setContext(context);
-            supervisor.init(context);
+            supervisor.init(plugins[i].getContext());
         }
         // The supervisors have been instantiated, and we have the models.
     }
