@@ -3,5 +3,5 @@
  class="net.sf.opengroove.client.plugins.AccumulatingSupervisor">
     <extension-point id="tool" class="net.sf.opengroove.client.plugins.AccumulatingExtensionPoint" 
      interface="net.sf.opengroove.client.toolworkspace.plugin.ToolFactory"/>
-    <extension 
+    <extension id="workspace" class="net.sf.opengroove.client.toolworkspace.ToolWorkspaceFactory"/>
 </plugin>
