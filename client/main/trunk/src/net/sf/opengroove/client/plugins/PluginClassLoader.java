@@ -2,6 +2,8 @@ package net.sf.opengroove.client.plugins;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.util.Hashtable;
+import java.util.Map;
 import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
 
@@ -42,6 +44,7 @@ public class PluginClassLoader extends ClassLoader
 {
     private Plugin[] allPlugins;
     private Plugin plugin;
+    private Map<String, Class> internalPool = new Hashtable<String, Class>();
     
     public PluginClassLoader(Plugin[] plugins, Plugin plugin)
     {
@@ -50,8 +53,11 @@ public class PluginClassLoader extends ClassLoader
         this.plugin = plugin;
     }
     
-    private Class resolveInternal(String className)
+    private synchronized Class resolveInternal(
+        String className)
     {
+        if (internalPool.get(className) != null)
+            return internalPool.get(className);
         JarFile file = plugin.getModel().getJarFile();
         JarEntry entry = file.getJarEntry(className
             .replace(".", "/")
@@ -71,6 +77,7 @@ public class PluginClassLoader extends ClassLoader
         byte[] bytes = baos.toByteArray();
         Class c = defineClass(className, bytes, 0,
             bytes.length);
+        internalPool.put(className, c);
         return c;
     }
     
@@ -114,7 +121,31 @@ public class PluginClassLoader extends ClassLoader
                  * chosen to install it.
                  */
                 continue;
+            if (dependedPlugin.getClassLoader() == null)
+                /*
+                 * This means that the plugin doesn't have a class loader. The
+                 * only practical reason for this to occur would be that the
+                 * plugin is an internal plugin, in which case it's classes
+                 * would have already been searched
+                 */
+                continue;
+            /*
+             * Now let's see if the dependency knows about the class. If it
+             * does, then we return it. The dependency's class loader caches the
+             * loaded classes, so this will return the exact same Class instance
+             * returned to that plugin itself if it has already tried to load
+             * the class.
+             */
+            c = dependedPlugin.getClassLoader()
+                .resolveInternal(name);
+            if (c != null)
+                return c;
         }
+        throw new ClassNotFoundException(
+            "The class couldn't be found in the plugin "
+                + plugin.getModel().getId()
+                + " or any of it's dependencies (a total of "
+                + plugin.getModel().getDependencies().length
+                + ")");
     }
-    
 }
