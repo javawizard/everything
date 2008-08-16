@@ -430,7 +430,20 @@ public class PluginManager
         // comes time to register the extension point's extensions.
         for (int i = 0; i < plugins.length; i++)
         {
-            
+            Plugin plugin = plugins[i];
+            ExtensionPointModel[] pointModels = plugin
+                .getModel().getExtensionPoints();
+            ExtensionPointContext[] pointContexts = new ExtensionPointContext[pointModels.length];
+            for (int p = 0; p < pointModels.length; p++)
+            {
+                pointContexts[p] = new ExtensionPointContext();
+                String className = pointModels[p]
+                    .getExtensionPointClass();
+                Class<ExtensionPoint> pointClass = (Class<ExtensionPoint>) Class
+                    .forName(className, true, plugin
+                        .getClassLoader());
+                
+            }
         }
     }
     

@@ -24,6 +24,8 @@ public class Plugin
     private PluginClassLoader classLoader;
     private PluginContext context;
     private Supervisor supervisor;
+    private ExtensionPointContext[] extensionPoints;
+    private ExtensionContext[] extensions;
     private Map<String, ArrayList<Image>> icons = new HashMap<String, ArrayList<Image>>();
     
     public PluginModel getModel()
@@ -69,5 +71,26 @@ public class Plugin
     public void setClassLoader(PluginClassLoader classLoader)
     {
         this.classLoader = classLoader;
+    }
+
+    public ExtensionPointContext[] getExtensionPoints()
+    {
+        return extensionPoints;
+    }
+
+    public ExtensionContext[] getExtensions()
+    {
+        return extensions;
+    }
+
+    public void setExtensionPoints(
+        ExtensionPointContext[] extensionPoints)
+    {
+        this.extensionPoints = extensionPoints;
+    }
+
+    public void setExtensions(ExtensionContext[] extensions)
+    {
+        this.extensions = extensions;
     }
 }
