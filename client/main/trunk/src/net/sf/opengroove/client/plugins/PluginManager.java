@@ -590,6 +590,9 @@ public class PluginManager
                 .getAttributeValue("license");
             String supervisorClass = root
                 .getAttributeValue("class");
+            if (supervisorClass == null)
+                supervisorClass = EmptySupervisor.class
+                    .getName();
             String updateSite = root
                 .getAttributeValue("update-site");
             String versionString = root
