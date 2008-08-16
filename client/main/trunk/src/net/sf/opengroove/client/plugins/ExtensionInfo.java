@@ -4,5 +4,10 @@ import java.util.Map;
 
 public class ExtensionInfo
 {
-    private Map<String, String> properties;
+    private ExtensionContext extensionContext;
+    
+    public ExtensionInfo(ExtensionContext context)
+    {
+        this.extensionContext = context;
+    }
 }

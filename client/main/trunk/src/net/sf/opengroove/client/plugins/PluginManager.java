@@ -515,12 +515,15 @@ public class PluginManager
                                         new PluginInfo(
                                             testPlugin),
                                         new ExtensionInfo(
-                                            extensionModel),
+                                            extensionContexts[p]),
                                         extension);
                             }
                         }
                     }
                 }
+                /*
+                 * We've now registered the extension with it's extension point.
+                 */
             }
         }
     }
