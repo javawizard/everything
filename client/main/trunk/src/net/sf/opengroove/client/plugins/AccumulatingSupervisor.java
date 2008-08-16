@@ -15,32 +15,6 @@ import java.util.Hashtable;
 public class AccumulatingSupervisor implements Supervisor
 {
     
-    public static class Wrapper
-    {
-        private Extension extension;
-        private ExtensionInfo info;
-        
-        public Extension getExtension()
-        {
-            return extension;
-        }
-        
-        public ExtensionInfo getInfo()
-        {
-            return info;
-        }
-        
-        public void setExtension(Extension extension)
-        {
-            this.extension = extension;
-        }
-        
-        public void setInfo(ExtensionInfo info)
-        {
-            this.info = info;
-        }
-    }
-    
     private Hashtable<String, ArrayList<Wrapper>> extensions = new Hashtable<String, ArrayList<Wrapper>>();
     
     private PluginContext context;

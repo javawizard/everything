@@ -1,16 +1,16 @@
 package net.sf.opengroove.client.plugins;
 
+import java.util.ArrayList;
+
 public class AccumulatingExtensionPoint implements
     ExtensionPoint
 {
-    private AccumulatingSupervisor supervisor;
     private String id;
+    private ArrayList<ExtensionWrapper> extensions = new ArrayList<ExtensionWrapper>();
     
     @Override
     public void init(ExtensionPointContext context)
     {
-        this.supervisor = (AccumulatingSupervisor) context
-            .getSupervisor();
         this.id = context.getModel().getId();
     }
     
@@ -18,6 +18,14 @@ public class AccumulatingExtensionPoint implements
     public void registerExtension(PluginInfo pInfo,
         ExtensionInfo info, Extension extension)
     {
-        supervisor.addExtension(id, extension, info);
+        ExtensionWrapper wrapper = new ExtensionWrapper();
+        wrapper.setExtension(extension);
+        wrapper.setInfo(info);
+        extensions.add(wrapper);
+    }
+    
+    public ExtensionWrapper[] getExtensions()
+    {
+        return extensions.toArray(new ExtensionWrapper[0]);
     }
 }
