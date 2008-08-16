@@ -401,9 +401,12 @@ public class PluginManager
         {
             plugins[i] = new Plugin();
             plugins[i].setModel(models[i]);
-            PluginClassLoader loader = new PluginClassLoader(
-                plugins, plugins[i]);
-            plugins[i].setClassLoader(loader);
+            if (!plugins[i].getModel().isInternal())
+            {
+                PluginClassLoader loader = new PluginClassLoader(
+                    plugins, plugins[i]);
+                plugins[i].setClassLoader(loader);
+            }
             PluginContext context = new PluginContext(
                 plugins[i], this);
             plugins[i].setContext(context);
@@ -416,8 +419,10 @@ public class PluginManager
          */
         for (int i = 0; i < plugins.length; i++)
         {
-            PluginClassLoader loader = plugins[i]
+            ClassLoader loader = plugins[i]
                 .getClassLoader();
+            if (loader == null)
+                loader = getClass().getClassLoader();
             Supervisor supervisor = ((Class<? extends Supervisor>) Class
                 .forName(models[i].getSupervisorClass(),
                     true, loader)).newInstance();
@@ -442,9 +447,12 @@ public class PluginManager
                 pointContexts[p] = new ExtensionPointContext();
                 String className = pointModels[p]
                     .getExtensionPointClass();
+                ClassLoader loader = plugin
+                    .getClassLoader();
+                if (loader == null)
+                    loader = getClass().getClassLoader();
                 Class<ExtensionPoint> pointClass = (Class<ExtensionPoint>) Class
-                    .forName(className, true, plugin
-                        .getClassLoader());
+                    .forName(className, true, loader);
                 ExtensionPoint point = pointClass
                     .newInstance();
                 pointContexts[p].setExtensionPoint(point);
@@ -475,9 +483,12 @@ public class PluginManager
                 extensionContexts[p] = new ExtensionContext();
                 String className = extensionModels[p]
                     .getExtensionClass();
+                ClassLoader loader = plugin
+                    .getClassLoader();
+                if (loader == null)
+                    loader = getClass().getClassLoader();
                 Class<Extension> extensionClass = (Class<Extension>) Class
-                    .forName(className, true, plugin
-                        .getClassLoader());
+                    .forName(className, true, loader);
                 Extension extension = extensionClass
                     .newInstance();
                 extensionContexts[p]
@@ -549,6 +560,16 @@ public class PluginManager
     public Plugin[] getAllPlugins()
     {
         return plugins;
+    }
+    
+    public Plugin getPluginById(String id)
+    {
+        for (Plugin plugin : plugins)
+        {
+            if (plugin.getModel().getId().equals(id))
+                return plugin;
+        }
+        return null;
     }
     
     private void loadModel(InputStream file,
