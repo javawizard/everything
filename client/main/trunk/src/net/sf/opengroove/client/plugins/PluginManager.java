@@ -277,6 +277,8 @@ public class PluginManager
     
     private boolean pluginsLoaded = false;
     
+    private Plugin[] plugins;
+    
     public synchronized void loadPlugins() throws Exception
     {
         if (pluginsLoaded)// already loaded
@@ -526,16 +528,27 @@ public class PluginManager
                  */
             }
         }
-    }
-    
-    public static Plugin getById(String id)
-    {
-        return pluginsById.get(id);
+        /*
+         * Everything's registered. Now we call ready() on all of the
+         * supervisors, and we're done.
+         */
+        for (Plugin p : plugins)
+        {
+            p.getSupervisor().ready();
+        }
+        this.plugins = plugins;
+        /*
+         * That's it. We've successfully set up the plugins.
+         * 
+         * TODO: currently, if an individual plugin throws an exception when
+         * initializing, none of the plugins will initialize. This needs to be
+         * changed.
+         */
     }
     
     public static Plugin[] getAllPlugins()
     {
-        return pluginsById.values().toArray(new Plugin[0]);
+        return plugins;
     }
     
     public static void showManageInstalledPluginsDialog(
