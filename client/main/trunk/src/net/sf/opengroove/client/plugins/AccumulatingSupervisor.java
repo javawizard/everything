@@ -15,7 +15,7 @@ import java.util.Hashtable;
 public class AccumulatingSupervisor implements Supervisor
 {
     
-    private Hashtable<String, ArrayList<Wrapper>> extensions = new Hashtable<String, ArrayList<Wrapper>>();
+    private Hashtable<String, AccumulatingExtensionPoint> extensions = new Hashtable<String, AccumulatingExtensionPoint>();
     
     private PluginContext context;
     
@@ -30,25 +30,9 @@ public class AccumulatingSupervisor implements Supervisor
         return context;
     }
     
-    public Wrapper[] getExtensions(String point)
+    public ExtensionWrapper[] getExtensions(String point)
     {
-        return extensions.get(point)
-            .toArray(new Wrapper[0]);
-    }
-    
-    synchronized void addExtension(String point,
-        Extension extension, ExtensionInfo info)
-    {
-        Wrapper wrapper = new Wrapper();
-        wrapper.setExtension(extension);
-        wrapper.setInfo(info);
-        ArrayList<Wrapper> list = extensions.get(point);
-        if (list == null)
-        {
-            list = new ArrayList<Wrapper>();
-            extensions.put(point, list);
-        }
-        list.add(wrapper);
+        return extensions.get(point).getExtensions();
     }
     
     @Override
@@ -60,6 +44,13 @@ public class AccumulatingSupervisor implements Supervisor
     public void registerExtensionPoint(
         ExtensionPoint<?> point)
     {
+        if (point instanceof AccumulatingExtensionPoint)
+        {
+            extensions.put(
+                ((AccumulatingExtensionPoint) point)
+                    .getId(),
+                (AccumulatingExtensionPoint) point);
+        }
     }
     
     @Override

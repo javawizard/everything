@@ -14,6 +14,11 @@ public class AccumulatingExtensionPoint implements
         this.id = context.getModel().getId();
     }
     
+    public String getId()
+    {
+        return id;
+    }
+    
     @Override
     public void registerExtension(PluginInfo pInfo,
         ExtensionInfo info, Extension extension)
