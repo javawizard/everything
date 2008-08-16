@@ -1,5 +1,6 @@
 package net.sf.opengroove.client.plugins;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Hashtable;
 
@@ -13,6 +14,27 @@ import java.util.Hashtable;
  */
 public class AccumulatingSupervisor implements Supervisor
 {
+    public static class AccumulatingExtensionPoint
+        implements ExtensionPoint
+    {
+        
+        @Override
+        public void init(ExtensionPointContext context)
+        {
+            // TODO Auto-generated method stub
+            
+        }
+        
+        @Override
+        public void registerExtension(PluginInfo info,
+            ExtensionInfo info2, Extension extension)
+        {
+            // TODO Auto-generated method stub
+            
+        }
+        
+    }
+    
     private Hashtable<String, ArrayList<AccumulatingExtensionWrapper>> extensions = new Hashtable<String, ArrayList<AccumulatingExtensionWrapper>>();
     
     private PluginContext context;
@@ -28,9 +50,9 @@ public class AccumulatingSupervisor implements Supervisor
         return context;
     }
     
-    public Extension[] getExtensions(String point)
+    public AccumulatingExtension[] getExtensions(
+        String point)
     {
-        return extensions.get(point);
     }
     
     void addExtension(String point, Extension extension);
