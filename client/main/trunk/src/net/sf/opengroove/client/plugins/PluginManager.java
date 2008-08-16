@@ -254,9 +254,8 @@ public class PluginManager
      */
     private File languageFolder;
     /**
-     * 
+     * The storage object for the user that this PluginManager belongs to.
      */
-    private File internalLanguageFolder;
     private Storage storage;
     
     private UserContext userContext;
@@ -423,7 +422,16 @@ public class PluginManager
             plugins[i].setSupervisor(supervisor);
             supervisor.init(plugins[i].getContext());
         }
-        // The supervisors have been instantiated, and we have the models.
+        // The supervisors have been instantiated and initialized. Now we go
+        // through and instantiate all of the extension points and register them
+        // to their supervisors. The extension point instances will be stored in
+        // the ExtensionPointContext, which is in turn stored in the plugin, so
+        // that the extension point can be retrieved from the plugin when it
+        // comes time to register the extension point's extensions.
+        for (int i = 0; i < plugins.length; i++)
+        {
+            
+        }
     }
     
     public static Plugin getById(String id)
