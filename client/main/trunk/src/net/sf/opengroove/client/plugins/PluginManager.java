@@ -239,7 +239,18 @@ public class PluginManager
      */
     private File dataFolder;
     /**
-     * The folder that cont
+     * The folder that contains the language packs for all of the plugins. Under
+     * it, it has one folder for each external plugin, and a folder called
+     * i_opengroove that holds OpenGroove's language packs. Within each of these
+     * folders, there is one file for each language pack, which is the name of
+     * the language pack followed by the extension .xml . When the plugin
+     * manager is created, it copies all language packs out of the plugin jar
+     * files into the paths within this folder just mentioned. It then loads all
+     * of the language packs into LanguagePack objects, and assigns them to
+     * their plugins. When the user wants to edit one of these language packs, a
+     * new one is created from it, and prefixed with the name "user_". Language
+     * packs that do not start with "user_" cannot be edited by the user, and
+     * must be copied to another one that starts with "user_" before editing.
      */
     private File languageFolder;
     /**
