@@ -141,6 +141,12 @@ public class PluginClassLoader extends ClassLoader
             if (c != null)
                 return c;
         }
+        /*
+         * At this point we've searched the vm classes, OpenGroove's classes,
+         * the plugin's classes, and all of it's dependencies' classes, without
+         * success. This leaves us nothing left to do but throw a
+         * ClassNotFoundException.
+         */
         throw new ClassNotFoundException(
             "The class couldn't be found in the plugin "
                 + plugin.getModel().getId()
