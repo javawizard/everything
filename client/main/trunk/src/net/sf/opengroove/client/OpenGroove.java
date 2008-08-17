@@ -532,7 +532,14 @@ public class OpenGroove
             /*
              * FIXME: pick up here August 12, 2008, pretty much the rest of the
              * main method needs to be split into it's own method that runs
-             * per-user, and replaced with the auto-login checks
+             * per-user, and replaced with the auto-login checks and stuff.
+             * There should, however, still be stuff for initializing the tray
+             * icon and putting a menu on it. Actually, this part might want to
+             * be in a different method that takes all of th logged in users and
+             * adds their context menu, and adds one for all other users that
+             * allows to log in as that user. There should also be a check here
+             * to see if there are no users, and if that's the case show the
+             * wizard that allows a user to add their account.
              */
             lcom = new LowLevelCommunicator(
                 getConnectHost(), getConnectPort(), true);
@@ -719,6 +726,7 @@ public class OpenGroove
                 }
             }
             authDialog.hide();
+            new TrayIcon().setPopupMenu(null);
             PopupMenu pp = new PopupMenu();
             workspacesSubMenu = new PopupMenu("Workspaces");
             MenuItem aboutConvergiaItem = new AMenuItem(

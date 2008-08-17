@@ -43,6 +43,11 @@ public class UserContext
     private JTabbedPane launchbarTabbedPane;
     
     private HelpViewer helpViewer;
+    /**
+     * The popup menu for this user. On the tray icon's popup menu, there is a
+     * menu item for each user, which is this popup menu.
+     */
+    private PopupMenu popupMenu;
     
     public String getUserid()
     {
