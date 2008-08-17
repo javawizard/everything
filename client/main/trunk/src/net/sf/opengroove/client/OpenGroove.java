@@ -105,6 +105,10 @@ import com.l2fprod.common.swing.JLinkButton;
 @SuppressWarnings("deprecation")
 public class OpenGroove
 {
+    static
+    {
+        Statics.run();
+    }
     static boolean updatesEnabled = false;
     /**
      * This file object is a folder that contains opengroove's data.
