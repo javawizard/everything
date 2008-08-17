@@ -1,12 +1,23 @@
 package net.sf.opengroove.client.ui;
 
+import java.awt.BorderLayout;
+import java.awt.Color;
 import java.awt.Component;
 import java.awt.Point;
+import java.awt.event.FocusAdapter;
+import java.awt.event.FocusEvent;
+import java.awt.event.FocusListener;
 
+import javax.swing.BorderFactory;
 import javax.swing.BoxLayout;
 import javax.swing.JPanel;
 import javax.swing.JWindow;
 import javax.swing.SwingUtilities;
+import javax.swing.border.BevelBorder;
+import javax.swing.border.CompoundBorder;
+import javax.swing.border.EmptyBorder;
+import javax.swing.border.EtchedBorder;
+import javax.swing.border.LineBorder;
 
 public class SwingPopupMenu extends JWindow
 {
@@ -17,8 +28,33 @@ public class SwingPopupMenu extends JWindow
         panel = new JPanel();
         panel.setLayout(new BoxLayout(panel,
             BoxLayout.X_AXIS));
+        panel.setBorder(new CompoundBorder(new LineBorder(
+            Color.DARK_GRAY, 1),
+            new EmptyBorder(2, 2, 2, 2)));
+        panel.setOpaque(true);
+        super.getContentPane()
+            .setLayout(new BorderLayout());
+        super.getContentPane().add(panel);
+        super.setAlwaysOnTop(true);
+        super.addFocusListener(new FocusAdapter()
+        {
+            
+            @Override
+            public void focusLost(FocusEvent e)
+            {
+                SwingPopupMenu.this.hide();
+            }
+        });
     }
     
+    /**
+     * Shows this popup menu. The window will be packed before showing. When the
+     * window loses focus, it will be hidden.
+     * 
+     * @param invoker
+     * @param x
+     * @param y
+     */
     public void show(Component invoker, int x, int y)
     {
         if (invoker != null)
@@ -28,6 +64,10 @@ public class SwingPopupMenu extends JWindow
             x = p.x;
             y = p.y;
         }
+        setLocation(x, y);
+        pack();
+        show();
+        requestFocus();
     }
     
     /**
