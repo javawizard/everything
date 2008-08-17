@@ -18,6 +18,7 @@ public class Test034
         Statics.run();
         JFrame frame = new TestFrame();
         JideButton button = new JideButton("Test button");
+        button.setButtonStyle(button.HYPERLINK_STYLE);
         frame.getContentPane().add(button);
         frame.show();
     }
