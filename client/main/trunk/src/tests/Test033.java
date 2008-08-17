@@ -1,6 +1,10 @@
 package tests;
 
 import java.awt.Color;
+import java.awt.FlowLayout;
+import java.awt.Point;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.awt.event.FocusEvent;
 import java.awt.event.FocusListener;
 import java.awt.event.WindowEvent;
@@ -8,11 +12,15 @@ import java.awt.event.WindowFocusListener;
 
 import javax.swing.BoxLayout;
 import javax.swing.JButton;
+import javax.swing.JDialog;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
+import javax.swing.JMenu;
 import javax.swing.JMenuItem;
 import javax.swing.JPanel;
 import javax.swing.JPopupMenu;
+import javax.swing.JWindow;
+import javax.swing.SwingUtilities;
 import javax.swing.border.CompoundBorder;
 import javax.swing.border.EmptyBorder;
 import javax.swing.border.LineBorder;
@@ -31,24 +39,60 @@ public class Test033
     public static void main(String[] args)
     {
         // SwingPopupMenu menu = new SwingPopupMenu();
-        final JFrame frame = new JFrame();
+        JFrame other = new JFrame();
+        other.setSize(300, 200);
+        final JButton showButton = new JButton("show popup");
+        other.getContentPane().setLayout(new FlowLayout());
+        other.getContentPane().add(showButton);
+        final JDialog frame = new JDialog();
+        showButton.addActionListener(new ActionListener()
+        {
+            
+            @Override
+            public void actionPerformed(ActionEvent e)
+            {
+                frame.pack();
+                Point p = new Point(0, showButton
+                    .getHeight());
+                SwingUtilities.convertPointToScreen(p,
+                    showButton);
+                frame.setLocation(p);
+                frame.show();
+                frame.requestFocus();
+            }
+        });
+        other.setLocationRelativeTo(null);
+        other.show();
         JPanel panel = new JPanel();
         panel.setLayout(new BoxLayout(panel,
             BoxLayout.Y_AXIS));
         panel.add(new JLabel("test label 1"));
         panel.add(new JLabel("test label 2"));
         panel.add(new JButton("test button 1"));
-        panel.add(new JButton("test button 2"));
+        final JButton button = new JButton("test button 2");
+        panel.add(button);
         panel.add(new JLabel("another label"));
         panel.setBorder(new CompoundBorder(new LineBorder(
             Color.GRAY, 1), new EmptyBorder(2, 2, 2, 2)));
+        final JPopupMenu menu = new JPopupMenu();
+        menu.add(new JMenuItem(
+            "A test menu item that has a long name"));
+        JMenu menu2 = new JMenu("An actual menu");
+        menu2.add(new JMenuItem("A subitem"));
+        menu2.add(new JMenuItem("another test subitem"));
+        menu.add(menu2);
+        button.addActionListener(new ActionListener()
+        {
+            
+            @Override
+            public void actionPerformed(ActionEvent e)
+            {
+                menu.show(button, 0, button.getHeight());
+            }
+        });
         frame.getContentPane().add(panel);
         frame.setUndecorated(true);
         frame.setAlwaysOnTop(true);
-        frame.pack();
-        frame.setLocationRelativeTo(null);
-        frame.show();
-        frame.requestFocus();
         frame
             .addWindowFocusListener(new WindowFocusListener()
             {
@@ -63,8 +107,8 @@ public class Test033
                 @Override
                 public void windowLostFocus(WindowEvent e)
                 {
-                    frame.dispose();
-                    System.out.println("Frame disposed");
+                    frame.hide();
+                    System.out.println("Frame hidden");
                 }
             });
         // menu.add(item1);
