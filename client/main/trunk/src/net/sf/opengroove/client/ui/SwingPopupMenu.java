@@ -52,7 +52,8 @@ public class SwingPopupMenu extends JWindow
      * Adds the specified menu item to this popup menu. This is a convienence
      * method for <code>getContentPane().add(item)</code>.
      * 
-     * @param item The menu item to add
+     * @param item
+     *            The menu item to add
      */
     public void add(JMenuItem item)
     {
@@ -64,8 +65,15 @@ public class SwingPopupMenu extends JWindow
      * window loses focus, it will be hidden.
      * 
      * @param invoker
+     *            The component that triggered this menu to show.
      * @param x
+     *            The x coordinate for the menu to show at, relative to
+     *            <code>invoker</code>'s position. If <code>invoker</code>
+     *            is null, the menu will be set to this location in screen
+     *            coordinates, unless both this and <code>y</code> are -1, in
+     *            which case the menu will be centered on the screen.
      * @param y
+     *            The y coordinate for the menu to show at.
      */
     public void show(Component invoker, int x, int y)
     {
@@ -75,6 +83,10 @@ public class SwingPopupMenu extends JWindow
             SwingUtilities.convertPointToScreen(p, invoker);
             x = p.x;
             y = p.y;
+        }
+        if (x == -1 && y == -1 && invoker == null)
+        {
+            setLocationRelativeTo(null);
         }
         setLocation(x, y);
         pack();
