@@ -10,6 +10,7 @@ import java.awt.event.FocusListener;
 
 import javax.swing.BorderFactory;
 import javax.swing.BoxLayout;
+import javax.swing.JMenuItem;
 import javax.swing.JPanel;
 import javax.swing.JWindow;
 import javax.swing.SwingUtilities;
@@ -45,6 +46,17 @@ public class SwingPopupMenu extends JWindow
                 SwingPopupMenu.this.hide();
             }
         });
+    }
+    
+    /**
+     * Adds the specified menu item to this popup menu. This is a convienence
+     * method for <code>getContentPane().add(item)</code>.
+     * 
+     * @param item The menu item to add
+     */
+    public void add(JMenuItem item)
+    {
+        getContentPane().add(item);
     }
     
     /**
