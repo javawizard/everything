@@ -2,7 +2,7 @@ package net.sf.opengroove.client;
 
 public class Statics
 {
-    public void run()
+    public static void run()
     {
         com.jidesoft.utils.Lm.verifyLicense(
             "Trivergia Technologies, LLC", "OpenGroove",
