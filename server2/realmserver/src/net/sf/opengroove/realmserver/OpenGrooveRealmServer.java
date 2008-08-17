@@ -2011,27 +2011,34 @@ public class OpenGrooveRealmServer
             {
                 byte[] dataBytes = readToBytes(data);
                 String firstSubsection = new String(
-                    dataBytes);
-                String[] tokens = tokenizeByLines(firstSubsection);
+                    dataBytes, 0, Math.min(128,
+                        dataBytes.length));
+                String[] tokens = firstSubsection.split(
+                    " ", 5);
                 verifyAtLeast(tokens, 4);
                 String messageId = tokens[0];
                 String recipientUser = tokens[1];
                 String recipientComputer = tokens[2];
-                String messageContents = tokens[3];
+                int dataIndex = messageId.length()
+                    + recipientUser.length()
+                    + recipientComputer.length() + 3;
+                byte[] messageContents = new byte[dataBytes.length
+                    - dataIndex];
+                System.arraycopy(dataBytes, dataIndex,
+                    messageContents, 0,
+                    messageContents.length);
                 ConnectionHandler recipientConnection = getConnectionForComputer(
                     recipientUser, recipientComputer);
                 if (recipientConnection == null)
                     throw new FailedResponseException(
                         Status.NOSUCHUSER,
                         "The recipient does not exist or is offline");
-                recipientConnection
-                    .sendEncryptedPacket(generateId(),
-                        "receiveimessage", Status.OK, (""
-                            + messageId + "\n"
-                            + connection.username + "\n"
-                            + connection.computerName
-                            + "\n" + messageContents)
-                            .getBytes());
+                recipientConnection.sendEncryptedPacket(
+                    generateId(), "receiveimessage",
+                    Status.OK, concat(("" + messageId + " "
+                        + connection.username + " "
+                        + connection.computerName + " ")
+                        .getBytes(), messageContents));
                 connection.sendEncryptedPacket(packetId,
                     "sendimessage", Status.OK, EMPTY);
             }
@@ -2175,6 +2182,8 @@ public class OpenGrooveRealmServer
                     0, keysToSearch.length);
                 for (String cKey : keysToSearch)
                 {
+                    if (cKey.trim().equals(""))
+                        continue;
                     if (!cKey.startsWith("public-"))
                         throw new FailedResponseException(
                             Status.FAIL,
