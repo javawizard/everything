@@ -18,6 +18,7 @@ import java.applet.*;
 /* but they are internal to Curve - how do I arrange that? */
 public class BezierUtils
 {
+    public static Point2D[]
     public static class ScaledInt
     {
         // scaled integers interpreted as m.n where n has 6 bits
@@ -243,7 +244,7 @@ public class BezierUtils
     }
     
     /* this is public */
-    public static class curve
+    public static class Curve
     {
         static double resolution = 0.50;
         
