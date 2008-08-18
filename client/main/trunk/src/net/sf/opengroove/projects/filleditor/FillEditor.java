@@ -11,6 +11,8 @@ import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
@@ -184,7 +186,7 @@ public class FillEditor
     public static void main(String[] args)
     {
         filechooser = new JFileChooser();
-        filechooser.setSelectedFile(new File("."));
+        filechooser.setCurrentDirectory(new File("./backgrounds"));
         filechooser
             .setFileFilter(new FileNameExtensionFilter(
                 "FillEditor files", "fdsc"));
@@ -385,6 +387,20 @@ public class FillEditor
             BorderLayout.CENTER);
         frame.setSize(650, 400);
         frame.setLocationRelativeTo(null);
+        frame
+            .setDefaultCloseOperation(frame.DO_NOTHING_ON_CLOSE);
+        frame.addWindowListener(new WindowAdapter()
+        {
+            
+            @Override
+            public void windowClosing(WindowEvent e)
+            {
+                JOptionPane
+                    .showMessageDialog(
+                        frame,
+                        "Closing isn't supported yet. Terminate the program's process to close it.");
+            }
+        });
         frame.show();
     }
     
@@ -446,8 +462,24 @@ public class FillEditor
             {
                 if (filechooser.showSaveDialog(frame) == JFileChooser.APPROVE_OPTION)
                 {
-                    writeObjectToFile(image, filechooser
-                        .getSelectedFile());
+                    File file = filechooser
+                        .getSelectedFile();
+                    if (file.getName().indexOf(".") == -1)
+                        file = new File(file
+                            .getParentFile(), file
+                            .getName()
+                            + ".fdsc");
+                    if (file.exists()
+                        && (JOptionPane
+                            .showConfirmDialog(
+                                frame,
+                                "The file "
+                                    + file.getName()
+                                    + " exists. Overwrite?",
+                                null,
+                                JOptionPane.YES_NO_OPTION) == JOptionPane.NO_OPTION))
+                        return;
+                    writeObjectToFile(image, file);
                     JOptionPane.showMessageDialog(frame,
                         "Saved.");
                 }
