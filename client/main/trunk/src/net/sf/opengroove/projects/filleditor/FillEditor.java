@@ -2,6 +2,7 @@ package net.sf.opengroove.projects.filleditor;
 
 import java.awt.BorderLayout;
 import java.awt.Color;
+import java.awt.Dimension;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.Point;
@@ -13,9 +14,12 @@ import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
+import javax.swing.JTextField;
 import javax.swing.border.CompoundBorder;
 import javax.swing.border.EmptyBorder;
 import javax.swing.border.LineBorder;
+
+import net.sf.opengroove.projects.filleditor.plugins.GradientPlugin;
 
 public class FillEditor
 {
@@ -34,7 +38,10 @@ public class FillEditor
     }
     
     private static JFrame frame;
+    private static Class<FillPlugin>[] plugins = new Class[] { GradientPlugin.class };
     private static FillImage image;
+    private static JTextField widthField;
+    private static JTextField heightField;
     private static Point highlightedPoint;
     private PointSelection selectedPoint;
     public static final int BOX_WIDTH = 8;
@@ -69,27 +76,46 @@ public class FillEditor
                     BOX_HEIGHT);
             }
         }
+        
+        public Dimension getPreferredSize()
+        {
+            if (image == null)
+                return new Dimension(0, 0);
+            return new Dimension(image.width, image.height);
+        }
     };
     
     private static JPanel leftPanel = new JPanel();
+    private static JPanel controlPanel = new JPanel();
     
     /**
      * @param args
      */
     public static void main(String[] args)
     {
+        // TODO: replace with an option to create new or load from file
+        image = new FillImage();
+        widthField = new JTextField(5);
+        heightField = new JTextField(5);
         frame = new JFrame("FillEditor - OpenGroove");
         frame.getContentPane()
             .setLayout(new BorderLayout());
-        frame.getContentPane().add(leftPanel,
-            BorderLayout.WEST);
-        leftPanel.setBorder(new CompoundBorder(
-            new EmptyBorder(2, 2, 2, 2),
-            new CompoundBorder(new LineBorder(Color.BLACK,
-                1), new EmptyBorder(2, 2, 2, 2))));
+        frame.getContentPane().add(
+            new JScrollPane(leftPanel), BorderLayout.WEST);
+        leftPanel.setBorder(
+            new EmptyBorder(4, 4, 4, 4));
+        leftPanel.setLayout(new BorderLayout());
+        controlPanel = new JPanel();
+        leftPanel.add(controlPanel, BorderLayout.NORTH);
+        JPanel lowerPanel = new JPanel();
+        lowerPanel.setLayout(new BoxLayout(lowerPanel,
+            BoxLayout.X_AXIS));
+        frame.getContentPane().add(lowerPanel,
+            BorderLayout.SOUTH);
+        buildEditor(controlPanel);
         frame.getContentPane().add(
             new JScrollPane(imageComponent),
-            BorderLayout.EAST);
+            BorderLayout.CENTER);
         frame.setSize(500, 400);
         frame.setLocationRelativeTo(null);
         frame.show();
@@ -106,6 +132,12 @@ public class FillEditor
             BoxLayout.Y_AXIS));
         JButton saveButton = new JButton("save");
         panel.add(saveButton);
+        JPanel innerSize = new JPanel();
+        innerSize.setLayout(new BorderLayout());
+        innerSize.add(widthField, BorderLayout.WEST);
+        innerSize.add(heightField, BorderLayout.EAST);
+        panel.add(new JLabel("Size:"));
+        panel.add(innerSize);
         panel.add(new JLabel("Regions:"));
         JButton addRegion = new JButton("Add");
         panel.add(addRegion);

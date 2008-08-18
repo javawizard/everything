@@ -46,7 +46,7 @@ public class FillImage implements java.io.Serializable
         g.fillRect(0, 0, this.width, this.height);
         for (Region region : regions)
         {
-            region.draw(g);
+            region.draw(g, this.width, this.height);
         }
         g.setTransform(oldTransform);
     }

@@ -11,7 +11,7 @@ public class FillParameter implements Serializable
     
     public enum Type
     {
-        COLOR, POINT, FLOAT
+        COLOR, POINT, FLOAT, BOOLEAN
     }
     
     /**

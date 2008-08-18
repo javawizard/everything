@@ -36,14 +36,14 @@ public class Region implements java.io.Serializable
     public ArrayList<Integer> cubicBezier = new ArrayList<Integer>();
     public FillPlugin plugin;
     
-    public void draw(Graphics2D g)
+    public void draw(Graphics2D g, int width, int height)
     {
         if (hide)
             return;
         Polygon bounds = getBounds();
         Shape oldClip = g.getClip();
         g.clip(bounds);
-        plugin.draw(this, g);
+        plugin.draw(this, g, width, height);
         g.setClip(oldClip);
     }
     
