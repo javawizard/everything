@@ -11,6 +11,12 @@ import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
+import java.io.Serializable;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Hashtable;
@@ -25,6 +31,7 @@ import javax.swing.JButton;
 import javax.swing.JCheckBox;
 import javax.swing.JComboBox;
 import javax.swing.JComponent;
+import javax.swing.JFileChooser;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
@@ -39,10 +46,12 @@ import javax.swing.border.EmptyBorder;
 import javax.swing.border.LineBorder;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
+import javax.swing.filechooser.FileNameExtensionFilter;
 
 import com.jidesoft.spinner.PointSpinner;
 import com.sun.org.apache.bcel.internal.generic.GETSTATIC;
 
+import net.sf.opengroove.client.Storage;
 import net.sf.opengroove.client.ui.ColorChooserButton;
 import net.sf.opengroove.projects.filleditor.plugins.GradientPlugin;
 
@@ -63,6 +72,7 @@ public class FillEditor
     }
     
     private static JFrame frame;
+    private static JFileChooser filechooser;
     private static Hashtable<String, Class<? extends FillPlugin>> plugins = new Hashtable<String, Class<? extends FillPlugin>>();
     private static Hashtable<Class, String> reversePlugins = new Hashtable<Class, String>();
     private static FillImage image;
@@ -118,10 +128,85 @@ public class FillEditor
     private static JSpinner ySpinner;
     
     /**
+     * Writes the specified object to the specified file, using the class
+     * {@link java.io.ObjectOutputStream}
+     * 
+     * @param object
+     *            The object to write
+     * @param file
+     *            The file to write the object to
+     */
+    private static void writeObjectToFile(
+        Serializable object, File file)
+    {
+        try
+        {
+            ObjectOutputStream oos = new ObjectOutputStream(
+                new FileOutputStream(file));
+            oos.writeObject(object);
+            oos.flush();
+            oos.close();
+        }
+        catch (Exception ex)
+        {
+            throw new RuntimeException(ex);
+        }
+    }
+    
+    /**
+     * Reads an object from the file specified.
+     * 
+     * @param file
+     *            The file to read an object from
+     * @return An object, read from the file specified. Only the first object is
+     *         read, so if the file contains multiple objects, they will not be
+     *         returned.
+     */
+    private static Serializable readObjectFromFile(File file)
+    {
+        try
+        {
+            ObjectInputStream ois = new ObjectInputStream(
+                new FileInputStream(file));
+            Object object = ois.readObject();
+            ois.close();
+            return (Serializable) object;
+        }
+        catch (Exception ex)
+        {
+            throw new RuntimeException(ex);
+        }
+    }
+    
+    /**
      * @param args
      */
     public static void main(String[] args)
     {
+        filechooser = new JFileChooser();
+        filechooser.setSelectedFile(new File("."));
+        filechooser
+            .setFileFilter(new FileNameExtensionFilter(
+                "FillEditor files", "fdsc"));
+        filechooser.setMultiSelectionEnabled(false);
+        JFrame testframe = new JFrame(
+            "Choose an image - FillEditor - OpenGroove");
+        testframe.setLocationRelativeTo(null);
+        testframe.show();
+        if (filechooser.showOpenDialog(testframe) == JFileChooser.APPROVE_OPTION)
+        {
+            testframe.dispose();
+            image = (FillImage) readObjectFromFile(filechooser
+                .getSelectedFile());
+        }
+        else
+        {
+            testframe.dispose();
+            image = new FillImage();
+            image.background = Color.WHITE;
+            image.width = 300;
+            image.height = 200;
+        }
         plugins.put("Dual Gradient", GradientPlugin.class);
         for (Map.Entry<String, Class<? extends FillPlugin>> entry : plugins
             .entrySet())
@@ -130,10 +215,6 @@ public class FillEditor
                 .getKey());
         }
         // TODO: replace with an option to create new or load from file
-        image = new FillImage();
-        image.background = Color.WHITE;
-        image.width = 300;
-        image.height = 200;
         widthField = new JTextField(5);
         heightField = new JTextField(5);
         widthField.setText("" + image.width);
@@ -354,7 +435,24 @@ public class FillEditor
         panel.removeAll();
         panel.setLayout(new BoxLayout(panel,
             BoxLayout.Y_AXIS));
-        JButton saveButton = new JButton("save");
+        JButton saveButton = new JButton(" save ");
+        saveButton.setBorder(BorderFactory
+            .createLineBorder(Color.GRAY, 1));
+        saveButton.addActionListener(new ActionListener()
+        {
+            
+            @Override
+            public void actionPerformed(ActionEvent e)
+            {
+                if (filechooser.showSaveDialog(frame) == JFileChooser.APPROVE_OPTION)
+                {
+                    writeObjectToFile(image, filechooser
+                        .getSelectedFile());
+                    JOptionPane.showMessageDialog(frame,
+                        "Saved.");
+                }
+            }
+        });
         panel.add(saveButton);
         JPanel innerSize = new JPanel();
         innerSize.setLayout(new BorderLayout());
@@ -404,7 +502,9 @@ public class FillEditor
         addType.setBorder(BorderFactory.createLineBorder(
             Color.GRAY, 1));
         panel.add(addType);
-        JButton addRegion = new JButton("Add");
+        JButton addRegion = new JButton(" Add ");
+        addRegion.setBorder(BorderFactory.createLineBorder(
+            Color.GRAY, 1));
         addRegion.addActionListener(new ActionListener()
         {
             
@@ -752,9 +852,9 @@ public class FillEditor
         panel.invalidate();
         panel.validate();
         panel.repaint();
-        frame.invalidate();
-        frame.validate();
-        frame.repaint();
+        frame.getContentPane().invalidate();
+        frame.getContentPane().validate();
+        frame.getContentPane().repaint();
         panel.invalidate();
         panel.validate();
         panel.repaint();
