@@ -8,6 +8,9 @@ import java.awt.Graphics2D;
 import java.awt.Point;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Hashtable;
@@ -168,6 +171,29 @@ public class FillEditor
             BoxLayout.X_AXIS));
         frame.getContentPane().add(lowerPanel,
             BorderLayout.SOUTH);
+        imageComponent.addMouseListener(new MouseAdapter()
+        {
+            
+            @Override
+            public void mouseClicked(MouseEvent e)
+            {
+                if (selectedPoint != null)
+                {
+                    Point position = e.getPoint();
+                    highlightedPoint = position;
+                    if (selectedPoint.isParameter)
+                    {
+                        selectedPoint.parameter.value = position;
+                    }
+                    else
+                    {
+                        selectedPoint.region.points.set(
+                            selectedPoint.index, position);
+                    }
+                    imageComponent.repaint();
+                }
+            }
+        });
         rebuild();
         frame.getContentPane().add(
             new JScrollPane(imageComponent),
@@ -217,10 +243,30 @@ public class FillEditor
                 }
             });
         panel.add(new JLabel("Regions:"));
+        JButton deselectButton = new JButton("de-select");
+        final ButtonGroup pointGroup = new ButtonGroup();
+        deselectButton
+            .addActionListener(new ActionListener()
+            {
+                
+                @Override
+                public void actionPerformed(ActionEvent e)
+                {
+                    highlightedPoint = null;
+                    selectedPoint = null;
+                    pointGroup.clearSelection();
+                    imageComponent.repaint();
+                }
+            });
+        deselectButton.setBorder(BorderFactory
+            .createLineBorder(Color.GRAY, 1));
+        panel.add(deselectButton);
         final JComboBox addType = new JComboBox(plugins
             .keySet().toArray());
         addType.setAlignmentX(0);
         addType.setAlignmentY(0);
+        addType.setBorder(BorderFactory.createLineBorder(
+            Color.GRAY, 1));
         panel.add(addType);
         JButton addRegion = new JButton("Add");
         addRegion.addActionListener(new ActionListener()
@@ -246,7 +292,6 @@ public class FillEditor
             }
         });
         panel.add(addRegion);
-        ButtonGroup pointGroup = new ButtonGroup();
         for (int r = 0; r < image.regions.size(); r++)
         {
             final int regionIndex = r;
@@ -316,6 +361,35 @@ public class FillEditor
             regionControls.setAlignmentX(0);
             regionControls.setAlignmentY(0);
             panel.add(regionControls);
+            JCheckBox hideRegion = new JCheckBox("hide");
+            JCheckBox outlineCheckbox = new JCheckBox(
+                "outline");
+            hideRegion.setSelected(region.hide);
+            outlineCheckbox.setSelected(region.outline);
+            hideRegion
+                .addActionListener(new ActionListener()
+                {
+                    
+                    @Override
+                    public void actionPerformed(
+                        ActionEvent e)
+                    {
+                        // TODO Auto-generated method stub
+                        
+                    }
+                });
+            outlineCheckbox
+                .addActionListener(new ActionListener()
+                {
+                    
+                    @Override
+                    public void actionPerformed(
+                        ActionEvent e)
+                    {
+                        // TODO Auto-generated method stub
+                        
+                    }
+                });
             for (int p = 0; p < region.plugin
                 .getParameters().length; p++)
             {
@@ -473,6 +547,24 @@ public class FillEditor
                 pointButton.setBorder(BorderFactory
                     .createLineBorder(Color.GRAY, 1));
                 pointGroup.add(pointButton);
+                pointButton
+                    .addChangeListener(new ChangeListener()
+                    {
+                        
+                        @Override
+                        public void stateChanged(
+                            ChangeEvent e)
+                        {
+                            PointSelection selection = new PointSelection();
+                            selection.isParameter = false;
+                            selection.region = region;
+                            selection.index = pointIndex;
+                            selectedPoint = selection;
+                            highlightedPoint = region.points
+                                .get(pointIndex);
+                            imageComponent.repaint();
+                        }
+                    });
                 pointControls.add(pointButton);
                 pointControls.add(new JLabel(" "));
                 final JCheckBox bezierCheckbox = new JCheckBox(

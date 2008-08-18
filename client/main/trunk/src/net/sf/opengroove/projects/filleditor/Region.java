@@ -1,5 +1,6 @@
 package net.sf.opengroove.projects.filleditor;
 
+import java.awt.Color;
 import java.awt.Graphics2D;
 import java.awt.Point;
 import java.awt.Polygon;
@@ -21,11 +22,17 @@ public class Region implements java.io.Serializable
      */
     public ArrayList<Point> points = new ArrayList<Point>();
     /**
-     * If this is true, then calls to draw() won't do anything. This can be used
-     * to hide a region during editing, so that other regions can be seen
-     * better.
+     * If this is true, then calls to draw() won't do anything, except for
+     * outlining if {@link #outline} is true. This can be used to hide a region
+     * during editing, so that other regions can be seen better.
      */
     public transient boolean hide = false;
+    /**
+     * If this is true, a dark-green outline of this region's boundaries, with
+     * bezier curves resolved, will be drawn over the region. This can be used
+     * when editing a region to see exactly what area it takes up.
+     */
+    public transient boolean outline = false;
     /**
      * The starting indexes of any sets of 3 points that should define a bezier
      * curve. For example, if there are 6 points, and this array contains one
@@ -38,13 +45,17 @@ public class Region implements java.io.Serializable
     
     public void draw(Graphics2D g, int width, int height)
     {
-        if (hide)
-            return;
         Polygon bounds = getBounds();
         Shape oldClip = g.getClip();
         g.clip(bounds);
-        plugin.draw(this, g, width, height);
+        if (!hide)
+            plugin.draw(this, g, width, height);
         g.setClip(oldClip);
+        if (outline)
+        {
+            g.setColor(Color.GREEN.darker());
+            g.drawPolygon(bounds);
+        }
     }
     
     /**
