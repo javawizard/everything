@@ -17,6 +17,9 @@ public class FillEditor
         public void paintComponent(Graphics g)
         {
             Graphics2D g2 = (Graphics2D) g;
+            if (image != null)
+                image.draw(g2, image.width, image.height);
+            g2.
         }
     };
     

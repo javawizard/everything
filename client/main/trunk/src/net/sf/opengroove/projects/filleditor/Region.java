@@ -3,6 +3,7 @@ package net.sf.opengroove.projects.filleditor;
 import java.awt.Graphics2D;
 import java.awt.Point;
 import java.awt.Polygon;
+import java.awt.Shape;
 import java.util.ArrayList;
 import java.util.Arrays;
 
@@ -40,8 +41,10 @@ public class Region implements java.io.Serializable
         if (hide)
             return;
         Polygon bounds = getBounds();
-        g.setClip(bounds);
+        Shape oldClip = g.getClip();
+        g.clip(bounds);
         plugin.draw(this, g);
+        g.setClip(oldClip);
     }
     
     /**

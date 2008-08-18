@@ -38,14 +38,16 @@ public class FillImage implements java.io.Serializable
             / (this.height * 1.0);
         // TODO: create a transform off of the scale values just computed to
         // scale the graphics
+        AffineTransform oldTransform = g.getTransform();
         AffineTransform transform = AffineTransform
             .getScaleInstance(scaleX, scaleY);
-        g.setTransform(transform);
+        g.transform(transform);
         g.setColor(background);
         g.fillRect(0, 0, this.width, this.height);
         for (Region region : regions)
         {
             region.draw(g);
         }
+        g.setTransform(oldTransform);
     }
 }
