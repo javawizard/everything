@@ -16,9 +16,11 @@ import java.util.Collections;
 import java.util.Hashtable;
 import java.util.Map;
 
+import javax.swing.AbstractSpinnerModel;
 import javax.swing.BorderFactory;
 import javax.swing.BoxLayout;
 import javax.swing.ButtonGroup;
+import javax.swing.InputVerifier;
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
 import javax.swing.JComboBox;
@@ -28,13 +30,18 @@ import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
+import javax.swing.JSpinner;
 import javax.swing.JTextField;
 import javax.swing.JToggleButton;
+import javax.swing.SpinnerModel;
 import javax.swing.border.CompoundBorder;
 import javax.swing.border.EmptyBorder;
 import javax.swing.border.LineBorder;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
+
+import com.jidesoft.spinner.PointSpinner;
+import com.sun.org.apache.bcel.internal.generic.GETSTATIC;
 
 import net.sf.opengroove.client.ui.ColorChooserButton;
 import net.sf.opengroove.projects.filleditor.plugins.GradientPlugin;
@@ -106,6 +113,9 @@ public class FillEditor
     
     private static JPanel leftPanel = new JPanel();
     private static JPanel controlPanel = new JPanel();
+    private static PointSpinner pointSpinner;
+    private static JSpinner xSpinner;
+    private static JSpinner ySpinner;
     
     /**
      * @param args
@@ -171,8 +181,67 @@ public class FillEditor
             BoxLayout.X_AXIS));
         frame.getContentPane().add(lowerPanel,
             BorderLayout.SOUTH);
+        final JLabel posLabel = new JLabel(" 0,0 ");
+        lowerPanel.add(posLabel);
+        xSpinner = new JSpinner(new AbstractSpinnerModel()
+        {
+            private int value;
+            
+            @Override
+            public Object getNextValue()
+            {
+                if (value >= image.width)
+                    return value;
+                return value + 1;
+            }
+            
+            @Override
+            public Object getPreviousValue()
+            {
+                if (value <= 0)
+                    return value;
+                return value - 1;
+            }
+            
+            @Override
+            public Object getValue()
+            {
+                return value;
+            }
+            
+            @Override
+            public void setValue(Object value)
+            {
+                this.value = (Integer) value;
+                Point current = getCurrentPosition();
+                if (current != null)
+                {
+                    setCurrentPosition(new Point(
+                        this.value, current.y));
+                }
+                fireStateChanged();
+            }
+        });
+        ySpinner = new JSpinner();
+        lowerPanel.add(xSpinner);
+        lowerPanel.add(ySpinner);
         imageComponent.addMouseListener(new MouseAdapter()
         {
+            public void mouseMoved(MouseEvent e)
+            {
+                Point position = e.getPoint();
+                if (position.x > image.width)
+                    position.x = image.width;
+                if (position.y > image.width)
+                    position.y = image.width;
+                posLabel.setText(" " + position.x + ","
+                    + position.y + " ");
+            }
+            
+            public void mouseDragged(MouseEvent e)
+            {
+                mouseMoved(e);
+            }
             
             @Override
             public void mouseClicked(MouseEvent e)
@@ -180,17 +249,11 @@ public class FillEditor
                 if (selectedPoint != null)
                 {
                     Point position = e.getPoint();
-                    highlightedPoint = position;
-                    if (selectedPoint.isParameter)
-                    {
-                        selectedPoint.parameter.value = position;
-                    }
-                    else
-                    {
-                        selectedPoint.region.points.set(
-                            selectedPoint.index, position);
-                    }
-                    imageComponent.repaint();
+                    if (position.x > image.width)
+                        position.x = image.width;
+                    if (position.y > image.width)
+                        position.y = image.width;
+                    setCurrentPosition(position);
                 }
             }
         });
@@ -201,6 +264,36 @@ public class FillEditor
         frame.setSize(650, 400);
         frame.setLocationRelativeTo(null);
         frame.show();
+    }
+    
+    protected static Point getCurrentPosition()
+    {
+        if (selectedPoint == null)
+            return null;
+        return (Point) (selectedPoint.isParameter ? (!(selectedPoint.parameter.value instanceof Point) ? new Point(
+            0, 0)
+            : selectedPoint.parameter.value)
+            : selectedPoint.region.points
+                .get(selectedPoint.index));
+    }
+    
+    protected static void setCurrentPosition(Point position)
+    {
+        if (selectedPoint == null)
+            return;
+        highlightedPoint = position;
+        if (selectedPoint.isParameter)
+        {
+            selectedPoint.parameter.value = position;
+        }
+        else
+        {
+            selectedPoint.region.points.set(
+                selectedPoint.index, position);
+        }
+        xSpinner.setValue(position.x);
+        ySpinner.setValue(position.y);
+        imageComponent.repaint();
     }
     
     public static void rebuild()
@@ -256,6 +349,8 @@ public class FillEditor
                     selectedPoint = null;
                     pointGroup.clearSelection();
                     imageComponent.repaint();
+                    highlightedPoint = null;
+                    selectedPoint = null;
                 }
             });
         deselectButton.setBorder(BorderFactory
@@ -361,8 +456,9 @@ public class FillEditor
             regionControls.setAlignmentX(0);
             regionControls.setAlignmentY(0);
             panel.add(regionControls);
-            JCheckBox hideRegion = new JCheckBox("hide");
-            JCheckBox outlineCheckbox = new JCheckBox(
+            final JCheckBox hideRegion = new JCheckBox(
+                "hide");
+            final JCheckBox outlineCheckbox = new JCheckBox(
                 "outline");
             hideRegion.setSelected(region.hide);
             outlineCheckbox.setSelected(region.outline);
@@ -374,8 +470,9 @@ public class FillEditor
                     public void actionPerformed(
                         ActionEvent e)
                     {
-                        // TODO Auto-generated method stub
-                        
+                        region.hide = hideRegion
+                            .isSelected();
+                        imageComponent.repaint();
                     }
                 });
             outlineCheckbox
@@ -386,10 +483,13 @@ public class FillEditor
                     public void actionPerformed(
                         ActionEvent e)
                     {
-                        // TODO Auto-generated method stub
-                        
+                        region.outline = outlineCheckbox
+                            .isSelected();
+                        imageComponent.repaint();
                     }
                 });
+            panel.add(hideRegion);
+            panel.add(outlineCheckbox);
             for (int p = 0; p < region.plugin
                 .getParameters().length; p++)
             {
@@ -593,6 +693,7 @@ public class FillEditor
                                 region.cubicBezier
                                     .remove(new Integer(
                                         pointIndex));
+                            imageComponent.repaint();
                         }
                     });
                 pointControls.add(bezierCheckbox);
