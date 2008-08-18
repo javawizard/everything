@@ -8,9 +8,12 @@ import java.awt.Graphics2D;
 import java.awt.Point;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.util.Hashtable;
 
 import javax.swing.BoxLayout;
+import javax.swing.ButtonGroup;
 import javax.swing.JButton;
+import javax.swing.JComboBox;
 import javax.swing.JComponent;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
@@ -44,7 +47,7 @@ public class FillEditor
     }
     
     private static JFrame frame;
-    private static Class<FillPlugin>[] plugins = new Class[] { GradientPlugin.class };
+    private static Hashtable<String, Class<? extends FillPlugin>> plugins = new Hashtable<String, Class<? extends FillPlugin>>();
     private static FillImage image;
     private static JTextField widthField;
     private static JTextField heightField;
@@ -99,6 +102,7 @@ public class FillEditor
      */
     public static void main(String[] args)
     {
+        plugins.put("Dual Gradient", GradientPlugin.class);
         // TODO: replace with an option to create new or load from file
         image = new FillImage();
         image.background = Color.WHITE;
@@ -177,7 +181,8 @@ public class FillEditor
         final ColorChooserButton backgroundChooser = new ColorChooserButton(
             image.background);
         panel.add(backgroundChooser);
-        backgroundChooser.addColorChangeListener(new ChangeListener()
+        backgroundChooser
+            .addColorChangeListener(new ChangeListener()
             {
                 
                 @Override
@@ -189,8 +194,19 @@ public class FillEditor
                 }
             });
         panel.add(new JLabel("Regions:"));
+        JComboBox addType = new JComboBox(plugins.keySet()
+            .toArray());
+        addType.setAlignmentX(0);
+        addType.setAlignmentY(0);
+        panel.add(addType);
         JButton addRegion = new JButton("Add");
         panel.add(addRegion);
+        ButtonGroup pointGroup = new ButtonGroup();
+        for (int r = 0; r < image.regions.size(); r++)
+        {
+            Region region = image.regions.get(r);
+            panel.add(new JLabel("R" + (r + 1) + ":"));
+        }
     }
     
 }
