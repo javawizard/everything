@@ -29,11 +29,11 @@ public class Region implements java.io.Serializable
     public ArrayList<Integer> cubicBezier = new ArrayList<Integer>();
     public FillPlugin plugin;
     
-    public void draw(Graphics2D g, double scaleX,
-        double scaleY)
+    public void draw(Graphics2D g)
     {
         Polygon bounds = getBounds();
-        
+        g.setClip(bounds);
+        plugin.draw(this, g);
     }
     
     /**

@@ -36,7 +36,12 @@ public interface FillPlugin extends Serializable
      * modify areas outside of the region specified; the resulting draw
      * operations will be trimmed to fit the region area. In fact, plugins are
      * encouraged to draw outside of their region, since the user may choose to
-     * apply a transform such as a bezier curve to the region.
+     * apply a transform such as a bezier curve to the region.<br/><br/>
+     * 
+     * Implementations of this method should not set the clip on the graphics
+     * object passed in, unless they know for sure that they are not drawing out
+     * of the region's bounds. The graphics passed in comes with a clip that
+     * restricts drawing to the region's bounds.
      * 
      * @param region
      *            The region that this fill is to be applied to
@@ -49,6 +54,5 @@ public interface FillPlugin extends Serializable
      *            A value that any Y coordinates of any points should be
      *            multiplied by
      */
-    public void draw(Region region, Graphics2D g,
-        double scaleX, double scaleY);
+    public void draw(Region region, Graphics2D g);
 }

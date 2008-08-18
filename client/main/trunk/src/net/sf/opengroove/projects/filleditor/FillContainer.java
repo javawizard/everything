@@ -1,5 +1,8 @@
 package net.sf.opengroove.projects.filleditor;
 
+import java.awt.Graphics;
+import java.awt.Graphics2D;
+
 import javax.swing.JPanel;
 
 /**
@@ -13,4 +16,20 @@ import javax.swing.JPanel;
 public class FillContainer extends JPanel
 {
     private FillImage image;
+    
+    public FillContainer(FillImage image)
+    {
+        this.image = image;
+    }
+    
+    public void setFillImage(FillImage image)
+    {
+        this.image = image;
+    }
+    
+    public void paintComponent(Graphics g1)
+    {
+        Graphics2D g = (Graphics2D) g1;
+        
+    }
 }
