@@ -177,8 +177,7 @@ public class FillEditor
         final ColorChooserButton backgroundChooser = new ColorChooserButton(
             image.background);
         panel.add(backgroundChooser);
-        backgroundChooser.getChooser().getSelectionModel()
-            .addChangeListener(new ChangeListener()
+        backgroundChooser.addColorChangeListener(new ChangeListener()
             {
                 
                 @Override
