@@ -1,5 +1,6 @@
 package net.sf.opengroove.client.ui.frames;
 import java.awt.BorderLayout;
+import java.awt.GridBagLayout;
 
 import javax.swing.WindowConstants;
 import net.sf.opengroove.client.ui.FillContainer;
@@ -46,8 +47,14 @@ public class LoginFrame extends javax.swing.JFrame {
             getContentPane().setLayout(thisLayout);
             {
                 fillContainer = new FillContainer();
+                GridBagLayout fillContainerLayout = new GridBagLayout();
                 getContentPane().add(fillContainer, BorderLayout.CENTER);
                 fillContainer.setFillImageName("loginframe");
+                fillContainer.setLayout(fillContainerLayout);
+                fillContainerLayout.rowWeights = new double[] {0.1, 0.1, 0.1, 0.1};
+                fillContainerLayout.rowHeights = new int[] {7, 7, 7, 7};
+                fillContainerLayout.columnWeights = new double[] {0.1, 0.1, 0.1, 0.1};
+                fillContainerLayout.columnWidths = new int[] {7, 7, 7, 7};
             }
             pack();
             this.setSize(335, 199);
