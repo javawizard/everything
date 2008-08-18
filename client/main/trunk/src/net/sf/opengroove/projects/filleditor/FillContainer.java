@@ -30,6 +30,6 @@ public class FillContainer extends JPanel
     public void paintComponent(Graphics g1)
     {
         Graphics2D g = (Graphics2D) g1;
-        
+        image.draw(g, getWidth(), getHeight());
     }
 }
