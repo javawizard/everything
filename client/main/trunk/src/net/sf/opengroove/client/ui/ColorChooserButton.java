@@ -11,6 +11,8 @@ import javax.swing.Icon;
 import javax.swing.JButton;
 import javax.swing.JColorChooser;
 import javax.swing.JPopupMenu;
+import javax.swing.event.ChangeEvent;
+import javax.swing.event.ChangeListener;
 
 public class ColorChooserButton extends JButton
 {
@@ -50,24 +52,21 @@ public class ColorChooserButton extends JButton
                 g.fillRect(x, y, getIconWidth(),
                     getIconHeight());
                 g.setColor(Color.BLACK);
-                g.drawRect(x, y, getIconWidth(),
-                    getIconHeight());
             }
         });
         menu = new JPopupMenu();
-        ok = new JButton("OK");
         menu.setLayout(new BorderLayout());
-        menu.add(ok, BorderLayout.SOUTH);
         menu.add(chooser, BorderLayout.CENTER);
-        ok.addActionListener(new ActionListener()
-        {
-            
-            @Override
-            public void actionPerformed(ActionEvent e)
+        chooser.getSelectionModel().addChangeListener(
+            new ChangeListener()
             {
-                menu.hide();
-            }
-        });
+                
+                @Override
+                public void stateChanged(ChangeEvent e)
+                {
+                    ColorChooserButton.this.repaint();
+                }
+            });
         addActionListener(new ActionListener()
         {
             
