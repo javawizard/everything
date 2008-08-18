@@ -42,6 +42,13 @@ public interface FillPlugin extends Serializable
      *            The region that this fill is to be applied to
      * @param g
      *            The graphics to draw this fill on
+     * @param scaleX
+     *            A value that any X coordinates of any points should be
+     *            multiplied by
+     * @param scaleY
+     *            A value that any Y coordinates of any points should be
+     *            multiplied by
      */
-    public void draw(Region region, Graphics2D g);
+    public void draw(Region region, Graphics2D g,
+        double scaleX, double scaleY);
 }
