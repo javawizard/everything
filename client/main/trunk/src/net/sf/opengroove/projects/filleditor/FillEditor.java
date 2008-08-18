@@ -17,6 +17,7 @@ import javax.swing.BorderFactory;
 import javax.swing.BoxLayout;
 import javax.swing.ButtonGroup;
 import javax.swing.JButton;
+import javax.swing.JCheckBox;
 import javax.swing.JComboBox;
 import javax.swing.JComponent;
 import javax.swing.JFrame;
@@ -25,6 +26,7 @@ import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTextField;
+import javax.swing.JToggleButton;
 import javax.swing.border.CompoundBorder;
 import javax.swing.border.EmptyBorder;
 import javax.swing.border.LineBorder;
@@ -117,6 +119,8 @@ public class FillEditor
         // TODO: replace with an option to create new or load from file
         image = new FillImage();
         image.background = Color.WHITE;
+        image.width = 300;
+        image.height = 200;
         widthField = new JTextField(5);
         heightField = new JTextField(5);
         widthField.setText("" + image.width);
@@ -168,7 +172,7 @@ public class FillEditor
         frame.getContentPane().add(
             new JScrollPane(imageComponent),
             BorderLayout.CENTER);
-        frame.setSize(500, 400);
+        frame.setSize(650, 400);
         frame.setLocationRelativeTo(null);
         frame.show();
     }
@@ -244,7 +248,7 @@ public class FillEditor
         for (int r = 0; r < image.regions.size(); r++)
         {
             final int regionIndex = r;
-            Region region = image.regions.get(r);
+            final Region region = image.regions.get(r);
             JPanel regionControls = new JPanel();
             regionControls.setLayout(new BoxLayout(
                 regionControls, BoxLayout.X_AXIS));
@@ -253,13 +257,13 @@ public class FillEditor
                 + "("
                 + reversePlugins.get(region.plugin
                     .getClass()) + ")" + ":"));
-            JButton regionUp = new JButton("↑");
+            JButton regionUp = new JButton(" ↑ ");
             if (r == 0)
                 regionUp.setEnabled(false);
-            JButton regionDown = new JButton("↓");
+            JButton regionDown = new JButton(" ↓ ");
             if ((r + 1) == image.regions.size())
                 regionDown.setEnabled(false);
-            JButton regionDelete = new JButton("X");
+            JButton regionDelete = new JButton(" X ");
             regionUp.setBorder(BorderFactory
                 .createLineBorder(Color.GRAY));
             regionDown.setBorder(BorderFactory
@@ -303,7 +307,9 @@ public class FillEditor
                     }
                 });
             regionControls.add(regionUp);
+            regionControls.add(new JLabel(" "));
             regionControls.add(regionDown);
+            regionControls.add(new JLabel(" "));
             regionControls.add(regionDelete);
             regionControls.setAlignmentX(0);
             regionControls.setAlignmentY(0);
@@ -314,6 +320,69 @@ public class FillEditor
                 FillParameter parameter = region.plugin
                     .getParameters()[p];
                 final int parameterIndex = p;
+            }
+            JPanel regionPointControls = new JPanel();
+            regionPointControls.setLayout(new BoxLayout(
+                regionPointControls, BoxLayout.X_AXIS));
+            regionPointControls.setAlignmentX(0);
+            regionPointControls.setAlignmentY(0);
+            regionPointControls.add(new JLabel("Points:"));
+            JButton addPointButton = new JButton(" + ");
+            addPointButton
+                .addActionListener(new ActionListener()
+                {
+                    
+                    @Override
+                    public void actionPerformed(
+                        ActionEvent e)
+                    {
+                        region.points.add(new Point(0, 0));
+                        rebuild();
+                    }
+                });
+            JButton removePointButton = new JButton(" - ");
+            removePointButton
+                .addActionListener(new ActionListener()
+                {
+                    
+                    @Override
+                    public void actionPerformed(
+                        ActionEvent e)
+                    {
+                        region.points.remove(region.points
+                            .size() - 1);
+                        rebuild();
+                    }
+                });
+            removePointButton.setEnabled(region.points
+                .size() > 0);
+            addPointButton.setBorder(BorderFactory
+                .createLineBorder(Color.GRAY));
+            removePointButton.setBorder(BorderFactory
+                .createLineBorder(Color.GRAY));
+            regionPointControls.add(addPointButton);
+            regionPointControls.add(new JLabel(" "));
+            regionPointControls.add(removePointButton);
+            panel.add(regionPointControls);
+            for (int p = 0; p < region.points.size(); p++)
+            {
+                final int pointIndex = p;
+                JPanel pointControls = new JPanel();
+                pointControls.setLayout(new BoxLayout(
+                    pointControls, BoxLayout.X_AXIS));
+                pointControls.setAlignmentX(0);
+                pointControls.setAlignmentY(0);
+                JToggleButton pointButton = new JToggleButton(
+                    "Point " + (p + 1));
+                pointButton.setBorder(BorderFactory
+                    .createLineBorder(Color.GRAY, 1));
+                pointGroup.add(pointButton);
+                pointControls.add(pointButton);
+                pointControls.add(new JLabel(" "));
+                JCheckBox bezierCheckbox = new JCheckBox(
+                    "bezier");
+                pointControls.add(bezierCheckbox);
+                panel.add(pointControls);
             }
         }
         panel.invalidate();
