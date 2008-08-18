@@ -20,6 +20,12 @@ public class Region implements java.io.Serializable
      */
     public ArrayList<Point> points = new ArrayList<Point>();
     /**
+     * If this is true, then calls to draw() won't do anything. This can be used
+     * to hide a region during editing, so that other regions can be seen
+     * better.
+     */
+    public transient boolean hide = false;
+    /**
      * The starting indexes of any sets of 3 points that should define a bezier
      * curve. For example, if there are 6 points, and this array contains one
      * element, namely the number 1, then the second, third, and fourth points
@@ -31,6 +37,8 @@ public class Region implements java.io.Serializable
     
     public void draw(Graphics2D g)
     {
+        if (hide)
+            return;
         Polygon bounds = getBounds();
         g.setClip(bounds);
         plugin.draw(this, g);
