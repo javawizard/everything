@@ -1,5 +1,8 @@
 package net.sf.opengroove.projects.filleditor;
 
+import java.awt.Graphics2D;
+import java.awt.Polygon;
+
 import com.jhlabs.image.CellularFilter.Point;
 
 public class Region implements java.io.Serializable
@@ -22,4 +25,15 @@ public class Region implements java.io.Serializable
      */
     public int[] cubicBezier;
     public FillPlugin plugin;
+    
+    public void draw(Graphics2D g, double scaleX,
+        double scaleY)
+    {
+        
+    }
+    
+    private Polygon getBounds()
+    {
+        Polygon polygon = new Polygon();
+    }
 }

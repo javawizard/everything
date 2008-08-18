@@ -22,13 +22,17 @@ public class FillImage implements java.io.Serializable
     public int height;
     
     /**
-     * Draws this FillImage onto the graphics object specified.
+     * Draws this FillImage onto the graphics object specified, scaling to the
+     * width and height specified if necessary.
      * 
      * @param g
      *            The graphics object to draw this image onto
      */
-    public void draw(Graphics2D g)
+    public void draw(Graphics2D g, int width, int height)
     {
+        double scaleX = (width * 1.0) / (this.width * 1.0);
+        double scaleY = (height * 1.0)
+            / (this.height * 1.0);
         
     }
     
