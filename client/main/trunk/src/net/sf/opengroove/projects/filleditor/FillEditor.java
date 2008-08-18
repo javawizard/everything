@@ -47,7 +47,7 @@ public class FillEditor
          * apply.
          */
         public boolean isParameter;
-        public String parameter;
+        public FillParameter parameter;
         public Region region;
         public int index;
     }
@@ -59,15 +59,15 @@ public class FillEditor
     private static JTextField widthField;
     private static JTextField heightField;
     private static Point highlightedPoint;
-    private PointSelection selectedPoint;
+    private static PointSelection selectedPoint;
     public static final int BOX_WIDTH = 8;
     public static final int BOX_HEIGHT = 8;
     public static final int HALF_BOX_WIDTH = BOX_WIDTH / 2;
     public static final int HALF_BOX_HEIGHT = BOX_HEIGHT / 2;
-    public static final Color BOX_INNER_1 = new Color(100,
-        100, 100, 160);
-    public static final Color BOX_INNER_2 = new Color(255,
+    public static final Color BOX_INNER_1 = new Color(255,
         0, 0, 160);
+    public static final Color BOX_INNER_2 = new Color(255,
+        255, 0, 160);
     private static JComponent imageComponent = new JComponent()
     {
         public void paintComponent(Graphics g)
@@ -189,6 +189,8 @@ public class FillEditor
      */
     public static void buildEditor(JPanel panel)
     {
+        selectedPoint = null;
+        highlightedPoint = null;
         panel.removeAll();
         panel.setLayout(new BoxLayout(panel,
             BoxLayout.Y_AXIS));
@@ -387,6 +389,27 @@ public class FillEditor
                         .setToolTipText(parameter.description);
                     pointButton.setBorder(BorderFactory
                         .createLineBorder(Color.GRAY, 1));
+                    pointButton
+                        .addChangeListener(new ChangeListener()
+                        {
+                            
+                            @Override
+                            public void stateChanged(
+                                ChangeEvent e)
+                            {
+                                PointSelection selection = new PointSelection();
+                                selection.isParameter = true;
+                                selection.parameter = parameter;
+                                selection.region = region;
+                                selectedPoint = selection;
+                                if (parameter.value == null
+                                    || !(parameter.value instanceof Point))
+                                    parameter.value = new Point(
+                                        0, 0);
+                                highlightedPoint = (Point) parameter.value;
+                                imageComponent.repaint();
+                            }
+                        });
                     pointGroup.add(pointButton);
                     panel.add(pointButton);
                 }
