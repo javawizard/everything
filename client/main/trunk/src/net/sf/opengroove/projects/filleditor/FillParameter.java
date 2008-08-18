@@ -1,7 +1,13 @@
 package net.sf.opengroove.projects.filleditor;
 
-public class FillParameter
+import java.io.Serializable;
+
+public class FillParameter implements Serializable
 {
+    /**
+     * 
+     */
+    private static final long serialVersionUID = 2033861388607534050L;
     public enum Type
     {
         COLOR,POINT,FLOAT
