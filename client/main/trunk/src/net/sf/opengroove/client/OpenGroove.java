@@ -123,6 +123,8 @@ public class OpenGroove
     
     public static final Hashtable<String, UserContext> userContextMap = new Hashtable<String, UserContext>();
     
+    private static JFrame loginFrame;
+    
     /**
      * This is the icon that should be used as the icon for all Convergia
      * windows, as well as the tray icon.
@@ -995,6 +997,26 @@ public class OpenGroove
             Thread.sleep(2000);
             e.printStackTrace();
         }
+    }
+    
+    private static void initLoginFrame()
+    {
+        
+    }
+    
+    private static void showLoginFrame(String userid)
+    {
+        
+    }
+    
+    private static void login(String userid, String password)
+    {
+        
+    }
+    
+    private static void initAccountWizard()
+    {
+        
     }
     
     protected static boolean anyServerConnections()
@@ -2136,17 +2158,6 @@ public class OpenGroove
                 }
             });
         convergiaMenu.add(useWindowTransparencyItem);
-        FeatureManager.registerComponentHandler(
-            "launchbarConvergiaMenuItem",
-            new FeatureComponentHandler<JMenuItem>()
-            {
-                
-                public void registerComponent(String id,
-                    JMenuItem component)
-                {
-                    convergiaMenu.add(component);
-                }
-            });
         if (Storage
             .getSystemConfigProperty("autologinuser") != null
             && Storage
