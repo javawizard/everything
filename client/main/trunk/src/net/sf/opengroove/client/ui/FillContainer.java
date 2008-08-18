@@ -1,9 +1,11 @@
-package net.sf.opengroove.projects.filleditor;
+package net.sf.opengroove.client.ui;
 
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 
 import javax.swing.JPanel;
+
+import net.sf.opengroove.projects.filleditor.FillImage;
 
 /**
  * A FillContainer takes a FillImage and draws it as the background of itself.
