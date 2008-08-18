@@ -164,7 +164,7 @@ public class FillEditor
      *         read, so if the file contains multiple objects, they will not be
      *         returned.
      */
-    private static Serializable readObjectFromFile(File file)
+    public static Serializable readObjectFromFile(File file)
     {
         try
         {

@@ -2,6 +2,7 @@ package net.sf.opengroove.projects.filleditor;
 
 import java.awt.Color;
 import java.awt.Graphics2D;
+import java.awt.RenderingHints;
 import java.awt.geom.AffineTransform;
 import java.util.ArrayList;
 
@@ -33,6 +34,8 @@ public class FillImage implements java.io.Serializable
      */
     public void draw(Graphics2D g, int width, int height)
     {
+        g.setRenderingHint(RenderingHints.KEY_ANTIALIASING,
+            RenderingHints.VALUE_ANTIALIAS_ON);
         double scaleX = (width * 1.0) / (this.width * 1.0);
         double scaleY = (height * 1.0)
             / (this.height * 1.0);

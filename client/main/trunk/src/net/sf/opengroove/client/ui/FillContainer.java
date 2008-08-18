@@ -2,9 +2,11 @@ package net.sf.opengroove.client.ui;
 
 import java.awt.Graphics;
 import java.awt.Graphics2D;
+import java.io.File;
 
 import javax.swing.JPanel;
 
+import net.sf.opengroove.projects.filleditor.FillEditor;
 import net.sf.opengroove.projects.filleditor.FillImage;
 
 /**
@@ -17,11 +19,14 @@ import net.sf.opengroove.projects.filleditor.FillImage;
  */
 public class FillContainer extends JPanel
 {
+    private static File nameRelativeTo = new File(
+        "C:\\workspace3.0\\OpenGroove Client");
     private FillImage image;
     
-    public FillContainer(FillImage image)
+    private String fillName;
+    
+    public FillContainer()
     {
-        this.image = image;
     }
     
     public void setFillImage(FillImage image)
@@ -29,9 +34,32 @@ public class FillContainer extends JPanel
         this.image = image;
     }
     
+    public String getFillImageName()
+    {
+        return fillName;
+    }
+    
+    public void setFillImageName(String name)
+    {
+        try
+        {
+            this.image = (FillImage) FillEditor
+                .readObjectFromFile(new File(new File(
+                    nameRelativeTo, "backgrounds"), name
+                    + ".fdsc"));
+        }
+        catch (Exception e)
+        {
+            this.image = null;
+        }
+    }
+    
     public void paintComponent(Graphics g1)
     {
-        Graphics2D g = (Graphics2D) g1;
-        image.draw(g, getWidth(), getHeight());
+        if (image != null)
+        {
+            Graphics2D g = (Graphics2D) g1;
+            image.draw(g, getWidth(), getHeight());
+        }
     }
 }
