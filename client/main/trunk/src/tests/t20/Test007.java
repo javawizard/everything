@@ -1,6 +1,6 @@
-package tests;
+package tests.t20;
 
-public class Test008
+public class Test007
 {
 
 	/**
@@ -8,8 +8,7 @@ public class Test008
 	 */
 	public static void main(String[] args)
 	{
-		// TODO Auto-generated method stub
-
+		System.out.println("" + "!".hashCode());
 	}
 
 }

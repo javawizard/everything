@@ -1,4 +1,4 @@
-package tests;
+package tests.t20;
 
 import javax.swing.*;
 import javax.swing.event.HyperlinkEvent;

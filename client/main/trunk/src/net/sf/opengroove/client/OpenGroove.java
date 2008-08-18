@@ -125,6 +125,8 @@ public class OpenGroove
     
     private static JFrame loginFrame;
     
+    private static Wizard accountWizard;
+    
     /**
      * This is the icon that should be used as the icon for all Convergia
      * windows, as well as the tray icon.
@@ -1001,7 +1003,8 @@ public class OpenGroove
     
     private static void initLoginFrame()
     {
-        
+        loginFrame = new JFrame();
+        loginFrame.setAlwaysOnTop(true);
     }
     
     private static void showLoginFrame(String userid)

@@ -1,4 +1,4 @@
-package tests;
+package tests.t20;
 
 public class Test004
 {
