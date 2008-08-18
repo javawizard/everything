@@ -18,7 +18,48 @@ import java.applet.*;
 /* but they are internal to Curve - how do I arrange that? */
 public class BezierUtils
 {
-    public static Point2D[]
+    /**
+     * Creates a quadratic bezier curve. The resulting array contains the points
+     * for the curve.
+     * 
+     * @param p1
+     * @param p2
+     * @param p3
+     * @param p4
+     * @return
+     */
+    public static Point[] createQuadCurve(Point p1,
+        Point p2, Point p3, Point p4)
+    {
+        PathSegment segment = new PathSegment();
+        segment.add(p1);
+        Curve.addCurve(segment, new RealPoint(p2.x, p2.y),
+            new RealPoint(p3.x, p3.y), new RealPoint(p4.x,
+                p4.y));
+        Point[] points = new Point[segment.n];
+        for (int i = 0; i < points.length; i++)
+        {
+            points[i] = new Point(segment.x[i],
+                segment.y[i]);
+        }
+        return points;
+    }
+    
+    /**
+     * Creates a cubic bezier curve. Currently, this just calls
+     * <code>createQuadCurve(p1,p2,p2,p3)</code>
+     * 
+     * @param p1
+     * @param p2
+     * @param p3
+     * @return
+     */
+    public static Point[] createCubicCurve(Point p1,
+        Point p2, Point p3)
+    {
+        return createQuadCurve(p1, p2, p2, p3);
+    }
+    
     public static class ScaledInt
     {
         // scaled integers interpreted as m.n where n has 6 bits
