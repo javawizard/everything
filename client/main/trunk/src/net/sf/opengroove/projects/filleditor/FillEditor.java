@@ -21,7 +21,10 @@ import javax.swing.JTextField;
 import javax.swing.border.CompoundBorder;
 import javax.swing.border.EmptyBorder;
 import javax.swing.border.LineBorder;
+import javax.swing.event.ChangeEvent;
+import javax.swing.event.ChangeListener;
 
+import net.sf.opengroove.client.ui.ColorChooserButton;
 import net.sf.opengroove.projects.filleditor.plugins.GradientPlugin;
 
 public class FillEditor
@@ -121,6 +124,13 @@ public class FillEditor
                     JOptionPane.showMessageDialog(frame,
                         "Invalid size");
                 }
+                imageComponent.repaint();
+                imageComponent.invalidate();
+                imageComponent.validate();
+                imageComponent.repaint();
+                frame.invalidate();
+                frame.validate();
+                frame.repaint();
             }
         };
         widthField.addActionListener(sizeChangeListener);
@@ -163,8 +173,22 @@ public class FillEditor
         innerSize.setLayout(new BorderLayout());
         innerSize.add(widthField, BorderLayout.WEST);
         innerSize.add(heightField, BorderLayout.EAST);
-        panel.add(new JLabel("Size:"));
         panel.add(innerSize);
+        final ColorChooserButton backgroundChooser = new ColorChooserButton(
+            image.background);
+        panel.add(backgroundChooser);
+        backgroundChooser.getChooser().getSelectionModel()
+            .addChangeListener(new ChangeListener()
+            {
+                
+                @Override
+                public void stateChanged(ChangeEvent e)
+                {
+                    image.background = backgroundChooser
+                        .getChooser().getColor();
+                    imageComponent.repaint();
+                }
+            });
         panel.add(new JLabel("Regions:"));
         JButton addRegion = new JButton("Add");
         panel.add(addRegion);
