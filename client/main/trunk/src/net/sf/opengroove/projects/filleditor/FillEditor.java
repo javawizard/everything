@@ -210,7 +210,7 @@ public class FillEditor
                 public void stateChanged(ChangeEvent e)
                 {
                     image.background = backgroundChooser
-                        .getChooser().getColor();
+                        .getColor();
                     imageComponent.repaint();
                 }
             });
@@ -317,9 +317,79 @@ public class FillEditor
             for (int p = 0; p < region.plugin
                 .getParameters().length; p++)
             {
-                FillParameter parameter = region.plugin
+                final FillParameter parameter = region.plugin
                     .getParameters()[p];
                 final int parameterIndex = p;
+                if (parameter.type == FillParameter.Type.BOOLEAN)
+                {
+                    final JCheckBox checkbox = new JCheckBox(
+                        parameter.name);
+                    checkbox
+                        .setToolTipText(parameter.description);
+                    checkbox.setSelected(new Boolean(true)
+                        .equals(parameter.value));
+                    checkbox
+                        .addActionListener(new ActionListener()
+                        {
+                            
+                            @Override
+                            public void actionPerformed(
+                                ActionEvent e)
+                            {
+                                parameter.value = new Boolean(
+                                    checkbox.isSelected());
+                                imageComponent.repaint();
+                            }
+                        });
+                    checkbox.setAlignmentX(0);
+                    checkbox.setAlignmentY(0);
+                    panel.add(checkbox);
+                }
+                else if (parameter.type == FillParameter.Type.COLOR)
+                {
+                    Color defaultColor = Color.WHITE;
+                    if (parameter.value != null
+                        && parameter.value instanceof Color)
+                        defaultColor = (Color) parameter.value;
+                    final ColorChooserButton chooser = new ColorChooserButton(
+                        defaultColor);
+                    chooser
+                        .addColorChangeListener(new ChangeListener()
+                        {
+                            
+                            @Override
+                            public void stateChanged(
+                                ChangeEvent e)
+                            {
+                                parameter.value = chooser
+                                    .getColor();
+                                imageComponent.repaint();
+                            }
+                        });
+                    JPanel chooserControls = new JPanel();
+                    chooserControls
+                        .setLayout(new BoxLayout(
+                            chooserControls,
+                            BoxLayout.X_AXIS));
+                    chooserControls.add(new JLabel(
+                        parameter.name + " "));
+                    chooser
+                        .setToolTipText(parameter.description);
+                    chooserControls.add(chooser);
+                    chooserControls.setAlignmentX(0);
+                    panel.add(chooserControls);
+                }
+                else if (parameter.type == FillParameter.Type.POINT)
+                {
+                    JToggleButton pointButton = new JToggleButton(
+                        " " + parameter.name + " ");
+                    pointButton
+                        .setToolTipText(parameter.description);
+                    pointButton.setBorder(BorderFactory
+                        .createLineBorder(Color.GRAY, 1));
+                    pointGroup.add(pointButton);
+                    panel.add(pointButton);
+                }
             }
             JPanel regionPointControls = new JPanel();
             regionPointControls.setLayout(new BoxLayout(
@@ -351,6 +421,9 @@ public class FillEditor
                     {
                         region.points.remove(region.points
                             .size() - 1);
+                        region.cubicBezier
+                            .remove((Integer) region.points
+                                .size());
                         rebuild();
                     }
                 });
@@ -373,14 +446,40 @@ public class FillEditor
                 pointControls.setAlignmentX(0);
                 pointControls.setAlignmentY(0);
                 JToggleButton pointButton = new JToggleButton(
-                    "Point " + (p + 1));
+                    " Point " + (p + 1) + " ");
                 pointButton.setBorder(BorderFactory
                     .createLineBorder(Color.GRAY, 1));
                 pointGroup.add(pointButton);
                 pointControls.add(pointButton);
                 pointControls.add(new JLabel(" "));
-                JCheckBox bezierCheckbox = new JCheckBox(
+                final JCheckBox bezierCheckbox = new JCheckBox(
                     "bezier");
+                bezierCheckbox
+                    .setToolTipText("If checked, this point and the next two "
+                        + "will be drawn as a bezier curve "
+                        + "instead of straight line segments");
+                bezierCheckbox
+                    .setSelected(region.cubicBezier
+                        .contains(p));
+                bezierCheckbox
+                    .addActionListener(new ActionListener()
+                    {
+                        
+                        @Override
+                        public void actionPerformed(
+                            ActionEvent e)
+                        {
+                            if (bezierCheckbox.isSelected()
+                                && !region.cubicBezier
+                                    .contains(pointIndex))
+                                region.cubicBezier
+                                    .add((Integer) pointIndex);
+                            else
+                                region.cubicBezier
+                                    .remove(new Integer(
+                                        pointIndex));
+                        }
+                    });
                 pointControls.add(bezierCheckbox);
                 panel.add(pointControls);
             }

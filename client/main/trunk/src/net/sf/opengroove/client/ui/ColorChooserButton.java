@@ -124,4 +124,9 @@ public class ColorChooserButton extends JButton
             }
         });
     }
+    
+    public Color getColor()
+    {
+        return color;
+    }
 }
