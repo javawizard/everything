@@ -1,4 +1,5 @@
 package net.sf.opengroove.client.ui.frames;
+import info.clearthought.layout.TableLayout;
 import java.awt.BorderLayout;
 import java.awt.GridBagLayout;
 
@@ -47,14 +48,12 @@ public class LoginFrame extends javax.swing.JFrame {
             getContentPane().setLayout(thisLayout);
             {
                 fillContainer = new FillContainer();
-                GridBagLayout fillContainerLayout = new GridBagLayout();
+                TableLayout fillContainerLayout = new TableLayout(new double[][] {{TableLayout.FILL, TableLayout.FILL, TableLayout.FILL, TableLayout.FILL}, {TableLayout.FILL, TableLayout.FILL, TableLayout.FILL, TableLayout.FILL}});
+                fillContainerLayout.setHGap(5);
+                fillContainerLayout.setVGap(5);
                 getContentPane().add(fillContainer, BorderLayout.CENTER);
                 fillContainer.setFillImageName("loginframe");
                 fillContainer.setLayout(fillContainerLayout);
-                fillContainerLayout.rowWeights = new double[] {0.1, 0.1, 0.1, 0.1};
-                fillContainerLayout.rowHeights = new int[] {7, 7, 7, 7};
-                fillContainerLayout.columnWeights = new double[] {0.1, 0.1, 0.1, 0.1};
-                fillContainerLayout.columnWidths = new int[] {7, 7, 7, 7};
             }
             pack();
             this.setSize(335, 199);

@@ -48,6 +48,7 @@ public class PNGTransparency
         }
         ImageIO.write(newImage, dest.getName().substring(
             dest.getName().lastIndexOf(".") + 1), dest);
+        System.exit(0);
     }
     
 }
