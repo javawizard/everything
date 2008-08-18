@@ -25,6 +25,7 @@ public class GradientPlugin implements FillPlugin
         secondColorParam = new FillParameter();
         firstPointParam = new FillParameter();
         secondPointParam = new FillParameter();
+        cyclicParameter = new FillParameter();
         firstColorParam.name = "Color 1";
         firstColorParam.type = FillParameter.Type.COLOR;
         firstColorParam.value = Color.WHITE;

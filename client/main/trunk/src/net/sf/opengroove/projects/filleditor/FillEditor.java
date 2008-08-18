@@ -8,8 +8,12 @@ import java.awt.Graphics2D;
 import java.awt.Point;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.Hashtable;
+import java.util.Map;
 
+import javax.swing.BorderFactory;
 import javax.swing.BoxLayout;
 import javax.swing.ButtonGroup;
 import javax.swing.JButton;
@@ -48,6 +52,7 @@ public class FillEditor
     
     private static JFrame frame;
     private static Hashtable<String, Class<? extends FillPlugin>> plugins = new Hashtable<String, Class<? extends FillPlugin>>();
+    private static Hashtable<Class, String> reversePlugins = new Hashtable<Class, String>();
     private static FillImage image;
     private static JTextField widthField;
     private static JTextField heightField;
@@ -103,6 +108,12 @@ public class FillEditor
     public static void main(String[] args)
     {
         plugins.put("Dual Gradient", GradientPlugin.class);
+        for (Map.Entry<String, Class<? extends FillPlugin>> entry : plugins
+            .entrySet())
+        {
+            reversePlugins.put(entry.getValue(), entry
+                .getKey());
+        }
         // TODO: replace with an option to create new or load from file
         image = new FillImage();
         image.background = Color.WHITE;
@@ -153,13 +164,18 @@ public class FillEditor
             BoxLayout.X_AXIS));
         frame.getContentPane().add(lowerPanel,
             BorderLayout.SOUTH);
-        buildEditor(controlPanel);
+        rebuild();
         frame.getContentPane().add(
             new JScrollPane(imageComponent),
             BorderLayout.CENTER);
         frame.setSize(500, 400);
         frame.setLocationRelativeTo(null);
         frame.show();
+    }
+    
+    public static void rebuild()
+    {
+        buildEditor(controlPanel);
     }
     
     /**
@@ -169,6 +185,7 @@ public class FillEditor
      */
     public static void buildEditor(JPanel panel)
     {
+        panel.removeAll();
         panel.setLayout(new BoxLayout(panel,
             BoxLayout.Y_AXIS));
         JButton saveButton = new JButton("save");
@@ -194,19 +211,120 @@ public class FillEditor
                 }
             });
         panel.add(new JLabel("Regions:"));
-        JComboBox addType = new JComboBox(plugins.keySet()
-            .toArray());
+        final JComboBox addType = new JComboBox(plugins
+            .keySet().toArray());
         addType.setAlignmentX(0);
         addType.setAlignmentY(0);
         panel.add(addType);
         JButton addRegion = new JButton("Add");
+        addRegion.addActionListener(new ActionListener()
+        {
+            
+            @Override
+            public void actionPerformed(ActionEvent e)
+            {
+                Region region = new Region();
+                region.hide = false;
+                try
+                {
+                    region.plugin = plugins.get(
+                        addType.getSelectedItem())
+                        .newInstance();
+                }
+                catch (Exception e1)
+                {
+                    throw new RuntimeException(e1);
+                }
+                image.regions.add(region);
+                rebuild();
+            }
+        });
         panel.add(addRegion);
         ButtonGroup pointGroup = new ButtonGroup();
         for (int r = 0; r < image.regions.size(); r++)
         {
+            final int regionIndex = r;
             Region region = image.regions.get(r);
-            panel.add(new JLabel("R" + (r + 1) + ":"));
+            JPanel regionControls = new JPanel();
+            regionControls.setLayout(new BoxLayout(
+                regionControls, BoxLayout.X_AXIS));
+            regionControls.add(new JLabel("R"
+                + (r + 1)
+                + "("
+                + reversePlugins.get(region.plugin
+                    .getClass()) + ")" + ":"));
+            JButton regionUp = new JButton("↑");
+            if (r == 0)
+                regionUp.setEnabled(false);
+            JButton regionDown = new JButton("↓");
+            if ((r + 1) == image.regions.size())
+                regionDown.setEnabled(false);
+            JButton regionDelete = new JButton("X");
+            regionUp.setBorder(BorderFactory
+                .createLineBorder(Color.GRAY));
+            regionDown.setBorder(BorderFactory
+                .createLineBorder(Color.GRAY));
+            regionDelete.setBorder(BorderFactory
+                .createLineBorder(Color.GRAY));
+            regionUp.addActionListener(new ActionListener()
+            {
+                
+                @Override
+                public void actionPerformed(ActionEvent e)
+                {
+                    Collections.swap(image.regions,
+                        regionIndex, regionIndex - 1);
+                    rebuild();
+                }
+            });
+            regionDown
+                .addActionListener(new ActionListener()
+                {
+                    
+                    @Override
+                    public void actionPerformed(
+                        ActionEvent e)
+                    {
+                        Collections.swap(image.regions,
+                            regionIndex, regionIndex + 1);
+                        rebuild();
+                    }
+                });
+            regionDelete
+                .addActionListener(new ActionListener()
+                {
+                    
+                    @Override
+                    public void actionPerformed(
+                        ActionEvent e)
+                    {
+                        image.regions.remove(regionIndex);
+                        rebuild();
+                    }
+                });
+            regionControls.add(regionUp);
+            regionControls.add(regionDown);
+            regionControls.add(regionDelete);
+            regionControls.setAlignmentX(0);
+            regionControls.setAlignmentY(0);
+            panel.add(regionControls);
+            for (int p = 0; p < region.plugin
+                .getParameters().length; p++)
+            {
+                FillParameter parameter = region.plugin
+                    .getParameters()[p];
+                final int parameterIndex = p;
+            }
         }
+        panel.invalidate();
+        panel.validate();
+        panel.repaint();
+        frame.invalidate();
+        frame.validate();
+        frame.repaint();
+        panel.invalidate();
+        panel.validate();
+        panel.repaint();
+        imageComponent.repaint();
     }
-    
 }
