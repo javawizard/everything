@@ -3,6 +3,7 @@ package net.sf.opengroove.projects.filleditor;
 import java.awt.Color;
 import java.awt.Graphics2D;
 import java.awt.geom.AffineTransform;
+import java.util.ArrayList;
 
 /**
  * A class that holds the representation of a fill image. A .fdsc file is a
@@ -21,6 +22,7 @@ public class FillImage implements java.io.Serializable
     public Color background;
     public int width;
     public int height;
+    public ArrayList<Region> regions = new ArrayList<Region>();
     
     /**
      * Draws this FillImage onto the graphics object specified, scaling to the
@@ -39,8 +41,11 @@ public class FillImage implements java.io.Serializable
         AffineTransform transform = AffineTransform
             .getScaleInstance(scaleX, scaleY);
         g.setTransform(transform);
-        
+        g.setColor(background);
+        g.fillRect(0, 0, this.width, this.height);
+        for (Region region : regions)
+        {
+            region.draw(g);
+        }
     }
-    
-    private Region[] regions;
 }
