@@ -176,10 +176,14 @@ public class FillEditor
         leftPanel.setLayout(new BorderLayout());
         controlPanel = new JPanel();
         leftPanel.add(controlPanel, BorderLayout.NORTH);
-        JPanel lowerPanel = new JPanel();
+        final JPanel lowerPanel = new JPanel();
         lowerPanel.setLayout(new BoxLayout(lowerPanel,
             BoxLayout.X_AXIS));
-        frame.getContentPane().add(lowerPanel,
+        final JPanel lowerPanelWrapper = new JPanel(
+            new BorderLayout());
+        lowerPanelWrapper
+            .add(lowerPanel, BorderLayout.WEST);
+        frame.getContentPane().add(lowerPanelWrapper,
             BorderLayout.SOUTH);
         xSpinner = new JSpinner(new AbstractSpinnerModel()
         {
@@ -223,6 +227,9 @@ public class FillEditor
                         this.value, current.y));
                 }
                 fireStateChanged();
+                lowerPanelWrapper.invalidate();
+                lowerPanelWrapper.validate();
+                lowerPanelWrapper.repaint();
             }
         });
         ySpinner = new JSpinner(new AbstractSpinnerModel()
@@ -267,6 +274,9 @@ public class FillEditor
                         this.value));
                 }
                 fireStateChanged();
+                lowerPanelWrapper.invalidate();
+                lowerPanelWrapper.validate();
+                lowerPanelWrapper.repaint();
             }
         });
         lowerPanel.add(xSpinner);
@@ -282,8 +292,8 @@ public class FillEditor
                     Point position = e.getPoint();
                     if (position.x > image.width)
                         position.x = image.width;
-                    if (position.y > image.width)
-                        position.y = image.width;
+                    if (position.y > image.height)
+                        position.y = image.height;
                     setCurrentPosition(position);
                 }
             }
