@@ -6,12 +6,15 @@ import java.awt.Dimension;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.Point;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 
 import javax.swing.BoxLayout;
 import javax.swing.JButton;
 import javax.swing.JComponent;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTextField;
@@ -95,15 +98,39 @@ public class FillEditor
     {
         // TODO: replace with an option to create new or load from file
         image = new FillImage();
+        image.background = Color.WHITE;
         widthField = new JTextField(5);
         heightField = new JTextField(5);
+        widthField.setText("" + image.width);
+        heightField.setText("" + image.height);
+        ActionListener sizeChangeListener = new ActionListener()
+        {
+            
+            @Override
+            public void actionPerformed(ActionEvent e)
+            {
+                try
+                {
+                    image.width = Integer
+                        .parseInt(widthField.getText());
+                    image.height = Integer
+                        .parseInt(heightField.getText());
+                }
+                catch (Exception exception)
+                {
+                    JOptionPane.showMessageDialog(frame,
+                        "Invalid size");
+                }
+            }
+        };
+        widthField.addActionListener(sizeChangeListener);
+        heightField.addActionListener(sizeChangeListener);
         frame = new JFrame("FillEditor - OpenGroove");
         frame.getContentPane()
             .setLayout(new BorderLayout());
         frame.getContentPane().add(
             new JScrollPane(leftPanel), BorderLayout.WEST);
-        leftPanel.setBorder(
-            new EmptyBorder(4, 4, 4, 4));
+        leftPanel.setBorder(new EmptyBorder(4, 4, 4, 4));
         leftPanel.setLayout(new BorderLayout());
         controlPanel = new JPanel();
         leftPanel.add(controlPanel, BorderLayout.NORTH);
