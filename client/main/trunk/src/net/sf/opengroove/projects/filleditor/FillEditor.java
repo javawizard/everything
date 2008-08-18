@@ -181,8 +181,6 @@ public class FillEditor
             BoxLayout.X_AXIS));
         frame.getContentPane().add(lowerPanel,
             BorderLayout.SOUTH);
-        final JLabel posLabel = new JLabel(" 0,0 ");
-        lowerPanel.add(posLabel);
         xSpinner = new JSpinner(new AbstractSpinnerModel()
         {
             private int value;
@@ -212,9 +210,14 @@ public class FillEditor
             @Override
             public void setValue(Object value)
             {
-                this.value = (Integer) value;
                 Point current = getCurrentPosition();
-                if (current != null)
+                if (current == null)
+                    return;
+                if (!(value instanceof Integer))
+                    return;
+                this.value = (Integer) value;
+                if (current != null
+                    && current.x != this.value)
                 {
                     setCurrentPosition(new Point(
                         this.value, current.y));
@@ -222,26 +225,54 @@ public class FillEditor
                 fireStateChanged();
             }
         });
-        ySpinner = new JSpinner();
+        ySpinner = new JSpinner(new AbstractSpinnerModel()
+        {
+            private int value;
+            
+            @Override
+            public Object getNextValue()
+            {
+                if (value >= image.height)
+                    return value;
+                return value + 1;
+            }
+            
+            @Override
+            public Object getPreviousValue()
+            {
+                if (value <= 0)
+                    return value;
+                return value - 1;
+            }
+            
+            @Override
+            public Object getValue()
+            {
+                return value;
+            }
+            
+            @Override
+            public void setValue(Object value)
+            {
+                Point current = getCurrentPosition();
+                if (current == null)
+                    return;
+                if (!(value instanceof Integer))
+                    return;
+                this.value = (Integer) value;
+                if (current != null
+                    && current.y != this.value)
+                {
+                    setCurrentPosition(new Point(current.x,
+                        this.value));
+                }
+                fireStateChanged();
+            }
+        });
         lowerPanel.add(xSpinner);
         lowerPanel.add(ySpinner);
         imageComponent.addMouseListener(new MouseAdapter()
         {
-            public void mouseMoved(MouseEvent e)
-            {
-                Point position = e.getPoint();
-                if (position.x > image.width)
-                    position.x = image.width;
-                if (position.y > image.width)
-                    position.y = image.width;
-                posLabel.setText(" " + position.x + ","
-                    + position.y + " ");
-            }
-            
-            public void mouseDragged(MouseEvent e)
-            {
-                mouseMoved(e);
-            }
             
             @Override
             public void mouseClicked(MouseEvent e)
@@ -581,6 +612,10 @@ public class FillEditor
                                     parameter.value = new Point(
                                         0, 0);
                                 highlightedPoint = (Point) parameter.value;
+                                xSpinner
+                                    .setValue(highlightedPoint.x);
+                                ySpinner
+                                    .setValue(highlightedPoint.y);
                                 imageComponent.repaint();
                             }
                         });
@@ -662,6 +697,10 @@ public class FillEditor
                             selectedPoint = selection;
                             highlightedPoint = region.points
                                 .get(pointIndex);
+                            xSpinner
+                                .setValue(highlightedPoint.x);
+                            ySpinner
+                                .setValue(highlightedPoint.y);
                             imageComponent.repaint();
                         }
                     });
