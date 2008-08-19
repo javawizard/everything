@@ -2,13 +2,20 @@ package net.sf.opengroove.client.ui.frames;
 
 import com.jidesoft.swing.JideButton;
 import com.jidesoft.tooltip.BalloonTip;
+import com.jidesoft.tooltip.shapes.RoundedRectangularBalloonShape;
 
 import info.clearthought.layout.TableLayout;
 import java.awt.BorderLayout;
 import java.awt.Dimension;
+import java.awt.Font;
 import java.awt.GridBagLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.FocusEvent;
+import java.awt.event.FocusListener;
+import java.awt.event.InputEvent;
+import java.awt.event.KeyEvent;
+import java.awt.event.KeyListener;
 import java.io.File;
 import javax.swing.BorderFactory;
 import javax.swing.BoxLayout;
@@ -23,6 +30,8 @@ import javax.swing.JPanel;
 import javax.swing.JPasswordField;
 
 import javax.swing.WindowConstants;
+
+import net.sf.opengroove.client.Statics;
 import net.sf.opengroove.client.ui.FillContainer;
 import javax.swing.SwingUtilities;
 
@@ -38,6 +47,10 @@ import javax.swing.SwingUtilities;
  */
 public class LoginFrame extends javax.swing.JFrame
 {
+    static
+    {
+        Statics.run();
+    }
     private FillContainer fillContainer;
     private JideButton helpButton;
     private JLabel useridLabel;
@@ -191,6 +204,83 @@ public class LoginFrame extends javax.swing.JFrame
                                     getPreferredSize().height);
                             }
                         };
+                        passwordField
+                            .addFocusListener(new FocusListener()
+                            {
+                                
+                                @Override
+                                public void focusGained(
+                                    FocusEvent e)
+                                {
+                                    if (passwordField
+                                        .getToolkit()
+                                        .getLockingKeyState(
+                                            KeyEvent.VK_CAPS_LOCK))
+                                    {
+                                        getCapsLockBalloon()
+                                            .show(
+                                                passwordField,
+                                                passwordField
+                                                    .getHeight() / 2,
+                                                passwordField
+                                                    .getHeight() / 2);
+                                    }
+                                }
+                                
+                                @Override
+                                public void focusLost(
+                                    FocusEvent e)
+                                {
+                                    // TODO Auto-generated method stub
+                                    
+                                }
+                            });
+                        passwordField
+                            .addKeyListener(new KeyListener()
+                            {
+                                
+                                @Override
+                                public void keyPressed(
+                                    KeyEvent e)
+                                {
+                                    if (e.getKeyCode() == KeyEvent.VK_CAPS_LOCK
+                                        && passwordField
+                                            .getToolkit()
+                                            .getLockingKeyState(
+                                                KeyEvent.VK_CAPS_LOCK))
+                                    {
+                                        getCapsLockBalloon()
+                                            .show(
+                                                passwordField,
+                                                passwordField
+                                                    .getHeight() / 2,
+                                                passwordField
+                                                    .getHeight() / 2);
+                                    }
+                                    else if (e.getKeyCode() == KeyEvent.VK_CAPS_LOCK)
+                                    {
+                                        getCapsLockBalloon()
+                                            .hide();
+                                    }
+                                }
+                                
+                                @Override
+                                public void keyTyped(
+                                    KeyEvent e)
+                                {
+                                    // TODO Auto-generated method stub
+                                    
+                                }
+                                
+                                @Override
+                                public void keyReleased(
+                                    KeyEvent e)
+                                {
+                                    // TODO Auto-generated method stub
+                                    
+                                }
+                                
+                            });
                         northContents
                             .add(getPasswordField());
                     }
@@ -357,8 +447,13 @@ public class LoginFrame extends javax.swing.JFrame
     {
         if (capsLockBalloon == null)
         {
-            capsLockBalloon = new BalloonTip();
-            capsLockBalloon.setTipText("Caps lock is on");
+            JLabel balloonLabel = new JLabel(
+                "<html><b>Caps lock is on</b><br/>Having caps lock on might cause you<br/>to type your password incorrectly.");
+            balloonLabel.setFont(balloonLabel.getFont()
+                .deriveFont(Font.PLAIN));
+            capsLockBalloon = new BalloonTip(balloonLabel);
+            ((RoundedRectangularBalloonShape) capsLockBalloon
+                .getBalloonShape()).setCornerSize(5);
         }
         return capsLockBalloon;
     }
