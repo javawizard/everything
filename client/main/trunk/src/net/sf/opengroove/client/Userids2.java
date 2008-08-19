@@ -6,7 +6,7 @@ package net.sf.opengroove.client;
  * @author Alexander Boyd
  * 
  */
-public class UserIds
+public class Userids2
 {
     
     /**
