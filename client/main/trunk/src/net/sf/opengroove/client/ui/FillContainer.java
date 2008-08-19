@@ -20,7 +20,7 @@ import net.sf.opengroove.projects.filleditor.FillImage;
 public class FillContainer extends JPanel
 {
     private static File nameRelativeTo = new File(
-        "C:\\workspace3.0\\OpenGroove Client");
+        ".");
     private FillImage image;
     
     private String fillName;

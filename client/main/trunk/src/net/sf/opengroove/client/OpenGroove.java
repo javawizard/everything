@@ -84,6 +84,7 @@ import net.sf.opengroove.client.ui.ConfigureWorkspaceDialog;
 import net.sf.opengroove.client.ui.CreateWorkspaceDialog;
 import net.sf.opengroove.client.ui.ImportWorkspaceDialog;
 import net.sf.opengroove.client.ui.InviteToWorkspaceDialog;
+import net.sf.opengroove.client.ui.frames.LoginFrame;
 import net.sf.opengroove.client.workspace.WorkspaceManager;
 import net.sf.opengroove.client.workspace.WorkspaceWrapper;
 
@@ -123,7 +124,7 @@ public class OpenGroove
     
     public static final Hashtable<String, UserContext> userContextMap = new Hashtable<String, UserContext>();
     
-    private static JFrame loginFrame;
+    private static LoginFrame loginFrame;
     
     private static Wizard accountWizard;
     
@@ -402,6 +403,7 @@ public class OpenGroove
             System.out.println("storage path is "
                 + sfile.getCanonicalPath());
             // helpviewer = new HelpViewer(helpFolder);
+            initLoginFrame();
             notificationFrame = new TaskbarNotificationFrame();
             NotificationAdapter authenticatingNotification = new NotificationAdapter(
                 new JLabel(
@@ -1001,10 +1003,63 @@ public class OpenGroove
         }
     }
     
+    protected static void doNewAccountWizard()
+    {
+        // TODO Auto-generated method stub
+        
+    }
+    
+    protected static void doFrameLogin()
+    {
+        // TODO Auto-generated method stub
+        
+    }
+    
     private static void initLoginFrame()
     {
-        loginFrame = new JFrame();
+        loginFrame = new LoginFrame();
+        loginFrame.getCancelButton().addActionListener(
+            new ActionListener()
+            {
+                
+                @Override
+                public void actionPerformed(ActionEvent e)
+                {
+                    loginFrame.getPasswordField().setText(
+                        "");
+                    loginFrame
+                        .getRememberPasswordCheckbox()
+                        .setSelected(false);
+                    loginFrame.hide();
+                }
+            });
+        ActionListener loginActionListener = new ActionListener()
+        {
+            
+            @Override
+            public void actionPerformed(ActionEvent e)
+            {
+                doFrameLogin();
+            }
+        };
+        loginFrame.getLoginButton().addActionListener(
+            loginActionListener);
+        loginFrame.getPasswordField().addActionListener(
+            loginActionListener);
+        loginFrame.getNewAccountButton().addActionListener(
+            new ActionListener()
+            {
+                
+                @Override
+                public void actionPerformed(ActionEvent e)
+                {
+                    doNewAccountWizard();
+                }
+            });
+        loginFrame.setLocationRelativeTo(null);
+        loginFrame.setResizable(false);
         loginFrame.setAlwaysOnTop(true);
+        
     }
     
     private static void showLoginFrame(String userid)
