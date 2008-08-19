@@ -12,9 +12,30 @@ public class Contact implements Serializable
     // TODO: what to do about a contact's computers? They should probably be
     // listed here (so that the user can choose to send a message to just a
     // particular computer if they want)
+    /**
+     * This contact's userid. This must be a userid; it cannot be a username.
+     */
     private String userid;
+    /**
+     * This contact's real name. This is available in the user's user property
+     * public-real-name.
+     */
     private String realName;
+    /**
+     * A name set for this contact by the local user. If this is null, then
+     * realName should be displayed to the user. If this is not null, then this
+     * should be displayed to the user in place of realName.
+     */
     private String localName;
+    /**
+     * The date that the contact was last online. It is up to the server system
+     * whether this is the most recent point in time that the user was connected
+     * to the server, or the most recent point in time when an authenticate
+     * command was sent by the contact. Ideally, it would be the first, but as
+     * of this writing, it is actually the second in the OpenGroove Realm Server
+     * (revision 397).
+     */
+    private long lastOnline;
     /**
      * This field, along with {@link #rsaEncMod}, {@link #rsaSigMod}, and
      * {@link #rsaSigPub}, constitute this contact's public security key.
@@ -48,7 +69,18 @@ public class Contact implements Serializable
      * instead.
      */
     private boolean isUserContact;
+    /**
+     * True if the local user has verified this contact. This means that the
+     * local user has reviewed the hash of this contact's security keys and
+     * contacted the actual user represented by this contact to validate that
+     * those keys are correct, and then indicated to opengroove that they have
+     * done this.
+     */
     private boolean isUserVerified;
+    /**
+     * The list of this contact's computers. This is automatically synchronized
+     * every time the local user goes online.
+     */
     private ArrayList<ContactComputer> computers = new ArrayList<ContactComputer>();
     
     public String getRealm()
@@ -159,5 +191,30 @@ public class Contact implements Serializable
     public void setUserVerified(boolean isUserVerified)
     {
         this.isUserVerified = isUserVerified;
+    }
+    
+    public boolean isHasKeys()
+    {
+        return hasKeys;
+    }
+    
+    public ArrayList<ContactComputer> getComputers()
+    {
+        return computers;
+    }
+    
+    public void setHasKeys(boolean hasKeys)
+    {
+        this.hasKeys = hasKeys;
+    }
+
+    public long getLastOnline()
+    {
+        return lastOnline;
+    }
+
+    public void setLastOnline(long lastOnline)
+    {
+        this.lastOnline = lastOnline;
     }
 }
