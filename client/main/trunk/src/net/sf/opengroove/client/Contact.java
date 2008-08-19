@@ -12,28 +12,58 @@ public class Contact implements Serializable
     // TODO: what to do about a contact's computers? They should probably be
     // listed here (so that the user can choose to send a message to just a
     // particular computer if they want)
-    
-    private String realm;
-    private String username;
+    private String userid;
     private String realName;
     private String localName;
+    /**
+     * This field, along with {@link #rsaEncMod}, {@link #rsaSigMod}, and
+     * {@link #rsaSigPub}, constitute this contact's public security key.
+     */
     private BigInteger rsaEncPub;
     private BigInteger rasEncMod;
     private BigInteger rsaSigPub;
     private BigInteger rsaSigMod;
+    /**
+     * True if the keys for this contact have been obtained, false if not.
+     * Messages to be sent to the contact will be queued until the key is
+     * available, and the same with received messages.
+     */
     private boolean hasKeys;
+    /**
+     * True if the user is a contact. This may seem somewhat counter-intuitive
+     * given the name of this class, but Contact objects are created for all
+     * users with which this user corresponds, in order to store the public
+     * security keys for those users. This field, then, is true if the user
+     * represented by this contact object was added to the contacts list by the
+     * local user, and false if this contact object only exists because the
+     * local user has corresponded with the user represented by this contact
+     * object. For example, a user will be added as a contact object with this
+     * field equal to false if that user is a member of a workspace that the
+     * local user is also a member of.<br/><br/>
+     * 
+     * When a contact (in the ui sense) is added by the user, they might already
+     * have an associated contact object, in which case that object will just
+     * have this field set to true. Similarly, when a user deletes a contact,
+     * it's contact object is not discarded; this field is simply set to false
+     * instead.
+     */
     private boolean isUserContact;
     private boolean isUserVerified;
     private ArrayList<ContactComputer> computers = new ArrayList<ContactComputer>();
     
     public String getRealm()
     {
-        return realm;
+        return Userids.toRealm(userid);
     }
     
     public String getUsername()
     {
-        return username;
+        return Userids.toUsername(userid);
+    }
+    
+    public String getUserid()
+    {
+        return userid;
     }
     
     public String getRealName()
@@ -78,12 +108,17 @@ public class Contact implements Serializable
     
     public void setRealm(String realm)
     {
-        this.realm = realm;
+        this.userid = Userids.setRealm(userid, realm);
     }
     
     public void setUsername(String username)
     {
-        this.username = username;
+        this.userid = Userids.setUsername(userid, username);
+    }
+    
+    public void setUserid(String userid)
+    {
+        this.userid = userid;
     }
     
     public void setRealName(String realName)

@@ -27,7 +27,9 @@ public class Userids
     }
     
     /**
-     * Extracts the name of the user's realm from the userid.
+     * Extracts the name of the user's realm from the userid. If the userid does
+     * not have a realm component, or if the userid is a username, the empty
+     * string is returned.
      * 
      * @param userid
      *            The userid
@@ -35,11 +37,18 @@ public class Userids
      */
     public static String toRealm(String userid)
     {
+        if (userid == null)
+            return "";
+        if (!userid.contains(":"))
+            return "";
         return userid.split("\\:")[0];
     }
     
     /**
-     * Extracts the user's username from the userid.
+     * Extracts the user's username from the userid. If the userid specified
+     * does not have a username component (e.g. "example.com:"), the empty
+     * string is returned. If the userid specified is a username, then it is
+     * returned without modification.
      * 
      * @param userid
      *            The userid
@@ -47,6 +56,8 @@ public class Userids
      */
     public static String toUsername(String userid)
     {
+        if (userid.indexOf(":") == -1)
+            return userid;
         return userid.split("\\:")[1];
     }
     

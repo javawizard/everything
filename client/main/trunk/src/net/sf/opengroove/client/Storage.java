@@ -102,10 +102,8 @@ public class Storage
      *            The user's username
      * @return A storage object for the user specified
      */
-    public static synchronized Storage get(String realm,
-        String username)
+    public static synchronized Storage get(String userid)
     {
-        String userid = realm + ":" + username;
         Storage storage = singletons.get(userid);
         if (storage == null)
         {
@@ -164,13 +162,32 @@ public class Storage
      */
     public static LocalUser[] getUsers()
     {
-        LocalUser[] users = listObjectContentsAsArray(auth,
+        return listObjectContentsAsArray(auth,
             LocalUser.class);
-        for(LocalUser user : users)
+    }
+    
+    public static LocalUser[] getUsersLoggedIn()
+    {
+        LocalUser[] users = getUsers();
+        ArrayList<LocalUser> result = new ArrayList<LocalUser>();
+        for (LocalUser user : users)
         {
-            if(OpenGroove.userContextMap.get(user.ge))
+            if (user.isLoggedIn())
+                result.add(user);
         }
-        return users;
+        return result.toArray(new LocalUser[0]);
+    }
+    
+    public static LocalUser[] getUsersNotLoggedIn()
+    {
+        LocalUser[] users = getUsers();
+        ArrayList<LocalUser> result = new ArrayList<LocalUser>();
+        for (LocalUser user : users)
+        {
+            if (!user.isLoggedIn())
+                result.add(user);
+        }
+        return result.toArray(new LocalUser[0]);
     }
     
     /**
@@ -308,10 +325,9 @@ public class Storage
      * @return <code>true</code> if the password entered matches the password
      *         stored to the file system, false otherwise.
      */
-    public static boolean checkPassword(String realm,
-        String username, String pass)
+    public static boolean checkPassword(String userid, String pass)
     {
-        LocalUser user = getLocalUser(realm, username);
+        LocalUser user = getLocalUser(userid);
         return user.getEncPassword()
             .equals(Hash.hash(pass));
     }
