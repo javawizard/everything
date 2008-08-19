@@ -307,7 +307,7 @@ public class LoginFrame extends javax.swing.JFrame
                 }
             }
             pack();
-            this.setSize(377, 199);
+            this.setSize(377, 212);
         }
         catch (Exception e)
         {
