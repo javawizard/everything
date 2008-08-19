@@ -28,6 +28,7 @@ import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JPasswordField;
+import javax.swing.SwingConstants;
 
 import javax.swing.WindowConstants;
 
@@ -71,6 +72,7 @@ public class LoginFrame extends javax.swing.JFrame
     private JPanel useridPanel;
     private JPanel northContents;
     private JLabel iconLabel;
+    protected String passwordHint;
     
     /**
      * Auto-generated main method to display this JFrame
@@ -302,6 +304,20 @@ public class LoginFrame extends javax.swing.JFrame
                             rememberPasswordCheckbox
                                 .setText("Remember my password on this computer");
                             rememberPasswordCheckbox
+                                .addActionListener(new ActionListener()
+                                {
+                                    
+                                    @Override
+                                    public void actionPerformed(
+                                        ActionEvent e)
+                                    {
+                                        JOptionPane
+                                            .showMessageDialog(
+                                                LoginFrame.this,
+                                                "We're still working on this feature. When we've added this feature, you won't see this message anymore.");
+                                    }
+                                });
+                            rememberPasswordCheckbox
                                 .setOpaque(false);
                             rememberPasswordCheckbox
                                 .setFont(new java.awt.Font(
@@ -338,6 +354,21 @@ public class LoginFrame extends javax.swing.JFrame
                                 .setButtonStyle(3);
                             passwordHintButton
                                 .setAlwaysShowHyperlink(true);
+                            passwordHintButton
+                                .addActionListener(new ActionListener()
+                                {
+                                    
+                                    @Override
+                                    public void actionPerformed(
+                                        ActionEvent e)
+                                    {
+                                        JOptionPane
+                                            .showMessageDialog(
+                                                LoginFrame.this,
+                                                passwordHint == null ? "You do not have a password hint."
+                                                    : passwordHint);
+                                    }
+                                });
                         }
                     }
                     northContents.add(Box
@@ -454,8 +485,41 @@ public class LoginFrame extends javax.swing.JFrame
             capsLockBalloon = new BalloonTip(balloonLabel);
             ((RoundedRectangularBalloonShape) capsLockBalloon
                 .getBalloonShape()).setCornerSize(5);
+            ((RoundedRectangularBalloonShape) capsLockBalloon
+                .getBalloonShape()).setArrowLeftRatio(0.70);
+            ((RoundedRectangularBalloonShape) capsLockBalloon
+                .getBalloonShape())
+                .setArrowRightRatio(0.20);
+            ((RoundedRectangularBalloonShape) capsLockBalloon
+                .getBalloonShape()).setVertexPosition(0.85);
+            ((RoundedRectangularBalloonShape) capsLockBalloon
+                .getBalloonShape())
+                .setBalloonSizeRatio(0.73);
+            ((RoundedRectangularBalloonShape) capsLockBalloon
+                .getBalloonShape())
+                .setPosition(SwingConstants.BOTTOM);
+            
         }
         return capsLockBalloon;
     }
     
+    public String getPasswordHint()
+    {
+        return passwordHint;
+    }
+    
+    public void setPasswordHint(String passwordHint)
+    {
+        this.passwordHint = passwordHint;
+    }
+    
+    public String getUserid()
+    {
+        return useridLabel.getText();
+    }
+    
+    public void setUserid(String userid)
+    {
+        useridLabel.setText(userid);
+    }
 }
