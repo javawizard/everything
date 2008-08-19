@@ -6,13 +6,18 @@ import info.clearthought.layout.TableLayout;
 import java.awt.BorderLayout;
 import java.awt.Dimension;
 import java.awt.GridBagLayout;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.io.File;
 import javax.swing.BorderFactory;
 import javax.swing.BoxLayout;
 
 import javax.swing.Box;
 import javax.swing.ImageIcon;
+import javax.swing.JButton;
+import javax.swing.JCheckBox;
 import javax.swing.JLabel;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JPasswordField;
 
@@ -35,6 +40,16 @@ public class LoginFrame extends javax.swing.JFrame
     private FillContainer fillContainer;
     private JideButton helpButton;
     private JLabel useridLabel;
+    private JButton cancelButton;
+    private JLabel jLabel3;
+    private JButton loginButton;
+    private JLabel jLabel2;
+    private JButton newAccountButton;
+    private JPanel southPanel;
+    private JideButton passwordHintButton;
+    private JPanel passwordHintPanel;
+    private JCheckBox rememberPasswordCheckbox;
+    private JPanel passwordFooterPanel;
     private JPasswordField passwordField;
     private JLabel capsLockLabel;
     private JLabel jLabel1;
@@ -103,6 +118,7 @@ public class LoginFrame extends javax.swing.JFrame
                     helpButton
                         .setForeground(new java.awt.Color(
                             0, 0, 255));
+                    helpButton.setAlwaysShowHyperlink(true);
                 }
                 {
                     iconLabel = new JLabel();
@@ -117,7 +133,8 @@ public class LoginFrame extends javax.swing.JFrame
                         "2, 1, 3, 2");
                     northContents.setLayout(contentsLayout);
                     northContents.setOpaque(false);
-                    northContents.setBorder(BorderFactory.createEmptyBorder(3, 3, 3, 3));
+                    northContents.setBorder(BorderFactory
+                        .createEmptyBorder(3, 3, 3, 3));
                     {
                         useridPanel = new JPanel();
                         BoxLayout useridPanelLayout = new BoxLayout(
@@ -133,7 +150,9 @@ public class LoginFrame extends javax.swing.JFrame
                                 .add(getUseridLabel());
                             useridLabel
                                 .setText("Realm:Username");
-                            useridLabel.setFont(new java.awt.Font("Dialog",1,12));
+                            useridLabel
+                                .setFont(new java.awt.Font(
+                                    "Dialog", 1, 12));
                         }
                         useridPanel.add(Box
                             .createHorizontalGlue());
@@ -154,7 +173,9 @@ public class LoginFrame extends javax.swing.JFrame
                             passwordHeaderPanel
                                 .add(jLabel1);
                             jLabel1.setText("Password:");
-                            jLabel1.setFont(new java.awt.Font("Dialog",0,12));
+                            jLabel1
+                                .setFont(new java.awt.Font(
+                                    "Dialog", 0, 12));
                         }
                         passwordHeaderPanel.add(Box
                             .createHorizontalGlue());
@@ -164,7 +185,9 @@ public class LoginFrame extends javax.swing.JFrame
                                 .add(getCapsLockLabel());
                             capsLockLabel
                                 .setText("Caps Lock is on");
-                            capsLockLabel.setFont(new java.awt.Font("Dialog",0,12));
+                            capsLockLabel
+                                .setFont(new java.awt.Font(
+                                    "Dialog", 0, 12));
                         }
                     }
                     {
@@ -180,12 +203,111 @@ public class LoginFrame extends javax.swing.JFrame
                         northContents
                             .add(getPasswordField());
                     }
+                    {
+                        passwordFooterPanel = new JPanel();
+                        BoxLayout passwordFooterPanelLayout = new BoxLayout(
+                            passwordFooterPanel,
+                            javax.swing.BoxLayout.X_AXIS);
+                        northContents
+                            .add(passwordFooterPanel);
+                        passwordFooterPanel
+                            .setLayout(passwordFooterPanelLayout);
+                        passwordFooterPanel
+                            .setOpaque(false);
+                        {
+                            rememberPasswordCheckbox = new JCheckBox();
+                            passwordFooterPanel
+                                .add(getRememberPasswordCheckbox());
+                            rememberPasswordCheckbox
+                                .setText("Remember my password on this computer");
+                            rememberPasswordCheckbox
+                                .setOpaque(false);
+                            rememberPasswordCheckbox
+                                .setFont(new java.awt.Font(
+                                    "Dialog", 0, 12));
+                        }
+                        passwordFooterPanel.add(Box
+                            .createHorizontalGlue());
+                    }
+                    {
+                        passwordHintPanel = new JPanel();
+                        BoxLayout passwordHintPanelLayout = new BoxLayout(
+                            passwordHintPanel,
+                            javax.swing.BoxLayout.X_AXIS);
+                        northContents
+                            .add(passwordHintPanel);
+                        passwordHintPanel
+                            .setLayout(passwordHintPanelLayout);
+                        passwordHintPanel.setOpaque(false);
+                        passwordHintPanel.add(Box
+                            .createHorizontalGlue());
+                        {
+                            passwordHintButton = new JideButton();
+                            passwordHintPanel
+                                .add(getPasswordHintButton());
+                            passwordHintButton
+                                .setText("Password hint");
+                            passwordHintButton
+                                .setFont(new java.awt.Font(
+                                    "Dialog", 0, 12));
+                            passwordHintButton
+                                .setForeground(new java.awt.Color(
+                                    0, 0, 255));
+                            passwordHintButton
+                                .setButtonStyle(3);
+                            passwordHintButton
+                                .setAlwaysShowHyperlink(true);
+                        }
+                    }
                     northContents.add(Box
                         .createVerticalGlue());
+                    {
+                        southPanel = new JPanel();
+                        BoxLayout southPanelLayout = new BoxLayout(
+                            southPanel,
+                            javax.swing.BoxLayout.X_AXIS);
+                        northContents.add(southPanel);
+                        southPanel
+                            .setLayout(southPanelLayout);
+                        southPanel.setOpaque(false);
+                        southPanel.setBorder(BorderFactory
+                            .createEmptyBorder(4, 4, 4, 4));
+                        southPanel.add(Box
+                            .createHorizontalGlue());
+                        {
+                            newAccountButton = new JButton();
+                            southPanel
+                                .add(getNewAccountButton());
+                            newAccountButton
+                                .setText("New account");
+                        }
+                        {
+                            jLabel2 = new JLabel();
+                            southPanel.add(jLabel2);
+                            jLabel2.setText(" ");
+                        }
+                        {
+                            loginButton = new JButton();
+                            southPanel
+                                .add(getLoginButton());
+                            loginButton.setText("Login");
+                        }
+                        {
+                            jLabel3 = new JLabel();
+                            southPanel.add(jLabel3);
+                            jLabel3.setText(" ");
+                        }
+                        {
+                            cancelButton = new JButton();
+                            southPanel
+                                .add(getCancelButton());
+                            cancelButton.setText("Cancel");
+                        }
+                    }
                 }
             }
             pack();
-            this.setSize(335, 199);
+            this.setSize(377, 199);
         }
         catch (Exception e)
         {
@@ -216,6 +338,31 @@ public class LoginFrame extends javax.swing.JFrame
     public JPasswordField getPasswordField()
     {
         return passwordField;
+    }
+    
+    public JCheckBox getRememberPasswordCheckbox()
+    {
+        return rememberPasswordCheckbox;
+    }
+    
+    public JideButton getPasswordHintButton()
+    {
+        return passwordHintButton;
+    }
+    
+    public JButton getNewAccountButton()
+    {
+        return newAccountButton;
+    }
+    
+    public JButton getLoginButton()
+    {
+        return loginButton;
+    }
+    
+    public JButton getCancelButton()
+    {
+        return cancelButton;
     }
     
 }
