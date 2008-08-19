@@ -164,8 +164,13 @@ public class Storage
      */
     public static LocalUser[] getUsers()
     {
-        return listObjectContentsAsArray(auth,
+        LocalUser[] users = listObjectContentsAsArray(auth,
             LocalUser.class);
+        for(LocalUser user : users)
+        {
+            if(OpenGroove.userContextMap.get(user.ge))
+        }
+        return users;
     }
     
     /**
@@ -284,11 +289,10 @@ public class Storage
      *            The username of the user to look up
      * @return The user's information
      */
-    public static LocalUser getLocalUser(String realm,
-        String user)
+    public static LocalUser getLocalUser(String userid)
     {
         return (LocalUser) readObjectFromFile(new File(
-            auth, realm + ":" + user));
+            auth, userid));
     }
     
     /**

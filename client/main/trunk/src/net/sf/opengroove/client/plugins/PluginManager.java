@@ -55,7 +55,7 @@ import net.sf.opengroove.client.OpenGroove;
 import net.sf.opengroove.client.Storage;
 import net.sf.opengroove.client.SubversionFileFilter;
 import net.sf.opengroove.client.UserContext;
-import net.sf.opengroove.client.UserIds;
+import net.sf.opengroove.client.Userids;
 import net.sf.opengroove.client.download.PluginDownloadManager;
 
 /**

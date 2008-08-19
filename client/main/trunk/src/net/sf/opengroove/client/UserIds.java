@@ -50,4 +50,29 @@ public class UserIds
         return userid.split("\\:")[1];
     }
     
+    /**
+     * Returns a new userid that is equal to the one specified, but with the
+     * realm set to the realm specified.
+     * 
+     * @param userid
+     * @param realm
+     * @return
+     */
+    public static String setRealm(String userid,
+        String realm)
+    {
+        return toUserid(realm, toUsername(userid));
+    }
+    
+    /**
+     * Returns a new userid that is equal to the one specified, but with the
+     * username set to the username specified.
+     */
+    
+    public static String setUsername(String userid,
+        String username)
+    {
+        return toUserid(toRealm(userid), username);
+    }
+    
 }

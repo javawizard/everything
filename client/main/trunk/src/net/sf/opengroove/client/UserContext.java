@@ -61,12 +61,12 @@ public class UserContext
     
     public String getUsername()
     {
-        return UserIds.toUsername(userid);
+        return Userids.toUsername(userid);
     }
     
     public String getRealm()
     {
-        return UserIds.toRealm(userid);
+        return Userids.toRealm(userid);
     }
     
     public JPanel getContactsPanel()

@@ -121,7 +121,11 @@ public class OpenGroove
     public static AuthenticationDialog authDialog;
     
     private static BufferedImage trayimage;
-    
+    /**
+     * Each user that is currently logged in has an entry in this map. The keys
+     * are userids and the values are user contexts that correspond to that
+     * user.
+     */
     public static final Hashtable<String, UserContext> userContextMap = new Hashtable<String, UserContext>();
     
     private static LoginFrame loginFrame;
@@ -1007,7 +1011,14 @@ public class OpenGroove
         }
     }
     
-    protected static void doNewAccountWizard()
+    /**
+     * Shows the new account wizard over the frame specified. This method
+     * returns once the user completes the wizard, returning the userid of the
+     * user created.
+     * 
+     * @param parent
+     */
+    protected static void doNewAccountWizard(Frame parent)
     {
         // TODO Auto-generated method stub
         
@@ -1031,6 +1042,21 @@ public class OpenGroove
     public static void refreshTrayMenu()
     {
         
+    }
+    
+    /**
+     * Shows the login window for the specified user. If the login window is
+     * already showing, it is changed to this user. If this user is already
+     * logged in, this method does nothing. If this user does not exist, or the
+     * userid is null, the new account wizard is shown over the authentication
+     * window, and when the user creates an account, the login window will be
+     * set to the newly-created user's username.
+     * 
+     * @param userid
+     */
+    public static void showLoginWindow(String userid)
+    {
+        Storage.getLocalUser(null,null);
     }
     
     private static void initLoginFrame()
@@ -1071,7 +1097,7 @@ public class OpenGroove
                 @Override
                 public void actionPerformed(ActionEvent e)
                 {
-                    doNewAccountWizard();
+                    doNewAccountWizard(loginFrame);
                 }
             });
         loginFrame.setLocationRelativeTo(null);

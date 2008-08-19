@@ -8,8 +8,7 @@ public class LocalUser implements Serializable
      * 
      */
     private static final long serialVersionUID = 5428195665256519157L;
-    private String realm;
-    private String username;
+    private String userid;
     private String encPassword;
     /**
      * If this is not null, then this is the plain-text value of the user's
@@ -21,6 +20,11 @@ public class LocalUser implements Serializable
     public String getRealm()
     {
         return realm;
+    }
+    
+    public String getUserid()
+    {
+        return userid;
     }
     
     public String getUsername()
@@ -35,7 +39,12 @@ public class LocalUser implements Serializable
     
     public void setRealm(String realm)
     {
-        this.realm = realm;
+        userid = Userids.setRealm(userid, realm);
+    }
+    
+    public void setUserid(String userid)
+    {
+        this.userid = userid;
     }
     
     public void setUsername(String username)
