@@ -281,6 +281,10 @@ public class OpenGroove
         
     }
     
+    private static final Object authLock = new Object();
+    
+    private static PopupMenu trayPopup;
+    
     /*
      * More rambling by me on converting this stuff over to multiple users
      * logged in at a time...
@@ -312,11 +316,12 @@ public class OpenGroove
      * and any global internal plugins, and shows the auth dialog once, and
      * loads the tray icon and notification frame. It then just sits there until
      * someone logs in, at which point the method that handles authenticating
-     * gets stuff up and running, or until it gets exited. For every known user,
-     * there's a menu item under the launchbar. It's submenu is either one that
-     * contains stuff related to, for example, wokspaces or showing a launchbar,
-     * or one that has an item for logging in as that user if the user is not
-     * currently logged in.
+     * gets stuff up and running, or until it gets exited.
+     * 
+     * For every known user, there's a menu item under the launchbar. It's
+     * submenu is either one that contains stuff related to, for example,
+     * wokspaces or showing a launchbar, or one that has an item for logging in
+     * as that user if the user is not currently logged in.
      */
     /**
      * Starts OpenGroove, without updates. Run the main method of
@@ -736,7 +741,6 @@ public class OpenGroove
                 }
             }
             authDialog.hide();
-            new TrayIcon().setPopupMenu(null);
             PopupMenu pp = new PopupMenu();
             workspacesSubMenu = new PopupMenu("Workspaces");
             MenuItem aboutConvergiaItem = new AMenuItem(
@@ -1009,9 +1013,23 @@ public class OpenGroove
         
     }
     
+    /**
+     * This methods is called when the user clicks the "login" button in the
+     * login window. It validates their password (if it's incorrect, a message
+     * is shown on the login frame and this method returns) and creates a user
+     * context for them. It then does stuff like setting up a launchbar for
+     * them, refreshing the taskbar menu, etc.
+     */
     protected static void doFrameLogin()
     {
-        // TODO Auto-generated method stub
+    }
+    
+    /**
+     * Refreshes the task tray menu. This involves removing all items from it,
+     * and adding items back as they currently should be.
+     */
+    public static void refreshTrayMenu()
+    {
         
     }
     
