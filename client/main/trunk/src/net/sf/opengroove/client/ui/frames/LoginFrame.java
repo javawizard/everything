@@ -1,6 +1,7 @@
 package net.sf.opengroove.client.ui.frames;
 
 import com.jidesoft.swing.JideButton;
+import com.jidesoft.tooltip.BalloonTip;
 
 import info.clearthought.layout.TableLayout;
 import java.awt.BorderLayout;
@@ -40,6 +41,7 @@ public class LoginFrame extends javax.swing.JFrame
     private FillContainer fillContainer;
     private JideButton helpButton;
     private JLabel useridLabel;
+    private BalloonTip capsLockBalloon;
     private JButton cancelButton;
     private JLabel jLabel3;
     private JButton loginButton;
@@ -51,7 +53,6 @@ public class LoginFrame extends javax.swing.JFrame
     private JCheckBox rememberPasswordCheckbox;
     private JPanel passwordFooterPanel;
     private JPasswordField passwordField;
-    private JLabel capsLockLabel;
     private JLabel jLabel1;
     private JPanel passwordHeaderPanel;
     private JPanel useridPanel;
@@ -179,16 +180,6 @@ public class LoginFrame extends javax.swing.JFrame
                         }
                         passwordHeaderPanel.add(Box
                             .createHorizontalGlue());
-                        {
-                            capsLockLabel = new JLabel();
-                            passwordHeaderPanel
-                                .add(getCapsLockLabel());
-                            capsLockLabel
-                                .setText("Caps Lock is on");
-                            capsLockLabel
-                                .setFont(new java.awt.Font(
-                                    "Dialog", 0, 12));
-                        }
                     }
                     {
                         passwordField = new JPasswordField()
@@ -308,10 +299,12 @@ public class LoginFrame extends javax.swing.JFrame
             }
             pack();
             this.setSize(377, 212);
+            
         }
         catch (Exception e)
         {
             e.printStackTrace();
+            throw new RuntimeException(e);
         }
     }
     
@@ -328,11 +321,6 @@ public class LoginFrame extends javax.swing.JFrame
     public JLabel getUseridLabel()
     {
         return useridLabel;
-    }
-    
-    public JLabel getCapsLockLabel()
-    {
-        return capsLockLabel;
     }
     
     public JPasswordField getPasswordField()
@@ -363,6 +351,16 @@ public class LoginFrame extends javax.swing.JFrame
     public JButton getCancelButton()
     {
         return cancelButton;
+    }
+    
+    private BalloonTip getCapsLockBalloon()
+    {
+        if (capsLockBalloon == null)
+        {
+            capsLockBalloon = new BalloonTip();
+            capsLockBalloon.setTipText("Caps lock is on");
+        }
+        return capsLockBalloon;
     }
     
 }
