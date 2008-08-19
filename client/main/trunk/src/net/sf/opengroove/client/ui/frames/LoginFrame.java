@@ -133,7 +133,7 @@ public class LoginFrame extends javax.swing.JFrame
                                 .add(getUseridLabel());
                             useridLabel
                                 .setText("Realm:Username");
-                            useridLabel.setFont(new java.awt.Font("Dialog",0,12));
+                            useridLabel.setFont(new java.awt.Font("Dialog",1,12));
                         }
                         useridPanel.add(Box
                             .createHorizontalGlue());
