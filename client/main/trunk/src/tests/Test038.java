@@ -7,6 +7,8 @@ import java.awt.event.ActionEvent;
 import javax.swing.AbstractAction;
 import javax.swing.JComponent;
 import javax.swing.JFrame;
+import javax.swing.JLabel;
+import javax.swing.border.EmptyBorder;
 
 import com.jidesoft.dialog.AbstractDialogPage;
 import com.jidesoft.dialog.BannerPanel;
@@ -14,6 +16,7 @@ import com.jidesoft.dialog.ButtonEvent;
 import com.jidesoft.dialog.ButtonNames;
 import com.jidesoft.dialog.PageList;
 import com.jidesoft.wizard.CompletionWizardPage;
+import com.jidesoft.wizard.DefaultWizardPage;
 import com.jidesoft.wizard.WelcomeWizardPage;
 import com.jidesoft.wizard.WizardDialogPane;
 import com.jidesoft.wizard.WizardStyle;
@@ -36,36 +39,34 @@ public class Test038
             "Test038 - OpenGroove");
         final WizardDialogPane wizard = new WizardDialogPane()
         {
+            private JLabel titleLabel;
             
             @Override
             protected void updateBannerPanel(
                 JComponent bannerPanel,
                 AbstractDialogPage page)
             {
-                BannerPanel banner = (BannerPanel) bannerPanel
-                    .getComponent(0);
-                banner.setBackgroundPaint(new Color(255,
-                    255, 255, 0));
+                titleLabel.setText(page.getTitle());
             }
             
             @Override
             public JComponent createBannerPanel()
             {
-                BannerPanel banner = new BannerPanel();
-                banner.setOpaque(false);
                 FillContainer fill = new FillContainer();
                 fill.setFillImageName("test-wizard");
                 fill.setLayout(new BorderLayout());
-                fill.add(banner);
+                titleLabel = new JLabel(" ");
+                fill.add(titleLabel);
+                fill.setBorder(new EmptyBorder(6, 6, 6, 6));
                 return fill;
             }
         };
         wizard.setBackground(new Color(235, 235, 235));
         PageList model = new PageList();
-        model.append(new WelcomeWizardPage(
+        DefaultWizardPage page1 = new WelcomeWizardPage(
             "This is the title",
-            "This is the description for this page."));
-        model.append(new WelcomeWizardPage(
+            "This is the description for this page.");
+        final DefaultWizardPage page2 = new WelcomeWizardPage(
             "This is the title2",
             "This is the description for this page2.")
         {
@@ -80,8 +81,8 @@ public class Test038
                         ButtonEvent.ENABLE_BUTTON,
                         ButtonNames.BACK);
             }
-        });
-        model.append(new WelcomeWizardPage(
+        };
+        DefaultWizardPage page3 = new WelcomeWizardPage(
             "This is the title3",
             "This is the description for this page3.")
         {
@@ -92,11 +93,14 @@ public class Test038
                 // TODO Auto-generated method stub
                 super.setupWizardButtons();
             }
-        });
-        model
-            .append(new CompletionWizardPage(
-                "This is the completion title",
-                "This is the description for the completion page."));
+        };
+        DefaultWizardPage page4 = new CompletionWizardPage(
+            "This is the completion title",
+            "This is the description for the completion page.");
+        model.append(page1);
+        model.append(page2);
+        model.append(page3);
+        model.append(page4);
         wizard.setPageList(model);
         wizard.initComponents();
         wizard.setFinishAction(new AbstractAction(
@@ -106,7 +110,9 @@ public class Test038
             @Override
             public void actionPerformed(ActionEvent e)
             {
-                frame.dispose();
+                System.out.println(wizard
+                    .closeCurrentPage());
+                wizard.setCurrentPage(page2.getTitle());
             }
         });
         wizard.setCancelAction(new AbstractAction(
