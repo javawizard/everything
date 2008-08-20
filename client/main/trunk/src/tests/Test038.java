@@ -1,5 +1,6 @@
 package tests;
 
+import java.awt.Color;
 import java.awt.event.ActionEvent;
 
 import javax.swing.AbstractAction;
@@ -29,6 +30,7 @@ public class Test038
         final JFrame frame = new JFrame(
             "Test038 - OpenGroove");
         final WizardDialogPane wizard = new WizardDialogPane();
+        wizard.setBackground(new Color(235, 235, 235));
         PageList model = new PageList();
         model.append(new WelcomeWizardPage(
             "This is the title",
