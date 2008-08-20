@@ -1152,7 +1152,11 @@ public class OpenGroove
      */
     private static void showNewAccountWizard(boolean welcome)
     {
-        
+        if(newAccountWizardPane.isShowing())
+        {
+            bringToFront(newAccountFrame);
+            return;
+        }
     }
     
     protected static boolean anyServerConnections()
