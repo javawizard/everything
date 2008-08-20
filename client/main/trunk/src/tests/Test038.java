@@ -30,9 +30,9 @@ public class Test038
             "Test038 - OpenGroove");
         final WizardDialogPane wizard = new WizardDialogPane();
         PageList model = new PageList();
-//        model.append(new WelcomeWizardPage(
-//            "This is the title",
-//            "This is the description for this page."));
+        model.append(new WelcomeWizardPage(
+            "This is the title",
+            "This is the description for this page."));
         model.append(new WelcomeWizardPage(
             "This is the title2",
             "This is the description for this page2.")
