@@ -1,11 +1,15 @@
 package tests;
 
+import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.event.ActionEvent;
 
 import javax.swing.AbstractAction;
+import javax.swing.JComponent;
 import javax.swing.JFrame;
 
+import com.jidesoft.dialog.AbstractDialogPage;
+import com.jidesoft.dialog.BannerPanel;
 import com.jidesoft.dialog.ButtonEvent;
 import com.jidesoft.dialog.ButtonNames;
 import com.jidesoft.dialog.PageList;
@@ -15,6 +19,7 @@ import com.jidesoft.wizard.WizardDialogPane;
 import com.jidesoft.wizard.WizardStyle;
 
 import net.sf.opengroove.client.Statics;
+import net.sf.opengroove.client.ui.FillContainer;
 import net.sf.opengroove.client.ui.TestFrame;
 
 public class Test038
@@ -29,7 +34,32 @@ public class Test038
         WizardStyle.setStyle(WizardStyle.WIZARD97_STYLE);
         final JFrame frame = new JFrame(
             "Test038 - OpenGroove");
-        final WizardDialogPane wizard = new WizardDialogPane();
+        final WizardDialogPane wizard = new WizardDialogPane()
+        {
+            
+            @Override
+            protected void updateBannerPanel(
+                JComponent bannerPanel,
+                AbstractDialogPage page)
+            {
+                BannerPanel banner = (BannerPanel) bannerPanel
+                    .getComponent(0);
+                banner.setBackgroundPaint(new Color(255,
+                    255, 255, 0));
+            }
+            
+            @Override
+            public JComponent createBannerPanel()
+            {
+                BannerPanel banner = new BannerPanel();
+                banner.setOpaque(false);
+                FillContainer fill = new FillContainer();
+                fill.setFillImageName("test-wizard");
+                fill.setLayout(new BorderLayout());
+                fill.add(banner);
+                return fill;
+            }
+        };
         wizard.setBackground(new Color(235, 235, 235));
         PageList model = new PageList();
         model.append(new WelcomeWizardPage(
