@@ -138,7 +138,7 @@ public class Test038
         });
         frame.getContentPane().add(wizard);
         frame.pack();
-        frame.setSize(500, 350);
+        frame.setSize(650, 500);
         frame.setLocationRelativeTo(null);
         frame.show();
     }
