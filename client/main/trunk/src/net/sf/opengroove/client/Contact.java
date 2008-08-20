@@ -27,15 +27,7 @@ public class Contact implements Serializable
      * should be displayed to the user in place of realName.
      */
     private String localName;
-    /**
-     * The date that the contact was last online. It is up to the server system
-     * whether this is the most recent point in time that the user was connected
-     * to the server, or the most recent point in time when an authenticate
-     * command was sent by the contact. Ideally, it would be the first, but as
-     * of this writing, it is actually the second in the OpenGroove Realm Server
-     * (revision 397).
-     */
-    private long lastOnline;
+
     /**
      * This field, along with {@link #rsaEncMod}, {@link #rsaSigMod}, and
      * {@link #rsaSigPub}, constitute this contact's public security key.
@@ -208,13 +200,4 @@ public class Contact implements Serializable
         this.hasKeys = hasKeys;
     }
 
-    public long getLastOnline()
-    {
-        return lastOnline;
-    }
-
-    public void setLastOnline(long lastOnline)
-    {
-        this.lastOnline = lastOnline;
-    }
 }
