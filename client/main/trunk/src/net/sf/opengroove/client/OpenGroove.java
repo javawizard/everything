@@ -91,6 +91,7 @@ import net.sf.opengroove.client.workspace.WorkspaceWrapper;
 import base64.Base64Coder;
 
 import com.elevenworks.swing.panel.SimpleGradientPanel;
+import com.jidesoft.wizard.WizardDialogPane;
 import com.l2fprod.common.swing.JLinkButton;
 
 /**
@@ -130,7 +131,9 @@ public class OpenGroove
     
     private static LoginFrame loginFrame;
     
-    private static Wizard accountWizard;
+    private static WizardDialogPane newAccountWizardPane;
+    
+    private static JFrame newAccountFrame;
     
     /**
      * This is the icon that should be used as the icon for all Convergia
@@ -1048,20 +1051,30 @@ public class OpenGroove
      * Shows the login window for the specified user. If the login window is
      * already showing, it is changed to this user. If this user is already
      * logged in, this method does nothing. If this user does not exist, or the
-     * userid is null, the new account wizard is shown over the authentication
-     * window, and when the user creates an account, the login window will be
-     * set to the newly-created user's username.
+     * userid is null, the new account wizard is shown instead.<br/><br/>
+     * 
+     * If the new user wizard is currently showing, it is brought to the front,
+     * and this method returns.
      * 
      * @param userid
      */
     public static void showLoginWindow(String userid)
     {
-        LocalUser user = Storage.getLocalUser(userid);
+        if (newAccountFrame.isShowing())
+        {
+            bringToFront(newAccountFrame);
+            return;
+        }
+        LocalUser user = userid == null ? null : Storage
+            .getLocalUser(userid);
         if (user != null && user.isLoggedIn())
             return;
         if (user == null)
         {
-            loginFrame.getP
+            /*
+             * Show the new user wizard.
+             */
+            show
         }
     }
     
@@ -1123,6 +1136,21 @@ public class OpenGroove
     }
     
     private static void initAccountWizard()
+    {
+        
+    }
+    
+    /**
+     * Shows the new account wizard. If the wizard is already showing, it will
+     * be brought to the front. If not, the current wizard page will be reset to
+     * it's first page. If <code>welcome</code> is true, the wizard will have
+     * an added initial screen that gives the user more information about
+     * OpenGroove. If not, this initial screen won't be displayed, and the first
+     * screen will instead be the one that allows users to choose between
+     * creating a new account, importing one they have already created, or
+     * entering an account configuration code.
+     */
+    private static void showNewAccountWizard(boolean welcome)
     {
         
     }
