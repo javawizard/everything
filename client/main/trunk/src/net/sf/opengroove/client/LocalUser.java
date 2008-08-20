@@ -29,6 +29,11 @@ public class LocalUser implements Serializable
     private BigInteger rsaSigPrv;
     private BigInteger rsaSigMod;
     /**
+     * The user's password hint. The user can set this up in their settings
+     * dialog, and it is usually synchronized between computers.
+     */
+    private String passwordHint;
+    /**
      * The user's encrypted password, in the format returned by
      * {@link net.sf.opengroove.security.Hash#hash(String)}. This is used to
      * authenticate the user.
@@ -80,7 +85,8 @@ public class LocalUser implements Serializable
     
     /**
      * Returns the user context for this user, if they are logged in. If not,
-     * null is returned. This method is a shortcut for <code>OpenGroove.userContextMap.get(getUserid())</code>.
+     * null is returned. This method is a shortcut for
+     * <code>OpenGroove.userContextMap.get(getUserid())</code>.
      * 
      * @return
      */
@@ -222,5 +228,15 @@ public class LocalUser implements Serializable
     public void setStoredPassword(String storedPassword)
     {
         this.storedPassword = storedPassword;
+    }
+
+    public String getPasswordHint()
+    {
+        return passwordHint;
+    }
+
+    public void setPasswordHint(String passwordHint)
+    {
+        this.passwordHint = passwordHint;
     }
 }

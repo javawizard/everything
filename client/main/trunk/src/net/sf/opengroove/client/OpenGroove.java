@@ -1056,7 +1056,13 @@ public class OpenGroove
      */
     public static void showLoginWindow(String userid)
     {
-        Storage.getLocalUser(null,null);
+        LocalUser user = Storage.getLocalUser(userid);
+        if (user != null && user.isLoggedIn())
+            return;
+        if (user == null)
+        {
+            loginFrame.getP
+        }
     }
     
     private static void initLoginFrame()
