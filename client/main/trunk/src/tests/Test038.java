@@ -8,6 +8,8 @@ import javax.swing.AbstractAction;
 import javax.swing.JComponent;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
+import javax.swing.JPanel;
+import javax.swing.JSeparator;
 import javax.swing.border.EmptyBorder;
 
 import com.jidesoft.dialog.AbstractDialogPage;
@@ -57,11 +59,15 @@ public class Test038
                 fill.setLayout(new BorderLayout());
                 titleLabel = new JLabel(" ");
                 fill.add(titleLabel);
-                fill.setBorder(new EmptyBorder(6, 6, 6, 6));
-                return fill;
+                JPanel panel = new JPanel();
+                panel.setLayout(new BorderLayout());
+                panel.add(fill);
+                panel.add(new JSeparator(),
+                    BorderLayout.SOUTH);
+                fill.setBorder(new EmptyBorder(12, 20, 12, 10));
+                return panel;
             }
         };
-        wizard.setBackground(new Color(235, 235, 235));
         PageList model = new PageList();
         DefaultWizardPage page1 = new WelcomeWizardPage(
             "This is the title",
@@ -80,6 +86,11 @@ public class Test038
                     fireButtonEvent(
                         ButtonEvent.ENABLE_BUTTON,
                         ButtonNames.BACK);
+            }
+            
+            public boolean showBannerPane()
+            {
+                return true;
             }
         };
         DefaultWizardPage page3 = new WelcomeWizardPage(
