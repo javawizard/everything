@@ -23,7 +23,13 @@ public abstract class StandardWizardPage extends
         this.isLastStep = isLastStep;
     }
     
-    protected abstract void initContentPane();
+    protected abstract void init();
+    
+    protected void initContentPane()
+    {
+        super.initContentPane();
+        init();
+    }
     
     public void setupWizardButtons()
     {
