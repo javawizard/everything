@@ -85,6 +85,7 @@ import net.sf.opengroove.client.ui.CreateWorkspaceDialog;
 import net.sf.opengroove.client.ui.FillContainer;
 import net.sf.opengroove.client.ui.ImportWorkspaceDialog;
 import net.sf.opengroove.client.ui.InviteToWorkspaceDialog;
+import net.sf.opengroove.client.ui.StandardWizardPage;
 import net.sf.opengroove.client.ui.frames.LoginFrame;
 import net.sf.opengroove.client.workspace.WorkspaceManager;
 import net.sf.opengroove.client.workspace.WorkspaceWrapper;
@@ -1156,7 +1157,8 @@ public class OpenGroove
      * OpenGroove. If not, this initial screen won't be displayed, and the first
      * screen will instead be the one that allows users to choose between
      * creating a new account, importing one they have already created, or
-     * entering an account configuration code.
+     * entering an account configuration code. If the user finishes the wizard
+     * successfully, the login box will be shown.
      */
     private static void showNewAccountWizard(boolean welcome)
     {
@@ -1197,9 +1199,40 @@ public class OpenGroove
         };
         PageList pages = new PageList();
         // pages here
+        if (welcome)
+        {
+            StandardWizardPage welcomePage = new StandardWizardPage(
+                "Welcome to OpenGroove", false, true, true,
+                false)
+            {
+                
+                @Override
+                protected void init()
+                {
+                    addText(getWelcomeWizardMessage());
+                }
+            };
+        }
         // end pages
         newAccountWizardPane.setPageList(pages);
-        
+        newAccountWizardPane.initComponents();
+        newAccountFrame.getContentPane().setLayout(
+            new BorderLayout());
+        newAccountFrame.getContentPane().removeAll();
+        newAccountFrame.getContentPane().add(
+            newAccountWizardPane);
+        newAccountFrame.setSize(650, 500);
+        newAccountFrame.setResizable(false);
+        newAccountFrame.setLocationRelativeTo(null);
+        newAccountFrame.show();
+    }
+    
+    protected static String getWelcomeWizardMessage()
+    {
+        return ""
+            + "This appears to be your first time using OpenGroove "
+            + "on this computer. Before you can use OpenGroove, you "
+            + "need to create an account. Click Next to continue.";
     }
     
     protected static boolean anyServerConnections()

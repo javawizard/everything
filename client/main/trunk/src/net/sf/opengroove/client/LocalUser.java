@@ -55,7 +55,7 @@ public class LocalUser implements Serializable
      * to be ordered correctly, even if multiple users don't have the same
      * system time on their computers.
      */
-    private long lag = System.currentTimeMillis();
+    private long lag;
     /**
      * If this is not null, then this is the plain-text value of the user's
      * password, and the user won't be prompted for their password when they
@@ -229,12 +229,12 @@ public class LocalUser implements Serializable
     {
         this.storedPassword = storedPassword;
     }
-
+    
     public String getPasswordHint()
     {
         return passwordHint;
     }
-
+    
     public void setPasswordHint(String passwordHint)
     {
         this.passwordHint = passwordHint;
