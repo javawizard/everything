@@ -54,6 +54,7 @@ public class Test038
             @Override
             public JComponent createBannerPanel()
             {
+                System.out.println("created");
                 FillContainer fill = new FillContainer();
                 fill.setFillImageName("test-wizard");
                 fill.setLayout(new BorderLayout());
@@ -64,7 +65,8 @@ public class Test038
                 panel.add(fill);
                 panel.add(new JSeparator(),
                     BorderLayout.SOUTH);
-                fill.setBorder(new EmptyBorder(12, 20, 12, 10));
+                fill.setBorder(new EmptyBorder(12, 20, 12,
+                    10));
                 return panel;
             }
         };
@@ -88,10 +90,10 @@ public class Test038
                         ButtonNames.BACK);
             }
             
-            public boolean showBannerPane()
-            {
-                return true;
-            }
+            // public boolean showBannerPane()
+            // {
+            // return true;
+            // }
         };
         DefaultWizardPage page3 = new WelcomeWizardPage(
             "This is the title3",
@@ -114,8 +116,7 @@ public class Test038
         model.append(page4);
         wizard.setPageList(model);
         wizard.initComponents();
-        wizard.setFinishAction(new AbstractAction(
-            "Finish")
+        wizard.setFinishAction(new AbstractAction("Finish")
         {
             
             @Override
@@ -126,8 +127,7 @@ public class Test038
                 wizard.setCurrentPage(page2.getTitle());
             }
         });
-        wizard.setCancelAction(new AbstractAction(
-            "Cancel")
+        wizard.setCancelAction(new AbstractAction("Cancel")
         {
             
             @Override
