@@ -115,7 +115,7 @@ public class Test038
         wizard.setPageList(model);
         wizard.initComponents();
         wizard.setFinishAction(new AbstractAction(
-            ButtonNames.FINISH)
+            "Finish")
         {
             
             @Override
@@ -127,7 +127,7 @@ public class Test038
             }
         });
         wizard.setCancelAction(new AbstractAction(
-            ButtonNames.CANCEL)
+            "Cancel")
         {
             
             @Override
