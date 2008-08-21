@@ -82,6 +82,7 @@ import net.sf.opengroove.client.ui.ChooseLAFDialog;
 import net.sf.opengroove.client.ui.ConfigureOpenGrooveDialog;
 import net.sf.opengroove.client.ui.ConfigureWorkspaceDialog;
 import net.sf.opengroove.client.ui.CreateWorkspaceDialog;
+import net.sf.opengroove.client.ui.FillContainer;
 import net.sf.opengroove.client.ui.ImportWorkspaceDialog;
 import net.sf.opengroove.client.ui.InviteToWorkspaceDialog;
 import net.sf.opengroove.client.ui.frames.LoginFrame;
@@ -91,6 +92,8 @@ import net.sf.opengroove.client.workspace.WorkspaceWrapper;
 import base64.Base64Coder;
 
 import com.elevenworks.swing.panel.SimpleGradientPanel;
+import com.jidesoft.dialog.AbstractDialogPage;
+import com.jidesoft.dialog.PageList;
 import com.jidesoft.wizard.WizardDialogPane;
 import com.l2fprod.common.swing.JLinkButton;
 
@@ -404,6 +407,8 @@ public class OpenGroove
                     new JFileChooser();
                 }
             }.start();
+            initNewAccountWizard();
+            initLoginFrame();
             sfile.mkdirs();
             // the setProperty call below is used to avoid problems with the
             // fade effect for the taskbar notification frame
@@ -1135,9 +1140,12 @@ public class OpenGroove
         
     }
     
-    private static void initAccountWizard()
+    private static void initNewAccountWizard()
     {
-        
+        newAccountFrame = new JFrame(
+            "New Account - OpenGroove");
+        newAccountFrame.setSize(650, 500);
+        newAccountFrame.setLocationRelativeTo(null);
     }
     
     /**
@@ -1152,11 +1160,46 @@ public class OpenGroove
      */
     private static void showNewAccountWizard(boolean welcome)
     {
-        if(newAccountWizardPane.isShowing())
+        if (newAccountWizardPane.isShowing())
         {
             bringToFront(newAccountFrame);
             return;
         }
+        newAccountWizardPane = new WizardDialogPane()
+        {
+            private JLabel titleLabel;
+            
+            @Override
+            protected void updateBannerPanel(
+                JComponent bannerPanel,
+                AbstractDialogPage page)
+            {
+                titleLabel.setText(page.getTitle());
+            }
+            
+            @Override
+            public JComponent createBannerPanel()
+            {
+                FillContainer fill = new FillContainer();
+                fill.setFillImageName("newaccount");
+                fill.setLayout(new BorderLayout());
+                titleLabel = new JLabel(" ");
+                fill.add(titleLabel);
+                JPanel panel = new JPanel();
+                panel.setLayout(new BorderLayout());
+                panel.add(fill);
+                panel.add(new JSeparator(),
+                    BorderLayout.SOUTH);
+                fill.setBorder(new EmptyBorder(12, 20, 12,
+                    10));
+                return panel;
+            }
+        };
+        PageList pages = new PageList();
+        // pages here
+        // end pages
+        newAccountWizardPane.setPageList(pages);
+        
     }
     
     protected static boolean anyServerConnections()
