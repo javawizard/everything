@@ -64,7 +64,8 @@ public class Test038
                 panel.add(fill);
                 panel.add(new JSeparator(),
                     BorderLayout.SOUTH);
-                fill.setBorder(new EmptyBorder(12, 20, 12, 10));
+                fill.setBorder(new EmptyBorder(12, 20, 12,
+                    10));
                 return panel;
             }
         };
@@ -93,10 +94,16 @@ public class Test038
                 return true;
             }
         };
-        DefaultWizardPage page3 = new WelcomeWizardPage(
-            "This is the title3",
-            "This is the description for this page3.")
+        DefaultWizardPage page3 = new DefaultWizardPage(
+            "This is the title3")
         {
+            
+            @Override
+            protected void initContentPane()
+            {
+                super.initContentPane();
+                addText("This is page 3's contents. These contents are intentionally long so that the contents will eventually wrap. Did it work? I'm really hoping that it did, but we'll have to see.");
+            }
             
             @Override
             public void setupWizardButtons()
@@ -114,8 +121,7 @@ public class Test038
         model.append(page4);
         wizard.setPageList(model);
         wizard.initComponents();
-        wizard.setFinishAction(new AbstractAction(
-            "Finish")
+        wizard.setFinishAction(new AbstractAction("Finish")
         {
             
             @Override
@@ -126,8 +132,7 @@ public class Test038
                 wizard.setCurrentPage(page2.getTitle());
             }
         });
-        wizard.setCancelAction(new AbstractAction(
-            "Cancel")
+        wizard.setCancelAction(new AbstractAction("Cancel")
         {
             
             @Override
