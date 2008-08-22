@@ -284,9 +284,11 @@ public class CommandCommunicator
      * Sets your visibility. When your account is created, this is, by default,
      * false. If this is false, then you won't be returned as part of any
      * searchUsers requests. If this is true, then you can be returned as part
-     * of a searchUsers request. Changes to this may take a few minutes to
-     * propegate through all of the realm servers, although the change will
-     * generally be available to other users on your realm server immediately.
+     * of a searchUsers request. Changes to this may take a few minutes (or even
+     * longer, the OpenGroove specs specify a maximum prepegation time of 24
+     * hours) to propegate through all of the realm servers, although the change
+     * will generally be available to other users on your realm server
+     * immediately.
      * 
      * @param visible
      *            True to make you visible to other users, so that your username
