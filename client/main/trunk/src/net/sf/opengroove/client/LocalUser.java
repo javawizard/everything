@@ -3,6 +3,8 @@ package net.sf.opengroove.client;
 import java.io.Serializable;
 import java.math.BigInteger;
 
+import net.sf.opengroove.client.com.CommandCommunicator;
+
 public class LocalUser implements Serializable
 {
     /**
@@ -45,10 +47,35 @@ public class LocalUser implements Serializable
      * of storedPassword should also match encPassword if this is true.
      */
     private boolean autoSignOn;
+    /**
+     * True if this user has chosen to be publicly visible. This directly
+     * corresponds to {@link CommandCommunicator#getVisibility()}.
+     */
     private boolean isSearchVisible;
+    /**
+     * True if this user has chosen to be locally visible. If this is true, then
+     * the user will respond to multicast queries for users on the same network.
+     */
     private boolean isLocalVisible;
+    /**
+     * This user's real name. This is made visible in the public-real-name user
+     * property.
+     */
     private String realName;
+    /**
+     * This user's private email address. This is the email address that
+     * operators of this user's realm server, or OpenGroove administrators
+     * themselves, will use to contact this user. This must not be null or the
+     * empty string. This is made visible in the email-address user property.
+     */
     private String emailAddress;
+    /**
+     * This user's public email address. This is the email address that others
+     * will see as this user's email address. This can be null or the empty
+     * string, which usually indicates that this user doesn't want to reveal any
+     * email information to other users. This is made visible in the
+     * public-email-address user property.
+     */
     private String publicEmailAddress;
     /**
      * This user's time lag as compared with the server. This is equal to
