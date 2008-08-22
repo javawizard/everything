@@ -205,7 +205,7 @@ public class CommandCommunicator
      */
     public void ping() throws IOException
     {
-        // This must be communicator.query, not communicator.send!
+        // This must be communicator.query, not communicator.send
         communicator.query(new Packet(null, "ping",
             new byte[0]), defaultTimeout);
     }
@@ -290,9 +290,9 @@ public class CommandCommunicator
      * searchUsers requests. If this is true, then you can be returned as part
      * of a searchUsers request. Changes to this may take a few minutes (or even
      * longer, the OpenGroove specs specify a maximum prepegation time of 24
-     * hours) to propegate through all of the realm servers, although the change
-     * will generally be available to other users on your realm server
-     * immediately.
+     * hours, although it is generally much shorter than that) to propegate
+     * through all of the realm servers, although the change will generally be
+     * available to other users on your realm server immediately.
      * 
      * @param visible
      *            True to make you visible to other users, so that your username

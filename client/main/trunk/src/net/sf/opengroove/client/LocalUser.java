@@ -45,6 +45,11 @@ public class LocalUser implements Serializable
      * of storedPassword should also match encPassword if this is true.
      */
     private boolean autoSignOn;
+    private boolean isSearchVisible;
+    private boolean isLocalVisible;
+    private String realName;
+    private String emailAddress;
+    private String publicEmailAddress;
     /**
      * This user's time lag as compared with the server. This is equal to
      * <code>myTime - serverTime</code>, where myTime is the value of

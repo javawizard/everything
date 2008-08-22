@@ -27,10 +27,11 @@ public class Contact implements Serializable
      * should be displayed to the user in place of realName.
      */
     private String localName;
-
+    
     /**
      * This field, along with {@link #rsaEncMod}, {@link #rsaSigMod}, and
-     * {@link #rsaSigPub}, constitute this contact's public security key.
+     * {@link #rsaSigPub}, constitute this contact's public security key. These
+     * will be null if hasKeys is false.
      */
     private BigInteger rsaEncPub;
     private BigInteger rasEncMod;
@@ -58,7 +59,7 @@ public class Contact implements Serializable
      * have an associated contact object, in which case that object will just
      * have this field set to true. Similarly, when a user deletes a contact,
      * it's contact object is not discarded; this field is simply set to false
-     * instead.
+     * instead, even if the contact is not a known user by any other means.
      */
     private boolean isUserContact;
     /**
@@ -199,5 +200,5 @@ public class Contact implements Serializable
     {
         this.hasKeys = hasKeys;
     }
-
+    
 }
