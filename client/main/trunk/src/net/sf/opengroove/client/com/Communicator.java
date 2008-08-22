@@ -159,6 +159,11 @@ public class Communicator
      * waits for 1000ms on this object repeatedly.
      */
     private final Object oneTimeLock = new Object();
+    /**
+     * If one-time initialization fails because of an exception, the exception
+     * is placed here.
+     */
+    private Exception oneTimeException;
     
     /*
      * TODO: on one-time-use, if the communicator fails to connect, it should
@@ -322,6 +327,10 @@ public class Communicator
                         in = tSocket.getInputStream();
                         out = tSocket.getOutputStream();
                         socket = tSocket;
+                        synchronized (oneTimeLock)
+                        {
+                            oneTimeLock.notifyAll();
+                        }
                         // Now the actual listening stuff.
                         boolean b = true;
                         while (b)
@@ -436,6 +445,7 @@ public class Communicator
                     }
                     catch (Exception e)
                     {
+                        oneTimeException = e;
                         System.err
                             .println("Uncategorized exception while connecting to server");
                         e.printStackTrace();
@@ -476,9 +486,40 @@ public class Communicator
                         }
                     }
                 }
+                isRunning = false;
+                synchronized (oneTimeLock)
+                {
+                    oneTimeLock.notifyAll();
+                }
             }
         };
         coordinator.start();
+        if (isOneTime)
+        {
+            while (isAlive() && isRunning && socket == null)
+            {
+                synchronized (oneTimeLock)
+                {
+                    try
+                    {
+                        oneTimeLock.wait(1000);
+                    }
+                    catch (InterruptedException e)
+                    {
+                        throw new RuntimeException(e);
+                    }
+                }
+            }
+            if (oneTimeException != null)
+            {
+                throw new RuntimeException(
+                    "Setting up the communicator failed",
+                    oneTimeException);
+            }
+            if ((!isRunning) || (!isAlive()))
+                throw new RuntimeException(
+                    "Setting up the communicator failed for an unknown reason");
+        }
     }
     
     private void notifyPacketListeners(
