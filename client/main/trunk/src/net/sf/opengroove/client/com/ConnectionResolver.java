@@ -36,9 +36,9 @@ public class ConnectionResolver
     {
         try
         {
-            Record[] records = new Lookup(
-                "_opengroove._tcp." + realm, Type.SRV)
-                .run();
+            Lookup lookup = new Lookup("_opengroove._tcp."
+                + realm, Type.SRV);
+            Record[] records = lookup.run();
             if (records == null)
             {
                 return new SRVRecord[0];

@@ -142,9 +142,27 @@ public class Communicator
      * connection is encrypted and decrypted with this key.
      */
     private Aes256 securityKey;
+    /**
+     * If this is true, then this is a one-time-only communicator. This means
+     * that the constructor
+     * {@link #Communicator(String, boolean, String, String, String, String, BigInteger, BigInteger)}
+     * will not return until either a connection has been established, or
+     * establishing a connection failed (IE the coordinator has died). In
+     * addition, when the coordinator loses it's connection, it will die
+     * immediately without repeatedly trying to connect again.
+     */
+    private boolean isOneTime;
+    /**
+     * The object that the constructor will lock on when isOneTime = true. Just
+     * before the coordinator dies, it will notify this object. It will also
+     * notify it when it successfully connects to the server. The constructor
+     * waits for 1000ms on this object repeatedly.
+     */
+    private final Object oneTimeLock = new Object();
     
     public Communicator(String realm, boolean auth,
-        String connectionType, String connectionUsername,
+        boolean isOneTime, String connectionType,
+        String connectionUsername,
         String connectionComputer,
         String connectionPassword,
         BigInteger serverRsaPublic, BigInteger serverRsaMod)
@@ -153,6 +171,7 @@ public class Communicator
         this.serverRsaPublic = serverRsaPublic;
         this.serverRsaMod = serverRsaMod;
         this.authenticateOnConnect = auth;
+        this.isOneTime = isOneTime;
         this.connectionType = connectionType;
         this.connectionComputer = connectionComputer;
         this.connectionUsername = connectionUsername;
@@ -162,7 +181,8 @@ public class Communicator
             public void run()
             {
                 boolean isFirst = true;
-                while (isRunning)
+                while (isRunning
+                    && ((!Communicator.this.isOneTime) || isFirst))
                 {
                     // If the wait index is greater than 2, clear the cache.
                     // This is used so that old lookup entries that would
@@ -198,6 +218,8 @@ public class Communicator
                     {
                         ex1.printStackTrace();
                     }
+                    if (!isRunning)
+                        return;
                     // First, we get a list of servers to connect to from the
                     // ConnectionResolver class. Then, for each server, in the
                     // order returned, we try to connect. If connecting to a
@@ -256,6 +278,11 @@ public class Communicator
                                 .println("Failed to set up a connection.");
                             continue;
                         }
+                        if (!isRunning)
+                        {
+                            socket.close();
+                            return;
+                        }
                         if (authenticateOnConnect)
                         {
                             Packet authPacket = new Packet(
@@ -293,6 +320,11 @@ public class Communicator
                         boolean b = true;
                         while (b)
                         {
+                            if (!isRunning)
+                            {
+                                socket.close();
+                                return;
+                            }
                             byte[] packet = Crypto.dec(
                                 securityKey, in, 65535);
                             byte[] first128bytes = new byte[Math
@@ -304,6 +336,11 @@ public class Communicator
                                 first128bytes);
                             String[] first128split = first128
                                 .split("\\ ", 4);
+                            if (!isRunning)
+                            {
+                                socket.close();
+                                return;
+                            }
                             if (first128split.length < 4)
 
                             {
@@ -476,7 +513,15 @@ public class Communicator
      */
     public void shutdown()
     {
-        
+        isRunning = false;
+        try
+        {
+            socket.close();
+        }
+        catch (Exception exception)
+        {
+            exception.printStackTrace();
+        }
     }
     
     /**
