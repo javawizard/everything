@@ -160,6 +160,12 @@ public class Communicator
      */
     private final Object oneTimeLock = new Object();
     
+    /*
+     * TODO: on one-time-use, if the communicator fails to connect, it should
+     * probably store the fail exception and throw it out of the constructor,
+     * wrapped with a RuntimeException.
+     */
+
     public Communicator(String realm, boolean auth,
         boolean isOneTime, String connectionType,
         String connectionUsername,
