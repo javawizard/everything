@@ -168,7 +168,12 @@ public class Communicator
     /**
      * Creates a new Communicator object. The communicator will attempt to
      * re-establish a connection to the server whenever it's connection is lost,
-     * unless <code>isOneTime</code> is true.
+     * unless <code>isOneTime</code> is true.<br/><br/>
+     * 
+     * Note that, upon the first packet being received from the server, the
+     * coordinator thread will pause until at least one packet listener is
+     * present. This ensures that no packets will be received without a packet
+     * listener to sink them.
      * 
      * @param realm
      *            The name of the realm to connect to. A server will be
@@ -430,6 +435,8 @@ public class Communicator
                             final Packet iPacket = new Packet(
                                 packetId, commandName,
                                 responseName, data);
+                            while (packetListeners.size() == 0)
+                                Thread.sleep(500);
                             // We have a valid packet. Now we need to process
                             // it. First, if it's packetid is _auth, then we
                             // check to see if it was successful, and notify the
