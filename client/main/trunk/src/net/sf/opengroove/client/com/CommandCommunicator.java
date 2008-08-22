@@ -241,7 +241,11 @@ public class CommandCommunicator
      *            The maximum number of results that will be returned at a time.
      * @param searchOtherRealms
      *            true to search other realm servers (in which case the search
-     *            may be slow), false to only search this realm server.
+     *            may be slow), false to only search this realm server. Exactly
+     *            which other realm servers are searched is up to this user's
+     *            realm server, but it is typically all servers listed in the
+     *            public server directory, as well as any additional servers
+     *            that this user's realm server is configured to search.
      * @param userSettings
      *            A list of user settings to search in addition to the user's
      *            username. If this is the empty array, only the user's username
