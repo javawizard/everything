@@ -165,18 +165,66 @@ public class Communicator
      */
     private Exception oneTimeException;
     
-    /*
-     * TODO: on one-time-use, if the communicator fails to connect, it should
-     * probably store the fail exception and throw it out of the constructor,
-     * wrapped with a RuntimeException.
+    /**
+     * Creates a new Communicator object. The communicator will attempt to
+     * re-establish a connection to the server whenever it's connection is lost,
+     * unless <code>isOneTime</code> is true.
+     * 
+     * @param realm
+     *            The name of the realm to connect to. A server will be
+     *            automatically selected from among the specified realm's
+     *            servers.
+     * @param auth
+     *            True to automatically run the authenticate command upon
+     *            connecting to the server, false if not.
+     * @param isOneTime
+     *            True for the communicator to connect just once, false to
+     *            attempt to stay connected by re-connecting if a connection is
+     *            lost. If this is true, the constructor will not return until a
+     *            connection to the server is established, and will throw an
+     *            exception if a connection cannot be established.
+     * @param connectionType
+     *            The type of connection. This is typically normal, although if
+     *            the communicator will be used for channel communication, then
+     *            this would be channel.
+     * @param connectionUsername
+     *            If auth is true, the username to authenticate with
+     * @param connectionComputer
+     *            If auth is true, the computer name to authenticate with
+     * @param connectionPassword
+     *            If auth is true, the plain-text password to authenticate with
+     * @param serverRsaPublic
+     *            The RSA public key of the server to connect to. This can
+     *            either be exported from the server via it's web interface, or
+     *            it can be downloaded from the public server list for servers
+     *            that are listed there.
+     * @param serverRsaMod
+     *            The RSA modulus of the server to connect to. This can either
+     *            be exported from the server via it's web interface, or it can
+     *            be downloaded from the public server list for servers that are
+     *            listed there.
+     * @param initialStatusListener
+     *            A status listener to register before doing anything with
+     *            connecting. If an initial status listener is not required,
+     *            this can be null. This is provided since registering a status
+     *            listener to this communicator immediately after constructing
+     *            it is not safe since the communicator's coordinator thread may
+     *            have established a connection, and the status listener would
+     *            have missed some status events.
+     * @param initialPacketListener
+     *            A packet listener to register before doing anything with
+     *            connecting.
      */
-
+    
     public Communicator(String realm, boolean auth,
         boolean isOneTime, String connectionType,
         String connectionUsername,
         String connectionComputer,
         String connectionPassword,
-        BigInteger serverRsaPublic, BigInteger serverRsaMod)
+        BigInteger serverRsaPublic,
+        BigInteger serverRsaMod,
+        StatusListener initialStatusListener,
+        PacketListener initialPacketListener)
     {
         this.realm = realm;
         this.serverRsaPublic = serverRsaPublic;
@@ -187,6 +235,10 @@ public class Communicator
         this.connectionComputer = connectionComputer;
         this.connectionUsername = connectionUsername;
         this.connectionPassword = connectionPassword;
+        if (initialStatusListener != null)
+            statusListeners.add(initialStatusListener);
+        if (initialPacketListener != null)
+            packetListeners.add(initialPacketListener);
         coordinator = new Thread("Communicator-Manager")
         {
             public void run()
@@ -487,6 +539,19 @@ public class Communicator
                     }
                 }
                 isRunning = false;
+                for (StatusListener listener : new ArrayList<StatusListener>(
+                    statusListeners))
+                {
+                    try
+                    {
+                        listener
+                            .communicatorShutdown(Communicator.this);
+                    }
+                    catch (Exception exception)
+                    {
+                        exception.printStackTrace();
+                    }
+                }
                 synchronized (oneTimeLock)
                 {
                     oneTimeLock.notifyAll();
@@ -836,6 +901,12 @@ public class Communicator
         }
     }
     
+    /**
+     * Returns true if this communicator is active. This means that it currently
+     * has a connection to the server.
+     * 
+     * @return
+     */
     public boolean isActive()
     {
         try

@@ -7,6 +7,7 @@ public interface StatusListener
      * server.
      * 
      * @param c
+     *            The communicator on which this event occured.
      */
     public void connectionLost(Communicator c);
     
@@ -21,6 +22,7 @@ public interface StatusListener
      * next server, connect to it, and call this method again.
      * 
      * @param c
+     *            The communicator on which this event occured.
      */
     public void connectionEstablished(Communicator c,
         ServerContext server);
@@ -33,6 +35,7 @@ public interface StatusListener
      * will arrive before the authentication packet.
      * 
      * @param c
+     *            The communicator on which this event occured.
      */
     public void connectionReady(Communicator c);
     
@@ -42,6 +45,7 @@ public interface StatusListener
      * failed.
      * 
      * @param c
+     *            The communicator on which this event occured.
      */
     public void authenticationFailed(Communicator c,
         Packet packet);
@@ -51,6 +55,20 @@ public interface StatusListener
      * packet it sent, which indicates that authenticating was successful.
      * 
      * @param c
+     *            The communicator on which this event occured.
      */
     public void authenticationSuccessful(Communicator c);
+    
+    /**
+     * Called when the communicator successfully shuts down. Calling this method
+     * on all of the registered StatusListeners is the last step before the
+     * communicator's coordinator thread shuts down. Note that the communicator
+     * will still report that it is alive when this method is called. isAlive()
+     * will not return false until after all of the communicatorShutdown methods
+     * have been called for the commnuicator in question.
+     * 
+     * @param c
+     *            The communicator on which this event occured.
+     */
+    public void communicatorShutdown(Communicator c);
 }
