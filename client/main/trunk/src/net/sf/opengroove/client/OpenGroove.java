@@ -12,6 +12,7 @@ import java.awt.Frame;
 import java.awt.Graphics2D;
 import java.awt.GridLayout;
 import java.awt.Image;
+import java.awt.Menu;
 import java.awt.MenuItem;
 import java.awt.PopupMenu;
 import java.awt.RenderingHints;
@@ -566,60 +567,6 @@ public class OpenGroove
              * to see if there are no users, and if that's the case show the
              * wizard that allows a user to add their account.
              */
-            loadCurrentUserLookAndFeel();
-            PopupMenu pp = new PopupMenu();
-            workspacesSubMenu = new PopupMenu("Workspaces");
-            MenuItem aboutConvergiaItem = new AMenuItem(
-                tm("trayicon.menu.show.about.intouch3.window"))
-            {
-                
-                @Override
-                public void run(ActionEvent e)
-                {
-                    showAboutWindow();
-                }
-            };
-            
-            pp.add(aboutConvergiaItem);
-            pp.add(workspacesSubMenu);
-            pp.add(new AMenuItem(
-                tm("trayicon.menu.show.launchbar"))
-            {
-                
-                @Override
-                public void run(ActionEvent e)
-                {
-                    showLaunchBar();
-                }
-            });
-            pp.add(new AMenuItem("Restart OpenGroove")
-            {
-                
-                @Override
-                public void run(ActionEvent e)
-                {
-                    if (JOptionPane
-                        .showConfirmDialog(
-                            launchbar,
-                            "Are you sure you want to restart OpenGroove? You will lose any usaved information.",
-                            null, JOptionPane.YES_NO_OPTION) == JOptionPane.YES_OPTION)
-                        restartOpenGroove();
-                }
-            });
-            pp.add(new AMenuItem(tm("trayicon.menu.exit"))
-            {
-                
-                @Override
-                public void run(ActionEvent e)
-                {
-                    showLaunchBar();
-                    if (JOptionPane.showConfirmDialog(
-                        launchbar,
-                        tm("intouch3.exit.are.you.sure"),
-                        null, JOptionPane.OK_CANCEL_OPTION) == JOptionPane.OK_OPTION)
-                        exit();
-                }
-            });
             trayimage = ImageIO.read(new File(
                 "trayicon.gif"));
             trayofflineimage = ImageIO.read(new File(
@@ -898,6 +845,7 @@ public class OpenGroove
                  * re-generating the taskbar popup menu, etc.
                  */
                 // loadFeatures();
+                // loadCurrentUserLookAndFeel();
             }
         }
         finally
@@ -918,7 +866,7 @@ public class OpenGroove
         trayPopup.removeAll();
         // The popup menu should contain, in this order:
         //
-        // --[online users] username
+        // --[online users] userid
         // ------workspaces
         // ----------[list of workspaces] workspace name
         // ------launchbar
@@ -926,7 +874,7 @@ public class OpenGroove
         // ------[plugin-generated items]
         // --------------------------
         // ------logout
-        // --[offline users] username
+        // --[offline users] userid
         // ------login
         // --------------------------
         // --New Account
@@ -934,24 +882,83 @@ public class OpenGroove
         // --About
         // --Restart
         // --Exit
-        LocalUser[] onlineUsers = Storage
+        final LocalUser[] onlineUsers = Storage
             .getUsersLoggedIn();
-        LocalUser[] offlineUsers = Storage
+        final LocalUser[] offlineUsers = Storage
             .getUsersNotLoggedIn();
         if (onlineUsers.length > 0)
         {
-            for (LocalUser user : onlineUsers)
+            for (final LocalUser user : onlineUsers)
             {
                 
             }
+            trayPopup.addSeparator();
         }
         if (offlineUsers.length > 0)
         {
-            for (LocalUser user : offlineUsers)
+            for (final LocalUser user : offlineUsers)
             {
-                
+                Menu userMenu = new Menu(user.getUserid());
+                MenuItem loginItem = new MenuItem("Login");
+                loginItem
+                    .addActionListener(new ActionListener()
+                    {
+                        
+                        @Override
+                        public void actionPerformed(
+                            ActionEvent e)
+                        {
+                            if (!user.isLoggedIn())
+                                showLoginWindow(user
+                                    .getUserid());
+                        }
+                    });
+                userMenu.add(loginItem);
+                trayPopup.add(userMenu);
             }
+            trayPopup.addSeparator();
         }
+        trayPopup.add(new AMenuItem("New Account")
+        {
+            
+            @Override
+            public void run(ActionEvent e)
+            {
+                showNewAccountWizard(onlineUsers.length == 0
+                    && offlineUsers.length == 0);
+            }
+        });
+        trayPopup.addSeparator();
+        trayPopup.add(new AMenuItem("About")
+        {
+            
+            @Override
+            public void run(ActionEvent e)
+            {
+                showAboutWindow();
+            }
+        });
+        trayPopup.add(new AMenuItem("Exit")
+        {
+            
+            @Override
+            public void run(ActionEvent e)
+            {
+                /*
+                 * TODO: This should check with the user before exiting to make
+                 * sure that they really want to exit. It should also make use
+                 * of some sort of exit listener stuff (I think I talked about
+                 * this in another comment in this file) to make sure that there
+                 * aren't any unsaved changes in any workspaces or tools, or
+                 * other plugins. It should also probably wait until all user
+                 * communicators successfully shut down (within a reasonable
+                 * time limit) to make sure that if a message chunk is in the
+                 * process of being sent, it won't just quit right in the
+                 * middle.
+                 */
+                System.exit(0);
+            }
+        });
     }
     
     /**
@@ -1381,20 +1388,20 @@ public class OpenGroove
      */
     protected static void showAboutWindow()
     {
+        /*
+         * TODO: This needs to show about info for plugins, credits for stuff
+         * that require it (such as jide, arimaa, and the bezier algorithm used
+         * for the fill containers), and info about who develops OpenGroove
+         * (which is just me, Alex, right now, but could be additional people in
+         * the future) and how to contribute. It also needs to be split into
+         * it's own frame, instead of a dialog, that could be always-on-top.
+         */
         showLaunchBar();
         JOptionPane.showMessageDialog(launchbar,
             "<html>OpenGroove<br/>Version "
                 + getDisplayableVersion()
 
                 + "<br/><br/>http://www.opengroove.org");// TODO:
-        // if
-        // this
-        // gets
-        // contributed to
-        // sourceforge, the
-        // copyright line will
-        // need to be changed,
-        // and the website line will also need to be changed.
     }
     
     private static final Object updateCheckLock = new Object();
