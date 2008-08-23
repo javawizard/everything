@@ -837,8 +837,13 @@ public class OpenGroove
                         public void authenticationFailed(
                             Communicator c, Packet packet)
                         {
-                            // TODO Auto-generated method stub
-                            
+                            System.err
+                                .println("Persistant authentication failed");
+                            /*
+                             * TODO: the user should be notified that they have
+                             * an incorrect local passwod, and that they need to
+                             * change it.
+                             */
                         }
                         
                         @Override
@@ -890,6 +895,9 @@ public class OpenGroove
                         .getServerRsaPub(), user
                         .getServerRsaMod(), context
                         .getStatusListener(), null);
+                CommandCommunicator commandCom = new CommandCommunicator(
+                    com);
+                context.setCom(commandCom);
                 // loadFeatures();
                 // loadCurrentUserLookAndFeel();
                 loadLaunchBar(userid, context);
@@ -899,6 +907,14 @@ public class OpenGroove
                 // workspaceManager.reloadWorkspaces();
                 // workspaceManager.reloadWorkspaceMembers();
                 // reloadLaunchbarWorkspaces(context);
+                notificationFrame
+                    .addNotification(
+                        context.getUserid(),
+                        new NotificationAdapter(
+                            notificationFrame,
+                            new JLabel(
+                                "You have successfully logged into OpenGroove."),
+                            false, true), true);
             }
         }
         finally
