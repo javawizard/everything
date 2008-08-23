@@ -423,10 +423,6 @@ public class OpenGroove
             // helpviewer = new HelpViewer(helpFolder);
             initLoginFrame();
             notificationFrame = new TaskbarNotificationFrame();
-            NotificationAdapter authenticatingNotification = new NotificationAdapter(
-                new JLabel(
-                    "OpenGroove is logging you in..."),
-                false, true);
             new Thread("notification status updater")
             {
                 public void run()
@@ -569,96 +565,6 @@ public class OpenGroove
              * to see if there are no users, and if that's the case show the
              * wizard that allows a user to add their account.
              */
-            lcom = new LowLevelCommunicator(
-                getConnectHost(), getConnectPort(), true);
-            ocom = new OldCommunicator(lcom);
-            /*
-             * FIXME: This needs to be changed to create a CommandCommunicator
-             * and stick it into the com field
-             */
-            // loadFeatures();
-            boolean successfulAuth = false;
-            if (Storage.getUsers().length == 0)
-            {
-                showWelcomeToInTouchScreen();
-                if (runCreateUserWizard() == null)
-                    System.exit(0);
-            }
-            authDialog = new AuthenticationDialog(null);
-            authDialog
-                .setDefaultCloseOperation(WindowConstants.DO_NOTHING_ON_CLOSE);
-            String usernameToShow = null;
-            boolean needsFailedAuthPrompt = false;
-            boolean isFirstTime = true;
-            String pautoUser = Storage
-                .getSystemConfigProperty("autologinuser");
-            String pautoPass = Storage
-                .getSystemConfigProperty("autologinpass");
-            System.out.println("****wasautouser is "
-                + pautoUser);
-            boolean wasAutoLogin = pautoUser != null
-                && pautoPass != null;
-            while (!successfulAuth)
-            {
-                notificationFrame
-                    .removeNotification(authenticatingNotification);
-                authDialog.setUsernames(Storage.getUsers());
-                String autoUser = Storage
-                    .getSystemConfigProperty("autologinuser");
-                String autoPass = Storage
-                    .getSystemConfigProperty("autologinpass");
-                System.out.println("****autouser is "
-                    + autoUser);
-                boolean autoLogin = autoUser != null
-                    && autoPass != null;
-                if (!autoLogin)
-                {
-                    Storage.setSystemConfigProperty(
-                        "autologinuser", null);
-                    Storage.setSystemConfigProperty(
-                        "autologinpass", null);
-                }
-                else
-                // if autologin, implied by above if statement and this else
-                // statement
-                {
-                    authDialog.getUsernameField()
-                        .setSelectedItem(autoUser);
-                    authDialog.getPasswordField().setText(
-                        autoPass);
-                    authDialog.getAutoLoginCheckbox()
-                        .setSelected(true);
-                }
-                if (!(autoLogin && isFirstTime))
-                {
-                    if (usernameToShow == null)
-                        authDialog.show();
-                    else
-                        authDialog.show(usernameToShow);
-                    if (needsFailedAuthPrompt)
-                    {
-                        JOptionPane
-                            .showMessageDialog(
-                                authDialog,
-                                tm("intouch3.auth.incorrect.password"));
-                        needsFailedAuthPrompt = false;
-                    }
-                    while (authDialog.isShowing())
-                    {
-                        Thread.sleep(300);
-                    }
-                    if (authDialog.clickedOnNewUser())
-                    {
-                        String uts = runCreateUserWizard();
-                        if (uts != null)
-                            usernameToShow = uts;
-                        continue;
-                    }
-                    else if (!authDialog.clickedOnOK())
-                    {
-                        System.exit(0);
-                    }
-                }
                 String eUsername = authDialog.getUsername();
                 String ePassword = authDialog.getPassword();
                 if (autoLogin && isFirstTime)
@@ -1042,6 +948,24 @@ public class OpenGroove
      */
     protected static void doFrameLogin()
     {
+        /*
+         * FIXME: This needs to be changed to create a CommandCommunicator and
+         * stick it into the com field
+         */
+        synchronized(authLock)
+        {
+            String userid = loginFrame.getUserid();
+            String password = loginFrame.getPasswordField().getText();
+            LocalUser user = Storage.getLocalUser(userid);
+            if(user.isLoggedIn())
+            {
+                JOptionPane.showMessageDialog(loginFrame, "<html>You're already logged in. This is probably a bug if <br/>" +
+                		"you're seeing this, so be sure to contact us about it. <br/>" +
+                		"Use the help / contact us option in the launchbar menu.");
+                return;
+            // loadFeatures();
+        }
+        
     }
     
     /**
@@ -1133,14 +1057,9 @@ public class OpenGroove
     
     private static void showLoginFrame(String userid)
     {
-        
+        showLoginWindow(userid);
     }
-    
-    private static void login(String userid, String password)
-    {
         
-    }
-    
     private static void initNewAccountWizard()
     {
         newAccountFrame = new JFrame(
@@ -1235,7 +1154,16 @@ public class OpenGroove
                     BoxLayout.Y_AXIS));
                 panel.add(inner, BorderLayout.NORTH);
                 inner.add(newButton);
-                JLabel newLabel = new JLabel("");
+                JLabel newLabel = new JLabel(
+                    "Choose this if this is your first time using OpenGroove");
+                newLabel.setFont(Font.decode(null));
+                inner.add(newLabel);
+                inner.add(existingButton);
+                JLabel existingLabel = new JLabel(
+                    "Choose this if you already have an OpenGroove "
+                        + "account and would like to use it on this computer.");
+                existingLabel.setFont(Font.decode(null));
+                inner.add(existingLabel);
                 return panel;
             }
             
