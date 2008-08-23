@@ -1209,9 +1209,11 @@ public class OpenGroove
                 @Override
                 protected void init()
                 {
-                    addText(getWelcomeWizardMessage());
+                    addText(getWelcomeWizardMessage(), Font
+                        .decode(null));
                 }
             };
+            pages.append(welcomePage);
         }
         // end pages
         newAccountWizardPane.setPageList(pages);

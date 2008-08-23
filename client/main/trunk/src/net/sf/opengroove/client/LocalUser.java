@@ -85,7 +85,10 @@ public class LocalUser implements Serializable
      * server's time can then be reconstructed by evaluating
      * <code>myTime - lag</code>. This allows for time-sensitive operations
      * to be ordered correctly, even if multiple users don't have the same
-     * system time on their computers.
+     * system time on their computers.<br/><br/>
+     * 
+     * This is not synchronized between the user's computers, as it is usually
+     * different for all of them.
      */
     private long lag;
     /**
