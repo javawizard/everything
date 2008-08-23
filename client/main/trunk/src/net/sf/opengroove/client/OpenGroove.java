@@ -755,6 +755,15 @@ public class OpenGroove
                     
                 }
             });
+            /*
+             * We've set everything up at this point. Now we check to see if
+             * there aren't any users, in which case we show the new account
+             * wizard.
+             */
+            if (Storage.getUsers().length == 0)
+            {
+                showNewAccountWizard(true);
+            }
         }
         catch (Throwable e)
         {
@@ -1044,22 +1053,50 @@ public class OpenGroove
      */
     public static void showLoginWindow(String userid)
     {
+        if (loginFrame.isShowing()
+            && (!loginFrame.getUserid().equals(userid)))
+            /*
+             * If the login frame is showing and we're switching it to a
+             * different user, or if it's not showing at all, then we clear the
+             * password field. If it is already showing and with the same user
+             * as the argument to this method, then we won't clear the password
+             * field.
+             */
+            loginFrame.getPasswordField().setText("");
         if (newAccountFrame.isShowing())
         {
+            /*
+             * The user is currently using the create new account wizard, so we
+             * bring it to the front instead.
+             */
             bringToFront(newAccountFrame);
             return;
         }
         LocalUser user = userid == null ? null : Storage
             .getLocalUser(userid);
         if (user != null && user.isLoggedIn())
+        {
+            /*
+             * Somehow the user has tried to log in but they are already logged
+             * in. The most probable cause of this is that a glitch occured and
+             * the taskbar menu (currently the only way to choose to login as a
+             * user except for creating a new account) didn't get reloaded, so
+             * we'll try to reload it to see if that helps.
+             */
+            refreshTrayMenu();
             return;
+        }
         if (user == null)
         {
             /*
-             * Show the new user wizard.
+             * Either an invalid user was specified, or there aren't any user
+             * accounts currently. In either case, we show the new account
+             * wizard instead.
              */
-            show
+            showNewAccountWizard(Storage.getUsers().length == 0);
+            return;
         }
+        
     }
     
     private static void initLoginFrame()
