@@ -17,6 +17,14 @@ public class LocalUser implements Serializable
      */
     private String userid;
     /**
+     * The public security key of this user's realm server.
+     */
+    private BigInteger serverRsaPub;
+    /**
+     * The security key modulus of this user's realm server.
+     */
+    private BigInteger serverRsaMod;
+    /**
      * The name of this computer that the user has chosen. This is used when
      * authenticating with the server.
      */
@@ -273,5 +281,25 @@ public class LocalUser implements Serializable
     public void setPasswordHint(String passwordHint)
     {
         this.passwordHint = passwordHint;
+    }
+
+    public BigInteger getServerRsaPub()
+    {
+        return serverRsaPub;
+    }
+
+    public void setServerRsaPub(BigInteger serverRsaPub)
+    {
+        this.serverRsaPub = serverRsaPub;
+    }
+
+    public BigInteger getServerRsaMod()
+    {
+        return serverRsaMod;
+    }
+
+    public void setServerRsaMod(BigInteger serverRsaMod)
+    {
+        this.serverRsaMod = serverRsaMod;
     }
 }

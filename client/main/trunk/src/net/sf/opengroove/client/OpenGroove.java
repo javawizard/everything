@@ -68,8 +68,12 @@ import org.awl.Wizard;
 
 import net.sf.opengroove.client.com.AuthenticationException;
 import net.sf.opengroove.client.com.CommandCommunicator;
+import net.sf.opengroove.client.com.Communicator;
 import net.sf.opengroove.client.com.OldCommunicator;
 import net.sf.opengroove.client.com.LowLevelCommunicator;
+import net.sf.opengroove.client.com.Packet;
+import net.sf.opengroove.client.com.ServerContext;
+import net.sf.opengroove.client.com.StatusListener;
 import net.sf.opengroove.client.download.PluginDownloadManager;
 import net.sf.opengroove.client.features.FeatureComponentHandler;
 import net.sf.opengroove.client.features.FeatureManager;
@@ -751,33 +755,6 @@ public class OpenGroove
                     
                 }
             });
-            System.out.println("***got to 1");
-            WorkspaceManager.reloadWorkspaces();
-            System.out.println("***got to 2");
-            WorkspaceManager.reloadWorkspaceMembers();
-            System.out.println("***got to 3");
-            reloadLaunchbarWorkspaces();
-            System.out.println("***GOT TO HERE");
-            try
-            {
-                updateMetadata();
-            }
-            catch (Exception e)
-            {
-                e.printStackTrace();
-            }
-            NotificationAdapter loggedInNotification = new NotificationAdapter(
-                new JLabel(
-                    "You have successfully logged in to OpenGroove."),
-                false, true);
-            notificationFrame
-                .removeNotification(loadingNotification);
-            notificationFrame.addNotification(
-                loggedInNotification, true);
-            // trayicon.displayMessage(
-            // tm("intouch3.started.tray.balloon.caption"),
-            // tm("intouch3.started.tray.balloon.message"),
-            // TrayIcon.MessageType.NONE);
         }
         catch (Throwable e)
         {
@@ -852,6 +829,67 @@ public class OpenGroove
                 UserContext context = new UserContext();
                 context.setUserid(userid);
                 context.setPassword(password);
+                context
+                    .setStatusListener(new StatusListener()
+                    {
+                        
+                        @Override
+                        public void authenticationFailed(
+                            Communicator c, Packet packet)
+                        {
+                            // TODO Auto-generated method stub
+                            
+                        }
+                        
+                        @Override
+                        public void authenticationSuccessful(
+                            Communicator c)
+                        {
+                            // TODO Auto-generated method stub
+                            
+                        }
+                        
+                        @Override
+                        public void communicatorShutdown(
+                            Communicator c)
+                        {
+                            System.err
+                                .println("Communicator shutdown prematurely, "
+                                    + "OpenGroove needs to be restarted to work correctly");
+                        }
+                        
+                        @Override
+                        public void connectionEstablished(
+                            Communicator c,
+                            ServerContext server)
+                        {
+                            // TODO Auto-generated method stub
+                            
+                        }
+                        
+                        @Override
+                        public void connectionLost(
+                            Communicator c)
+                        {
+                            // TODO Auto-generated method stub
+                            
+                        }
+                        
+                        @Override
+                        public void connectionReady(
+                            Communicator c)
+                        {
+                            // TODO Auto-generated method stub
+                            
+                        }
+                    });
+                Communicator com = new Communicator(Userids
+                    .toRealm(userid), true, false,
+                    "normal", Userids.toUsername(userid),
+                    user.getComputer(), password, user
+                        .getServerRsaPub(), user
+                        .getServerRsaMod(), context
+                        .getStatusListener(), null);
                 // loadFeatures();
                 // loadCurrentUserLookAndFeel();
                 loadLaunchBar(userid, context);
@@ -1674,6 +1712,7 @@ public class OpenGroove
             workspacePanel.invalidate();
             workspacePanel.validate();
             workspacePanel.repaint();
+            JFrame launchbar = context.getLaunchbar();
             launchbar.invalidate();
             launchbar.validate();
             launchbar.repaint();
