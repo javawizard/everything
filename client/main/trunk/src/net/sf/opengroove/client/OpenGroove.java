@@ -89,6 +89,7 @@ import net.sf.opengroove.client.ui.StandardWizardPage;
 import net.sf.opengroove.client.ui.frames.LoginFrame;
 import net.sf.opengroove.client.workspace.WorkspaceManager;
 import net.sf.opengroove.client.workspace.WorkspaceWrapper;
+import net.sf.opengroove.security.Hash;
 
 import base64.Base64Coder;
 
@@ -565,101 +566,7 @@ public class OpenGroove
              * to see if there are no users, and if that's the case show the
              * wizard that allows a user to add their account.
              */
-                String eUsername = authDialog.getUsername();
-                String ePassword = authDialog.getPassword();
-                if (autoLogin && isFirstTime)
-                {
-                    eUsername = autoUser;
-                    ePassword = autoPass;
-                }
-                isFirstTime = false;
-                boolean isAuthenticated = false;
-                try
-                {
-                    notificationFrame.addNotification(
-                        authenticatingNotification, true);
-                    boolean authed = false;
-                    try
-                    {
-                        System.out
-                            .println("network validating");
-                        ocom.getCommunicator()
-                            .authenticate(eUsername,
-                                ePassword);
-                        System.out
-                            .println("network validated");
-                        authed = true;
-                    }
-                    catch (AuthenticationException e)
-                    {
-                        System.out
-                            .println("network not validated");
-                        e.printStackTrace();
-                    }
-                    if (authed)
-                    {
-                        isAuthenticated = true;
-                        username = eUsername;
-                        password = ePassword;
-                        Storage.storeUser(username,
-                            password);
-                        isAuthenticated = true;
-                    }
-                }
-                catch (Exception e)
-                {
-                    System.out
-                        .println("could not connect to internet or validate, trying to valiate locally");
-                    e.printStackTrace();
-                    if (Storage.checkPassword(eUsername,
-                        ePassword))
-                    {
-                        isAuthenticated = true;
-                        username = eUsername;
-                        password = ePassword;
-                    }
-                }
-                if (isAuthenticated)
-                    successfulAuth = true;
-                else
-                {
-                    needsFailedAuthPrompt = true;
-                }
-            }
-            Storage.setCurrentUser(username);
             loadCurrentUserLookAndFeel();
-            if (authDialog.getAutoLoginCheckbox()
-                .isSelected())
-            {
-                System.out
-                    .println("***** autologin box selected");
-                if (wasAutoLogin
-                    || JOptionPane
-                        .showConfirmDialog(
-                            authDialog,
-                            "<html>"
-                                + "If you choose to auto log in, your password will<br/>"
-                                + "be stored in plain text on your hard disk to that<br/>"
-                                + "we can authenticate you the next time OpenGroove<br/>"
-                                + "starts. Are you sure you want to do this? You<br/>"
-                                + "can always change your mind later and disable this.",
-                            null, JOptionPane.YES_NO_OPTION) == JOptionPane.YES_OPTION)
-                {
-                    System.out
-                        .println("***** user confirmed autologin");
-                    if (!wasAutoLogin)// if wasAutoLogin then these are
-                    // already set
-                    {
-                        Storage.setSystemConfigProperty(
-                            "autologinuser", authDialog
-                                .getUsername());
-                        Storage.setSystemConfigProperty(
-                            "autologinpass", authDialog
-                                .getPassword());
-                    }
-                }
-            }
-            authDialog.hide();
             PopupMenu pp = new PopupMenu();
             workspacesSubMenu = new PopupMenu("Workspaces");
             MenuItem aboutConvergiaItem = new AMenuItem(
@@ -952,20 +859,54 @@ public class OpenGroove
          * FIXME: This needs to be changed to create a CommandCommunicator and
          * stick it into the com field
          */
-        synchronized(authLock)
+        loginFrame.getLoginButton().setEnabled(false);
+        loginFrame.getNewAccountButton().setEnabled(false);
+        loginFrame.getCancelButton().setEnabled(false);
+        try
         {
-            String userid = loginFrame.getUserid();
-            String password = loginFrame.getPasswordField().getText();
-            LocalUser user = Storage.getLocalUser(userid);
-            if(user.isLoggedIn())
+            synchronized (authLock)
             {
-                JOptionPane.showMessageDialog(loginFrame, "<html>You're already logged in. This is probably a bug if <br/>" +
-                		"you're seeing this, so be sure to contact us about it. <br/>" +
-                		"Use the help / contact us option in the launchbar menu.");
-                return;
-            // loadFeatures();
+                String userid = loginFrame.getUserid();
+                String password = loginFrame
+                    .getPasswordField().getText();
+                LocalUser user = Storage
+                    .getLocalUser(userid);
+                if (user.isLoggedIn())
+                {
+                    JOptionPane
+                        .showMessageDialog(
+                            loginFrame,
+                            "<html>You're already logged in. This is probably a bug if <br/>"
+                                + "you're seeing this, so be sure to contact us about it. <br/>"
+                                + "Use the help / contact us option in the launchbar menu.");
+                    return;
+                }
+                String encPassword = Hash.hash(password);
+                if (!encPassword.equals(user
+                    .getEncPassword()))
+                {
+                    JOptionPane
+                        .showMessageDialog(loginFrame,
+                            "Incorrect username and/or password.");
+                    return;
+                }
+                /*
+                 * Ok, we've checked that the user is not already logged in, and
+                 * the user entered the correct password. Now we do all of the
+                 * rest of the initialization stuff, such as hiding the auth
+                 * dialog, creating the launchbar, loading plugins,
+                 * re-generating the taskbar popup menu, etc.
+                 */
+                // loadFeatures();
+            }
         }
-        
+        finally
+        {
+            loginFrame.getLoginButton().setEnabled(true);
+            loginFrame.getNewAccountButton().setEnabled(
+                true);
+            loginFrame.getCancelButton().setEnabled(true);
+        }
     }
     
     /**
@@ -974,7 +915,43 @@ public class OpenGroove
      */
     public static void refreshTrayMenu()
     {
-        
+        trayPopup.removeAll();
+        // The popup menu should contain, in this order:
+        //
+        // --[online users] username
+        // ------workspaces
+        // ----------[list of workspaces] workspace name
+        // ------launchbar
+        // --------------------------
+        // ------[plugin-generated items]
+        // --------------------------
+        // ------logout
+        // --[offline users] username
+        // ------login
+        // --------------------------
+        // --New Account
+        // --------------------------
+        // --About
+        // --Restart
+        // --Exit
+        LocalUser[] onlineUsers = Storage
+            .getUsersLoggedIn();
+        LocalUser[] offlineUsers = Storage
+            .getUsersNotLoggedIn();
+        if (onlineUsers.length > 0)
+        {
+            for (LocalUser user : onlineUsers)
+            {
+                
+            }
+        }
+        if (offlineUsers.length > 0)
+        {
+            for (LocalUser user : offlineUsers)
+            {
+                
+            }
+        }
     }
     
     /**
@@ -1059,7 +1036,7 @@ public class OpenGroove
     {
         showLoginWindow(userid);
     }
-        
+    
     private static void initNewAccountWizard()
     {
         newAccountFrame = new JFrame(
