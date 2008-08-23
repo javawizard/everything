@@ -610,4 +610,10 @@ public class TaskbarNotificationFrame extends
         }
     }
     
+    public TaskbarNotification[] listAllNotifications()
+    {
+        return internalAllNotifications().toArray(
+            new TaskbarNotification[0]);
+    }
+    
 }

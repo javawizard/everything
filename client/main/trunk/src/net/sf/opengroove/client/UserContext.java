@@ -9,6 +9,7 @@ import javax.swing.JTabbedPane;
 import net.sf.opengroove.client.com.CommandCommunicator;
 import net.sf.opengroove.client.help.HelpViewer;
 import net.sf.opengroove.client.plugins.PluginManager;
+import net.sf.opengroove.client.workspace.WorkspaceManager;
 
 /**
  * A user context object is created for each user that logs in, and is passed
@@ -43,6 +44,8 @@ public class UserContext
     private JTabbedPane launchbarTabbedPane;
     
     private HelpViewer helpViewer;
+    
+    private WorkspaceManager workspaceManager;
     /**
      * The popup menu for this user. On the tray icon's popup menu, there is a
      * menu item for each user, which is this popup menu.
@@ -164,5 +167,16 @@ public class UserContext
     public Storage getStorage()
     {
         return Storage.get(userid);
+    }
+
+    public WorkspaceManager getWorkspaceManager()
+    {
+        return workspaceManager;
+    }
+
+    public void setWorkspaceManager(
+        WorkspaceManager workspaceManager)
+    {
+        this.workspaceManager = workspaceManager;
     }
 }

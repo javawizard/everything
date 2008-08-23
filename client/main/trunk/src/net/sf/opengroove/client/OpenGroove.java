@@ -712,14 +712,6 @@ public class OpenGroove
                         catch (Throwable e2)
                         {
                             e2.printStackTrace();
-                            JOptionPane
-                                .showMessageDialog(
-                                    launchbar,
-                                    "The shortcut that you use to launch OpenGroove is set up wrong.\n"
-                                        + "For the technically minded, you need to add examples.jar and jna.jar to\n"
-                                        + "your classpath, or to the -cp switch on the icon or script. For those that\n"
-                                        + "aren't technically minded, contact us for more info. Use the Help -> Contact us\n"
-                                        + "menu option on the launchbar.");
                         }
                     }
                 });
@@ -731,7 +723,7 @@ public class OpenGroove
                     System.out.println("clicked");
                     if (e.getClickCount() == 2)
                     {
-                        showLaunchBar();
+                        showChosenLaunchbar();
                     }
                 }
                 
@@ -759,7 +751,6 @@ public class OpenGroove
                     
                 }
             });
-            WorkspaceManager.init(ocom);
             System.out.println("***got to 1");
             WorkspaceManager.reloadWorkspaces();
             System.out.println("***got to 2");
@@ -796,16 +787,15 @@ public class OpenGroove
     }
     
     /**
-     * Shows the new account wizard over the frame specified. This method
-     * returns once the user completes the wizard, returning the userid of the
-     * user created.
-     * 
-     * @param parent
+     * If no users are logged in, this method does nothing. If only one user is
+     * logged in, this method shows that user's launchbar. If more than one user
+     * is logged in, this method shows a dialog asking the user to pick which
+     * launchbar they want to show. This dialog will hide itself if it loses
+     * focus.
      */
-    protected static void doNewAccountWizard(Frame parent)
+    protected static void showChosenLaunchbar()
     {
-        // TODO Auto-generated method stub
-        
+        // TODO: implement this method
     }
     
     /**
@@ -855,13 +845,22 @@ public class OpenGroove
                 /*
                  * Ok, we've checked that the user is not already logged in, and
                  * the user entered the correct password. Now we do all of the
-                 * rest of the initialization stuff, such as hiding the auth
-                 * dialog, creating the launchbar, loading plugins,
-                 * re-generating the taskbar popup menu, etc.
+                 * rest of the initialization stuff, such as creating a user
+                 * context, hiding the auth dialog, creating the launchbar,
+                 * loading plugins, re-generating the taskbar popup menu, etc.
                  */
+                UserContext context = new UserContext();
+                context.setUserid(userid);
+                context.setPassword(password);
                 // loadFeatures();
                 // loadCurrentUserLookAndFeel();
-                loadLaunchBar();
+                loadLaunchBar(userid, context);
+                // WorkspaceManager workspaceManager = new
+                // WorkspaceManager(context);
+                // context.setWorkspaceManager(workspaceManager);
+                // workspaceManager.reloadWorkspaces();
+                // workspaceManager.reloadWorkspaceMembers();
+                // reloadLaunchbarWorkspaces(context);
             }
         }
         finally
@@ -1555,15 +1554,19 @@ public class OpenGroove
     /**
      * reloads the panel in the launchbar that shows the user's workspaces.
      */
-    public static void reloadLaunchbarWorkspaces()
+    public static void reloadLaunchbarWorkspaces(
+        UserContext context)
     {
+        JPanel workspacePanel = context.getWorkspacePanel();
         synchronized (workspacePanel)
         {
             System.out
                 .println("repainting workspace panel");
-            WorkspaceWrapper[] workspaces = WorkspaceManager
-                .getAll();
+            WorkspaceWrapper[] workspaces = context
+                .getWorkspaceManager().getAll();
             workspacePanel.removeAll();
+            PopupMenu workspacesSubMenu = context
+                .getWorkspacesSubMenu();
             workspacesSubMenu.removeAll();
             for (final WorkspaceWrapper w : workspaces)
             {
@@ -1939,10 +1942,10 @@ public class OpenGroove
      * Loads the launchbar. This is called for each user when they log in.
      */
     private static void loadLaunchBar(String userid,
-        UserContext context)
+        final UserContext context)
     {
         // TODO: move the icon loading into it's own method
-        JFrame launchbar = new JFrame(userid
+        final JFrame launchbar = new JFrame(userid
             + " - Launchbar - OpenGroove");
         context.setLaunchbar(launchbar);
         launchbar.setIconImage(trayimage);
@@ -2036,15 +2039,18 @@ public class OpenGroove
             launchbar.setLocation(Integer.parseInt(context
                 .getStorage().getConfigProperty(
                     "launchbarx")), Integer
-                .parseInt(Storage
+                .parseInt(context.getStorage()
                     .getConfigProperty("launchbary")));
         }
-        if (Storage.getConfigProperty("launchbarwidth") != null
-            && Storage.getConfigProperty("launchbarheight") != null)
+        if (context.getStorage().getConfigProperty(
+            "launchbarwidth") != null
+            && context.getStorage().getConfigProperty(
+                "launchbarheight") != null)
         {
-            launchbar.setSize(Integer.parseInt(Storage
-                .getConfigProperty("launchbarwidth")),
-                Integer.parseInt(Storage
+            launchbar.setSize(Integer.parseInt(context
+                .getStorage().getConfigProperty(
+                    "launchbarwidth")), Integer
+                .parseInt(context.getStorage()
                     .getConfigProperty("launchbarheight")));
         }
         launchbar
@@ -2059,21 +2065,23 @@ public class OpenGroove
                 
                 public void componentMoved(ComponentEvent e)
                 {
-                    Storage.setConfigProperty("launchbarx",
-                        "" + launchbar.getX());
-                    Storage.setConfigProperty("launchbary",
-                        "" + launchbar.getY());
+                    context.getStorage()
+                        .setConfigProperty("launchbarx",
+                            "" + launchbar.getX());
+                    context.getStorage()
+                        .setConfigProperty("launchbary",
+                            "" + launchbar.getY());
                 }
                 
                 public void componentResized(
                     ComponentEvent e)
                 {
-                    Storage.setConfigProperty(
-                        "launchbarwidth", ""
-                            + launchbar.getWidth());
-                    Storage.setConfigProperty(
-                        "launchbarheight", ""
-                            + launchbar.getHeight());
+                    context.getStorage().setConfigProperty(
+                        "launchbarwidth",
+                        "" + launchbar.getWidth());
+                    context.getStorage().setConfigProperty(
+                        "launchbarheight",
+                        "" + launchbar.getHeight());
                 }
                 
                 public void componentShown(ComponentEvent e)
