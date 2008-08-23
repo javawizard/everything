@@ -642,40 +642,55 @@ public class OpenGroove
                 notificationTrayOfflineDelays[i] = Integer
                     .parseInt(delayString);
             }
+            trayPopup = new PopupMenu();
             trayicon = new TrayIcon(trayimage,
-                "OpenGroove", pp);
+                "OpenGroove", trayPopup);
+            refreshTrayMenu();
             SystemTray.getSystemTray().add(trayicon);
-            NotificationAdapter loadingNotification = new NotificationAdapter(
-                new JLabel("OpenGroove is initializing..."),
-                false, true);
-            notificationFrame
-                .removeNotification(authenticatingNotification);
-            notificationFrame.addNotification(
-                loadingNotification, true);
-            Thread.sleep(1000);
-            // trayicon.displayMessage("Convergia - Please wait",
-            // "Convergia is initializing. Please wait...",
-            // TrayIcon.MessageType.NONE);
+            /*
+             * These tooltip settings should be exported into either
+             * user-specific settings, or global ones. If user specific, then
+             * users can choose (by clicking a button in their launchbar) who's
+             * settings are curently active at any given time. This would also
+             * apply to looks and feels, although there might be some way with
+             * looks and feels to make a particular user's windows appear with
+             * one look and feel, and another user's windows appear with another
+             * look and feel.
+             */
             ToolTipManager.sharedInstance()
-                .setDismissDelay(
-                    Integer.parseInt(Storage
-                        .getConfigProperty(
-                            "tooltipdismiss", ""
-                                + (1000 * 60 * 60 * 24))));
+                .setDismissDelay(86400);
             ToolTipManager.sharedInstance().setReshowDelay(
-                Integer.parseInt(Storage.getConfigProperty(
-                    "tooltipreshow", ""
-                        + ToolTipManager.sharedInstance()
-                            .getReshowDelay())));
+                ToolTipManager.sharedInstance()
+                    .getReshowDelay());
             ToolTipManager.sharedInstance()
                 .setInitialDelay(
-                    Integer.parseInt(Storage
-                        .getConfigProperty(
-                            "tooltipinitial", ""
-                                + ToolTipManager
-                                    .sharedInstance()
-                                    .getInitialDelay())));
-            loadLaunchBar();
+                    ToolTipManager.sharedInstance()
+                        .getInitialDelay());
+            try
+            {
+                for (Icons icon : Icons.values())
+                {
+                    icon.setImage(scaleImage(loadImage(icon
+                        .getIconPath()), icon.getSize(),
+                        icon.getSize()));
+                }
+            }
+            catch (Exception e)
+            {
+                try
+                {
+                    Thread.sleep(1000);
+                }
+                catch (InterruptedException e1)
+                {
+                    // TODO Dec 7, 2007 Auto-generated catch block
+                    throw new RuntimeException(
+                        "TODO auto generated on Dec 7, 2007 : "
+                            + e.getClass().getName()
+                            + " - " + e.getMessage(), e1);
+                }
+                e.printStackTrace();
+            }
             trayicon
                 .addMouseMotionListener(new MouseMotionAdapter()
                 {
@@ -846,6 +861,7 @@ public class OpenGroove
                  */
                 // loadFeatures();
                 // loadCurrentUserLookAndFeel();
+                loadLaunchBar();
             }
         }
         finally
@@ -854,6 +870,7 @@ public class OpenGroove
             loginFrame.getNewAccountButton().setEnabled(
                 true);
             loginFrame.getCancelButton().setEnabled(true);
+            refreshTrayMenu();
         }
     }
     
@@ -1919,41 +1936,18 @@ public class OpenGroove
     }
     
     /**
-     * Loads the launchbar. This is called when OpenGroove first starts.
+     * Loads the launchbar. This is called for each user when they log in.
      */
-    private static void loadLaunchBar()
+    private static void loadLaunchBar(String userid,
+        UserContext context)
     {
         // TODO: move the icon loading into it's own method
-        try
-        {
-            for (Icons icon : Icons.values())
-            {
-                icon.setImage(scaleImage(loadImage(icon
-                    .getIconPath()), icon.getSize(), icon
-                    .getSize()));
-            }
-        }
-        catch (Exception e)
-        {
-            try
-            {
-                Thread.sleep(1000);
-            }
-            catch (InterruptedException e1)
-            {
-                // TODO Dec 7, 2007 Auto-generated catch block
-                throw new RuntimeException(
-                    "TODO auto generated on Dec 7, 2007 : "
-                        + e.getClass().getName() + " - "
-                        + e.getMessage(), e1);
-            }
-            e.printStackTrace();
-        }
-        launchbar = new JFrame(tm(
-            "launchbar.window.caption", username));
+        JFrame launchbar = new JFrame(userid
+            + " - Launchbar - OpenGroove");
+        context.setLaunchbar(launchbar);
         launchbar.setIconImage(trayimage);
         launchbar.setSize(300, 500);
-        loadLaunchbarMenus();
+        loadLaunchbarMenus(userid, context, launchbar);
         SimpleGradientPanel workspacesGradientPanel = new SimpleGradientPanel(
             new Color(180, 200, 255), new Color(245, 249,
                 255), SimpleGradientPanel.VERTICAL);
@@ -1962,12 +1956,14 @@ public class OpenGroove
         workspacesGradientPanel.setOpaque(true);
         launchbar.getContentPane().setLayout(
             new BorderLayout());
-        launchbarTabbedPane = new JTabbedPane();
+        JTabbedPane launchbarTabbedPane = new JTabbedPane();
+        context.setLaunchbarTabbedPane(launchbarTabbedPane);
         launchbarTabbedPane.setFocusable(false);
         launchbar.getContentPane().add(launchbarTabbedPane);
         launchbarTabbedPane.add("Workspaces",
             new JScrollPane(workspacesGradientPanel));
-        contactsPanel = new JPanel();
+        JPanel contactsPanel = new JPanel();
+        context.setContactsPanel(contactsPanel);
         contactsPanel.setLayout(new BoxLayout(
             contactsPanel, BoxLayout.Y_AXIS));
         JPanel p3 = new SimpleGradientPanel(new Color(180,
@@ -2004,15 +2000,14 @@ public class OpenGroove
         workspacesGradientPanel.add(p);
         p.setOpaque(false);
         // p.setBorder(BorderFactory.createLineBorder(Color.BLACK));
-        workspacePanel = new JPanel();
+        JPanel workspacePanel = new JPanel();
+        context.setWorkspacePanel(workspacePanel);
         workspacePanel.setOpaque(false);
         // workspacePanel.setBorder(BorderFactory.createLineBorder(Color.BLACK));
         workspacePanel.setLayout(new BoxLayout(
             workspacePanel, BoxLayout.Y_AXIS));
         JLinkButton createWorkspaceButton = new JLinkButton(
             tm("launchbar.workspaces.create.workspace.link"));
-        JLinkButton importWorkspaceButton = new JLinkButton(
-            tm("launchbar.workspaces.import.workspace.link"));
         createWorkspaceButton.setFocusable(false);
         importWorkspaceButton.setFocusable(false);
         createWorkspaceButton
@@ -2024,33 +2019,23 @@ public class OpenGroove
                     runNewWorkspaceWizard();
                 }
             });
-        importWorkspaceButton
-            .addActionListener(new ActionListener()
-            {
-                
-                public void actionPerformed(ActionEvent e)
-                {
-                    runImportWorkspaceWizard();
-                }
-            });
         setPlainFont(createWorkspaceButton);
-        setPlainFont(importWorkspaceButton);
         createWorkspaceButton
-            .setAlignmentX(JComponent.LEFT_ALIGNMENT);
-        importWorkspaceButton
             .setAlignmentX(JComponent.LEFT_ALIGNMENT);
         workspacePanel
             .setAlignmentX(JComponent.LEFT_ALIGNMENT);
         p.add(pad(wrap(createWorkspaceButton), 2, 2));
-        p.add(pad(wrap(importWorkspaceButton), 2, 2));
         p.add(pad(workspacePanel, 2, 6));
         launchbar
             .setDefaultCloseOperation(WindowConstants.HIDE_ON_CLOSE);
-        if (Storage.getConfigProperty("launchbarx") != null
-            && Storage.getConfigProperty("launchbary") != null)
+        if (context.getStorage().getConfigProperty(
+            "launchbarx") != null
+            && context.getStorage().getConfigProperty(
+                "launchbary") != null)
         {
-            launchbar.setLocation(Integer.parseInt(Storage
-                .getConfigProperty("launchbarx")), Integer
+            launchbar.setLocation(Integer.parseInt(context
+                .getStorage().getConfigProperty(
+                    "launchbarx")), Integer
                 .parseInt(Storage
                     .getConfigProperty("launchbary")));
         }
@@ -2113,7 +2098,8 @@ public class OpenGroove
     /**
      * Loads the menu bar on the launchbar.
      */
-    private static void loadLaunchbarMenus()
+    private static void loadLaunchbarMenus(String userid,
+        UserContext context, JFrame launchbar)
     {
         JMenuBar bar = new JMenuBar();
         launchbar.setJMenuBar(bar);

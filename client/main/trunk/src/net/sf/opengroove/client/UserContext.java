@@ -160,4 +160,9 @@ public class UserContext
     {
         this.helpViewer = helpViewer;
     }
+    
+    public Storage getStorage()
+    {
+        return Storage.get(userid);
+    }
 }
