@@ -1215,6 +1215,35 @@ public class OpenGroove
             };
             pages.append(welcomePage);
         }
+        StandardWizardPage newOrExistPage = new StandardWizardPage(
+            "New or Existing Account?", welcome, true,
+            true, false)
+        {
+            public JComponent createWizardContent()
+            {
+                JPanel panel = new JPanel();
+                JRadioButton newButton = new JRadioButton(
+                    "Create a new OpenGroove account");
+                JRadioButton existingButton = new JRadioButton(
+                    "Use an OpenGroove account that you have already created");
+                ButtonGroup newOrExistGroup = new ButtonGroup();
+                newOrExistGroup.add(newButton);
+                newOrExistGroup.add(existingButton);
+                panel.setLayout(new BorderLayout());
+                JPanel inner = new JPanel();
+                inner.setLayout(new BoxLayout(inner,
+                    BoxLayout.Y_AXIS));
+                panel.add(inner, BorderLayout.NORTH);
+                inner.add(newButton);
+                JLabel newLabel = new JLabel("");
+                return panel;
+            }
+            
+            @Override
+            protected void init()
+            {
+            }
+        };
         // end pages
         newAccountWizardPane.setPageList(pages);
         newAccountWizardPane.initComponents();
