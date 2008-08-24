@@ -2283,7 +2283,7 @@ public class OpenGroove
         }
         return list;
     }
-   
+    
     /**
      * returns a string containing each of the items in the list specified,
      * separated by <code>delimiter</code>. if there are no items, the empty
@@ -2323,6 +2323,7 @@ public class OpenGroove
             allowedMembersModel.addElement(o);
         }
     }
+    
     /**
      * Shows the user a wizard for creating a new workspace. This is expected to
      * undergo heavy modification with the addition of realm servers.
@@ -2331,187 +2332,10 @@ public class OpenGroove
      */
     public static boolean runNewWorkspaceWizard()
     {
-    }
-    
-    /**
-     * This method shows a wizard for participating in a workspace where the
-     * creator of the workspace has given you permission to participate but has
-     * not sent you an invitation. Workspaces are moving towards cryptographic
-     * keys for security, which will make it impossible for this method to serve
-     * it's intended function, and so it will be removed once the transition is
-     * complete.
-     * 
-     * @return
-     */
-    public static boolean runImportWorkspaceWizard()
-    {
-        if (currentDialog != null
-            && currentDialog.isShowing())
-            return false;
-        final ImportWorkspaceDialog dialog = new ImportWorkspaceDialog(
-            launchbar);
-        dialog.setLocationRelativeTo(launchbar);
-        currentDialog = dialog;
-        new Thread()
-        {
-            public void run()
-            {
-                dialog.setLocationRelativeTo(launchbar);
-                dialog.show();
-                dialog.dispose();
-                if (!dialog.isWasOkClicked())
-                    return;
-                if (!ocom.getCommunicator().isActive())
-                {
-                    launchbar.show();
-                    JOptionPane
-                        .showMessageDialog(launchbar,
-                            "You must be connected to the internet to add a workspace");
-                    return;
-                }
-                String id = dialog.getWorkspaceId()
-                    .getText();
-                if (WorkspaceManager.getById(id) != null)
-                {
-                    launchbar.show();
-                    JOptionPane
-                        .showMessageDialog(launchbar,
-                            "You are already participating in this workspace");
-                    return;
-                }
-                boolean incorrectId = false;
-                if (id.contains("-"))
-                {
-                    String creator = WorkspaceManager
-                        .getWorkspaceCreator(id);
-                    String mdString = ocom
-                        .getUserMetadata(creator);
-                    if (mdString != null)
-                    {
-                        Properties md = WorkspaceManager
-                            .parseMetadata(mdString);
-                        String mdWorkspaceAllowedUsers = md
-                            .getProperty("workspace_" + id
-                                + "_users");
-                        if (mdWorkspaceAllowedUsers != null)
-                        {
-                            String[] allowedUsers = mdWorkspaceAllowedUsers
-                                .split("\\,");
-                            boolean allowed = false;
-                            for (String u : allowedUsers)
-                            {
-                                if (u
-                                    .equals(OpenGroove.username))
-                                    allowed = true;
-                            }
-                            if (!allowed)
-                            {
-                                launchbar.show();
-                                JOptionPane
-                                    .showMessageDialog(
-                                        launchbar,
-                                        "<html>The creator of that workspace, "
-                                            + creator
-                                            + ", has <br/> not allowed you to participate in this workspace. Contact<br/>"
-                                            + "that user, and ask them to add you to the workspace's list<br/>"
-                                            + "of allowed users.");
-                                return;
-                            }
-                            String mdWorkspaceType = md
-                                .getProperty("workspace_"
-                                    + id + "_type");
-                            if (mdWorkspaceType != null)
-                            {
-                                if (PluginManager
-                                    .getById(mdWorkspaceType) != null)
-                                {
-                                    WorkspaceWrapper ws = new WorkspaceWrapper();
-                                    ws
-                                        .setDatastore(new File(
-                                            Storage
-                                                .getWorkspaceDataStore(),
-                                            id
-                                                + "_dstore_"
-                                                + System
-                                                    .currentTimeMillis()));
-                                    ws.setId(id);
-                                    ws
-                                        .setName(WORKSPACE_DEFAULT_NAME);
-                                    ws
-                                        .setTypeId(mdWorkspaceType);
-                                    Storage
-                                        .addOrUpdateWorkspace(ws);
-                                    WorkspaceManager
-                                        .reloadWorkspaces();
-                                    WorkspaceManager
-                                        .reloadWorkspaceMembers();
-                                    reloadLaunchbarWorkspaces();
-                                    for (String u : WorkspaceManager
-                                        .getById(id)
-                                        .getAllowedUsers())
-                                    {
-                                        try
-                                        {
-                                            ocom
-                                                .sendMessage(
-                                                    u,
-                                                    "wsi|reloadusers");
-                                        }
-                                        catch (Exception e)
-                                        {
-                                            e
-                                                .printStackTrace();
-                                        }
-                                    }
-                                    launchbar.show();
-                                    JOptionPane
-                                        .showMessageDialog(
-                                            launchbar,
-                                            "<html>The workspace has been successfully imported. Click<br/>on the configure icon next to it in the launchbar to edit it's settings.<br/><br/>"
-                                                + "");
-                                    return;
-                                }
-                                else
-                                {
-                                    launchbar.show();
-                                    JOptionPane
-                                        .showMessageDialog(
-                                            launchbar,
-                                            "<html>You don't have this workspace's type installed.<br/>It's type is "
-                                                + mdWorkspaceType
-                                                + ".<br/>Please install this type, then try again.");
-                                    return;
-                                }
-                            }
-                            else
-                            {
-                                incorrectId = true;
-                            }
-                        }
-                        else
-                        {
-                            incorrectId = true;
-                        }
-                    }
-                    else
-                    {
-                        incorrectId = true;
-                    }
-                }
-                else
-                {
-                    incorrectId = true;
-                }
-                if (incorrectId)
-                {
-                    launchbar.show();
-                    JOptionPane
-                        .showMessageDialog(launchbar,
-                            "The ID specified is not a valid ID.");
-                }
-            }
-        }.start();
-        return true;
+        /*
+         * TODO: re-implement this method
+         */
+        return false;
     }
     
     /**
@@ -2521,9 +2345,10 @@ public class OpenGroove
      * 
      * @param path
      */
-    public static void showHelpTopic(String path)
+    public static void showHelpTopic(UserContext context,
+        String path)
     {
-        helpviewer.showHelpTopic(path);
+        context.getHelpViewer().showHelpTopic(path);
     }
     
     /**
