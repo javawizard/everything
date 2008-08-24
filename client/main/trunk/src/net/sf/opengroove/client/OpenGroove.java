@@ -2358,9 +2358,10 @@ public class OpenGroove
      * @param username
      */
     public static void showUserInformationDialog(
-        String username)
+        UserContext context, String username)
     {
-        showUserInformationDialog(username, launchbar);
+        showUserInformationDialog(username, context
+            .getLaunchbar());
     }
     
     private static final String[][] userInfoLabels = new String[][] {
