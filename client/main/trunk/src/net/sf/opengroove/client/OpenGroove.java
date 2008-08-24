@@ -1547,7 +1547,7 @@ public class OpenGroove
      * reloads the panel in the launchbar that shows the user's workspaces.
      */
     public static void reloadLaunchbarWorkspaces(
-        UserContext context)
+        final UserContext context)
     {
         JPanel workspacePanel = context.getWorkspacePanel();
         synchronized (workspacePanel)
@@ -1618,7 +1618,7 @@ public class OpenGroove
                         public void actionPerformed(
                             ActionEvent e)
                         {
-                            showConfigWindow(w);
+                            showConfigWindow(context, w);
                         }
                     });
                 mainButton
@@ -1682,9 +1682,10 @@ public class OpenGroove
      * @return
      */
     public static boolean showConfigWindow(
-        WorkspaceWrapper w)
+        UserContext context, WorkspaceWrapper w)
     {
-        return showConfigWindow(w, launchbar);
+        return showConfigWindow(context, w, context
+            .getLaunchbar());
     }
     
     /**
@@ -1723,9 +1724,10 @@ public class OpenGroove
      * it's showing, it will be focused. This method does not deiconify the
      * window right now, this will be added later.
      */
-    protected static void showLaunchBar()
+    protected static void showLaunchBar(UserContext context)
     {
-        launchbar.show();
+        context.getLaunchbar().show();
+        bringToFront(context.getLaunchbar());
     }
     
     /**
@@ -1802,7 +1804,6 @@ public class OpenGroove
         JLinkButton createWorkspaceButton = new JLinkButton(
             tm("launchbar.workspaces.create.workspace.link"));
         createWorkspaceButton.setFocusable(false);
-        importWorkspaceButton.setFocusable(false);
         createWorkspaceButton
             .addActionListener(new ActionListener()
             {
@@ -1897,7 +1898,7 @@ public class OpenGroove
      * Loads the menu bar on the launchbar.
      */
     private static void loadLaunchbarMenus(String userid,
-        UserContext context, JFrame launchbar)
+        UserContext context, final JFrame launchbar)
     {
         JMenuBar bar = new JMenuBar();
         launchbar.setJMenuBar(bar);
@@ -2598,6 +2599,7 @@ public class OpenGroove
      * @return
      */
     public static boolean showConfigWindow(
+        UserContext context,
         final WorkspaceWrapper workspace, JFrame frame)
     {
         if (currentDialog != null
