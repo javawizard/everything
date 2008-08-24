@@ -764,6 +764,15 @@ public class OpenGroove
             {
                 showNewAccountWizard(true);
             }
+            else
+            {
+                /*
+                 * If we get here then there is at least one user. Now we need
+                 * to check to see if any of those users have requested that
+                 * they be automatically logged in.
+                 */
+                // TODO: actually do what the above comment says
+            }
         }
         catch (Throwable e)
         {
@@ -916,6 +925,8 @@ public class OpenGroove
                 // workspaceManager.reloadWorkspaces();
                 // workspaceManager.reloadWorkspaceMembers();
                 // reloadLaunchbarWorkspaces(context);
+                loginFrame.hide();
+                userContextMap.put(userid, context);
                 notificationFrame
                     .addNotification(
                         context.getUserid(),
@@ -1096,7 +1107,15 @@ public class OpenGroove
             showNewAccountWizard(Storage.getUsers().length == 0);
             return;
         }
-        
+        /*
+         * We've finished all of our checks and tests. It's now time to set up
+         * the login frame and actually show it.
+         */
+        loginFrame.setUserid(userid);
+        loginFrame.setPasswordHint(user.getPasswordHint());
+        loginFrame.setAlwaysOnTop(true);
+        loginFrame.show();
+        bringToFront(loginFrame);
     }
     
     private static void initLoginFrame()
@@ -1123,7 +1142,13 @@ public class OpenGroove
             @Override
             public void actionPerformed(ActionEvent e)
             {
-                doFrameLogin();
+                new Thread()
+                {
+                    public void run()
+                    {
+                        doFrameLogin();
+                    }
+                }.start();
             }
         };
         loginFrame.getLoginButton().addActionListener(
@@ -1137,7 +1162,7 @@ public class OpenGroove
                 @Override
                 public void actionPerformed(ActionEvent e)
                 {
-                    doNewAccountWizard(loginFrame);
+                    showNewAccountWizard(false);
                 }
             });
         loginFrame.setLocationRelativeTo(null);
