@@ -1335,54 +1335,6 @@ public class OpenGroove
     
     private static HashMap<String, Class<LookAndFeel>> lookAndFeelClasses = new HashMap<String, Class<LookAndFeel>>();
     
-    /**
-     * Asks the user to select a new look and feel to use for OpenGroove. This
-     * method returns immediately, but a dialog will be open over the launchbar.
-     */
-    private static void promptForUserLookAndFeel()
-    {
-        final ChooseLAFDialog dialog = new ChooseLAFDialog(
-            launchbar);
-        final LookAndFeelInfo[] availableLafs = UIManager
-            .getInstalledLookAndFeels();
-        final JRadioButton[] rButtons = new JRadioButton[availableLafs.length];
-        ButtonGroup group = new ButtonGroup();
-        for (int i = 0; i < rButtons.length; i++)
-        {
-            rButtons[i] = new JRadioButton(availableLafs[i]
-                .getName());
-            group.add(rButtons[i]);
-            dialog.getLookAndFeelPanel().add(rButtons[i]);
-            if (availableLafs[i].getClass().equals(
-                Storage.getConfigProperty("lookandfeel")))
-                rButtons[i].setSelected(true);
-        }
-        new Thread()
-        {
-            public void run()
-            {
-                dialog.show();
-                dialog.dispose();
-                if (!dialog.wasOkClicked())
-                    return;
-                int clickedIndex = -1;
-                for (int i = 0; i < rButtons.length; i++)
-                {
-                    if (rButtons[i].isSelected())
-                    {
-                        clickedIndex = i;
-                        break;
-                    }
-                }
-                if (clickedIndex == -1)// didn't select an item
-                    return;
-                LookAndFeelInfo info = availableLafs[clickedIndex];
-                Storage.setConfigProperty("lookandfeel",
-                    info.getClassName());
-                loadCurrentUserLookAndFeel();
-            }
-        }.start();
-    }
     
     /**
      * gets the port to connect to the OpenGroove server on. This is obsolete
