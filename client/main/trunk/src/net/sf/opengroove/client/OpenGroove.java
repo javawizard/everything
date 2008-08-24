@@ -771,7 +771,7 @@ public class OpenGroove
                  * to check to see if any of those users have requested that
                  * they be automatically logged in.
                  */
-                // TODO: actually do what the above comment says
+                // TODO: actually do what the above comment says.
             }
         }
         catch (Throwable e)
@@ -1335,52 +1335,6 @@ public class OpenGroove
     
     private static HashMap<String, Class<LookAndFeel>> lookAndFeelClasses = new HashMap<String, Class<LookAndFeel>>();
     
-    private static void postPluginLoad()
-    {
-        // load all of the lookandfeel plugins into the swing UIManager and load
-        // the systemwide look and feel
-        for (Plugin<LookAndFeel> plugin : PluginManager
-            .getByType("lookandfeel"))
-        {
-            try
-            {
-                String name = plugin.getMetadata()
-                    .getProperty("name");
-                if (name == null)
-                    name = plugin.getImplClass().getName();
-                LookAndFeelInfo info = new LookAndFeelInfo(
-                    name, plugin.getImplClass().getName());
-                System.out.println("lookandfeel name:"
-                    + info.getName() + ",class:"
-                    + info.getClassName());
-                lookAndFeelClasses.put(info.getClassName(),
-                    plugin.getImplClass());
-                UIManager.installLookAndFeel(info);
-            }
-            catch (Exception ex1)
-            {
-                ex1.printStackTrace();
-            }
-        }
-        String lookAndFeel = Storage
-            .getSystemConfigProperty("lookandfeel");
-        if (lookAndFeel != null)
-        {
-            try
-            {
-                if (lookAndFeelClasses.get(lookAndFeel) != null)
-                    UIManager
-                        .setLookAndFeel(lookAndFeelClasses
-                            .get(lookAndFeel).newInstance());
-                else
-                    UIManager.setLookAndFeel(lookAndFeel);
-            }
-            catch (Exception ex1)
-            {
-                ex1.printStackTrace();
-            }
-        }
-    }
     
     /**
      * Loads and applies the user's look and feel. Currently, this is always
