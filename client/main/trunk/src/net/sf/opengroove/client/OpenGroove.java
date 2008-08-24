@@ -2386,49 +2386,9 @@ public class OpenGroove
     public static void showUserInformationDialog(
         String username, JFrame parent)
     {
-        final JDialog dialog = new JDialog(parent, true);
-        Container content = dialog.getContentPane();
-        JPanel properties = new JPanel();
-        properties.setLayout(new GridLayout(0, 2));
-        JPanel wrapper = new JPanel();
-        wrapper.setLayout(new BorderLayout());
-        content.setLayout(new FlowLayout());
-        content.add(wrapper);
-        wrapper.add(properties, BorderLayout.CENTER);
-        wrapper.add(new JLabel(username),
-            BorderLayout.NORTH);
-        Properties md = WorkspaceManager.parseMetadata(ocom
-            .getUserMetadata(username));
-        properties
-            .add(new JLabel("OpenGroove Version:   "));
-        properties.add(new JLabel(md
-            .getProperty("stat_version_string")));
-        properties.add(new JLabel("Last Online:   "));
-        try
-        {
-            properties.add(new JLabel(""
-                + formatDate(new Date(Long.parseLong(md
-                    .getProperty("stat_last_online"))))));
-        }
-        catch (Exception e)
-        {
-            e.printStackTrace();
-            properties.add(new JLabel("unknown"));
-        }
-        dialog.pack();
-        dialog.setLocationRelativeTo(parent);
-        dialog.invalidate();
-        dialog.validate();
-        dialog.repaint();
-        dialog
-            .setDefaultCloseOperation(dialog.DISPOSE_ON_CLOSE);
-        new Thread()
-        {
-            public void run()
-            {
-                dialog.show();
-            }
-        }.start();
+        /*
+         * TODO: re-implement this method
+         */
     }
     
     /**
