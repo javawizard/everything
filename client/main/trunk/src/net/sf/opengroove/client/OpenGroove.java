@@ -1335,44 +1335,6 @@ public class OpenGroove
     
     private static HashMap<String, Class<LookAndFeel>> lookAndFeelClasses = new HashMap<String, Class<LookAndFeel>>();
     
-    
-    /**
-     * Loads and applies the user's look and feel. Currently, this is always
-     * called right after OpenGroove starts up. In the future, it could be
-     * configured not to do anything if OpenGroove is started in safe mode, so
-     * that if the look and feel messes up part of the ui it's not permanent.
-     */
-    private static void loadCurrentUserLookAndFeel()
-    {
-        String lookAndFeel = Storage
-            .getConfigProperty("lookandfeel");
-        if (lookAndFeel != null)
-        {
-            try
-            {
-                if (lookAndFeelClasses.get(lookAndFeel) != null)
-                {
-                    UIManager.put("ClassLoader",
-                        lookAndFeelClasses.get(lookAndFeel)
-                            .getClassLoader());
-                    UIManager
-                        .setLookAndFeel(lookAndFeelClasses
-                            .get(lookAndFeel).newInstance());
-                }
-                else
-                {
-                    UIManager.put("ClassLoader", null);
-                    UIManager.setLookAndFeel(lookAndFeel);
-                }
-            }
-            catch (Exception ex1)
-            {
-                ex1.printStackTrace();
-            }
-        }
-        swingUIReload();
-    }
-    
     /**
      * Asks the user to select a new look and feel to use for OpenGroove. This
      * method returns immediately, but a dialog will be open over the launchbar.
