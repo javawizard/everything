@@ -101,6 +101,7 @@ import base64.Base64Coder;
 import com.elevenworks.swing.panel.SimpleGradientPanel;
 import com.jidesoft.dialog.AbstractDialogPage;
 import com.jidesoft.dialog.PageList;
+import com.jidesoft.swing.JideButton;
 import com.jidesoft.wizard.WizardDialogPane;
 import com.l2fprod.common.swing.JLinkButton;
 
@@ -1335,13 +1336,9 @@ public class OpenGroove
     
     private static HashMap<String, Class<LookAndFeel>> lookAndFeelClasses = new HashMap<String, Class<LookAndFeel>>();
     
-        
-    /**
-     * Shows an about window that describes OpenGroove and it's current version.
-     * In the future, this will also show the about screens for any plugins that
-     * have an about screen.
-     */
-    protected static void showAboutWindow()
+    private static JFrame aboutWindow;
+    
+    protected static void initAboutWindow()
     {
         /*
          * TODO: This needs to show about info for plugins, credits for stuff
@@ -1351,12 +1348,65 @@ public class OpenGroove
          * the future) and how to contribute. It also needs to be split into
          * it's own frame, instead of a dialog, that could be always-on-top.
          */
-        showLaunchBar();
-        JOptionPane.showMessageDialog(launchbar,
-            "<html>OpenGroove<br/>Version "
-                + getDisplayableVersion()
-
-                + "<br/><br/>http://www.opengroove.org");// TODO:
+        aboutWindow = new JFrame("About OpenGroove");
+        aboutWindow.setAlwaysOnTop(true);
+        aboutWindow.setSize(400, 300);
+        aboutWindow.setLocationRelativeTo(null);
+        aboutWindow.getContentPane().setLayout(
+            new BorderLayout());
+        JPanel panel = new JPanel();
+        aboutWindow.getContentPane().add(panel,
+            BorderLayout.NORTH);
+        panel.setLayout(new BoxLayout(panel,
+            BoxLayout.Y_AXIS));
+        panel.setBorder(new EmptyBorder(10, 10, 10, 10));
+        panel.add(new JLabel("OpenGroove version "
+            + getDisplayableVersion()));
+        JideButton websiteButton = new JideButton(
+            "www.opengroove.org");
+        websiteButton
+            .setButtonStyle(websiteButton.HYPERLINK_STYLE);
+        websiteButton.setAlwaysShowHyperlink(true);
+        websiteButton.setForeground(Color.BLUE);
+        websiteButton
+            .addActionListener(new ActionListener()
+            {
+                
+                @Override
+                public void actionPerformed(ActionEvent e)
+                {
+                    try
+                    {
+                        Desktop
+                            .getDesktop()
+                            .browse(
+                                new URI(
+                                    "http://www.opengroove.org"));
+                    }
+                    catch (IOException e1)
+                    {
+                        // TODO Auto-generated catch block
+                        e1.printStackTrace();
+                    }
+                    catch (URISyntaxException e1)
+                    {
+                        // TODO Auto-generated catch block
+                        e1.printStackTrace();
+                    }
+                }
+            });
+    }
+    
+    /**
+     * Shows an about window that describes OpenGroove and it's current version.
+     * In the future, this will also show the about screens for any plugins that
+     * have an about screen.
+     */
+    protected static synchronized void showAboutWindow()
+    {
+        if (aboutWindow == null)
+            initAboutWindow();
+        aboutWindow.show();
     }
     
     private static final Object updateCheckLock = new Object();
@@ -1415,7 +1465,8 @@ public class OpenGroove
                         JProgressBar bar = notification
                             .getProgressBar();
                         notificationFrame.addNotification(
-                            notification, true);
+                            "OpenGroove", notification,
+                            true);
                         File updateFile = new File(
                             "appdata/systemupdates/updates.jar");
                         File versionFile = new File(
@@ -1461,6 +1512,7 @@ public class OpenGroove
                         notificationFrame
                             .removeNotification(notification);
                         final NotificationAdapter readyNotification = new NotificationAdapter(
+                            notificationFrame,
                             new JLabel(
                                 "OpenGroove has been updated. Restart\nfor updates to take effect."),
                             true, false)
@@ -1472,6 +1524,7 @@ public class OpenGroove
                             }
                         };
                         notificationFrame.addNotification(
+                            "OpenGroove",
                             readyNotification, true);
                         return true;
                     }
