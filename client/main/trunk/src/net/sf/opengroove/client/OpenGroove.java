@@ -415,14 +415,18 @@ public class OpenGroove
                     new JFileChooser();
                 }
             }.start();
+            sfile.mkdirs();
+            Storage.initStorage(sfile);
+            trayimage = ImageIO.read(new File(
+                "trayicon.gif"));
+            trayofflineimage = ImageIO.read(new File(
+                "trayoffline.gif"));
             initNewAccountWizard();
             initLoginFrame();
-            sfile.mkdirs();
             // the setProperty call below is used to avoid problems with the
             // fade effect for the taskbar notification frame
             System
                 .setProperty("sun.java2d.noddraw", "true");
-            Storage.initStorage(sfile);
             // PluginManager.loadPlugins();
             // postPluginLoad();
             System.out.println("storage path is "
@@ -572,10 +576,6 @@ public class OpenGroove
              * to see if there are no users, and if that's the case show the
              * wizard that allows a user to add their account.
              */
-            trayimage = ImageIO.read(new File(
-                "trayicon.gif"));
-            trayofflineimage = ImageIO.read(new File(
-                "trayoffline.gif"));
             File[] trayfiles = new File(".")
                 .listFiles(new FileFilter()
                 {
@@ -725,7 +725,6 @@ public class OpenGroove
                 
                 public void mouseClicked(MouseEvent e)
                 {
-                    System.out.println("clicked");
                     if (e.getClickCount() == 2)
                     {
                         showChosenLaunchbar();
@@ -1181,6 +1180,7 @@ public class OpenGroove
     {
         newAccountFrame = new JFrame(
             "New Account - OpenGroove");
+        newAccountFrame.setIconImage(getWindowIcon());
         newAccountFrame.setSize(650, 500);
         newAccountFrame.setLocationRelativeTo(null);
     }
