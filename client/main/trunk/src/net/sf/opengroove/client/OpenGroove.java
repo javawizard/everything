@@ -1121,6 +1121,7 @@ public class OpenGroove
     private static void initLoginFrame()
     {
         loginFrame = new LoginFrame();
+        loginFrame.setIconImage(getWindowIcon());
         loginFrame.getCancelButton().addActionListener(
             new ActionListener()
             {
@@ -1203,6 +1204,44 @@ public class OpenGroove
             bringToFront(newAccountFrame);
             return;
         }
+        /*
+         * The general flow of the wizard is as follows, not counting the
+         * initial welcome screen:
+         * 
+         * 1. The user is asked if they want to create a new account, or use an
+         * existing one. If they choose to use an existing one, flow proceeds to
+         * step 2. If they choose to create a new account, flow proceeds to step
+         * 7.
+         * 
+         * 2. The user is prompted for their userid and password.
+         * 
+         * 3. The user's realm server is contacted to verify the information
+         * that the user entered. If they could not be authenticated, flow goes
+         * back to step 2.
+         * 
+         * 4. If any of the encryption key user properties are already present
+         * on the account, the user is informed that they need to supply
+         * OpenGroove with their private keys. A test message will be encoded
+         * with each key and decrypted with the public key and modulus found on
+         * the server to validate that the keys specified are correct. If the
+         * user's security keys don't exist, they are prompted to create some
+         * keys.
+         * 
+         * 5. The user is prompted for a name that they would like to assign to
+         * this computer. The text field for accepting a name is initially
+         * populated with the environment variable COMPUTERNAME, a hyphen, and
+         * the system property user.name, or just user.name if COMPUTERNAME
+         * couldn't be found. Anyway, before they can advance, the server is
+         * contacted to make sure that the computer specified doesn't already
+         * exist.
+         * 
+         * 6. The computer specified is created, and account addition is
+         * successful. The user can then log in. The new account wizard then
+         * closes.
+         * 
+         * 7. If the user chose to create a new account instead of using an
+         * existing one, TBD.
+         */
         newAccountWizardPane = new WizardDialogPane()
         {
             private JLabel titleLabel;
@@ -1251,6 +1290,18 @@ public class OpenGroove
             };
             pages.append(welcomePage);
         }
+        StandardWizardPage existAuthPage = new StandardWizardPage(
+            "Enter your userid and password", true, true,
+            true, false)
+        {
+
+            @Override
+            protected void init()
+            {
+                // TODO Auto-generated method stub
+                
+            }
+        };
         StandardWizardPage newOrExistPage = new StandardWizardPage(
             "New or Existing Account?", welcome, true,
             true, false)
@@ -1259,9 +1310,14 @@ public class OpenGroove
             {
                 JPanel panel = new JPanel();
                 JRadioButton newButton = new JRadioButton(
-                    "Create a new OpenGroove account");
+                    "<html><b>Create a new OpenGroove account</b><br/>"
+                        + "Choose this if this is your first time using OpenGroove, or if ");
                 JRadioButton existingButton = new JRadioButton(
-                    "Use an OpenGroove account that you have already created");
+                    "<html><b>Use an OpenGroove account that you have already created</b><br/>"
+                        + "Choose this if you already have an OpenGroove "
+                        + "account and would like to use it on this computer.");
+                newButton.setFont(Font.decode(null));
+                existingButton.setFont(Font.decode(null));
                 ButtonGroup newOrExistGroup = new ButtonGroup();
                 newOrExistGroup.add(newButton);
                 newOrExistGroup.add(existingButton);
@@ -1270,17 +1326,17 @@ public class OpenGroove
                 inner.setLayout(new BoxLayout(inner,
                     BoxLayout.Y_AXIS));
                 panel.add(inner, BorderLayout.NORTH);
+                newButton.setSelected(true);
+                newButton
+                    .setVerticalTextPosition(newButton.TOP);
+                existingButton
+                    .setVerticalTextPosition(existingButton.TOP);
+                newButton.setFocusable(false);
+                existingButton.setFocusable(false);
                 inner.add(newButton);
-                JLabel newLabel = new JLabel(
-                    "Choose this if this is your first time using OpenGroove");
-                newLabel.setFont(Font.decode(null));
-                inner.add(newLabel);
+                inner.add(new JLabel(" "));
+                inner.add(new JLabel(" "));
                 inner.add(existingButton);
-                JLabel existingLabel = new JLabel(
-                    "Choose this if you already have an OpenGroove "
-                        + "account and would like to use it on this computer.");
-                existingLabel.setFont(Font.decode(null));
-                inner.add(existingLabel);
                 return panel;
             }
             
@@ -1289,6 +1345,7 @@ public class OpenGroove
             {
             }
         };
+        pages.append(newOrExistPage);
         // end pages
         newAccountWizardPane.setPageList(pages);
         newAccountWizardPane

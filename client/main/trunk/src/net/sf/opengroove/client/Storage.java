@@ -37,6 +37,8 @@ public class Storage
     
     private static File systemConfig;
     
+    private static File logFolder;
+    
     /**
      * Initializes the Storage class. This should only be called once per JVM
      * instance.
@@ -57,6 +59,9 @@ public class Storage
         systemConfig = new File(base, "systemconfig");
         if (!systemConfig.exists())
             systemConfig.mkdirs();
+        logFolder = new File(base, "logs");
+        if (!logFolder.exists())
+            logFolder.mkdirs();
     }
     
     private String userid;
@@ -325,7 +330,8 @@ public class Storage
      * @return <code>true</code> if the password entered matches the password
      *         stored to the file system, false otherwise.
      */
-    public static boolean checkPassword(String userid, String pass)
+    public static boolean checkPassword(String userid,
+        String pass)
     {
         LocalUser user = getLocalUser(userid);
         return user.getEncPassword()
