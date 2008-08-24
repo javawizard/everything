@@ -561,6 +561,11 @@ public class PluginManager
         return plugins;
     }
     
+    public Plugin getById(String id)
+    {
+        return getPluginById(id);
+    }
+    
     public Plugin getPluginById(String id)
     {
         for (Plugin plugin : plugins)

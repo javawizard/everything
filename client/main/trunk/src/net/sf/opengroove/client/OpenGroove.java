@@ -2198,26 +2198,23 @@ public class OpenGroove
         wframe.dispose();
     }
     
-    private static long nextGenId = 0;
+    private static volatile long nextGenId = 0;
     
     /**
      * creates a new id. the id should be unique for the whole OpenGroove
      * system. the first part of the id, up until the first hyphen, is this
-     * user's username.
-     * 
-     * TODO: work out what defines the user's "username" with the addition of
-     * realm servers, IE is it the user's userid (probably) or just their
-     * username. This would result in a colon ( : ) character in their username
-     * which may cause problems.
+     * user's userid, with the ":" character replaced by two dots, IE ".." .
      * 
      * @return
      */
-    public static synchronized String generateId()
+    public static synchronized String generateId(
+        UserContext context)
     {
         String d = Double.toString(Math.random()).replace(
             ".", "");
-        return username + "-" + System.currentTimeMillis()
-            + "-" + nextGenId++ + "-"
+        return context.getUserid().replace(":", "..") + "-"
+            + System.currentTimeMillis() + "-"
+            + nextGenId++ + "-"
             + d.substring(1, Math.min(d.length(), 7));
     }
     
@@ -2262,98 +2259,12 @@ public class OpenGroove
         UserContext context,
         final WorkspaceWrapper workspace, JFrame frame)
     {
-        if (currentDialog != null
-            && currentDialog.isShowing())
-            return false;
-        final ConfigureWorkspaceDialog dialog = new ConfigureWorkspaceDialog(
-            frame);
-        dialog.getIdLabel().setText(workspace.getId());
-        dialog.getTypeLabel().setText(
-            PluginManager.getById(workspace.getTypeId())
-                .getMetadata().getProperty("name"));
-        dialog.setAllUsers(ocom.allUsers
-            .toArray(new String[0]));
-        currentDialog = dialog;
-        Map<String, JComponent> customComponents = workspace
-            .getWorkspace().getConfigurationComponents();
-        if (customComponents != null)
-        {
-            for (Map.Entry<String, JComponent> entry : customComponents
-                .entrySet())
-            {
-                dialog.getMainTabbedPane().addTab(
-                    entry.getKey(), entry.getValue());
-            }
-        }
-        dialog.setTitle("" + workspace.getName()
-            + " - Configure - OpenGroove");
-        dialog.setLocationRelativeTo(null);
-        dialog.getManagerLabel().setText(
-            WorkspaceManager.getWorkspaceCreator(workspace
-                .getId()));
-        dialog.getWorkspaceNameField().setText(
-            workspace.getName());
-        dialog.getRemoveMemberButton().setEnabled(
-            workspace.isMine());
-        dialog.getAddMemberButton().setEnabled(
-            workspace.isMine());
-        addAllToModel(dialog.getAllowedMembersModel(),
-            workspace.getAllowedUsers());
-        addAllToModel(dialog.getParticipantModel(),
-            workspace.getParticipants());
-        new Thread()
-        {
-            public void run()
-            {
-                dialog.show();
-                dialog.dispose();
-                // finished configuration, now save the data reported
-                currentDialog = null;
-                String newName = dialog
-                    .getWorkspaceNameField().getText();
-                workspace.setName(newName);
-                ArrayList<String> allowedUsers = modelToList(dialog
-                    .getAllowedMembersModel());
-                if (workspace.isMine())
-                {
-                    workspace.getAllowedUsers().addAll(
-                        allowedUsers);
-                    workspace.getAllowedUsers().retainAll(
-                        allowedUsers);
-                }
-                // now notify the workspace
-                try
-                {
-                    workspace.getWorkspace()
-                        .configurationSaved();
-                }
-                catch (Exception e)
-                {
-                    e.printStackTrace();
-                }
-                // send our new metadata to the server
-                try
-                {
-                    updateMetadata();
-                }
-                catch (Exception e)
-                {
-                    e.printStackTrace();
-                }
-                // reload the workspaces showing up on the launchbar in case
-                // they changed the name
-                try
-                {
-                    reloadLaunchbarWorkspaces();
-                }
-                catch (Exception e)
-                {
-                    e.printStackTrace();
-                }
-                workspace.getWorkspace().save();
-            }
-        }.start();
-        return true;
+        /*
+         * TODO: actually implement this method. It was implemented, but it was
+         * going to have to be changed so much with the new realm server model
+         * that I decided just to scrap it.
+         */
+        return false;
     }
     
     /**
