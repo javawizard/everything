@@ -269,8 +269,7 @@ public class PluginManager
     public PluginManager(UserContext userContext)
     {
         this.userContext = userContext;
-        this.storage = Storage.get(userContext.getRealm(),
-            userContext.getUsername());
+        this.storage = Storage.get(userContext.getUserid());
         pluginFolder = new File(storage.getPluginStore(),
             "code");
     }
@@ -748,5 +747,16 @@ public class PluginManager
     File getDataFolder()
     {
         return dataFolder;
+    }
+    
+    /**
+     * Shows a dialog on top of the user's launchbar that allows them to manage
+     * the plugins that they have installed. Changes to installed plugins won't
+     * take effect until OpenGroove is restarted.
+     */
+    public static void showManageInstalledPluginsDialog()
+    {
+        // TODO Auto-generated method stub
+        
     }
 }

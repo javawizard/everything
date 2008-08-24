@@ -1898,7 +1898,7 @@ public class OpenGroove
      * Loads the menu bar on the launchbar.
      */
     private static void loadLaunchbarMenus(String userid,
-        UserContext context, final JFrame launchbar)
+        final UserContext context, final JFrame launchbar)
     {
         JMenuBar bar = new JMenuBar();
         launchbar.setJMenuBar(bar);
@@ -1939,93 +1939,13 @@ public class OpenGroove
                 public void actionPerformed(ActionEvent e)
                 {
                     PluginManager
-                        .showManageInstalledPluginsDialog(launchbar);
+                        .showManageInstalledPluginsDialog();
                 }
             } });
-        JMenu lafMenu = new JMenu("Choose look and feel");
-        convergiaMenu.add(lafMenu);
-        final LookAndFeelInfo[] availableLafs = UIManager
-            .getInstalledLookAndFeels();
-        final JRadioButtonMenuItem[] rButtons = new JRadioButtonMenuItem[availableLafs.length];
-        ButtonGroup group = new ButtonGroup();
-        for (int i = 0; i < rButtons.length; i++)
-        {
-            rButtons[i] = new JRadioButtonMenuItem(
-                availableLafs[i].getName());
-            group.add(rButtons[i]);
-            lafMenu.add(rButtons[i]);
-            final LookAndFeelInfo laf = availableLafs[i];
-            final JRadioButtonMenuItem rItem = rButtons[i];
-            rButtons[i]
-                .addActionListener(new ActionListener()
-                {
-                    
-                    public void actionPerformed(
-                        ActionEvent e)
-                    {
-                        new Thread()
-                        {
-                            public void run()
-                            {
-                                final WaitingDialog dialog = new WaitingDialog(
-                                    launchbar);
-                                dialog
-                                    .getMainLabel()
-                                    .setText(
-                                        "Please wait while the look and feel is applied...");
-                                dialog
-                                    .setLocationRelativeTo(null);
-                                dialog.pack();
-                                dialog.setSize(dialog
-                                    .getWidth() + 30,
-                                    dialog.getHeight() + 5);
-                                dialog.invalidate();
-                                dialog.validate();
-                                dialog.repaint();
-                                try
-                                {
-                                    Thread.sleep(200);
-                                }
-                                catch (InterruptedException e)
-                                {
-                                }// give time to validate and repaint before
-                                // we
-                                // start updating the look and feel
-                                new Thread()
-                                {
-                                    public void run()
-                                    {
-                                        dialog.show();
-                                    }
-                                }.start();
-                                Storage.setConfigProperty(
-                                    "lookandfeel", laf
-                                        .getClassName());
-                                rItem.setSelected(true);
-                                loadCurrentUserLookAndFeel();
-                                dialog.dispose();
-                                if (JOptionPane
-                                    .showConfirmDialog(
-                                        launchbar,
-                                        "The look and feel has been changed. It is\n"
-                                            + "reccomended that you restart OpenGroove. Would\n"
-                                            + "you like to restart OpenGroove now?",
-                                        null,
-                                        JOptionPane.YES_NO_OPTION) == JOptionPane.YES_OPTION)
-                                    restartOpenGroove();
-                                
-                            }
-                        }.start();
-                    }
-                });
-            if (availableLafs[i].getClassName().equals(
-                Storage.getConfigProperty("lookandfeel")))
-                rButtons[i].setSelected(true);
-        }
-        
         final JCheckBoxMenuItem alwaysOnTopItem = new JCheckBoxMenuItem(
             "Always on top");
-        if (Storage.getConfigProperty("alwaysontop") != null)
+        if (context.getStorage().getConfigProperty(
+            "alwaysontop") != null)
         {
             alwaysOnTopItem.setSelected(true);
             launchbar.setAlwaysOnTop(true);
@@ -2039,105 +1959,27 @@ public class OpenGroove
                     if (alwaysOnTopItem.isSelected())
                     {
                         launchbar.setAlwaysOnTop(true);
-                        Storage.setConfigProperty(
-                            "alwaysontop", "");
+                        context.getStorage()
+                            .setConfigProperty(
+                                "alwaysontop", "");
                     }
                     else
                     {
                         launchbar.setAlwaysOnTop(false);
-                        Storage.setConfigProperty(
-                            "alwaysontop", null);
+                        context.getStorage()
+                            .setConfigProperty(
+                                "alwaysontop", null);
                     }
                 }
             });
         convergiaMenu.add(alwaysOnTopItem);
-        
-        final JCheckBoxMenuItem useWindowTransparencyItem = new JCheckBoxMenuItem(
-            "Use window transparency");
-        useWindowTransparencyItem
-            .setToolTipText("<html>"
-                + "Some windows will fade in and out instead of just<br/>"
-                + "appearing, for example, the OpenGroove alerts window.<br/>"
-                + "This may not be compatible with all operating systems.");
-        if (Storage.getConfigProperty("windowtrans") != null
-            && Storage.getConfigProperty("windowtrans")
-                .startsWith("t"))
-        {
-            // use
-            useWindowTransparencyItem.setSelected(true);
-            useWindowTransparency = WindowTransparencyMode.ENABLED;
-        }
-        else if (Storage.getConfigProperty("windowtrans") == null)
-        {
-            // unknown
-            useWindowTransparency = (getDefaultTransparencyMode() ? WindowTransparencyMode.ENABLED
-                : WindowTransparencyMode.DISABLED);
-            useWindowTransparencyItem
-                .setSelected(getDefaultTransparencyMode());
-        }
-        else
-        {
-            // don't use
-            useWindowTransparency = WindowTransparencyMode.DISABLED;
-        }
-        useWindowTransparencyItem
-            .addActionListener(new ActionListener()
-            {
-                
-                public void actionPerformed(ActionEvent e)
-                {
-                    if (useWindowTransparencyItem
-                        .isSelected())
-                    {
-                        useWindowTransparency = WindowTransparencyMode.ENABLED;
-                        Storage.setConfigProperty(
-                            "windowtrans", "true");
-                    }
-                    else
-                    {
-                        useWindowTransparency = WindowTransparencyMode.DISABLED;
-                        Storage.setConfigProperty(
-                            "windowtrans", "false");
-                    }
-                }
-            });
-        convergiaMenu.add(useWindowTransparencyItem);
-        if (Storage
-            .getSystemConfigProperty("autologinuser") != null
-            && Storage
-                .getSystemConfigProperty("autologinpass") != null)
-        {
-            convergiaMenu.add(new IMenuItem(
-                "Don't auto log me in")
-            {
-                
-                public void actionPerformed(ActionEvent e)
-                {
-                    if (JOptionPane
-                        .showConfirmDialog(
-                            launchbar,
-                            "Are you sure you want to stop auto-logging you in?",
-                            null, JOptionPane.YES_NO_OPTION) == JOptionPane.YES_OPTION)
-                    {
-                        Storage.setSystemConfigProperty(
-                            "autologinuser", null);
-                        Storage.setSystemConfigProperty(
-                            "autologinpass", null);
-                        convergiaMenu.remove(this);
-                        convergiaMenu.invalidate();
-                        convergiaMenu.validate();
-                        convergiaMenu.repaint();
-                    }
-                }
-            });
-        }
         JMenu helpMenu = new IMenu("Help", new IMenuItem[] {
             new IMenuItem("Help")
             {
                 
                 public void actionPerformed(ActionEvent e)
                 {
-                    helpviewer.show();
+                    context.getHelpViewer().show();
                 }
             }, new IMenuItem("Contact us")
             {
