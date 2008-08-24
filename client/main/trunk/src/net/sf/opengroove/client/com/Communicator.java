@@ -930,4 +930,41 @@ public class Communicator
             return false;
         }
     }
+    
+    /**
+     * Returns this communicator's socket, or null if it doesn't have a
+     * connection to the server right now.
+     * 
+     * @return
+     */
+    public Socket getSocket()
+    {
+        return socket;
+    }
+    
+    /**
+     * Returns the host that this communicator is currently connected to, or
+     * null if it doesn't have a connection right now.
+     * 
+     * @return
+     */
+    public String getConnectedHost()
+    {
+        if (socket == null)
+            return null;
+        return socket.getInetAddress().getHostName();
+    }
+    
+    /**
+     * Returns the port that this communicator is connected on, or -1 if it's
+     * not connected right now.
+     * 
+     * @return
+     */
+    public int getConnectedPort()
+    {
+        if (socket == null)
+            return -1;
+        return socket.getPort();
+    }
 }

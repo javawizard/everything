@@ -759,4 +759,15 @@ public class PluginManager
         // TODO Auto-generated method stub
         
     }
+    
+    /**
+     * Opens a dialog on top of the window specified that allows the user to
+     * browse their update sites for new plugins, and configure new update sites
+     * if they want.
+     * 
+     * @param frame
+     */
+    public void promptForDownload(Window frame)
+    {
+    }
 }

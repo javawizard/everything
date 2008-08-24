@@ -1928,7 +1928,7 @@ public class OpenGroove
                     public void actionPerformed(
                         ActionEvent e)
                     {
-                        showOptionsWindow();
+                        showOptionsWindow(context);
                     }
                 } });
         final JMenu pluginsMenu = new IMenu("Plugins",
@@ -2008,39 +2008,30 @@ public class OpenGroove
      * shows a dialog to the user where they can select plugins from the ptl to
      * download. (ptl stands for Public Tool List, which is somewhat of a
      * misnomer because it contains lots of types of plugins, not just tools)
-     * this method will return once the user has closed the dialog. if the user
-     * chooses to restart Convergia after installing the plugin, then this
-     * method will not return normally.hb
+     * this method will return once the user has closed the dialog.
      * 
      * @param frame
      *            the frame to pass to the dialog's constructor. the dialog will
      *            be shown on top of this frame.
-     * @param types
-     *            the types of plugins to show in the list, or null to show all
-     *            plugins. for example, if you only wanted the user to download
-     *            tools, you could pass a String[] that contains one string,
-     *            "tool".
+     * @param context
+     *            The user context of the user that wants to search for new
+     *            plugins.
      */
     public static void findNewPlugins(JFrame frame,
-        String[] types)
+        UserContext context)
     {
-        try
-        {
-            PluginDownloadManager.promptForDownload(frame,
-                types, PluginManager.pluginFolder
-                    .list(new SubversionFilenameFilter()));
-        }
-        catch (MalformedURLException e)
-        {
-            e.printStackTrace();
-        }
+        context.getPlugins().promptForDownload(frame);
     }
     
-    protected static void showOptionsWindow()
+    /**
+     * Shows a dialog that allows the user to configure OpenGroove.
+     */
+    protected static void showOptionsWindow(
+        UserContext context)
     {
         final ConfigureOpenGrooveDialog dialog = new ConfigureOpenGrooveDialog(
-            launchbar);
-        showStatusInfo(dialog);
+            context);
+        // showStatusInfo(dialog);
         new Thread()
         {
             public void run()
@@ -2059,9 +2050,10 @@ public class OpenGroove
      * 
      * @param dialog
      */
-    private static void showStatusInfo(
+    private static void showStatusInfo(UserContext context,
         ConfigureOpenGrooveDialog dialog)
     {
+        CommandCommunicator ocom = context.getCom();
         Socket socket = ocom.getCommunicator().getSocket();
         dialog.getMConnectedServerLabel().setText(
             socket == null ? "N/A" : ocom.getCommunicator()
@@ -2074,9 +2066,12 @@ public class OpenGroove
         dialog.getMConnectivityStatus().setText(
             socket == null ? "offline" : "online");
         dialog.getMConnectionSecurityStatus().setText(
-            socket == null ? "N/A"
-                : (socket instanceof SSLSocket ? "secure"
-                    : "non-secure"));
+            "secure");
+        /*
+         * All connections are secured with the change to the new realm server
+         * framework, so there's no need to imform the user of whether they're
+         * using security anymore.
+         */
     }
     
     /**
@@ -2201,183 +2196,6 @@ public class OpenGroove
             }
         }
         wframe.dispose();
-    }
-    
-    /**
-     * opens the "create new user wizard" account. when the wizard is finished,
-     * or cancelled, this method returns. the return value is null if the wizard
-     * ws cancelled or the name of the user just created or downloaded if the
-     * wizard finished.
-     * 
-     * @return
-     */
-    private static String runCreateUserWizard()
-    {
-        AddUserFrame uframe = new AddUserFrame();
-        uframe
-            .setDefaultCloseOperation(WindowConstants.DO_NOTHING_ON_CLOSE);
-        uframe.setLocationRelativeTo(null);
-        uframe.show();
-        while (true)
-        {
-            System.out.println("t-loop");
-            while (!(uframe.getOkButton().isSelected()
-                || uframe.getNewAccountButton()
-                    .isSelected() || uframe
-                .getCancelButton().isSelected()))
-            {
-                try
-                {
-                    Thread.sleep(200);
-                }
-                catch (InterruptedException e)
-                {
-                    // TODO Oct 22, 2007 Auto-generated catch block
-                    throw new RuntimeException(
-                        "TODO auto generated on Oct 22, 2007 : "
-                            + e.getClass().getName()
-                            + " - " + e.getMessage(), e);
-                }
-            }
-            boolean wasOk = uframe.getOkButton()
-                .isSelected();
-            boolean wasCancel = uframe.getCancelButton()
-                .isSelected();
-            boolean wasNewAccount = uframe
-                .getNewAccountButton().isSelected();
-            uframe.getOkButton().setSelected(false);
-            uframe.getCancelButton().setSelected(false);
-            uframe.getNewAccountButton().setSelected(false);
-            if (wasOk)
-            {
-                if (uframe.getUsernameField().getText()
-                    .length() < 1
-                    || uframe.getPasswordField().getText()
-                        .length() < 1)
-                {
-                    JOptionPane
-                        .showMessageDialog(
-                            uframe,
-                            tm("intouch3.adduser.window.popup.youmustenterinfo"));
-                    continue;
-                }
-                final WaitingDialog wdialog = new WaitingDialog(
-                    uframe);
-                wdialog
-                    .getMainLabel()
-                    .setText(
-                        tm("intouch3.adduser.window.popup.lookingupinfo"));
-                wdialog.setLocationRelativeTo(uframe);
-                new Thread()
-                {
-                    public void run()
-                    {
-                        wdialog.show();
-                    }
-                }.start();
-                try
-                {
-                    Thread.sleep(800);
-                }
-                catch (InterruptedException e)
-                {
-                }
-                boolean wasSuccessfulAuth = false;
-                try
-                {
-                    LowLevelCommunicator com2 = null;
-                    try
-                    {
-                        com2 = new LowLevelCommunicator(
-                            getConnectHost(),
-                            getConnectPort(), true);
-                        com2.authenticate(uframe
-                            .getUsernameField().getText(),
-                            uframe.getPasswordField()
-                                .getText());
-                        wasSuccessfulAuth = true;
-                    }
-                    catch (AuthenticationException e)
-                    {
-                        
-                    }
-                    try
-                    {
-                        com2.close();
-                    }
-                    catch (Exception e)
-                    {
-                        
-                    }
-                }
-                catch (Exception e)
-                {
-                    JOptionPane
-                        .showMessageDialog(
-                            uframe,
-                            "<html>You do not appear to be connected to the internet. Please<br/>"
-                                + "connect to the internet, and try again. If this does<br/>"
-                                + "not solve your problem, we are probably experiencing<br/>"
-                                + "techincal difficulties with our server.");
-                    continue;
-                }
-                wdialog.hide();
-                wdialog.dispose();
-                if (wasSuccessfulAuth)
-                {
-                    Storage
-                        .storeUser(uframe
-                            .getUsernameField().getText(),
-                            uframe.getPasswordField()
-                                .getText());
-                    uframe.hide();
-                    uframe.dispose();
-                    return uframe.getUsernameField()
-                        .getText();
-                }
-                else
-                {
-                    JOptionPane
-                        .showMessageDialog(
-                            uframe,
-                            tm("intouch3.adduser.window.popup.wronguserorpassword"));
-                    continue;
-                }
-            }
-            else if (wasNewAccount)
-            {
-                try
-                {
-                    Desktop
-                        .getDesktop()
-                        .browse(
-                            new URI(
-                                "http://register.opengroove.org"));
-                }
-                catch (IOException e)
-                {
-                    e.printStackTrace();
-                    JOptionPane
-                        .showMessageDialog(
-                            uframe,
-                            "OpenGroove may not have been able to open the new user web page. To create an account, visit http://register.opengroove.org");
-                }
-                catch (URISyntaxException e)
-                {
-                    e.printStackTrace();
-                    JOptionPane
-                        .showMessageDialog(uframe,
-                            "An internal error has occured. OpenGroove will shut down.");
-                    System.exit(0);
-                }
-            }
-            else if (wasCancel)
-            {
-                uframe.hide();
-                uframe.dispose();
-                return null;
-            }
-        }
     }
     
     private static long nextGenId = 0;
