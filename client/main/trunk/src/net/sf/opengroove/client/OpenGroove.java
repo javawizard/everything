@@ -1198,7 +1198,7 @@ public class OpenGroove
      */
     private static void showNewAccountWizard(boolean welcome)
     {
-        if (newAccountWizardPane.isShowing())
+        if (newAccountFrame.isShowing())
         {
             bringToFront(newAccountFrame);
             return;
@@ -1291,6 +1291,29 @@ public class OpenGroove
         };
         // end pages
         newAccountWizardPane.setPageList(pages);
+        newAccountWizardPane
+            .setCancelAction(new AbstractAction("Cancel")
+            {
+                
+                @Override
+                public void actionPerformed(ActionEvent e)
+                {
+                    newAccountFrame.hide();
+                }
+            });
+        newAccountWizardPane
+            .setFinishAction(new AbstractAction("Finish")
+            {
+                
+                @Override
+                public void actionPerformed(ActionEvent e)
+                {
+                    /*
+                     * TODO: implement this method
+                     */
+                    newAccountFrame.hide();
+                }
+            });
         newAccountWizardPane.initComponents();
         newAccountFrame.getContentPane().setLayout(
             new BorderLayout());
