@@ -1335,52 +1335,7 @@ public class OpenGroove
     
     private static HashMap<String, Class<LookAndFeel>> lookAndFeelClasses = new HashMap<String, Class<LookAndFeel>>();
     
-    
-    /**
-     * gets the port to connect to the OpenGroove server on. This is obsolete
-     * with the addition of realm servers, and will be removed shortly.
-     * 
-     * @return
-     */
-    private static int getConnectPort()
-    {
-        if (Storage.getConfigProperty("icport") == null)
-            Storage.setConfigProperty("icport", "64482");
-        return Integer.parseInt(Storage
-            .getConfigProperty("icport"));
-    }
-    
-    /**
-     * not used right now, I'm not sure what it was for but it will be removed
-     * once I'm absolutely sure it's not going to mess anything up.
-     * 
-     * @return
-     */
-    private static boolean getUseFirstConnect()
-
-    {
-        if (Storage.getConfigProperty("icuseFirstConnect") == null)
-            Storage.setConfigProperty("icuseFirstConnect",
-                "false");
-        return Storage.getConfigProperty(
-            "icuseFirstConnect").toLowerCase().startsWith(
-            "t");
-    }
-    
-    /**
-     * gets the hostname or ip address to connect to. This is obsolete with the
-     * addition of realm servers, and will be removed shortly.
-     * 
-     * @return
-     */
-    private static String getConnectHost()
-    {
-        if (Storage.getConfigProperty("ichost") == null)
-            Storage.setConfigProperty("ichost",
-                "trivergia.com");
-        return Storage.getConfigProperty("ichost");
-    }
-    
+        
     /**
      * Shows an about window that describes OpenGroove and it's current version.
      * In the future, this will also show the about screens for any plugins that
