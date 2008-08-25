@@ -418,9 +418,9 @@ public class OpenGroove
             sfile.mkdirs();
             Storage.initStorage(sfile);
             trayimage = ImageIO.read(new File(
-                "trayicon.gif"));
+                "trayicon.png"));
             trayofflineimage = ImageIO.read(new File(
-                "trayoffline.gif"));
+                "trayoffline.png"));
             initNewAccountWizard();
             initLoginFrame();
             // the setProperty call below is used to avoid problems with the
@@ -585,7 +585,7 @@ public class OpenGroove
                         return pathname.getName()
                             .startsWith("traynotify")
                             && pathname.getName().endsWith(
-                                ".gif");
+                                ".png");
                     }
                 });
             Arrays.sort(trayfiles);
@@ -621,7 +621,7 @@ public class OpenGroove
                             .getName()
                             .startsWith("trayofflinenotify")
                             && pathname.getName().endsWith(
-                                ".gif");
+                                ".png");
                     }
                 });
             Arrays.sort(trayofflinefiles);
@@ -1292,25 +1292,22 @@ public class OpenGroove
                         .decode(null));
                 }
                 
-                public boolean allowClosing()
-                {
-                    System.out
-                        .println("allowclosing on welcome");
-                    return super.allowClosing();
-                }
             };
             pages.append(welcomePage);
         }
         StandardWizardPage newOrExistPage = new StandardWizardPage(
             LABEL_NEW_OR_EXIST, welcome, true, true, false)
         {
+            private JRadioButton newButton;
+            private JRadioButton existingButton;
+            
             public JComponent createWizardContent()
             {
                 JPanel panel = new JPanel();
-                JRadioButton newButton = new JRadioButton(
+                newButton = new JRadioButton(
                     "<html><b>Create a new OpenGroove account</b><br/>"
                         + "Choose this if this is your first time using OpenGroove, or if ");
-                JRadioButton existingButton = new JRadioButton(
+                existingButton = new JRadioButton(
                     "<html><b>Use an OpenGroove account that you have already created</b><br/>"
                         + "Choose this if you already have an OpenGroove "
                         + "account and would like to use it on this computer.");
@@ -1324,7 +1321,6 @@ public class OpenGroove
                 inner.setLayout(new BoxLayout(inner,
                     BoxLayout.Y_AXIS));
                 panel.add(inner, BorderLayout.NORTH);
-                newButton.setSelected(true);
                 newButton
                     .setVerticalTextPosition(newButton.TOP);
                 existingButton
@@ -1336,6 +1332,21 @@ public class OpenGroove
                 inner.add(new JLabel(" "));
                 inner.add(existingButton);
                 return panel;
+            }
+            
+            @Override
+            public boolean allowClosing()
+            {
+                boolean isOneSelected = newButton
+                    .isSelected()
+                    || existingButton.isSelected();
+                if (!isOneSelected)
+                {
+                    JOptionPane
+                        .showMessageDialog(this,
+                            "You must select an option before continuing.");
+                }
+                return isOneSelected;
             }
             
             @Override
