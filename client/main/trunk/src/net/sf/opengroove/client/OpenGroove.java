@@ -596,6 +596,9 @@ public class OpenGroove
                 File file = trayfiles[i];
                 notificationTrayImages[i] = ImageIO
                     .read(file);
+                notificationTrayImages[i] = blockTransparify(
+                    scaleImage(notificationTrayImages[i],
+                        16, 16), new Color(255, 0, 0));
                 String filename = file.getName();
                 System.out.println(filename);
                 int hIndex = filename.lastIndexOf("-");
@@ -778,6 +781,29 @@ public class OpenGroove
         {
             Thread.sleep(2000);
             e.printStackTrace();
+        }
+    }
+    
+    /**
+     * Changes all pixels in the image that are within five color points of the
+     * color specified to transparent. The image passed in itself is modified; a
+     * new copy is not created.
+     * 
+     * @param image
+     *            The image to transparify
+     * @param color
+     *            The color to convert to transparent
+     * @return The exact same image object that was passed in
+     */
+    private static BufferedImage blockTransparify(
+        BufferedImage image, Color color)
+    {
+        for (int x = 0; x < image.getWidth(); x++)
+        {
+            for (int y = 0; y < image.getHeight(); y++)
+            {
+                Color at = new Color(image.getRGB(x, y));
+            }
         }
     }
     
@@ -2199,8 +2225,8 @@ public class OpenGroove
      * @return a new image, which is the original image scaled to the width and
      *         height specified
      */
-    private static Image scaleImage(Image image, int width,
-        int height)
+    private static BufferedImage scaleImage(Image image,
+        int width, int height)
     {
         BufferedImage b = new BufferedImage(width, height,
             BufferedImage.TYPE_INT_ARGB);
