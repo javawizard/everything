@@ -417,12 +417,12 @@ public class OpenGroove
             }.start();
             sfile.mkdirs();
             Storage.initStorage(sfile);
-            trayimage = blockTransparify(scaleImage(ImageIO
-                .read(new File("trayicon.png")), 16, 16),
-                new Color(255, 0, 0));
-            trayofflineimage = blockTransparify(scaleImage(
+            trayimage = scaleImage(blockTransparify(ImageIO
+                .read(new File("trayicon.png")), new Color(
+                255, 0, 0)), 16, 16);
+            trayofflineimage = scaleImage(blockTransparify(
                 ImageIO.read(new File("trayoffline.png")),
-                16, 16), new Color(255, 0, 0));
+                new Color(255, 0, 0)), 16, 16);
             initNewAccountWizard();
             initLoginFrame();
             // the setProperty call below is used to avoid problems with the
@@ -598,9 +598,10 @@ public class OpenGroove
                 File file = trayfiles[i];
                 notificationTrayImages[i] = ImageIO
                     .read(file);
-                notificationTrayImages[i] = blockTransparify(
-                    scaleImage(notificationTrayImages[i],
-                        16, 16), new Color(255, 0, 0));
+                notificationTrayImages[i] = scaleImage(
+                    blockTransparify(
+                        notificationTrayImages[i],
+                        new Color(255, 0, 0)), 16, 16);
                 String filename = file.getName();
                 System.out.println(filename);
                 int hIndex = filename.lastIndexOf("-");
@@ -637,10 +638,10 @@ public class OpenGroove
                 File file = trayofflinefiles[i];
                 notificationTrayOfflineImages[i] = ImageIO
                     .read(file);
-                notificationTrayOfflineImages[i] = blockTransparify(
-                    scaleImage(
+                notificationTrayOfflineImages[i] = scaleImage(
+                    blockTransparify(
                         notificationTrayOfflineImages[i],
-                        16, 16), new Color(255, 0, 0));
+                        new Color(255, 0, 0)), 16, 16);
                 String filename = file.getName();
                 System.out.println(filename);
                 int hIndex = filename.lastIndexOf("-");
@@ -792,18 +793,21 @@ public class OpenGroove
     
     /**
      * Changes all pixels in the image that are within five color points of the
-     * color specified to transparent. The image passed in itself is modified; a
-     * new copy is not created.
+     * color specified to transparent. The image passed in is copied before any
+     * of the transparifying occurs.
      * 
      * @param image
      *            The image to transparify
      * @param color
      *            The color to convert to transparent
-     * @return The exact same image object that was passed in
+     * @return A new image with transparency applied
      */
     private static BufferedImage blockTransparify(
-        BufferedImage image, Color color)
+        BufferedImage oldImage, Color color)
     {
+        BufferedImage image = new BufferedImage(oldImage
+            .getWidth(null), oldImage.getHeight(null),
+            BufferedImage.TYPE_INT_ARGB);
         int tr = color.getRed();
         int tg = color.getGreen();
         int tb = color.getBlue();
@@ -817,7 +821,7 @@ public class OpenGroove
         {
             for (int y = 0; y < image.getHeight(); y++)
             {
-                Color at = new Color(image.getRGB(x, y));
+                Color at = new Color(oldImage.getRGB(x, y));
                 int r = at.getRed();
                 int g = at.getGreen();
                 int b = at.getBlue();
@@ -826,6 +830,10 @@ public class OpenGroove
                 {
                     Color sub = new Color(r, g, b, 0);
                     image.setRGB(x, y, sub.getRGB());
+                }
+                else
+                {
+                    image.setRGB(x, y, at.getRGB());
                 }
             }
         }
