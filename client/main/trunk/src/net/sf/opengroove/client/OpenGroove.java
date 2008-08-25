@@ -1186,7 +1186,6 @@ public class OpenGroove
         newAccountFrame.setLocationRelativeTo(null);
     }
     
-    
     /**
      * Shows the new account wizard. If the wizard is already showing, it will
      * be brought to the front. If not, the current wizard page will be reset to
@@ -1275,11 +1274,15 @@ public class OpenGroove
         };
         PageList pages = new PageList();
         // pages here
+        final String LABEL_WELCOME = "Welcome to OpenGroove";
+        final String LABEL_NEW_OR_EXIST = "New or Existing Account?";
+        final String LABEL_EXIST_AUTH = "Enter your userid and password";
+        final String LABEL_EXIST_ENTER_KEYS = "Enter your security keys";
+        final String LABEL_EXIST_COMPUTER = "Choose a name for this computer";
         if (welcome)
         {
             StandardWizardPage welcomePage = new StandardWizardPage(
-                "Welcome to OpenGroove", false, true, true,
-                false)
+                LABEL_WELCOME, false, true, true, false)
             {
                 
                 @Override
@@ -1288,12 +1291,18 @@ public class OpenGroove
                     addText(getWelcomeWizardMessage(), Font
                         .decode(null));
                 }
+                
+                public boolean allowClosing()
+                {
+                    System.out
+                        .println("allowclosing on welcome");
+                    return super.allowClosing();
+                }
             };
             pages.append(welcomePage);
         }
         StandardWizardPage newOrExistPage = new StandardWizardPage(
-            "New or Existing Account?", welcome, true,
-            true, false)
+            LABEL_NEW_OR_EXIST, welcome, true, true, false)
         {
             public JComponent createWizardContent()
             {
@@ -1336,10 +1345,9 @@ public class OpenGroove
         };
         pages.append(newOrExistPage);
         StandardWizardPage existAuthPage = new StandardWizardPage(
-            "Enter your userid and password", true, true,
-            true, false)
+            LABEL_EXIST_AUTH, true, true, true, false)
         {
-
+            
             @Override
             protected void init()
             {
