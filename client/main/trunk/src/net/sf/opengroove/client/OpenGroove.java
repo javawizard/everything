@@ -1186,6 +1186,7 @@ public class OpenGroove
         newAccountFrame.setLocationRelativeTo(null);
     }
     
+    
     /**
      * Shows the new account wizard. If the wizard is already showing, it will
      * be brought to the front. If not, the current wizard page will be reset to
@@ -1290,18 +1291,6 @@ public class OpenGroove
             };
             pages.append(welcomePage);
         }
-        StandardWizardPage existAuthPage = new StandardWizardPage(
-            "Enter your userid and password", true, true,
-            true, false)
-        {
-
-            @Override
-            protected void init()
-            {
-                // TODO Auto-generated method stub
-                
-            }
-        };
         StandardWizardPage newOrExistPage = new StandardWizardPage(
             "New or Existing Account?", welcome, true,
             true, false)
@@ -1346,6 +1335,18 @@ public class OpenGroove
             }
         };
         pages.append(newOrExistPage);
+        StandardWizardPage existAuthPage = new StandardWizardPage(
+            "Enter your userid and password", true, true,
+            true, false)
+        {
+
+            @Override
+            protected void init()
+            {
+                // TODO Auto-generated method stub
+                
+            }
+        };
         // end pages
         newAccountWizardPane.setPageList(pages);
         newAccountWizardPane
