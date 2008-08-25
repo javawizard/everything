@@ -417,10 +417,12 @@ public class OpenGroove
             }.start();
             sfile.mkdirs();
             Storage.initStorage(sfile);
-            trayimage = ImageIO.read(new File(
-                "trayicon.png"));
-            trayofflineimage = ImageIO.read(new File(
-                "trayoffline.png"));
+            trayimage = blockTransparify(scaleImage(ImageIO
+                .read(new File("trayicon.png")), 16, 16),
+                new Color(255, 0, 0));
+            trayofflineimage = blockTransparify(scaleImage(
+                ImageIO.read(new File("trayoffline.png")),
+                16, 16), new Color(255, 0, 0));
             initNewAccountWizard();
             initLoginFrame();
             // the setProperty call below is used to avoid problems with the
@@ -635,6 +637,10 @@ public class OpenGroove
                 File file = trayofflinefiles[i];
                 notificationTrayOfflineImages[i] = ImageIO
                     .read(file);
+                notificationTrayOfflineImages[i] = blockTransparify(
+                    scaleImage(
+                        notificationTrayOfflineImages[i],
+                        16, 16), new Color(255, 0, 0));
                 String filename = file.getName();
                 System.out.println(filename);
                 int hIndex = filename.lastIndexOf("-");
@@ -798,13 +804,32 @@ public class OpenGroove
     private static BufferedImage blockTransparify(
         BufferedImage image, Color color)
     {
+        int tr = color.getRed();
+        int tg = color.getGreen();
+        int tb = color.getBlue();
+        int rMin = tr - 6;
+        int rMax = tr + 6;
+        int gMin = tg - 6;
+        int gMax = tg + 6;
+        int bMin = tb - 6;
+        int bMax = tb + 6;
         for (int x = 0; x < image.getWidth(); x++)
         {
             for (int y = 0; y < image.getHeight(); y++)
             {
                 Color at = new Color(image.getRGB(x, y));
+                int r = at.getRed();
+                int g = at.getGreen();
+                int b = at.getBlue();
+                if (r > rMin && r < rMax && g > gMin
+                    && g < gMax && b > bMin && b < bMax)
+                {
+                    Color sub = new Color(r, g, b, 0);
+                    image.setRGB(x, y, sub.getRGB());
+                }
             }
         }
+        return image;
     }
     
     /**
