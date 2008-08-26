@@ -1486,6 +1486,7 @@ public class OpenGroove
             }
             
         };
+        pages.append(newAuthPage);
         // end pages
         newAccountWizardPane.setPageList(pages);
         newAccountWizardPane
