@@ -100,7 +100,9 @@ import base64.Base64Coder;
 
 import com.elevenworks.swing.panel.SimpleGradientPanel;
 import com.jidesoft.dialog.AbstractDialogPage;
+import com.jidesoft.dialog.PageEvent;
 import com.jidesoft.dialog.PageList;
+import com.jidesoft.dialog.PageListener;
 import com.jidesoft.swing.JideButton;
 import com.jidesoft.wizard.WizardDialogPane;
 import com.l2fprod.common.swing.JLinkButton;
@@ -1404,6 +1406,7 @@ public class OpenGroove
             @Override
             public boolean allowClosing()
             {
+                System.out.println("allow closing");
                 boolean isOneSelected = newButton
                     .isSelected()
                     || existingButton.isSelected();
@@ -1419,6 +1422,17 @@ public class OpenGroove
             @Override
             protected void init()
             {
+                addPageListener(new PageListener()
+                {
+                    
+                    @Override
+                    public void pageEventFired(PageEvent e)
+                    {
+                        System.out.println("Event "
+                            + e.getID() + " on "
+                            + e.getSource());
+                    }
+                });
             }
         };
         pages.append(newOrExistPage);
