@@ -2266,7 +2266,7 @@ public class OpenGroove
         Graphics2D g = b.createGraphics();
         g.setRenderingHint(
             RenderingHints.KEY_INTERPOLATION,
-            RenderingHints.VALUE_INTERPOLATION_BILINEAR);
+            RenderingHints.VALUE_INTERPOLATION_BICUBIC);
         g.drawImage(image, 0, 0, width, height, null);
         return b;
     }
