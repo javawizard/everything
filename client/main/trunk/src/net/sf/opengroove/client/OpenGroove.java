@@ -1531,6 +1531,8 @@ public class OpenGroove
             + getDisplayableVersion()));
         JideButton websiteButton = new JideButton(
             "www.opengroove.org");
+        panel.add(new JLabel(" "));
+        panel.add(websiteButton);
         websiteButton
             .setButtonStyle(websiteButton.HYPERLINK_STYLE);
         websiteButton.setAlwaysShowHyperlink(true);
