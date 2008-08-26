@@ -2264,11 +2264,16 @@ public class OpenGroove
         BufferedImage b = new BufferedImage(width, height,
             BufferedImage.TYPE_INT_ARGB);
         Graphics2D g = b.createGraphics();
-        g.setRenderingHint(
-            RenderingHints.KEY_INTERPOLATION,
-            RenderingHints.VALUE_INTERPOLATION_BICUBIC);
-        g.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
-        g.drawImage(image, 0, 0, width, height, null);
+        g.setRenderingHint(RenderingHints.KEY_ANTIALIASING,
+            RenderingHints.VALUE_ANTIALIAS_ON);
+        /*
+         * Now we do the actual scaling. The buffered image construction is
+         * really only for other methods that use one; the actual scaling is
+         * done by the Image class itself.
+         */
+        g.drawImage(image.getScaledInstance(width, height,
+            Image.SCALE_AREA_AVERAGING), 0, 0, width,
+            height, null);
         return b;
     }
     
