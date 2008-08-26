@@ -100,6 +100,7 @@ import base64.Base64Coder;
 
 import com.elevenworks.swing.panel.SimpleGradientPanel;
 import com.jidesoft.dialog.AbstractDialogPage;
+import com.jidesoft.dialog.ButtonNames;
 import com.jidesoft.dialog.PageEvent;
 import com.jidesoft.dialog.PageList;
 import com.jidesoft.dialog.PageListener;
@@ -1346,8 +1347,11 @@ public class OpenGroove
         final String LABEL_WELCOME = "Welcome to OpenGroove";
         final String LABEL_NEW_OR_EXIST = "New or Existing Account?";
         final String LABEL_EXIST_AUTH = "Enter your userid and password";
-        final String LABEL_EXIST_ENTER_KEYS = "Enter your security keys";
-        final String LABEL_EXIST_COMPUTER = "Choose a name for this computer";
+        final String LABEL_NEW_AUTH = "Select a realm, username, and password";
+        final String LABEL_ENTER_KEYS = "Select your security keys";
+        final String LABEL_MORE_INFO = "Enter some additional information";
+        final String LABEL_COMPUTER = "Choose a name for this computer";
+        final String LABEL_DONE = "Finished";
         if (welcome)
         {
             StandardWizardPage welcomePage = new StandardWizardPage(
@@ -1400,39 +1404,63 @@ public class OpenGroove
                 inner.add(new JLabel(" "));
                 inner.add(new JLabel(" "));
                 inner.add(existingButton);
-                return panel;
-            }
-            
-            @Override
-            public boolean allowClosing()
-            {
-                System.out.println("allow closing");
-                boolean isOneSelected = newButton
-                    .isSelected()
-                    || existingButton.isSelected();
-                if (!isOneSelected)
+                ActionListener listener = new ActionListener()
                 {
-                    JOptionPane
-                        .showMessageDialog(this,
-                            "You must select an option before continuing.");
-                }
-                return isOneSelected;
-            }
-            
-            @Override
-            protected void init()
-            {
+                    
+                    @Override
+                    public void actionPerformed(
+                        ActionEvent e)
+                    {
+                        if (newButton.isSelected())
+                        {
+                            System.out.println("Setting label to new_auth");
+                            newAccountWizardPane
+                                .setNextPage(newAccountWizardPane
+                                    .getPageByTitle(LABEL_NEW_AUTH));
+                        }
+                        else if (existingButton
+                            .isSelected())
+                        {
+                            System.out.println("setting label to existing_auth");
+                            newAccountWizardPane
+                                .setNextPage(newAccountWizardPane
+                                    .getPageByTitle(LABEL_EXIST_AUTH));
+                        }
+                    }
+                };
+                newButton.addActionListener(listener);
+                existingButton.addActionListener(listener);
                 addPageListener(new PageListener()
                 {
                     
                     @Override
                     public void pageEventFired(PageEvent e)
                     {
-                        System.out.println("Event "
-                            + e.getID() + " on "
-                            + e.getSource());
+                        if (e.getID() != PageEvent.PAGE_CLOSING)
+                            return;
+                        boolean isOneSelected = newButton
+                            .isSelected()
+                            || existingButton.isSelected();
+                        if (!(((JButton) e.getSource())
+                            .getName()
+                            .equals(ButtonNames.NEXT)))
+                            isOneSelected = true;
+                        if (!isOneSelected)
+                        {
+                            JOptionPane
+                                .showMessageDialog(
+                                    newAccountWizardPane,
+                                    "You must select an option before continuing.");
+                        }
+                        setAllowClosing(isOneSelected);
                     }
                 });
+                return panel;
+            }
+            
+            @Override
+            protected void init()
+            {
             }
         };
         pages.append(newOrExistPage);
@@ -1443,9 +1471,20 @@ public class OpenGroove
             @Override
             protected void init()
             {
-                // TODO Auto-generated method stub
-                
+                addText("Enter your userid and password");
             }
+        };
+        pages.append(existAuthPage);
+        StandardWizardPage newAuthPage = new StandardWizardPage(
+            LABEL_NEW_AUTH, true, true, true, false)
+        {
+            
+            @Override
+            protected void init()
+            {
+                addText("Select a realm, username, and password.");
+            }
+            
         };
         // end pages
         newAccountWizardPane.setPageList(pages);

@@ -15,6 +15,18 @@ public class ContactComputer implements Serializable
     private long lastOnline;
     
     private String type;
+    
+    private long lag;
+
+    public long getLag()
+    {
+        return lag;
+    }
+
+    public void setLag(long lag)
+    {
+        this.lag = lag;
+    }
 
     public String getName()
     {
