@@ -463,7 +463,8 @@ public class OpenGroove
                     {
                         try
                         {
-                            Thread.sleep(3100);
+                            if (!isNotificationAlertShowing)
+                                Thread.sleep(3100);
                             if (trayicon != null)
                             {
                                 if (isNotificationAlertShowing)
@@ -487,8 +488,15 @@ public class OpenGroove
                                         .setImage(nimages[currentNotificationIndex]);
                                     try
                                     {
+                                        System.out
+                                            .println("sleeping for "
+                                                + ndelays[currentNotificationIndex]
+                                                + " at index "
+                                                + currentNotificationIndex);
                                         Thread
                                             .sleep(ndelays[currentNotificationIndex]);
+                                        System.out
+                                            .println("done sleeping");
                                     }
                                     catch (Exception ex1)
                                     {
@@ -496,6 +504,8 @@ public class OpenGroove
                                             .printStackTrace();
                                         try
                                         {
+                                            System.out
+                                                .println("sleeping for 3000");
                                             Thread
                                                 .sleep(3000);
                                         }
@@ -521,6 +531,8 @@ public class OpenGroove
                                         trayicon
                                             .setImage(trayofflineimage);
                                     }
+                                    System.out
+                                        .println("sleeping for 3100");
                                     Thread.sleep(3100);
                                 }
                             }
