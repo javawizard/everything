@@ -765,6 +765,11 @@ public class OpenGroove
                     
                 }
             });
+            // TODO: remove the following line, it's just for testing purposes
+            notificationFrame.addNotification("OpenGroove",
+                new NotificationAdapter(notificationFrame,
+                    new JLabel("Test notification"), true,
+                    false), false);
             /*
              * We've set everything up at this point. Now we check to see if
              * there aren't any users, in which case we show the new account
