@@ -1413,7 +1413,6 @@ public class OpenGroove
                     {
                         if (newButton.isSelected())
                         {
-                            System.out.println("Setting label to new_auth");
                             newAccountWizardPane
                                 .setNextPage(newAccountWizardPane
                                     .getPageByTitle(LABEL_NEW_AUTH));
@@ -1421,7 +1420,6 @@ public class OpenGroove
                         else if (existingButton
                             .isSelected())
                         {
-                            System.out.println("setting label to existing_auth");
                             newAccountWizardPane
                                 .setNextPage(newAccountWizardPane
                                     .getPageByTitle(LABEL_EXIST_AUTH));
