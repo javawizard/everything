@@ -488,15 +488,8 @@ public class OpenGroove
                                         .setImage(nimages[currentNotificationIndex]);
                                     try
                                     {
-                                        System.out
-                                            .println("sleeping for "
-                                                + ndelays[currentNotificationIndex]
-                                                + " at index "
-                                                + currentNotificationIndex);
                                         Thread
                                             .sleep(ndelays[currentNotificationIndex]);
-                                        System.out
-                                            .println("done sleeping");
                                     }
                                     catch (Exception ex1)
                                     {
@@ -504,8 +497,6 @@ public class OpenGroove
                                             .printStackTrace();
                                         try
                                         {
-                                            System.out
-                                                .println("sleeping for 3000");
                                             Thread
                                                 .sleep(3000);
                                         }
