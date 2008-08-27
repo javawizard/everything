@@ -5,6 +5,8 @@ import java.awt.Window;
 
 import javax.swing.JDialog;
 import javax.swing.JLabel;
+import javax.swing.JPanel;
+import javax.swing.border.EmptyBorder;
 
 import com.jidesoft.swing.MultilineLabel;
 
@@ -25,12 +27,25 @@ public class StatusDialog extends JDialog
             ModalityType.APPLICATION_MODAL);
         label = new JLabel(text);
         label.setHorizontalAlignment(label.CENTER);
-        getContentPane().setLayout(new BorderLayout());
-        getContentPane().add(label, BorderLayout.CENTER);
-        getContentPane().add(
-            new AnimatedImage(ProgressItem.Status.ACTIVE
-                .getImage()), BorderLayout.WEST);
-        setSize(400, 150);
+        JPanel panel = new JPanel(new BorderLayout());
+        panel.setBorder(new EmptyBorder(20, 20, 20, 20));
+        panel.add(label, BorderLayout.CENTER);
+        panel.add(new AnimatedImage(
+            ProgressItem.Status.ACTIVE.getImage()),
+            BorderLayout.WEST);
+        getContentPane().add(panel);
+        pack();
+        setSize(400, 120);
+        setLocationRelativeTo(parent);
+        invalidate();
+        validate();
+        repaint();
+        getContentPane().invalidate();
+        getContentPane().validate();
+        getContentPane().repaint();
+        panel.invalidate();
+        panel.validate();
+        panel.repaint();
         invalidate();
         validate();
         repaint();
@@ -38,7 +53,18 @@ public class StatusDialog extends JDialog
     
     public static void main(String[] args)
     {
+        ProgressItem.Status.ACTIVE.getImage();
+        try
+        {
+            Thread.sleep(1000);
+        }
+        catch (InterruptedException e)
+        {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
         TestFrame f = new TestFrame();
+        f.setSize(500,300);
         f.show();
         StatusDialog d = new StatusDialog(f,
             "This is some test status information");
