@@ -1,6 +1,7 @@
 package net.sf.opengroove.client.ui;
 
 import java.awt.BorderLayout;
+import java.awt.Dimension;
 import java.awt.Window;
 
 import javax.swing.JDialog;
@@ -25,7 +26,7 @@ public class StatusDialog extends JDialog
     {
         super(parent, "OpenGroove",
             ModalityType.APPLICATION_MODAL);
-        label = new JLabel(text);
+        label = new JLabel();
         label.setHorizontalAlignment(label.CENTER);
         JPanel panel = new JPanel(new BorderLayout());
         panel.setBorder(new EmptyBorder(20, 20, 20, 20));
@@ -35,7 +36,7 @@ public class StatusDialog extends JDialog
             BorderLayout.WEST);
         getContentPane().add(panel);
         pack();
-        setSize(400, 120);
+        setText(text);
         setLocationRelativeTo(parent);
         invalidate();
         validate();
@@ -64,15 +65,19 @@ public class StatusDialog extends JDialog
             e.printStackTrace();
         }
         TestFrame f = new TestFrame();
-        f.setSize(500,300);
+        f.setSize(500, 300);
         f.show();
         StatusDialog d = new StatusDialog(f,
-            "This is some test status information");
+            "Please wait while your security keys are generated...");
         d.show();
     }
     
     public void setText(String text)
     {
         label.setText(text);
+        Dimension size = label.getPreferredSize();
+        setSize(size.width + 60 + 0 + getInsets().left
+            + getInsets().right, size.height + 40
+            + getInsets().top + getInsets().bottom);
     }
 }
