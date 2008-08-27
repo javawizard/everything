@@ -1485,6 +1485,17 @@ public class OpenGroove
             
         };
         pages.append(newAuthPage);
+        StandardWizardPage securityKeysPage = new StandardWizardPage(
+            LABEL_ENTER_KEYS, false, true, true, false)
+        {
+            
+            @Override
+            protected void init()
+            {
+                
+            }
+        };
+        pages.append(securityKeysPage);
         // end pages
         newAccountWizardPane.setPageList(pages);
         newAccountWizardPane

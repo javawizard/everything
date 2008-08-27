@@ -17,13 +17,14 @@ import com.jidesoft.swing.MultilineLabel;
  */
 public class StatusDialog extends JDialog
 {
-    private MultilineLabel label;
+    private JLabel label;
     
     public StatusDialog(Window parent, String text)
     {
         super(parent, "OpenGroove",
             ModalityType.APPLICATION_MODAL);
-        label = new MultilineLabel(text);
+        label = new JLabel(text);
+        label.setHorizontalAlignment(label.CENTER);
         getContentPane().setLayout(new BorderLayout());
         getContentPane().add(label, BorderLayout.CENTER);
         getContentPane().add(
@@ -39,7 +40,8 @@ public class StatusDialog extends JDialog
     {
         TestFrame f = new TestFrame();
         f.show();
-        StatusDialog d = new StatusDialog(f,"This is some test status information");
+        StatusDialog d = new StatusDialog(f,
+            "This is some test status information");
         d.show();
     }
     
