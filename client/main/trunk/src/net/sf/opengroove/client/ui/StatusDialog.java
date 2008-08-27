@@ -26,10 +26,11 @@ public class StatusDialog extends JDialog
     {
         super(parent, "OpenGroove",
             ModalityType.APPLICATION_MODAL);
+        setResizable(false);
         label = new JLabel();
         label.setHorizontalAlignment(label.CENTER);
         JPanel panel = new JPanel(new BorderLayout());
-        panel.setBorder(new EmptyBorder(20, 20, 20, 20));
+        panel.setBorder(new EmptyBorder(30, 30, 30, 30));
         panel.add(label, BorderLayout.CENTER);
         panel.add(new AnimatedImage(
             ProgressItem.Status.ACTIVE.getImage()),
@@ -76,8 +77,8 @@ public class StatusDialog extends JDialog
     {
         label.setText(text);
         Dimension size = label.getPreferredSize();
-        setSize(size.width + 60 + 0 + getInsets().left
-            + getInsets().right, size.height + 40
+        setSize(size.width + 116 + getInsets().left
+            + getInsets().right, size.height + 60
             + getInsets().top + getInsets().bottom);
     }
 }
