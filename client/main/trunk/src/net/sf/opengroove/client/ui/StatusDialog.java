@@ -53,7 +53,7 @@ public class StatusDialog extends JDialog
         repaint();
     }
     
-    public static void main(String[] args)
+    public static void main(String[] args) throws Throwable
     {
         ProgressItem.Status.ACTIVE.getImage();
         try
@@ -71,6 +71,12 @@ public class StatusDialog extends JDialog
         StatusDialog d = new StatusDialog(f,
             "Please wait while your security keys are generated...");
         d.showImmediate();
+        Thread.sleep(2000);
+        d
+            .setText("Please wait while your security keys are generated... (almost done)");
+        Thread.sleep(2000);
+        d
+            .setText("Your security keys have been generated.");
     }
     
     /**
