@@ -70,7 +70,39 @@ public class StatusDialog extends JDialog
         f.show();
         StatusDialog d = new StatusDialog(f,
             "Please wait while your security keys are generated...");
-        d.show();
+        d.showImmediate();
+    }
+    
+    /**
+     * Same as show() or setVisible(true), but the method returns immediately
+     * instead of waiting for the dialog to be hidden. This is accomplished by
+     * showing the dialog in a separate thread, and then polling the dialog
+     * until it becomes visible to avoid it being hidden (in the event of a
+     * really quick task, so that the dialog is not shown for very long) so
+     * quick after being shown that the new threads ends up showing the dialog
+     * after the request to hide it.
+     */
+    public void showImmediate()
+    {
+        new Thread()
+        {
+            @SuppressWarnings("deprecation")
+            public void run()
+            {
+                show();
+            }
+        }.start();
+        while (!isVisible())
+            try
+            {
+                Thread.sleep(100);
+            }
+            catch (InterruptedException e)
+            {
+                // TODO Auto-generated catch block
+                e.printStackTrace();
+                break;
+            }
     }
     
     public void setText(String text)
