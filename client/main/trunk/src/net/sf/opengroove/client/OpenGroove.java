@@ -104,6 +104,7 @@ import com.jidesoft.dialog.ButtonNames;
 import com.jidesoft.dialog.PageEvent;
 import com.jidesoft.dialog.PageList;
 import com.jidesoft.dialog.PageListener;
+import com.jidesoft.swing.DefaultOverlayable;
 import com.jidesoft.swing.JideButton;
 import com.jidesoft.wizard.WizardDialogPane;
 import com.l2fprod.common.swing.JLinkButton;
@@ -1471,6 +1472,26 @@ public class OpenGroove
             @Override
             protected void init()
             {
+                addText("Enter your existing userid and password below, then click "
+                    + "next. Make sure you are connected to the internet before "
+                    + "you proceed.");
+                final JTextField useridField = new JTextField(
+                    30);
+                final JPasswordField passwordField = new JPasswordField(
+                    30);
+                DefaultOverlayable useridContainer = new DefaultOverlayable(
+                    useridField);
+                DefaultOverlayable passwordContainer = new DefaultOverlayable(
+                    passwordField);
+                JLabel useridLabel = new JLabel(" Username");
+                JLabel passwordLabel = new JLabel(
+                    " Password");
+                useridLabel.setFont(Font.decode(null));
+                passwordLabel.setFont(Font.decode(null));
+                useridContainer.addOverlayComponent(
+                    useridLabel, SwingConstants.WEST);
+                passwordContainer.addOverlayComponent(
+                    passwordLabel, SwingConstants.WEST);
             }
         };
         pages.append(existAuthPage);
