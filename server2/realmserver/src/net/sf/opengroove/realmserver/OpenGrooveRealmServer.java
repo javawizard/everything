@@ -1836,6 +1836,11 @@ public class OpenGrooveRealmServer
                         // to hand-scan the connections list for a connection
                         // with this username and no computer to verify that
                         // such a connection does not exist
+                        //
+                        // TODO: Is this a good idea? In retrospect, it seems
+                        // that having a user signed on multiple times without a
+                        // computer isn't a problem, they just should be able to
+                        // see that there is another connection on
                         for (ConnectionHandler ich : new ArrayList<ConnectionHandler>(
                             connections))
                         {
