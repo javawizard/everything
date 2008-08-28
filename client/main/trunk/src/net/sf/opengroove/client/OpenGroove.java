@@ -1544,9 +1544,22 @@ public class OpenGroove
                             .getText();
                         String password = passwordField
                             .getText();
-                        if(userid.equals("") || password.equals(""))
+                        if (userid.equals("")
+                            || password.equals(""))
                         {
-                            JOptionPane.showMes
+                            JOptionPane
+                                .showMessageDialog(
+                                    newAccountFrame,
+                                    "You didn't enter a userid and password.");
+                            return;
+                        }
+                        if (!userid.contains(":"))
+                        {
+                            JOptionPane
+                                .showMessageDialog(
+                                    newAccountFrame,
+                                    "Userids are of the format realm:username . The "
+                                        + "userid you specified did not contain a : character.");
                         }
                     }
                 });
