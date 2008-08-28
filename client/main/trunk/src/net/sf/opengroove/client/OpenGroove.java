@@ -1737,7 +1737,7 @@ public class OpenGroove
                         }
                         finally
                         {
-                            statusDialog.hide();
+                            statusDialog.dispose();
                             statusDialog.hide();
                         }
                     }
