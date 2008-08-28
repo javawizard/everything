@@ -1641,6 +1641,10 @@ public class OpenGroove
                                             "The file you selected is corrupt, or could not be read.");
                                     return;
                                 }
+                                statusDialog.dispose();
+                                statusDialog = new StatusDialog(
+                                    newAccountFrame,
+                                    "Please wait while we validate your username and password...");
                                 statusDialog
                                     .showImmediate();
                             }
@@ -1675,6 +1679,7 @@ public class OpenGroove
                                      */
                                     vars.serverKey = null;
                                     e2.printStackTrace();
+                                    statusDialog.hide();
                                     JOptionPane
                                         .showMessageDialog(
                                             newAccountFrame,
@@ -1701,12 +1706,14 @@ public class OpenGroove
                                 catch (Exception e2)
                                 {
                                     e2.printStackTrace();
+                                    statusDialog.hide();
                                     JOptionPane
                                         .showMessageDialog(
                                             newAccountFrame,
                                             "Your realm server reported that your userid or password was incorrect.");
                                     return;
                                 }
+                                statusDialog.hide();
                                 JOptionPane
                                     .showMessageDialog(
                                         newAccountFrame,
@@ -1730,6 +1737,7 @@ public class OpenGroove
                         }
                         finally
                         {
+                            statusDialog.hide();
                             statusDialog.hide();
                         }
                     }
