@@ -201,8 +201,9 @@ public class CommandCommunicator
         String username, String computer, String password)
         throws IOException
     {
-        Packet packet = new Packet(null, "authenticate", ""
-            .getBytes());
+        Packet packet = new Packet(null, "authenticate",
+            (connectionType + "\n" + username + "\n"
+                + computer + "\n" + password).getBytes());
         Packet response = communicator.query(packet,
             defaultTimeout);
         return response.getResponse();
