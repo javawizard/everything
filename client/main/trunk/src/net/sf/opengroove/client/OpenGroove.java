@@ -526,8 +526,6 @@ public class OpenGroove
                                         trayicon
                                             .setImage(trayofflineimage);
                                     }
-                                    System.out
-                                        .println("sleeping for 3100");
                                     Thread.sleep(3100);
                                 }
                             }
@@ -1487,6 +1485,8 @@ public class OpenGroove
                     useridLabel, SwingConstants.WEST);
                 passwordContainer.addOverlayComponent(
                     passwordLabel, SwingConstants.WEST);
+                addComponent(useridContainer);
+                addComponent(passwordContainer);
             }
         };
         pages.append(existAuthPage);
