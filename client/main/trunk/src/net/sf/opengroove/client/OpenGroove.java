@@ -1569,7 +1569,29 @@ public class OpenGroove
                                 .showMessageDialog(
                                     newAccountFrame,
                                     "Userids are of the format realm:username . The "
-                                        + "userid you specified contained more than one : character.");
+                                        + "userid you specified containes more than one : character.");
+                            return;
+                        }
+                        /*
+                         * At this point, the userid and password are valid
+                         * input. We need to construct a one-time
+                         * CommandCommunicator to the realm server and
+                         * authenticate, to make sure that they entered a
+                         * correct userid and password.
+                         */
+                        CommandCommunicator lcom;
+                        try
+                        {
+                        }
+                        catch (Exception e2)
+                        {
+                            e2.printStackTrace();
+                            JOptionPane
+                                .showMessageDialog(
+                                    newAccountFrame,
+                                    "A connection to the server could not be established. Make "
+                                        + "sure you're connected to the internet and that you entered "
+                                        + "a correct userid.");
                             return;
                         }
                     }
