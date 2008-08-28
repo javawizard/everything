@@ -1313,6 +1313,7 @@ public class OpenGroove
          * 7. If the user chose to create a new account instead of using an
          * existing one, TBD.
          */
+        final NewAccountWizardVars vars = new NewAccountWizardVars();
         newAccountWizardPane = new WizardDialogPane()
         {
             private JLabel titleLabel;
@@ -1485,8 +1486,8 @@ public class OpenGroove
                     + "them create an account for you. Then, choose \"Use an "
                     + "OpenGroove account that you have already created\" "
                     + "on the previous step.");
-                addText("For more information, or to get an OpenGroove account at " +
-                		"the opengroove.org realm, contact us at support@opengroove.org");
+                addText("For more information, or to get an OpenGroove account at "
+                    + "the opengroove.org realm, contact us at support@opengroove.org");
             }
             
         };

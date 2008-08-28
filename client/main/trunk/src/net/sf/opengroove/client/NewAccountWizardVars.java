@@ -14,5 +14,7 @@ package net.sf.opengroove.client;
  */
 public class NewAccountWizardVars
 {
-    
+    public String userid;
+    public String password;
+    public String computer;
 }
