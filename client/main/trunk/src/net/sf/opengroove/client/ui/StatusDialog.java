@@ -32,9 +32,10 @@ public class StatusDialog extends JDialog
         JPanel panel = new JPanel(new BorderLayout());
         panel.setBorder(new EmptyBorder(30, 30, 30, 30));
         panel.add(label, BorderLayout.CENTER);
-        panel.add(new AnimatedImage(
-            ProgressItem.Status.ACTIVE.getImage()),
-            BorderLayout.WEST);
+        AnimatedImage animatedImage = new AnimatedImage(
+            ProgressItem.Status.ACTIVE.getImage());
+        animatedImage.setSize(16, 16);
+        panel.add(animatedImage, BorderLayout.WEST);
         getContentPane().add(panel);
         pack();
         setText(text);
