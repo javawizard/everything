@@ -94,6 +94,7 @@ import net.sf.opengroove.client.ui.FillContainer;
 import net.sf.opengroove.client.ui.ImportWorkspaceDialog;
 import net.sf.opengroove.client.ui.InviteToWorkspaceDialog;
 import net.sf.opengroove.client.ui.StandardWizardPage;
+import net.sf.opengroove.client.ui.StatusDialog;
 import net.sf.opengroove.client.ui.frames.LoginFrame;
 import net.sf.opengroove.client.workspace.WorkspaceManager;
 import net.sf.opengroove.client.workspace.WorkspaceWrapper;
@@ -1581,105 +1582,156 @@ public class OpenGroove
                          * authenticate, to make sure that they entered a
                          * correct userid and password.
                          */
-                        vars.userid = userid;
-                        vars.password = password;
-                        if (vars.serverKey == null
-                            || !vars.serverKey
-                                .equals(userid))
+                        StatusDialog statusDialog = new StatusDialog(
+                            newAccountFrame,
+                            "Please wait while we validate your username and password...");
+                        statusDialog.showImmediate();
+                        try
                         {
-                            /*
-                             * If we're in here then the user needs to input
-                             * their server's security keys.
-                             */
-                            JOptionPane
-                                .showMessageDialog(
-                                    newAccountFrame,
-                                    "OpenGroove needs your realm's "
-                                        + "security keys to continue.\n"
-                                        + "When you are prompted, select the file that "
-                                        + "contains your realm's security keys.\n"
-                                        + "If you don't know your realm's security keys, contact\n"
-                                        + "your realm's administrator. You could try going to\n"
-                                        + Userids
-                                            .toRealm(userid)
-                                        + " for more information.");
-                            JFileChooser chooser = new JFileChooser();
-                            chooser
-                                .setMultiSelectionEnabled(false);
-                            chooser
-                                .setFileFilter(new FileNameExtensionFilter(
-                                    "OpenGroove Server Security Key files",
-                                    "ogvs"));
-                            if (chooser
-                                .showOpenDialog(newAccountFrame) != JFileChooser.APPROVE_OPTION)
+                            vars.userid = userid;
+                            vars.password = password;
+                            if (vars.serverKey == null
+                                || !vars.serverKey
+                                    .equals(userid))
                             {
-                                return;
-                            }
-                            File securityKeyFile = chooser
-                                .getSelectedFile();
-                            try
-                            {
-                                ServerSecurityKey key = ServerSecurityKey
-                                    .parse(securityKeyFile);
-                                key.realm = Userids
-                                    .toRealm(userid);
-                                vars.serverKey = key;
-                            }
-                            catch (Exception e2)
-                            {
+                                /*
+                                 * If we're in here then the user needs to input
+                                 * their server's security keys.
+                                 */
+                                statusDialog.hide();
                                 JOptionPane
                                     .showMessageDialog(
                                         newAccountFrame,
-                                        "The file you selected is corrupt, or could not be read.");
-                                return;
+                                        "OpenGroove needs your realm's "
+                                            + "security keys to continue.\n"
+                                            + "When you are prompted, select the file that "
+                                            + "contains your realm's security keys.\n"
+                                            + "If you don't know your realm's security keys, contact\n"
+                                            + "your realm's administrator. You could try going to\n"
+                                            + Userids
+                                                .toRealm(userid)
+                                            + " for more information.");
+                                JFileChooser chooser = new JFileChooser();
+                                chooser
+                                    .setMultiSelectionEnabled(false);
+                                chooser
+                                    .setFileFilter(new FileNameExtensionFilter(
+                                        "OpenGroove Server Security Key files",
+                                        "ogvs"));
+                                if (chooser
+                                    .showOpenDialog(newAccountFrame) != JFileChooser.APPROVE_OPTION)
+                                {
+                                    return;
+                                }
+                                File securityKeyFile = chooser
+                                    .getSelectedFile();
+                                try
+                                {
+                                    ServerSecurityKey key = ServerSecurityKey
+                                        .parse(securityKeyFile);
+                                    key.realm = Userids
+                                        .toRealm(userid);
+                                    vars.serverKey = key;
+                                }
+                                catch (Exception e2)
+                                {
+                                    JOptionPane
+                                        .showMessageDialog(
+                                            newAccountFrame,
+                                            "The file you selected is corrupt, or could not be read.");
+                                    return;
+                                }
+                                statusDialog
+                                    .showImmediate();
+                            }
+                            CommandCommunicator lcom = null;
+                            try
+                            {
+                                try
+                                {
+                                    lcom = new CommandCommunicator(
+                                        new Communicator(
+                                            Userids
+                                                .toRealm(userid),
+                                            false,
+                                            true,
+                                            "normal",
+                                            Userids
+                                                .toUsername(userid),
+                                            "",
+                                            password,
+                                            vars.serverKey.rsaPublic,
+                                            vars.serverKey.rsaMod,
+                                            null, null));
+                                }
+                                catch (Exception e2)
+                                {
+                                    /*
+                                     * Clear the security key in case that was
+                                     * the cause of the problem, might want to
+                                     * set it to just clear it if the
+                                     * communicator handshake failed in the
+                                     * future
+                                     */
+                                    vars.serverKey = null;
+                                    e2.printStackTrace();
+                                    JOptionPane
+                                        .showMessageDialog(
+                                            newAccountFrame,
+                                            "A connection to the server could not be established. Make "
+                                                + "sure you're connected to the internet and that you entered "
+                                                + "a correct userid.\n"
+                                                + "If you entered the security keys for this server, you may have entered them wrong.");
+                                    return;
+                                }
+                                try
+                                {
+                                    String res = lcom
+                                        .authenticate(
+                                            "normal",
+                                            Userids
+                                                .toUsername(userid),
+                                            "", password);
+                                    if (!res
+                                        .equalsIgnoreCase("OK"))
+                                        throw new RuntimeException(
+                                            "Expected status OK, but received "
+                                                + res);
+                                }
+                                catch (Exception e2)
+                                {
+                                    e2.printStackTrace();
+                                    JOptionPane
+                                        .showMessageDialog(
+                                            newAccountFrame,
+                                            "Your realm server reported that your userid or password was incorrect.");
+                                    return;
+                                }
+                                JOptionPane
+                                    .showMessageDialog(
+                                        newAccountFrame,
+                                        "Successful. TBD: don't show this, just forward to the next page");
+                            }
+                            finally
+                            {
+                                if (lcom != null)
+                                    try
+                                    {
+                                        lcom
+                                            .getCommunicator()
+                                            .shutdown();
+                                    }
+                                    catch (Exception exception)
+                                    {
+                                        exception
+                                            .printStackTrace();
+                                    }
                             }
                         }
-                        CommandCommunicator lcom;
-                        try
+                        finally
                         {
-                            lcom = new CommandCommunicator(
-                                new Communicator(
-                                    Userids.toRealm(userid),
-                                    false,
-                                    true,
-                                    "normal",
-                                    Userids
-                                        .toUsername(userid),
-                                    "",
-                                    password,
-                                    vars.serverKey.rsaPublic,
-                                    vars.serverKey.rsaMod,
-                                    null, null));
+                            statusDialog.hide();
                         }
-                        catch (Exception e2)
-                        {
-                            e2.printStackTrace();
-                            JOptionPane
-                                .showMessageDialog(
-                                    newAccountFrame,
-                                    "A connection to the server could not be established. Make "
-                                        + "sure you're connected to the internet and that you entered "
-                                        + "a correct userid.\n"
-                                        + "If you entered the security keys for this server, you may have entered them wrong.");
-                            return;
-                        }
-                        try
-                        {
-                            lcom.
-                        }
-                        catch (Exception e2)
-                        {
-                            e2.printStackTrace();
-                            JOptionPane
-                                .showMessageDialog(
-                                    newAccountFrame,
-                                    "Your realm server reported that your userid or password was incorrect.");
-                            return;
-                        }
-                        JOptionPane
-                            .showMessageDialog(
-                                newAccountFrame,
-                                "Successful. TBD: don't show this, just forward to the next page");
                     }
                 });
             }
