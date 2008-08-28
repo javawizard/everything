@@ -1470,7 +1470,6 @@ public class OpenGroove
             @Override
             protected void init()
             {
-                addText("Enter your userid and password");
             }
         };
         pages.append(existAuthPage);
