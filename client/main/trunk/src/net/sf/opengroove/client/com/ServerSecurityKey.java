@@ -20,8 +20,15 @@ public class ServerSecurityKey
 {
     public BigInteger rsaPublic;
     public BigInteger rsaMod;
+    /**
+     * The realm that these keys are for. This is not required (and is not set
+     * upon an instance of this class being returned from parse()), but can be
+     * set and read by the application using this class as it sees fit, to make
+     * it easier to track security keys throughout the application.
+     */
+    public String realm;
     
-    public ServerSecurityKey parse(File file)
+    public static ServerSecurityKey parse(File file)
     {
         String keyMerged = readFile(file);
         keyMerged = keyMerged.trim();

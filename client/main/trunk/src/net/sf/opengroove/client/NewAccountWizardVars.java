@@ -1,5 +1,7 @@
 package net.sf.opengroove.client;
 
+import net.sf.opengroove.client.com.ServerSecurityKey;
+
 /**
  * This class contains variables related to the new account wizard. An instance
  * of it is created whenever the user chooses to show the new account wizard,
@@ -28,6 +30,13 @@ public class NewAccountWizardVars
      * false otherwise
      */
     public boolean useridValidated = false;
+    /**
+     * The security key for this user's realm. If the realm server is listed in
+     * the public server directory, then this is the security key obtained from
+     * there. If not, the user will be prompted to select a .ogvs file to use as
+     * their server's security key.
+     */
+    public ServerSecurityKey serverKey;
     /**
      * The name of the computer that this user has chosen to create
      */

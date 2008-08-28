@@ -197,6 +197,25 @@ public class CommandCommunicator
         return response.getResponse();
     }
     
+    public String authenticate(String connectionType,
+        String username, String computer, String password)
+    {
+        Packet packet = new Packet(null, "authenticate", ""
+            .getBytes());
+        Packet response;
+        try
+        {
+            response = communicator.query(packet,
+                defaultTimeout);
+        }
+        catch (IOException e)
+        {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
+        return response.getResponse();
+    }
+    
     /**
      * Pings the server. This command sends a ping command and waits until it
      * receives a response before returning.
