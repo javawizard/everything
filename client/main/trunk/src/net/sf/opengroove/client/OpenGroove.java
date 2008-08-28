@@ -1267,6 +1267,7 @@ public class OpenGroove
      * entering an account configuration code. If the user finishes the wizard
      * successfully, the login box will be shown.
      */
+    @SuppressWarnings("serial")
     private static void showNewAccountWizard(boolean welcome)
     {
         if (newAccountFrame.isShowing())
@@ -1474,13 +1475,19 @@ public class OpenGroove
         };
         pages.append(existAuthPage);
         StandardWizardPage newAuthPage = new StandardWizardPage(
-            LABEL_NEW_AUTH, true, true, true, false)
+            LABEL_NEW_AUTH, true, true, false, false)
         {
             
             @Override
             protected void init()
             {
-                addText("Select a realm, username, and password.");
+                addText("Right now, you can't create a new user account. If you'd like "
+                    + "a user account, contact the owner of a realm server, and have "
+                    + "them create an account for you. Then, choose \"Use an "
+                    + "OpenGroove account that you have already created\" "
+                    + "on the previous step.");
+                addText("For more information, or to get an OpenGroove account at " +
+                		"the opengroove.org realm, contact us at support@opengroove.org");
             }
             
         };
