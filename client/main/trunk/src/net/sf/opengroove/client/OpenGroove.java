@@ -1560,6 +1560,17 @@ public class OpenGroove
                                     newAccountFrame,
                                     "Userids are of the format realm:username . The "
                                         + "userid you specified did not contain a : character.");
+                            return;
+                        }
+                        if (userid.indexOf(":") != userid
+                            .lastIndexOf(":"))
+                        {
+                            JOptionPane
+                                .showMessageDialog(
+                                    newAccountFrame,
+                                    "Userids are of the format realm:username . The "
+                                        + "userid you specified contained more than one : character.");
+                            return;
                         }
                     }
                 });
