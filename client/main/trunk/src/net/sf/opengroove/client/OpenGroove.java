@@ -1647,6 +1647,16 @@ public class OpenGroove
                                     "Please wait while we validate your username and password...");
                                 statusDialog
                                     .showImmediate();
+                                try
+                                {
+                                    Thread.sleep(300);
+                                }
+                                catch (Exception exception)
+                                {
+                                    exception
+                                        .printStackTrace();
+                                }
+                                statusDialog.repaint();
                             }
                             CommandCommunicator lcom = null;
                             try
@@ -1686,7 +1696,7 @@ public class OpenGroove
                                             "A connection to the server could not be established. Make "
                                                 + "sure you're connected to the internet and that you entered "
                                                 + "a correct userid.\n"
-                                                + "If you entered the security keys for this server, you may have entered them wrong.");
+                                                + "If you entered the security keys for this server, you may have entered them incorrectly.");
                                     return;
                                 }
                                 try

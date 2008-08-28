@@ -690,10 +690,16 @@ public class Communicator
                         + "a response was received.");
             if (!responsePacket.getResponse().trim()
                 .equalsIgnoreCase("OK"))
+            {
                 throw new FailedResponseException(
                     responsePacket.getResponse(),
-                    "For response code: "
-                        + responsePacket.getResponse());
+                    "For response code: \""
+                        + responsePacket.getResponse()
+                        + "\" and message "
+                        + new String(packet.getContents(),
+                            0, Math.min(packet
+                                .getContents().length, 128)));
+            }
             return responsePacket;
         }
         catch (IOException e)

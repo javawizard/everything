@@ -199,20 +199,12 @@ public class CommandCommunicator
     
     public String authenticate(String connectionType,
         String username, String computer, String password)
+        throws IOException
     {
         Packet packet = new Packet(null, "authenticate", ""
             .getBytes());
-        Packet response;
-        try
-        {
-            response = communicator.query(packet,
-                defaultTimeout);
-        }
-        catch (IOException e)
-        {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-        }
+        Packet response = communicator.query(packet,
+            defaultTimeout);
         return response.getResponse();
     }
     
