@@ -915,6 +915,11 @@ public class OpenGrooveRealmServer
             }
             catch (FailedResponseException e)
             {
+                System.out
+                    .println("Failing response for user "
+                        + username + " with code "
+                        + e.getStatus() + " and message "
+                        + e.getMessage());
                 sendEncryptedPacket(
                     packetId,
                     commandName,
