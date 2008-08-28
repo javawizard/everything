@@ -6,6 +6,7 @@ import java.awt.Component;
 import java.awt.Container;
 import java.awt.Desktop;
 import java.awt.Dialog;
+import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.Font;
 import java.awt.Frame;
@@ -101,6 +102,7 @@ import base64.Base64Coder;
 import com.elevenworks.swing.panel.SimpleGradientPanel;
 import com.jidesoft.dialog.AbstractDialogPage;
 import com.jidesoft.dialog.ButtonNames;
+import com.jidesoft.dialog.JideOptionPane;
 import com.jidesoft.dialog.PageEvent;
 import com.jidesoft.dialog.PageList;
 import com.jidesoft.dialog.PageListener;
@@ -1468,25 +1470,86 @@ public class OpenGroove
                 addText("Enter your existing userid and password below, then click "
                     + "next. Make sure you are connected to the internet before "
                     + "you proceed.");
+                addText(" ");
                 final JTextField useridField = new JTextField(
                     30);
                 final JPasswordField passwordField = new JPasswordField(
                     30);
-                DefaultOverlayable useridContainer = new DefaultOverlayable(
-                    useridField);
-                DefaultOverlayable passwordContainer = new DefaultOverlayable(
-                    passwordField);
-                JLabel useridLabel = new JLabel(" Username");
+                JPanel useridPanel = new JPanel();
+                JPanel passwordPanel = new JPanel();
+                useridPanel.setLayout(new BorderLayout());
+                passwordPanel.setLayout(new BorderLayout());
+                JPanel useridInnerPanel = new JPanel();
+                JPanel passwordInnerPanel = new JPanel();
+                useridPanel.setLayout(new BorderLayout());
+                passwordPanel.setLayout(new BorderLayout());
+                useridPanel.add(useridInnerPanel,
+                    BorderLayout.WEST);
+                passwordPanel.add(passwordInnerPanel,
+                    BorderLayout.WEST);
+                JLabel useridLabel = new JLabel(
+                    "    Userid:");
+                useridLabel.setPreferredSize(new Dimension(
+                    100,
+                    useridLabel.getPreferredSize().height));
                 JLabel passwordLabel = new JLabel(
-                    " Password");
-                useridLabel.setFont(Font.decode(null));
-                passwordLabel.setFont(Font.decode(null));
-                useridContainer.addOverlayComponent(
-                    useridLabel, SwingConstants.WEST);
-                passwordContainer.addOverlayComponent(
-                    passwordLabel, SwingConstants.WEST);
-                addComponent(useridContainer);
-                addComponent(passwordContainer);
+                    "    Password:");
+                passwordLabel
+                    .setPreferredSize(new Dimension(
+                        100,
+                        passwordLabel.getPreferredSize().height));
+                useridInnerPanel.add(useridLabel,
+                    BorderLayout.WEST);
+                passwordInnerPanel.add(passwordLabel,
+                    BorderLayout.WEST);
+                useridInnerPanel.add(useridField,
+                    BorderLayout.EAST);
+                passwordInnerPanel.add(passwordField,
+                    BorderLayout.EAST);
+                addComponent(useridPanel);
+                addComponent(passwordPanel);
+                addPageListener(new PageListener()
+                {
+                    
+                    @Override
+                    public void pageEventFired(PageEvent e)
+                    {
+                        if (e.getID() != PageEvent.PAGE_CLOSING)
+                            return;
+                        if (!((JButton) e.getSource())
+                            .getName().equals(
+                                ButtonNames.NEXT))
+                        {
+                            setAllowClosing(true);
+                            return;
+                        }
+                        /*
+                         * If we're here, the user is trying to leave the page
+                         * by way of the next button. We'll show a status dialog
+                         * over the frame as we contact the user's realm server
+                         * to validate their username and password. If all of
+                         * this fails, we show a JOptionPane message dialog
+                         * alerting that user that they're realm server is
+                         * offline (or they provided a userid with an incorrect
+                         * realm server), or the username or password was
+                         * incorrect.
+                         */
+                        setAllowClosing(false);
+                        // The above is to deny closing by default. Most of the
+                        // cases that this method can terminate result in
+                        // closing denied, so we'll explicitly set when we want
+                        // to allow it instead of explicitly setting when we
+                        // want to deny it.
+                        String userid = useridField
+                            .getText();
+                        String password = passwordField
+                            .getText();
+                        if(userid.equals("") || password.equals(""))
+                        {
+                            JOptionPane.showMes
+                        }
+                    }
+                });
             }
         };
         pages.append(existAuthPage);

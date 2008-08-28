@@ -14,7 +14,28 @@ package net.sf.opengroove.client;
  */
 public class NewAccountWizardVars
 {
+    /**
+     * The userid that the user has chosen to use
+     */
     public String userid;
+    /**
+     * The password that the user has entered, in plain text
+     */
     public String password;
+    /**
+     * True if a connection has been established to this user's realm to see if
+     * the username and password are correct, with the result that they are,
+     * false otherwise
+     */
+    public boolean useridValidated = false;
+    /**
+     * The name of the computer that this user has chosen to create
+     */
     public String computer;
+    /**
+     * True if a connection has been established to this user's realm to ensure
+     * that the computer name specified does not already exist, with the result
+     * that it does not, false otherwise
+     */
+    public boolean computerValidated = false;
 }
