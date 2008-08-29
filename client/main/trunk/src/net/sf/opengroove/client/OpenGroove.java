@@ -1726,10 +1726,7 @@ public class OpenGroove
                                     return;
                                 }
                                 statusDialog.hide();
-                                JOptionPane
-                                    .showMessageDialog(
-                                        newAccountFrame,
-                                        "Successful. TBD: don't show this, just forward to the next page");
+                                setAllowClosing(true);
                             }
                             finally
                             {
@@ -1749,6 +1746,9 @@ public class OpenGroove
                         }
                         finally
                         {
+                            newAccountWizardPane
+                                .setNextPage(newAccountWizardPane
+                                    .getPageByTitle(LABEL_ENTER_KEYS));
                             statusDialog.dispose();
                             statusDialog.hide();
                         }
@@ -1783,7 +1783,7 @@ public class OpenGroove
             @Override
             protected void init()
             {
-                
+                addText("TBD");
             }
         };
         pages.append(securityKeysPage);
