@@ -1,5 +1,6 @@
 package net.sf.opengroove.client.ui;
 
+import java.awt.Dimension;
 import java.awt.Graphics;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -23,6 +24,7 @@ public class AnimatedSpinner extends JComponent
     public AnimatedSpinner(int size, int delay)
     {
         this.size = size;
+        setPreferredSize(new Dimension(size, size));
         timer = new Timer(delay, new ActionListener()
         {
             
@@ -32,8 +34,8 @@ public class AnimatedSpinner extends JComponent
                 step++;
                 if (step >= 12)
                     step = 0;
-                if(isSh)
-                repaint();
+                if (isShowing())
+                    repaint();
             }
         });
         timer.start();
@@ -46,6 +48,6 @@ public class AnimatedSpinner extends JComponent
     
     public void paintComponent(Graphics g)
     {
-        
+        int center = size / 2;
     }
 }
