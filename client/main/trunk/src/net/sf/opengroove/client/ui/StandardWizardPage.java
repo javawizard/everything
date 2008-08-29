@@ -53,7 +53,12 @@ public abstract class StandardWizardPage extends
             : ButtonNames.FINISH;
         fireButtonEvent(ButtonEvent.SHOW_BUTTON, button);
         fireButtonEvent(ButtonEvent.HIDE_BUTTON, notButton);
-        fireButtonEvent(ButtonEvent.ENABLE_BUTTON, button);
+        if (isNextAllowed)
+            fireButtonEvent(ButtonEvent.ENABLE_BUTTON,
+                button);
+        else
+            fireButtonEvent(ButtonEvent.DISABLE_BUTTON,
+                button);
     }
     
     //    

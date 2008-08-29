@@ -1590,9 +1590,11 @@ public class OpenGroove
                         {
                             vars.userid = userid;
                             vars.password = password;
+                            System.out.println();
                             if (vars.serverKey == null
                                 || !vars.serverKey
-                                    .equals(userid))
+                                    .equals(Userids
+                                        .toRealm(userid)))
                             {
                                 /*
                                  * If we're in here then the user needs to input
@@ -1762,7 +1764,8 @@ public class OpenGroove
             @Override
             protected void init()
             {
-                addText("Right now, you can't create a new user account. If you'd like "
+                addText("Right now, you can't create a new user account. We're "
+                    + "still working on this functionality. If you'd like "
                     + "a user account, contact the owner of a realm server, and have "
                     + "them create an account for you. Then, choose \"Use an "
                     + "OpenGroove account that you have already created\" "
