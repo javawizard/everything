@@ -223,6 +223,11 @@ public class OpenGrooveRealmServer
                 // needs to be notified of changes to one of it's computer's
                 // settings it should tell the computer that and have the
                 // computer send it an imessage whenever it changes a setting
+                //
+                // TODO: rethink the above, now that I think about it, it seems
+                // like a user should be able to subscribe to their own private
+                // properties, as well as private properties of any of their
+                // computers.
                 return;
             try
             {
