@@ -1856,6 +1856,13 @@ public class OpenGroove
                                                     .toUsername(vars.userid),
                                                 "",
                                                 vars.password);
+                                        /*
+                                         * TODO: pick up here, get the key user
+                                         * properties, if they don't exist
+                                         * generate new ones, if they do, prompt
+                                         * for the file that contains the
+                                         * private keys as a .ogvsa file
+                                         */
                                     }
                                     catch (Exception exception)
                                     {
