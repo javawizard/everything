@@ -1828,8 +1828,7 @@ public class OpenGroove
                             {
                                 public void run()
                                 {
-                                    /*
-                                     * The page has just been shown. We need to
+                                    /* The page has just been shown. We need to
                                      * check the server to see if the user
                                      * already has security keys.
                                      */

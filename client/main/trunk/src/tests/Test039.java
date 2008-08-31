@@ -118,5 +118,13 @@ public class Test039
         frame.invalidate();
         frame.validate();
         frame.repaint();
+        System.out.println("             MB");
+        System.out.println("-----------------------------");
+        System.out.println("Free      :  "
+            + Runtime.getRuntime().freeMemory() / 1000000);
+        System.out.println("Total     :  "
+            + Runtime.getRuntime().totalMemory() / 1000000);
+        System.out.println("Max       :  "
+            + Runtime.getRuntime().maxMemory() / 1000000);
     }
 }
