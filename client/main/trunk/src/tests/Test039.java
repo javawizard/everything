@@ -79,7 +79,8 @@ public class Test039
                                     for (int i = 0; i < 4; i++)
                                     {
                                         label
-                                            .setForeground(Color.RED);
+                                            .setForeground(Color.RED
+                                                .darker());
                                         Thread.sleep(150);
                                         label
                                             .setForeground(Color.BLACK);
