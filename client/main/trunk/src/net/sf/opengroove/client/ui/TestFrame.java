@@ -19,4 +19,10 @@ public class TestFrame extends JFrame
         setLocationRelativeTo(null);
         getContentPane().setLayout(new FlowLayout());
     }
+    
+    public TestFrame(String string)
+    {
+        this();
+        setTitle(string);
+    }
 }
