@@ -111,6 +111,7 @@ import com.jidesoft.dialog.PageList;
 import com.jidesoft.dialog.PageListener;
 import com.jidesoft.swing.DefaultOverlayable;
 import com.jidesoft.swing.JideButton;
+import com.jidesoft.swing.MultilineLabel;
 import com.jidesoft.wizard.WizardDialogPane;
 import com.l2fprod.common.swing.JLinkButton;
 
@@ -1793,10 +1794,28 @@ public class OpenGroove
         StandardWizardPage securityKeysPage = new StandardWizardPage(
             LABEL_ENTER_KEYS, false, true, false, false)
         {
+            private JProgressBar progress;
             
             @Override
             protected void init()
             {
+                progress = new JProgressBar();
+                progress.setIndeterminate(true);
+                progress.setStringPainted(true);
+                progress
+                    .setString("Checking your account, please wait...");
+                addText("OpenGroove uses security keys to encrypt your correspondence "
+                    + "with other people. This prevents others from reading your "
+                    + "correspondence, or from corresponding with someone else while "
+                    + "pretending to be you. If your account already has security keys "
+                    + "on it (this is usually the case if you're already using your account "
+                    + "on another computer), then you will need to provide OpenGroove"
+                    + " with a file that contains those keys. If your account does not "
+                    + "have security keys on it (this is usually the case if you're"
+                    + " creating a new account, or if you never got to this step when"
+                    + " creating your account before), then OpenGroove will generate "
+                    + "security keys for you.");
+                addComponent(progress);
                 addPageListener(new PageListener()
                 {
                     
@@ -1805,39 +1824,80 @@ public class OpenGroove
                     {
                         if (e.getID() == PageEvent.PAGE_OPENED)
                         {
-                            /*
-                             * The page has just been shown. We need to check
-                             * the server to see if the user already has
-                             * security keys.
-                             */
-                            try
+                            new Thread()
                             {
-                                throw new RuntimeException(
-                                    "Still need to implement this stuff");
-                            }
-                            catch (Exception exception)
-                            {
-                                exception.printStackTrace();
-                                /*
-                                 * TODO: probably split this out so that it
-                                 * handles issues with connecting to the user's
-                                 * server by allowing them to re-try the keygen
-                                 * stuff or something.
-                                 */
-                                JOptionPane
-                                    .showMessageDialog(
-                                        newAccountFrame,
-                                        "A problem occured during security key processing. You'll need\n"
-                                            + " to close the new account wizard and then open it again. If you chose to\n"
-                                            + "create a new account instead of using an existing one, then the new account\n"
-                                            + "has already been created for you, and you should choose to use an existing\n"
-                                            + "account when you open this wizard again.");
-                                setBackAllowed(false);
-                                setNextAllowed(false);
-                                setLastStep(false);
-                                setCancelAllowed(true);
-                                setAllowClosing(true);
-                            }
+                                public void run()
+                                {
+                                    /*
+                                     * The page has just been shown. We need to
+                                     * check the server to see if the user
+                                     * already has security keys.
+                                     */
+                                    CommandCommunicator com = null;
+                                    try
+                                    {
+                                        com = new CommandCommunicator(
+                                            new Communicator(
+                                                Userids
+                                                    .toRealm(vars.userid),
+                                                false,
+                                                true,
+                                                "normal",
+                                                "",
+                                                "",
+                                                "",
+                                                vars.serverKey.rsaPublic,
+                                                vars.serverKey.rsaMod,
+                                                null, null));
+                                        com
+                                            .authenticate(
+                                                "normal",
+                                                Userids
+                                                    .toUsername(vars.userid),
+                                                "",
+                                                vars.password);
+                                    }
+                                    catch (Exception exception)
+                                    {
+                                        exception
+                                            .printStackTrace();
+                                        /*
+                                         * TODO: probably split this out so that
+                                         * it handles issues with connecting to
+                                         * the user's server by allowing them to
+                                         * re-try the keygen stuff or something.
+                                         */
+                                        progress
+                                            .setIndeterminate(false);
+                                        progress
+                                            .setMinimum(0);
+                                        progress
+                                            .setMaximum(1);
+                                        progress
+                                            .setValue(0);
+                                        progress
+                                            .setString("An error has occured. Cancel the wizard, then open it again.");
+                                        JOptionPane
+                                            .showMessageDialog(
+                                                newAccountFrame,
+                                                "A problem occured during security key processing. You'll need\n"
+                                                    + " to close the new account wizard and then open it again. If you chose to\n"
+                                                    + "create a new account instead of using an existing one, then the new account\n"
+                                                    + "has already been created for you, and you should choose to use an existing\n"
+                                                    + "account when you open this wizard again.");
+                                        setBackAllowed(false);
+                                        setNextAllowed(false);
+                                        setLastStep(false);
+                                        setCancelAllowed(true);
+                                        setAllowClosing(true);
+                                    }
+                                    finally
+                                    {
+                                        if (com != null)
+                                            com.shutdown();
+                                    }
+                                }
+                            }.start();
                         }
                     }
                 });
