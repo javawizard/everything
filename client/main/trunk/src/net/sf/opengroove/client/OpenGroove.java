@@ -1780,7 +1780,7 @@ public class OpenGroove
         /*
          * This page checks to see if the user has security keys present on
          * their account. If they do, the user on the local machine is prompted
-         * for a .ogvsa file that contains their account's keys. It then checks
+         * for a .ogva file that contains their account's keys. It then checks
          * to make sure that the private keys in the file match with the public
          * keys (by encrypting a random number, decrypting it, and validating
          * that it is still the same), and that the public keys in the file
@@ -1861,7 +1861,7 @@ public class OpenGroove
                                          * properties, if they don't exist
                                          * generate new ones, if they do, prompt
                                          * for the file that contains the
-                                         * private keys as a .ogvsa file
+                                         * private keys as a .ogva file
                                          */
                                     }
                                     catch (Exception exception)
