@@ -1776,6 +1776,20 @@ public class OpenGroove
             
         };
         pages.append(newAuthPage);
+        /*
+         * This page checks to see if the user has security keys present on
+         * their account. If they do, the user on the local machine is prompted
+         * for a .ogvsa file that contains their account's keys. It then checks
+         * to make sure that the private keys in the file match with the public
+         * keys (by encrypting a random number, decrypting it, and validating
+         * that it is still the same), and that the public keys in the file
+         * match the public keys on the user's account. If the user does not
+         * already have keys on their account, some keys are generated for them,
+         * with an indeterminate progress bar in the window. Once keygen is
+         * done, the next button is enabled, and a message appears to the user
+         * that keygen is done and they can proceed. The keys are stored on the
+         * account on the server.
+         */
         StandardWizardPage securityKeysPage = new StandardWizardPage(
             LABEL_ENTER_KEYS, false, true, true, false)
         {
@@ -1783,7 +1797,7 @@ public class OpenGroove
             @Override
             protected void init()
             {
-                addText("TBD");
+                
             }
         };
         pages.append(securityKeysPage);
