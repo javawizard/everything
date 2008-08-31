@@ -1791,13 +1791,56 @@ public class OpenGroove
          * account on the server.
          */
         StandardWizardPage securityKeysPage = new StandardWizardPage(
-            LABEL_ENTER_KEYS, false, true, true, false)
+            LABEL_ENTER_KEYS, false, true, false, false)
         {
             
             @Override
             protected void init()
             {
-                
+                addPageListener(new PageListener()
+                {
+                    
+                    @Override
+                    public void pageEventFired(PageEvent e)
+                    {
+                        if (e.getID() == PageEvent.PAGE_OPENED)
+                        {
+                            /*
+                             * The page has just been shown. We need to check
+                             * the server to see if the user already has
+                             * security keys.
+                             */
+                            try
+                            {
+                                throw new RuntimeException(
+                                    "Still need to implement this stuff");
+                            }
+                            catch (Exception exception)
+                            {
+                                exception.printStackTrace();
+                                /*
+                                 * TODO: probably split this out so that it
+                                 * handles issues with connecting to the user's
+                                 * server by allowing them to re-try the keygen
+                                 * stuff or something.
+                                 */
+                                JOptionPane
+                                    .showMessageDialog(
+                                        newAccountFrame,
+                                        "A problem occured during security key processing. You'll need\n"
+                                            + " to close the new account wizard and then open it again. If you chose to\n"
+                                            + "create a new account instead of using an existing one, then the new account\n"
+                                            + "has already been created for you, and you should choose to use an existing\n"
+                                            + "account when you open this wizard again.");
+                                setBackAllowed(false);
+                                setNextAllowed(false);
+                                setLastStep(false);
+                                setCancelAllowed(true);
+                                setAllowClosing(true);
+                            }
+                        }
+                    }
+                });
             }
         };
         pages.append(securityKeysPage);
