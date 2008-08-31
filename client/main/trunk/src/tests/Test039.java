@@ -51,6 +51,7 @@ public class Test039
             progress.setString("" + (end - i)
                 + " to go (start: " + start + ",end: "
                 + end + ")");
+            progress.repaint();
             final JLabel label = new JLabel(" " + (char) i
                 + " ");
             final int fI = i;
@@ -101,7 +102,7 @@ public class Test039
             label.setToolTipText("0x"
                 + Integer.toHexString(i));
             panel.add(label);
-            if ((i % 50) == 0)
+            if (false)
             {
                 panel.invalidate();
                 panel.validate();
