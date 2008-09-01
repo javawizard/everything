@@ -42,10 +42,60 @@ public enum Symbol
     /**
      * The character &#x263a;, a face with a smile on it.
      */
-    SMILE(0x263a), TEL("℡"), BOX_PLUS("⊞"), BOX_MINUS("⊟"), CIRCLE_1(
-        "①"), CIRCLE_A("Ⓐ"), TELEPHONE("☏"), RIGHT_3D("➩"), SNOWFLAKE(
-        "❄"), ENVELOPE("✉"), SUN("☀"), CLOUDS("☁"), UMBRELLA(
-        "☂"), SNOWMAN("☃"),
+    SMILE(0x263a),
+    /**
+     * The character ℡, a character used to indicate a telephone number will
+     * follow.
+     */
+    TEL("℡"),
+    /**
+     * The character ⊞, a box with a + sign in it.
+     */
+    BOX_PLUS("⊞"),
+    /**
+     * The character ⊟, a box with a - sign in it.
+     */
+    BOX_MINUS("⊟"),
+    /**
+     * The character ①, a circle with the number 1 inside it.
+     */
+    CIRCLE_1("①"),
+    /**
+     * The character Ⓐ, a circle with the letter A inside it.
+     */
+    CIRCLE_A("Ⓐ"),
+    /**
+     * The character ☏, a telephone icon.
+     */
+    TELEPHONE("☏"),
+    /**
+     * The character ➩, a right-arrow with a shadow under it.
+     */
+    RIGHT_3D("➩"),
+    /**
+     * The character ❄, a snowflake.
+     */
+    SNOWFLAKE("❄"),
+    /**
+     * The character ✉, an envelope
+     */
+    ENVELOPE("✉"),
+    /**
+     * The character ☀, the sun.
+     */
+    SUN("☀"),
+    /**
+     * The character ☁, some clouds
+     */
+    CLOUDS("☁"),
+    /**
+     * The character ☂, an umbrella
+     */
+    UMBRELLA("☂"),
+    /**
+     * The character ☃, a snowman
+     */
+    SNOWMAN("☃"),
     /**
      * The character &#x2020;, a cross.
      */
@@ -58,8 +108,15 @@ public enum Symbol
      * The character &#x2114;, the pound sign. This should not be confused with
      * {@link #POUNDS_STERLING}.
      */
-    POUNDS("℔"), DEGREES_CELSIUS("℃"), DEGREES_FAHRENHEIT(
-        "℉"),
+    POUNDS("℔"),
+    /**
+     * The character ℃, the degrees celsius symbol.
+     */
+    DEGREES_CELSIUS("℃"),
+    /**
+     * The character ℉, the degrees fahrenheit symbol
+     */
+    DEGREES_FAHRENHEIT("℉"),
     /**
      * The character &#x2654;, a white chess king.
      */
@@ -87,7 +144,27 @@ public enum Symbol
     /**
      * The character &#x265a;, a black chess king.
      */
-    CHESS_BLACK_KING(0x265a);
+    CHESS_BLACK_KING(0x265a),
+    /**
+     * The character &#x265b;, a black chess queen.
+     */
+    CHESS_BLACK_QUEEN(0x265b),
+    /**
+     * The character &#x265c;, a black chess rook.
+     */
+    CHESS_BLACK_ROOK(0x265c),
+    /**
+     * The character &#x265d;, a black chess bishop.
+     */
+    CHESS_BLACK_BISHOP(0x265d),
+    /**
+     * The character &#x265e;, a black chess knight.
+     */
+    CHESS_BLACK_KNIGHT(0x265e),
+    /**
+     * The character &#x265f;, a black chess pawn.
+     */
+    CHESS_BLACK_PAWN(0x265f);
     private String value;
     
     private Symbol(String value)

@@ -1885,7 +1885,8 @@ public class OpenGroove
                         try
                         {
                             if (com != null)
-                                com.getCommunicator().shutdown();
+                                com.getCommunicator()
+                                    .shutdown();
                         }
                         catch (Exception exception)
                         {
@@ -1895,7 +1896,8 @@ public class OpenGroove
                     progress.setString("");
                     progress.setIndeterminate(false);
                     label
-                        .setText("Your security keys have been successfully generated. Click next to continue.");
+                        .setText("Your security keys have been successfully generated. Click "
+                            + "next to continue.");
                     label.setVisible(true);
                     setNextAllowed(true);
                 }
@@ -2037,7 +2039,8 @@ public class OpenGroove
                                                     + " in the launchbar on a computer on which you are "
                                                     + "already using this account. If you aren't using "
                                                     + "this account on any computers, send us an email at "
-                                                    + "support@opengroove.org");
+                                                    + "support@opengroove.org, and we will help you restore"
+                                                    + " your account.");
                                             button
                                                 .setText("Browse");
                                             button
