@@ -6,7 +6,7 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.Properties;
 
-public class Files
+public class OgvFile
 {
     public static Properties load(File file) throws FileNotFoundException, IOException
     {
