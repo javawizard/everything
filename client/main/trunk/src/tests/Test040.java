@@ -47,7 +47,7 @@ public class Test040
                     public void run()
                     {
                         button.setEnabled(true);
-                        
+                        Point[] points = 
                     }
                 }.start();
             }
