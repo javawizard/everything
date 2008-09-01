@@ -1873,7 +1873,61 @@ public class OpenGroove
                                          * for the file that contains the
                                          * private keys as a .ogva file
                                          */
-                                        String existingEncPub = com.getUserSetting("", "")
+                                        String existingEncPub = com
+                                            .getUserSetting(
+                                                "",
+                                                ""
+                                                    + UserSettings.KEY_ENC_PUB);
+                                        String existingEncMod = com
+                                            .getUserSetting(
+                                                "",
+                                                ""
+                                                    + UserSettings.KEY_ENC_MOD);
+                                        String existingSigPub = com
+                                            .getUserSetting(
+                                                "",
+                                                ""
+                                                    + UserSettings.KEY_SIG_PUB);
+                                        String existingSigMod = com
+                                            .getUserSetting(
+                                                "",
+                                                ""
+                                                    + UserSettings.KEY_SIG_MOD);
+                                        boolean needsNewKeys = existingEncPub == null
+                                            || existingEncMod == null
+                                            || existingSigPub == null
+                                            || existingSigMod == null;
+                                        if (needsNewKeys)
+                                        {
+                                            label
+                                                .setText("You do not have any security keys on your account. "
+                                                    + "OpenGroove is ready to generate security keys for your "
+                                                    + "account. When you're ready, click start.");
+                                            button
+                                                .setText("Start");
+                                        }
+                                        else
+                                        {
+                                            label
+                                                .setText("Your account already has security keys. You'll need to provide "
+                                                    + "OpenGroove with a file that contains your account's "
+                                                    + "private keys. This should have the file extension .ogva, "
+                                                    + "and can be created by choosing "
+                                                    + Conventions
+                                                        .formatMenuPath(
+                                                            "File",
+                                                            "Export Account")
+                                                    + " in the launchbar on a computer on which you are "
+                                                    + "already using this account. If you aren't using "
+                                                    + "this account on any computers, send us an email at "
+                                                    + "support@opengroove.org");
+                                            button
+                                                .setText("Browse");
+                                        }
+                                        label
+                                            .setVisible(true);
+                                        button
+                                            .setVisible(true);
                                     }
                                     catch (Exception exception)
                                     {
@@ -1884,7 +1938,9 @@ public class OpenGroove
                                     finally
                                     {
                                         if (com != null)
-                                            com.getCommunicator().shutdown();
+                                            com
+                                                .getCommunicator()
+                                                .shutdown();
                                     }
                                 }
                             }.start();
