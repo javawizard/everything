@@ -43,8 +43,9 @@ public enum Symbol
      * The character &#x263a;, a face with a smile on it.
      */
     SMILE(0x263a), TEL("℡"), BOX_PLUS("⊞"), BOX_MINUS("⊟"), CIRCLE_1(
-        "①"), CIRCLE_A("Ⓐ"), TELEPHONE_WHITE("☏"), RIGHT_3D(
-        "➩"),SNOWFLAKE("❄"),ENVELOPE("✉"),
+        "①"), CIRCLE_A("Ⓐ"), TELEPHONE("☏"), RIGHT_3D("➩"), SNOWFLAKE(
+        "❄"), ENVELOPE("✉"), SUN("☀"), CLOUDS("☁"), UMBRELLA(
+        "☂"), SNOWMAN("☃"),
     /**
      * The character &#x2020;, a cross.
      */
