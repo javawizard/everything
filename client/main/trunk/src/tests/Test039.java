@@ -98,7 +98,7 @@ public class Test039
                     }
                 }
             });
-            label.setFont(Font.decode("Dialog 18"));
+            label.setFont(Font.decode("Dialog 24"));
             label.setToolTipText("0x"
                 + Integer.toHexString(i));
             panel.add(label);

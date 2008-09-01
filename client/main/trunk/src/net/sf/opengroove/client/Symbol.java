@@ -42,7 +42,21 @@ public enum Symbol
     /**
      * The character &#x263a;, a face with a smile on it.
      */
-    SMILE(0x263a),
+    SMILE(0x263a), TEL("℡"), BOX_PLUS("⊞"), BOX_MINUS("⊟"),
+    /**
+     * The character &#x2020;, a cross.
+     */
+    CROSS("†"),
+    /**
+     * The character &#x2021;, a double-cross.
+     */
+    DOUBLE_CROSS("‡"),
+    /**
+     * The character &#x2114;, the pound sign. This should not be confused with
+     * {@link #POUNDS_STERLING}.
+     */
+    POUNDS("℔"), DEGREES_CELSIUS("℃"), DEGREES_FAHRENHEIT(
+        "℉"),
     /**
      * The character &#x2654;, a white chess king.
      */
