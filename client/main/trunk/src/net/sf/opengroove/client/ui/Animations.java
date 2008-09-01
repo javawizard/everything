@@ -28,6 +28,8 @@ public class Animations
     public static Point[] generateLineAnimation(
         Point start, Point end, int steps)
     {
+        System.out.println("start:" + start + ",end:" + end
+            + ",steps:" + steps);
         if (steps < 2)
             throw new IllegalArgumentException(
                 "steps must be at least 2, but it was "
@@ -35,10 +37,16 @@ public class Animations
         Point[] result = new Point[steps];
         double difX = end.x - start.x;
         double difY = end.y - start.y;
-        double inc = 90.0 / ((steps - 1.0) * 1.0);
+        double inc = 180.0 / ((steps - 1.0) * 1.0);
+        System.out.println("difx:" + difX + ",dify:" + difY
+            + ",inc:" + inc);
         for (int i = 0; i < steps; i++)
         {
-            double pos = Math.sin(Math.toRadians(i * inc));
+            double pos = Math.sin(Math
+                .toRadians((i * inc) - 90));
+            pos = ((pos + 1.0) / 2);
+            System.out.println("i:" + i + ",inc:" + inc
+                + ",i*inc:" + (i * inc) + ",pos:" + pos);
             result[i] = new Point(
                 (int) (start.x + (difX * pos)),
                 (int) (start.y + (difY * pos)));

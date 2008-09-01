@@ -15,7 +15,7 @@ public class Test040
 {
     private static boolean isExpanded = false;
     private static int min = 100;
-    private static int max = 100;
+    private static int max = 500;
     
     /**
      * @param args
@@ -29,6 +29,7 @@ public class Test040
         frame.getContentPane().setLayout(new FlowLayout());
         frame.setResizable(false);
         final JButton button = new JButton("" + Symbol.DOWN);
+        button.setFocusable(false);
         button.addActionListener(new ActionListener()
         {
             
@@ -54,7 +55,7 @@ public class Test040
                                     isExpanded ? max : min),
                                 new Point(0,
                                     isExpanded ? min : max),
-                                100);
+                                50);
                         for (int i = 0; i < points.length; i++)
                         {
                             frame.setSize(frame.getWidth(),
