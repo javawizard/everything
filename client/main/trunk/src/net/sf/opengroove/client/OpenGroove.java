@@ -1807,6 +1807,85 @@ public class OpenGroove
             
             private MultilineLabel label;
             
+            private Thread startKeyGenThread = new Thread()
+            {
+                public void run()
+                {
+                    progress
+                        .setString("Generating encryption key (step 1 of 3), this may take a few minutes...");
+                    progress.setIndeterminate(true);
+                    System.out.println("enc");
+                    RSA enc = new RSA(SECURITY_KEY_SIZE);
+                    progress
+                        .setString("Generating signature key (step 2 of 3), this may take a few minutes...");
+                    System.out.println("sig");
+                    RSA sig = new RSA(SECURITY_KEY_SIZE);
+                    progress
+                        .setString("Uploading public keys (step 3 of 3), this may take a few minutes...");
+                    System.out.println("upload");
+                    CommandCommunicator com = null;
+                    try
+                    {
+                        vars.encPub = enc.getPublicKey();
+                        vars.encPrv = enc.getPrivateKey();
+                        vars.encMod = enc.getModulus();
+                        vars.sigPub = sig.getPublicKey();
+                        vars.sigPrv = sig.getPrivateKey();
+                        vars.sigMod = sig.getModulus();
+                        String encPubString = vars.encPub.toString(16);
+                        String encModString = vars.encMod.toString(16);
+                        String sigPubString = vars.sigPub.toString(16);
+                        String sigModString = vars.sigMod.toString(16);
+                        com = new CommandCommunicator(
+                            new Communicator(Userids
+                                .toRealm(vars.userid),
+                                false, true, "normal", "",
+                                "", "",
+                                vars.serverKey.rsaPublic,
+                                vars.serverKey.rsaMod,
+                                null, null));
+                        com.authenticate("normal", Userids
+                            .toUsername(vars.userid), "",
+                            vars.password);
+                        com.setUserSetting(UserSettings.KEY_ENC_PUB, enc.getPublicKey())
+                    }
+                    catch (Exception e)
+                    {
+                        e.printStackTrace();
+                        progress.setString("");
+                        progress.setIndeterminate(false);
+                        label
+                            .setText("An error occured. This is probably because you were disconnected "
+                                + "from the internet while running this wizard. Close the wizard, "
+                                + "and then open it again. If you had chosen to create a new account, "
+                                + "choose to use an existing account when you open the wizard again, "
+                                + "and enter the userid and password you used while creating the account. "
+                                + "If the error keeps occuring, send an email to support@opengroove.org"
+                                + " and we will help you to resolve the problem.");
+                        label.setVisible(true);
+                        return;
+                    }
+                    finally
+                    {
+                        try
+                        {
+                            if (com != null)
+                                com.shutdown();
+                        }
+                        catch (Exception exception)
+                        {
+                            exception.printStackTrace();
+                        }
+                    }
+                    progress.setString("");
+                    progress.setIndeterminate(false);
+                    label
+                        .setText("Your security keys have been successfully generated. Click next to continue.");
+                    label.setVisible(true);
+                    setNextAllowed(true);
+                }
+            };
+            
             @Override
             protected void init()
             {
@@ -1924,14 +2003,8 @@ public class OpenGroove
                                                             .setVisible(false);
                                                         label
                                                             .setVisible(false);
-                                                        progress
-                                                            .setString("Generating keys, this may take a few minutes...");
-                                                        progress
-                                                            .setIndeterminate(true);
-                                                        RSA enc = new RSA(
-                                                            SECURITY_KEY_SIZE);
-                                                        RSA sig = new RSA(
-                                                            SECURITY_KEY_SIZE);
+                                                        startKeyGenThread
+                                                            .start();
                                                     }
                                                 });
                                         }
