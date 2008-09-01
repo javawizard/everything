@@ -392,6 +392,9 @@ public class CommandCommunicator
         Packet response = communicator.query(new Packet(
             null, "getusersetting", (username + "\n" + key)
                 .getBytes()), defaultTimeout);
+        if (new String(response.getContents()).trim()
+            .equals(""))
+            return null;
         return new String(response.getContents());
     }
     
@@ -589,11 +592,14 @@ public class CommandCommunicator
     public String getComputerSetting(String username,
         String computer, String key) throws IOException
     {
-        return new String(communicator.query(
-            new Packet(null, "getcomputersetting",
-                (username + "\n" + computer + "\n" + key)
-                    .getBytes()), defaultTimeout)
-            .getContents());
+        Packet response = communicator.query(new Packet(
+            null, "getcomputersetting", (username + "\n"
+                + computer + "\n" + key).getBytes()),
+            defaultTimeout);
+        if (new String(response.getContents()).trim()
+            .equals(""))
+            return null;
+        return new String(response.getContents());
     }
     
     /**

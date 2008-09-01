@@ -1893,6 +1893,9 @@ public class OpenGroove
                                                 "",
                                                 ""
                                                     + UserSettings.KEY_SIG_MOD);
+                                        System.out
+                                            .println("eep:"
+                                                + existingEncPub);
                                         boolean needsNewKeys = existingEncPub == null
                                             || existingEncMod == null
                                             || existingSigPub == null
