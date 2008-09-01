@@ -99,6 +99,7 @@ import net.sf.opengroove.client.ui.frames.LoginFrame;
 import net.sf.opengroove.client.workspace.WorkspaceManager;
 import net.sf.opengroove.client.workspace.WorkspaceWrapper;
 import net.sf.opengroove.security.Hash;
+import net.sf.opengroove.security.RSA;
 
 import base64.Base64Coder;
 
@@ -155,6 +156,12 @@ public class OpenGroove
     private static WizardDialogPane newAccountWizardPane;
     
     private static JFrame newAccountFrame;
+    /**
+     * The number of bits that should be in RSA security keys generated for the
+     * user. Workspace key sizes are decided by the creator of the workspace,
+     * but default to this value as well.
+     */
+    public static final int SECURITY_KEY_SIZE = 3072;
     
     /**
      * This is the icon that should be used as the icon for all Convergia
@@ -1913,9 +1920,18 @@ public class OpenGroove
                                                     public void actionPerformed(
                                                         ActionEvent e)
                                                     {
-                                                        // TODO Auto-generated
-                                                        // method stub
-                                                        
+                                                        button
+                                                            .setVisible(false);
+                                                        label
+                                                            .setVisible(false);
+                                                        progress
+                                                            .setString("Generating keys, this may take a few minutes...");
+                                                        progress
+                                                            .setIndeterminate(true);
+                                                        RSA enc = new RSA(
+                                                            SECURITY_KEY_SIZE);
+                                                        RSA sig = new RSA(
+                                                            SECURITY_KEY_SIZE);
                                                     }
                                                 });
                                         }

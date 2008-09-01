@@ -2,9 +2,11 @@ package net.sf.opengroove.security;
 
 /*************************************************************************
  *  DOWNLOADED FROM: http://www.cs.princeton.edu/introcs/78crypto/RSA.java
- *  and slightly modified to fix the 2 bugs listed below and make more usable in OpenGroove
+ *  and slightly modified to fix the 2 bugs listed below and make more usable in OpenGroove<br/><br/>
  *  
- *  If anyone knows who to credit for this file, send me an email (javawizard@opengroove.org)
+ *  If anyone knows who to credit for this file, send me an email (javawizard@opengroove.org)<br/><br/>
+ *  
+ *  The comments below this line were in the original file.<br/><br/>
  *  
  *  
  * 

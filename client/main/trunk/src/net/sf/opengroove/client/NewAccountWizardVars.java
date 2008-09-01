@@ -1,5 +1,7 @@
 package net.sf.opengroove.client;
 
+import java.math.BigInteger;
+
 import net.sf.opengroove.client.com.ServerSecurityKey;
 
 /**
@@ -47,4 +49,10 @@ public class NewAccountWizardVars
      * that it does not, false otherwise
      */
     public boolean computerValidated = false;
+    public BigInteger encPub;
+    public BigInteger encMod;
+    public BigInteger encPrv;
+    public BigInteger sigPub;
+    public BigInteger sigMod;
+    public BigInteger sigPrv;
 }
