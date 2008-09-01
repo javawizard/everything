@@ -12,6 +12,60 @@ import java.awt.Point;
 public class Animations
 {
     /**
+     * A set of functions for generating scale positions based on the current
+     * step. When an animation method is called, the getValue() method on one of
+     * these is called repeatedly with incrementing values of the step passed
+     * in. The value returned is then multiplied into the animation to create
+     * the smooth effect.
+     * 
+     * @author Alexander Boyd
+     * 
+     */
+    public static enum ScaleFunction
+    {
+        /**
+         * A sine function. Returns the sine of the argument, translating the
+         * possible values of the argument into the range -90 to 90.
+         */
+        SINE
+        {
+            public double getValue(double step)
+            {
+                return (Math.sin(Math
+                    .toRadians((step * 180) - 90)) + 1.0) / 2.0;
+            }
+        },
+        /**
+         * A double-sine function. Returns SINE.getValue(SINE.getValue(step)).
+         */
+        DOUBLE_SINE
+        {
+            public double getValue(double step)
+            {
+                return SINE.getValue(SINE.getValue(step));
+            }
+        },
+        /**
+         * A linear function. It just returns <code>step</code>.
+         */
+        LINEAR
+        {
+            public double getValue(double step)
+            {
+                return step;
+            }
+        };
+        /**
+         * Transforms an input value between 0 and 1 inclusive into a
+         * corresponding scale value, also between 0 and 1 inclusive.
+         * 
+         * @param step
+         * @return
+         */
+        public abstract double getValue(double step);
+    }
+    
+    /**
      * Generates a set of points that move the object at <code>start</code> to
      * <code>end</code> smoothly, in the number of steps specified.
      * 
@@ -28,6 +82,7 @@ public class Animations
     public static Point[] generateLineAnimation(
         Point start, Point end, int steps)
     {
+        ScaleFunction sf = ScaleFunction.SINE;
         System.out.println("start:" + start + ",end:" + end
             + ",steps:" + steps);
         if (steps < 2)
@@ -37,14 +92,12 @@ public class Animations
         Point[] result = new Point[steps];
         double difX = end.x - start.x;
         double difY = end.y - start.y;
-        double inc = 180.0 / ((steps - 1.0) * 1.0);
+        double inc = 1.0 / ((steps - 1.0) * 1.0);
         System.out.println("difx:" + difX + ",dify:" + difY
             + ",inc:" + inc);
         for (int i = 0; i < steps; i++)
         {
-            double pos = Math.sin(Math
-                .toRadians((i * inc) - 90));
-            pos = ((pos + 1.0) / 2);
+            double pos = sf.getValue(i * inc);
             System.out.println("i:" + i + ",inc:" + inc
                 + ",i*inc:" + (i * inc) + ",pos:" + pos);
             result[i] = new Point(

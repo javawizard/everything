@@ -17,6 +17,8 @@ public class Test040
     private static int min = 100;
     private static int max = 500;
     
+
+    
     /**
      * @param args
      */
@@ -62,7 +64,8 @@ public class Test040
                                 points[i].y);
                             try
                             {
-                                Thread.sleep(10);
+                                // 5
+                                Thread.sleep(5);
                             }
                             catch (InterruptedException e)
                             {
