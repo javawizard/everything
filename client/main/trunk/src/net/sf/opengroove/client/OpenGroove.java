@@ -1832,10 +1832,14 @@ public class OpenGroove
                         vars.sigPub = sig.getPublicKey();
                         vars.sigPrv = sig.getPrivateKey();
                         vars.sigMod = sig.getModulus();
-                        String encPubString = vars.encPub.toString(16);
-                        String encModString = vars.encMod.toString(16);
-                        String sigPubString = vars.sigPub.toString(16);
-                        String sigModString = vars.sigMod.toString(16);
+                        String encPubString = vars.encPub
+                            .toString(16);
+                        String encModString = vars.encMod
+                            .toString(16);
+                        String sigPubString = vars.sigPub
+                            .toString(16);
+                        String sigModString = vars.sigMod
+                            .toString(16);
                         com = new CommandCommunicator(
                             new Communicator(Userids
                                 .toRealm(vars.userid),
@@ -1847,7 +1851,18 @@ public class OpenGroove
                         com.authenticate("normal", Userids
                             .toUsername(vars.userid), "",
                             vars.password);
-                        com.setUserSetting(UserSettings.KEY_ENC_PUB, enc.getPublicKey())
+                        com.setUserSetting(""
+                            + UserSettings.KEY_ENC_PUB,
+                            encPubString);
+                        com.setUserSetting(""
+                            + UserSettings.KEY_ENC_MOD,
+                            encModString);
+                        com.setUserSetting(""
+                            + UserSettings.KEY_SIG_PUB,
+                            sigPubString);
+                        com.setUserSetting(""
+                            + UserSettings.KEY_SIG_MOD,
+                            sigModString);
                     }
                     catch (Exception e)
                     {
@@ -1870,7 +1885,7 @@ public class OpenGroove
                         try
                         {
                             if (com != null)
-                                com.shutdown();
+                                com.getCommunicator().shutdown();
                         }
                         catch (Exception exception)
                         {
