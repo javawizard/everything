@@ -1893,9 +1893,6 @@ public class OpenGroove
                                                 "",
                                                 ""
                                                     + UserSettings.KEY_SIG_MOD);
-                                        System.out
-                                            .println("eep:"
-                                                + existingEncPub);
                                         boolean needsNewKeys = existingEncPub == null
                                             || existingEncMod == null
                                             || existingSigPub == null
@@ -1904,10 +1901,23 @@ public class OpenGroove
                                         {
                                             label
                                                 .setText("You do not have any security keys on your account. "
-                                                    + "OpenGroove is ready to generate security keys for your "
-                                                    + "account. When you're ready, click start.");
+                                                    + "OpenGroove is ready to generate security keys for you. "
+                                                    + "When you're ready, click start.");
                                             button
                                                 .setText("Start");
+                                            button
+                                                .addActionListener(new ActionListener()
+                                                {
+                                                    
+                                                    @Override
+                                                    public void actionPerformed(
+                                                        ActionEvent e)
+                                                    {
+                                                        // TODO Auto-generated
+                                                        // method stub
+                                                        
+                                                    }
+                                                });
                                         }
                                         else
                                         {
@@ -1926,11 +1936,28 @@ public class OpenGroove
                                                     + "support@opengroove.org");
                                             button
                                                 .setText("Browse");
+                                            button
+                                                .addActionListener(new ActionListener()
+                                                {
+                                                    
+                                                    @Override
+                                                    public void actionPerformed(
+                                                        ActionEvent e)
+                                                    {
+                                                        // TODO Auto-generated
+                                                        // method stub
+                                                        
+                                                    }
+                                                });
                                         }
                                         label
                                             .setVisible(true);
                                         button
                                             .setVisible(true);
+                                        progress
+                                            .setIndeterminate(false);
+                                        progress
+                                            .setString("");
                                     }
                                     catch (Exception exception)
                                     {
