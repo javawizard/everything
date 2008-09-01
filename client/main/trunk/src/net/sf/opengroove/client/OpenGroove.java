@@ -1796,6 +1796,10 @@ public class OpenGroove
         {
             private JProgressBar progress;
             
+            private JButton button;
+            
+            private MultilineLabel label;
+            
             @Override
             protected void init()
             {
@@ -1804,6 +1808,10 @@ public class OpenGroove
                 progress.setStringPainted(true);
                 progress
                     .setString("Checking your account, please wait...");
+                button = new JButton();
+                label = new MultilineLabel();
+                label.setVisible(false);
+                button.setVisible(false);
                 addText("OpenGroove uses security keys to encrypt your correspondence "
                     + "with other people. This prevents others from reading your "
                     + "correspondence, or from corresponding with someone else while "
@@ -1816,6 +1824,8 @@ public class OpenGroove
                     + " creating your account before), then OpenGroove will generate "
                     + "security keys for you.");
                 addComponent(progress);
+                addComponent(label);
+                addComponent(button);
                 addPageListener(new PageListener()
                 {
                     
@@ -1828,7 +1838,8 @@ public class OpenGroove
                             {
                                 public void run()
                                 {
-                                    /* The page has just been shown. We need to
+                                    /*
+                                     * The page has just been shown. We need to
                                      * check the server to see if the user
                                      * already has security keys.
                                      */
@@ -1862,51 +1873,52 @@ public class OpenGroove
                                          * for the file that contains the
                                          * private keys as a .ogva file
                                          */
+                                        String existingEncPub = com.getUserSetting("", "")
                                     }
                                     catch (Exception exception)
                                     {
                                         exception
                                             .printStackTrace();
-                                        /*
-                                         * TODO: probably split this out so that
-                                         * it handles issues with connecting to
-                                         * the user's server by allowing them to
-                                         * re-try the keygen stuff or something.
-                                         */
-                                        progress
-                                            .setIndeterminate(false);
-                                        progress
-                                            .setMinimum(0);
-                                        progress
-                                            .setMaximum(1);
-                                        progress
-                                            .setValue(0);
-                                        progress
-                                            .setString("An error has occured. Cancel the wizard, then open it again.");
-                                        JOptionPane
-                                            .showMessageDialog(
-                                                newAccountFrame,
-                                                "A problem occured during security key processing. You'll need\n"
-                                                    + " to close the new account wizard and then open it again. If you chose to\n"
-                                                    + "create a new account instead of using an existing one, then the new account\n"
-                                                    + "has already been created for you, and you should choose to use an existing\n"
-                                                    + "account when you open this wizard again.");
-                                        setBackAllowed(false);
-                                        setNextAllowed(false);
-                                        setLastStep(false);
-                                        setCancelAllowed(true);
-                                        setAllowClosing(true);
+                                        fail();
                                     }
                                     finally
                                     {
                                         if (com != null)
-                                            com.shutdown();
+                                            com.getCommunicator().shutdown();
                                     }
                                 }
                             }.start();
                         }
                     }
                 });
+            }
+            
+            protected void fail()
+            {
+                /*
+                 * TODO: probably split this out so that it handles issues with
+                 * connecting to the user's server by allowing them to re-try
+                 * the keygen stuff or something.
+                 */
+                progress.setIndeterminate(false);
+                progress.setMinimum(0);
+                progress.setMaximum(1);
+                progress.setValue(0);
+                progress
+                    .setString("An error has occured. Cancel the wizard, then open it again.");
+                JOptionPane
+                    .showMessageDialog(
+                        newAccountFrame,
+                        "A problem occured during security key processing. You'll need\n"
+                            + " to close the new account wizard and then open it again. If you chose to\n"
+                            + "create a new account instead of using an existing one, then the new account\n"
+                            + "has already been created for you, and you should choose to use an existing\n"
+                            + "account when you open this wizard again.");
+                setBackAllowed(false);
+                setNextAllowed(false);
+                setLastStep(false);
+                setCancelAllowed(true);
+                setAllowClosing(true);
             }
         };
         pages.append(securityKeysPage);

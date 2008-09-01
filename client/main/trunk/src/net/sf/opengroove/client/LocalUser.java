@@ -32,8 +32,8 @@ public class LocalUser implements Serializable
     /**
      * This, along with the other rsa fields, contain the user's security keys.
      * These are stored in the public-rsa-enc-pub, public-rsa-enc-mod,
-     * rsa-enc-prv, public-rsa-sig-pub, public-rsa-sig-mod, and rsa-sig-prv user
-     * properties.
+     * public-rsa-sig-pub, and public-rsa-sig-mod user properties. the private
+     * keys are not stored on the server.
      */
     private BigInteger rsaEncPub;
     private BigInteger rsaEncPrv;
