@@ -1,6 +1,7 @@
 package tests;
 
 import java.awt.FlowLayout;
+import java.awt.Point;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
@@ -8,6 +9,7 @@ import javax.swing.JButton;
 import javax.swing.JFrame;
 
 import net.sf.opengroove.client.Symbol;
+import net.sf.opengroove.client.ui.Animations;
 
 public class Test040
 {
@@ -20,7 +22,7 @@ public class Test040
      */
     public static void main(String[] args)
     {
-        javax.swing.JFrame frame = new JFrame();
+        final javax.swing.JFrame frame = new JFrame();
         frame.setSize(500, min);
         frame.setLocationRelativeTo(null);
         frame.setLocation(frame.getX(), frame.getY() - 200);
@@ -46,8 +48,29 @@ public class Test040
                 {
                     public void run()
                     {
+                        Point[] points = Animations
+                            .generateLineAnimation(
+                                new Point(0,
+                                    isExpanded ? max : min),
+                                new Point(0,
+                                    isExpanded ? min : max),
+                                100);
+                        for (int i = 0; i < points.length; i++)
+                        {
+                            frame.setSize(frame.getWidth(),
+                                points[i].y);
+                            try
+                            {
+                                Thread.sleep(10);
+                            }
+                            catch (InterruptedException e)
+                            {
+                                // TODO Auto-generated catch block
+                                e.printStackTrace();
+                            }
+                        }
+                        isExpanded = !isExpanded;
                         button.setEnabled(true);
-                        Point[] points = 
                     }
                 }.start();
             }
