@@ -1969,14 +1969,6 @@ public class OpenGroove
                                                     .toUsername(vars.userid),
                                                 "",
                                                 vars.password);
-                                        /*
-                                         * TODO: pick up here, get the key user
-                                         * properties, if they don't exist or if
-                                         * the user has no computer then
-                                         * generate new keys, if they do, prompt
-                                         * for the file that contains the
-                                         * private keys as a .ogva file
-                                         */
                                         String existingEncPub = com
                                             .getUserSetting(
                                                 "",
@@ -2001,7 +1993,8 @@ public class OpenGroove
                                             || existingEncMod == null
                                             || existingSigPub == null
                                             || existingSigMod == null
-                                            || com.listComputers("").length == 0;
+                                            || com
+                                                .listComputers("").length == 0;
                                         if (needsNewKeys)
                                         {
                                             label
@@ -2053,9 +2046,8 @@ public class OpenGroove
                                                     public void actionPerformed(
                                                         ActionEvent e)
                                                     {
-                                                        // TODO Auto-generated
-                                                        // method stub
-                                                        
+                                                        browseForKeyThread
+                                                            .start();
                                                     }
                                                 });
                                         }

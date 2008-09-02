@@ -4,13 +4,17 @@ package net.sf.opengroove.client;
  * A bunch of symbols that I've found that I think could be used in portions of
  * OpenGroove. the toString() method on each symbol returns a string with the
  * symbol itself, so you can just embed symbol enum constants directly within
- * strings.
+ * strings. The string returned from toString() is guaranteed to only have one
+ * symbol as encoded in UTF-8, although there is no guarantee that it will use
+ * only one byte. In fact, almost all of the symbols here use two or more bytes
+ * when encoded with UTF-8.
  * 
  * @author Alexander Boyd
  * 
  */
 public enum Symbol
 {
+    POUND_STERLING("£"),
     /**
      * The character &uarr;, an up-arrow.
      */
