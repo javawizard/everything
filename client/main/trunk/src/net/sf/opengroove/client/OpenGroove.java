@@ -78,6 +78,7 @@ import net.sf.opengroove.client.com.Packet;
 import net.sf.opengroove.client.com.ServerContext;
 import net.sf.opengroove.client.com.ServerSecurityKey;
 import net.sf.opengroove.client.com.StatusListener;
+import net.sf.opengroove.client.com.FieldFile.Fields;
 import net.sf.opengroove.client.download.PluginDownloadManager;
 import net.sf.opengroove.client.features.FeatureComponentHandler;
 import net.sf.opengroove.client.features.FeatureManager;
@@ -1922,6 +1923,8 @@ public class OpenGroove
                     {
                         file = new FieldFile(fc
                             .getSelectedFile());
+                        if(!file.checkExists())
+                            throw new Exception();
                     }
                     catch (Exception e)
                     {
