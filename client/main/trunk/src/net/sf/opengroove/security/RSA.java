@@ -181,4 +181,32 @@ public class RSA
             System.out.println("" + l);
         }
     }
+    
+    /**
+     * Verifies that the keys given form a keypair. This method works by
+     * generating a random number of at most N - 3 bits, where N is
+     * <code>mod.bitLength()</code>. It then encrypts it using the public key
+     * and modulus, and decrypts it using the private key and modulus. If this
+     * decrypted value matches the original random number, true is returned. If
+     * not, false is returned.
+     * 
+     * @param pub
+     *            The public exponent to test
+     * @param mod
+     *            The modulus to test
+     * @param prv
+     *            The private key exponent to test
+     * @return True if the public, modulus, and private keys passed in form a
+     *         valid keypair, false if they don't
+     */
+    public static boolean verifySet(BigInteger pub,
+        BigInteger mod, BigInteger prv)
+    {
+        BigInteger randomNumber = new BigInteger(mod
+            .bitLength() - 3, random);
+        BigInteger encrypted = encrypt(pub, mod,
+            randomNumber);
+        BigInteger decrypted = decrypt(prv, mod, encrypted);
+        return decrypted.equals(randomNumber);
+    }
 }

@@ -35,6 +35,7 @@ import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.math.BigInteger;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.ServerSocket;
@@ -1918,21 +1919,51 @@ public class OpenGroove
                         .showOpenDialog(newAccountFrame);
                     if (fcResult != JFileChooser.APPROVE_OPTION)
                         return;
+                    button.setVisible(false);
+                    label.setVisible(false);
+                    progress.setIndeterminate(true);
+                    progress.setString("Reading file...");
                     FieldFile file;
+                    BigInteger encPub;
+                    BigInteger encPrv;
+                    BigInteger encMod;
+                    BigInteger sigPub;
+                    BigInteger sigPrv;
+                    BigInteger sigMod;
                     try
                     {
                         file = new FieldFile(fc
                             .getSelectedFile());
-                        if(!file.checkExists())
+                        if (!file.checkExists(
+                            Fields.encMod, Fields.encPrv,
+                            Fields.encPub, Fields.sigMod,
+                            Fields.sigPrv, Fields.sigPub))
                             throw new Exception();
+                        encPub = new BigInteger(file
+                            .getField(Fields.encPub), 16);
+                        encPrv = new BigInteger(file
+                            .getField(Fields.encPrv), 16);
+                        encMod = new BigInteger(file
+                            .getField(Fields.encMod), 16);
+                        sigPub = new BigInteger(file
+                            .getField(Fields.sigPub), 16);
+                        sigPrv = new BigInteger(file
+                            .getField(Fields.sigPrv), 16);
+                        sigMod = new BigInteger(file
+                            .getField(Fields.sigMod), 16);
                     }
                     catch (Exception e)
                     {
                         e.printStackTrace();
-                        JOptionPane
-                            .showMessageDialog(
-                                newAccountFrame,
-                                "The file you selected is not valid, or is corrupt.");
+                        JOptionPane.showMessageDialog(
+                            newAccountFrame,
+                            "The file you selected is not valid, "
+                                + "could not be opened, "
+                                + "or is corrupt.");
+                        label.setVisible(true);
+                        progress.setIndeterminate(false);
+                        progress.setString("");
+                        button.setVisible(true);
                         return;
                     }
                     /*
@@ -1947,10 +1978,93 @@ public class OpenGroove
                      * onto the wizard vars and continue on to the account info
                      * page.
                      */
-                    button.setVisible(false);
-                    label.setVisible(false);
-                    progress.setIndeterminate(true);
-                    progress.setString("Validating keys...");
+                    progress
+                        .setString("Validating encryption key...");
+                    boolean isEncValid = RSA.verifySet(
+                        encPub, encMod, encPrv);
+                    if (!isEncValid)
+                    {
+                        label.setVisible(true);
+                        progress.setIndeterminate(false);
+                        progress.setString("");
+                        JOptionPane
+                            .showMessageDialog(
+                                newAccountFrame,
+                                "The account file you provided contains "
+                                    + "a mismatched encryption keypair.");
+                        button.setVisible(true);
+                        return;
+                    }
+                    progress
+                        .setString("Validating signature key...");
+                    boolean isSigValid = RSA.verifySet(
+                        sigPub, sigMod, sigPrv);
+                    if (!isSigValid)
+                    {
+                        label.setVisible(true);
+                        progress.setIndeterminate(false);
+                        progress.setString("");
+                        JOptionPane
+                            .showMessageDialog(
+                                newAccountFrame,
+                                "The acount file you provided contains "
+                                    + "a mismatched signature keypait.");
+                        button.setVisible(true);
+                        return;
+                    }
+                    /*
+                     * The file itself, and the key contained therein, are
+                     * valid, so we need to validate the public keys against the
+                     * ones on the server and then stick them into the new
+                     * account wizard vars.
+                     */
+                    CommandCommunicator com = null;
+                    try
+                    {
+                        com = new CommandCommunicator(
+                            new Communicator(Userids
+                                .toRealm(vars.userid),
+                                false, true, "normal", "",
+                                "", "",
+                                vars.serverKey.rsaPublic,
+                                vars.serverKey.rsaMod,
+                                null, null));
+                        com.authenticate("normal", Userids
+                            .toUsername(vars.userid), "",
+                            vars.password);
+                        BigInteger existingEncPub = new BigInteger(com
+                            .getUserSetting("", ""
+                                + UserSettings.KEY_ENC_PUB),16);
+                        BigInteger existingEncMod = new BigInteger(com
+                            .getUserSetting("", ""
+                                + UserSettings.KEY_ENC_MOD),16);
+                        BigInteger existingSigPub = new BigInteger(com
+                            .getUserSetting("", ""
+                                + UserSettings.KEY_SIG_PUB),16);
+                        BigInteger existingSigMod = new BigInteger(com
+                            .getUserSetting("", ""
+                                + UserSettings.KEY_SIG_MOD),16);
+                        if(!())
+                    }
+                    catch (Exception e)
+                    {
+                        e.printStackTrace();
+                        label.setVisible(true);
+                        progress.setIndeterminate(false);
+                        progress.setString("");
+                        JOptionPane
+                            .showMessageDialog(
+                                newAccountFrame,
+                                "An error occured while connecting to your server.");
+                        button.setVisible(true);
+                        return;
+                    }
+                    finally
+                    {
+                        if (com != null)
+                            com.getCommunicator()
+                                .shutdown();
+                    }
                 }
             };
             
