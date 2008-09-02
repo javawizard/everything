@@ -2310,6 +2310,18 @@ public class OpenGroove
             }
         };
         pages.append(securityKeysPage);
+        StandardWizardPage generalInfoPage = new StandardWizardPage(
+            "Enter your information", false, true, false,
+            false)
+        {
+            @Override
+            protected void init()
+            {
+                // TODO Auto-generated method stub
+                
+            }
+        };
+        pages.append(generalInfoPage);
         // end pages
         newAccountWizardPane.setPageList(pages);
         newAccountWizardPane
