@@ -1971,8 +1971,9 @@ public class OpenGroove
                                                 vars.password);
                                         /*
                                          * TODO: pick up here, get the key user
-                                         * properties, if they don't exist
-                                         * generate new ones, if they do, prompt
+                                         * properties, if they don't exist or if
+                                         * the user has no computer then
+                                         * generate new keys, if they do, prompt
                                          * for the file that contains the
                                          * private keys as a .ogva file
                                          */
@@ -1999,7 +2000,8 @@ public class OpenGroove
                                         boolean needsNewKeys = existingEncPub == null
                                             || existingEncMod == null
                                             || existingSigPub == null
-                                            || existingSigMod == null;
+                                            || existingSigMod == null
+                                            || com.listComputers("").length == 0;
                                         if (needsNewKeys)
                                         {
                                             label

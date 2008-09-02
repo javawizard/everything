@@ -549,11 +549,23 @@ public class CommandCommunicator
     public String[] listComputers(String username)
         throws IOException
     {
-        return tokenizeByLines(new String(communicator
-            .query(
-                new Packet(null, "listcomputers", username
-                    .getBytes()), defaultTimeout)
-            .getContents()));
+        if (username == "")
+            username = "\n";
+        try
+        {
+            return tokenizeByLines(new String(communicator
+                .query(
+                    new Packet(null, "listcomputers",
+                        username.getBytes()),
+                    defaultTimeout).getContents()));
+        }
+        catch (FailedResponseException e)
+        {
+            if (e.getResponseCode().equalsIgnoreCase(
+                "NORESULTS"))
+                return new String[0];
+            throw e;
+        }
     }
     
     /**
