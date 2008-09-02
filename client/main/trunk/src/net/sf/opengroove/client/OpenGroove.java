@@ -1903,6 +1903,22 @@ public class OpenGroove
                 }
             };
             
+            private Thread browseForKeyThread = new Thread()
+            {
+                public void run()
+                {
+                    JFileChooser fc = new JFileChooser();
+                    fc
+                        .setFileFilter(new FileNameExtensionFilter(
+                            "OpenGroove Account Key Files",
+                            "ogva"));
+                    int fcResult = fc
+                        .showOpenDialog(newAccountFrame);
+                    if (fcResult != JFileChooser.APPROVE_OPTION)
+                        return;
+                }
+            };
+            
             @Override
             protected void init()
             {
