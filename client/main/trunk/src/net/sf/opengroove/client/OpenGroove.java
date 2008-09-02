@@ -2008,7 +2008,7 @@ public class OpenGroove
                             .showMessageDialog(
                                 newAccountFrame,
                                 "The acount file you provided contains "
-                                    + "a mismatched signature keypait.");
+                                    + "a mismatched signature keypair.");
                         button.setVisible(true);
                         return;
                     }
@@ -2032,19 +2032,41 @@ public class OpenGroove
                         com.authenticate("normal", Userids
                             .toUsername(vars.userid), "",
                             vars.password);
-                        BigInteger existingEncPub = new BigInteger(com
-                            .getUserSetting("", ""
-                                + UserSettings.KEY_ENC_PUB),16);
-                        BigInteger existingEncMod = new BigInteger(com
-                            .getUserSetting("", ""
-                                + UserSettings.KEY_ENC_MOD),16);
-                        BigInteger existingSigPub = new BigInteger(com
-                            .getUserSetting("", ""
-                                + UserSettings.KEY_SIG_PUB),16);
-                        BigInteger existingSigMod = new BigInteger(com
-                            .getUserSetting("", ""
-                                + UserSettings.KEY_SIG_MOD),16);
-                        if(!())
+                        BigInteger existingEncPub = new BigInteger(
+                            com.getUserSetting("", ""
+                                + UserSettings.KEY_ENC_PUB),
+                            16);
+                        BigInteger existingEncMod = new BigInteger(
+                            com.getUserSetting("", ""
+                                + UserSettings.KEY_ENC_MOD),
+                            16);
+                        BigInteger existingSigPub = new BigInteger(
+                            com.getUserSetting("", ""
+                                + UserSettings.KEY_SIG_PUB),
+                            16);
+                        BigInteger existingSigMod = new BigInteger(
+                            com.getUserSetting("", ""
+                                + UserSettings.KEY_SIG_MOD),
+                            16);
+                        if (!(existingEncPub.equals(encPub)
+                            && existingEncMod
+                                .equals(encMod)
+                            && existingSigPub
+                                .equals(sigPub) && existingSigMod
+                            .equals(sigMod)))
+                        {
+                            label.setVisible(true);
+                            progress
+                                .setIndeterminate(false);
+                            progress.setString("");
+                            JOptionPane
+                                .showMessageDialog(
+                                    newAccountFrame,
+                                    "The account file you provided is for "
+                                        + "a different account, not yours.");
+                            button.setVisible(true);
+                            return;
+                        }
                     }
                     catch (Exception e)
                     {
@@ -2065,6 +2087,20 @@ public class OpenGroove
                             com.getCommunicator()
                                 .shutdown();
                     }
+                    vars.encPub = encPub;
+                    vars.encMod = encMod;
+                    vars.encPrv = encPrv;
+                    vars.sigPub = sigPub;
+                    vars.sigMod = sigMod;
+                    vars.sigPrv = sigPrv;
+                    label
+                        .setText("Your account security key file has been "
+                            + "successfully verified and imported. "
+                            + "Click next to continue.");
+                    label.setVisible(true);
+                    progress.setString("");
+                    progress.setIndeterminate(false);
+                    setNextAllowed(true);
                 }
             };
             
