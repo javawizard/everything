@@ -71,6 +71,7 @@ import org.awl.Wizard;
 import net.sf.opengroove.client.com.AuthenticationException;
 import net.sf.opengroove.client.com.CommandCommunicator;
 import net.sf.opengroove.client.com.Communicator;
+import net.sf.opengroove.client.com.FieldFile;
 import net.sf.opengroove.client.com.OldCommunicator;
 import net.sf.opengroove.client.com.LowLevelCommunicator;
 import net.sf.opengroove.client.com.Packet;
@@ -1916,6 +1917,33 @@ public class OpenGroove
                         .showOpenDialog(newAccountFrame);
                     if (fcResult != JFileChooser.APPROVE_OPTION)
                         return;
+                    FieldFile file;
+                    try
+                    {
+                        file = new FieldFile(fc
+                            .getSelectedFile());
+                    }
+                    catch (Exception e)
+                    {
+                        e.printStackTrace();
+                        JOptionPane
+                            .showMessageDialog(
+                                newAccountFrame,
+                                "The file you selected is not valid, or is corrupt.");
+                        return;
+                    }
+                    /*
+                     * TODO: start the progress bar going, load the keys in to
+                     * BigIntegers, encrypt a random number with the public key
+                     * and verify decryption with the private key, for the enc
+                     * key, and do the reverse for the sig key, then check to
+                     * see if the public keys match the public keys on the
+                     * server (and show a warning that the keys are for the
+                     * wrong account if they don't), and if all of this works
+                     * out, stick the private keys (and the public keys too)
+                     * onto the wizard vars and continue on to the account info
+                     * page.
+                     */
                 }
             };
             

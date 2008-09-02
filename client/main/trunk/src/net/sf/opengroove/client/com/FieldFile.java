@@ -29,6 +29,11 @@ public class FieldFile
         properties.load(new FileInputStream(file));
     }
     
+    public FieldFile()
+    {
+        
+    }
+    
     public void save(File file)
         throws FileNotFoundException, IOException
     {
