@@ -7,11 +7,11 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.Properties;
 
-public class OgvFile
+public class FieldFile
 {
     private Properties properties = new Properties();
     
-    public OgvFile(File file) throws FileNotFoundException,
+    public FieldFile(File file) throws FileNotFoundException,
         IOException
     {
         properties.load(new FileInputStream(file));
