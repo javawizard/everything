@@ -1944,6 +1944,10 @@ public class OpenGroove
                      * onto the wizard vars and continue on to the account info
                      * page.
                      */
+                    button.setVisible(false);
+                    label.setVisible(false);
+                    progress.setIndeterminate(true);
+                    progress.setString("Validating keys...");
                 }
             };
             
