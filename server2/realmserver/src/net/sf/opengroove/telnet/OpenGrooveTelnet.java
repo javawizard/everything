@@ -31,9 +31,9 @@ import javax.swing.filechooser.FileNameExtensionFilter;
 import DE.knp.MicroCrypt.Aes256;
 
 import net.sf.opengroove.realmserver.ProtocolMismatchException;
-import net.sf.opengroove.security.Crypto;
-import net.sf.opengroove.security.Hash;
-import net.sf.opengroove.security.RSA;
+import net.sf.opengroove.common.security.Crypto;
+import net.sf.opengroove.common.security.Hash;
+import net.sf.opengroove.common.security.RSA;
 
 public class OpenGrooveTelnet
 {

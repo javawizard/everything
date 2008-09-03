@@ -17,7 +17,7 @@ import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
 import net.sf.opengroove.realmserver.OpenGrooveRealmServer;
-import net.sf.opengroove.security.Hash;
+import net.sf.opengroove.common.security.Hash;
 
 public class LoginFilter implements Filter
 {
