@@ -101,8 +101,8 @@ import net.sf.opengroove.client.ui.StatusDialog;
 import net.sf.opengroove.client.ui.frames.LoginFrame;
 import net.sf.opengroove.client.workspace.WorkspaceManager;
 import net.sf.opengroove.client.workspace.WorkspaceWrapper;
-import net.sf.opengroove.security.Hash;
-import net.sf.opengroove.security.RSA;
+import net.sf.opengroove.common.security.Hash;
+import net.sf.opengroove.common.security.RSA;
 
 import base64.Base64Coder;
 

@@ -18,9 +18,9 @@ import java.util.concurrent.TimeUnit;
 
 import DE.knp.MicroCrypt.Aes256;
 
-import net.sf.opengroove.security.Crypto;
-import net.sf.opengroove.security.Hash;
-import net.sf.opengroove.security.RSA;
+import net.sf.opengroove.common.security.Crypto;
+import net.sf.opengroove.common.security.Hash;
+import net.sf.opengroove.common.security.RSA;
 
 /**
  * This class can be used to communicate with an OpenGroove server. It takes

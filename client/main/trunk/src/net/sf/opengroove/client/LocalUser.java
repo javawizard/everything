@@ -48,7 +48,7 @@ public class LocalUser implements Serializable
     private String passwordHint;
     /**
      * The user's encrypted password, in the format returned by
-     * {@link net.sf.opengroove.security.Hash#hash(String)}. This is used to
+     * {@link net.sf.opengroove.common.security.Hash#hash(String)}. This is used to
      * authenticate the user.
      */
     private String encPassword;
