@@ -2311,7 +2311,7 @@ public class OpenGroove
         };
         pages.append(securityKeysPage);
         StandardWizardPage generalInfoPage = new StandardWizardPage(
-            "Enter your information", false, true, false,
+            "Enter your user information", false, true, false,
             false)
         {
             @Override

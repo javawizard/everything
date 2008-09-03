@@ -26,11 +26,11 @@ net.sf.opengroove.client.toolworkspace.sync
 net.sf.opengroove.client.ui
 net.sf.opengroove.client.ui.frames
 net.sf.opengroove.client.workspace
+net.sf.opengroove.common.security
 net.sf.opengroove.projects.filleditor
 net.sf.opengroove.projects.filleditor.bezier
 net.sf.opengroove.projects.filleditor.plugins
 net.sf.opengroove.projects.pngtransparency
-net.sf.opengroove.security
 net.sf.opengroove.utils
 tests
 tests.t20
