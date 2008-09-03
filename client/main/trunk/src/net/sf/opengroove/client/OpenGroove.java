@@ -120,7 +120,7 @@ import com.jidesoft.wizard.WizardDialogPane;
 import com.l2fprod.common.swing.JLinkButton;
 
 /**
- * This is the class that does most of the thinking for Convergia. If you don't
+ * This is the class that does most of the thinking for OpenGroove. If you don't
  * want Convergia to update itself (for example, if you are developing it), then
  * you would run this class. If you do want Convergia to update itself, you
  * would call Loader, which then calls this class after a bit of processing
