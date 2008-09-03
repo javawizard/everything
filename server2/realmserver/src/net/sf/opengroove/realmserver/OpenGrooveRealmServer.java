@@ -58,9 +58,9 @@ import net.sf.opengroove.realmserver.data.model.User;
 import net.sf.opengroove.realmserver.data.model.UserSetting;
 import net.sf.opengroove.realmserver.web.LoginFilter;
 import net.sf.opengroove.realmserver.web.RendererServlet;
-import net.sf.opengroove.security.Crypto;
-import net.sf.opengroove.security.Hash;
-import net.sf.opengroove.security.RSA;
+import net.sf.opengroove.common.security.Crypto;
+import net.sf.opengroove.common.security.Hash;
+import net.sf.opengroove.common.security.RSA;
 
 import org.apache.jasper.servlet.JspServlet;
 import org.mortbay.jetty.Server;

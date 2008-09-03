@@ -3,7 +3,7 @@ package net.sf.opengroove.realmserver.handlers;
 import net.sf.opengroove.realmserver.DataStore;
 import net.sf.opengroove.realmserver.web.Handler;
 import net.sf.opengroove.realmserver.web.HandlerContext;
-import net.sf.opengroove.security.Hash;
+import net.sf.opengroove.common.security.Hash;
 
 public class AddUser implements Handler
 {

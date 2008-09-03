@@ -9,7 +9,7 @@ import javax.servlet.http.HttpServletRequest;
 import net.sf.opengroove.realmserver.OpenGrooveRealmServer;
 import net.sf.opengroove.realmserver.web.Handler;
 import net.sf.opengroove.realmserver.web.HandlerContext;
-import net.sf.opengroove.security.Hash;
+import net.sf.opengroove.common.security.Hash;
 
 public class AddWebUser implements Handler
 {
