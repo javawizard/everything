@@ -4,6 +4,7 @@ import java.io.Serializable;
 import java.math.BigInteger;
 
 import net.sf.opengroove.client.com.CommandCommunicator;
+import net.sf.opengroove.common.vcard.VCard;
 
 public class LocalUser implements Serializable
 {
@@ -48,8 +49,8 @@ public class LocalUser implements Serializable
     private String passwordHint;
     /**
      * The user's encrypted password, in the format returned by
-     * {@link net.sf.opengroove.common.security.Hash#hash(String)}. This is used to
-     * authenticate the user.
+     * {@link net.sf.opengroove.common.security.Hash#hash(String)}. This is
+     * used to authenticate the user.
      */
     private String encPassword;
     /**
@@ -69,11 +70,6 @@ public class LocalUser implements Serializable
      */
     private boolean isLocalVisible;
     /**
-     * This user's real name. This is made visible in the public-real-name user
-     * property.
-     */
-    private String realName;
-    /**
      * This user's private email address. This is the email address that
      * operators of this user's realm server, or OpenGroove administrators
      * themselves, will use to contact this user. This must not be null or the
@@ -81,13 +77,12 @@ public class LocalUser implements Serializable
      */
     private String emailAddress;
     /**
-     * This user's public email address. This is the email address that others
-     * will see as this user's email address. This can be null or the empty
-     * string, which usually indicates that this user doesn't want to reveal any
-     * email information to other users. This is made visible in the
-     * public-email-address user property.
+     * The user's contact card. This can be null, which indicates that the user
+     * has chosen not to provide a contact card. If it's not null, then the
+     * user's name will usually be shown as the name in this contact card,
+     * instead of the user's userid.
      */
-    private String publicEmailAddress;
+    private VCard contactCard;
     /**
      * This user's time lag as compared with the server. This is equal to
      * <code>myTime - serverTime</code>, where myTime is the value of
@@ -304,5 +299,45 @@ public class LocalUser implements Serializable
     public void setServerRsaMod(BigInteger serverRsaMod)
     {
         this.serverRsaMod = serverRsaMod;
+    }
+    
+    public boolean isSearchVisible()
+    {
+        return isSearchVisible;
+    }
+    
+    public boolean isLocalVisible()
+    {
+        return isLocalVisible;
+    }
+    
+    public String getEmailAddress()
+    {
+        return emailAddress;
+    }
+    
+    public VCard getContactCard()
+    {
+        return contactCard;
+    }
+    
+    public void setSearchVisible(boolean isSearchVisible)
+    {
+        this.isSearchVisible = isSearchVisible;
+    }
+    
+    public void setLocalVisible(boolean isLocalVisible)
+    {
+        this.isLocalVisible = isLocalVisible;
+    }
+    
+    public void setEmailAddress(String emailAddress)
+    {
+        this.emailAddress = emailAddress;
+    }
+    
+    public void setContactCard(VCard contactCard)
+    {
+        this.contactCard = contactCard;
     }
 }
