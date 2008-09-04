@@ -70,7 +70,8 @@ public class VCard
                 String value = line.substring(1);
                 value = value.replace("\\:", ":");
                 card.properties.setProperty(lastProperty,
-                    card.properties.getProperty(lastProperty)
+                    card.properties
+                        .getProperty(lastProperty)
                         + value);
             }
         }
@@ -84,11 +85,17 @@ public class VCard
      * 
      * @param sourceReader
      * @return
+     * @throws IOException
      */
     public static VCard[] parse(BufferedReader sourceReader)
+        throws IOException
     {
         BufferedReader reader = new BufferedReader(
             sourceReader);
         ArrayList<VCard> cards = new ArrayList<VCard>();
+        VCard card;
+        while ((card = parseSingle(sourceReader)) != null)
+            cards.add(card);
+        return cards.toArray(new VCard[0]);
     }
 }
