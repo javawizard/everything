@@ -55,4 +55,10 @@ public class NewAccountWizardVars
     public BigInteger sigPub;
     public BigInteger sigMod;
     public BigInteger sigPrv;
+    /**
+     * True if the wizard completed by successfully creating the account (in
+     * which case we show a login screen for that account when the wizard is
+     * closed), false if it did not
+     */
+    public boolean finishedWizard;
 }

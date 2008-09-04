@@ -2,6 +2,12 @@ package net.sf.opengroove.client;
 
 import java.io.Serializable;
 
+/**
+ * This class stores information about a contact's computer.
+ * 
+ * @author Alexander Boyd
+ * 
+ */
 public class ContactComputer implements Serializable
 {
     
@@ -17,42 +23,42 @@ public class ContactComputer implements Serializable
     private String type;
     
     private long lag;
-
+    
     public long getLag()
     {
         return lag;
     }
-
+    
     public void setLag(long lag)
     {
         this.lag = lag;
     }
-
+    
     public String getName()
     {
         return name;
     }
-
+    
     public long getLastOnline()
     {
         return lastOnline;
     }
-
+    
     public String getType()
     {
         return type;
     }
-
+    
     public void setName(String name)
     {
         this.name = name;
     }
-
+    
     public void setLastOnline(long lastOnline)
     {
         this.lastOnline = lastOnline;
     }
-
+    
     public void setType(String type)
     {
         this.type = type;

@@ -359,9 +359,15 @@ public class Communicator
                                 (Communicator.this.connectionType
                                     + "\n"
                                     + Communicator.this.connectionUsername
+                                    + "\n"
+                                    + Communicator.this.connectionComputer
                                     + "\n" + Communicator.this.connectionPassword)
                                     .getBytes());
-                            send(authPacket, tSocket);
+                            System.out
+                                .println("sending packet "
+                                    + authPacket);
+                            send(authPacket, tSocket,
+                                tSocket.getOutputStream());
                         }
                         notifyStatusListeners(new Notifier<StatusListener>()
                         {
@@ -677,7 +683,7 @@ public class Communicator
             BlockingQueue<Packet> queue = new LinkedBlockingQueue<Packet>(
                 1);
             syncBlocks.put(packet.getPacketId(), queue);
-            send(packet, socket);
+            send(packet, socket, out);
             Packet responsePacket = queue.poll(timeout,
                 TimeUnit.MILLISECONDS);
             if (responsePacket == CONNECTION_ERROR)
@@ -755,11 +761,11 @@ public class Communicator
      */
     public void send(Packet packet) throws IOException
     {
-        send(packet, socket);
+        send(packet, socket, out);
     }
     
     private synchronized void send(Packet packet,
-        Socket socket) throws IOException
+        Socket socket, OutputStream out) throws IOException
     {
         // TODO: instead of this method being synchronized, have it push packets
         // on to a packet spooler, which then forwards them to the server.

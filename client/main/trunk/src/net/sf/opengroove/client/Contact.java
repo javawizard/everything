@@ -5,6 +5,8 @@ import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.HashMap;
 
+import net.sf.opengroove.common.vcard.VCard;
+
 public class Contact implements Serializable
 {
     private static final long serialVersionUID = -2910467169227988997L;
@@ -16,11 +18,6 @@ public class Contact implements Serializable
      * This contact's userid. This must be a userid; it cannot be a username.
      */
     private String userid;
-    /**
-     * This contact's real name. This is available in the user's user property
-     * public-real-name.
-     */
-    private String realName;
     /**
      * A name set for this contact by the local user. If this is null, then
      * realName should be displayed to the user. If this is not null, then this
@@ -71,6 +68,12 @@ public class Contact implements Serializable
      */
     private boolean isUserVerified;
     /**
+     * This contact's contact card. If this contains a name (as vCards should),
+     * then it will be used in place of the user's userid in OpenGroove's user
+     * interface.
+     */
+    private VCard contactCard;
+    /**
      * The list of this contact's computers. This is automatically synchronized
      * every time the local user goes online.
      */
@@ -89,11 +92,6 @@ public class Contact implements Serializable
     public String getUserid()
     {
         return userid;
-    }
-    
-    public String getRealName()
-    {
-        return realName;
     }
     
     public String getLocalName()
@@ -144,11 +142,6 @@ public class Contact implements Serializable
     public void setUserid(String userid)
     {
         this.userid = userid;
-    }
-    
-    public void setRealName(String realName)
-    {
-        this.realName = realName;
     }
     
     public void setLocalName(String localName)

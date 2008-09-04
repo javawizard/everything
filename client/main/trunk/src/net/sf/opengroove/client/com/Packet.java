@@ -70,4 +70,17 @@ public class Packet
     {
         this.response = response;
     }
+    
+    public String toString()
+    {
+        return "(PACKET: "
+            + getPacketId()
+            + " "
+            + getCommand()
+            + " "
+            + (getResponse() == null ? "" : getResponse()
+                + " ")
+            + new String(getContents(), 0, Math.min(96,
+                getContents().length));
+    }
 }

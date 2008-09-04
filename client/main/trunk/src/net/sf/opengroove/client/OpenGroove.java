@@ -17,6 +17,7 @@ import java.awt.Menu;
 import java.awt.MenuItem;
 import java.awt.PopupMenu;
 import java.awt.RenderingHints;
+import java.awt.SplashScreen;
 import java.awt.SystemTray;
 import java.awt.TrayIcon;
 import java.awt.Window;
@@ -72,6 +73,7 @@ import org.awl.Wizard;
 import net.sf.opengroove.client.com.AuthenticationException;
 import net.sf.opengroove.client.com.CommandCommunicator;
 import net.sf.opengroove.client.com.Communicator;
+import net.sf.opengroove.client.com.FailedResponseException;
 import net.sf.opengroove.client.com.FieldFile;
 import net.sf.opengroove.client.com.OldCommunicator;
 import net.sf.opengroove.client.com.LowLevelCommunicator;
@@ -269,8 +271,6 @@ public class OpenGroove
     private static final int LOCK_PORT = 61116;
     
     private static final String RESTART_CLASSPATH = "bin;*;lib/*";
-    
-    private static final Hashtable<String, UserContext> currentUsers = new Hashtable<String, UserContext>();
     
     // FIXME: needs to be localized to the user's operating system and java vm
     private static final String[] restartExecutableString = new String[] {
@@ -804,6 +804,14 @@ public class OpenGroove
                  */
                 // TODO: actually do what the above comment says.
             }
+            /*
+             * We should get rid of the splash screen so that the user isn't
+             * left wondering what to do
+             */
+            SplashScreen splash = SplashScreen
+                .getSplashScreen();
+            if (splash != null)
+                splash.close();
         }
         catch (Throwable e)
         {
@@ -935,7 +943,7 @@ public class OpenGroove
                         public void authenticationFailed(
                             Communicator c, Packet packet)
                         {
-                            System.err
+                            System.out
                                 .println("Persistant authentication failed");
                             /*
                              * TODO: the user should be notified that they have
@@ -948,8 +956,8 @@ public class OpenGroove
                         public void authenticationSuccessful(
                             Communicator c)
                         {
-                            // TODO Auto-generated method stub
-                            
+                            System.out
+                                .println("persistant auth successful");
                         }
                         
                         @Override
@@ -966,24 +974,24 @@ public class OpenGroove
                             Communicator c,
                             ServerContext server)
                         {
-                            // TODO Auto-generated method stub
-                            
+                            System.out
+                                .println("persistant connection established");
                         }
                         
                         @Override
                         public void connectionLost(
                             Communicator c)
                         {
-                            // TODO Auto-generated method stub
-                            
+                            System.out
+                                .println("persistant connection lost");
                         }
                         
                         @Override
                         public void connectionReady(
                             Communicator c)
                         {
-                            // TODO Auto-generated method stub
-                            
+                            System.out
+                                .println("persistant connection ready");
                         }
                     });
                 Communicator com = new Communicator(Userids
@@ -1202,6 +1210,8 @@ public class OpenGroove
     {
         loginFrame = new LoginFrame();
         loginFrame.setIconImage(getWindowIcon());
+        loginFrame.getIconLabel().setIcon(
+            new ImageIcon("trayicon48.png"));
         loginFrame.getCancelButton().addActionListener(
             new ActionListener()
             {
@@ -1243,6 +1253,7 @@ public class OpenGroove
                 @Override
                 public void actionPerformed(ActionEvent e)
                 {
+                    loginFrame.hide();
                     showNewAccountWizard(false);
                 }
             });
@@ -1307,6 +1318,11 @@ public class OpenGroove
          * the server to validate that the keys specified are correct. If the
          * user's security keys don't exist, they are prompted to create some
          * keys.
+         * 
+         * --TBD: general info screen, such as contact card if the user chooses
+         * (vCard), and email address (possibly derived from contact card).
+         * Allow import of vCard from external file but only allow up to
+         * TBD(suggest:4096KB) in size for their contact card.
          * 
          * 5. The user is prompted for a name that they would like to assign to
          * this computer. The text field for accepting a name is initially
@@ -1391,11 +1407,11 @@ public class OpenGroove
                 JPanel panel = new JPanel();
                 newButton = new JRadioButton(
                     "<html><b>Create a new OpenGroove account</b><br/>"
-                        + "Choose this if this is your first time using OpenGroove, or if ");
+                        + "Choose this if this is your first time using OpenGroove");
                 existingButton = new JRadioButton(
                     "<html><b>Use an OpenGroove account that you have already created</b><br/>"
                         + "Choose this if you already have an OpenGroove "
-                        + "account and would like to use it on this computer.");
+                        + "account and would like to use it on this computer");
                 newButton.setFont(Font.decode(null));
                 existingButton.setFont(Font.decode(null));
                 ButtonGroup newOrExistGroup = new ButtonGroup();
@@ -1558,6 +1574,15 @@ public class OpenGroove
                             .getText();
                         String password = passwordField
                             .getText();
+                        userid = userid.toLowerCase();
+                        if (Storage.getLocalUser(userid) != null)
+                        {
+                            JOptionPane
+                                .showMessageDialog(
+                                    newAccountFrame,
+                                    "You've already added that userid to this computer.");
+                            return;
+                        }
                         if (userid.equals("")
                             || password.equals(""))
                         {
@@ -2310,18 +2335,220 @@ public class OpenGroove
             }
         };
         pages.append(securityKeysPage);
-        StandardWizardPage generalInfoPage = new StandardWizardPage(
-            "Enter your user information", false, true, false,
+        // I'll worry about the user's general info later. For now, their userid
+        // is shown where their real name (if they specify it in their contact
+        // card) would be shown once this is added, and there won't be any way
+        // to contact the user via email. Before I open up public registration,
+        // I'll finish this up.
+        // StandardWizardPage generalInfoPage = new StandardWizardPage(
+        // "Enter your user information", false, true, false,
+        // false)
+        // {
+        // @Override
+        // protected void init()
+        // {
+        // // TODO Auto-generated method stub
+        //                
+        // }
+        // };
+        // pages.append(generalInfoPage);
+        StandardWizardPage computerNamePage = new StandardWizardPage(
+            "Select a computer name", false, true, true,
             false)
         {
+            private JTextField field;
+            
             @Override
             protected void init()
             {
-                // TODO Auto-generated method stub
-                
+                field = new JTextField(30);
+                addText("Select the name that you want for this computer. "
+                    + "This should contain only letters, numbers, and "
+                    + "hyphens, and will be converted to lowercase. "
+                    + "You cannot change this later.");
+                String physicalComputerName = System
+                    .getenv("COMPUTERNAME");
+                String username = System
+                    .getProperty("user.name");
+                String suggestedComputerName;
+                if (physicalComputerName == null
+                    && username == null)
+                    suggestedComputerName = "computer";
+                else if (physicalComputerName == null)// &&username != null
+                    suggestedComputerName = username;
+                else
+                    // if(physicalComputerName != null && username != null)
+                    suggestedComputerName = physicalComputerName
+                        + "-" + username;
+                suggestedComputerName = suggestedComputerName
+                    .replaceAll("[^a-zA-Z0-9]", "-");
+                suggestedComputerName = suggestedComputerName
+                    .toLowerCase();
+                field.setText(suggestedComputerName);
+                JPanel panel = new JPanel();
+                panel.setLayout(new BorderLayout());
+                JPanel inner = new JPanel();
+                inner.setLayout(new BorderLayout());
+                panel.add(inner, BorderLayout.CENTER);
+                inner.add(field, BorderLayout.WEST);
+                panel.add(new JLabel("            "),
+                    BorderLayout.WEST);
+                addComponent(new JLabel(""));
+                addComponent(panel);
+                addPageListener(new PageListener()
+                {
+                    
+                    @Override
+                    public void pageEventFired(PageEvent e)
+                    {
+                        if (e.getID() == PageEvent.PAGE_CLOSING)
+                        {
+                            /*
+                             * We'll try to create the computer on the server.
+                             * If this fails, we don't allow closing, and we
+                             * show a message telling the user that it failed,
+                             * and the reason (IE an internet error, a computer
+                             * with that name already exists, etc.). If it
+                             * succeeds, then we create a local user, inject all
+                             * of the info we've collected thus far, and forward
+                             * on to the next page, which is a page telling the
+                             * user that they've successfully created an
+                             * OpenGroove account, and they can click finish to
+                             * open the login screen for their account.
+                             */
+                            setAllowClosing(false);
+                            String computerName = field
+                                .getText();
+                            if (!computerName.replaceAll(
+                                "[^a-zA-Z0-9]", "-")
+                                .equalsIgnoreCase(
+                                    computerName))
+                            {
+                                JOptionPane
+                                    .showMessageDialog(
+                                        newAccountFrame,
+                                        "The computer name you specified contains invalid characters.");
+                                return;
+                            }
+                            computerName = computerName
+                                .toLowerCase();
+                            field.setText(computerName);
+                            CommandCommunicator com = null;
+                            try
+                            {
+                                com = new CommandCommunicator(
+                                    new Communicator(
+                                        Userids
+                                            .toRealm(vars.userid),
+                                        false,
+                                        true,
+                                        "normal",
+                                        "",
+                                        "",
+                                        "",
+                                        vars.serverKey.rsaPublic,
+                                        vars.serverKey.rsaMod,
+                                        null, null));
+                                com
+                                    .authenticate(
+                                        "normal",
+                                        Userids
+                                            .toUsername(vars.userid),
+                                        "", vars.password);
+                                try
+                                {
+                                    com.createComputer(
+                                        computerName, "pc");
+                                }
+                                catch (Exception e2)
+                                {
+                                    if (!(e2 instanceof FailedResponseException))
+                                        throw e2;
+                                    JOptionPane
+                                        .showMessageDialog(
+                                            newAccountFrame,
+                                            "That computer name is already in use.");
+                                    return;
+                                }
+                            }
+                            catch (Exception e2)
+                            {
+                                e2.printStackTrace();
+                                JOptionPane
+                                    .showMessageDialog(
+                                        newAccountFrame,
+                                        "An error occured while connecting to your server.");
+                                return;
+                            }
+                            finally
+                            {
+                                if (com != null)
+                                    try
+                                    {
+                                        com
+                                            .getCommunicator()
+                                            .shutdown();
+                                    }
+                                    catch (Exception exception)
+                                    {
+                                        exception
+                                            .printStackTrace();
+                                    }
+                            }
+                            /*
+                             * Ok, we've successfully created the computer. Now
+                             * we store everything in a LocalUser object, and
+                             * add it to the storage.
+                             */
+                            LocalUser user = new LocalUser();
+                            user.setAutoSignOn(false);
+                            user.setComputer(computerName);
+                            user.setContactCard(null);
+                            user.setEmailAddress("");
+                            user.setEncPassword(Hash
+                                .hash(vars.password));
+                            user.setLag(0);
+                            user.setLocalVisible(false);
+                            user.setPasswordHint(null);
+                            user.setRasEncMod(vars.encMod);
+                            user.setRsaEncPrv(vars.encPrv);
+                            user.setRsaEncPub(vars.encPub);
+                            user.setRsaSigMod(vars.sigMod);
+                            user.setRsaSigPrv(vars.sigPrv);
+                            user.setRsaSigPub(vars.sigPub);
+                            user.setSearchVisible(false);
+                            user
+                                .setServerRsaMod(vars.serverKey.rsaMod);
+                            user
+                                .setServerRsaPub(vars.serverKey.rsaPublic);
+                            user.setStoredPassword(null);
+                            user.setUserid(vars.userid);
+                            Storage.addUser(user);
+                            refreshTrayMenu();
+                            setAllowClosing(true);
+                            vars.finishedWizard = true;
+                        }
+                    }
+                });
             }
         };
-        pages.append(generalInfoPage);
+        pages.append(computerNamePage);
+        StandardWizardPage finishedPage = new StandardWizardPage(
+            "Successfully added account", false, false,
+            true, true)
+        {
+            
+            @Override
+            protected void init()
+            {
+                addText("You have successfully added your OpenGroove account. "
+                    + "When you click finish, you will be prompted for your "
+                    + "password. When you start OpenGroove next time, you can "
+                    + "log in by right-clicking the tray icon, clicking on "
+                    + "your userid, and clicking \"log in\".");
+            }
+        };
+        pages.append(finishedPage);
         // end pages
         newAccountWizardPane.setPageList(pages);
         newAccountWizardPane
@@ -2341,9 +2568,8 @@ public class OpenGroove
                 @Override
                 public void actionPerformed(ActionEvent e)
                 {
-                    /*
-                     * TODO: implement this method
-                     */
+                    if (vars.finishedWizard)
+                        showLoginWindow(vars.userid);
                     newAccountFrame.hide();
                 }
             });
@@ -2369,13 +2595,15 @@ public class OpenGroove
     
     protected static boolean anyServerConnections()
     {
-        for (UserContext context : currentUsers.values())
+        for (UserContext context : userContextMap.values())
         {
             if (context.getCom() != null
                 && context.getCom().getCommunicator() != null
                 && context.getCom().getCommunicator()
                     .isActive())
+            {
                 return true;
+            }
         }
         return false;
     }

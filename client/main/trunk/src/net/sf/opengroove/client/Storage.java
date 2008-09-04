@@ -204,11 +204,9 @@ public class Storage
      */
     public static void storeUser(LocalUser user)
     {
-        File userFile = new File(auth, user.getRealm()
-            + ":" + user.getUsername());
-        writeObjectToFile(user, new File(auth, user
-            .getRealm()
-            + ":" + user.getUsername()));
+        File userFile = new File(auth, user.getUserid()
+            .replace(":", "$"));
+        writeObjectToFile(user, userFile);
     }
     
     /**
@@ -313,8 +311,16 @@ public class Storage
      */
     public static LocalUser getLocalUser(String userid)
     {
-        return (LocalUser) readObjectFromFile(new File(
-            auth, userid));
+        try
+        {
+            return (LocalUser) readObjectFromFile(new File(
+                auth, userid.replace(":", "$")));
+        }
+        catch (Exception e)
+        {
+            e.printStackTrace();
+            return null;
+        }
     }
     
     /**
@@ -460,7 +466,9 @@ public class Storage
         }
         catch (Exception ex)
         {
-            throw new RuntimeException(ex);
+            throw new RuntimeException(
+                "Error while reading "
+                    + file.getAbsolutePath(), ex);
         }
     }
     
@@ -725,6 +733,11 @@ public class Storage
             new File(systemConfig, key).delete();
         else
             writeFile(value, new File(systemConfig, key));
+    }
+    
+    public static void addUser(LocalUser user)
+    {
+        storeUser(user);
     }
     
 }
