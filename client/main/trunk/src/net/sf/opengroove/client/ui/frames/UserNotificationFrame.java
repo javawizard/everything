@@ -1,6 +1,9 @@
 package net.sf.opengroove.client.ui.frames;
 
 import java.awt.BorderLayout;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+
 import javax.swing.BorderFactory;
 
 import javax.swing.Box;
@@ -61,6 +64,17 @@ public class UserNotificationFrame extends JFrame
         priorityLabel.setText(priority.name().substring(0,
             1).toUpperCase()
             + priority.name().substring(1));
+        messageField.setText(message);
+        setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+        okButton.addActionListener(new ActionListener()
+        {
+            
+            @Override
+            public void actionPerformed(ActionEvent e)
+            {
+                dispose();
+            }
+        });
     }
     
     private void initGUI()
@@ -259,18 +273,23 @@ public class UserNotificationFrame extends JFrame
                 {
                     centerPanel = new JPanel();
                     BorderLayout centerPanelLayout = new BorderLayout();
-                    centerPanel.setLayout(centerPanelLayout);
+                    centerPanel
+                        .setLayout(centerPanelLayout);
                     centerPanel.setBorder(new EmptyBorder(
                         0, 10, 10, 10));
                     getContentPane().add(centerPanel,
                         BorderLayout.CENTER);
                     {
                         jScrollPane1 = new JScrollPane();
-                        centerPanel.add(jScrollPane1, BorderLayout.CENTER);
-                        jScrollPane1.setPreferredSize(new java.awt.Dimension(324, 217));
+                        centerPanel.add(jScrollPane1,
+                            BorderLayout.CENTER);
+                        jScrollPane1
+                            .setPreferredSize(new java.awt.Dimension(
+                                324, 217));
                         {
                             messageField = new JTextArea();
-                            jScrollPane1.setViewportView(messageField);
+                            jScrollPane1
+                                .setViewportView(messageField);
                             messageField.setEditable(false);
                         }
                     }
