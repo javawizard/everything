@@ -79,7 +79,8 @@ public class Storage
     {
         this.userid = userid;
         File tbase = new File(
-            new File(base, "userspecific"), userid);
+            new File(base, "userspecific"), userid.replace(
+                ":", "$"));
         if (!tbase.exists())
             tbase.mkdirs();
         mOutCache = iItem(tbase, "moutcache");
