@@ -899,6 +899,7 @@ public class OpenGroove
         loginFrame.getLoginButton().setEnabled(false);
         loginFrame.getNewAccountButton().setEnabled(false);
         loginFrame.getCancelButton().setEnabled(false);
+        loginFrame.getPasswordField().setEnabled(false);
         try
         {
             synchronized (authLock)
@@ -925,6 +926,8 @@ public class OpenGroove
                     JOptionPane
                         .showMessageDialog(loginFrame,
                             "Incorrect username and/or password.");
+                    loginFrame.getPasswordField().setText(
+                        "");
                     return;
                 }
                 /*
@@ -1064,6 +1067,9 @@ public class OpenGroove
             loginFrame.getNewAccountButton().setEnabled(
                 true);
             loginFrame.getCancelButton().setEnabled(true);
+            loginFrame.getPasswordField().setEnabled(true);
+            loginFrame.getPasswordField()
+                .requestFocusInWindow();
             refreshTrayMenu();
         }
     }
@@ -1101,7 +1107,25 @@ public class OpenGroove
         {
             for (final LocalUser user : onlineUsers)
             {
-                
+                Menu userMenu = new Menu(user.getUserid());
+                MenuItem launchbarItem = new MenuItem(
+                    "Launchbar");
+                launchbarItem
+                    .addActionListener(new ActionListener()
+                    {
+                        
+                        @Override
+                        public void actionPerformed(
+                            ActionEvent e)
+                        {
+                            user.getContext()
+                                .getLaunchbar().show();
+                            bringToFront(user.getContext()
+                                .getLaunchbar());
+                        }
+                    });
+                userMenu.add(launchbarItem);
+                trayPopup.add(userMenu);
             }
             trayPopup.addSeparator();
         }
@@ -1237,6 +1261,8 @@ public class OpenGroove
         loginFrame.setAlwaysOnTop(true);
         loginFrame.show();
         bringToFront(loginFrame);
+        loginFrame.getPasswordField()
+            .requestFocusInWindow();
     }
     
     private static void initLoginFrame()
