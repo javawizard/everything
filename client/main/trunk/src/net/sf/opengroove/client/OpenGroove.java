@@ -1041,7 +1041,19 @@ public class OpenGroove
                                 component
                                     .setCursor(Cursor
                                         .getPredefinedCursor(Cursor.HAND_CURSOR));
-                                FrameShowingNotification tn = new FrameShowingNotification();
+                                if (priority == Priority.ALERT)
+                                    component
+                                        .setIcon(new ImageIcon(
+                                            Icons.WORKSPACE_WARNING_16
+                                                .getImage()));
+                                FrameShowingNotification tn = new FrameShowingNotification(
+                                    notificationFrame,
+                                    component, uframe,
+                                    true, false);
+                                notificationFrame
+                                    .addNotification(
+                                        context.getUserid(),
+                                        tn, true);
                             }
                         }
                     });
