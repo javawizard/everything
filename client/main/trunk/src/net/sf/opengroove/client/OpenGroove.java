@@ -4,6 +4,7 @@ import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Component;
 import java.awt.Container;
+import java.awt.Cursor;
 import java.awt.Desktop;
 import java.awt.Dialog;
 import java.awt.Dimension;
@@ -87,6 +88,7 @@ import net.sf.opengroove.client.download.PluginDownloadManager;
 import net.sf.opengroove.client.features.FeatureComponentHandler;
 import net.sf.opengroove.client.features.FeatureManager;
 import net.sf.opengroove.client.help.HelpViewer;
+import net.sf.opengroove.client.notification.FrameShowingNotification;
 import net.sf.opengroove.client.notification.NotificationAdapter;
 import net.sf.opengroove.client.notification.TaskbarNotificationFrame;
 import net.sf.opengroove.client.plugins.Plugin;
@@ -1013,10 +1015,7 @@ public class OpenGroove
                             /*
                              * TODO: the notification should dismiss itself if
                              * the current date passes the date that the
-                             * notification expires, and only critical
-                             * notifications should show in the frame; others
-                             * should show in the taskbar notification frame and
-                             * show the external frame when the item is clicked
+                             * notification expires
                              */
                             UserNotificationFrame uframe = new UserNotificationFrame(
                                 context
@@ -1024,7 +1023,26 @@ public class OpenGroove
                                 context
                                     .formatDateTime(dateExpires),
                                 priority, subject, message);
-                            uframe.show();
+                            uframe
+                                .setTitle("Server Notification - OpenGroove");
+                            uframe
+                                .setIconImage(getWindowIcon());
+                            uframe
+                                .setLocationRelativeTo(null);
+                            if (priority == Priority.CRITICAL)
+                            {
+                                uframe.show();
+                            }
+                            else
+                            {
+                                JLabel component = new JLabel(
+                                    "Server Notification: "
+                                        + subject);
+                                component
+                                    .setCursor(Cursor
+                                        .getPredefinedCursor(Cursor.HAND_CURSOR));
+                                FrameShowingNotification tn = new FrameShowingNotification();
+                            }
                         }
                     });
                 Communicator com = new Communicator(Userids
