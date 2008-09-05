@@ -32,6 +32,8 @@ public class UserNotificationFrame extends JFrame
     private JLabel jLabel3;
     private JLabel jLabel4;
     private JLabel jLabel5;
+    private JPanel centerPanel;
+    private JPanel lowerPanel;
     private JPanel jPanel6;
     private JPanel jPanel5;
     private JPanel jPanel4;
@@ -44,13 +46,17 @@ public class UserNotificationFrame extends JFrame
     private JLabel issuedOnLabel;
     private JTextField subjectTextField;
     
-    public UserNotificationFrame(long dateIssued,
-        long dateExpires, Priority priority,
+    public UserNotificationFrame(String dateIssued,
+        String dateExpires, Priority priority,
         String subject, String message)
     {
         initGUI();
         subjectTextField.setText(subject);
-        is
+        issuedOnLabel.setText(dateIssued);
+        expiresLabel.setText(dateExpires);
+        priorityLabel.setText(priority.name().substring(0,
+            1).toUpperCase()
+            + priority.name().substring(1));
     }
     
     private void initGUI()
@@ -104,17 +110,18 @@ public class UserNotificationFrame extends JFrame
                                 64, 21));
                         {
                             subjectTextField = new JTextField();
-                            jPanel2.add(subjectTextField, BorderLayout.CENTER);
+                            jPanel2.add(subjectTextField,
+                                BorderLayout.CENTER);
                             subjectTextField.setBounds(112,
                                 62, 220, 32);
                             subjectTextField
-                            .setOpaque(false);
+                                .setOpaque(false);
                             subjectTextField
-                            .setBorder(BorderFactory
-                                .createEmptyBorder(0,
-                                    0, 0, 0));
+                                .setBorder(BorderFactory
+                                    .createEmptyBorder(0,
+                                        0, 0, 0));
                             subjectTextField
-                            .setEditable(false);
+                                .setEditable(false);
                         }
                         {
                             jLabel2 = new JLabel();
@@ -126,7 +133,9 @@ public class UserNotificationFrame extends JFrame
                             jLabel2
                                 .setFont(new java.awt.Font(
                                     "Dialog", 1, 16));
-                            jLabel2.setPreferredSize(new java.awt.Dimension(100, 26));
+                            jLabel2
+                                .setPreferredSize(new java.awt.Dimension(
+                                    100, 26));
                             jLabel2.setSize(100, 26);
                         }
                     }
@@ -140,14 +149,15 @@ public class UserNotificationFrame extends JFrame
                                 58, 16));
                         {
                             issuedOnLabel = new JLabel();
-                            jPanel4.add(issuedOnLabel, BorderLayout.CENTER);
+                            jPanel4.add(issuedOnLabel,
+                                BorderLayout.CENTER);
                             issuedOnLabel
-                            .setText("Unknown");
+                                .setText("Unknown");
                             issuedOnLabel.setBounds(111,
                                 94, 221, 19);
                             issuedOnLabel
-                            .setFont(new java.awt.Font(
-                                "Dialog", 0, 12));
+                                .setFont(new java.awt.Font(
+                                    "Dialog", 0, 12));
                         }
                         {
                             jLabel3 = new JLabel();
@@ -157,7 +167,9 @@ public class UserNotificationFrame extends JFrame
                             jLabel3.setBounds(12, 94, 100,
                                 20);
                             jLabel3.setSize(100, 16);
-                            jLabel3.setPreferredSize(new java.awt.Dimension(100, 20));
+                            jLabel3
+                                .setPreferredSize(new java.awt.Dimension(
+                                    100, 20));
                         }
                     }
                     {
@@ -170,13 +182,14 @@ public class UserNotificationFrame extends JFrame
                                 46, 16));
                         {
                             expiresLabel = new JLabel();
-                            jPanel5.add(expiresLabel, BorderLayout.CENTER);
+                            jPanel5.add(expiresLabel,
+                                BorderLayout.CENTER);
                             expiresLabel.setText("Unknown");
                             expiresLabel.setBounds(112,
                                 116, 220, 16);
                             expiresLabel
-                            .setFont(new java.awt.Font(
-                                "Dialog", 0, 12));
+                                .setFont(new java.awt.Font(
+                                    "Dialog", 0, 12));
                         }
                         {
                             jLabel4 = new JLabel();
@@ -185,7 +198,9 @@ public class UserNotificationFrame extends JFrame
                             jLabel4.setText("Expires:");
                             jLabel4.setBounds(12, 114, 100,
                                 20);
-                            jLabel4.setPreferredSize(new java.awt.Dimension(100, 20));
+                            jLabel4
+                                .setPreferredSize(new java.awt.Dimension(
+                                    100, 20));
                         }
                     }
                     {
@@ -198,14 +213,15 @@ public class UserNotificationFrame extends JFrame
                                 44, 16));
                         {
                             priorityLabel = new JLabel();
-                            jPanel6.add(priorityLabel, BorderLayout.CENTER);
+                            jPanel6.add(priorityLabel,
+                                BorderLayout.CENTER);
                             priorityLabel
-                            .setText("Unknown");
+                                .setText("Unknown");
                             priorityLabel.setBounds(112,
                                 136, 220, 16);
                             priorityLabel
-                            .setFont(new java.awt.Font(
-                                "Dialog", 0, 12));
+                                .setFont(new java.awt.Font(
+                                    "Dialog", 0, 12));
                         }
                         {
                             jLabel5 = new JLabel();
@@ -215,16 +231,33 @@ public class UserNotificationFrame extends JFrame
                             jLabel5.setBounds(12, 134, 100,
                                 20);
                             jLabel5.setAutoscrolls(true);
-                            jLabel5.setPreferredSize(new java.awt.Dimension(100, 20));
+                            jLabel5
+                                .setPreferredSize(new java.awt.Dimension(
+                                    100, 20));
                         }
                     }
+                }
+                {
+                    lowerPanel = new JPanel();
+                    BorderLayout lowerPanelLayout = new BorderLayout();
+                    lowerPanel.setLayout(lowerPanelLayout);
+                    getContentPane().add(lowerPanel,
+                        BorderLayout.SOUTH);
                     {
                         okButton = new JButton();
-                        jPanel1.add(okButton);
+                        lowerPanel.add(okButton,
+                            BorderLayout.EAST);
                         okButton.setText("OK");
                         okButton
                             .setBounds(293, 348, 51, 26);
                     }
+                }
+                {
+                    centerPanel = new JPanel();
+                    centerPanel.setBorder(new EmptyBorder(
+                        0, 10, 10, 10));
+                    getContentPane().add(centerPanel,
+                        BorderLayout.CENTER);
                 }
             }
             {
