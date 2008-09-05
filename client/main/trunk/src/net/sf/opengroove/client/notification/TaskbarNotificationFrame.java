@@ -407,11 +407,15 @@ public class TaskbarNotificationFrame extends
     private synchronized void internalDeleteNotification(
         TaskbarNotification notification)
     {
-        for (ArrayList<TaskbarNotification> list : new ArrayList<ArrayList<TaskbarNotification>>(
-            notifications.values()))
+        for (Map.Entry<String, ArrayList<TaskbarNotification>> entry : new ArrayList<Map.Entry<String, ArrayList<TaskbarNotification>>>(
+            notifications.entrySet()))
         {
+            ArrayList<TaskbarNotification> list = entry
+                .getValue();
             if (list.contains(notification))
                 list.remove(notification);
+            if (list.size() == 0)
+                notifications.remove(entry.getKey());
         }
     }
     
