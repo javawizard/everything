@@ -1185,7 +1185,7 @@ public class OpenGroove
      */
     public static void showLoginWindow(String userid)
     {
-        if (loginFrame.isShowing()
+        if ((!loginFrame.isShowing())
             && (!loginFrame.getUserid().equals(userid)))
             /*
              * If the login frame is showing and we're switching it to a
