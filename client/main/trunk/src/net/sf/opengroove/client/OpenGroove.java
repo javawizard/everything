@@ -1081,14 +1081,16 @@ public class OpenGroove
                 // reloadLaunchbarWorkspaces(context);
                 loginFrame.hide();
                 userContextMap.put(userid, context);
-                notificationFrame
-                    .addNotification(
-                        context.getUserid(),
-                        new NotificationAdapter(
-                            notificationFrame,
-                            new JLabel(
-                                "You have successfully logged into OpenGroove."),
-                            false, true), true);
+                JLabel successLoggedInLabel = new JLabel(
+                    "You have successfully logged into OpenGroove.");
+                successLoggedInLabel
+                    .setCursor(Cursor
+                        .getPredefinedCursor(Cursor.HAND_CURSOR));
+                notificationFrame.addNotification(context
+                    .getUserid(), new NotificationAdapter(
+                    notificationFrame,
+                    successLoggedInLabel, false, true),
+                    true);
             }
         }
         finally
