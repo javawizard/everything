@@ -102,6 +102,7 @@ import net.sf.opengroove.client.ui.InviteToWorkspaceDialog;
 import net.sf.opengroove.client.ui.StandardWizardPage;
 import net.sf.opengroove.client.ui.StatusDialog;
 import net.sf.opengroove.client.ui.frames.LoginFrame;
+import net.sf.opengroove.client.ui.frames.UserNotificationFrame;
 import net.sf.opengroove.client.workspace.WorkspaceManager;
 import net.sf.opengroove.client.workspace.WorkspaceWrapper;
 import net.sf.opengroove.common.security.Hash;
@@ -933,7 +934,7 @@ public class OpenGroove
                  * context, hiding the auth dialog, creating the launchbar,
                  * loading plugins, re-generating the taskbar popup menu, etc.
                  */
-                UserContext context = new UserContext();
+                final UserContext context = new UserContext();
                 context.setUserid(userid);
                 context.setPassword(password);
                 context
@@ -1009,8 +1010,18 @@ public class OpenGroove
                             /*
                              * TODO: the notification should dismiss itself if
                              * the current date passes the date that the
-                             * notification expires
+                             * notification expires, and only critical
+                             * notifications should show in the frame; others
+                             * should show in the taskbar notification frame and
+                             * show the external frame when the item is clicked
                              */
+                            UserNotificationFrame uframe = new UserNotificationFrame(
+                                context
+                                    .formatDate(dateIssued),
+                                context
+                                    .formatDate(dateExpires),
+                                priority, subject, message);
+                            uframe.show();
                         }
                     });
                 Communicator com = new Communicator(Userids

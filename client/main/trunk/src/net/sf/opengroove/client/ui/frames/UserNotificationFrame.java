@@ -85,6 +85,7 @@ public class UserNotificationFrame extends JFrame
                 BorderLayout thisLayout = new BorderLayout();
                 getContentPane().setLayout(thisLayout);
                 this.setResizable(false);
+                this.setAlwaysOnTop(true);
                 {
                     jPanel1 = new JPanel();
                     jPanel1.setBorder(new EmptyBorder(10,

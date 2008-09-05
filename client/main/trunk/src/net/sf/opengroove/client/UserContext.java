@@ -1,6 +1,8 @@
 package net.sf.opengroove.client;
 
 import java.awt.PopupMenu;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 
 import javax.swing.JFrame;
 import javax.swing.JPanel;
@@ -8,6 +10,7 @@ import javax.swing.JTabbedPane;
 
 import net.sf.opengroove.client.com.CommandCommunicator;
 import net.sf.opengroove.client.com.StatusListener;
+import net.sf.opengroove.client.com.UserNotificationListener;
 import net.sf.opengroove.client.help.HelpViewer;
 import net.sf.opengroove.client.plugins.PluginManager;
 import net.sf.opengroove.client.workspace.WorkspaceManager;
@@ -30,6 +33,7 @@ public class UserContext
      * This user's userid
      */
     private String userid;
+    private UserNotificationListener userNotificationListener;
     /**
      * A JPanel that holds this user's contact list
      */
@@ -225,5 +229,24 @@ public class UserContext
         StatusListener statusListener)
     {
         this.statusListener = statusListener;
+    }
+    
+    public UserNotificationListener getUserNotificationListener()
+    {
+        return userNotificationListener;
+    }
+    
+    public void setUserNotificationListener(
+        UserNotificationListener userNotificationListener)
+    {
+        this.userNotificationListener = userNotificationListener;
+    }
+    
+    private static SimpleDateFormat DATE_FORMAT = new SimpleDateFormat(
+        "TODO: fill this out");
+    
+    public String formatDate(long dateExpires)
+    {
+        return DATE_FORMAT.format(new Date(dateExpires));
     }
 }
