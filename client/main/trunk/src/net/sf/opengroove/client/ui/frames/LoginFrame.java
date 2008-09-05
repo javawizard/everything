@@ -96,6 +96,7 @@ public class LoginFrame extends javax.swing.JFrame
     {
         super();
         initGUI();
+        passwordField.requestFocusInWindow();
     }
     
     private void initGUI()
