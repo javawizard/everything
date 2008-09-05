@@ -28,6 +28,7 @@ public class UserNotificationFrame extends JFrame
     private JLabel jLabel2;
     private JLabel jLabel3;
     private JLabel jLabel4;
+    private JLabel jLabel5;
     public UserNotificationFrame(long dateIssued,
         long dateExpires, Priority priority,
         String subject, String message)
@@ -51,21 +52,29 @@ public class UserNotificationFrame extends JFrame
                 {
                     jLabel2 = new JLabel();
                     getContentPane().add(jLabel2);
-                    jLabel2.setText("Issued on:");
+                    jLabel2.setText("Subject:");
                     jLabel2.setBounds(12, 68, 96, 20);
                     jLabel2.setSize(100, 20);
                 }
                 {
                     jLabel3 = new JLabel();
                     getContentPane().add(jLabel3);
-                    jLabel3.setText("Expires:");
+                    jLabel3.setText("Issued on:");
                     jLabel3.setBounds(12, 88, 100, 20);
                 }
                 {
                     jLabel4 = new JLabel();
                     getContentPane().add(jLabel4);
-                    jLabel4.setText("Priority:");
+                    jLabel4.setText("Expires:");
                     jLabel4.setBounds(12, 108, 100, 20);
+                }
+                {
+                    jLabel5 = new JLabel();
+                    getContentPane().add(jLabel5);
+                    jLabel5.setText("Priority:");
+                    jLabel5.setBounds(12, 128, 44, 16);
+                    jLabel5.setAutoscrolls(true);
+                    jLabel5.setSize(100, 20);
                 }
             }
             {
