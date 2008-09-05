@@ -81,6 +81,7 @@ import net.sf.opengroove.client.com.Packet;
 import net.sf.opengroove.client.com.ServerContext;
 import net.sf.opengroove.client.com.ServerSecurityKey;
 import net.sf.opengroove.client.com.StatusListener;
+import net.sf.opengroove.client.com.UserNotificationListener;
 import net.sf.opengroove.client.com.FieldFile.Fields;
 import net.sf.opengroove.client.download.PluginDownloadManager;
 import net.sf.opengroove.client.features.FeatureComponentHandler;
@@ -992,6 +993,24 @@ public class OpenGroove
                         {
                             System.out
                                 .println("persistant connection ready");
+                        }
+                    });
+                context
+                    .setUserNotificationListener(new UserNotificationListener()
+                    {
+                        
+                        @Override
+                        public void receive(
+                            long dateIssued,
+                            long dateExpires,
+                            Priority priority,
+                            String subject, String message)
+                        {
+                            /*
+                             * TODO: the notification should dismiss itself if
+                             * the current date passes the date that the
+                             * notification expires
+                             */
                         }
                     });
                 Communicator com = new Communicator(Userids
