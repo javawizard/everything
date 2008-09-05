@@ -9,6 +9,8 @@ import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
+import javax.swing.JScrollPane;
+import javax.swing.JTextArea;
 import javax.swing.JTextField;
 import javax.swing.SwingConstants;
 import javax.swing.border.EmptyBorder;
@@ -32,6 +34,8 @@ public class UserNotificationFrame extends JFrame
     private JLabel jLabel3;
     private JLabel jLabel4;
     private JLabel jLabel5;
+    private JScrollPane jScrollPane1;
+    private JTextArea messageField;
     private JPanel centerPanel;
     private JPanel lowerPanel;
     private JPanel jPanel6;
@@ -254,10 +258,22 @@ public class UserNotificationFrame extends JFrame
                 }
                 {
                     centerPanel = new JPanel();
+                    BorderLayout centerPanelLayout = new BorderLayout();
+                    centerPanel.setLayout(centerPanelLayout);
                     centerPanel.setBorder(new EmptyBorder(
                         0, 10, 10, 10));
                     getContentPane().add(centerPanel,
                         BorderLayout.CENTER);
+                    {
+                        jScrollPane1 = new JScrollPane();
+                        centerPanel.add(jScrollPane1, BorderLayout.CENTER);
+                        jScrollPane1.setPreferredSize(new java.awt.Dimension(324, 217));
+                        {
+                            messageField = new JTextArea();
+                            jScrollPane1.setViewportView(messageField);
+                            messageField.setEditable(false);
+                        }
+                    }
                 }
             }
             {
