@@ -243,10 +243,24 @@ public class UserContext
     }
     
     private static SimpleDateFormat DATE_FORMAT = new SimpleDateFormat(
-        "TODO: fill this out");
+        "yyyy.MM.dd");
+    private static SimpleDateFormat TIME_FORMAT = new SimpleDateFormat(
+        "hh:mmaa");
+    private static SimpleDateFormat DATE_TIME_FORMAT = new SimpleDateFormat(
+        "yyyy.MM.dd hh:mmaa");
     
-    public String formatDate(long dateExpires)
+    public String formatDate(long date)
     {
-        return DATE_FORMAT.format(new Date(dateExpires));
+        return DATE_FORMAT.format(new Date(date));
+    }
+    
+    public String formatTime(long time)
+    {
+        return TIME_FORMAT.format(new Date(time));
+    }
+    
+    public String formatDateTime(long dateTime)
+    {
+        return DATE_TIME_FORMAT.format(new Date(dateTime));
     }
 }

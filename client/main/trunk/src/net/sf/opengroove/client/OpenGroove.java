@@ -1017,9 +1017,9 @@ public class OpenGroove
                              */
                             UserNotificationFrame uframe = new UserNotificationFrame(
                                 context
-                                    .formatDate(dateIssued),
+                                    .formatDateTime(dateIssued),
                                 context
-                                    .formatDate(dateExpires),
+                                    .formatDateTime(dateExpires),
                                 priority, subject, message);
                             uframe.show();
                         }
@@ -1033,6 +1033,9 @@ public class OpenGroove
                         .getStatusListener(), null);
                 CommandCommunicator commandCom = new CommandCommunicator(
                     com);
+                commandCom
+                    .addUserNotificationListener(context
+                        .getUserNotificationListener());
                 context.setCom(commandCom);
                 // loadFeatures();
                 // loadCurrentUserLookAndFeel();

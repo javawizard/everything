@@ -84,7 +84,6 @@ public class UserNotificationFrame extends JFrame
             {
                 BorderLayout thisLayout = new BorderLayout();
                 getContentPane().setLayout(thisLayout);
-                this.setResizable(false);
                 this.setAlwaysOnTop(true);
                 {
                     jPanel1 = new JPanel();
@@ -141,6 +140,7 @@ public class UserNotificationFrame extends JFrame
                                         0, 0, 0));
                             subjectTextField
                                 .setEditable(false);
+                            subjectTextField.setFont(new java.awt.Font("Dialog",0,16));
                         }
                         {
                             jLabel2 = new JLabel();
@@ -292,6 +292,8 @@ public class UserNotificationFrame extends JFrame
                             jScrollPane1
                                 .setViewportView(messageField);
                             messageField.setEditable(false);
+                            messageField.setLineWrap(true);
+                            messageField.setWrapStyleWord(true);
                         }
                     }
                 }
