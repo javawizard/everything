@@ -65,8 +65,9 @@ import net.sf.opengroove.common.security.RSA;
 public class Communicator
 {
     private static final SecureRandom random = new SecureRandom();
-    public static final int[] WAIT_TIMES = { 0, 0, 2, 3, 5,
-        10, 10, 10, 10, 10, 10, 20, 20, 20, 20, 30, 30, 30 };
+    public static final int[] WAIT_TIMES = { 0, 0, 2, 2, 2,
+        3, 5, 10, 10, 10, 10, 10, 10, 20, 20, 20, 20, 30,
+        30, 30 };
     private int waitIndex = 0;
     private BigInteger serverRsaPublic;
     private BigInteger serverRsaMod;
