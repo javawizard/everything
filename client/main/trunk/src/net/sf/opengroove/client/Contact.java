@@ -18,12 +18,6 @@ public class Contact implements Serializable
      * This contact's userid. This must be a userid; it cannot be a username.
      */
     private String userid;
-    /**
-     * A name set for this contact by the local user. If this is null, then
-     * realName should be displayed to the user. If this is not null, then this
-     * should be displayed to the user in place of realName.
-     */
-    private String localName;
     
     /**
      * This field, along with {@link #rsaEncMod}, {@link #rsaSigMod}, and
@@ -65,14 +59,29 @@ public class Contact implements Serializable
      * contacted the actual user represented by this contact to validate that
      * those keys are correct, and then indicated to opengroove that they have
      * done this.
+     * 
+     * Verification is computer-specific. In otherwords, if the local user has
+     * two computers, and verifies a particular user on one computer, that won't
+     * cause that user to show up as verified on any of the user's other
+     * computers.
      */
     private boolean isUserVerified;
     /**
-     * This contact's contact card. If this contains a name (as vCards should),
-     * then it will be used in place of the user's userid in OpenGroove's user
-     * interface.
+     * The date of the last time that this contact was modified. This is used
+     * when connecting to the server, to see if the contact needs to be updated
+     * on the server. Each contact has a date stored on the server that
+     * represents the last time the information for that contact was updated by
+     * the local user. When a computer connects, it checks to see if this is
+     * greater than the corresponding value on the server. If it is, it uploads
+     * the details of this contact to the server, and updates it's lastModified
+     * date. If this one is less than the one on the server, the contact details
+     * from the server are downloaded to the local computer
+     * 
+     * In the future, this will be split out into several fields, or perhaps a
+     * Properties object, for each item within the contact, so that changing two
+     * entirely independant settings of a contact won't overwrite each other.
      */
-    private VCard contactCard;
+    private long lastModified;
     /**
      * The list of this contact's computers. This is automatically synchronized
      * every time the local user goes online.
@@ -92,11 +101,6 @@ public class Contact implements Serializable
     public String getUserid()
     {
         return userid;
-    }
-    
-    public String getLocalName()
-    {
-        return localName;
     }
     
     public BigInteger getRsaEncPub()
@@ -142,11 +146,6 @@ public class Contact implements Serializable
     public void setUserid(String userid)
     {
         this.userid = userid;
-    }
-    
-    public void setLocalName(String localName)
-    {
-        this.localName = localName;
     }
     
     public void setRsaEncPub(BigInteger rsaEncPub)
