@@ -56,6 +56,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 import java.util.Queue;
+import java.util.concurrent.ScheduledThreadPoolExecutor;
 import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
 import java.util.jar.JarOutputStream;
@@ -165,6 +166,8 @@ public class OpenGroove
     private static WizardDialogPane newAccountWizardPane;
     
     private static JFrame newAccountFrame;
+    
+    private static ScheduledThreadPoolExecutor periodicTasks
     /**
      * The number of bits that should be in RSA security keys generated for the
      * user. Workspace key sizes are decided by the creator of the workspace,

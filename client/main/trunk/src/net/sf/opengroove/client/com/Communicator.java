@@ -280,8 +280,11 @@ public class Communicator
                         ConnectionResolver.clearCache();
                     try
                     {
+                        waitIndex++;
+                        if (waitIndex >= WAIT_TIMES.length)
+                            waitIndex = WAIT_TIMES.length - 1;
                         Thread
-                            .sleep(WAIT_TIMES[waitIndex++] * 1000);
+                            .sleep(WAIT_TIMES[waitIndex] * 1000);
                     }
                     catch (Exception ex1)
                     {
