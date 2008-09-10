@@ -10,5 +10,18 @@ package net.sf.opengroove.common.concurrent;
  */
 public interface Conditional
 {
+    /**
+     * A conditional that is always true.
+     */
+    public static final Conditional True = new Conditional()
+    {
+        
+        @Override
+        public boolean query()
+        {
+            return true;
+        }
+    };
+    
     public boolean query();
 }
