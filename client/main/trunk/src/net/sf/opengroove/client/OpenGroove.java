@@ -896,10 +896,6 @@ public class OpenGroove
      */
     protected static void doFrameLogin()
     {
-        /*
-         * FIXME: This needs to be changed to create a CommandCommunicator and
-         * stick it into the com field
-         */
         loginFrame.getLoginButton().setEnabled(false);
         loginFrame.getNewAccountButton().setEnabled(false);
         loginFrame.getCancelButton().setEnabled(false);
