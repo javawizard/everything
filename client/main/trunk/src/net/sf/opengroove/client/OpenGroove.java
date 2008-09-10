@@ -3583,7 +3583,8 @@ public class OpenGroove
         wframe.dispose();
     }
     
-    private static final AtomicLong nextGenId = new AtomicLong(1);
+    private static final AtomicLong nextGenId = new AtomicLong(
+        1);
     
     /**
      * creates a new id. the id should be unique for the whole OpenGroove
@@ -3601,6 +3602,11 @@ public class OpenGroove
     }
     
     /**
+     * This is now obsolete (it will be replaced by the concept of
+     * LanguageContexts) and will be removed once I'm sure it's not used by
+     * anything else. However, I may end up deciding to keep it and have it
+     * delegate to the current language context for OpenGroove.<br/><br/>
+     * 
      * shorthand for TextManager.text(key);
      * 
      * @param key
