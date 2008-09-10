@@ -3595,8 +3595,6 @@ public class OpenGroove
     public static synchronized String generateId(
         UserContext context)
     {
-        String d = Double.toString(Math.random()).replace(
-            ".", "");
         return context.getUserid().replace(":", "..") + "-"
             + System.currentTimeMillis() + "-"
             + nextGenId.getAndIncrement();
