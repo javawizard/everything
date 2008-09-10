@@ -6,6 +6,7 @@ import java.util.Date;
 
 import javax.swing.JFrame;
 import javax.swing.JPanel;
+import javax.swing.JProgressBar;
 import javax.swing.JTabbedPane;
 
 import net.sf.opengroove.client.com.CommandCommunicator;
@@ -298,6 +299,8 @@ public class UserContext
         this.contactTimer = contactTimer;
     }
     
+    private final Object refreshContactsLock = new Object();
+    
     /**
      * Refreshes the contacts panel. This should generally not be run on the
      * EDT, as it may take some time to complete. It removes all components from
@@ -306,7 +309,10 @@ public class UserContext
      */
     public void refreshContactsPane()
     {
-        contactsPanel.removeAll();
-        
+        synchronized (refreshContactsLock)
+        {
+            contactsPanel.removeAll();
+            JProgressBar bar = new JProgressBar();
+        }
     }
 }

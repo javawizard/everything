@@ -366,21 +366,25 @@ public class Storage
      * Gets a particular contact by the realm and username specified, returning
      * null if the contact specified does not exist.
      * 
-     * @param realm
-     *            The user's realm
-     * @param username
-     *            The user's username
+     * @param userid
+     *            The userid (or username, in which case the realm of this
+     *            storage instance will be used to create a userid) of the
+     *            contact to get
      * @return The contact, or null if the contact does not exist on this
      *         computer
      */
-    public synchronized Contact getContact(String realm,
-        String username)
+    public synchronized Contact getContact(String userid)
     {
-        if (!new File(contacts, realm + ":" + username)
-            .exists())
+        userid = Userids.resolveTo(userid, this.userid);
+        if (!new File(contacts, userid).exists())
             return null;
         return (Contact) readObjectFromFile(new File(
-            contacts, realm + ":" + username));
+            contacts, userid));
+    }
+    
+    public synchronized int getContactCount()
+    {
+        return contacts.list().length;
     }
     
     /**

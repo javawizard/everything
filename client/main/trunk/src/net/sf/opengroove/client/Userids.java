@@ -86,4 +86,31 @@ public class Userids
         return toUserid(toRealm(userid), username);
     }
     
+    /**
+     * Resolves a username to a userid, relative to another username. More
+     * precisely, if <code>toResolve</code> is already a userid, then it is
+     * returned without modification. If it is a username, then it is made into
+     * a userid by extracting the realm from <code>relativeTo</code> and
+     * adding it to the username. For example:<br/><br/>
+     * 
+     * resolveTo("realm:username","differentrealm:differentusername")<br/><br/>
+     * 
+     * would evaluate to "realm:username", but:<br/><br/>
+     * 
+     * resolveTo("username","differentrealm:differentusername")<br/><br/>
+     * 
+     * would evaluate to "differentrealm:username".
+     * 
+     * @param toResolve
+     *            The userid or username to resolve
+     * @param relativeTo
+     *            The userid that <code>toResolve</code> should be interpreted
+     *            relative to if <code>toResolve</code> is a username
+     * @return The relativized userid.
+     */
+    public static String resolveTo(String toResolve,
+        String relativeTo)
+    {
+    }
+    
 }
