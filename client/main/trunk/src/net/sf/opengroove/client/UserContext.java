@@ -275,25 +275,38 @@ public class UserContext
     {
         return DATE_TIME_FORMAT.format(new Date(dateTime));
     }
-
+    
     public Conditional getConnectionConditional()
     {
         return connectionConditional;
     }
-
+    
     public ConditionalTimer getContactTimer()
     {
         return contactTimer;
     }
-
+    
     public void setConnectionConditional(
         Conditional connectionConditional)
     {
         this.connectionConditional = connectionConditional;
     }
-
-    public void setContactTimer(ConditionalTimer contactTimer)
+    
+    public void setContactTimer(
+        ConditionalTimer contactTimer)
     {
         this.contactTimer = contactTimer;
+    }
+    
+    /**
+     * Refreshes the contacts panel. This should generally not be run on the
+     * EDT, as it may take some time to complete. It removes all components from
+     * the contacts panel, adds an indeterminate progress bar to it, loads all
+     * of the contacts below it, and then removes the progress bar.
+     */
+    public void refreshContactsPane()
+    {
+        contactsPanel.removeAll();
+        
     }
 }

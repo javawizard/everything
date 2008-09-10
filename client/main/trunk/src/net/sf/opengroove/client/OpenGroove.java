@@ -109,6 +109,7 @@ import net.sf.opengroove.client.ui.frames.LoginFrame;
 import net.sf.opengroove.client.ui.frames.UserNotificationFrame;
 import net.sf.opengroove.client.workspace.WorkspaceManager;
 import net.sf.opengroove.client.workspace.WorkspaceWrapper;
+import net.sf.opengroove.common.concurrent.Conditional;
 import net.sf.opengroove.common.security.Hash;
 import net.sf.opengroove.common.security.RSA;
 
@@ -938,6 +939,24 @@ public class OpenGroove
                  * loading plugins, re-generating the taskbar popup menu, etc.
                  */
                 final UserContext context = new UserContext();
+                context
+                    .setConnectionConditional(new Conditional()
+                    {
+                        
+                        @Override
+                        public boolean query()
+                        {
+                            CommandCommunicator c2 = context
+                                .getCom();
+                            if (c2 == null)
+                                return false;
+                            Communicator c3 = c2
+                                .getCommunicator();
+                            if (c3 == null)
+                                return false;
+                            return c3.isActive();
+                        }
+                    });
                 context.setUserid(userid);
                 context.setPassword(password);
                 context
