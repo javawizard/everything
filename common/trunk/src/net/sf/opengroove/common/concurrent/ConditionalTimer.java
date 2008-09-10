@@ -70,6 +70,8 @@ public abstract class ConditionalTimer extends Thread
             }
             try
             {
+                nextUnlockTime = System.currentTimeMillis()
+                    + (waitCheck ? checkPeriod : period);
                 if (waitCheck)
                     waitingForCondition = true;
                 else
