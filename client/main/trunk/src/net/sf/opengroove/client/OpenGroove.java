@@ -3599,7 +3599,7 @@ public class OpenGroove
             ".", "");
         return context.getUserid().replace(":", "..") + "-"
             + System.currentTimeMillis() + "-"
-            + nextGenId.getAndIncrement());
+            + nextGenId.getAndIncrement();
     }
     
     /**
