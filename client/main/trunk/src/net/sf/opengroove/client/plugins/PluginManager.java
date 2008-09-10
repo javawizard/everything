@@ -55,8 +55,8 @@ import net.sf.opengroove.client.OpenGroove;
 import net.sf.opengroove.client.Storage;
 import net.sf.opengroove.client.SubversionFileFilter;
 import net.sf.opengroove.client.UserContext;
-import net.sf.opengroove.client.Userids;
 import net.sf.opengroove.client.download.PluginDownloadManager;
+import net.sf.opengroove.common.utils.Userids;
 
 /**
  * NOTES TO ME: the update site of a plugin is the URL that should be used to

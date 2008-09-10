@@ -20,6 +20,7 @@ import java.util.Hashtable;
 
 import net.sf.opengroove.client.workspace.WorkspaceWrapper;
 import net.sf.opengroove.common.security.Hash;
+import net.sf.opengroove.common.utils.Userids;
 
 import base64.Base64Coder;
 

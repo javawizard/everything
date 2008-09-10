@@ -4,6 +4,7 @@ import java.io.Serializable;
 import java.math.BigInteger;
 
 import net.sf.opengroove.client.com.CommandCommunicator;
+import net.sf.opengroove.common.utils.Userids;
 import net.sf.opengroove.common.vcard.VCard;
 
 public class LocalUser implements Serializable

@@ -17,6 +17,7 @@ import net.sf.opengroove.client.plugins.PluginManager;
 import net.sf.opengroove.client.workspace.WorkspaceManager;
 import net.sf.opengroove.common.concurrent.Conditional;
 import net.sf.opengroove.common.concurrent.ConditionalTimer;
+import net.sf.opengroove.common.utils.Userids;
 
 /**
  * A user context object is created for each user that logs in, and is passed

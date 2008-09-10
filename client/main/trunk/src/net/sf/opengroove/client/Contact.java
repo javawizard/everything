@@ -5,6 +5,7 @@ import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.HashMap;
 
+import net.sf.opengroove.common.utils.Userids;
 import net.sf.opengroove.common.vcard.VCard;
 
 public class Contact implements Serializable
