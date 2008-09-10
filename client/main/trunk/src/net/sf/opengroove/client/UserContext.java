@@ -14,6 +14,8 @@ import net.sf.opengroove.client.com.UserNotificationListener;
 import net.sf.opengroove.client.help.HelpViewer;
 import net.sf.opengroove.client.plugins.PluginManager;
 import net.sf.opengroove.client.workspace.WorkspaceManager;
+import net.sf.opengroove.common.concurrent.Conditional;
+import net.sf.opengroove.common.concurrent.ConditionalTimer;
 
 /**
  * A user context object is created for each user that logs in, and is passed
@@ -42,6 +44,16 @@ public class UserContext
      * The plugin manager that manages this user's plugins
      */
     private PluginManager plugins;
+    /**
+     * A conditional that is true if there is currently a connection to the
+     * server.
+     */
+    private Conditional connectionConditional;
+    /**
+     * A timer that downloads contact updates from the server, and uploads new
+     * contact updates if there are any.
+     */
+    private ConditionalTimer contactTimer;
     /**
      * The menu that is added to the tray icon that shows all of the user's
      * workspace
@@ -262,5 +274,26 @@ public class UserContext
     public String formatDateTime(long dateTime)
     {
         return DATE_TIME_FORMAT.format(new Date(dateTime));
+    }
+
+    public Conditional getConnectionConditional()
+    {
+        return connectionConditional;
+    }
+
+    public ConditionalTimer getContactTimer()
+    {
+        return contactTimer;
+    }
+
+    public void setConnectionConditional(
+        Conditional connectionConditional)
+    {
+        this.connectionConditional = connectionConditional;
+    }
+
+    public void setContactTimer(ConditionalTimer contactTimer)
+    {
+        this.contactTimer = contactTimer;
     }
 }

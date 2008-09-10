@@ -32,6 +32,9 @@ public class Contact implements Serializable
      * True if the keys for this contact have been obtained, false if not.
      * Messages to be sent to the contact will be queued until the key is
      * available, and the same with received messages.
+     * 
+     * Keys are computer-specific. In otherwords, just because one computer has
+     * the keys for a specific user doesn't mean another computer does.
      */
     private boolean hasKeys;
     /**
