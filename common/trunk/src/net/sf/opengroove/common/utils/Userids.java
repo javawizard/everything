@@ -115,7 +115,7 @@ public class Userids
         checkUserid(relativeTo);
     }
     
-    public void checkUserid(String userid)
+    public static void checkUserid(String userid)
     {
         if (!isUserid(userid))
             throw new IllegalArgumentException("The value "
@@ -123,7 +123,7 @@ public class Userids
                 + " is not a userid, as was expected");
     }
     
-    public void checkUseridOrUsername(
+    public static void checkUseridOrUsername(
         String useridOrUsername)
     {
         if (!(isUserid(useridOrUsername) || isUsername(useridOrUsername)))
@@ -133,14 +133,14 @@ public class Userids
                     + " is not a userid or a username, as was expected");
     }
     
-    public boolean isUserid(String userid)
+    public static boolean isUserid(String userid)
     {
         return userid.contains(":")
             && userid.indexOf(":") == userid
                 .lastIndexOf(":");
     }
     
-    public boolean isUsername(String username)
+    public static boolean isUsername(String username)
     {
         return !username.contains(":");
     }
