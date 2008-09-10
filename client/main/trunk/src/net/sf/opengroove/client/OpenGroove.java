@@ -57,6 +57,7 @@ import java.util.Map;
 import java.util.Properties;
 import java.util.Queue;
 import java.util.concurrent.ScheduledThreadPoolExecutor;
+import java.util.concurrent.atomic.AtomicLong;
 import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
 import java.util.jar.JarOutputStream;
@@ -3582,7 +3583,7 @@ public class OpenGroove
         wframe.dispose();
     }
     
-    private static volatile long nextGenId = 0;
+    private static final AtomicLong nextGenId = new AtomicLong(1);
     
     /**
      * creates a new id. the id should be unique for the whole OpenGroove
@@ -3598,8 +3599,7 @@ public class OpenGroove
             ".", "");
         return context.getUserid().replace(":", "..") + "-"
             + System.currentTimeMillis() + "-"
-            + nextGenId++ + "-"
-            + d.substring(1, Math.min(d.length(), 7));
+            + nextGenId.getAndIncrement());
     }
     
     /**
