@@ -111,6 +111,38 @@ public class Userids
     public static String resolveTo(String toResolve,
         String relativeTo)
     {
+        checkUseridOrUsername(toResolve);
+        checkUserid(relativeTo);
+    }
+    
+    public void checkUserid(String userid)
+    {
+        if (!isUserid(userid))
+            throw new IllegalArgumentException("The value "
+                + userid
+                + " is not a userid, as was expected");
+    }
+    
+    public void checkUseridOrUsername(
+        String useridOrUsername)
+    {
+        if (!(isUserid(useridOrUsername) || isUsername(useridOrUsername)))
+            throw new IllegalArgumentException(
+                "The value "
+                    + useridOrUsername
+                    + " is not a userid or a username, as was expected");
+    }
+    
+    public boolean isUserid(String userid)
+    {
+        return userid.contains(":")
+            && userid.indexOf(":") == userid
+                .lastIndexOf(":");
+    }
+    
+    public boolean isUsername(String username)
+    {
+        return !username.contains(":");
     }
     
 }
