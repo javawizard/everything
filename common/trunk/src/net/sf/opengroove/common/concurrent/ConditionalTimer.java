@@ -35,7 +35,7 @@ public abstract class ConditionalTimer extends Thread
      * sets this to false, and the timer will terminate after it finishes
      * waiting the next wait period.
      */
-    private boolean isRunning = true;
+    private volatile boolean isRunning = true;
     
     public ConditionalTimer(int period,
         Conditional condition)
@@ -60,13 +60,28 @@ public abstract class ConditionalTimer extends Thread
             try
             {
                 if (condition.query())
-                {
                     execute();
-                }
+                else
+                    waitCheck = true;
             }
             catch (Exception exception)
             {
                 exception.printStackTrace();
+            }
+            try
+            {
+                if (waitCheck)
+                    waitingForCondition = true;
+                else
+                    waitingForPeriod = true;
+                Thread.sleep(waitCheck ? checkPeriod
+                    : period);
+                waitingForCondition = false;
+                waitingForPeriod = false;
+            }
+            catch (InterruptedException e)
+            {
+                e.printStackTrace();
             }
         }
     }
