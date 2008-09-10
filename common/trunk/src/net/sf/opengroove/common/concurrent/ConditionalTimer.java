@@ -83,7 +83,7 @@ public abstract class ConditionalTimer extends Thread
             }
             catch (InterruptedException e)
             {
-                e.printStackTrace();
+                System.out.println("timer interrupted");
             }
         }
     }
