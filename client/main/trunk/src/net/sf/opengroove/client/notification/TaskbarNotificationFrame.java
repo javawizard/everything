@@ -210,16 +210,22 @@ public class TaskbarNotificationFrame extends
                         {
                             tensOfSecondsUntilHide = defaultNumVisibleSeconds * 10;
                             isFadingToVisible = true;
+                            pbar
+                                .setValue(defaultNumVisibleSeconds * 10);
                             if (currentVisibilityLevel < transition
                                 .getStepCount())
                             {
                                 currentVisibilityLevel++;
                                 transition
                                     .apply(currentVisibilityLevel);
+                                Thread.sleep(inTime
+                                    / transition
+                                        .getStepCount());
                             }
-                            pbar
-                                .setValue(defaultNumVisibleSeconds * 10);
-                            Thread.sleep(100);
+                            else
+                            {
+                                Thread.sleep(100);
+                            }
                         }
                         else if (isFadingToVisible
                             && currentVisibilityLevel < transition
