@@ -417,7 +417,7 @@ public class Storage
         File contactFile = new File(contacts, contact
             .getUserid().replace(":", "$"));
         /*
-         * TODO: is the following delete staement necessary? Perhaps the contact
+         * TODO: is the following delete statement necessary? Perhaps the contact
          * file should just be written over. Actually, this whole file needs to
          * be reworked on that idea. Perhaps, then, the old file could be
          * renamed to have $$.old on the end, and then write the new file as a
