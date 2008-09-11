@@ -383,6 +383,20 @@ public class Storage
             contacts, userid));
     }
     
+    /**
+     * If the specified value is a userid, returns it. If it is a username,
+     * returns a userid made up of the realm of this storage instance's user and
+     * the username specified.
+     * 
+     * @param useridOrUsername
+     * @return
+     */
+    private String resolve(String useridOrUsername)
+    {
+        return Userids.resolveTo(useridOrUsername,
+            this.userid);
+    }
+    
     public synchronized int getContactCount()
     {
         return contacts.list().length;
