@@ -4,7 +4,11 @@ import java.awt.Point;
 
 /**
  * This class contains utilities for doing general animations, as well as some
- * methods for preforming animations on swing components.
+ * methods for preforming animations on swing components.<br/><br/>
+ * 
+ * As of 2008.09.10, this class is no longer supported. It, or portions of it,
+ * will be moved into the net.sf.opengroove.client.ui.transitions package, which
+ * is replacing it.
  * 
  * @author Alexander Boyd
  * 

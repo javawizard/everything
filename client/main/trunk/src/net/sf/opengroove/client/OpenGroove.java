@@ -3178,6 +3178,10 @@ public class OpenGroove
             });
         setPlainFont(addContactButton);
         p4.add(pad(addContactButton, 2, 2));
+        JCheckBox showKnownUsers = new JCheckBox(
+            "Show known users");
+        context.setShowKnownUsersAsContacts(showKnownUsers);
+        p4.add(pad(showKnownUsers, 2, 2));
         p4.add(pad(contactsPanel, 2, 6));
         contactsPanel.setOpaque(false);
         p3.add(p4);
