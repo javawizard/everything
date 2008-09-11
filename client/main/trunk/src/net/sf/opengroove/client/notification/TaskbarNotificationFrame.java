@@ -65,6 +65,8 @@ public class TaskbarNotificationFrame extends
 {
     private Map<String, ArrayList<TaskbarNotification>> notifications = new Hashtable<String, ArrayList<TaskbarNotification>>();
     
+    private NotificationFrameTransition transition;
+    
     private ArrayList<TaskbarNotification> internalAllNotifications()
     {
         ArrayList<TaskbarNotification> all = new ArrayList<TaskbarNotification>();
@@ -78,7 +80,7 @@ public class TaskbarNotificationFrame extends
     
     private float tensOfSecondsUntilHide = 0;
     
-    private int defaultNumVisibleSeconds = 12;
+    private int defaultNumVisibleSeconds = 10;
     
     private boolean isMouseOver = false;
     
@@ -140,9 +142,10 @@ public class TaskbarNotificationFrame extends
      *            The transition to use when showing and hiding this frame.
      */
     public TaskbarNotificationFrame(
-        NotificationFrameTransition transition)
+        final NotificationFrameTransition transition)
     {
         super();
+        this.transition = transition;
         setAlwaysOnTop(true);
         addMouseListener(this);
         JPanel content = new JPanel();
@@ -166,7 +169,7 @@ public class TaskbarNotificationFrame extends
         content.add(notificationPanel, BorderLayout.CENTER);
         content.add(topPanel, BorderLayout.NORTH);
         final JLabel mainLabel = new JLabel(
-            "  OpenGroove           ");
+            "  OpenGroove Alerts   ");
         final JProgressBar pbar = new JProgressBar(0,
             defaultNumVisibleSeconds * 10);
         pbar.setValue(defaultNumVisibleSeconds * 10);
@@ -205,61 +208,31 @@ public class TaskbarNotificationFrame extends
                         {
                             tensOfSecondsUntilHide = defaultNumVisibleSeconds * 10;
                             isFadingToVisible = true;
-                            currentVisibilityLevel = 64;
-                            if (OpenGroove
-                                .useWindowTransparency())
-                                // FIXME: setWindowAlpha only works on windows
-                                // vista, what should be done is to move show
-                                // and hide animations into plugins. An
-                                // animation plugin could tell the taskbar
-                                // notification frame how many animation frames
-                                // it uses, and then the taskbar notification
-                                // frame could ask it for a component that wraps
-                                // the taskbar notification's panel. It would
-                                // also provide the plugin with the window
-                                // itself. Then, when it's time to animate, it
-                                // would repeatedly call some sort of update()
-                                // method on the plugin that accepts a number
-                                // which is the current frame to render, and the
-                                // plugin updates the taskbar notification frame
-                                // accordingly. The opengroove user could set in
-                                // a setting ui the amount of time that the
-                                // animation should last for, and the taskbar
-                                // notification frame will divide the time to
-                                // the number of animation frames it's plugin
-                                // needs.
-                                //
-                                // Also, setWindowAlpha only works on windows
-                                // vista, find a version that works on most, if
-                                // not all, operating systems
-                                WindowUtils
-                                    .setWindowAlpha(
-                                        TaskbarNotificationFrame.this,
-                                        1.0f);
+                            currentVisibilityLevel = transition
+                                .getStepCount();
+                            transition.apply(transition
+                                .getStepCount());
                             pbar
                                 .setValue(defaultNumVisibleSeconds * 10);
                             Thread.sleep(100);
                         }
                         else if (isFadingToVisible
-                            && currentVisibilityLevel < 64)
+                            && currentVisibilityLevel < transition
+                                .getStepCount())
                         {
                             pbar
                                 .setValue(defaultNumVisibleSeconds * 10);
                             currentVisibilityLevel++;
-                            if (OpenGroove
-                                .useWindowTransparency())
-                            {
-                                WindowUtils
-                                    .setWindowAlpha(
-                                        TaskbarNotificationFrame.this,
-                                        ((currentVisibilityLevel * 1.0f) / 64f));
-                                Thread.sleep(15);
-                            }
+                            transition
+                                .apply(currentVisibilityLevel);
+                            Thread.sleep(1000 / transition
+                                .getStepCount());
                             if (!TaskbarNotificationFrame.this
                                 .isShowing())
                                 TaskbarNotificationFrame.this
                                     .show();
-                            if (currentVisibilityLevel == 64)
+                            if (currentVisibilityLevel == transition
+                                .getStepCount())
                             {
                                 invalidate();
                                 validate();
@@ -276,55 +249,10 @@ public class TaskbarNotificationFrame extends
                         {
                             pbar.setValue(0);
                             currentVisibilityLevel--;
-                            if (OpenGroove
-                                .useWindowTransparency())// FIXME:
-                            // setWindowAlpha
-                            // only
-                            // works
-                            // on
-                            // Windows
-                            // Vista,
-                            // find
-                            // a
-                            // version
-                            // that
-                            // works
-                            // on
-                            // all
-                            // windows
-                            // versions
-                            {
-                                WindowUtils
-                                    .setWindowAlpha(
-                                        TaskbarNotificationFrame.this,
-                                        ((currentVisibilityLevel * 1.0f) / 64f));
-                                Thread.sleep(25);
-                            }
-                            if (OpenGroove
-                                .useWindowTransparency()
-                                && currentVisibilityLevel == 0)// FIXME:
-                            // setWindowAlpha
-                            // only
-                            // works
-                            // on
-                            // Windows
-                            // Vista,
-                            // find
-                            // a
-                            // version
-                            // that
-                            // works
-                            // on
-                            // all
-                            // windows
-                            // versions
-                            {
-                                WindowUtils
-                                    .setWindowAlpha(
-                                        TaskbarNotificationFrame.this,
-                                        1.0f);
-                            }
-                            
+                            transition
+                                .apply(currentVisibilityLevel);
+                            Thread.sleep(1500 / transition
+                                .getStepCount());
                             if (currentVisibilityLevel == 0)
                             {
                                 TaskbarNotificationFrame.this
@@ -338,7 +266,7 @@ public class TaskbarNotificationFrame extends
                         }
                         else if (!isFadingToVisible)
                         {
-                            Thread.sleep(200);
+                            Thread.sleep(250);
                         }
                         else if (isFadingToVisible)
                         {

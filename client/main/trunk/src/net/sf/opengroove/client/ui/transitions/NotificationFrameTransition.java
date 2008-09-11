@@ -66,7 +66,18 @@ public interface NotificationFrameTransition
      * specified. The step will range from 0 to getStepCount(), with 0 being
      * completely hidden and getStepCount() being completely visible.<br/><br/>
      * 
-     * This method will never be called before initialize().
+     * This method will never be called before initialize().<br/><br/>
+     * 
+     * Note that this method may be called frequently with a value equal to
+     * either 0 or getStepCount() to ensure that the transition is completely
+     * showing or completely hiding the frame. If each transition frame takes a
+     * lot of processing time to compute, if/else checks should be included to
+     * check for a value of 0 or a value of transition.getStepCount() and
+     * completely show or completely hide the frame.<br/><br/>
+     * 
+     * Also note that the taskbar notification frame should never be hidden by
+     * itself. It will be automatically hidden when the step reaches 0, and will
+     * be automatically shown for any other step value.
      * 
      * @param step
      *            The current step to apply

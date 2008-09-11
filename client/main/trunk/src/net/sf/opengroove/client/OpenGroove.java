@@ -107,6 +107,7 @@ import net.sf.opengroove.client.ui.StandardWizardPage;
 import net.sf.opengroove.client.ui.StatusDialog;
 import net.sf.opengroove.client.ui.frames.LoginFrame;
 import net.sf.opengroove.client.ui.frames.UserNotificationFrame;
+import net.sf.opengroove.client.ui.transitions.included.EmptyNotificationFrameTransition;
 import net.sf.opengroove.client.workspace.WorkspaceManager;
 import net.sf.opengroove.client.workspace.WorkspaceWrapper;
 import net.sf.opengroove.common.concurrent.Conditional;
@@ -463,7 +464,8 @@ public class OpenGroove
                 + sfile.getCanonicalPath());
             // helpviewer = new HelpViewer(helpFolder);
             initLoginFrame();
-            notificationFrame = new TaskbarNotificationFrame();
+            notificationFrame = new TaskbarNotificationFrame(
+                new EmptyNotificationFrameTransition());
             new Thread("notification status updater")
             {
                 public void run()
@@ -3180,6 +3182,8 @@ public class OpenGroove
         p4.add(pad(addContactButton, 2, 2));
         JCheckBox showKnownUsers = new JCheckBox(
             "Show known users");
+        showKnownUsers.setFont(Font.decode(null));
+        showKnownUsers.setOpaque(false);
         context.setShowKnownUsersAsContacts(showKnownUsers);
         p4.add(pad(showKnownUsers, 2, 2));
         p4.add(pad(contactsPanel, 2, 6));
