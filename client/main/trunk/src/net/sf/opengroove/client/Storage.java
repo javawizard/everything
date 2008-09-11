@@ -415,7 +415,7 @@ public class Storage
     public synchronized void setContact(Contact contact)
     {
         File contactFile = new File(contacts, contact
-            .getUserid());
+            .getUserid().replace(":", "$"));
         /*
          * TODO: is the following delete staement necessary? Perhaps the contact
          * file should just be written over. Actually, this whole file needs to
@@ -427,6 +427,14 @@ public class Storage
          * Perhaps, then, the stuff in this file should just use the proxy
          * storage system, and I should write what I just described into the
          * proxy storage system.
+         * 
+         * TODO: All over this file is the magic string "$", for replacing the :
+         * character in userids, since : isn't allowed in filenames on most file
+         * systems. This should probably be put into a static constant, or
+         * better yet, moved into a method on Userids.java that handles
+         * converting userids to a disk-friendly format. Actually, the
+         * ProxyStorage system would probably resolve the problem entirely, see
+         * the todo item above this one.
          */
         if (contactFile.exists())
             contactFile.delete();
