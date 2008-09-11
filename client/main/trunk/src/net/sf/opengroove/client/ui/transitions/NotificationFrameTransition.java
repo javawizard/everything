@@ -13,9 +13,14 @@ import net.sf.opengroove.client.notification.TaskbarNotificationFrame;
 public interface NotificationFrameTransition
 {
     /**
-     * Gets the number of steps that this notification requires.
+     * Gets the number of steps that this transition requires. It's best to keep
+     * this as small as possible without the animation looking jittery, as
+     * rounding errors will force the length of the animation (specified by the
+     * user) to round by this number of milliseconds. For example, if this
+     * returns 100, then an animation length of 463 would either be rounded to
+     * 400 or 500, it's not specified which one will occur.
      * 
-     * @return
+     * @return The number of steps that this transition requires.
      */
     public int getStepCount();
     
@@ -36,6 +41,21 @@ public interface NotificationFrameTransition
      */
     public void initialize(TaskbarNotificationFrame frame,
         JPanel panel);
+    
+    /**
+     * Updates the window's target position. This is where the notification
+     * frame's upper-left corner should be located at when it is completely
+     * visible. If a notification does not need to move the notification frame,
+     * then it should just set the size of the notification frame accordingly.
+     * 
+     * @param x
+     *            The X coordinate of where the upper-left corner of the window
+     *            should reside
+     * @param y
+     *            the Y coordinate of where the upper-left corner of the window
+     *            should reside
+     */
+    public void setWindowPosition(int x, int y);
     
     /**
      * Applies this notification to the frame specified in
