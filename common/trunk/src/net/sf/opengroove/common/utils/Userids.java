@@ -113,6 +113,10 @@ public class Userids
     {
         checkUseridOrUsername(toResolve);
         checkUserid(relativeTo);
+        if (isUserid(toResolve))
+            return toResolve;
+        assert isUsername(toResolve);
+        return setUsername(relativeTo, toResolve);
     }
     
     public static void checkUserid(String userid)
