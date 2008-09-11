@@ -3185,6 +3185,20 @@ public class OpenGroove
             "Show known users");
         showKnownUsers.setFont(Font.decode(null));
         showKnownUsers.setOpaque(false);
+        showKnownUsers
+            .addActionListener(new ActionListener()
+            {
+                
+                @Override
+                public void actionPerformed(ActionEvent e)
+                {
+                    context.refreshContactsPane();
+                }
+            });
+        showKnownUsers
+            .setToolTipText("<html>If you check this, then users that you've interacted<br/>"
+                + "will be shown, in addition to your contacts. If<br/>"
+                + "it's not checked, only your contacts will be shown.");
         context.setShowKnownUsersAsContacts(showKnownUsers);
         p4.add(pad(showKnownUsers, 2, 2));
         p4.add(pad(contactsPanel, 2, 6));

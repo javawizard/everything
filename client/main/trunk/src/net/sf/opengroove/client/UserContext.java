@@ -327,10 +327,19 @@ public class UserContext
             bar.setIndeterminate(true);
             // TODO: only add the bar if there are less than, say, 30 contacts
             contactsPanel.add(bar);
-            for (int i = 0; i < getStorage()
-                .getContactCount(); i++)
+            contactsPanel.invalidate();
+            contactsPanel.validate();
+            contactsPanel.repaint();
+            for (Contact contact : getStorage()
+                .getAllContacts())
             {
-                
+                if (contact.isUserContact()
+                    || showKnownUsersAsContacts
+                        .isSelected())
+                {
+                    // TODO: pick up here, create a panel for the contact (with
+                    // right-click options) and add it to the contact pane
+                }
             }
         }
     }

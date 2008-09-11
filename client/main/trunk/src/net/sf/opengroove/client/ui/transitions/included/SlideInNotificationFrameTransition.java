@@ -38,12 +38,12 @@ public class SlideInNotificationFrameTransition implements
     
     private void relocate()
     {
-        Double newScale = ((Animations.ScaleFunction.SINE.getValue(((scale/2)+0.5))-0.5)*2.0);
+        Double newScale = ((Animations.ScaleFunction.SINE
+            .getValue(((scale / 2) + 0.5)) - 0.5) * 2.0);
         int sDifference = sy - ry;
         if (sDifference < 0)
             sDifference = 0;
-        double newDifference = sDifference
-            * newScale;
+        double newDifference = sDifference * newScale;
         int newY = (int) (sy - newDifference);
         frame.setLocation(rx, newY);
     }
