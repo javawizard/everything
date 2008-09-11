@@ -136,17 +136,17 @@ public class TaskbarNotificationFrame extends
      * starts a thread that never exits, so you must call System.exit(0) to
      * exit.
      * 
-     * @param transition The transition to use when showing and hiding this frame
+     * @param transition
+     *            The transition to use when showing and hiding this frame.
      */
     public TaskbarNotificationFrame(
         NotificationFrameTransition transition)
     {
         super();
-        System.setProperty("sun.java2d.noddraw", "true");
         setAlwaysOnTop(true);
         addMouseListener(this);
         JPanel content = new JPanel();
-        getContentPane().add(content);
+        transition.initialize(this, content);
         JPanel topPanel = new JPanel();
         topPanel.setLayout(new BorderLayout());
         content.setLayout(new BorderLayout());

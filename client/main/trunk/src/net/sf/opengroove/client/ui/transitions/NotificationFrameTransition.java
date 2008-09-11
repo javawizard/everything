@@ -1,5 +1,7 @@
 package net.sf.opengroove.client.ui.transitions;
 
+import java.awt.Window;
+
 import javax.swing.JPanel;
 
 import net.sf.opengroove.client.notification.TaskbarNotificationFrame;
@@ -30,9 +32,10 @@ public interface NotificationFrameTransition
      * content pane, or wrap it with it's own custom panel or container. The
      * layout of the frame's content pane is whatever the default is for JFrame.
      * At the time of this writing, the default is BorderLayout. The only
-     * requirement is that either the layout's preferred size always be equal
-     * (or greater) than the panel passed in, or that the {@link #apply(int)}
-     * method resize the frame to be the panel's preferred size at that time.
+     * requirement is that the layout's preferred size always be equal (or
+     * greater) than the panel passed in, since, when an item is added to the
+     * notification frame, the notification frame {@link Window#pack() packs}
+     * itself.
      * 
      * @param frame
      *            The taskbar notification frame
