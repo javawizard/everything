@@ -376,8 +376,9 @@ public class Storage
      */
     public synchronized Contact getContact(String userid)
     {
-        userid = Userids.resolveTo(userid, this.userid);
-        if (!new File(contacts, userid).exists())
+        userid = resolve(userid);
+        if (!new File(contacts, userid.replace(":", "$"))
+            .exists())
             return null;
         return (Contact) readObjectFromFile(new File(
             contacts, userid));
@@ -414,8 +415,19 @@ public class Storage
     public synchronized void setContact(Contact contact)
     {
         File contactFile = new File(contacts, contact
-            .getRealm()
-            + ":" + contact.getUsername());
+            .getUserid());
+        /*
+         * TODO: is the following delete staement necessary? Perhaps the contact
+         * file should just be written over. Actually, this whole file needs to
+         * be reworked on that idea. Perhaps, then, the old file could be
+         * renamed to have $$.old on the end, and then write the new file as a
+         * file with $$.new on the end, rename that to the regular file name and
+         * delete the $$.old file. This would make it so that if OpenGroove were
+         * to unexpectedly terminate during an operation, nothing would be lost.
+         * Perhaps, then, the stuff in this file should just use the proxy
+         * storage system, and I should write what I just described into the
+         * proxy storage system.
+         */
         if (contactFile.exists())
             contactFile.delete();
         writeObjectToFile(contact, contactFile);
@@ -430,11 +442,11 @@ public class Storage
      * @param username
      *            the username of the contact to delete
      */
-    public synchronized void deleteContact(String realm,
-        String username)
+    public synchronized void deleteContact(String userid)
     {
-        if (!new File(contacts, (realm + ":" + username)
-            .replace("/", "").replace("\\", "")).delete())
+        userid = resolve(userid);
+        if (!new File(contacts, userid.replace(":", "$"))
+            .delete())
             throw new RuntimeException(
                 "The contact could not be deleted.");
     }

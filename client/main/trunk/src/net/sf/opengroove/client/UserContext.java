@@ -4,6 +4,7 @@ import java.awt.PopupMenu;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
+import javax.swing.JCheckBox;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.JProgressBar;
@@ -61,6 +62,15 @@ public class UserContext
      * workspace
      */
     private PopupMenu workspacesSubMenu;
+    /**
+     * The checkbox shown at the bottom of the contacts tab in the launchbar
+     * window. When checked, the contacts pane should display known users as
+     * well as contacts, and when not checked (the default), the contacts pane
+     * should only display contacts, not known users. A known user is one where
+     * the {@link Contact#isUserContact()} method returns false, and a contact
+     * is one where that method returns true.
+     */
+    private JCheckBox showKnownUsersAsContacts;
     /**
      * The user's launchbar window
      */
@@ -314,6 +324,25 @@ public class UserContext
         {
             contactsPanel.removeAll();
             JProgressBar bar = new JProgressBar();
+            bar.setIndeterminate(true);
+            // TODO: only add the bar if there are less than, say, 30 contacts
+            contactsPanel.add(bar);
+            for (int i = 0; i < getStorage()
+                .getContactCount(); i++)
+            {
+                
+            }
         }
+    }
+    
+    public JCheckBox getShowKnownUsersAsContacts()
+    {
+        return showKnownUsersAsContacts;
+    }
+    
+    public void setShowKnownUsersAsContacts(
+        JCheckBox showKnownUsersAsContacts)
+    {
+        this.showKnownUsersAsContacts = showKnownUsersAsContacts;
     }
 }
