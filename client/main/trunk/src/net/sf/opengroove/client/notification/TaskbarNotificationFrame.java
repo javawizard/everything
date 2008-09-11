@@ -453,7 +453,7 @@ public class TaskbarNotificationFrame extends
             .getScreenInsets(cfg);
         Dimension size = Toolkit.getDefaultToolkit()
             .getScreenSize();
-        setLocation((size.width - insets.right)
+        transition.setWindowPosition((size.width - insets.right)
             - getWidth(), (size.height - insets.bottom)
             - getHeight());
         notificationPanel.invalidate();
