@@ -41,6 +41,7 @@ import javax.swing.border.LineBorder;
 import javax.swing.border.TitledBorder;
 
 import net.sf.opengroove.client.OpenGroove;
+import net.sf.opengroove.client.ui.transitions.NotificationFrameTransition;
 
 import com.sun.jna.examples.WindowUtils;
 
@@ -134,8 +135,11 @@ public class TaskbarNotificationFrame extends
      * creates a new taskbar notification frame. currently, this constructor
      * starts a thread that never exits, so you must call System.exit(0) to
      * exit.
+     * 
+     * @param transition The transition to use when showing and hiding this frame
      */
-    public TaskbarNotificationFrame()
+    public TaskbarNotificationFrame(
+        NotificationFrameTransition transition)
     {
         super();
         System.setProperty("sun.java2d.noddraw", "true");
