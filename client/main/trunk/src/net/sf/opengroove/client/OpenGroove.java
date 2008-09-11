@@ -3192,7 +3192,13 @@ public class OpenGroove
                 @Override
                 public void actionPerformed(ActionEvent e)
                 {
-                    context.refreshContactsPane();
+                    new Thread()
+                    {
+                        public void run()
+                        {
+                            context.refreshContactsPane();
+                        }
+                    }.start();
                 }
             });
         showKnownUsers

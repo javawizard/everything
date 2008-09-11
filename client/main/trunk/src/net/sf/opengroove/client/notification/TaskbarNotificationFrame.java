@@ -81,7 +81,7 @@ public class TaskbarNotificationFrame extends
     private float tensOfSecondsUntilHide = 0;
     
     private int defaultNumVisibleSeconds = 6;
-    private int inTime = 1000;
+    private int inTime = 500;
     private int outTime = 1000;
     
     private boolean isMouseOver = false;
