@@ -58,4 +58,9 @@ public class ComponentUtils
     {
         return (int) ((Math.toDegrees(Math.atan2(y, x)) + 90) % 360);
     }
+    
+    public static void addPopup(Component c, JPopupMenu popup)
+    {
+        
+    }
 }
