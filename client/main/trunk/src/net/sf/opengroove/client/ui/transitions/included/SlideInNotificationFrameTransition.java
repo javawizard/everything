@@ -1,10 +1,12 @@
 package net.sf.opengroove.client.ui.transitions.included;
 
+import java.awt.Point;
 import java.awt.Toolkit;
 
 import javax.swing.JPanel;
 
 import net.sf.opengroove.client.notification.TaskbarNotificationFrame;
+import net.sf.opengroove.client.ui.Animations;
 import net.sf.opengroove.client.ui.transitions.NotificationFrameTransition;
 
 /**
@@ -24,6 +26,7 @@ public class SlideInNotificationFrameTransition implements
     private int ry;
     private int sy;
     private double scale = 0;
+    private static final int STEP_COUNT = 64;
     
     @Override
     public void apply(int step)
@@ -35,10 +38,12 @@ public class SlideInNotificationFrameTransition implements
     
     private void relocate()
     {
+        Double newScale = ((Animations.ScaleFunction.SINE.getValue(((scale/2)+0.5))-0.5)*2.0);
         int sDifference = sy - ry;
         if (sDifference < 0)
             sDifference = 0;
-        double newDifference = sDifference * scale;
+        double newDifference = sDifference
+            * newScale;
         int newY = (int) (sy - newDifference);
         frame.setLocation(rx, newY);
     }
@@ -46,7 +51,7 @@ public class SlideInNotificationFrameTransition implements
     @Override
     public int getStepCount()
     {
-        return 64;
+        return STEP_COUNT;
     }
     
     @Override
