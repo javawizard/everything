@@ -1,10 +1,15 @@
 package net.sf.opengroove.client.ui;
 
 import java.awt.BorderLayout;
+import java.awt.Component;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
 
 import javax.swing.BorderFactory;
 import javax.swing.JComponent;
 import javax.swing.JPanel;
+import javax.swing.JPopupMenu;
 
 public class ComponentUtils
 {
@@ -59,8 +64,42 @@ public class ComponentUtils
         return (int) ((Math.toDegrees(Math.atan2(y, x)) + 90) % 360);
     }
     
-    public static void addPopup(Component c, JPopupMenu popup)
+    /**
+     * Adds a MouseListener to the component specified that will show the popup
+     * specified (at the position that the mouse was clicked) when the mouse is
+     * right-clicked, or whatever mouse event returns true from the
+     * {@link MouseEvent#isPopupTrigger()} method.
+     * 
+     * @param c
+     *            The component to add the mouse listener to
+     * @param popup
+     *            the popup to show whe the component is clicked
+     */
+    public static void addPopup(Component c,
+        final JPopupMenu popup)
     {
-        
+        c.addMouseListener(new MouseAdapter()
+        {
+            
+            @Override
+            public void mousePressed(MouseEvent e)
+            {
+                if (e.isPopupTrigger())
+                    popup.show(e.getComponent(), e.getX(),
+                        e.getY());
+            }
+            
+            @Override
+            public void mouseReleased(MouseEvent e)
+            {
+                mousePressed(e);
+            }
+            
+            @Override
+            public void mouseClicked(MouseEvent e)
+            {
+                mousePressed(e);
+            }
+        });
     }
 }
