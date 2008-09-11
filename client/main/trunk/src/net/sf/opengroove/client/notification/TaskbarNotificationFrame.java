@@ -81,6 +81,8 @@ public class TaskbarNotificationFrame extends
     private float tensOfSecondsUntilHide = 0;
     
     private int defaultNumVisibleSeconds = 10;
+    private int inTime = 700;
+    private int outTime = 1500;
     
     private boolean isMouseOver = false;
     
@@ -225,8 +227,10 @@ public class TaskbarNotificationFrame extends
                             currentVisibilityLevel++;
                             transition
                                 .apply(currentVisibilityLevel);
-                            Thread.sleep(1000 / transition
-                                .getStepCount());
+                            Thread
+                                .sleep(inTime
+                                    / transition
+                                        .getStepCount());
                             if (!TaskbarNotificationFrame.this
                                 .isShowing())
                                 TaskbarNotificationFrame.this
@@ -251,8 +255,10 @@ public class TaskbarNotificationFrame extends
                             currentVisibilityLevel--;
                             transition
                                 .apply(currentVisibilityLevel);
-                            Thread.sleep(1500 / transition
-                                .getStepCount());
+                            Thread
+                                .sleep(outTime
+                                    / transition
+                                        .getStepCount());
                             if (currentVisibilityLevel == 0)
                             {
                                 TaskbarNotificationFrame.this
@@ -453,9 +459,9 @@ public class TaskbarNotificationFrame extends
             .getScreenInsets(cfg);
         Dimension size = Toolkit.getDefaultToolkit()
             .getScreenSize();
-        transition.setWindowPosition((size.width - insets.right)
-            - getWidth(), (size.height - insets.bottom)
-            - getHeight());
+        transition.setWindowPosition(
+            (size.width - insets.right) - getWidth(),
+            (size.height - insets.bottom) - getHeight());
         notificationPanel.invalidate();
         notificationPanel.validate();
         notificationPanel.repaint();
@@ -550,6 +556,38 @@ public class TaskbarNotificationFrame extends
     {
         return internalAllNotifications().toArray(
             new TaskbarNotification[0]);
+    }
+    
+    public int getInTime()
+    {
+        return inTime;
+    }
+    
+    public int getOutTime()
+    {
+        return outTime;
+    }
+    
+    /**
+     * Sets the number of milliseconds that the frame should take to transition
+     * from not visible to visible.
+     * 
+     * @param inTime
+     */
+    public void setInTime(int inTime)
+    {
+        this.inTime = inTime;
+    }
+    
+    /**
+     * Sets the number of milliseconds that the frame should take to transition
+     * from visible to not visible.
+     * 
+     * @param outTime
+     */
+    public void setOutTime(int outTime)
+    {
+        this.outTime = outTime;
     }
     
 }

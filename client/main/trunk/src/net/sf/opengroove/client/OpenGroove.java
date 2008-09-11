@@ -108,6 +108,7 @@ import net.sf.opengroove.client.ui.StatusDialog;
 import net.sf.opengroove.client.ui.frames.LoginFrame;
 import net.sf.opengroove.client.ui.frames.UserNotificationFrame;
 import net.sf.opengroove.client.ui.transitions.included.EmptyNotificationFrameTransition;
+import net.sf.opengroove.client.ui.transitions.included.SlideInNotificationFrameTransition;
 import net.sf.opengroove.client.workspace.WorkspaceManager;
 import net.sf.opengroove.client.workspace.WorkspaceWrapper;
 import net.sf.opengroove.common.concurrent.Conditional;
@@ -465,7 +466,7 @@ public class OpenGroove
             // helpviewer = new HelpViewer(helpFolder);
             initLoginFrame();
             notificationFrame = new TaskbarNotificationFrame(
-                new EmptyNotificationFrameTransition());
+                new SlideInNotificationFrameTransition());
             new Thread("notification status updater")
             {
                 public void run()
