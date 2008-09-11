@@ -140,7 +140,7 @@ public class UserNotificationFrame extends JFrame
                                         0, 0, 0));
                             subjectTextField
                                 .setEditable(false);
-                            subjectTextField.setFont(new java.awt.Font("Dialog",0,16));
+                            subjectTextField.setFont(new java.awt.Font("Dialog",1,16));
                         }
                         {
                             jLabel2 = new JLabel();
