@@ -68,7 +68,7 @@ public class ComponentUtils
      * Adds a MouseListener to the component specified that will show the popup
      * specified (at the position that the mouse was clicked) when the mouse is
      * right-clicked, or whatever mouse event returns true from the
-     * {@link MouseEvent#isPopupTrigger()} method.
+     * {@link MouseEvent#isPopupTrigger()} method.<br/><br/>
      * 
      * @param c
      *            The component to add the mouse listener to
