@@ -117,8 +117,8 @@ public class ComponentUtils
      * @param width
      * @return
      */
-    public String lineWrap(String input, String wrapString,
-        int width)
+    public static String lineWrap(String input,
+        String wrapString, int width)
     {
         if (input.length() <= width)
             /*

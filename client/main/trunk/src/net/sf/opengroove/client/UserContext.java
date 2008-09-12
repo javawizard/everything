@@ -325,11 +325,15 @@ public class UserContext
             contactsPanel.removeAll();
             JProgressBar bar = new JProgressBar();
             bar.setIndeterminate(true);
+            bar.setAlignmentX(0);
             // TODO: only add the bar if there are less than, say, 30 contacts
             contactsPanel.add(bar);
             contactsPanel.invalidate();
             contactsPanel.validate();
             contactsPanel.repaint();
+            launchbar.invalidate();
+            launchbar.validate();
+            launchbar.repaint();
             for (Contact contact : getStorage()
                 .getAllContacts())
             {
@@ -339,8 +343,17 @@ public class UserContext
                 {
                     // TODO: pick up here, create a panel for the contact (with
                     // right-click options) and add it to the contact pane
+                    
+                    contactsPanel.add(bar);
+                    contactsPanel.invalidate();
+                    contactsPanel.validate();
+                    contactsPanel.repaint();
+                    launchbar.invalidate();
+                    launchbar.validate();
+                    launchbar.repaint();
                 }
             }
+            contactsPanel.remove(bar);
         }
     }
     

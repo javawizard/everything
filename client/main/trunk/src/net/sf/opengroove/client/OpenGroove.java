@@ -97,6 +97,7 @@ import net.sf.opengroove.client.plugins.Plugin;
 import net.sf.opengroove.client.plugins.PluginManager;
 import net.sf.opengroove.client.text.TextManager;
 import net.sf.opengroove.client.ui.ChooseLAFDialog;
+import net.sf.opengroove.client.ui.ComponentUtils;
 import net.sf.opengroove.client.ui.ConfigureOpenGrooveDialog;
 import net.sf.opengroove.client.ui.ConfigureWorkspaceDialog;
 import net.sf.opengroove.client.ui.CreateWorkspaceDialog;
@@ -3182,7 +3183,17 @@ public class OpenGroove
         setPlainFont(addContactButton);
         p4.add(pad(addContactButton, 2, 2));
         JCheckBox showKnownUsers = new JCheckBox(
-            "Show known users");
+            "Show known users")
+        {
+            
+            @Override
+            public JToolTip createToolTip()
+            {
+                System.out.println("created a tooltip");
+                // TODO Auto-generated method stub
+                return super.createToolTip();
+            }
+        };
         showKnownUsers.setFont(Font.decode(null));
         showKnownUsers.setOpaque(false);
         showKnownUsers
@@ -3202,9 +3213,13 @@ public class OpenGroove
                 }
             });
         showKnownUsers
-            .setToolTipText("<html>If you check this, then users that you've interacted<br/>"
-                + "will be shown, in addition to your contacts. If<br/>"
-                + "it's not checked, only your contacts will be shown.");
+            .setToolTipText("<html>"
+                + ComponentUtils
+                    .lineWrap(
+                        "If you check this, then users that you've interacted with "
+                            + "will be shown, in addition to your contacts. If "
+                            + "it's not checked, only your contacts will be shown.",
+                        "<br/>", 60));
         context.setShowKnownUsersAsContacts(showKnownUsers);
         p4.add(pad(showKnownUsers, 2, 2));
         p4.add(pad(contactsPanel, 2, 6));
