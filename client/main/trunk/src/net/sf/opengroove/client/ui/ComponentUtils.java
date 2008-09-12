@@ -102,4 +102,49 @@ public class ComponentUtils
             }
         });
     }
+    
+    /**
+     * Returns a string which represents the initial string, but with the wrap
+     * string (which would usually be a newline or, for html content, something
+     * like "&lt;br/&gt;") inserted such that none of the text lines in the
+     * resulting string is longer than <code>width</code>, unless the line is
+     * made up of only one word and the word itself is longer than
+     * <code>width</code>. Lines are only wrapped on space characters, and
+     * the space character is retained (with the wrap string inserted directly
+     * after the space).
+     * 
+     * @param input
+     * @param width
+     * @return
+     */
+    public String lineWrap(String input, String wrapString,
+        int width)
+    {
+        if (input.length() <= width)
+            /*
+             * The input is shorter than the specified width, so it should take
+             * up only one line
+             */
+            return input;
+        if (input.indexOf(" ") == -1)
+            /*
+             * The input is longer than one line but contains no spaces
+             */
+            return input;
+        /*
+         * The input is longer than the specified length and contains a space.
+         * Now we need to find the last space within the width specified, and
+         * wrap around it. If there isn't a space within the width specified, we
+         * find the first space after the width specified and wrap on that one
+         * instead.
+         */
+        String firstWidth = input.substring(0, width);
+        String remainder = input.substring(width);
+        int lastSpaceIndex = firstWidth.lastIndexOf(" ");
+        int firstSpaceIndex = remainder.indexOf(" ");
+        assert firstSpaceIndex != -1
+            || lastSpaceIndex != -1;
+        int spaceIndex = (lastSpaceIndex == -1) ? (firstSpaceIndex + width)
+            : lastSpaceIndex;
+    }
 }
