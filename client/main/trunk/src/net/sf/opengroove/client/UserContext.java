@@ -1,7 +1,10 @@
 package net.sf.opengroove.client;
 
 import java.awt.BorderLayout;
+import java.awt.Color;
 import java.awt.PopupMenu;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
@@ -9,6 +12,7 @@ import javax.swing.JCheckBox;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
+import javax.swing.JPopupMenu;
 import javax.swing.JProgressBar;
 import javax.swing.JTabbedPane;
 
@@ -351,9 +355,26 @@ public class UserContext
                         new BorderLayout());
                     contactPanel.setAlignmentX(0);
                     JideButton contactButton = new JideButton(
-                        contact.getUserid());
-                    contactPanel.add(contactLabel,
+                        contact.getDisplayName());
+                    contactButton
+                        .setButtonStyle(JideButton.HYPERLINK_STYLE);
+                    contactButton
+                        .setForeground(Color.BLACK);
+                    contactButton
+                        .addActionListener(new ActionListener()
+                        {
+                            
+                            @Override
+                            public void actionPerformed(
+                                ActionEvent e)
+                            {
+                                System.out
+                                    .println("contact clicked");
+                            }
+                        });
+                    contactPanel.add(contactButton,
                         BorderLayout.CENTER);
+                    contactsPanel.add(contactPanel);
                     contactsPanel.invalidate();
                     contactsPanel.validate();
                     contactsPanel.repaint();
