@@ -2,6 +2,7 @@ package net.sf.opengroove.client;
 
 import java.io.Serializable;
 import java.math.BigInteger;
+import java.util.Properties;
 
 import net.sf.opengroove.client.com.CommandCommunicator;
 import net.sf.opengroove.common.utils.Userids;
@@ -45,7 +46,8 @@ public class LocalUser implements Serializable
     private BigInteger rsaSigMod;
     /**
      * The user's password hint. The user can set this up in their settings
-     * dialog, and it is usually synchronized between computers.
+     * dialog, but it is not synchronized between computers at this time, for
+     * security reasons.
      */
     private String passwordHint;
     /**
@@ -62,28 +64,32 @@ public class LocalUser implements Serializable
     private boolean autoSignOn;
     /**
      * True if this user has chosen to be publicly visible. This directly
-     * corresponds to {@link CommandCommunicator#getVisibility()}.
+     * corresponds to {@link CommandCommunicator#getVisibility()}. This <i>does</i>
+     * synchronize between computers.
      */
     private boolean isSearchVisible;
     /**
+     * True if isSearchVisible has been changed since the last time this
+     * computer connected to the internet. If this is true when an internet
+     * connection is established, then this value will be uploaded to the
+     * server. If not, the server's value will be downloaded.
+     */
+    private boolean needsSearchVisibleUpdate;
+    /**
      * True if this user has chosen to be locally visible. If this is true, then
      * the user will respond to multicast queries for users on the same network.
+     * This does not synchronize between computers.
      */
     private boolean isLocalVisible;
-    /**
-     * This user's private email address. This is the email address that
-     * operators of this user's realm server, or OpenGroove administrators
-     * themselves, will use to contact this user. This must not be null or the
-     * empty string. This is made visible in the email-address user property.
-     */
-    private String emailAddress;
-    /**
-     * The user's contact card. This can be null, which indicates that the user
-     * has chosen not to provide a contact card. If it's not null, then the
-     * user's name will usually be shown as the name in this contact card,
-     * instead of the user's userid.
-     */
-    private VCard contactCard;
+    
+    private static enum Names
+    {
+        emailAddress, realName, publicEmailAddress
+    }
+    
+    private Properties properties = new Properties();
+    private Properties lastModified = new Properties();
+    
     /**
      * This user's time lag as compared with the server. This is equal to
      * <code>myTime - serverTime</code>, where myTime is the value of

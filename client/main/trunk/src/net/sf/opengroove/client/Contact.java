@@ -39,6 +39,7 @@ public class Contact implements Serializable
      * the keys for a specific user doesn't mean another computer does.
      */
     private boolean hasKeys;
+    private String realName;
     /**
      * True if the local user has verified this contact. This means that the
      * local user has reviewed the hash of this contact's security keys and
@@ -103,7 +104,8 @@ public class Contact implements Serializable
     
     public boolean isUserContact()
     {
-        return isUserContact;
+        return "true".equalsIgnoreCase(properties
+            .getProperty("" + Names.userContact));
     }
     
     public boolean isUserVerified()
@@ -148,7 +150,8 @@ public class Contact implements Serializable
     
     public void setUserContact(boolean isUserContact)
     {
-        this.isUserContact = isUserContact;
+        properties.setProperty("" + Names.userContact, ""
+            + isUserContact);
     }
     
     public void setUserVerified(boolean isUserVerified)
@@ -169,6 +172,45 @@ public class Contact implements Serializable
     public void setHasKeys(boolean hasKeys)
     {
         this.hasKeys = hasKeys;
+    }
+    
+    public String getLocalName()
+    {
+        return properties.getProperty("" + Names.localName,
+            "");
+    }
+    
+    public void setLocalName(String localName)
+    {
+        properties.setProperty("" + Names.localName,
+            localName);
+    }
+    
+    /**
+     * If getLocalName() is not null or equal to the empty string, then it's
+     * value is returned. Failing that, getRealName() is checked to see if it is
+     * not null or the empty string. If it isn't, then it is returned. Failing
+     * that, getUserid() is returned.
+     * 
+     * @return
+     */
+    public String getDisplayName()
+    {
+        if (getLocalName() != null)
+            return getLocalName();
+        if (getRealName() != null)
+            return getRealName();
+        return getUserid();
+    }
+
+    public String getRealName()
+    {
+        return realName;
+    }
+
+    public void setRealName(String realName)
+    {
+        this.realName = realName;
     }
     
 }
