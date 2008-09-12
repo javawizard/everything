@@ -144,7 +144,16 @@ public class ComponentUtils
         int firstSpaceIndex = remainder.indexOf(" ");
         assert firstSpaceIndex != -1
             || lastSpaceIndex != -1;
-        int spaceIndex = (lastSpaceIndex == -1) ? (firstSpaceIndex + width)
+        int index = (lastSpaceIndex == -1) ? (firstSpaceIndex + width)
             : lastSpaceIndex;
+        /*
+         * Now we need to position the pointer directly after the space
+         */
+        index = index + 1;
+        input = input.substring(0, index)
+            + wrapString
+            + lineWrap(input.substring(index), wrapString,
+                width);
+        return input;
     }
 }
