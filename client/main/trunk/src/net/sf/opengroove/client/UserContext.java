@@ -1,14 +1,18 @@
 package net.sf.opengroove.client;
 
+import java.awt.BorderLayout;
 import java.awt.PopupMenu;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
 import javax.swing.JCheckBox;
 import javax.swing.JFrame;
+import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JProgressBar;
 import javax.swing.JTabbedPane;
+
+import com.jidesoft.swing.JideButton;
 
 import net.sf.opengroove.client.com.CommandCommunicator;
 import net.sf.opengroove.client.com.StatusListener;
@@ -343,8 +347,13 @@ public class UserContext
                 {
                     // TODO: pick up here, create a panel for the contact (with
                     // right-click options) and add it to the contact pane
-                    
-                    contactsPanel.add(bar);
+                    JPanel contactPanel = new JPanel(
+                        new BorderLayout());
+                    contactPanel.setAlignmentX(0);
+                    JideButton contactButton = new JideButton(
+                        contact.getUserid());
+                    contactPanel.add(contactLabel,
+                        BorderLayout.CENTER);
                     contactsPanel.invalidate();
                     contactsPanel.validate();
                     contactsPanel.repaint();
