@@ -104,6 +104,7 @@ import net.sf.opengroove.client.ui.CreateWorkspaceDialog;
 import net.sf.opengroove.client.ui.FillContainer;
 import net.sf.opengroove.client.ui.ImportWorkspaceDialog;
 import net.sf.opengroove.client.ui.InviteToWorkspaceDialog;
+import net.sf.opengroove.client.ui.ItemChooser;
 import net.sf.opengroove.client.ui.StandardWizardPage;
 import net.sf.opengroove.client.ui.StatusDialog;
 import net.sf.opengroove.client.ui.frames.LoginFrame;
@@ -2616,7 +2617,6 @@ public class OpenGroove
                             LocalUser user = new LocalUser();
                             user.setAutoSignOn(false);
                             user.setComputer(computerName);
-                            user.setContactCard(null);
                             user.setEmailAddress("");
                             user.setEncPassword(Hash
                                 .hash(vars.password));
@@ -3177,7 +3177,7 @@ public class OpenGroove
                 
                 public void actionPerformed(ActionEvent e)
                 {
-                    runAddContactWizard();
+                    runAddContactWizard(context);
                 }
             });
         setPlainFont(addContactButton);
@@ -3312,10 +3312,49 @@ public class OpenGroove
             });
     }
     
-    protected static void runAddContactWizard()
+    protected static void runAddContactWizard(
+        UserContext context)
     {
-        // TODO Auto-generated method stub
-        
+        String choice = ItemChooser
+            .showItemChooser(
+                context.getLaunchbar(),
+                "How would you like to add a contact?",
+                new String[] { "search", "userid" },
+                new String[] {
+                    "<html><b>Search for other users</b><br/>"
+                        + ComponentUtils
+                            .lineWrap(
+                                "You can search for users on your server or on "
+                                    + "other servers, "
+                                    + "or find users connected to the same network "
+                                    + "that you are. You can only find a user this "
+                                    + "way if the user has chosen to be publicly visible.",
+                                "<br/>", 60),
+                    "<html><b>Enter the user's userid</b><br/>"
+                        + ComponentUtils
+                            .lineWrap(
+                                "If you know the user's userid, you "
+                                    + "can enter it instead of searching. If the "
+                                    + "user that you want to add is not publicly "
+                                    + "visible, then this is the only way to add that user.",
+                                "<br/>", 60) }, true);
+        if (choice == null)
+            return;
+        if (choice.equals("search"))
+        {
+            JOptionPane
+                .showMessageDialog(
+                    context.getLaunchbar(),
+                    "<html>"
+                        + ComponentUtils
+                            .lineWrap(
+                                "We don't currently support searching for "
+                                    + "users. Make sure that you've chosen to receive updates "
+                                    + "for OpenGroove, and try again after the next update "
+                                    + "is downloaded to see if we've added support yet.",
+                                "<br/>", 80));
+        }
+        assert (choice.equals("userid"));
     }
     
     protected void reloadLaunchbarContacts()
