@@ -90,6 +90,36 @@ public class LocalUser implements Serializable
     private Properties properties = new Properties();
     private Properties lastModified = new Properties();
     
+    public long getLastModified(Names name)
+    {
+        String value = lastModified.getProperty("" + name);
+        if (value == null)
+            return 0;
+        try
+        {
+            return Long.parseLong(value);
+        }
+        catch (Exception exception)
+        {
+            return 0;
+        }
+    }
+    
+    public void setLastModified(Names name, long date)
+    {
+        lastModified.setProperty("" + name, "" + date);
+    }
+    
+    public Properties getLastModifiedProperties()
+    {
+        return lastModified;
+    }
+    
+    public Properties getProperties()
+    {
+        return properties;
+    }
+    
     /**
      * This user's time lag as compared with the server. This is equal to
      * <code>myTime - serverTime</code>, where myTime is the value of
@@ -320,12 +350,8 @@ public class LocalUser implements Serializable
     
     public String getEmailAddress()
     {
-        return emailAddress;
-    }
-    
-    public VCard getContactCard()
-    {
-        return contactCard;
+        return properties.getProperty(""
+            + Names.emailAddress, "");
     }
     
     public void setSearchVisible(boolean isSearchVisible)
@@ -340,11 +366,30 @@ public class LocalUser implements Serializable
     
     public void setEmailAddress(String emailAddress)
     {
-        this.emailAddress = emailAddress;
+        properties.setProperty("" + Names.emailAddress,
+            emailAddress);
     }
     
-    public void setContactCard(VCard contactCard)
+    public String getRealName()
     {
-        this.contactCard = contactCard;
+        return properties.getProperty("" + Names.realName);
+    }
+    
+    public void setRealName(String realName)
+    {
+        properties.setProperty("" + Names.realName,
+            realName);
+    }
+    
+    public void setPublicEmailAddress(String addr)
+    {
+        properties.setProperty(""
+            + Names.publicEmailAddress, addr);
+    }
+    
+    public String getPublicEmailAddress()
+    {
+        return properties.getProperty(""
+            + Names.publicEmailAddress, "");
     }
 }

@@ -23,6 +23,7 @@ import net.sf.opengroove.client.com.StatusListener;
 import net.sf.opengroove.client.com.UserNotificationListener;
 import net.sf.opengroove.client.help.HelpViewer;
 import net.sf.opengroove.client.plugins.PluginManager;
+import net.sf.opengroove.client.ui.frames.SearchForUsersFrame;
 import net.sf.opengroove.client.workspace.WorkspaceManager;
 import net.sf.opengroove.common.concurrent.Conditional;
 import net.sf.opengroove.common.concurrent.ConditionalTimer;
@@ -70,6 +71,7 @@ public class UserContext
      * workspace
      */
     private PopupMenu workspacesSubMenu;
+    private SearchForUsersFrame searchForUsersFrame;
     /**
      * The checkbox shown at the bottom of the contacts tab in the launchbar
      * window. When checked, the contacts pane should display known users as

@@ -56,6 +56,36 @@ public class Contact implements Serializable
     private Properties properties = new Properties();
     private Properties lastModified = new Properties();
     
+    public long getLastModified(Names name)
+    {
+        String value = lastModified.getProperty("" + name);
+        if (value == null)
+            return 0;
+        try
+        {
+            return Long.parseLong(value);
+        }
+        catch (Exception exception)
+        {
+            return 0;
+        }
+    }
+    
+    public void setLastModified(Names name, long date)
+    {
+        lastModified.setProperty("" + name, "" + date);
+    }
+    
+    public Properties getLastModifiedProperties()
+    {
+        return lastModified;
+    }
+    
+    public Properties getProperties()
+    {
+        return properties;
+    }
+    
     private static enum Names
     {
         userContact, localName
@@ -202,12 +232,12 @@ public class Contact implements Serializable
             return getRealName();
         return getUserid();
     }
-
+    
     public String getRealName()
     {
         return realName;
     }
-
+    
     public void setRealName(String realName)
     {
         this.realName = realName;
