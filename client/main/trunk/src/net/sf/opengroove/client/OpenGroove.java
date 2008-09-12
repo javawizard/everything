@@ -3183,17 +3183,7 @@ public class OpenGroove
         setPlainFont(addContactButton);
         p4.add(pad(addContactButton, 2, 2));
         JCheckBox showKnownUsers = new JCheckBox(
-            "Show known users")
-        {
-            
-            @Override
-            public JToolTip createToolTip()
-            {
-                System.out.println("created a tooltip");
-                // TODO Auto-generated method stub
-                return super.createToolTip();
-            }
-        };
+            "Show known users");
         showKnownUsers.setFont(Font.decode(null));
         showKnownUsers.setOpaque(false);
         showKnownUsers
