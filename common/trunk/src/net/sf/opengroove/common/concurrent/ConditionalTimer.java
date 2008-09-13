@@ -68,23 +68,23 @@ public abstract class ConditionalTimer extends Thread
             {
                 exception.printStackTrace();
             }
+            nextUnlockTime = System.currentTimeMillis()
+                + (waitCheck ? checkPeriod : period);
+            if (waitCheck)
+                waitingForCondition = true;
+            else
+                waitingForPeriod = true;
             try
             {
-                nextUnlockTime = System.currentTimeMillis()
-                    + (waitCheck ? checkPeriod : period);
-                if (waitCheck)
-                    waitingForCondition = true;
-                else
-                    waitingForPeriod = true;
                 Thread.sleep(waitCheck ? checkPeriod
                     : period);
-                waitingForCondition = false;
-                waitingForPeriod = false;
             }
             catch (InterruptedException e)
             {
                 System.out.println("timer interrupted");
             }
+            waitingForCondition = false;
+            waitingForPeriod = false;
         }
     }
 }
