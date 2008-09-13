@@ -8,6 +8,7 @@ import java.awt.event.ActionListener;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
+import javax.swing.Box;
 import javax.swing.JCheckBox;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
@@ -347,10 +348,14 @@ public class UserContext
             for (Contact contact : getStorage()
                 .getAllContacts())
             {
+                System.out.println("encountered a contact");
                 if (contact.isUserContact()
                     || showKnownUsersAsContacts
                         .isSelected())
                 {
+                    System.out
+                        .println("user contact with dn:"
+                            + contact.getDisplayName());
                     // TODO: pick up here, create a panel for the contact (with
                     // right-click options) and add it to the contact pane
                     JPanel contactPanel = new JPanel(
@@ -358,8 +363,15 @@ public class UserContext
                     contactPanel.setAlignmentX(0);
                     JideButton contactButton = new JideButton(
                         contact.getDisplayName());
+                    contactButton.setOpaque(false);
                     contactButton
                         .setButtonStyle(JideButton.HYPERLINK_STYLE);
+                    System.out.println("perferred:"
+                        + contactButton.getPreferredSize()
+                        + ",minimum:"
+                        + contactButton.getMinimumSize()
+                        + ",maximum:"
+                        + contactButton.getMaximumSize());
                     contactButton
                         .setForeground(Color.BLACK);
                     contactButton
@@ -386,6 +398,12 @@ public class UserContext
                 }
             }
             contactsPanel.remove(bar);
+            contactsPanel.invalidate();
+            contactsPanel.validate();
+            contactsPanel.repaint();
+            launchbar.invalidate();
+            launchbar.validate();
+            launchbar.repaint();
         }
     }
     

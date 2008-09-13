@@ -69,6 +69,7 @@ import javax.net.ssl.SSLSocket;
 import javax.swing.*;
 import javax.swing.UIManager.LookAndFeelInfo;
 import javax.swing.border.EmptyBorder;
+import javax.swing.border.LineBorder;
 import javax.swing.filechooser.FileNameExtensionFilter;
 
 import org.awl.Wizard;
@@ -1096,6 +1097,7 @@ public class OpenGroove
                 // loadFeatures();
                 // loadCurrentUserLookAndFeel();
                 loadLaunchBar(userid, context);
+                context.refreshContactsPane();
                 // WorkspaceManager workspaceManager = new
                 // WorkspaceManager(context);
                 // context.setWorkspaceManager(workspaceManager);
@@ -3163,6 +3165,7 @@ public class OpenGroove
         JPanel p3 = new SimpleGradientPanel(new Color(180,
             200, 255), new Color(245, 249, 255),
             SimpleGradientPanel.VERTICAL);
+        p3.setLayout(new BorderLayout());
         JPanel p4 = new JPanel();
         p4.setOpaque(false);
         p4.setLayout(new BoxLayout(p4, BoxLayout.Y_AXIS));
@@ -3214,7 +3217,12 @@ public class OpenGroove
         p4.add(pad(showKnownUsers, 2, 2));
         p4.add(pad(contactsPanel, 2, 6));
         contactsPanel.setOpaque(false);
-        p3.add(p4);
+        p3.add(p4, BorderLayout.NORTH);
+        p3.add(new JLabel("hello"), BorderLayout.CENTER);
+        p4.setOpaque(false);
+        p3.setBorder(new LineBorder(Color.RED));
+        p4.setBorder(new LineBorder(Color.GREEN));
+        contactsPanel.setBorder(new LineBorder(Color.BLUE));
         launchbarTabbedPane.add("Contacts",
             new JScrollPane(p3));
         JPanel p = new JPanel();

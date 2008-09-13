@@ -235,9 +235,11 @@ public class Contact implements Serializable
      */
     public String getDisplayName()
     {
-        if (getLocalName() != null)
+        if (getLocalName() != null
+            && !getLocalName().equals(""))
             return getLocalName();
-        if (getRealName() != null)
+        if (getRealName() != null
+            && !getRealName().equals(""))
             return getRealName();
         return getUserid();
     }
