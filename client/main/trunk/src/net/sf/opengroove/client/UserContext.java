@@ -333,20 +333,21 @@ public class UserContext
     {
         synchronized (refreshContactsLock)
         {
+            Contact[] contactList = getStorage()
+                .getAllContacts();
             contactsPanel.removeAll();
             JProgressBar bar = new JProgressBar();
             bar.setIndeterminate(true);
             bar.setAlignmentX(0);
-            // TODO: only add the bar if there are less than, say, 30 contacts
-            contactsPanel.add(bar);
+            if (contactList.length > 60)
+                contactsPanel.add(bar);
             contactsPanel.invalidate();
             contactsPanel.validate();
             contactsPanel.repaint();
             launchbar.invalidate();
             launchbar.validate();
             launchbar.repaint();
-            for (Contact contact : getStorage()
-                .getAllContacts())
+            for (Contact contact : contactList)
             {
                 System.out.println("encountered a contact");
                 if (contact.isUserContact()
@@ -387,6 +388,7 @@ public class UserContext
                                     .println("contact clicked");
                             }
                         });
+                    contactButton.setBorder(null);
                     contactPanel.add(contactButton,
                         BorderLayout.WEST);
                     contactsPanel.add(contactPanel);

@@ -286,6 +286,7 @@ public class LoginFrame extends javax.swing.JFrame
                             });
                         northContents
                             .add(getPasswordField());
+                        passwordField.setBackground(new java.awt.Color(255,255,255));
                     }
                     {
                         passwordFooterPanel = new JPanel();
