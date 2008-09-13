@@ -355,25 +355,45 @@ public class UserContext
             launchbar.validate();
             launchbar.repaint();
             final JPopupMenu userStatusMenu = new JPopupMenu();
-            userStatusMenu.add(new JLabel("Online",
+            JLabel onlineLabel = new JLabel("Online",
                 new ImageIcon(
                     OpenGroove.Icons.USER_ONLINE_16
-                        .getImage()), JLabel.LEFT));
-            userStatusMenu.add(new JLabel("Offline",
+                        .getImage()), JLabel.LEFT);
+            JLabel offlineLabel = new JLabel("Offline",
                 new ImageIcon(
                     OpenGroove.Icons.USER_OFFLINE_16
-                        .getImage()), JLabel.LEFT));
-            userStatusMenu.add(new JLabel("Idle",
+                        .getImage()), JLabel.LEFT);
+            JLabel idleLabel = new JLabel("Idle",
                 new ImageIcon(OpenGroove.Icons.USER_IDLE_16
-                    .getImage()), JLabel.LEFT));
-            userStatusMenu.add(new JLabel("Unknown",
+                    .getImage()), JLabel.LEFT);
+            JLabel unknownLabel = new JLabel("Unknown",
                 new ImageIcon(
                     OpenGroove.Icons.USER_UNKNOWN_16
-                        .getImage()), JLabel.LEFT));
-            userStatusMenu.add(new JLabel("Nonexistant",
-                new ImageIcon(
+                        .getImage()), JLabel.LEFT);
+            JLabel nonexistantLabel = new JLabel(
+                "Nonexistant", new ImageIcon(
                     OpenGroove.Icons.USER_NONEXISTANT_16
-                        .getImage()), JLabel.LEFT));
+                        .getImage()), JLabel.LEFT);
+            onlineLabel
+                .setToolTipText("This means that the user is connected to the"
+                    + " internet and is using their computer");
+            offlineLabel
+                .setToolTipText("This means that the user is not connected "
+                    + "to the internet, or their computer is off");
+            idleLabel
+                .setToolTipText("This means that the user is connected "
+                    + "to the internet, but they are not using their computer right now");
+            unknownLabel
+                .setToolTipText("This means that OpenGroove doesn't know what the "
+                    + "user's current status is.");
+            nonexistantLabel
+                .setToolTipText("This means that OpenGroove has determined that "
+                    + "the user doesn't exist.");
+            userStatusMenu.add(onlineLabel);
+            userStatusMenu.add(offlineLabel);
+            userStatusMenu.add(idleLabel);
+            userStatusMenu.add(unknownLabel);
+            userStatusMenu.add(nonexistantLabel);
             for (final Contact contact : contactList)
             {
                 System.out.println("encountered a contact");
