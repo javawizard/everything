@@ -16,6 +16,7 @@ import javax.swing.JPanel;
 import javax.swing.JPopupMenu;
 import javax.swing.JProgressBar;
 import javax.swing.JTabbedPane;
+import javax.swing.border.EmptyBorder;
 
 import com.jidesoft.swing.JideButton;
 
@@ -388,7 +389,9 @@ public class UserContext
                                     .println("contact clicked");
                             }
                         });
-                    contactButton.setBorder(null);
+                    contactButton
+                        .setBorder(new EmptyBorder(2, 2, 2,
+                            2));
                     contactPanel.add(contactButton,
                         BorderLayout.WEST);
                     contactsPanel.add(contactPanel);
