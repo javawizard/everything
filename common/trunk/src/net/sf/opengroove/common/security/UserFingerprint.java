@@ -29,6 +29,19 @@ public class UserFingerprint
         System.arraycopy(sigModHash, 0, concat,
             encPubHash.length + encModHash.length
                 + sigPubHash.length, sigModHash.length);
-        
+        byte[] hashBytes = Hash.hashRaw(concat);
+        BigInteger hashInt = new BigInteger(1, hashBytes);
+        String hashUnsplit = hashInt.toString(36);
+        hashUnsplit = hashUnsplit.toUpperCase();
+        String hash = "";
+        for (int i = 0; i < hashUnsplit.length(); i += 4)
+        {
+            String section = hashUnsplit.substring(i, Math
+                .min(i + 4, hashUnsplit.length()));
+            if (i != 0)
+                hash += "-";
+            hash += section;
+        }
+        return hash;
     }
 }
