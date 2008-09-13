@@ -387,7 +387,7 @@ public class UserContext
                             }
                         });
                     contactPanel.add(contactButton,
-                        BorderLayout.CENTER);
+                        BorderLayout.WEST);
                     contactsPanel.add(contactPanel);
                     contactsPanel.invalidate();
                     contactsPanel.validate();

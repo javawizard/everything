@@ -3162,15 +3162,15 @@ public class OpenGroove
         context.setContactsPanel(contactsPanel);
         contactsPanel.setLayout(new BoxLayout(
             contactsPanel, BoxLayout.Y_AXIS));
-        JPanel p3 = new SimpleGradientPanel(new Color(180,
+        JPanel contactsTab = new SimpleGradientPanel(new Color(180,
             200, 255), new Color(245, 249, 255),
             SimpleGradientPanel.VERTICAL);
-        p3.setLayout(new BorderLayout());
+        contactsTab.setLayout(new BorderLayout());
         JPanel p4 = new JPanel();
         p4.setOpaque(false);
         p4.setLayout(new BoxLayout(p4, BoxLayout.Y_AXIS));
         p4.setBorder(new EmptyBorder(15, 15, 15, 15));
-        p3.setLayout(new BoxLayout(p3, BoxLayout.Y_AXIS));
+        contactsTab.setLayout(new BoxLayout(contactsTab, BoxLayout.Y_AXIS));
         JLinkButton addContactButton = new JLinkButton(
             "Add a contact");
         addContactButton.setFocusable(false);
@@ -3217,14 +3217,17 @@ public class OpenGroove
         p4.add(pad(showKnownUsers, 2, 2));
         p4.add(pad(contactsPanel, 2, 6));
         contactsPanel.setOpaque(false);
-        p3.add(p4, BorderLayout.NORTH);
-        p3.add(new JLabel("hello"), BorderLayout.CENTER);
+        contactsTab.add(p4, BorderLayout.NORTH);
         p4.setOpaque(false);
-        p3.setBorder(new LineBorder(Color.RED));
+        contactsTab.setBorder(new LineBorder(Color.RED));
         p4.setBorder(new LineBorder(Color.GREEN));
         contactsPanel.setBorder(new LineBorder(Color.BLUE));
+        System.out.println("p3preferred:"
+            + contactsTab.getPreferredSize() + ",p4preferred:"
+            + p4.getPreferredSize() + ",c:"
+            + contactsPanel.getPreferredSize());
         launchbarTabbedPane.add("Contacts",
-            new JScrollPane(p3));
+            new JScrollPane(contactsTab));
         JPanel p = new JPanel();
         p.setLayout(new BoxLayout(p, BoxLayout.Y_AXIS));
         p.setBorder(BorderFactory.createEmptyBorder(15, 15,
