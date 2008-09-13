@@ -20,7 +20,7 @@ public class Contact implements Serializable
      * This contact's userid. This must be a userid; it cannot be a username.
      */
     private String userid;
-    private ContactStatus status;
+    private ContactStatus status = new ContactStatus();
     /**
      * This field, along with {@link #rsaEncMod}, {@link #rsaSigMod}, and
      * {@link #rsaSigPub}, constitute this contact's public security key. These
@@ -252,6 +252,16 @@ public class Contact implements Serializable
     public void setRealName(String realName)
     {
         this.realName = realName;
+    }
+    
+    public ContactStatus getStatus()
+    {
+        return status;
+    }
+    
+    public void setStatus(ContactStatus status)
+    {
+        this.status = status;
     }
     
 }

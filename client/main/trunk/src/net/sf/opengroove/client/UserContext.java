@@ -2,6 +2,7 @@ package net.sf.opengroove.client;
 
 import java.awt.BorderLayout;
 import java.awt.Color;
+import java.awt.Font;
 import java.awt.PopupMenu;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -530,15 +531,25 @@ public class UserContext
                                     .println("contact clicked");
                             }
                         });
-                    contactButton
-                        .setBorder(new EmptyBorder(2, 2, 2,
-                            2));
+                    Font contactFont = contactButton
+                        .getFont();
+                    if (contactFont == null)
+                        contactFont = Font.decode(null);
+                    if (contact.isUserContact())
+                        contactFont = contactFont
+                            .deriveFont(Font.BOLD);
+                    else
+                        contactFont = contactFont
+                            .deriveFont(Font.PLAIN);
+                    contactButton.setFont(contactFont);
                     contactPanel.add(contactButton,
                         BorderLayout.CENTER);
+                    OpenGroove.Icons statusIcon;
+                    ContactStatus status = contact
+                        .getStatus();
+                    if(status.is)
                     final JideButton statusButton = new JideButton(
-                        new ImageIcon(
-                            OpenGroove.Icons.USER_UNKNOWN_16
-                                .getImage()));
+                        new ImageIcon(statusIcon.getImage()));
                     statusButton
                         .setButtonStyle(statusButton.HYPERLINK_STYLE);
                     statusButton
