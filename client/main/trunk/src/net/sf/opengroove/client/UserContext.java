@@ -377,6 +377,7 @@ public class UserContext
                         + contactButton.getMaximumSize());
                     contactButton
                         .setForeground(Color.BLACK);
+                    JPopupMenu
                     contactButton
                         .addActionListener(new ActionListener()
                         {
