@@ -156,4 +156,16 @@ public class ComponentUtils
                 width);
         return input;
     }
+    
+    /**
+     * Returns the text specified, but line-wrapped and with &lt;html&gt; added
+     * to the beginning.
+     * 
+     * @param text
+     * @return
+     */
+    public static String htmlTipWrap(String text)
+    {
+        
+    }
 }

@@ -256,6 +256,10 @@ public class Contact implements Serializable
     
     public ContactStatus getStatus()
     {
+        if (status == null)
+        {
+            status = new ContactStatus();
+        }
         return status;
     }
     
