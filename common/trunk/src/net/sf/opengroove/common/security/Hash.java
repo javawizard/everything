@@ -13,6 +13,13 @@ public class Hash
         return hexcode(encoder.finish());
     }
     
+    public static byte[] hashRaw(byte[] bytes)
+    {
+        Sha512 encoder = new Sha512();
+        encoder.append(bytes);
+        return encoder.finish();
+    }
+    
     public static String hash(String string)
     {
         return hash(string.getBytes());
