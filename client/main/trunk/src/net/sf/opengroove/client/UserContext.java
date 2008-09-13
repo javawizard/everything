@@ -461,7 +461,7 @@ public class UserContext
                                 + "</td></tr>"
                                 + "<tr><td>Local name: &nbsp; &nbsp; </td><td>"
                                 + (contact.getLocalName()
-                                    .equals("") ? "<font color=\"#999999\">Not specified</font>"
+                                    .equals("") ? "<font color=\"#707070\">(Not specified)</font>"
                                     : contact
                                         .getLocalName())
                                 + "</td></tr></table>";
