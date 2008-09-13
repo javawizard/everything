@@ -5,11 +5,13 @@ import java.awt.Color;
 import java.awt.PopupMenu;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
 import javax.swing.Box;
+import javax.swing.ImageIcon;
 import javax.swing.JCheckBox;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
@@ -352,8 +354,26 @@ public class UserContext
             launchbar.invalidate();
             launchbar.validate();
             launchbar.repaint();
-            JPopupMenu userStatusMenu = new JPopupMenu();
-            userStatusMenu.add();
+            final JPopupMenu userStatusMenu = new JPopupMenu();
+            userStatusMenu.add(new JLabel("Online",
+                new ImageIcon(
+                    OpenGroove.Icons.USER_ONLINE_16
+                        .getImage()), JLabel.LEFT));
+            userStatusMenu.add(new JLabel("Offline",
+                new ImageIcon(
+                    OpenGroove.Icons.USER_OFFLINE_16
+                        .getImage()), JLabel.LEFT));
+            userStatusMenu.add(new JLabel("Idle",
+                new ImageIcon(OpenGroove.Icons.USER_IDLE_16
+                    .getImage()), JLabel.LEFT));
+            userStatusMenu.add(new JLabel("Unknown",
+                new ImageIcon(
+                    OpenGroove.Icons.USER_UNKNOWN_16
+                        .getImage()), JLabel.LEFT));
+            userStatusMenu.add(new JLabel("Nonexistant",
+                new ImageIcon(
+                    OpenGroove.Icons.USER_OFFLINE_16
+                        .getImage()), JLabel.LEFT));
             for (final Contact contact : contactList)
             {
                 System.out.println("encountered a contact");
@@ -374,7 +394,8 @@ public class UserContext
                         contact.getDisplayName())
                     {
                         @Override
-                        public String getToolTipText(MouseEvent e)
+                        public String getToolTipText(
+                            MouseEvent e)
                         {
                             System.out
                                 .println("getting text");
@@ -437,7 +458,26 @@ public class UserContext
                     contactButton
                         .setBorder(new EmptyBorder(2, 2, 2,
                             2));
-                    contactPanel.add(contactButton);
+                    contactPanel.add(contactButton,
+                        BorderLayout.CENTER);
+                    final JideButton statusButton = new JideButton(
+                        new ImageIcon(
+                            OpenGroove.Icons.USER_UNKNOWN_16
+                                .getImage()));
+                    statusButton
+                        .setButtonStyle(statusButton.HYPERLINK_STYLE);
+                    statusButton
+                        .addActionListener(new ActionListener()
+                        {
+                            
+                            @Override
+                            public void actionPerformed(
+                                ActionEvent e)
+                            {
+                                userStatusMenu.show(
+                                    statusButton, 0, 0);
+                            }
+                        });
                     contactsPanel.add(contactPanel);
                     contactsPanel.invalidate();
                     contactsPanel.validate();

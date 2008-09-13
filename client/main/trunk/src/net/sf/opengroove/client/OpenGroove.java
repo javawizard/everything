@@ -224,7 +224,6 @@ public class OpenGroove
      * 
      */
     
-    
     public static enum Icons
     {
         CONFIGURE_WORKSPACE_16("configure-workspace.png",
@@ -236,7 +235,12 @@ public class OpenGroove
             "workspace-warning.png", 16), BACK_BUTTON_32(
             "back-button.png", 32), FOLDER_DOCS_16(
             "folder-docs.png", 16), EDIT_16("edit16.gif",
-            16), NOTES_16("notes16.gif", 16);
+            16), NOTES_16("notes16.gif", 16), USER_ONLINE_16(
+            "user-green.png", 16), USER_IDLE_16(
+            "user-yellow.png", 16), USER_NONEXISTANT_16(
+            "user-red.png", 16), USER_UNKNOWN_16(
+            "user-purple.png", 16), USER_OFFLINE_16(
+            "user-gray.png", 16);
         private int size;
         
         private Icons(String iconPath, int size)
