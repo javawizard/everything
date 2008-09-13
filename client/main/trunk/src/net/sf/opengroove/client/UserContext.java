@@ -388,7 +388,7 @@ public class UserContext
                     + "user's current status is.");
             nonexistantLabel
                 .setToolTipText("This means that OpenGroove has determined that "
-                    + "the user doesn't exist.");
+                    + "the user does not exist.");
             userStatusMenu.add(onlineLabel);
             userStatusMenu.add(offlineLabel);
             userStatusMenu.add(idleLabel);
