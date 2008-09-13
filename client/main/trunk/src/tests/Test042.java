@@ -36,7 +36,13 @@ public class Test042
             {
                 public void something()
                 {
-                    label.setText(area.getText());
+                    try
+                    {
+                        label.setText(area.getText());
+                    }
+                    catch (Exception e)
+                    {
+                    }
                     f.invalidate();
                     f.validate();
                     f.repaint();
