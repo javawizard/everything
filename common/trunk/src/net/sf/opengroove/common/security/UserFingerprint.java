@@ -34,7 +34,7 @@ public class UserFingerprint
         String hashUnsplit = hashInt.toString(36);
         hashUnsplit = hashUnsplit.toUpperCase();
         String hash = "";
-        for (int i = 0; i < hashUnsplit.length(); i += 4)
+        for (int i = 0; i < Math.min(hashUnsplit.length(),32); i += 4)
         {
             String section = hashUnsplit.substring(i, Math
                 .min(i + 4, hashUnsplit.length()));
