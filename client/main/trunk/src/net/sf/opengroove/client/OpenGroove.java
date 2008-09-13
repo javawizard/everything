@@ -224,6 +224,7 @@ public class OpenGroove
      * 
      */
     
+    
     public static enum Icons
     {
         CONFIGURE_WORKSPACE_16("configure-workspace.png",
