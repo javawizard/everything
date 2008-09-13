@@ -30,6 +30,12 @@ public class ContactStatus implements Serializable
         return isNonexistant;
     }
     
+    /**
+     * Returns the time, measured in the server's time, that the contact last
+     * moved their mouse or was otherwise active at their computer.
+     * 
+     * @return
+     */
     public long getIdleTime()
     {
         return idleTime;

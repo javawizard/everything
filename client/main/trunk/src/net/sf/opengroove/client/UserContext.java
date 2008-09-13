@@ -54,6 +54,12 @@ import net.sf.opengroove.common.utils.Userids;
  */
 public class UserContext
 {
+    /*
+     * TODO: currently 15 seconds for testing purposes, probably change to
+     * something like 5 minutes when OpenGroove is released, or make it
+     * user-configurable
+     */
+    private static final long IDLE_THRESHOLD = 1000 * 15;
     /**
      * This user's userid
      */
@@ -94,6 +100,12 @@ public class UserContext
      * set all of the user's statuses to offline.
      */
     private ConditionalTimer contactStatusTimer;
+    /**
+     * A timer that gets the server's time and sets the lag of this user's
+     * backing LocalUser to be the difference between the server's time and the
+     * local time.
+     */
+    private ConditionalTimer timeSyncTimer;
     /**
      * The menu that is added to the tray icon that shows all of the user's
      * workspace
@@ -547,9 +559,20 @@ public class UserContext
                     OpenGroove.Icons statusIcon;
                     ContactStatus status = contact
                         .getStatus();
-                    if(status.is)
+                    if (!status.isKnown())
+                        statusIcon = OpenGroove.Icons.USER_UNKNOWN_16;
+                    else if (status.isNonexistant())
+                        statusIcon = OpenGroove.Icons.USER_NONEXISTANT_16;
+                    else if (!status.isOnline())
+                        statusIcon = OpenGroove.Icons.USER_OFFLINE_16;
+                    else if ((status.getIdleTime() + IDLE_THRESHOLD) < getServerTime())
+                        statusIcon = OpenGroove.Icons.USER_IDLE_16;
+                    else
+                        statusIcon = OpenGroove.Icons.USER_ONLINE_16;
                     final JideButton statusButton = new JideButton(
                         new ImageIcon(statusIcon.getImage()));
+                    contactStatusLabelMap.put(contact
+                        .getUserid(), statusButton);
                     statusButton
                         .setButtonStyle(statusButton.HYPERLINK_STYLE);
                     statusButton
@@ -626,6 +649,11 @@ public class UserContext
         return searchForUsersFrame;
     }
     
+    public long getServerTime()
+    {
+        return getStorage().getLocalUser().getServerTime();
+    }
+    
     public void setMyStatusTimer(
         ConditionalTimer myStatusTimer)
     {
@@ -642,5 +670,16 @@ public class UserContext
         SearchForUsersFrame searchForUsersFrame)
     {
         this.searchForUsersFrame = searchForUsersFrame;
+    }
+    
+    public ConditionalTimer getTimeSyncTimer()
+    {
+        return timeSyncTimer;
+    }
+    
+    public void setTimeSyncTimer(
+        ConditionalTimer timeSyncTimer)
+    {
+        this.timeSyncTimer = timeSyncTimer;
     }
 }
