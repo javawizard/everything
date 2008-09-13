@@ -9,6 +9,7 @@ import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.HashMap;
 
 import javax.swing.Box;
 import javax.swing.ImageIcon;
@@ -75,10 +76,36 @@ public class UserContext
      */
     private ConditionalTimer contactTimer;
     /**
+     * A timer that uploads the current use status of this computer (whether or
+     * not the computer is idle, how long it has been idle for, if the user is
+     * currently using OpenGroove)
+     */
+    private ConditionalTimer myStatusTimer;
+    /**
+     * A timer that downloads the status updates for all of the contacts (IE the
+     * status updates uploaded by those contacts' {@link #myStatusTimer}s), and
+     * updates the icons in the launchbar's contact's pane.<br/><br/>
+     * 
+     * This timer, unlike most of the other timers, uses
+     * {@link Conditional#True} instead of {@link #connectionConditional}, so
+     * that it will run even if there is no connection to the server, so as to
+     * set all of the user's statuses to offline.
+     */
+    private ConditionalTimer contactStatusTimer;
+    /**
      * The menu that is added to the tray icon that shows all of the user's
      * workspace
      */
     private PopupMenu workspacesSubMenu;
+    /**
+     * A map that maps contact userids to the jidebutton that contains the
+     * user's status icon.
+     */
+    private HashMap<String, JideButton> contactStatusLabelMap = new HashMap<String, JideButton>();
+    /**
+     * The search users frame (it's actually a dialog) associated with this
+     * context.
+     */
     private SearchForUsersFrame searchForUsersFrame;
     /**
      * The checkbox shown at the bottom of the contacts tab in the launchbar
@@ -389,6 +416,7 @@ public class UserContext
             nonexistantLabel
                 .setToolTipText("This means that OpenGroove has determined that "
                     + "the user does not exist.");
+            userStatusMenu.add(new JLabel(" Key:"));
             userStatusMenu.add(onlineLabel);
             userStatusMenu.add(offlineLabel);
             userStatusMenu.add(idleLabel);
@@ -528,5 +556,38 @@ public class UserContext
         JCheckBox showKnownUsersAsContacts)
     {
         this.showKnownUsersAsContacts = showKnownUsersAsContacts;
+    }
+    
+    public ConditionalTimer getMyStatusTimer()
+    {
+        return myStatusTimer;
+    }
+    
+    public ConditionalTimer getContactStatusTimer()
+    {
+        return contactStatusTimer;
+    }
+    
+    public SearchForUsersFrame getSearchForUsersFrame()
+    {
+        return searchForUsersFrame;
+    }
+    
+    public void setMyStatusTimer(
+        ConditionalTimer myStatusTimer)
+    {
+        this.myStatusTimer = myStatusTimer;
+    }
+    
+    public void setContactStatusTimer(
+        ConditionalTimer contactStatusTimer)
+    {
+        this.contactStatusTimer = contactStatusTimer;
+    }
+    
+    public void setSearchForUsersFrame(
+        SearchForUsersFrame searchForUsersFrame)
+    {
+        this.searchForUsersFrame = searchForUsersFrame;
     }
 }

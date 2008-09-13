@@ -20,7 +20,7 @@ public class Contact implements Serializable
      * This contact's userid. This must be a userid; it cannot be a username.
      */
     private String userid;
-    
+    private ContactStatus status;
     /**
      * This field, along with {@link #rsaEncMod}, {@link #rsaSigMod}, and
      * {@link #rsaSigPub}, constitute this contact's public security key. These
