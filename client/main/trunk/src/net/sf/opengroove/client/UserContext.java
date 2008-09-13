@@ -16,6 +16,7 @@ import javax.swing.ImageIcon;
 import javax.swing.JCheckBox;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JPopupMenu;
 import javax.swing.JProgressBar;
@@ -474,20 +475,49 @@ public class UserContext
                         .setButtonStyle(JideButton.HYPERLINK_STYLE);
                     contactButton
                         .setForeground(Color.BLACK);
-                    JPopupMenu menu = new JPopupMenu();
-                    menu.add(new IMenuItem("Rename")
+                    if (contact.isUserContact())
                     {
-                        
-                        @Override
-                        public void actionPerformed(
-                            ActionEvent e)
+                        JPopupMenu menu = new JPopupMenu();
+                        menu.add(new IMenuItem("Rename")
                         {
-                            // TODO Auto-generated method stub
                             
-                        }
-                    });
-                    ComponentUtils.addPopup(contactButton,
-                        menu);
+                            @Override
+                            public void actionPerformed(
+                                ActionEvent e)
+                            {
+                                // TODO Auto-generated method stub
+                                
+                            }
+                        });
+                        menu.add(new IMenuItem("Delete")
+                        {
+                            
+                            @Override
+                            public void actionPerformed(
+                                ActionEvent e)
+                            {
+                                if (JOptionPane
+                                    .showConfirmDialog(
+                                        getLaunchbar(),
+                                        "Are you sure you want to delete the contact "
+                                            + contact
+                                                .getDisplayName()
+                                            + "?",
+                                        null,
+                                        JOptionPane.YES_NO_OPTION) == JOptionPane.YES_OPTION)
+                                {
+                                    contact
+                                        .setUserContact(false);
+                                    getStorage()
+                                        .setContact(contact);
+                                    refreshContactsPaneAsynchronously();
+                                }
+                            }
+                            
+                        });
+                        ComponentUtils.addPopup(
+                            contactButton, menu);
+                    }
                     contactButton
                         .addActionListener(new ActionListener()
                         {
@@ -546,6 +576,17 @@ public class UserContext
             launchbar.validate();
             launchbar.repaint();
         }
+    }
+    
+    protected void refreshContactsPaneAsynchronously()
+    {
+        new Thread()
+        {
+            public void run()
+            {
+                refreshContactsPane();
+            }
+        }.start();
     }
     
     public JCheckBox getShowKnownUsersAsContacts()
