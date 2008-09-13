@@ -455,10 +455,15 @@ public class UserContext
                                 + contact.getUserid()
                                 + "</td></tr>"
                                 + "<tr><td>Real name: &nbsp; &nbsp; </td><td>"
-                                + contact.getRealName()
+                                + (contact.getRealName()
+                                    .equals("") ? "<font color=\"#707070\">(Not specified)</font>"
+                                    : contact.getRealName())
                                 + "</td></tr>"
                                 + "<tr><td>Local name: &nbsp; &nbsp; </td><td>"
-                                + contact.getLocalName()
+                                + (contact.getLocalName()
+                                    .equals("") ? "<font color=\"#999999\">Not specified</font>"
+                                    : contact
+                                        .getLocalName())
                                 + "</td></tr></table>";
                         }
                     };
