@@ -3162,15 +3162,16 @@ public class OpenGroove
         context.setContactsPanel(contactsPanel);
         contactsPanel.setLayout(new BoxLayout(
             contactsPanel, BoxLayout.Y_AXIS));
-        JPanel contactsTab = new SimpleGradientPanel(new Color(180,
-            200, 255), new Color(245, 249, 255),
-            SimpleGradientPanel.VERTICAL);
+        JPanel contactsTab = new SimpleGradientPanel(
+            new Color(180, 205, 255), new Color(245, 249,
+                255), SimpleGradientPanel.VERTICAL);
         contactsTab.setLayout(new BorderLayout());
-        JPanel p4 = new JPanel();
-        p4.setOpaque(false);
-        p4.setLayout(new BoxLayout(p4, BoxLayout.Y_AXIS));
-        p4.setBorder(new EmptyBorder(15, 15, 15, 15));
-        contactsTab.setLayout(new BoxLayout(contactsTab, BoxLayout.Y_AXIS));
+        JPanel contactsNorth = new JPanel();
+        contactsNorth.setOpaque(false);
+        contactsNorth.setLayout(new BoxLayout(
+            contactsNorth, BoxLayout.Y_AXIS));
+        contactsNorth.setBorder(new EmptyBorder(15, 15, 15,
+            15));
         JLinkButton addContactButton = new JLinkButton(
             "Add a contact");
         addContactButton.setFocusable(false);
@@ -3184,7 +3185,7 @@ public class OpenGroove
                 }
             });
         setPlainFont(addContactButton);
-        p4.add(pad(addContactButton, 2, 2));
+        contactsNorth.add(pad(addContactButton, 2, 2));
         JCheckBox showKnownUsers = new JCheckBox(
             "Show known users");
         showKnownUsers.setFont(Font.decode(null));
@@ -3214,17 +3215,15 @@ public class OpenGroove
                             + "it's not checked, only your contacts will be shown.",
                         "<br/>", 60));
         context.setShowKnownUsersAsContacts(showKnownUsers);
-        p4.add(pad(showKnownUsers, 2, 2));
-        p4.add(pad(contactsPanel, 2, 6));
+        contactsNorth.add(pad(showKnownUsers, 2, 2));
+        contactsNorth.add(pad(contactsPanel, 2, 6));
         contactsPanel.setOpaque(false);
-        contactsTab.add(p4, BorderLayout.NORTH);
-        p4.setOpaque(false);
-        contactsTab.setBorder(new LineBorder(Color.RED));
-        p4.setBorder(new LineBorder(Color.GREEN));
-        contactsPanel.setBorder(new LineBorder(Color.BLUE));
+        contactsTab.add(contactsNorth, BorderLayout.NORTH);
+        contactsNorth.setOpaque(false);
         System.out.println("p3preferred:"
-            + contactsTab.getPreferredSize() + ",p4preferred:"
-            + p4.getPreferredSize() + ",c:"
+            + contactsTab.getPreferredSize()
+            + ",p4preferred:"
+            + contactsNorth.getPreferredSize() + ",c:"
             + contactsPanel.getPreferredSize());
         launchbarTabbedPane.add("Contacts",
             new JScrollPane(contactsTab));

@@ -360,6 +360,7 @@ public class UserContext
                     // right-click options) and add it to the contact pane
                     JPanel contactPanel = new JPanel(
                         new BorderLayout());
+                    contactPanel.setOpaque(false);
                     contactPanel.setAlignmentX(0);
                     JideButton contactButton = new JideButton(
                         contact.getDisplayName());
