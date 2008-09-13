@@ -12,5 +12,19 @@ import net.sf.opengroove.common.security.UserFingerprint;
  */
 public class FingerprintUtils
 {
+    public String fingerprint(Contact contact)
+    {
+        if (!contact.isHasKeys())
+            return null;
+        return UserFingerprint.fingerprint(contact
+            .getRsaEncPub(), contact.getRasEncMod(),
+            contact.getRsaSigPub(), contact.getRsaSigMod());
+    }
     
+    public String fingerprint(LocalUser user)
+    {
+        return UserFingerprint.fingerprint(user
+            .getRsaEncPub(), user.getRasEncMod(), user
+            .getRsaSigPub(), user.getRsaSigMod());
+    }
 }
