@@ -5,6 +5,7 @@ import java.awt.Color;
 import java.awt.PopupMenu;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.MouseEvent;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
@@ -16,6 +17,8 @@ import javax.swing.JPanel;
 import javax.swing.JPopupMenu;
 import javax.swing.JProgressBar;
 import javax.swing.JTabbedPane;
+import javax.swing.JToolTip;
+import javax.swing.SwingConstants;
 import javax.swing.border.EmptyBorder;
 
 import com.jidesoft.swing.JideButton;
@@ -25,6 +28,7 @@ import net.sf.opengroove.client.com.StatusListener;
 import net.sf.opengroove.client.com.UserNotificationListener;
 import net.sf.opengroove.client.help.HelpViewer;
 import net.sf.opengroove.client.plugins.PluginManager;
+import net.sf.opengroove.client.ui.ComponentUtils;
 import net.sf.opengroove.client.ui.frames.SearchForUsersFrame;
 import net.sf.opengroove.client.workspace.WorkspaceManager;
 import net.sf.opengroove.common.concurrent.Conditional;
@@ -348,7 +352,9 @@ public class UserContext
             launchbar.invalidate();
             launchbar.validate();
             launchbar.repaint();
-            for (Contact contact : contactList)
+            JPopupMenu userStatusMenu = new JPopupMenu();
+            userStatusMenu.add();
+            for (final Contact contact : contactList)
             {
                 System.out.println("encountered a contact");
                 if (contact.isUserContact()
@@ -365,7 +371,32 @@ public class UserContext
                     contactPanel.setOpaque(false);
                     contactPanel.setAlignmentX(0);
                     JideButton contactButton = new JideButton(
-                        contact.getDisplayName());
+                        contact.getDisplayName())
+                    {
+                        @Override
+                        public String getToolTipText(MouseEvent e)
+                        {
+                            System.out
+                                .println("getting text");
+                            return "<html><b>"
+                                + contact.getDisplayName()
+                                + "</b><br/>"
+                                + "<table border=\"0\" cellspacing=\"0\" cellpadding=\"0\">"
+                                + "<tr><td>Userid: &nbsp; &nbsp; </td><td>"
+                                + contact.getUserid()
+                                + "</td></tr>"
+                                + "<tr><td>Real name: &nbsp; &nbsp; </td><td>"
+                                + contact.getRealName()
+                                + "</td></tr>"
+                                + "<tr><td>Local name: &nbsp; &nbsp; </td><td>"
+                                + contact.getLocalName()
+                                + "</td></tr></table>";
+                        }
+                    };
+                    contactButton
+                        .setToolTipText("Loading...");
+                    contactButton
+                        .setHorizontalAlignment(SwingConstants.LEFT);
                     contactButton.setOpaque(false);
                     contactButton
                         .setButtonStyle(JideButton.HYPERLINK_STYLE);
@@ -377,7 +408,20 @@ public class UserContext
                         + contactButton.getMaximumSize());
                     contactButton
                         .setForeground(Color.BLACK);
-                    JPopupMenu
+                    JPopupMenu menu = new JPopupMenu();
+                    menu.add(new IMenuItem("Rename")
+                    {
+                        
+                        @Override
+                        public void actionPerformed(
+                            ActionEvent e)
+                        {
+                            // TODO Auto-generated method stub
+                            
+                        }
+                    });
+                    ComponentUtils.addPopup(contactButton,
+                        menu);
                     contactButton
                         .addActionListener(new ActionListener()
                         {
@@ -393,8 +437,7 @@ public class UserContext
                     contactButton
                         .setBorder(new EmptyBorder(2, 2, 2,
                             2));
-                    contactPanel.add(contactButton,
-                        BorderLayout.WEST);
+                    contactPanel.add(contactButton);
                     contactsPanel.add(contactPanel);
                     contactsPanel.invalidate();
                     contactsPanel.validate();
