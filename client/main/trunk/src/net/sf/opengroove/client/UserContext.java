@@ -376,13 +376,13 @@ public class UserContext
                         .getImage()), JLabel.LEFT);
             onlineLabel
                 .setToolTipText("This means that the user is connected to the"
-                    + " internet and is using their computer");
+                    + " internet and is using their computer.");
             offlineLabel
                 .setToolTipText("This means that the user is not connected "
-                    + "to the internet, or their computer is off");
+                    + "to the internet, or their computer is off.");
             idleLabel
                 .setToolTipText("This means that the user is connected "
-                    + "to the internet, but they are not using their computer right now");
+                    + "to the internet, but they are not using their computer right now.");
             unknownLabel
                 .setToolTipText("This means that OpenGroove doesn't know what the "
                     + "user's current status is.");
