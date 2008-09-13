@@ -3365,6 +3365,7 @@ public class OpenGroove
             contactId = JOptionPane.showInputDialog(context
                 .getLaunchbar(),
                 "Enter the contact's userid.");
+            contactId = contactId.trim();
             if (contactId == null)
                 return;
             if (!Userids.isUserid(contactId))
@@ -3377,20 +3378,42 @@ public class OpenGroove
                 continue;
             }
             assert contactId != null;
-            Contact contact = new Contact();
-            contact.setHasKeys(false);
-            contact.setLocalName("");
-            contact.setLastModified(
-                Contact.Names.localName, System
-                    .currentTimeMillis());
-            contact.setRealName("");
-            contact.setUserContact(true);
-            contact.setUserid(contactId);
-            contact.setLastModified(
-                Contact.Names.userContact, System
-                    .currentTimeMillis());
-            contact.setUserVerified(false);
-            context.getStorage().setContact(contact);
+            if (context.getStorage().getContact(contactId) != null
+                && context.getStorage().getContact(
+                    contactId).isUserContact())
+            {
+                JOptionPane
+                    .showMessageDialog(context
+                        .getLaunchbar(),
+                        "The contact specified already exists.");
+                isValidContact = false;
+                continue;
+            }
+            else if (context.getStorage().getContact(
+                contactId) != null)
+            {
+                Contact contact = context.getStorage()
+                    .getContact(contactId);
+                contact.setUserContact(true);
+                context.getStorage().setContact(contact);
+            }
+            else
+            {
+                Contact contact = new Contact();
+                contact.setHasKeys(false);
+                contact.setLocalName("");
+                contact.setLastModified(
+                    Contact.Names.localName, System
+                        .currentTimeMillis());
+                contact.setRealName("");
+                contact.setUserContact(true);
+                contact.setUserid(contactId);
+                contact.setLastModified(
+                    Contact.Names.userContact, System
+                        .currentTimeMillis());
+                contact.setUserVerified(false);
+                context.getStorage().setContact(contact);
+            }
             new Thread()
             {
                 public void run()
