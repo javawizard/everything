@@ -159,13 +159,14 @@ public class ComponentUtils
     
     /**
      * Returns the text specified, but line-wrapped and with &lt;html&gt; added
-     * to the beginning.
+     * to the beginning. This is intended to be used with tool tips.
      * 
      * @param text
-     * @return
+     *            The text to wrap
+     * @return The wrapped text, with &lt;html&gt; at the beginning
      */
     public static String htmlTipWrap(String text)
     {
-        
+        return "<html>" + lineWrap(text, "<br/>", 60);
     }
 }

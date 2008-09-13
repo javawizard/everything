@@ -418,20 +418,25 @@ public class UserContext
                     OpenGroove.Icons.USER_NONEXISTANT_16
                         .getImage()), JLabel.LEFT);
             onlineLabel
-                .setToolTipText("This means that the user is connected to the"
-                    + " internet and is using their computer.");
+                .setToolTipText(ComponentUtils
+                    .htmlTipWrap("This means that the user is connected to the"
+                        + " internet and is using their computer."));
             offlineLabel
-                .setToolTipText("This means that the user is not connected "
-                    + "to the internet, or their computer is off.");
+                .setToolTipText(ComponentUtils
+                    .htmlTipWrap("This means that the user is not connected "
+                        + "to the internet, or their computer is off."));
             idleLabel
-                .setToolTipText("This means that the user is connected "
-                    + "to the internet, but they are not using their computer right now.");
+                .setToolTipText(ComponentUtils
+                    .htmlTipWrap("This means that the user is connected "
+                        + "to the internet, but they are not using their computer right now."));
             unknownLabel
-                .setToolTipText("This means that OpenGroove doesn't know what the "
-                    + "user's current status is.");
+                .setToolTipText(ComponentUtils
+                    .htmlTipWrap("This means that OpenGroove doesn't know what the "
+                        + "user's current status is."));
             nonexistantLabel
-                .setToolTipText("This means that OpenGroove has determined that "
-                    + "the user does not exist.");
+                .setToolTipText(ComponentUtils
+                    .htmlTipWrap("This means that OpenGroove has determined that "
+                        + "the user does not exist."));
             userStatusMenu.add(new JLabel(" Key:"));
             userStatusMenu.add(onlineLabel);
             userStatusMenu.add(offlineLabel);
