@@ -86,10 +86,19 @@ public class Contact implements Serializable
         return properties;
     }
     
-    private static enum Names
+    public static enum Names
     {
         userContact, localName
     }
+    
+    /**
+     * True if this contact does for sure exist. This is initially false when a
+     * contact is created, and is set to true when actual correspondence with
+     * the contact is received, or the contact's server indicates that this
+     * contact really does exist. Some operations, such as adding a user to a
+     * workspace, won't succeed unless that user has this field set to true.
+     */
+    private boolean existanceVerified;
     
     /**
      * The list of this contact's computers. This is automatically synchronized

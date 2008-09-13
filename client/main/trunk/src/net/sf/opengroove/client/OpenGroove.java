@@ -3313,7 +3313,7 @@ public class OpenGroove
     }
     
     protected static void runAddContactWizard(
-        UserContext context)
+        final UserContext context)
     {
         String choice = ItemChooser
             .showItemChooser(
@@ -3334,7 +3334,9 @@ public class OpenGroove
                         + ComponentUtils
                             .lineWrap(
                                 "If you know the user's userid, you "
-                                    + "can enter it instead of searching. If the "
+                                    + "can enter it instead of searching. OpenGroove "
+                                    + "won't check to see if the user really does "
+                                    + "exist until you connect to the internet. If the "
                                     + "user that you want to add is not publicly "
                                     + "visible, then this is the only way to add that user.",
                                 "<br/>", 60) }, true);
@@ -3353,8 +3355,51 @@ public class OpenGroove
                                     + "for OpenGroove, and try again after the next update "
                                     + "is downloaded to see if we've added support yet.",
                                 "<br/>", 80));
+            return;
         }
         assert (choice.equals("userid"));
+        boolean isValidContact = false;
+        String contactId = null;
+        while (!isValidContact)
+        {
+            contactId = JOptionPane.showInputDialog(context
+                .getLaunchbar(),
+                "Enter the contact's userid.");
+            if (contactId == null)
+                return;
+            if (!Userids.isUserid(contactId))
+            {
+                JOptionPane
+                    .showMessageDialog(context
+                        .getLaunchbar(),
+                        "The userid entered is not a valid userid.");
+                isValidContact = false;
+                continue;
+            }
+            assert contactId != null;
+            Contact contact = new Contact();
+            contact.setHasKeys(false);
+            contact.setLocalName("");
+            contact.setLastModified(
+                Contact.Names.localName, System
+                    .currentTimeMillis());
+            contact.setRealName("");
+            contact.setUserContact(true);
+            contact.setUserid(contactId);
+            contact.setLastModified(
+                Contact.Names.userContact, System
+                    .currentTimeMillis());
+            contact.setUserVerified(false);
+            context.getStorage().setContact(contact);
+            new Thread()
+            {
+                public void run()
+                {
+                    context.refreshContactsPane();
+                }
+            }.start();
+            return;
+        }
     }
     
     protected void reloadLaunchbarContacts()

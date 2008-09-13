@@ -2,12 +2,14 @@ package net.sf.opengroove.client.ui;
 
 import java.awt.BorderLayout;
 import java.awt.Color;
+import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.Insets;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
+import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.awt.event.WindowListener;
 
@@ -85,22 +87,8 @@ public class ItemChooser<E> extends JDialog
         p3.setLayout(new BorderLayout());
         p2.add(p3, BorderLayout.SOUTH);
         setDefaultCloseOperation(DO_NOTHING_ON_CLOSE);
-        addWindowListener(new WindowListener()
+        addWindowListener(new WindowAdapter()
         {
-            
-            @Override
-            public void windowActivated(WindowEvent e)
-            {
-                // TODO Auto-generated method stub
-                
-            }
-            
-            @Override
-            public void windowClosed(WindowEvent e)
-            {
-                // TODO Auto-generated method stub
-                
-            }
             
             @Override
             public void windowClosing(WindowEvent e)
@@ -111,34 +99,6 @@ public class ItemChooser<E> extends JDialog
                     JOptionPane.showMessageDialog(
                         ItemChooser.this,
                         "You must select a choice.");
-            }
-            
-            @Override
-            public void windowDeactivated(WindowEvent e)
-            {
-                // TODO Auto-generated method stub
-                
-            }
-            
-            @Override
-            public void windowDeiconified(WindowEvent e)
-            {
-                // TODO Auto-generated method stub
-                
-            }
-            
-            @Override
-            public void windowIconified(WindowEvent e)
-            {
-                // TODO Auto-generated method stub
-                
-            }
-            
-            @Override
-            public void windowOpened(WindowEvent e)
-            {
-                // TODO Auto-generated method stub
-                
             }
         });
         JPanel p5 = new JPanel();
@@ -158,6 +118,8 @@ public class ItemChooser<E> extends JDialog
         label.setBorder(new EmptyBorder(0, 0, 15, 0));
         label.setAlignmentX(0);
         label.setAlignmentY(0);
+        Dimension preferredLabelSize = label
+            .getPreferredSize();
         p1.add(label);
         for (final E choice : choices)
         {
@@ -234,6 +196,10 @@ public class ItemChooser<E> extends JDialog
                     }
                 });
         }
+        setSize(Math.min(p2.getPreferredSize().width + 50,
+            450), Math.min(
+            p2.getPreferredSize().height + 70, 550));
+        setLocationRelativeTo(parent);
     }
     
     public static <T> T showItemChooser(JFrame parent,
