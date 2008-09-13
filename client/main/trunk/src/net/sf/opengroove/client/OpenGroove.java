@@ -3380,9 +3380,9 @@ public class OpenGroove
             contactId = JOptionPane.showInputDialog(context
                 .getLaunchbar(),
                 "Enter the contact's userid.");
-            contactId = contactId.trim();
             if (contactId == null)
                 return;
+            contactId = contactId.trim();
             if (!Userids.isUserid(contactId))
             {
                 JOptionPane

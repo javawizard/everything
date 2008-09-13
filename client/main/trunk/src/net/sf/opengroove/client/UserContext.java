@@ -374,13 +374,15 @@ public class UserContext
             bar.setIndeterminate(true);
             bar.setAlignmentX(0);
             if (contactList.length > 60)
+            {
                 contactsPanel.add(bar);
-            contactsPanel.invalidate();
-            contactsPanel.validate();
-            contactsPanel.repaint();
-            launchbar.invalidate();
-            launchbar.validate();
-            launchbar.repaint();
+                contactsPanel.invalidate();
+                contactsPanel.validate();
+                contactsPanel.repaint();
+                launchbar.invalidate();
+                launchbar.validate();
+                launchbar.repaint();
+            }
             final JPopupMenu userStatusMenu = new JPopupMenu();
             JLabel onlineLabel = new JLabel("Online",
                 new ImageIcon(
@@ -422,18 +424,14 @@ public class UserContext
             userStatusMenu.add(idleLabel);
             userStatusMenu.add(unknownLabel);
             userStatusMenu.add(nonexistantLabel);
+            int contactsAdded = 0;
             for (final Contact contact : contactList)
             {
-                System.out.println("encountered a contact");
                 if (contact.isUserContact()
                     || showKnownUsersAsContacts
                         .isSelected())
                 {
-                    System.out
-                        .println("user contact with dn:"
-                            + contact.getDisplayName());
-                    // TODO: pick up here, create a panel for the contact (with
-                    // right-click options) and add it to the contact pane
+                    contactsAdded++;
                     JPanel contactPanel = new JPanel(
                         new BorderLayout());
                     contactPanel.setOpaque(false);
@@ -474,12 +472,6 @@ public class UserContext
                     contactButton.setOpaque(false);
                     contactButton
                         .setButtonStyle(JideButton.HYPERLINK_STYLE);
-                    System.out.println("perferred:"
-                        + contactButton.getPreferredSize()
-                        + ",minimum:"
-                        + contactButton.getMinimumSize()
-                        + ",maximum:"
-                        + contactButton.getMaximumSize());
                     contactButton
                         .setForeground(Color.BLACK);
                     JPopupMenu menu = new JPopupMenu();
@@ -534,14 +526,18 @@ public class UserContext
                     contactPanel.add(statusButton,
                         BorderLayout.WEST);
                     contactsPanel.add(contactPanel);
-                    contactsPanel.invalidate();
-                    contactsPanel.validate();
-                    contactsPanel.repaint();
-                    launchbar.invalidate();
-                    launchbar.validate();
-                    launchbar.repaint();
+                    // contactsPanel.invalidate();
+                    // contactsPanel.validate();
+                    // contactsPanel.repaint();
+                    // launchbar.invalidate();
+                    // launchbar.validate();
+                    // launchbar.repaint();
                 }
             }
+            if (contactsAdded == 0)
+                contactsPanel
+                    .add(new JLabel(
+                        "<html><font color=\"#707070\">(No contacts)</font>"));
             contactsPanel.remove(bar);
             contactsPanel.invalidate();
             contactsPanel.validate();
