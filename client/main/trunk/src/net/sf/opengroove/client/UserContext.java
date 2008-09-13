@@ -372,7 +372,7 @@ public class UserContext
                         .getImage()), JLabel.LEFT));
             userStatusMenu.add(new JLabel("Nonexistant",
                 new ImageIcon(
-                    OpenGroove.Icons.USER_OFFLINE_16
+                    OpenGroove.Icons.USER_NONEXISTANT_16
                         .getImage()), JLabel.LEFT));
             for (final Contact contact : contactList)
             {
@@ -478,6 +478,8 @@ public class UserContext
                                     statusButton, 0, 0);
                             }
                         });
+                    contactPanel.add(statusButton,
+                        BorderLayout.WEST);
                     contactsPanel.add(contactPanel);
                     contactsPanel.invalidate();
                     contactsPanel.validate();
