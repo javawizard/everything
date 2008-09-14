@@ -61,6 +61,7 @@ import net.sf.opengroove.realmserver.web.RendererServlet;
 import net.sf.opengroove.common.security.Crypto;
 import net.sf.opengroove.common.security.Hash;
 import net.sf.opengroove.common.security.RSA;
+import net.sf.opengroove.common.utils.Userids;
 
 import org.apache.jasper.servlet.JspServlet;
 import org.mortbay.jetty.Server;
@@ -2640,6 +2641,25 @@ public class OpenGrooveRealmServer
                 DataStore.insertSubscription(subscription);
                 connection.sendEncryptedPacket(packetId,
                     command(), Status.OK, EMPTY);
+            }
+        };
+        new Command("userexists", 128, false, true)
+        {
+            
+            @Override
+            public void handle(String packetId,
+                InputStream data,
+                ConnectionHandler connection)
+                throws Exception
+            {
+                String dataString = tokenize(data)[0];
+                if (DataStore.getUser(dataString) != null)
+                    connection.sendEncryptedPacket(
+                        packetId, command(), Status.OK, "");
+                else
+                    throw new FailedResponseException(
+                        Status.NOSUCHUSER,
+                        "The user specified does not exist");
             }
         };
         new Command("listsubscriptions", 128, false, false)
