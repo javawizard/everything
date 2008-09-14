@@ -3446,22 +3446,25 @@ public class OpenGrooveRealmServer
     public static String handleWebNotify(
         HttpServletRequest request)
     {
-        String to = request.getParameter("to");
-        String subject = request.getParameter("subject");
-        String message = request.getParameter("message");
-        String priority = request.getParameter("priority");
-        String dismissString = request
+        final String to = request.getParameter("to");
+        final String subject = request
+            .getParameter("subject");
+        final String message = request
+            .getParameter("message");
+        final String priority = request
+            .getParameter("priority");
+        final String dismissString = request
             .getParameter("dismiss");
-        int dismissMinutes = Integer
+        final int dismissMinutes = Integer
             .parseInt(dismissString);
-        Date start = new Date();
-        Date end = new Date(start.getTime()
+        final Date start = new Date();
+        final Date end = new Date(start.getTime()
             + TimeUnit.MINUTES.toMillis(dismissMinutes));
-        String contents = "" + start.getTime() + " "
+        final String contents = "" + start.getTime() + " "
             + start + "\n" + end.getTime() + " " + end
             + "\n" + priority + "\n" + subject + "\n"
             + message;
-        ConnectionHandler[] recipientConnections = null;
+        final ConnectionHandler[] recipientConnections;
         if (to.equalsIgnoreCase("all"))
         {
             recipientConnections = connections
@@ -3485,26 +3488,29 @@ public class OpenGrooveRealmServer
                 return "fThe computer specified is not online.";
             recipientConnections = new ConnectionHandler[] { computerConnection };
         }
-        boolean someSucceeded = false;
-        for (ConnectionHandler handler : recipientConnections)
+        else
+            throw new RuntimeException(
+                "Invalid scope specified");
+        tasks.execute(new Runnable()
         {
-            try
+            public void run()
             {
-                handler
-                    .sendEncryptedPacket(generateId(),
-                        "usernotification", Status.OK,
-                        contents);
-                someSucceeded = true;
+                for (ConnectionHandler handler : recipientConnections)
+                {
+                    try
+                    {
+                        handler.sendEncryptedPacket(
+                            generateId(),
+                            "usernotification", Status.OK,
+                            contents);
+                    }
+                    catch (Exception ex1)
+                    {
+                        ex1.printStackTrace();
+                    }
+                }
             }
-            catch (Exception ex1)
-            {
-                ex1.printStackTrace();
-            }
-        }
-        if (!someSucceeded)
-            return "fThe notification wasn't delivered to any recipients.\n"
-                + "This means that no-one's online to send the notification to,\n"
-                + "or an error has occured with this server's network.";
+        });
         return "t";
     }
     
