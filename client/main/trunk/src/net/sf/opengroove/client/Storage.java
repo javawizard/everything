@@ -381,7 +381,7 @@ public class Storage
             .exists())
             return null;
         return (Contact) readObjectFromFile(new File(
-            contacts, userid));
+            contacts, userid.replace(":", "$")));
     }
     
     /**
@@ -417,14 +417,14 @@ public class Storage
         File contactFile = new File(contacts, contact
             .getUserid().replace(":", "$"));
         /*
-         * TODO: is the following delete statement necessary? Perhaps the contact
-         * file should just be written over. Actually, this whole file needs to
-         * be reworked on that idea. Perhaps, then, the old file could be
-         * renamed to have $$.old on the end, and then write the new file as a
-         * file with $$.new on the end, rename that to the regular file name and
-         * delete the $$.old file. This would make it so that if OpenGroove were
-         * to unexpectedly terminate during an operation, nothing would be lost.
-         * Perhaps, then, the stuff in this file should just use the proxy
+         * TODO: is the following delete statement necessary? Perhaps the
+         * contact file should just be written over. Actually, this whole file
+         * needs to be reworked on that idea. Perhaps, then, the old file could
+         * be renamed to have $$.old on the end, and then write the new file as
+         * a file with $$.new on the end, rename that to the regular file name
+         * and delete the $$.old file. This would make it so that if OpenGroove
+         * were to unexpectedly terminate during an operation, nothing would be
+         * lost. Perhaps, then, the stuff in this file should just use the proxy
          * storage system, and I should write what I just described into the
          * proxy storage system.
          * 

@@ -15,14 +15,19 @@ public class ContactComputer implements Serializable
      * 
      */
     private static final long serialVersionUID = -5092427115370001261L;
-    
+    /**
+     * The contact's computer name.
+     */
     private String name;
-    
-    private long lastOnline;
-    
+    /**
+     * The type of computer that the contact is
+     */
     private String type;
-    
+    /**
+     * The server's lag relative to the contact's time.
+     */
     private long lag;
+    private ContactStatus status;
     
     public long getLag()
     {
@@ -39,9 +44,16 @@ public class ContactComputer implements Serializable
         return name;
     }
     
-    public long getLastOnline()
+    public ContactStatus getStatus()
     {
-        return lastOnline;
+        if (status == null)
+            status = new ContactStatus();
+        return status;
+    }
+    
+    public void setStatus(ContactStatus status)
+    {
+        this.status = status;
     }
     
     public String getType()
@@ -52,11 +64,6 @@ public class ContactComputer implements Serializable
     public void setName(String name)
     {
         this.name = name;
-    }
-    
-    public void setLastOnline(long lastOnline)
-    {
-        this.lastOnline = lastOnline;
     }
     
     public void setType(String type)

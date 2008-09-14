@@ -9,6 +9,7 @@ import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 
@@ -80,7 +81,9 @@ public class UserContext
     private Conditional connectionConditional;
     /**
      * A timer that downloads contact updates from the server, and uploads new
-     * contact updates if there are any.
+     * contact updates if there are any. This timer is interrupted any time an
+     * imessage is received from another computer that indicates updates to
+     * contacts.
      */
     private ConditionalTimer contactTimer;
     /**
@@ -92,7 +95,7 @@ public class UserContext
     /**
      * A timer that downloads the status updates for all of the contacts (IE the
      * status updates uploaded by those contacts' {@link #myStatusTimer}s), and
-     * updates the icons in the launchbar's contact's pane.<br/><br/>
+     * updates the icons in the launchbar's contact's pane. <br/><br/>
      * 
      * This timer, unlike most of the other timers, uses
      * {@link Conditional#True} instead of {@link #connectionConditional}, so
@@ -106,6 +109,11 @@ public class UserContext
      * local time.
      */
     private ConditionalTimer timeSyncTimer;
+    /**
+     * A timer that checks to make sure that subscriptions are present for all
+     * of the contacts that exist.
+     */
+    private ConditionalTimer subscriptionTimer;
     /**
      * The menu that is added to the tray icon that shows all of the user's
      * workspace
@@ -174,6 +182,26 @@ public class UserContext
      * menu item for each user, which is this popup menu.
      */
     private PopupMenu popupMenu;
+    
+    /**
+     * Starts all of this context's timers.
+     */
+    public void startTimers()
+    {
+        
+    }
+    
+    /**
+     * Returns a list of all timers for this UserContext.
+     * 
+     * @return
+     */
+    public ConditionalTimer[] getTimers()
+    {
+        Field[] fields = getClass().getFields();
+        ArrayList<ConditionalTimer> timers = new ArrayList<ConditionalTimer>();
+        for(Fielf eif)
+    }
     
     public String getUserid()
     {
@@ -436,7 +464,9 @@ public class UserContext
             nonexistantLabel
                 .setToolTipText(ComponentUtils
                     .htmlTipWrap("This means that OpenGroove has determined that "
-                        + "the user does not exist."));
+                        + "the user does not exist. The user may have "
+                        + "been deleted, or you might have entered the user's "
+                        + "userid incorrectly when adding them as a contact."));
             userStatusMenu.add(new JLabel(" Key:"));
             userStatusMenu.add(onlineLabel);
             userStatusMenu.add(offlineLabel);
@@ -561,19 +591,7 @@ public class UserContext
                     contactButton.setFont(contactFont);
                     contactPanel.add(contactButton,
                         BorderLayout.CENTER);
-                    OpenGroove.Icons statusIcon;
-                    ContactStatus status = contact
-                        .getStatus();
-                    if (!status.isKnown())
-                        statusIcon = OpenGroove.Icons.USER_UNKNOWN_16;
-                    else if (status.isNonexistant())
-                        statusIcon = OpenGroove.Icons.USER_NONEXISTANT_16;
-                    else if (!status.isOnline())
-                        statusIcon = OpenGroove.Icons.USER_OFFLINE_16;
-                    else if ((status.getIdleTime() + IDLE_THRESHOLD) < getServerTime())
-                        statusIcon = OpenGroove.Icons.USER_IDLE_16;
-                    else
-                        statusIcon = OpenGroove.Icons.USER_ONLINE_16;
+                    OpenGroove.Icons statusIcon = getStatusIcon(contact);
                     final JideButton statusButton = new JideButton(
                         new ImageIcon(statusIcon.getImage()));
                     contactStatusLabelMap.put(contact
@@ -626,6 +644,30 @@ public class UserContext
                 refreshContactsPane();
             }
         }.start();
+    }
+    
+    /**
+     * Returns an icon that should be displayed as the user's icon, based on the
+     * user's current status.
+     * 
+     * @param contact
+     * @return
+     */
+    public OpenGroove.Icons getStatusIcon(Contact contact)
+    {
+        OpenGroove.Icons statusIcon;
+        ContactStatus status = contact.getStatus();
+        if (!status.isKnown())
+            statusIcon = OpenGroove.Icons.USER_UNKNOWN_16;
+        else if (status.isNonexistant())
+            statusIcon = OpenGroove.Icons.USER_NONEXISTANT_16;
+        else if (!status.isOnline())
+            statusIcon = OpenGroove.Icons.USER_OFFLINE_16;
+        else if ((status.getIdleTime() + IDLE_THRESHOLD) < getServerTime())
+            statusIcon = OpenGroove.Icons.USER_IDLE_16;
+        else
+            statusIcon = OpenGroove.Icons.USER_ONLINE_16;
+        return statusIcon;
     }
     
     public JCheckBox getShowKnownUsersAsContacts()
@@ -686,5 +728,16 @@ public class UserContext
         ConditionalTimer timeSyncTimer)
     {
         this.timeSyncTimer = timeSyncTimer;
+    }
+    
+    public ConditionalTimer getSubscriptionTimer()
+    {
+        return subscriptionTimer;
+    }
+    
+    public void setSubscriptionTimer(
+        ConditionalTimer subscriptionTimer)
+    {
+        this.subscriptionTimer = subscriptionTimer;
     }
 }

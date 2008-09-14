@@ -167,6 +167,6 @@ public class ComponentUtils
      */
     public static String htmlTipWrap(String text)
     {
-        return "<html>" + lineWrap(text, "<br/>", 60);
+        return "<html>" + lineWrap(text, "<br/>", 80);
     }
 }
