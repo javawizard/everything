@@ -8,6 +8,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.lang.reflect.Field;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
@@ -85,12 +86,14 @@ public class UserContext
      * imessage is received from another computer that indicates updates to
      * contacts.
      */
+    @TimerField
     private ConditionalTimer contactTimer;
     /**
      * A timer that uploads the current use status of this computer (whether or
      * not the computer is idle, how long it has been idle for, if the user is
      * currently using OpenGroove)
      */
+    @TimerField
     private ConditionalTimer myStatusTimer;
     /**
      * A timer that downloads the status updates for all of the contacts (IE the
@@ -102,17 +105,20 @@ public class UserContext
      * that it will run even if there is no connection to the server, so as to
      * set all of the user's statuses to offline.
      */
+    @TimerField
     private ConditionalTimer contactStatusTimer;
     /**
      * A timer that gets the server's time and sets the lag of this user's
      * backing LocalUser to be the difference between the server's time and the
      * local time.
      */
+    @TimerField
     private ConditionalTimer timeSyncTimer;
     /**
      * A timer that checks to make sure that subscriptions are present for all
      * of the contacts that exist.
      */
+    @TimerField
     private ConditionalTimer subscriptionTimer;
     /**
      * The menu that is added to the tray icon that shows all of the user's
@@ -188,7 +194,11 @@ public class UserContext
      */
     public void startTimers()
     {
-        
+        ConditionalTimer[] timers = getTimers();
+        for (ConditionalTimer timer : timers)
+        {
+            timer.start();
+        }
     }
     
     /**
@@ -198,9 +208,36 @@ public class UserContext
      */
     public ConditionalTimer[] getTimers()
     {
-        Field[] fields = getClass().getFields();
+        Field[] fields = getClass().getDeclaredFields();
         ArrayList<ConditionalTimer> timers = new ArrayList<ConditionalTimer>();
-        for(Fielf eif)
+        for (Field field : fields)
+        {
+            if (field.isAnnotationPresent(TimerField.class)
+                && field.getType().equals(
+                    ConditionalTimer.class))
+            {
+                try
+                {
+                    timers.add((ConditionalTimer) field
+                        .get(this));
+                }
+                catch (IllegalAccessException e)
+                {
+                    // should never be thrown
+                    e.printStackTrace();
+                }
+            }
+            else if (field
+                .isAnnotationPresent(TimerField.class))
+            {
+                System.err
+                    .println("Field "
+                        + field.getName()
+                        + "declared in UserContext as a timer field but is "
+                        + "not an instance of ConditionalTimer");
+            }
+        }
+        return timers.toArray(new ConditionalTimer[0]);
     }
     
     public String getUserid()
