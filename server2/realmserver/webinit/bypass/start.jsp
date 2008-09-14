@@ -50,8 +50,8 @@ you can put it into the lib folder) <i>before</i> the server starts.</td></tr>
 Unless noted, these settings <i>cannot</i> be changed later.</td></tr>
 <tr><td>Server port:</td><td><input type="text" name="serverport" value="${param.serverport}"/></td></tr>
 <tr><td>Web port:</td><td><input type="text" name="webport" value="${param.webport}"/></td></tr>
-<tr><td>Public server hostname<sup><a target="_blank"
-href="http://www.opengroove.org/help/public-server-hostname">?</a></sup>:</td>
+<tr><td>Realm name<sup><a target="_blank"
+href="http://www.opengroove.org/help/server-realm-name">?</a></sup>:</td>
 <td><input type="text" name="serverhostname" value="${param.serverhostname}"/></td></tr>
 <tr><td>Force all connections to use encryption<sup><a target="_blank"
 href="http://www.opengroove.org/help/force-encryption">?</a></sup>:</td><td><input

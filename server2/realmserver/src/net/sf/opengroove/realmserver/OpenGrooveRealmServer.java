@@ -540,6 +540,8 @@ public class OpenGrooveRealmServer
     
     public static HashMap<String, Command> commands = new HashMap<String, Command>();
     
+    private static String serverRealmAddress;
+    
     public static class ConnectionHandler extends Thread
     {
         private Socket socket;
@@ -1320,7 +1322,7 @@ public class OpenGrooveRealmServer
                             setConfig("serverport",
                                 serverport);
                             setConfig("webport", webport);
-                            setConfig("serverhostname",
+                            setConfig("realm",
                                 serverhostname);
                             setConfig("forceencryption",
                                 forceEncryption ? "true"
@@ -1573,6 +1575,7 @@ public class OpenGrooveRealmServer
             getConfig("rsa-sgn-mod"), 16);
         rsaSignaturePrivateKey = new BigInteger(
             getConfig("rsa-sgn-prv"), 16);
+        serverRealmAddress = getConfig("realm");
         serverSocket = new ServerSocket(Integer
             .parseInt(getConfig("serverport")));
         loadCommands();
@@ -1851,7 +1854,8 @@ public class OpenGrooveRealmServer
                         // TODO: Is this a good idea? In retrospect, it seems
                         // that having a user signed on multiple times without a
                         // computer isn't a problem, they just should be able to
-                        // see that there is another connection that currently exists
+                        // see that there is another connection that currently
+                        // exists
                         for (ConnectionHandler ich : new ArrayList<ConnectionHandler>(
                             connections))
                         {
@@ -2035,6 +2039,8 @@ public class OpenGrooveRealmServer
                 String messageId = tokens[0];
                 String recipientUser = tokens[1];
                 String recipientComputer = tokens[2];
+                recipientUser = Userids.relativeTo(
+                    recipientUser, "");
                 int dataIndex = messageId.length()
                     + recipientUser.length()
                     + recipientComputer.length() + 3;
