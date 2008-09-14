@@ -119,6 +119,75 @@ public class Userids
         return setUsername(relativeTo, toResolve);
     }
     
+    /**
+     * Converts a userid (or a username) to a username relative to the realm
+     * specified, or leaves it the same if the userid specified is different
+     * than the realm specified. This could be considered the opposite of
+     * {@link #resolveTo(String, String)}, except that it takes a realm as it's
+     * input instead of a userid.<br/><br/>
+     * 
+     * Another way to think of this method would be that it removes the realm
+     * component of the userid (thereby reducing it to a username) if the realm
+     * component matches the realm specified by <code>relativeTo</code>, or
+     * leaves it alone if the input is a username.<br/><br/>
+     * 
+     * Here are some examples:<br/><br/>
+     * 
+     * <table border="0" cellspacing="0" cellpadding="2">
+     * <tr>
+     * <th>toRelativize</th>
+     * <th>relativeTo</th>
+     * <th>result</th>
+     * </tr>
+     * <tr>
+     * <td>realm:username</td>
+     * <td>realm</td>
+     * <td>username</td>
+     * </tr>
+     * <tr>
+     * <td>username</td>
+     * <td>realm</td>
+     * <td>username</td>
+     * </tr>
+     * <tr>
+     * <td>realm:username</td>
+     * <td>dfferentrealm</td>
+     * <td>realm:username</td>
+     * </tr>
+     * <tr>
+     * <td></td>
+     * <td></td>
+     * <td></td>
+     * </tr>
+     * <tr>
+     * <td></td>
+     * <td></td>
+     * <td></td>
+     * </tr>
+     * </table>
+     * 
+     * @param toRelativize
+     *            The userid to convert to relative
+     * @param relativeTo
+     *            The realm to relativize the userid to
+     * @return The relativized userid
+     */
+    public static String relativeTo(String toRelativize,
+        String relativeTo)
+    {
+        if (isUsername(toRelativize))
+            return toRelativize;
+        if (isUserid(toRelativize)
+            && toRealm(toRelativize).equalsIgnoreCase(
+                relativeTo))
+            return toUsername(toRelativize);
+        if (isUserid(toRelativize))
+            return toRelativize;
+        throw new IllegalArgumentException(
+            "The argument provided as toRelativize ("
+                + toRelativize + ") is not valid");
+    }
+    
     public static void checkUserid(String userid)
     {
         if (!isUserid(userid))
