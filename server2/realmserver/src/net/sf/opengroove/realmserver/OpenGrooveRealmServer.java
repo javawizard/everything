@@ -309,7 +309,7 @@ public class OpenGrooveRealmServer
     
     public static enum Status
     {
-        OK, FAIL, BADAUTH, BADCOMPUTER, QUOTAEXCEEDED, NOSUCHCOMPUTER, NOSUCHUSER, NORESULTS, ALREADYEXISTS, NOSUCHSUBSCRIPTION, UNAUTHORIZED
+        OK, FAIL, BADAUTH, BADCOMPUTER, QUOTAEXCEEDED, NOSUCHCOMPUTER, NOSUCHUSER, NORESULTS, ALREADYEXISTS, NOSUCHSUBSCRIPTION, UNAUTHORIZED, INVALIDREALM
     };
     
     public static final SecureRandom random = new SecureRandom();
@@ -358,7 +358,16 @@ public class OpenGrooveRealmServer
     }
     
     private static Map<String, Map<String, ConnectionHandler>> connectionsByAuth = new Hashtable<String, Map<String, ConnectionHandler>>();
-    
+    /**
+     * A map that holds packets waiting to be delivered to other realm servers.
+     * Since not every known realm server will have a connection to it non-stop,
+     * there will frequently be items in the queues of this map for servers that
+     * this server is not connected to. For each item in the map, the key is the
+     * name of the realm of the realm server, and the value is the queue that
+     * holds the realm's pending items.
+     */
+    private static Map<String, BlockingQueue<Packet>> interRealmCache = new HashMap<String, BlockingQueue<Packet>>();
+    @Deprecated
     protected static final File HTTPD_RES_FOLDER = new File(
         "httpdres");
     /**
@@ -2040,6 +2049,7 @@ public class OpenGrooveRealmServer
                 String recipientUser = tokens[1];
                 String recipientComputer = tokens[2];
                 recipientUser = relativeId(recipientUser);
+                checkUsername(recipientUser);
                 int dataIndex = messageId.length()
                     + recipientUser.length()
                     + recipientComputer.length() + 3;
@@ -3215,6 +3225,21 @@ public class OpenGrooveRealmServer
         };
         System.out.println("loaded " + commands.size()
             + " commands");
+    }
+    
+    /**
+     * Throws a FailedResponseException with {@link Status#INVALIDREALM} if the
+     * input specified is not a username. This is currently used to validate
+     * that all users specified in arguments to commands are of this realm
+     * server, and this method will likely be removed when full support for
+     * realm servers and inter-realm communication is added.
+     * 
+     * @param recipientUser
+     */
+    protected static void checkUsername(String recipientUser)
+    {
+        // TODO Auto-generated method stub
+        
     }
     
     protected static String relativeId(String recipientUser)
