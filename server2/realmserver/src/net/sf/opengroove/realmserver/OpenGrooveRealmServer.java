@@ -2039,8 +2039,7 @@ public class OpenGrooveRealmServer
                 String messageId = tokens[0];
                 String recipientUser = tokens[1];
                 String recipientComputer = tokens[2];
-                recipientUser = Userids.relativeTo(
-                    recipientUser, "");
+                recipientUser = relativeId(recipientUser);
                 int dataIndex = messageId.length()
                     + recipientUser.length()
                     + recipientComputer.length() + 3;
@@ -3216,6 +3215,12 @@ public class OpenGrooveRealmServer
         };
         System.out.println("loaded " + commands.size()
             + " commands");
+    }
+    
+    protected static String relativeId(String recipientUser)
+    {
+        return Userids.relativeTo(recipientUser,
+            serverRealmAddress);
     }
     
     /**
