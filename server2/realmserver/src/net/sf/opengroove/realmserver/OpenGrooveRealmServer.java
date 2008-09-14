@@ -3067,9 +3067,6 @@ public class OpenGrooveRealmServer
                 ConnectionHandler connection)
                 throws Exception
             {
-                StoredMessage[] messages = DataStore
-                    .listApprovedMessageInfo(connection.username);
-                
             }
         };
         new Command("listoutboundmessages", 256, false,
