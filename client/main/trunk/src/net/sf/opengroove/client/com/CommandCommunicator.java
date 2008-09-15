@@ -522,6 +522,25 @@ public class CommandCommunicator
     }
     
     /**
+     * Returns true if the user indicated by the userid or username specified
+     * exists, false if the user does not. The server may limit the rate at
+     * which this can be called to prevent searching for users who are not
+     * publicly visible by dictionary attacking their userids using this method.
+     * 
+     * @param userid
+     * @return
+     * @throws IOException
+     */
+    public boolean userExists(String userid)
+        throws IOException
+    {
+        return new String(communicator.query(
+            new Packet(null, "userexists", userid
+                .getBytes()), defaultTimeout).getContents())
+            .trim().toLowerCase().startsWith("t");
+    }
+    
+    /**
      * Deletes a subscription.
      * 
      * @param subscription

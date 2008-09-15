@@ -774,7 +774,20 @@ public class UserContext
          */
         if (com.getCommunicator().isActive())
         {
-            
+            try
+            {
+                
+            }
+            catch (Exception exception)
+            {
+                /*
+                 * This just means that we had an exception while connecting to
+                 * the server. It's no big deal, as the server probably just
+                 * disconnected us while we were trying to talk with it. We'll
+                 * just proceed with the updates we've downloaded so far.
+                 */
+                exception.printStackTrace();
+            }
         }
         /*
          * Now, the updating of the launchbar contact icons with contact status.
