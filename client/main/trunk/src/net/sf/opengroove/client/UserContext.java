@@ -683,7 +683,19 @@ public class UserContext
         }.start();
     }
     
-    protected void 
+    /**
+     * Updates the status icons for the contacts in the contacts pane. A new
+     * thread is started for each contact, so that even if some contacts take
+     * some time to update, not all of them will be delayed by the one that took
+     * a lot of time. all of the newly-started threads are
+     * {@link Thread#join() joined} before this method returns, so that when it
+     * returns, all contacts in the contacts list at the time the method was
+     * started will have their status icons updated.
+     */
+    public void updateContactStatus()
+    {
+        
+    }
     
     /**
      * Returns an icon that should be displayed as the user's icon, based on the
