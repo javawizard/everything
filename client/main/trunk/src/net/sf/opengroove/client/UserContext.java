@@ -8,6 +8,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.io.File;
 import java.lang.reflect.Field;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -26,6 +27,7 @@ import javax.swing.JProgressBar;
 import javax.swing.JTabbedPane;
 import javax.swing.JToolTip;
 import javax.swing.SwingConstants;
+import javax.swing.SwingUtilities;
 import javax.swing.border.EmptyBorder;
 
 import com.jidesoft.swing.JideButton;
@@ -529,8 +531,26 @@ public class UserContext
                         public String getToolTipText(
                             MouseEvent e)
                         {
-                            System.out
-                                .println("getting text");
+                            String computersString = "";
+                            int computersAdded = 0;
+                            for (ContactComputer computer : new ArrayList<ContactComputer>(
+                                contact.getComputers()))
+                            {
+                                computersAdded++;
+                                computersString += " &nbsp; <img src=\""
+                                    + new File(
+                                        getStatusIcon(
+                                            computer
+                                                .getStatus())
+                                            .getIconPath())
+                                        .toURI().toString()
+                                    + "\"/> "
+                                    + computer.getName() + "<br/>";
+                            }
+                            if (computersAdded == 0)
+                            {
+                                computersString = " &nbsp; <font color=\"#707070\">(No computers)</font>";
+                            }
                             return "<html><b>"
                                 + contact.getDisplayName()
                                 + "</b><br/>"
@@ -548,7 +568,8 @@ public class UserContext
                                     .equals("") ? "<font color=\"#707070\">(Not specified)</font>"
                                     : contact
                                         .getLocalName())
-                                + "</td></tr></table>";
+                                + "</td></tr></table><br/>Computers:<br/>"
+                                + computersString;
                         }
                     };
                     contactButton
@@ -628,7 +649,8 @@ public class UserContext
                     contactButton.setFont(contactFont);
                     contactPanel.add(contactButton,
                         BorderLayout.CENTER);
-                    OpenGroove.Icons statusIcon = getStatusIcon(contact);
+                    OpenGroove.Icons statusIcon = getStatusIcon(contact
+                        .getStatus());
                     final JideButton statusButton = new JideButton(
                         new ImageIcon(statusIcon.getImage()));
                     contactStatusLabelMap.put(contact
@@ -684,17 +706,26 @@ public class UserContext
     }
     
     /**
-     * Updates the status icons for the contacts in the contacts pane. A new
-     * thread is started for each contact, so that even if some contacts take
-     * some time to update, not all of them will be delayed by the one that took
-     * a lot of time. all of the newly-started threads are
+     * Updates the status icons for the contacts in the contacts pane, based on
+     * the contact's current statuses. If a connection to the server is not
+     * present, the contact will be shown as if the contact was currently
+     * offline, or as a nonexistant contact if it is already marked as being
+     * nonexistant. A new thread is started for each contact, so that even if
+     * some contacts take some time to update, not all of them will be delayed
+     * by the one that took a lot of time. all of the newly-started threads are
      * {@link Thread#join() joined} before this method returns, so that when it
      * returns, all contacts in the contacts list at the time the method was
-     * started will have their status icons updated.
+     * started will have their status icons updated.<br/><br/>
+     * 
+     * 
      */
     public void updateContactStatus()
     {
-        
+        Contact[] contacts = getStorage().getAllContacts();
+        for (Contact contact : contacts)
+        {
+            
+        }
     }
     
     /**
@@ -704,10 +735,10 @@ public class UserContext
      * @param contact
      * @return
      */
-    public OpenGroove.Icons getStatusIcon(Contact contact)
+    public OpenGroove.Icons getStatusIcon(
+        ContactStatus status)
     {
         OpenGroove.Icons statusIcon;
-        ContactStatus status = contact.getStatus();
         if (!status.isKnown())
             statusIcon = OpenGroove.Icons.USER_UNKNOWN_16;
         else if (status.isNonexistant())
