@@ -87,4 +87,5 @@ public abstract class ConditionalTimer extends Thread
             waitingForPeriod = false;
         }
     }
+    
 }
