@@ -706,6 +706,8 @@ public class UserContext
         }.start();
     }
     
+    private final Object contactStatusLock = new Object();
+    
     /**
      * Updates the status icons for the contacts in the contacts pane, based on
      * the contact's current statuses. If a connection to the server is not
@@ -756,12 +758,29 @@ public class UserContext
      * online, whether or not it is idle, etc. This information is then stored
      * into the contact, and the contact is stored into this context's storage
      * object. The icon in the contacts pane is then updated to reflect the
-     * information.
+     * information.<br/><br/>
+     * 
+     * This <b>must not</b> be called by any method besides
+     * {@link #updateContactStatus()}, unless the caller explicitly
+     * synchronizes on {@link #contactStatusLock} first. This is to avoid two
+     * threads trying to update the same contact at the same time.
      * 
      * @param contact
      */
     protected void updateOneContactStatus(Contact contact)
     {
+        /*
+         * First, the downloading of new updates.
+         */
+        if (com.getCommunicator().isActive())
+        {
+            
+        }
+        /*
+         * Now, the updating of the launchbar contact icons with contact status.
+         * The tooltip for each contact will update itself automatically, so
+         * there's no need to do that in this method.
+         */
     }
     
     /**
