@@ -3540,7 +3540,7 @@ public class OpenGroove
                     JOptionPane
                         .showMessageDialog(
                             launchbar,
-                            "Questions? Comments? Send an email to webmaster@trivergia.com");
+                            "Questions? Comments? Send an email to support@opengroove.org");
                 }
             }, new IMenuItem("About")
             {

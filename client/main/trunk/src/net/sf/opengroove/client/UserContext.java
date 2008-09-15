@@ -554,7 +554,7 @@ public class UserContext
                             }
                             return "<html><b>"
                                 + contact.getDisplayName()
-                                + "</b><br/>"
+                                + "</b><br/><br/>"
                                 + "<table border=\"0\" cellspacing=\"0\" cellpadding=\"0\">"
                                 + "<tr><td>Userid: &nbsp; &nbsp; </td><td>"
                                 + contact.getUserid()
@@ -749,12 +749,21 @@ public class UserContext
         }
     }
     
+    /**
+     * Synchronously updates a contact's status. This contacts the server if a
+     * connection is present, and downloads a list of the contact's computers,
+     * and for each computer, whether or not it is online, when it was last
+     * online, whether or not it is idle, etc. This information is then stored
+     * into the contact, and the contact is stored into this context's storage
+     * object. The icon in the contacts pane is then updated to reflect the
+     * information.
+     * 
+     * @param contact
+     */
     protected void updateOneContactStatus(Contact contact)
     {
-        // TODO Auto-generated method stub
-        
     }
-
+    
     /**
      * Returns an icon that should be displayed as the user's icon, based on the
      * user's current status.
