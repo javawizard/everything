@@ -683,6 +683,8 @@ public class UserContext
         }.start();
     }
     
+    protected void 
+    
     /**
      * Returns an icon that should be displayed as the user's icon, based on the
      * user's current status.

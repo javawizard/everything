@@ -3553,6 +3553,8 @@ public class OpenGroove
         bar.add(convergiaMenu);
         bar.add(pluginsMenu);
         bar.add(helpMenu);
+        bar.invalidate();
+        bar.validate();
     }
     
     /**
