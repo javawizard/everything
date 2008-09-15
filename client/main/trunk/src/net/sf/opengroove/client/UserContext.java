@@ -776,7 +776,31 @@ public class UserContext
         {
             try
             {
-                
+                ContactStatus status = contact.getStatus();
+                if (!com.userExists(contact.getUserid()))
+                {
+                    /*
+                     * contact doesn't exist
+                     */
+                    status.setNonexistant(true);
+                }
+                else
+                {
+                    /*
+                     * contact does exist, so check the rest of the information
+                     */
+                }
+                status.setKnown(true);
+                /*
+                 * Re-update the contact in case something else is trying to
+                 * access it at the same time. We really should lock on the
+                 * contact so that there are no collisions, but if the user's
+                 * storage ends up going with the ProxyStorage system, the we
+                 * won't even need to do that as all modifications to the
+                 * properties will be "live"
+                 */
+                contact = getStorage().getContact(
+                    contact.getUserid());
             }
             catch (Exception exception)
             {
