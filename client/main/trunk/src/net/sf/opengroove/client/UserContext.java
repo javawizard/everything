@@ -789,6 +789,17 @@ public class UserContext
                     /*
                      * contact does exist, so check the rest of the information
                      */
+                    status.setNonexistant(false);
+                    // TODO: this just marks the user as never being idle. This
+                    // needs to actually download the updates from the server.
+                    String[] contactComputers = com
+                        .listComputers(contact.getUserid());
+                    // TODO: pick up September 15, 2008
+                    // Check each computer, add it's status into the contact
+                    // (and also mark the status down on the contact itself),
+                    // delete any local contact computers that don't exist on
+                    // the server, store all of that into this context's Storage
+                    // object
                 }
                 status.setKnown(true);
                 /*
@@ -801,6 +812,8 @@ public class UserContext
                  */
                 contact = getStorage().getContact(
                     contact.getUserid());
+                contact.setStatus(status);
+                getStorage().setContact(contact);
             }
             catch (Exception exception)
             {
@@ -813,11 +826,25 @@ public class UserContext
                 exception.printStackTrace();
             }
         }
+        else
+        {
+            /*
+             * There's no connection to the server, so we'll mark the contact as
+             * offline
+             */
+            contact.getStatus().setOnline(false);
+            getStorage().setContact(contact);
+        }
         /*
          * Now, the updating of the launchbar contact icons with contact status.
          * The tooltip for each contact will update itself automatically, so
          * there's no need to do that in this method.
          */
+        JideButton button = contactStatusLabelMap
+            .get(contact.getUserid());
+        if (button != null)
+            button.setIcon(new ImageIcon(getStatusIcon(
+                contact.getStatus()).getImage()));
     }
     
     /**
