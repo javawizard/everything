@@ -822,6 +822,14 @@ public class OpenGroove
                  * they be automatically logged in.
                  */
                 // TODO: actually do what the above comment says.
+                notificationFrame
+                    .addNotification(
+                        "OpenGroove",
+                        new NotificationAdapter(
+                            notificationFrame,
+                            new JLabel(
+                                "OpenGroove has successfully started up."),
+                            false, true), true);
             }
             /*
              * We should get rid of the splash screen so that the user isn't
@@ -2772,7 +2780,7 @@ public class OpenGroove
         panel.add(websiteButton);
         panel.add(Box.createVerticalStrut(5));
         panel
-            .add(new JLabel("Developed by Alexander Boyd"));        
+            .add(new JLabel("Developed by Alexander Boyd"));
         websiteButton
             .setButtonStyle(websiteButton.HYPERLINK_STYLE);
         websiteButton.setAlwaysShowHyperlink(true);

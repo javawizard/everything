@@ -528,8 +528,10 @@ public class CommandCommunicator
      * publicly visible by dictionary attacking their userids using this method.
      * 
      * @param userid
-     * @return
+     *            The userid or username to check
+     * @return True if the user specified exists; false if not
      * @throws IOException
+     *             if an I/O error occurs
      */
     public boolean userExists(String userid)
         throws IOException
