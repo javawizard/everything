@@ -366,7 +366,7 @@ public class OpenGrooveRealmServer
      * name of the realm of the realm server, and the value is the queue that
      * holds the realm's pending items.
      */
-    private static Map<String, BlockingQueue<Packet>> interRealmCache = new HashMap<String, BlockingQueue<Packet>>();
+    private static Map<String, BlockingQueue<InterServerPacket>> interRealmCache = new HashMap<String, BlockingQueue<InterServerPacket>>();
     @Deprecated
     protected static final File HTTPD_RES_FOLDER = new File(
         "httpdres");
@@ -2118,6 +2118,8 @@ public class OpenGrooveRealmServer
                 verifyAtLeast(tokens, 2);
                 String username = tokens[0];
                 String computerName = tokens[1];
+                username = relativeId(username);
+                checkUsername(username);
                 boolean isOnline = false;
                 String lastOnline = "";
                 boolean isComputer = !computerName
@@ -2202,6 +2204,8 @@ public class OpenGrooveRealmServer
                 ConnectionHandler connection)
                 throws Exception
             {
+                // FIXME: needs to be redone to match the new spec for this
+                // command present at the command spec on www.opengroove.org
                 String[] tokens = tokenize(data);
                 verifyAtLeast(tokens, 4);
                 String searchString = tokens[0];
@@ -2259,6 +2263,8 @@ public class OpenGrooveRealmServer
                 verifyAtLeast(tokens, 2);
                 String username = tokens[0];
                 String property = tokens[1];
+                username = relativeId(username);
+                checkUsername(username);
                 boolean isPublic = property
                     .startsWith("public-");
                 boolean isPrivate = !isPublic;
@@ -2293,6 +2299,8 @@ public class OpenGrooveRealmServer
                 String[] tokens = tokenize(data);
                 verifyAtLeast(tokens, 1);
                 String username = tokens[0];
+                username = relativeId(username);
+                checkUsername(username);
                 UserSetting[] settings;
                 if (username.equals(""))
                     settings = DataStore
@@ -2378,6 +2386,8 @@ public class OpenGrooveRealmServer
                 String username = tokens[0];
                 if (username.equals(""))
                     username = connection.username;
+                username = relativeId(username);
+                checkUsername(username);
                 Computer[] computers = DataStore
                     .listComputersByUser(username);
                 if (computers.length == 0)
@@ -2418,6 +2428,8 @@ public class OpenGrooveRealmServer
                 verifyAtLeast(tokens, 3);
                 String username = tokens[0];
                 String computerName = tokens[1];
+                username = relativeId(username);
+                checkUsername(username);
                 if (computerName.equals(""))
                     computerName = connection.computerName;
                 if (computerName == null
@@ -2465,7 +2477,10 @@ public class OpenGrooveRealmServer
                         Status.OK,
                         "You're speaking to an OpenGroove Realm Server.\r\n"
                             + "Visit www.opengroove.org if you have any questions, or you can send\r\n"
-                            + "an email to javawizard@opengroove.org .\r\n\r\n"
+                            + "an email to webmaster@opengroove.org, mentioning\r\n"
+                            + "that you read this on realm \""
+                            + serverRealmAddress
+                            + "\" .\r\n\r\n"
                             + "Here's a list of all of the commands that this server knows:\r\n\r\n"
                             + delimited(commands.values()
                                 .toArray(new Command[0]),
@@ -2495,6 +2510,8 @@ public class OpenGrooveRealmServer
                 verifyAtLeast(tokens, 2);
                 String username = tokens[0];
                 String computername = tokens[1];
+                username = relativeId(username);
+                checkUsername(username);
                 if (computername.equals("")
                     && username.equals(""))
                     computername = connection.computerName;
@@ -2586,6 +2603,8 @@ public class OpenGrooveRealmServer
                 String[] tokens = tokenize(data);
                 verifyAtLeast(tokens, 2);
                 String username = tokens[0];
+                username = relativeId(username);
+                checkUsername(username);
                 String computerName = tokens[1];
                 ComputerSetting[] settings;
                 if (computerName.equals(""))
@@ -2634,6 +2653,8 @@ public class OpenGrooveRealmServer
                         "You have too many active subscriptions right now.");
                 String type = tokens[0];
                 String onuser = tokens[1];
+                onuser = relativeId(onuser);
+                checkUsername(onuser);
                 String oncomputer = tokens[2];
                 String onsetting = tokens[3];
                 boolean deletewithtarget = tokens[4]
@@ -2667,8 +2688,10 @@ public class OpenGrooveRealmServer
                 ConnectionHandler connection)
                 throws Exception
             {
-                String dataString = tokenize(data)[0];
-                if (DataStore.getUser(dataString) != null)
+                String username = tokenize(data)[0];
+                username = relativeId(username);
+                checkUsername(username);
+                if (DataStore.getUser(username) != null)
                     connection.sendEncryptedPacket(
                         packetId, command(), Status.OK, "");
                 else
@@ -2731,6 +2754,8 @@ public class OpenGrooveRealmServer
                 verifyAtLeast(tokens, 5);
                 String type = tokens[0];
                 String onuser = tokens[1];
+                onuser = relativeId(onuser);
+                checkUsername(onuser);
                 String oncomputer = tokens[2];
                 String onsetting = tokens[3];
                 boolean deletewithtarget = tokens[4]
@@ -2764,6 +2789,8 @@ public class OpenGrooveRealmServer
                 ConnectionHandler connection)
                 throws Exception
             {
+                // FIXME: needs to be redone, as the method of sending messages
+                // has changed since this was coded.
                 String[] tokens = tokenize(data);
                 verifyAtLeast(tokens, 5);
                 String messageId = tokens[0];
@@ -2841,6 +2868,8 @@ public class OpenGrooveRealmServer
                 ConnectionHandler connection)
                 throws Exception
             {
+                // FIXME: needs to be redone, as the method of sending messages
+                // has changed since this was coded.
                 String[] tokens = tokenize(data);
                 verifyAtLeast(tokens, 3);
                 String messageId = tokens[0];
@@ -2878,6 +2907,8 @@ public class OpenGrooveRealmServer
                 ConnectionHandler connection)
                 throws Exception
             {
+                // FIXME: needs to be redone, as the method of sending messages
+                // has changed since this was coded.
                 String[] tokens = tokenize(data);
                 verifyAtLeast(tokens, 2);
                 String messageId = tokens[0];
@@ -2913,6 +2944,8 @@ public class OpenGrooveRealmServer
                 ConnectionHandler connection)
                 throws Exception
             {
+                // FIXME: needs to be redone, as the method of sending messages
+                // has changed since this was coded.
                 String[] tokens = tokenize(data);
                 verifyAtLeast(tokens, 2);
                 String messageId = tokens[0];
@@ -2941,6 +2974,8 @@ public class OpenGrooveRealmServer
                 ConnectionHandler connection)
                 throws Exception
             {
+                // FIXME: needs to be redone, as the method of sending messages
+                // has changed since this was coded.
                 String[] tokens = tokenize(data);
                 verifyAtLeast(tokens, 1);
                 String messageId = tokens[0];
@@ -2977,6 +3012,8 @@ public class OpenGrooveRealmServer
                 ConnectionHandler connection)
                 throws Exception
             {
+                // FIXME: needs to be redone, as the method of sending messages
+                // has changed since this was coded.
                 // This command is a bit tricky, as we only want to read up to
                 // the number of tokens we need (2, messageid and chunk number)
                 // plus one additional space, and the rest of the data is the
@@ -3063,6 +3100,8 @@ public class OpenGrooveRealmServer
                 ConnectionHandler connection)
                 throws Exception
             {
+                // FIXME: needs to be redone, as the method of sending messages
+                // has changed since this was coded.
                 String[] tokens = tokenize(data);
                 verifyAtLeast(tokens, 1);
                 String messageId = tokens[0];
@@ -3089,7 +3128,8 @@ public class OpenGrooveRealmServer
                 ConnectionHandler connection)
                 throws Exception
             {
-                
+                // FIXME: needs to be redone, as the method of sending messages
+                // has changed since this was coded.
             }
         };
         new Command("listapprovedmessages", 256, false,
@@ -3102,6 +3142,8 @@ public class OpenGrooveRealmServer
                 ConnectionHandler connection)
                 throws Exception
             {
+                // FIXME: needs to be redone, as the method of sending messages
+                // has changed since this was coded.
             }
         };
         new Command("listoutboundmessages", 256, false,
@@ -3114,8 +3156,8 @@ public class OpenGrooveRealmServer
                 ConnectionHandler connection)
                 throws Exception
             {
-                // TODO Auto-generated method stub
-                
+                // FIXME: needs to be redone, as the method of sending messages
+                // has changed since this was coded.
             }
         };
         new Command("listunapprovedmessages", 256, false,
@@ -3128,8 +3170,8 @@ public class OpenGrooveRealmServer
                 ConnectionHandler connection)
                 throws Exception
             {
-                // TODO Auto-generated method stub
-                
+                // FIXME: needs to be redone, as the method of sending messages
+                // has changed since this was coded.
             }
         };
         new Command("approvemessage", 256, false, false)
@@ -3141,8 +3183,8 @@ public class OpenGrooveRealmServer
                 ConnectionHandler connection)
                 throws Exception
             {
-                // TODO Auto-generated method stub
-                
+                // FIXME: needs to be redone, as the method of sending messages
+                // has changed since this was coded.
             }
         };
         new Command("deletemessage", 256, false, false)
@@ -3154,8 +3196,8 @@ public class OpenGrooveRealmServer
                 ConnectionHandler connection)
                 throws Exception
             {
-                // TODO Auto-generated method stub
-                
+                // FIXME: needs to be redone, as the method of sending messages
+                // has changed since this was coded.
             }
         };
         new Command("softdeletemessage", 256, false, false)
@@ -3167,8 +3209,8 @@ public class OpenGrooveRealmServer
                 ConnectionHandler connection)
                 throws Exception
             {
-                // TODO Auto-generated method stub
-                
+                // FIXME: needs to be redone, as the method of sending messages
+                // has changed since this was coded.
             }
         };
         new Command("getmessageinfo", 256, false, false)
@@ -3180,8 +3222,8 @@ public class OpenGrooveRealmServer
                 ConnectionHandler connection)
                 throws Exception
             {
-                // TODO Auto-generated method stub
-                
+                // FIXME: needs to be redone, as the method of sending messages
+                // has changed since this was coded.
             }
         };
         new Command("listmessagedata", 256, false, false)
@@ -3193,8 +3235,8 @@ public class OpenGrooveRealmServer
                 ConnectionHandler connection)
                 throws Exception
             {
-                // TODO Auto-generated method stub
-                
+                // FIXME: needs to be redone, as the method of sending messages
+                // has changed since this was coded.
             }
         };
         new Command("getmessagedata", 256, false, false)
@@ -3206,8 +3248,8 @@ public class OpenGrooveRealmServer
                 ConnectionHandler connection)
                 throws Exception
             {
-                // TODO Auto-generated method stub
-                
+                // FIXME: needs to be redone, as the method of sending messages
+                // has changed since this was coded.
             }
         };
         new Command("getmessagedatahash", 256, false, false)
@@ -3219,8 +3261,8 @@ public class OpenGrooveRealmServer
                 ConnectionHandler connection)
                 throws Exception
             {
-                // TODO Auto-generated method stub
-                
+                // FIXME: needs to be redone, as the method of sending messages
+                // has changed since this was coded.
             }
         };
         System.out.println("loaded " + commands.size()
@@ -3229,21 +3271,30 @@ public class OpenGrooveRealmServer
     
     /**
      * Throws a FailedResponseException with {@link Status#INVALIDREALM} if the
-     * input specified is not a username. This is currently used to validate
-     * that all users specified in arguments to commands are of this realm
-     * server, and this method will likely be removed when full support for
-     * realm servers and inter-realm communication is added.
+     * input specified is not a username (in othewords, userids are not
+     * allowed). This is currently used to validate that all users specified in
+     * arguments to commands are of this realm server, and this method will
+     * likely be removed when full support for realm servers and inter-realm
+     * communication is added.
      * 
      * @param recipientUser
      */
     protected static void checkUsername(String recipientUser)
     {
-        // TODO Auto-generated method stub
-        
+        if (recipientUser.equals(""))
+            return;
+        if (!Userids.isUsername(recipientUser))
+            throw new FailedResponseException(
+                Status.INVALIDREALM,
+                "The input \""
+                    + recipientUser
+                    + "\" was supposed to be a username, but it wasn't.");
     }
     
     protected static String relativeId(String recipientUser)
     {
+        if (recipientUser.equals(""))
+            return "";
         return Userids.relativeTo(recipientUser,
             serverRealmAddress);
     }
