@@ -545,7 +545,8 @@ public class UserContext
                                             .getIconPath())
                                         .toURI().toString()
                                     + "\"/> "
-                                    + computer.getName() + "<br/>";
+                                    + computer.getName()
+                                    + "<br/>";
                             }
                             if (computersAdded == 0)
                             {
@@ -722,12 +723,38 @@ public class UserContext
     public void updateContactStatus()
     {
         Contact[] contacts = getStorage().getAllContacts();
-        for (Contact contact : contacts)
+        ArrayList<Thread> threads = new ArrayList<Thread>();
+        for (final Contact contact : contacts)
         {
-            
+            Thread thread = new Thread()
+            {
+                public void run()
+                {
+                    updateOneContactStatus(contact);
+                }
+            };
+            threads.add(thread);
+            thread.start();
+        }
+        for (Thread thread : threads)
+        {
+            try
+            {
+                thread.join();
+            }
+            catch (InterruptedException e)
+            {
+                e.printStackTrace();
+            }
         }
     }
     
+    protected void updateOneContactStatus(Contact contact)
+    {
+        // TODO Auto-generated method stub
+        
+    }
+
     /**
      * Returns an icon that should be displayed as the user's icon, based on the
      * user's current status.
