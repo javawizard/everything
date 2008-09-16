@@ -38,29 +38,35 @@ public class Crypto
     public static void enc(Aes256 c, byte[] message,
         OutputStream stream) throws IOException
     {
-        DataOutputStream out = new DataOutputStream(stream);
-        out.writeInt(message.length);
-        int tl = message.length;
-        while ((tl % 16) != 0)
-            tl++;
-        byte[] toEnc = new byte[tl];
-        System.arraycopy(message, 0, toEnc, 0,
-            message.length);
-        byte[] randomBytes = new byte[tl - message.length];
-        random.nextBytes(randomBytes);
-        System.arraycopy(randomBytes, 0, toEnc,
-            message.length, randomBytes.length);
-        // we have our bytes now, time to encrypt them
-        byte[] enc = new byte[toEnc.length];
-        for (int i = 0; i < tl; i += 16)
+        synchronized (c)
         {
-            c.encrypt(toEnc, i, enc, i);
+            DataOutputStream out = new DataOutputStream(
+                stream);
+            out.writeInt(message.length);
+            int tl = message.length;
+            while ((tl % 16) != 0)
+                tl++;
+            byte[] toEnc = new byte[tl];
+            System.arraycopy(message, 0, toEnc, 0,
+                message.length);
+            byte[] randomBytes = new byte[tl
+                - message.length];
+            random.nextBytes(randomBytes);
+            System.arraycopy(randomBytes, 0, toEnc,
+                message.length, randomBytes.length);
+            // we have our bytes now, time to encrypt them
+            byte[] enc = new byte[toEnc.length];
+            for (int i = 0; i < tl; i += 16)
+            {
+                c.encrypt(toEnc, i, enc, i);
+            }
+            // everything's been encrypted, now we need to write it to the
+            // stream
+            out.write(enc);
+            out.flush();
+            System.out.println("encrypted with length "
+                + message.length);
         }
-        // everything's been encrypted, now we need to write it to the stream
-        out.write(enc);
-        out.flush();
-        System.out.println("encrypted with length "
-            + message.length);
     }
     
     /**
