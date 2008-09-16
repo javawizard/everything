@@ -2,7 +2,7 @@ package net.sf.opengroove.common.utils;
 
 public class StringUtils
 {
-    public boolean isMemberOf(String string, String[] strings)
+    public static boolean isMemberOf(String string, String[] strings)
     {
         for(String test : strings)
         {
@@ -11,7 +11,7 @@ public class StringUtils
         }
         return false;
     }
-    public boolean isMemberOfIgnoreCase(String string, String[] strings)
+    public static boolean isMemberOfIgnoreCase(String string, String[] strings)
     {
         for(String test : strings)
         {
