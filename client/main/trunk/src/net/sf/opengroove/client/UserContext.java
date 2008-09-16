@@ -829,6 +829,8 @@ public class UserContext
                             computer
                                 .setLag(Long.MAX_VALUE - 100);
                             computer.setName(computerName);
+                            computer.getStatus()
+                                .setIdleTime(-1);
                             // TODO: set the computer type
                             contact.getComputers().add(
                                 computer);
@@ -885,13 +887,35 @@ public class UserContext
                     /*
                      * Now we'll iterate over the computers again. This time,
                      * we're going to add their status stuff together to get the
-                     * value that should be used for the contact overall.
+                     * value that should be used for the contact overall. The
+                     * contact status that we're about to create won't actually
+                     * be injected into the contact itself; we're just using it
+                     * for convienence, so that we don't have to re-declare all
+                     * of it's fields as local variables.
                      */
+                    ContactStatus statusHolder = new ContactStatus();
+                    statusHolder.setIdleTime(-1);
                     for (ContactComputer computer : new ArrayList<ContactComputer>(
                         contact.getComputers()))
                     {
-                        
+                        if (computer.getStatus().isActive())
+                            statusHolder.setActive(true);
+                        if (computer.getStatus().isOnline())
+                            statusHolder.setOnline(true);
+                        statusHolder.setIdleTime(Math.max(
+                            statusHolder.getIdleTime(),
+                            computer.getStatus()
+                                .getIdleTime()));
                     }
+                    if (statusHolder.getIdleTime() == -1)
+                        statusHolder
+                            .setIdleTime(getServerTime());
+                    contact.getStatus().setActive(
+                        statusHolder.isActive());
+                    contact.getStatus().setIdleTime(
+                        statusHolder.getIdleTime());
+                    contact.getStatus().setOnline(
+                        statusHolder.isOnline());
                 }// end of (if contact exists) statement
                 
                 status.setKnown(true);
@@ -923,7 +947,9 @@ public class UserContext
         {
             /*
              * There's no connection to the server, so we'll mark the contact as
-             * offline
+             * offline if it's known, otherwise we'll leave it as unknown.
+             * 
+             * TODO: we might actually want to just set it to unknown here.
              */
             contact.getStatus().setOnline(false);
             getStorage().setContact(contact);
