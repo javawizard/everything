@@ -106,10 +106,21 @@ public class UserContext
      * This timer, unlike most of the other timers, uses
      * {@link Conditional#True} instead of {@link #connectionConditional}, so
      * that it will run even if there is no connection to the server, so as to
-     * set all of the user's statuses to offline.
+     * set all of the user's statuses to offline.<br/><br/>
+     * 
+     * This timer runs every 3 minutes.
      */
     @TimerField
-    private ConditionalTimer contactStatusTimer;
+    private ConditionalTimer contactStatusTimer = new ConditionalTimer(
+        1000 * 60 * 3, Conditional.True)
+    {
+        
+        @Override
+        public void execute()
+        {
+            updateContactStatus();
+        }
+    };
     /**
      * A timer that gets the server's time and sets the lag of this user's
      * backing LocalUser to be the difference between the server's time and the
