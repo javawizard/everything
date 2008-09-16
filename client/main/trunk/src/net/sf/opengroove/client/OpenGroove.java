@@ -1036,6 +1036,14 @@ public class OpenGroove
                         {
                             System.out
                                 .println("persistant connection ready");
+                            new Thread()
+                            {
+                                public void run()
+                                {
+                                    context
+                                        .updateContactStatus();
+                                }
+                            }.start();
                         }
                     });
                 context
@@ -3445,6 +3453,7 @@ public class OpenGroove
                 public void run()
                 {
                     context.refreshContactsPane();
+                    context.updateContactStatus();
                 }
             }.start();
             return;
