@@ -42,6 +42,7 @@ import net.sf.opengroove.client.ui.frames.SearchForUsersFrame;
 import net.sf.opengroove.client.workspace.WorkspaceManager;
 import net.sf.opengroove.common.concurrent.Conditional;
 import net.sf.opengroove.common.concurrent.ConditionalTimer;
+import net.sf.opengroove.common.utils.StringUtils;
 import net.sf.opengroove.common.utils.Userids;
 
 /**
@@ -825,7 +826,8 @@ public class UserContext
                         if (computer == null)
                         {
                             computer = new ContactComputer();
-                            computer.setLag(Long.MAX_VALUE - 100);
+                            computer
+                                .setLag(Long.MAX_VALUE - 100);
                             computer.setName(computerName);
                             // TODO: set the computer type
                             contact.getComputers().add(
@@ -852,8 +854,46 @@ public class UserContext
                                 .setIdleTime(
                                     Long
                                         .parseLong(idleTimeString));
+                        computer.getStatus().setKnown(true);
+                        computer.getStatus()
+                            .setNonexistant(false);
+                        computer.getStatus().setOnline(
+                            com.getUserStatus(
+                                contact.getUserid(),
+                                computerName).isOnline());
+                    }// end of computer foreach
+                    for (ContactComputer computer : new ArrayList<ContactComputer>(
+                        contact.getComputers()))
+                    {
+                        if (!StringUtils
+                            .isMemberOfIgnoreCase(computer
+                                .getName(),
+                                contactComputers))
+                            /*
+                             * We have here a computer which is present locally
+                             * but not on the server. This means that the owner
+                             * of the computer deleted it, so we should delete
+                             * our local copy too. Note that we won't get an
+                             * empty array if we are not connected to the
+                             * internet; we'll get an exception instead, so we
+                             * don't havew to worry that we'll clobber any local
+                             * computers when we're offline.
+                             */
+                            contact.getComputers().remove(
+                                computer);
+                    }// end of contact computer deleting loop
+                    /*
+                     * Now we'll iterate over the computers again. This time,
+                     * we're going to add their status stuff together to get the
+                     * value that should be used for the contact overall.
+                     */
+                    for (ContactComputer computer : new ArrayList<ContactComputer>(
+                        contact.getComputers()))
+                    {
+                        
                     }
-                }
+                }// end of (if contact exists) statement
+                
                 status.setKnown(true);
                 /*
                  * Re-update the contact in case something else is trying to
@@ -861,7 +901,7 @@ public class UserContext
                  * contact so that there are no collisions, but if the user's
                  * storage ends up going with the ProxyStorage system, the we
                  * won't even need to do that as all modifications to the
-                 * properties will be "live"
+                 * properties will be "live".
                  */
                 contact = getStorage().getContact(
                     contact.getUserid());
