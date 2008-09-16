@@ -800,6 +800,59 @@ public class UserContext
                     // delete any local contact computers that don't exist on
                     // the server, store all of that into this context's Storage
                     // object
+                    for (String computerName : contactComputers)
+                    {
+                        ContactComputer computer = null;
+                        for (ContactComputer test : new ArrayList<ContactComputer>(
+                            contact.getComputers()))
+                        {
+                            if (test.getName().equals(
+                                computerName))
+                            {
+                                if (computer != null)
+                                    /*
+                                     * For some reason, we've wound up with two
+                                     * contact computer objects that represent
+                                     * the same computer. We'll delete this one
+                                     * and keep the first one.
+                                     */
+                                    contact.getComputers()
+                                        .remove(test);
+                                else
+                                    computer = test;
+                            }
+                        }
+                        if (computer == null)
+                        {
+                            computer = new ContactComputer();
+                            computer.setLag(Long.MAX_VALUE - 100);
+                            computer.setName(computerName);
+                            // TODO: set the computer type
+                            contact.getComputers().add(
+                                computer);
+                        }
+                        String lagString = com
+                            .getComputerSetting(contact
+                                .getUserid(), computerName,
+                                "public-lag");
+                        if (lagString != null)
+                            computer.setLag(Long
+                                .parseLong(lagString));
+                        // TODO: implement active stuff, which is true if one of
+                        // the OpenGroove windows is the focused window
+                        computer.getStatus().setActive(
+                            false);
+                        String idleTimeString = com
+                            .getComputerSetting(contact
+                                .getUserid(), computerName,
+                                "public-idle");
+                        if (idleTimeString != null)
+                            computer
+                                .getStatus()
+                                .setIdleTime(
+                                    Long
+                                        .parseLong(idleTimeString));
+                    }
                 }
                 status.setKnown(true);
                 /*
