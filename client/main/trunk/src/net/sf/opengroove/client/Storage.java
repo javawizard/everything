@@ -219,7 +219,7 @@ public class Storage
     public LocalUser getLocalUser()
     {
         return (LocalUser) readObjectFromFile(new File(
-            auth, this.userid));
+            auth, this.userid.replace(":", "$")));
     }
     
     /**

@@ -536,6 +536,9 @@ public class CommandCommunicator
     public boolean userExists(String userid)
         throws IOException
     {
+        System.out
+            .println("sending server message to see if user "
+                + userid + " exists");
         return new String(communicator.query(
             new Packet(null, "userexists", userid
                 .getBytes()), defaultTimeout).getContents())
