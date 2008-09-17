@@ -208,6 +208,11 @@ public class OpenGrooveRealmServer
      * subscribed. They will receive the subscription events and distribute them
      * to any of their users that have subscribed.
      * 
+     * If a user has subscribed to updates for computer settings for a
+     * particular user, but they have not specified a computer to subscribe to
+     * (IE the computer name is the empty string), then they will receive
+     * notifications if any of the computers change that setting.
+     * 
      * @author Alexander Boyd
      * 
      */
@@ -264,17 +269,20 @@ public class OpenGrooveRealmServer
                         .getType().equalsIgnoreCase(
                             "usersetting");
                     boolean isSubscriberComputerSetting = !isSubscriberUserSetting;
-                    if ((isUserSetting
+                    // FIXME: clean up the rat's-nest boolean arithmetic that
+                    // follows
+                    boolean acceptOnUser = (isUserSetting
                         && isSubscriberUserSetting && subscription
                         .getOnsettingname()
-                        .equalsIgnoreCase(setting))
-                        || (isComputerSetting
-                            && isSubscriberComputerSetting
-                            && subscription
-                                .getOncomputername()
-                                .equalsIgnoreCase(computer) && subscription
-                            .getOnsettingname()
-                            .equalsIgnoreCase(setting)))
+                        .equalsIgnoreCase(setting));
+                    boolean acceptOnComputer = (isComputerSetting
+                        && isSubscriberComputerSetting
+                        && (subscription
+                            .getOncomputername()
+                            .equalsIgnoreCase(computer) || computer == null) && subscription
+                        .getOnsettingname()
+                        .equalsIgnoreCase(setting));
+                    if (acceptOnUser || acceptOnComputer)
                     {
                         // the subscription is for this setting, so send a
                         // subscription event to the user
