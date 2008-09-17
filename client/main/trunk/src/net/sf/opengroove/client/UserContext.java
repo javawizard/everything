@@ -86,7 +86,17 @@ public class UserContext
      * A conditional that is true if there is currently a connection to the
      * server.
      */
-    private Conditional connectionConditional;
+    private Conditional connectionConditional = new Conditional()
+    {
+        
+        @Override
+        public boolean query()
+        {
+            return com != null
+                && com.getCommunicator() != null
+                && com.getCommunicator().isActive();
+        }
+    };
     /**
      * A timer that downloads contact updates from the server, and uploads new
      * contact updates if there are any. This timer is interrupted any time an
@@ -122,6 +132,10 @@ public class UserContext
      */
     private long lastIdle;
     @TimerField
+    /**
+     * A timer that updates the public-idle computer property. In the future it
+     * will also update public-active.
+     */
     private ConditionalTimer myStatusTimer = new ConditionalTimer(
         1000 * 45, connectionConditional)
     {
@@ -185,7 +199,14 @@ public class UserContext
      * of the contacts that exist.
      */
     @TimerField
-    private ConditionalTimer subscriptionTimer;
+    private ConditionalTimer subscriptionTimer = new ConditionalTimer(
+        1000 * 60 * 2, connectionConditional)
+    {
+        public void execute()
+        {
+            
+        }
+    };
     /**
      * The menu that is added to the tray icon that shows all of the user's
      * workspace
