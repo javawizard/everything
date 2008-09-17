@@ -1177,6 +1177,7 @@ public class OpenGroove
                 // loadCurrentUserLookAndFeel();
                 loadLaunchBar(userid, context);
                 context.refreshContactsPane();
+                context.startTimers();
                 // WorkspaceManager workspaceManager = new
                 // WorkspaceManager(context);
                 // context.setWorkspaceManager(workspaceManager);
