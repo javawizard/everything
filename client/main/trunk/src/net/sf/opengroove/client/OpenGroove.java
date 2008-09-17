@@ -1084,15 +1084,17 @@ public class OpenGroove
                                     .equalsIgnoreCase(
                                         "public-idle")));
                             /*
-                             * We really should change this so that
-                             * isRelatedSubscription is only true if the
-                             * subscription is a user status subscription, or
-                             * it's a computersetting subscription on
-                             * public-idle or public-active
+                             * We're not checking for public-lag since it will
+                             * change so infrequently.
                              */
                             if (isRelatedSubscription)
                             {
-                                
+                                /*
+                                 * This subscription is for one of the events
+                                 * that we're interested in that relates to
+                                 * contact management. We need to tell the
+                                 * context to update it's contact status.
+                                 */
                             }
                         }
                     });
