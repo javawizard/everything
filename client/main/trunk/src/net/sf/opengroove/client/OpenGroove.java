@@ -1028,6 +1028,14 @@ public class OpenGroove
                         {
                             System.out
                                 .println("persistant connection lost");
+                            new Thread()
+                            {
+                                public void run()
+                                {
+                                    context
+                                        .updateContactStatus();
+                                }
+                            }.start();
                         }
                         
                         @Override
