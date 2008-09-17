@@ -1054,6 +1054,16 @@ public class OpenGroove
                             }.start();
                         }
                     });
+                /*
+                 * TODO: set this as an object on the user context instead of
+                 * just adding it, in case we replace the communicator while the
+                 * user is logged in (an unlikely but possible event if
+                 * OpenGroove goes the way I'm thinking it will go)
+                 */
+                context.getCom().addSubscriptionListener(
+                    new SubscriptionListener()
+                    {
+                    });
                 context
                     .setUserNotificationListener(new UserNotificationListener()
                     {
