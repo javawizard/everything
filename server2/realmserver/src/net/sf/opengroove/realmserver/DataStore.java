@@ -140,7 +140,7 @@ public class DataStore
             return 1024 * 16;
         else if (quotaName
             .equalsIgnoreCase("subscriptions"))
-            return 300;
+            return 1000;
         return -1;
     }
     

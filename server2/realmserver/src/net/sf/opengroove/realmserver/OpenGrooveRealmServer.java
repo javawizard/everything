@@ -199,6 +199,18 @@ public class OpenGrooveRealmServer
         }
     }
     
+    /**
+     * A runnable that can be run (usually on the
+     * {@link OpenGrooveRealmServer#tasks} executor) to notify users that have
+     * subscribed to updates for a specific property about the changes to that
+     * property. This currently only notifies users that have subscribed
+     * locally; in the future, it will notify other realm servers that have
+     * subscribed. They will receive the subscription events and distribute them
+     * to any of their users that have subscribed.
+     * 
+     * @author Alexander Boyd
+     * 
+     */
     public static class UserSettingNotifier implements
         Runnable
     {
@@ -889,13 +901,14 @@ public class OpenGrooveRealmServer
                     + packet.length);
             String packetId = "UNKNOWN";
             String commandName = "UNKNOWN";
+            String first128 = "UNKNOWN";
             try
             {
                 byte[] first128bytes = new byte[Math.min(
                     128, packet.length)];
                 System.arraycopy(packet, 0, first128bytes,
                     0, first128bytes.length);
-                String first128 = new String(first128bytes);
+                first128 = new String(first128bytes);
                 String[] first128split = first128.split(
                     "\\ ", 3);
                 if (first128split.length < 3)
@@ -936,7 +949,11 @@ public class OpenGrooveRealmServer
                     .println("Failing response for user "
                         + username + " with code "
                         + e.getStatus() + " and message "
-                        + e.getMessage());
+                        + e.getMessage()
+                        + " in reply to command "
+                        + commandName
+                        + " with first 128 equal to "
+                        + first128);
                 sendEncryptedPacket(
                     packetId,
                     commandName,
@@ -2688,16 +2705,22 @@ public class OpenGrooveRealmServer
                 ConnectionHandler connection)
                 throws Exception
             {
+                System.out
+                    .println("checking if user exists");
                 String username = tokenize(data)[0];
                 username = relativeId(username);
                 checkUsername(username);
+                System.out.println("resolved userid is "
+                    + username);
                 if (DataStore.getUser(username) != null)
                     connection.sendEncryptedPacket(
-                        packetId, command(), Status.OK, "");
+                        packetId, command(), Status.OK,
+                        "true");
                 else
-                    throw new FailedResponseException(
-                        Status.NOSUCHUSER,
-                        "The user specified does not exist");
+                    connection.sendEncryptedPacket(
+                        packetId, command(), Status.OK,
+                        "false");
+                System.out.println("responded");
             }
         };
         new Command("listsubscriptions", 128, false, false)
