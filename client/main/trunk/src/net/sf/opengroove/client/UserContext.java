@@ -204,7 +204,7 @@ public class UserContext
     {
         public void execute()
         {
-            
+            updateSubscriptions();
         }
     };
     /**
@@ -285,6 +285,22 @@ public class UserContext
         for (ConditionalTimer timer : timers)
         {
             timer.start();
+        }
+    }
+    
+    private final Object subscriptionUpdateLock = new Object();
+    
+    /**
+     * Scans through all of the contacts and ensures that subscriptions are
+     * present to the contacts' computer settings public-idle and public-active,
+     * and makes sure that the contact's user status is subscribed to. All
+     * subscriptions not falling under those categories will be removed.
+     */
+    protected void updateSubscriptions()
+    {
+        synchronized (subscriptionUpdateLock)
+        {
+            
         }
     }
     
