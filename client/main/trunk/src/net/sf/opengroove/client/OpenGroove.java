@@ -85,6 +85,8 @@ import net.sf.opengroove.client.com.Packet;
 import net.sf.opengroove.client.com.ServerContext;
 import net.sf.opengroove.client.com.ServerSecurityKey;
 import net.sf.opengroove.client.com.StatusListener;
+import net.sf.opengroove.client.com.Subscription;
+import net.sf.opengroove.client.com.SubscriptionListener;
 import net.sf.opengroove.client.com.UserNotificationListener;
 import net.sf.opengroove.client.com.FieldFile.Fields;
 import net.sf.opengroove.client.download.PluginDownloadManager;
@@ -1063,6 +1065,36 @@ public class OpenGroove
                 context.getCom().addSubscriptionListener(
                     new SubscriptionListener()
                     {
+                        
+                        @Override
+                        public void event(
+                            Subscription subscription)
+                        {
+                            boolean isRelatedSubscription = subscription
+                                .getType()
+                                .equalsIgnoreCase(
+                                    "userstatus")
+                                || (subscription.getType()
+                                    .equalsIgnoreCase(
+                                        "computersetting") && (subscription
+                                    .getOnSetting()
+                                    .equalsIgnoreCase(
+                                        "public-active") || subscription
+                                    .getOnSetting()
+                                    .equalsIgnoreCase(
+                                        "public-idle")));
+                            /*
+                             * We really should change this so that
+                             * isRelatedSubscription is only true if the
+                             * subscription is a user status subscription, or
+                             * it's a computersetting subscription on
+                             * public-idle or public-active
+                             */
+                            if (isRelatedSubscription)
+                            {
+                                
+                            }
+                        }
                     });
                 context
                     .setUserNotificationListener(new UserNotificationListener()
