@@ -3,12 +3,16 @@ package net.sf.opengroove.client;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Font;
+import java.awt.MouseInfo;
+import java.awt.Point;
+import java.awt.PointerInfo;
 import java.awt.PopupMenu;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.io.File;
+import java.io.IOException;
 import java.lang.reflect.Field;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -96,8 +100,56 @@ public class UserContext
      * not the computer is idle, how long it has been idle for, if the user is
      * currently using OpenGroove)
      */
+    /**
+     * The last X coordinate of the mouse. The mouse position is checked every
+     * few seconds, and if the mouse has moved since the last check, the idle
+     * time is reset. If it hasn't, the idle time is not reset, so that if the
+     * mouse isn't moved for an extended period of time, the computer will end
+     * up being marked as idle.
+     */
+    private int lastMouseX;
+    /**
+     * The last Y coordinate of the mouse. The mouse position is checked every
+     * few seconds, and if the mouse has moved since the last check, the idle
+     * time is reset. If it hasn't, the idle time is not reset, so that if the
+     * mouse isn't moved for an extended period of time, the computer will end
+     * up being marked as idle.
+     */
+    private int lastMouseY;
+    /**
+     * The last time, in terms of server time, that the mouse was moved. This is
+     * generated and uploaded to the server by myStatusTimer.
+     */
+    private long lastIdle;
     @TimerField
-    private ConditionalTimer myStatusTimer;
+    private ConditionalTimer myStatusTimer = new ConditionalTimer(
+        1000 * 45, connectionConditional)
+    {
+        
+        @Override
+        public void execute()
+        {
+            PointerInfo info = MouseInfo.getPointerInfo();
+            Point location = info.getLocation();
+            if (location.x != lastMouseX
+                || location.y != lastMouseY)
+                lastIdle = getServerTime();
+            /*
+             * We've checked whether the user is idle. Now we'll upload this to
+             * the server.
+             */
+            try
+            {
+                com.setComputerSetting(getLocalUser()
+                    .getComputer(), "public-idle", ""
+                    + lastIdle);
+            }
+            catch (IOException e)
+            {
+                e.printStackTrace();
+            }
+        }
+    };
     /**
      * A timer that downloads the status updates for all of the contacts (IE the
      * status updates uploaded by those contacts' {@link #myStatusTimer}s), and
@@ -215,6 +267,11 @@ public class UserContext
         }
     }
     
+    public LocalUser getLocalUser()
+    {
+        return getStorage().getLocalUser();
+    }
+    
     /**
      * Returns a list of all timers for this UserContext.
      * 
@@ -232,8 +289,9 @@ public class UserContext
             {
                 try
                 {
-                    timers.add((ConditionalTimer) field
-                        .get(this));
+                    if (field.get(this) != null)
+                        timers.add((ConditionalTimer) field
+                            .get(this));
                 }
                 catch (IllegalAccessException e)
                 {
