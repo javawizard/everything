@@ -293,14 +293,26 @@ public class UserContext
     /**
      * Scans through all of the contacts and ensures that subscriptions are
      * present to the contacts' computer settings public-idle and public-active,
-     * and makes sure that the contact's user status is subscribed to. All
-     * subscriptions not falling under those categories will be removed.
+     * and makes sure that the contact's user status is subscribed to. Right
+     * now, other subscriptions aren't deleted, mainly since this could clobber
+     * another computer that has subscribed to a contact recently added on that
+     * computer but that we are still unaware about.
      */
     protected void updateSubscriptions()
     {
         synchronized (subscriptionUpdateLock)
         {
-            
+            Contact[] contacts = getStorage()
+                .getAllContacts();
+            for (Contact contact : contacts)
+            {
+                /*
+                 * TODO: pick up here September 17, 2008: add the subscription
+                 * stuff, then test it out with the local user (currently
+                 * alexlaptop:testusername) as a contact, and see if it goes
+                 * idle after a minute or so of no activity.
+                 */
+            }
         }
     }
     
