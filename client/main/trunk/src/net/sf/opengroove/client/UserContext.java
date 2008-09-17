@@ -133,20 +133,25 @@ public class UserContext
     private long lastIdle;
     @TimerField
     /**
-     * A timer that updates the public-idle computer property. In the future it
-     * will also update public-active.<br/><br/>
-     * 
-     * This should probably be split into two timers and a method. The method
-     * would upload the actual updates, and would be synchronized on some sort
-     * of object. One timer would upload the values from the fields regularly,
-     * let's say once per minute. The other timer would check the mouse once per
-     * second, update the fields, and, if the mouse had been moved since the
-     * last check but not before the last check (IE the user has just stopped
-     * being idle), then it starts an upload of the information. That way, the
-     * user doesn't have to wait a minute to see updates that the contact has
-     * come back online.
+     * checks to see if the computer is idle, and updates the idle-related
+     * fields.
      */
-    private ConditionalTimer myStatusTimer = new ConditionalTimer(
+    private ConditionalTimer myStatusCheckTimer = new ConditionalTimer(
+        1000, Conditional.True)
+    {
+        
+        @Override
+        public void execute()
+        {
+            // TODO Auto-generated method stub
+            
+        }
+    };
+    @TimerField
+    /**
+     * Uploads the current idle and active status.
+     */
+    private ConditionalTimer myStatusUploadTimer = new ConditionalTimer(
         1000 * 45, connectionConditional)
     {
         
