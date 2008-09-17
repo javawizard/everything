@@ -1094,7 +1094,13 @@ public class OpenGroove
                                  * that we're interested in that relates to
                                  * contact management. We need to tell the
                                  * context to update it's contact status.
+                                 * 
+                                 * TODO: in the future, we should just update
+                                 * the status of the contact that had the
+                                 * subscription event.
                                  */
+                                context
+                                    .updateContactStatus();
                             }
                         }
                     });
