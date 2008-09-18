@@ -361,6 +361,7 @@ public class UserContext
                  * alexlaptop:testusername) as a contact, and see if it goes
                  * idle after a minute or so of no activity.
                  */
+
             }
         }
     }
@@ -387,6 +388,11 @@ public class UserContext
          * If we get here, the subscription doesn't exist. We'll go ahead and
          * send it to the server now. We'll wrap it in a try/catch in case the
          * server has gone offline while we were in the above for loop.
+         * 
+         * Hmm, on second thought, we should check this, and if it's a failed
+         * response exception that we receive, then we should either throw it
+         * out, or make note in the javadoc for this method that it will swallow
+         * any exceptions generated.
          */
         try
         {
