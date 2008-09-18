@@ -414,7 +414,10 @@ public class UserContext
             return;
         for (Subscription test : existing)
         {
-            if (test.equals(subscription))
+            if (test.absolute(Userids.toRealm(getUserid()))
+                .equals(
+                    subscription.absolute(Userids
+                        .toRealm(getUserid()))))
                 /*
                  * The subscription already exists, so we don't need to put it
                  * on the server

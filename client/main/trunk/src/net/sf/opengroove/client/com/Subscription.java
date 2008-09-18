@@ -1,5 +1,7 @@
 package net.sf.opengroove.client.com;
 
+import net.sf.opengroove.common.utils.Userids;
+
 public class Subscription
 {
     private String type = "";
@@ -97,6 +99,22 @@ public class Subscription
         return result;
     }
     
+    /**
+     * Returns a subscription identical to this one but with onUser converted to
+     * be an absolute userid instead of a username if it is one. Usernames will
+     * be resolved to userids using the realm specified.
+     * 
+     * @param realm
+     *            The realm to resolve usernames against
+     * @return a new, absolute subscription
+     */
+    public Subscription absolute(String realm)
+    {
+        return new Subscription(type, Userids.resolveTo(
+            onUser, realm + ":"), onComputer, onSetting,
+            deleteWithTarget);
+    }
+    
     @Override
     public boolean equals(Object obj)
     {
@@ -107,12 +125,12 @@ public class Subscription
         if (getClass() != obj.getClass())
             return false;
         final Subscription other = (Subscription) obj;
-        System.out.println("checking subscription this: "
-            + type + "," + onUser + "," + onComputer + ","
-            + onSetting + "," + deleteWithTarget
-            + " against subscription: " + other.type + ","
-            + other.onUser + "," + other.onComputer + ","
-            + other.onSetting + "," + deleteWithTarget);
+        // System.out.println("checking subscription this: "
+        // + type + "," + onUser + "," + onComputer + ","
+        // + onSetting + "," + deleteWithTarget
+        // + " against subscription: " + other.type + ","
+        // + other.onUser + "," + other.onComputer + ","
+        // + other.onSetting + "," + deleteWithTarget);
         if (deleteWithTarget != other.deleteWithTarget)
             return false;
         if (onComputer == null)
