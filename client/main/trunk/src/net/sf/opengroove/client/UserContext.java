@@ -38,6 +38,7 @@ import com.jidesoft.swing.JideButton;
 
 import net.sf.opengroove.client.com.CommandCommunicator;
 import net.sf.opengroove.client.com.StatusListener;
+import net.sf.opengroove.client.com.TimeoutException;
 import net.sf.opengroove.client.com.UserNotificationListener;
 import net.sf.opengroove.client.help.HelpViewer;
 import net.sf.opengroove.client.plugins.PluginManager;
@@ -935,7 +936,32 @@ public class UserContext
             try
             {
                 ContactStatus status = contact.getStatus();
-                if (!com.userExists(contact.getUserid()))
+                boolean serverUserExists = false;
+                /*
+                 * The loop that calls the command over and over again is to fix
+                 * some sort of weird bug that I've been getting where a
+                 * userexists packet is getting corrupted en route to the
+                 * server, but it seems to be random which packets get corrupted
+                 * so I figured this might help.
+                 */
+                for (int i = 0; i < 3; i++)
+                {
+                    try
+                    {
+                        serverUserExists = com
+                            .userExists(contact.getUserid());
+                        break;
+                    }
+                    catch (TimeoutException e)
+                    {
+                        new Exception(
+                            "Timeout while getting user status, trying again...",
+                            e).printStackTrace();
+                        if (i == 2)
+                            throw e;
+                    }
+                }
+                if (!serverUserExists)
                 {
                     /*
                      * contact doesn't exist
