@@ -63,8 +63,8 @@ public class Crypto
         // stream
         out.write(enc);
         out.flush();
-        System.out.println("encrypted with length "
-            + message.length);
+        // System.out.println("encrypted with length "
+        // + message.length);
     }
     
     /**
