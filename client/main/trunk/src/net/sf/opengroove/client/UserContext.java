@@ -134,7 +134,8 @@ public class UserContext
     @TimerField
     /**
      * checks to see if the computer is idle, and updates the idle-related
-     * fields.
+     * fields. If the computer has just stopped being idle, then this timer will
+     * also trigger an immediate upload of user presence information.
      */
     private ConditionalTimer myStatusCheckTimer = new ConditionalTimer(
         1000, Conditional.True)
