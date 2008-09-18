@@ -15,9 +15,9 @@ import java.util.Date;
  */
 public class CommandCommunicator
 {
-    private static final int GLOBAL_DEFAULT_TIMEOUT = 10 * 1000;
-    // 10 seconds, this should be re-thought, as a value too low would prevent
-    // uploading large message chunks on a slow network, and a value too high
+    private static final int GLOBAL_DEFAULT_TIMEOUT = 5 * 1000;
+    // 5 seconds, this should be re-thought, as a value too low would prevent
+    // downloading large message chunks on a slow network, and a value too high
     // could cause application freezing upon a dropped connection. Actually, a
     // UI should probably be added into OpenGroove for allowing the user to
     // configure this. Perhaps there should be two variables, one for short
