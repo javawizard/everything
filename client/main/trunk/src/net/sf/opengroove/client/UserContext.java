@@ -157,7 +157,6 @@ public class UserContext
         @Override
         public void execute()
         {
-            System.out.println("status check");
             PointerInfo info = MouseInfo.getPointerInfo();
             Point location = info.getLocation();
             boolean oldWasLastIdle = wasLastIdle;
@@ -167,17 +166,16 @@ public class UserContext
             {
                 lastIdle = getServerTime();
                 wasLastIdle = false;
-                System.out.println("wasn't idle");
             }
             else
             {
-                System.out.println("was idle");
             }
             lastMouseX = location.x;
             lastMouseY = location.y;
             if (oldWasLastIdle && !wasLastIdle)
             {
-                System.out.println("**was last idle");
+                System.out
+                    .println("local not idle anymore");
                 uploadCurrentStatus();
             }
         }
