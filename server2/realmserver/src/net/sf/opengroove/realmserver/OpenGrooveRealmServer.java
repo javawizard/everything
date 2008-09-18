@@ -237,6 +237,7 @@ public class OpenGrooveRealmServer
         public void run()
         {
             if (!setting.startsWith("public-"))
+            {
                 // don't allow subscriptions to non-public settings, if a user
                 // needs to be notified of changes to one of it's computer's
                 // settings it should tell the computer that and have the
@@ -246,7 +247,10 @@ public class OpenGrooveRealmServer
                 // like a user should be able to subscribe to their own private
                 // properties, as well as private properties of any of their
                 // computers.
+                System.out
+                    .println("non-public subscription attempted. Returning.");
                 return;
+            }
             try
             {
                 Subscription[] subscriptions = DataStore
@@ -268,7 +272,23 @@ public class OpenGrooveRealmServer
                     boolean isSubscriberUserSetting = subscription
                         .getType().equalsIgnoreCase(
                             "usersetting");
-                    boolean isSubscriberComputerSetting = !isSubscriberUserSetting;
+                    boolean isSubscriberComputerSetting = subscription
+                        .getType().equalsIgnoreCase(
+                            "computersetting");
+                    System.out.println("targeting "
+                        + (isUserSetting ? "usersetting"
+                            : "computersetting")
+                        + " subscriptions");
+                    if (isSubscriberComputerSetting)
+                    {
+                        System.out
+                            .println("computersetting subscription found");
+                    }
+                    else if (isSubscriberUserSetting)
+                    {
+                        System.out
+                            .println("usersetting subscription found");
+                    }
                     // FIXME: clean up the rat's-nest boolean arithmetic that
                     // follows
                     boolean acceptOnUser = (isUserSetting
@@ -282,6 +302,12 @@ public class OpenGrooveRealmServer
                             .equalsIgnoreCase(computer) || computer == null) && subscription
                         .getOnsettingname()
                         .equalsIgnoreCase(setting));
+                    if (acceptOnUser)
+                        System.out
+                            .println("accepting on user");
+                    else if (acceptOnComputer)
+                        System.out
+                            .println("accepting on computer");
                     if (acceptOnUser || acceptOnComputer)
                     {
                         // the subscription is for this setting, so send a
@@ -295,6 +321,8 @@ public class OpenGrooveRealmServer
                             {
                                 if (handler.isAlive())
                                 {
+                                    System.out
+                                        .println("notifying subscriber");
                                     handler
                                         .sendEncryptedPacket(
                                             generateId(),
