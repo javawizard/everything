@@ -25,6 +25,8 @@ public class Crypto
 {
     private static SecureRandom random = new SecureRandom();
     
+    private static final Object decryptionLock = new Object();
+    
     /**
      * Encrypts the message specified, using the aes key specified, to the
      * stream specified, with some header information that allows the length of
@@ -35,35 +37,34 @@ public class Crypto
      * @param stream
      * @throws IOException
      */
-    public static synchronized void enc(Aes256 c, byte[] message,
-        OutputStream stream) throws IOException
+    public static synchronized void enc(Aes256 c,
+        byte[] message, OutputStream stream)
+        throws IOException
     {
-            DataOutputStream out = new DataOutputStream(
-                stream);
-            out.writeInt(message.length);
-            int tl = message.length;
-            while ((tl % 16) != 0)
-                tl++;
-            byte[] toEnc = new byte[tl];
-            System.arraycopy(message, 0, toEnc, 0,
-                message.length);
-            byte[] randomBytes = new byte[tl
-                - message.length];
-            random.nextBytes(randomBytes);
-            System.arraycopy(randomBytes, 0, toEnc,
-                message.length, randomBytes.length);
-            // we have our bytes now, time to encrypt them
-            byte[] enc = new byte[toEnc.length];
-            for (int i = 0; i < tl; i += 16)
-            {
-                c.encrypt(toEnc, i, enc, i);
-            }
-            // everything's been encrypted, now we need to write it to the
-            // stream
-            out.write(enc);
-            out.flush();
-            System.out.println("encrypted with length "
-                + message.length);
+        DataOutputStream out = new DataOutputStream(stream);
+        out.writeInt(message.length);
+        int tl = message.length;
+        while ((tl % 16) != 0)
+            tl++;
+        byte[] toEnc = new byte[tl];
+        System.arraycopy(message, 0, toEnc, 0,
+            message.length);
+        byte[] randomBytes = new byte[tl - message.length];
+        random.nextBytes(randomBytes);
+        System.arraycopy(randomBytes, 0, toEnc,
+            message.length, randomBytes.length);
+        // we have our bytes now, time to encrypt them
+        byte[] enc = new byte[toEnc.length];
+        for (int i = 0; i < tl; i += 16)
+        {
+            c.encrypt(toEnc, i, enc, i);
+        }
+        // everything's been encrypted, now we need to write it to the
+        // stream
+        out.write(enc);
+        out.flush();
+        System.out.println("encrypted with length "
+            + message.length);
     }
     
     /**
@@ -82,10 +83,13 @@ public class Crypto
      * @return the decrypted message
      * @throws IOException
      */
-    public static synchronized byte[] dec(Aes256 c, InputStream message,
+    public static byte[] dec(Aes256 c, InputStream message,
         int limit) throws IOException
     {
-        System.out.println("Waiting for decryption lock");
+        synchronized (decryptionLock)
+        {
+            System.out
+                .println("Waiting for decryption lock");
             System.out.println("reading length to decrypt");
             DataInputStream in = new DataInputStream(
                 message);
@@ -126,9 +130,10 @@ public class Crypto
                 .arraycopy(dec, 0, returnArray, 0, length);
             System.out.println("decrypted data");
             return returnArray;
+        }
     }
     
-    public static synchronized byte[] intToBytes(int i)
+    public static byte[] intToBytes(int i)
     {
         ByteArrayOutputStream baos = new ByteArrayOutputStream(
             4);
@@ -144,7 +149,7 @@ public class Crypto
         return baos.toByteArray();
     }
     
-    public static synchronized int bytesToInt(byte[] bytes)
+    public static int bytesToInt(byte[] bytes)
     {
         if (bytes.length < 4)
             throw new RuntimeException(
