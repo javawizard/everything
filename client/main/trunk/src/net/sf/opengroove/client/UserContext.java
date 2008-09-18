@@ -135,7 +135,7 @@ public class UserContext
      * True if, on the last check, the user had not moved their mouse, false
      * otherwise
      */
-    private boolean wasLastIdle = false;
+    private boolean wasLastIdle = true;
     @TimerField
     /**
      * checks to see if the computer is idle, and updates the idle-related
@@ -151,9 +151,16 @@ public class UserContext
         {
             PointerInfo info = MouseInfo.getPointerInfo();
             Point location = info.getLocation();
+            boolean oldWasLastIdle = wasLastIdle;
+            wasLastIdle = true;
             if (location.x != lastMouseX
                 || location.y != lastMouseY)
+            {
                 lastIdle = getServerTime();
+                wasLastIdle = false;
+            }
+            if (oldWasLastIdle && !wasLastIdle)
+                uploadCurrentStatus();
         }
     };
     @TimerField
@@ -167,16 +174,7 @@ public class UserContext
         @Override
         public void execute()
         {
-            try
-            {
-                com.setComputerSetting(getLocalUser()
-                    .getComputer(), "public-idle", ""
-                    + lastIdle);
-            }
-            catch (IOException e)
-            {
-                e.printStackTrace();
-            }
+            uploadCurrentStatus();
         }
     };
     /**
@@ -1092,11 +1090,22 @@ public class UserContext
          * The tooltip for each contact will update itself automatically, so
          * there's no need to do that in this method.
          */
-        JideButton button = contactStatusLabelMap
-            .get(contact.getUserid());
-        if (button != null)
-            button.setIcon(new ImageIcon(getStatusIcon(
-                contact.getStatus()).getImage()));
+        updateContactIcon(contact.getUserid());
+    }
+    
+    private final Object contactIconLock = new Object();
+    
+    private void updateContactIcon(String contactUserid)
+    {
+        synchronized (contactIconLock)
+        {
+            JideButton button = contactStatusLabelMap
+                .get(contactUserid);
+            if (button != null)
+                button.setIcon(new ImageIcon(getStatusIcon(
+                    getStorage().getContact(contactUserid)
+                        .getStatus()).getImage()));
+        }
     }
     
     /**
@@ -1181,5 +1190,21 @@ public class UserContext
         ConditionalTimer subscriptionTimer)
     {
         this.subscriptionTimer = subscriptionTimer;
+    }
+    
+    public void uploadCurrentStatus()
+    {
+        System.out.println("uploading current status");
+        try
+        {
+            if (com.getCommunicator().isActive())
+                com.setComputerSetting(getLocalUser()
+                    .getComputer(), "public-idle", ""
+                    + lastIdle);
+        }
+        catch (IOException e)
+        {
+            e.printStackTrace();
+        }
     }
 }
