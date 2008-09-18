@@ -1177,6 +1177,8 @@ public class OpenGroove
                         public void event(
                             Subscription subscription)
                         {
+                            System.out
+                                .println("received subscription");
                             boolean isRelatedSubscription = subscription
                                 .getType()
                                 .equalsIgnoreCase(
@@ -1206,6 +1208,8 @@ public class OpenGroove
                                  * the status of the contact that had the
                                  * subscription event.
                                  */
+                                System.out
+                                    .println("subscription is related");
                                 context
                                     .updateContactStatus();
                             }

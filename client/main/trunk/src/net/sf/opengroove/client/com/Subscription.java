@@ -107,6 +107,12 @@ public class Subscription
         if (getClass() != obj.getClass())
             return false;
         final Subscription other = (Subscription) obj;
+        System.out.println("checking subscription this: "
+            + type + "," + onUser + "," + onComputer + ","
+            + onSetting + "," + deleteWithTarget
+            + " against subscription: " + other.type + ","
+            + other.onUser + "," + other.onComputer + ","
+            + other.onSetting + "," + deleteWithTarget);
         if (deleteWithTarget != other.deleteWithTarget)
             return false;
         if (onComputer == null)
