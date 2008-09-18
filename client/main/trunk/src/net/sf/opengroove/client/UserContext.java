@@ -346,22 +346,37 @@ public class UserContext
      * now, other subscriptions aren't deleted, mainly since this could clobber
      * another computer that has subscribed to a contact recently added on that
      * computer but that we are still unaware about.
+     * 
+     * Exceptions generated due to a lack of an internet connection are not
+     * returned, but are dumped to standard error.
      */
     protected void updateSubscriptions()
     {
         synchronized (subscriptionUpdateLock)
         {
-            Contact[] contacts = getStorage()
-                .getAllContacts();
-            for (Contact contact : contacts)
-            {
+            if (!com.getCommunicator().isActive())
                 /*
-                 * TODO: pick up here September 17, 2008: add the subscription
-                 * stuff, then test it out with the local user (currently
-                 * alexlaptop:testusername) as a contact, and see if it goes
-                 * idle after a minute or so of no activity.
+                 * No point in updating subscriptions if we don't have an
+                 * internet connection
                  */
-
+                return;
+            try
+            {
+                Contact[] contacts = getStorage()
+                    .getAllContacts();
+                Subscription[] subscriptions = com
+                    .listSubscriptions();
+                for (Contact contact : contacts)
+                {
+                    /*
+                     * First, add a subscription to the contact's current status
+                     */
+                    putSubscription(subscriptions,new Subscription());
+                }
+            }
+            catch (Exception exception)
+            {
+                exception.printStackTrace();
             }
         }
     }

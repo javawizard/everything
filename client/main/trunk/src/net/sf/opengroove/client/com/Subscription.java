@@ -8,6 +8,23 @@ public class Subscription
     private String onSetting = "";
     private boolean deleteWithTarget;
     
+    public Subscription(String type, String onUser,
+        String onComputer, String onSetting,
+        boolean deleteWithTarget)
+    {
+        super();
+        this.type = type;
+        this.onUser = onUser;
+        this.onComputer = onComputer;
+        this.onSetting = onSetting;
+        this.deleteWithTarget = deleteWithTarget;
+    }
+    
+    public Subscription()
+    {
+        super();
+    }
+    
     public String getType()
     {
         return type;
