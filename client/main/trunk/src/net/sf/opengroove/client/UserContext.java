@@ -406,6 +406,8 @@ public class UserContext
     protected void putSubscription(Subscription[] existing,
         Subscription subscription)
     {
+        System.out
+            .println("attempting to post subscription");
         if (!com.getCommunicator().isActive())
             /*
              * No sense in trying to send a subscription to the server if we
@@ -421,6 +423,8 @@ public class UserContext
                  */
                 return;
         }
+        System.out
+            .println("no such existing subscription. adding");
         /*
          * If we get here, the subscription doesn't exist. We'll go ahead and
          * send it to the server now. We'll wrap it in a try/catch in case the
@@ -434,6 +438,7 @@ public class UserContext
         try
         {
             com.createSubscription(subscription);
+            System.out.println("subscription created");
         }
         catch (Exception exception)
         {

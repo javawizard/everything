@@ -1050,8 +1050,46 @@ public class OpenGroove
                             {
                                 public void run()
                                 {
-                                    context
-                                        .updateContactStatus();
+                                    System.out
+                                        .println("server conection established, waiting 2 seconds to update");
+                                    try
+                                    {
+                                        Thread.sleep(2000);
+                                    }
+                                    catch (InterruptedException e)
+                                    {
+                                        // TODO Auto-generated catch block
+                                        e.printStackTrace();
+                                    }
+                                    System.out
+                                        .println("now running update stuff");
+                                    try
+                                    {
+                                        context
+                                            .uploadCurrentStatus();
+                                    }
+                                    catch (Exception e)
+                                    {
+                                        e.printStackTrace();
+                                    }
+                                    try
+                                    {
+                                        context
+                                            .updateContactStatus();
+                                    }
+                                    catch (Exception e)
+                                    {
+                                        e.printStackTrace();
+                                    }
+                                    try
+                                    {
+                                        context
+                                            .updateSubscriptions();
+                                    }
+                                    catch (Exception e)
+                                    {
+                                        e.printStackTrace();
+                                    }
                                 }
                             }.start();
                         }
