@@ -628,14 +628,30 @@ public class CommandCommunicator
     public String getComputerSetting(String username,
         String computer, String key) throws IOException
     {
-        Packet response = communicator.query(new Packet(
-            null, "getcomputersetting", (username + "\n"
-                + computer + "\n" + key).getBytes()),
-            defaultTimeout);
-        if (new String(response.getContents()).trim()
-            .equals(""))
+        try
+        {
+            Packet response = communicator
+                .query(
+                    new Packet(
+                        null,
+                        "getcomputersetting",
+                        (username + "\n" + computer + "\n" + key)
+                            .getBytes()), defaultTimeout);
+            if (new String(response.getContents()).trim()
+                .equals(""))
+                return null;
+            return new String(response.getContents());
+        }
+        catch (FailedResponseException e)
+        {
+            /*
+             * We really should check to see if it's a response type that
+             * indicates a nonexistant property, computer, or user, and return
+             * null, and throw the exception back out if it's not one of those
+             * types.
+             */
             return null;
-        return new String(response.getContents());
+        }
     }
     
     /**

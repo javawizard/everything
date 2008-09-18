@@ -950,6 +950,9 @@ public class UserContext
                     {
                         serverUserExists = com
                             .userExists(contact.getUserid());
+                        System.out
+                            .println("got existance for user "
+                                + contact.getUserid());
                         break;
                     }
                     catch (TimeoutException e)
