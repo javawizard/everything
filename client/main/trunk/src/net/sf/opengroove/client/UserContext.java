@@ -365,12 +365,37 @@ public class UserContext
         }
     }
     
-    private final Object subscriptionCheckLock = new Object();
-    
     protected void putSubscription(Subscription[] existing,
         Subscription subscription)
     {
-        
+        if (!com.getCommunicator().isActive())
+            /*
+             * No sense in trying to send a subscription to the server if we
+             * don't have a connection to the server anyway
+             */
+            return;
+        for (Subscription test : existing)
+        {
+            if (test.equals(subscription))
+                /*
+                 * The subscription already exists, so we don't need to put it
+                 * on the server
+                 */
+                return;
+        }
+        /*
+         * If we get here, the subscription doesn't exist. We'll go ahead and
+         * send it to the server now. We'll wrap it in a try/catch in case the
+         * server has gone offline while we were in the above for loop.
+         */
+        try
+        {
+            com.createSubscription(subscription);
+        }
+        catch (Exception exception)
+        {
+            exception.printStackTrace();
+        }
     }
     
     public LocalUser getLocalUser()
