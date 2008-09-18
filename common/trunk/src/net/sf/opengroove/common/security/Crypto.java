@@ -35,11 +35,9 @@ public class Crypto
      * @param stream
      * @throws IOException
      */
-    public static void enc(Aes256 c, byte[] message,
+    public static synchronized void enc(Aes256 c, byte[] message,
         OutputStream stream) throws IOException
     {
-        synchronized (stream)
-        {
             DataOutputStream out = new DataOutputStream(
                 stream);
             out.writeInt(message.length);
@@ -66,7 +64,6 @@ public class Crypto
             out.flush();
             System.out.println("encrypted with length "
                 + message.length);
-        }
     }
     
     /**
@@ -85,12 +82,10 @@ public class Crypto
      * @return the decrypted message
      * @throws IOException
      */
-    public static byte[] dec(Aes256 c, InputStream message,
+    public static synchronized byte[] dec(Aes256 c, InputStream message,
         int limit) throws IOException
     {
         System.out.println("Waiting for decryption lock");
-        synchronized (message)
-        {
             System.out.println("reading length to decrypt");
             DataInputStream in = new DataInputStream(
                 message);
@@ -131,10 +126,9 @@ public class Crypto
                 .arraycopy(dec, 0, returnArray, 0, length);
             System.out.println("decrypted data");
             return returnArray;
-        }
     }
     
-    public static byte[] intToBytes(int i)
+    public static synchronized byte[] intToBytes(int i)
     {
         ByteArrayOutputStream baos = new ByteArrayOutputStream(
             4);
@@ -150,7 +144,7 @@ public class Crypto
         return baos.toByteArray();
     }
     
-    public static int bytesToInt(byte[] bytes)
+    public static synchronized int bytesToInt(byte[] bytes)
     {
         if (bytes.length < 4)
             throw new RuntimeException(
