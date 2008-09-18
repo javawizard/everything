@@ -3483,6 +3483,11 @@ public class OpenGroove
                 isValidContact = false;
                 continue;
             }
+            /*
+             * The rest of this method should be split into it's own method, so
+             * that contacts can be added via other buttons and stuff, such as a
+             * right-click menu item on known users or users within a workspace
+             */
             else if (context.getStorage().getContact(
                 contactId) != null)
             {
@@ -3514,6 +3519,7 @@ public class OpenGroove
                 {
                     context.refreshContactsPane();
                     context.updateContactStatus();
+                    context.updateSubscriptions();
                 }
             }.start();
             return;

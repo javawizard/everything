@@ -350,7 +350,7 @@ public class UserContext
      * Exceptions generated due to a lack of an internet connection are not
      * returned, but are dumped to standard error.
      */
-    protected void updateSubscriptions()
+    public void updateSubscriptions()
     {
         synchronized (subscriptionUpdateLock)
         {

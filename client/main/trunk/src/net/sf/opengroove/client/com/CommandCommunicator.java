@@ -508,9 +508,25 @@ public class CommandCommunicator
     public Subscription[] listSubscriptions()
         throws IOException
     {
-        Packet response = communicator.query(new Packet(
-            null, "listsubscriptions", new byte[0]),
-            defaultTimeout);
+        Packet response;
+        try
+        {
+            response = communicator.query(new Packet(null,
+                "listsubscriptions", new byte[0]),
+                defaultTimeout);
+        }
+        catch (FailedResponseException e)
+        {
+            /*
+             * For now we'll assume it was because of a NORESULTS error. In the
+             * future, we should actually check the error that caused it
+             * (perhaps by moving OpenGrooveRealmServer.Status into it's own
+             * enum in OpenGroove Commons and adding a field to this exception,
+             * or sharing this exception with it's counterpart in OpenGroove
+             * Realm Server).
+             */
+            return new Subscription[0];
+        }
         String[] responseTokens = tokenizeByLines(new String(
             response.getContents()));
         ArrayList<Subscription> subscriptions = new ArrayList<Subscription>();
