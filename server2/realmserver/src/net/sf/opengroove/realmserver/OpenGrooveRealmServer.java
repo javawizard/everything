@@ -295,11 +295,14 @@ public class OpenGrooveRealmServer
                         && isSubscriberUserSetting && subscription
                         .getOnsettingname()
                         .equalsIgnoreCase(setting));
+                    boolean isCorrectComputer = (subscription
+                        .getOncomputername()
+                        .equalsIgnoreCase(computer) || subscription
+                        .getOncomputername().trim().equals(
+                            ""));
                     boolean acceptOnComputer = (isComputerSetting
                         && isSubscriberComputerSetting
-                        && (subscription
-                            .getOncomputername()
-                            .equalsIgnoreCase(computer) || computer == null) && subscription
+                        && isCorrectComputer && subscription
                         .getOnsettingname()
                         .equalsIgnoreCase(setting));
                     if (acceptOnUser)
