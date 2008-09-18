@@ -2,10 +2,10 @@ package net.sf.opengroove.client.com;
 
 public class Subscription
 {
-    private String type;
-    private String onUser;
-    private String onComputer;
-    private String onSetting;
+    private String type = "";
+    private String onUser = "";
+    private String onComputer = "";
+    private String onSetting = "";
     private boolean deleteWithTarget;
     
     public String getType()
