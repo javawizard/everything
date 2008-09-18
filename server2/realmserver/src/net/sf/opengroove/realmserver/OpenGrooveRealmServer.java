@@ -2721,14 +2721,21 @@ public class OpenGrooveRealmServer
                 System.out.println("resolved userid is "
                     + username);
                 if (DataStore.getUser(username) != null)
+                {
                     connection.sendEncryptedPacket(
                         packetId, command(), Status.OK,
                         "true");
+                    System.out
+                        .println("responded with true");
+                }
                 else
+                {
                     connection.sendEncryptedPacket(
                         packetId, command(), Status.OK,
                         "false");
-                System.out.println("responded");
+                    System.out
+                        .println("responded with false");
+                }
             }
         };
         new Command("listsubscriptions", 128, false, false)
