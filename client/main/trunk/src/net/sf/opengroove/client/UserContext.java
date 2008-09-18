@@ -371,7 +371,29 @@ public class UserContext
                     /*
                      * First, add a subscription to the contact's current status
                      */
-                    putSubscription(subscriptions,new Subscription());
+                    putSubscription(subscriptions,
+                        new Subscription("userstatus",
+                            contact.getUserid(), "", "",
+                            false));
+                    /*
+                     * The userstatus subscription will take care of the status
+                     * of all of the user's computers. Now we need to subscribe
+                     * to public-idle and public-active.
+                     */
+                    putSubscription(subscriptions,
+                        new Subscription("computersetting",
+                            contact.getUserid(), "",
+                            "public-idle", false));
+                    putSubscription(subscriptions,
+                        new Subscription("computersetting",
+                            contact.getUserid(), "",
+                            "public-active", false));
+                    /*
+                     * Leaving the target computer empty is intentional; if the
+                     * target computer is empty, it notifies us of changes to
+                     * any of the user's computer's properties under that name,
+                     * which is what we want.
+                     */
                 }
             }
             catch (Exception exception)
