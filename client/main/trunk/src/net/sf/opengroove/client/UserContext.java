@@ -200,6 +200,23 @@ public class UserContext
             updateContactStatus();
         }
     };
+    @TimerField
+    private ConditionalTimer contactIconTimer = new ConditionalTimer(
+        1000 * 15, Conditional.True)
+    {
+        
+        @Override
+        public void execute()
+        {
+            Contact[] contacts = getStorage()
+                .getAllContacts();
+            for (Contact contact : contacts)
+            {
+                updateContactIcon(contact.getUserid());
+            }
+        }
+        
+    };
     /**
      * A timer that gets the server's time and sets the lag of this user's
      * backing LocalUser to be the difference between the server's time and the
