@@ -970,33 +970,19 @@ public class UserContext
      * returns, all contacts in the contacts list at the time the method was
      * started will have their status icons updated.<br/><br/>
      * 
-     * 
+     * UPDATE: this no longer runs in separate threads, due to issues that were
+     * occuring. Instead, it runs the cotact updates one after another.
      */
     public void updateContactStatus()
     {
-        Contact[] contacts = getStorage().getAllContacts();
-        ArrayList<Thread> threads = new ArrayList<Thread>();
-        for (final Contact contact : contacts)
+        synchronized (contactStatusLock)
         {
-            Thread thread = new Thread()
+            Contact[] contacts = getStorage()
+                .getAllContacts();
+            ArrayList<Thread> threads = new ArrayList<Thread>();
+            for (final Contact contact : contacts)
             {
-                public void run()
-                {
-                    updateOneContactStatus(contact);
-                }
-            };
-            threads.add(thread);
-            thread.start();
-        }
-        for (Thread thread : threads)
-        {
-            try
-            {
-                thread.join();
-            }
-            catch (InterruptedException e)
-            {
-                e.printStackTrace();
+                updateOneContactStatus(contact);
             }
         }
     }
