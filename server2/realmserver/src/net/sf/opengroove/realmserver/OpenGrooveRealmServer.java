@@ -2735,7 +2735,11 @@ public class OpenGrooveRealmServer
                     command(), Status.OK, EMPTY);
             }
         };
-        new Command("userexists", 128, false, true)
+        /*
+         * userexists doesn't seem to be working for some reason, so I'm not
+         * using it right now. I'll probably remove it if I can't fix it.
+         */
+        new Command("userexists", 128, false, false)
         {
             
             @Override
