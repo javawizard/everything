@@ -43,6 +43,8 @@ public class ContactStatus implements Serializable
     
     public void setOnline(boolean isOnline)
     {
+        System.out.println("setting contact online to "
+            + isOnline);
         this.isOnline = isOnline;
     }
     

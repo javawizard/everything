@@ -499,6 +499,14 @@ public class Communicator
                                     syncQueue
                                         .offer(iPacket);
                                 }
+                                else
+                                {
+                                    System.out
+                                        .println("command "
+                                            + iPacket
+                                                .getCommand()
+                                            + " received with nothig polling for it");
+                                }
                                 // Now we'll loop through all of the
                                 // PacketHandlers and send the packet to them.
                                 notifyPacketListeners(new Notifier<PacketListener>()

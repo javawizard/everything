@@ -559,10 +559,19 @@ public class CommandCommunicator
         System.out
             .println("sending server message to see if user "
                 + userid + " exists");
-        return new String(communicator.query(
-            new Packet(null, "userexists", userid
-                .getBytes()), defaultTimeout).getContents())
-            .trim().toLowerCase().startsWith("t");
+        try
+        {
+            getUserStatus(userid,"");
+        }
+        catch(TimeoutException e)
+        {
+            throw e;
+        }
+        catch(FailedResponseException e)
+        {
+            return false;
+        }
+        return true;
     }
     
     /**

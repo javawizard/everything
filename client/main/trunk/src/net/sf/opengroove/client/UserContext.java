@@ -1234,6 +1234,8 @@ public class UserContext
              * 
              * TODO: we might actually want to just set it to unknown here.
              */
+            System.out
+                .println("setting contact to offline due to lack of server connection");
             contact.getStatus().setOnline(false);
             getStorage().setContact(contact);
         }
