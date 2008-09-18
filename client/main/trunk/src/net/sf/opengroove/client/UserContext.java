@@ -68,7 +68,13 @@ public class UserContext
      * something like 5 minutes when OpenGroove is released, or make it
      * user-configurable
      */
-    private static final long IDLE_THRESHOLD = 1000 * 15;
+    /**
+     * The time that a contact must not move their mouse for in order to be
+     * marked idle. This should be low enough that it doesn't take forever for
+     * the contact to be marked as idle, but high enough that a user pausing to
+     * read over some information won't be marked idle immediately.
+     */
+    private static final long IDLE_THRESHOLD = 1000 * 30;
     /**
      * This user's userid
      */
@@ -202,7 +208,7 @@ public class UserContext
     };
     @TimerField
     private ConditionalTimer contactIconTimer = new ConditionalTimer(
-        1000 * 15, Conditional.True)
+        1000 * 9, Conditional.True)
     {
         
         @Override
