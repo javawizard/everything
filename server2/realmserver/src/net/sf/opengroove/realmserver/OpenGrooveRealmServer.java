@@ -1051,7 +1051,10 @@ public class OpenGrooveRealmServer
                     Packet packet = queue.take();
                     synchronized (this)
                     {
-                        copy(packet.getStream(), out);
+                        synchronized (out)
+                        {
+                            copy(packet.getStream(), out);
+                        }
                     }
                 }
             }
