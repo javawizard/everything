@@ -1196,6 +1196,8 @@ public class OpenGroove
                     notificationFrame,
                     successLoggedInLabel, false, true),
                     true);
+                context.getLaunchbar().show();
+                bringToFront(context.getLaunchbar());
             }
         }
         finally
@@ -2846,8 +2848,7 @@ public class OpenGroove
         panel.add(Box.createVerticalStrut(3));
         panel.add(websiteButton);
         panel.add(Box.createVerticalStrut(3));
-        panel
-            .add(new JLabel("Created by Alexander Boyd"));
+        panel.add(new JLabel("Created by Alexander Boyd"));
         websiteButton
             .setButtonStyle(websiteButton.HYPERLINK_STYLE);
         websiteButton.setAlwaysShowHyperlink(true);

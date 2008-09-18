@@ -38,6 +38,7 @@ import com.jidesoft.swing.JideButton;
 
 import net.sf.opengroove.client.com.CommandCommunicator;
 import net.sf.opengroove.client.com.StatusListener;
+import net.sf.opengroove.client.com.Subscription;
 import net.sf.opengroove.client.com.TimeoutException;
 import net.sf.opengroove.client.com.UserNotificationListener;
 import net.sf.opengroove.client.help.HelpViewer;
@@ -156,6 +157,7 @@ public class UserContext
         @Override
         public void execute()
         {
+            System.out.println("status check");
             PointerInfo info = MouseInfo.getPointerInfo();
             Point location = info.getLocation();
             boolean oldWasLastIdle = wasLastIdle;
@@ -165,9 +167,19 @@ public class UserContext
             {
                 lastIdle = getServerTime();
                 wasLastIdle = false;
+                System.out.println("wasn't idle");
             }
+            else
+            {
+                System.out.println("was idle");
+            }
+            lastMouseX = location.x;
+            lastMouseY = location.y;
             if (oldWasLastIdle && !wasLastIdle)
+            {
+                System.out.println("**was last idle");
                 uploadCurrentStatus();
+            }
         }
     };
     @TimerField
@@ -351,6 +363,14 @@ public class UserContext
                  */
             }
         }
+    }
+    
+    private final Object subscriptionCheckLock = new Object();
+    
+    protected void putSubscription(Subscription[] existing,
+        Subscription subscription)
+    {
+        
     }
     
     public LocalUser getLocalUser()
