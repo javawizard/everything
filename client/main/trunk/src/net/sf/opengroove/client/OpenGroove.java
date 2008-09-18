@@ -1056,54 +1056,6 @@ public class OpenGroove
                             }.start();
                         }
                     });
-                /*
-                 * TODO: set this as an object on the user context instead of
-                 * just adding it, in case we replace the communicator while the
-                 * user is logged in (an unlikely but possible event if
-                 * OpenGroove goes the way I'm thinking it will go)
-                 */
-                context.getCom().addSubscriptionListener(
-                    new SubscriptionListener()
-                    {
-                        
-                        @Override
-                        public void event(
-                            Subscription subscription)
-                        {
-                            boolean isRelatedSubscription = subscription
-                                .getType()
-                                .equalsIgnoreCase(
-                                    "userstatus")
-                                || (subscription.getType()
-                                    .equalsIgnoreCase(
-                                        "computersetting") && (subscription
-                                    .getOnSetting()
-                                    .equalsIgnoreCase(
-                                        "public-active") || subscription
-                                    .getOnSetting()
-                                    .equalsIgnoreCase(
-                                        "public-idle")));
-                            /*
-                             * We're not checking for public-lag since it will
-                             * change so infrequently.
-                             */
-                            if (isRelatedSubscription)
-                            {
-                                /*
-                                 * This subscription is for one of the events
-                                 * that we're interested in that relates to
-                                 * contact management. We need to tell the
-                                 * context to update it's contact status.
-                                 * 
-                                 * TODO: in the future, we should just update
-                                 * the status of the contact that had the
-                                 * subscription event.
-                                 */
-                                context
-                                    .updateContactStatus();
-                            }
-                        }
-                    });
                 context
                     .setUserNotificationListener(new UserNotificationListener()
                     {
@@ -1173,6 +1125,54 @@ public class OpenGroove
                     .addUserNotificationListener(context
                         .getUserNotificationListener());
                 context.setCom(commandCom);
+                /*
+                 * TODO: set this as an object on the user context instead of
+                 * just adding it, in case we replace the communicator while the
+                 * user is logged in (an unlikely but possible event if
+                 * OpenGroove goes the way I'm thinking it will go)
+                 */
+                context.getCom().addSubscriptionListener(
+                    new SubscriptionListener()
+                    {
+                        
+                        @Override
+                        public void event(
+                            Subscription subscription)
+                        {
+                            boolean isRelatedSubscription = subscription
+                                .getType()
+                                .equalsIgnoreCase(
+                                    "userstatus")
+                                || (subscription.getType()
+                                    .equalsIgnoreCase(
+                                        "computersetting") && (subscription
+                                    .getOnSetting()
+                                    .equalsIgnoreCase(
+                                        "public-active") || subscription
+                                    .getOnSetting()
+                                    .equalsIgnoreCase(
+                                        "public-idle")));
+                            /*
+                             * We're not checking for public-lag since it will
+                             * change so infrequently.
+                             */
+                            if (isRelatedSubscription)
+                            {
+                                /*
+                                 * This subscription is for one of the events
+                                 * that we're interested in that relates to
+                                 * contact management. We need to tell the
+                                 * context to update it's contact status.
+                                 * 
+                                 * TODO: in the future, we should just update
+                                 * the status of the contact that had the
+                                 * subscription event.
+                                 */
+                                context
+                                    .updateContactStatus();
+                            }
+                        }
+                    });
                 // loadFeatures();
                 // loadCurrentUserLookAndFeel();
                 loadLaunchBar(userid, context);
