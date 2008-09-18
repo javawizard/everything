@@ -38,7 +38,7 @@ public class Crypto
     public static void enc(Aes256 c, byte[] message,
         OutputStream stream) throws IOException
     {
-        synchronized (c)
+        synchronized (stream)
         {
             DataOutputStream out = new DataOutputStream(
                 stream);
