@@ -698,7 +698,13 @@ public class Communicator
                 throw new TimeoutException(
                     "The specified timeout expired before "
                         + "a response was received. The command was "
-                        + packet.getCommand());
+                        + packet.getCommand()
+                        + " with first128 equal to "
+                        + new String(packet.getContents(),
+                            0, Math.min(packet
+                                .getContents().length, 128))
+                        + " packet id "
+                        + packet.getPacketId());
             if (!responsePacket.getResponse().trim()
                 .equalsIgnoreCase("OK"))
             {

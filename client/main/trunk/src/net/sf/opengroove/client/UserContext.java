@@ -929,6 +929,9 @@ public class UserContext
          */
         if (com.getCommunicator().isActive())
         {
+            System.out
+                .println("updating contact status for "
+                    + contact.getUserid());
             try
             {
                 ContactStatus status = contact.getStatus();
@@ -1096,6 +1099,9 @@ public class UserContext
                  */
                 exception.printStackTrace();
             }
+            System.out
+                .println("finished updating contact status without incident for user "
+                    + contact.getUserid());
         }
         else
         {

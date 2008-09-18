@@ -2843,11 +2843,11 @@ public class OpenGroove
             + getDisplayableVersion()));
         JideButton websiteButton = new JideButton(
             "www.opengroove.org");
-        panel.add(Box.createVerticalStrut(5));
+        panel.add(Box.createVerticalStrut(3));
         panel.add(websiteButton);
-        panel.add(Box.createVerticalStrut(5));
+        panel.add(Box.createVerticalStrut(3));
         panel
-            .add(new JLabel("Developed by Alexander Boyd"));
+            .add(new JLabel("Created by Alexander Boyd"));
         websiteButton
             .setButtonStyle(websiteButton.HYPERLINK_STYLE);
         websiteButton.setAlwaysShowHyperlink(true);
