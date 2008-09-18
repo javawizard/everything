@@ -372,7 +372,19 @@ public class Communicator
                                     + authPacket);
                             send(authPacket, tSocket,
                                 tSocket.getOutputStream());
+                            tSocket.getOutputStream()
+                                .flush();
                         }
+                        
+                        // Ok, we have a connection to the server, we've
+                        // performed a handshake, and we've sent an
+                        // authentication request if the user wanted one to be
+                        // sent. Now we inject the streams into the in and out
+                        // fields, inject the socket into the socket field, and
+                        // start listening for response packets.
+                        in = tSocket.getInputStream();
+                        out = tSocket.getOutputStream();
+                        socket = tSocket;
                         notifyStatusListeners(new Notifier<StatusListener>()
                         {
                             
@@ -385,15 +397,6 @@ public class Communicator
                             }
                             
                         });
-                        // Ok, we have a connection to the server, we've
-                        // performed a handshake, and we've sent an
-                        // authentication request if the user wanted one to be
-                        // sent. Now we inject the streams into the in and out
-                        // fields, inject the socket into the socket field, and
-                        // start listening for response packets.
-                        in = tSocket.getInputStream();
-                        out = tSocket.getOutputStream();
-                        socket = tSocket;
                         synchronized (oneTimeLock)
                         {
                             oneTimeLock.notifyAll();
