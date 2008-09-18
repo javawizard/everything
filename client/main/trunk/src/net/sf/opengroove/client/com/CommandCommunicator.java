@@ -23,6 +23,10 @@ public class CommandCommunicator
     // configure this. Perhaps there should be two variables, one for short
     // requests, and one for long ones such as sending a message, receiving a
     // message chunk, or searching for users.
+    //
+    // Update: on searching for users, this will no longer be a long-time
+    // request. See http://www.opengroove.org/dev/protocol/commands for more
+    // info.
     
     private Communicator communicator;
     
