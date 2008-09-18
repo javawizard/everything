@@ -131,6 +131,11 @@ public class UserContext
      * generated and uploaded to the server by myStatusTimer.
      */
     private long lastIdle;
+    /**
+     * True if, on the last check, the user had not moved their mouse, false
+     * otherwise
+     */
+    private boolean wasLastIdle = false;
     @TimerField
     /**
      * checks to see if the computer is idle, and updates the idle-related
@@ -144,8 +149,11 @@ public class UserContext
         @Override
         public void execute()
         {
-            // TODO Auto-generated method stub
-            
+            PointerInfo info = MouseInfo.getPointerInfo();
+            Point location = info.getLocation();
+            if (location.x != lastMouseX
+                || location.y != lastMouseY)
+                lastIdle = getServerTime();
         }
     };
     @TimerField
@@ -153,21 +161,12 @@ public class UserContext
      * Uploads the current idle and active status.
      */
     private ConditionalTimer myStatusUploadTimer = new ConditionalTimer(
-        1000 * 45, connectionConditional)
+        1000 * 60, connectionConditional)
     {
         
         @Override
         public void execute()
         {
-            PointerInfo info = MouseInfo.getPointerInfo();
-            Point location = info.getLocation();
-            if (location.x != lastMouseX
-                || location.y != lastMouseY)
-                lastIdle = getServerTime();
-            /*
-             * We've checked whether the user is idle. Now we'll upload this to
-             * the server.
-             */
             try
             {
                 com.setComputerSetting(getLocalUser()
@@ -1135,11 +1134,6 @@ public class UserContext
         this.showKnownUsersAsContacts = showKnownUsersAsContacts;
     }
     
-    public ConditionalTimer getMyStatusTimer()
-    {
-        return myStatusTimer;
-    }
-    
     public ConditionalTimer getContactStatusTimer()
     {
         return contactStatusTimer;
@@ -1153,12 +1147,6 @@ public class UserContext
     public long getServerTime()
     {
         return getStorage().getLocalUser().getServerTime();
-    }
-    
-    public void setMyStatusTimer(
-        ConditionalTimer myStatusTimer)
-    {
-        this.myStatusTimer = myStatusTimer;
     }
     
     public void setContactStatusTimer(
