@@ -50,7 +50,13 @@ public class Crypto
         System.arraycopy(message, 0, toEnc, 0,
             message.length);
         byte[] randomBytes = new byte[tl - message.length];
-        random.nextBytes(randomBytes);
+        /*
+         * FIXME: un-comment the following line. I commented it out to see if it
+         * helped with the corrupted packet stuff that was happening, but it's
+         * not a good idea as it makes the last 16 bytes of a packet subject to
+         * a known-plaintext attack.
+         */
+        // random.nextBytes(randomBytes);
         System.arraycopy(randomBytes, 0, toEnc,
             message.length, randomBytes.length);
         // we have our bytes now, time to encrypt them
