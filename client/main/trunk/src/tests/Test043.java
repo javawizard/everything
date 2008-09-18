@@ -16,7 +16,7 @@ public class Test043
      */
     public static void main(String[] args) throws Throwable
     {
-        for (int i = 0; i < 300; i++)
+        for (int i = 0; i < 50000; i++)
         {
             ByteArrayOutputStream baos = new ByteArrayOutputStream();
             BigInteger aesRandomNumber = new BigInteger(
@@ -26,15 +26,22 @@ public class Test043
                 0, securityKeyBytes, 0, 32);
             final Aes256 securityKey = new Aes256(
                 securityKeyBytes);
-            Crypto.enc(securityKey, "Hello world!"
-                .getBytes(), baos);
+            BigInteger testRandomNumber = new BigInteger(
+                3060, new SecureRandom());
+            String testString = testRandomNumber
+                .toString(36);
+            testString = testString.substring(0,
+                (int) ((Math.random() * 200) + 3));
+            Crypto.enc(securityKey, testString.getBytes(),
+                baos);
             ByteArrayInputStream is = new ByteArrayInputStream(
                 baos.toByteArray());
             String dec = new String(Crypto.dec(securityKey,
                 is, 65535));
-            if (!dec.equals("Hello world!"))
+            if (!dec.equals(testString))
                 throw new RuntimeException(
-                    "Invalid decryption, value is " + dec);
+                    "Invalid decryption, value is " + dec
+                        + " and enc value is " + testString);
         }
     }
 }
