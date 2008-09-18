@@ -102,6 +102,7 @@ public class Crypto
             // to read, tl will always be greater or equal to length, and the
             // remaining bytes are just random padding
             System.out.println("read length " + length
+                + ", required " + tl + " bytes"
                 + ", receiving data");
             if (length > limit)
                 throw new RuntimeException(
