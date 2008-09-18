@@ -697,7 +697,8 @@ public class Communicator
             if (responsePacket == null)
                 throw new TimeoutException(
                     "The specified timeout expired before "
-                        + "a response was received.");
+                        + "a response was received. The command was "
+                        + packet.getCommand());
             if (!responsePacket.getResponse().trim()
                 .equalsIgnoreCase("OK"))
             {
