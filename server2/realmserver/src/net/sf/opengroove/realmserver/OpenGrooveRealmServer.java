@@ -1001,6 +1001,12 @@ public class OpenGrooveRealmServer
                         .getBytes()
                         : e.getMessage().getBytes());
             }
+            catch (Exception e)
+            {
+                System.out
+                    .println("Connection-fatal exception on packet with first128 equal to "
+                        + first128);
+            }
         }
     }
     
