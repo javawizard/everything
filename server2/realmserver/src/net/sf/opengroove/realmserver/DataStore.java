@@ -121,8 +121,11 @@ public class DataStore
     public static long getUserLastOnline(String username)
         throws SQLException
     {
-        return (Long) getPdbClient().queryForObject(
+        Object obj = getPdbClient().queryForObject(
             "getUserLastOnline", username);
+        if (obj == null)
+            return 0;
+        return (Long) obj;
     }
     
     public static int getUserQuota(String username,

@@ -1006,6 +1006,7 @@ public class OpenGrooveRealmServer
                 System.out
                     .println("Connection-fatal exception on packet with first128 equal to "
                         + first128);
+                throw e;
             }
         }
     }
@@ -1049,6 +1050,7 @@ public class OpenGrooveRealmServer
                 while (true)
                 {
                     Packet packet = queue.take();
+                    System.out.println("spooling packet");
                     synchronized (this)
                     {
                         synchronized (out)
@@ -1056,6 +1058,8 @@ public class OpenGrooveRealmServer
                             copy(packet.getStream(), out);
                         }
                     }
+                    System.out
+                        .println("packet spool complete");
                 }
             }
             catch (Exception e)
@@ -2209,6 +2213,9 @@ public class OpenGrooveRealmServer
                         throw new FailedResponseException(
                             Status.NOSUCHUSER,
                             "The user specified doesn't exist");
+                    System.out
+                        .println("getting information for user "
+                            + username);
                     long lastOnlineValue = DataStore
                         .getUserLastOnline(username);
                     lastOnline += lastOnlineValue + " "
