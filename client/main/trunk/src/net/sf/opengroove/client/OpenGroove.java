@@ -1216,8 +1216,20 @@ public class OpenGroove
                                          */
                                         System.out
                                             .println("subscription is related");
-                                        context
-                                            .updateContactStatus();
+                                        synchronized (context.contactStatusLock)
+                                        {
+                                            Contact contact = context
+                                                .getStorage()
+                                                .getContact(
+                                                    subscription
+                                                        .getOnUser());
+                                            if (contact != null)
+                                                context
+                                                    .updateOneContactStatus(contact);
+                                            else
+                                                System.out
+                                                    .println("subscription received for nonexistant contact");
+                                        }
                                     }
                                 }
                             }.start();

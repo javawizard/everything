@@ -964,7 +964,7 @@ public class UserContext
         }.start();
     }
     
-    private final Object contactStatusLock = new Object();
+    final Object contactStatusLock = new Object();
     
     /**
      * Updates the status icons for the contacts in the contacts pane, based on
