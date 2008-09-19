@@ -9,12 +9,13 @@ package net.sf.opengroove.client.plugins;
  * @author Alexander Boyd
  * 
  */
-public class UpdateSiteConnector
+public class Folder
 {
     /*
      * An update site has a root folder that we can access, which represents the
-     * root element. When we create an update site folder, we do so by passing it 
-     * a JDOM node that represents the element it is supposed to base itself on.
-     * The folder's contents
+     * root element. When we create an update site folder, we do so by passing
+     * it a JDOM node that represents the element it is supposed to base itself
+     * on. It can also be passed a URL that it is to base it's contents on, and
+     * it will download the xml file at the url and use it's root node
      */
 }
