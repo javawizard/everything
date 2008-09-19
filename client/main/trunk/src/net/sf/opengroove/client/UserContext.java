@@ -798,6 +798,14 @@ public class UserContext
                                     + computer.getName()
                                     + "<br/>";
                             }
+                            System.out.println("Added "
+                                + computersAdded
+                                + " computers for user "
+                                + contact.getUserid()
+                                + " with "
+                                + contact.getComputers()
+                                    .size()
+                                + " computers in storage");
                             if (computersAdded == 0)
                             {
                                 computersString = " &nbsp; <font color=\"#707070\">(No computers)</font>";

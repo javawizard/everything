@@ -487,16 +487,29 @@ public class CommandCommunicator
     private Subscription stringToSubscription(
         String string, String delimiter)
     {
-        String[] tokens = string.trim().split(
-            "\\" + delimiter);
-        Subscription subscription = new Subscription();
-        subscription.setType(tokens[0]);
-        subscription.setOnUser(tokens[1]);
-        subscription.setOnComputer(tokens[2]);
-        subscription.setOnSetting(tokens[3]);
-        subscription.setDeleteWithTarget(tokens[4].trim()
-            .equalsIgnoreCase("true"));
-        return subscription;
+        try
+        {
+            String[] tokens = string.trim().split(
+                "\\" + delimiter);
+            Subscription subscription = new Subscription();
+            subscription.setType(tokens[0]);
+            subscription.setOnUser(tokens[1]);
+            subscription.setOnComputer(tokens[2]);
+            subscription.setOnSetting(tokens[3]);
+            subscription.setDeleteWithTarget(tokens[4]
+                .trim().equalsIgnoreCase("true"));
+            return subscription;
+        }
+        catch (ArrayIndexOutOfBoundsException e)
+        {
+            throw new IllegalArgumentException(
+                "The subscription denoted by the string \""
+                    + string
+                    + "\" using delimiter \""
+                    + delimiter
+                    + "\" could not be parsed, because it did not contain "
+                    + "enough tokens to parse into a subscription.");
+        }
     }
     
     /**
@@ -561,13 +574,13 @@ public class CommandCommunicator
                 + userid + " exists");
         try
         {
-            getUserStatus(userid,"");
+            getUserStatus(userid, "");
         }
-        catch(TimeoutException e)
+        catch (TimeoutException e)
         {
             throw e;
         }
-        catch(FailedResponseException e)
+        catch (FailedResponseException e)
         {
             return false;
         }

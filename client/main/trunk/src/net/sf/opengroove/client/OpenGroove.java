@@ -1175,44 +1175,52 @@ public class OpenGroove
                         
                         @Override
                         public void event(
-                            Subscription subscription)
+                            final Subscription subscription)
                         {
-                            System.out
-                                .println("received subscription");
-                            boolean isRelatedSubscription = subscription
-                                .getType()
-                                .equalsIgnoreCase(
-                                    "userstatus")
-                                || (subscription.getType()
-                                    .equalsIgnoreCase(
-                                        "computersetting") && (subscription
-                                    .getOnSetting()
-                                    .equalsIgnoreCase(
-                                        "public-active") || subscription
-                                    .getOnSetting()
-                                    .equalsIgnoreCase(
-                                        "public-idle")));
-                            /*
-                             * We're not checking for public-lag since it will
-                             * change so infrequently.
-                             */
-                            if (isRelatedSubscription)
+                            new Thread()
                             {
-                                /*
-                                 * This subscription is for one of the events
-                                 * that we're interested in that relates to
-                                 * contact management. We need to tell the
-                                 * context to update it's contact status.
-                                 * 
-                                 * TODO: in the future, we should just update
-                                 * the status of the contact that had the
-                                 * subscription event.
-                                 */
-                                System.out
-                                    .println("subscription is related");
-                                context
-                                    .updateContactStatus();
-                            }
+                                public void run()
+                                {
+                                    System.out
+                                        .println("received subscription");
+                                    boolean isRelatedSubscription = subscription
+                                        .getType()
+                                        .equalsIgnoreCase(
+                                            "userstatus")
+                                        || (subscription
+                                            .getType()
+                                            .equalsIgnoreCase(
+                                                "computersetting") && (subscription
+                                            .getOnSetting()
+                                            .equalsIgnoreCase(
+                                                "public-active") || subscription
+                                            .getOnSetting()
+                                            .equalsIgnoreCase(
+                                                "public-idle")));
+                                    /*
+                                     * We're not checking for public-lag since
+                                     * it will change so infrequently.
+                                     */
+                                    if (isRelatedSubscription)
+                                    {
+                                        /*
+                                         * This subscription is for one of the
+                                         * events that we're interested in that
+                                         * relates to contact management. We
+                                         * need to tell the context to update
+                                         * it's contact status.
+                                         * 
+                                         * TODO: in the future, we should just
+                                         * update the status of the contact that
+                                         * had the subscription event.
+                                         */
+                                        System.out
+                                            .println("subscription is related");
+                                        context
+                                            .updateContactStatus();
+                                    }
+                                }
+                            }.start();
                         }
                     });
                 // loadFeatures();
