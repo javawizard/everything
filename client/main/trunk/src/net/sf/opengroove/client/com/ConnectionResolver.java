@@ -2,6 +2,8 @@ package net.sf.opengroove.client.com;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.Hashtable;
 import java.util.Map;
 
@@ -142,6 +144,28 @@ public class ConnectionResolver
             results.add(new ServerContext(realm, realm,
                 DEFAULT_PORT, Integer.MAX_VALUE, 1,
                 ServerContext.Source.TARGET));
+        }
+        Collections.sort(results,
+            new Comparator<ServerContext>()
+            {
+                
+                @Override
+                public int compare(ServerContext o1,
+                    ServerContext o2)
+                {
+                    if (o1.getPriority() > o2.getPriority())
+                        return -1;
+                    if (o1.getPriority() < o2.getPriority())
+                        return 1;
+                    return 0;
+                }
+            });
+        System.out.println("Resolved realm " + realm
+            + " to these servers:");
+        for (ServerContext context : results)
+        {
+            System.out.println(context.getHostname() + ":"
+                + context.getPort());
         }
         return results.toArray(new ServerContext[0]);
     }
