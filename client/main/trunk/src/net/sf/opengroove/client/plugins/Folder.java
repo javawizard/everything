@@ -16,6 +16,7 @@ public class Folder
      * root element. When we create an update site folder, we do so by passing
      * it a JDOM node that represents the element it is supposed to base itself
      * on. It can also be passed a URL that it is to base it's contents on, and
-     * it will download the xml file at the url and use it's root node
+     * it will download the xml file at the url and use it's root node as the
+     * JDOM element representing the folder.
      */
 }
