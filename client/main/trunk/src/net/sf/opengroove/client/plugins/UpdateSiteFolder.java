@@ -31,24 +31,43 @@ public class UpdateSiteFolder
 
     private ReferableNode node;
     
-    public UpdateSiteFolder(URL url)
+    private volatile UpdateSiteFolder[] children;
+    
+    private volatile boolean isInitialized = false;
+    
+    /**
+     * Creates a new update site folder from the update site at the specified
+     * location.
+     * 
+     * @param url
+     *            An absolute url (IE beginning with a proper scheme) that
+     *            points to an update site xml file. This url can point to an
+     *            http url that returns a 307 redirect; such redirects will be
+     *            followed until the appropriate location is found.
+     */
+    public UpdateSiteFolder(String url)
     {
-        try
+        Element refElement = new Element("folder");
+        refElement.setAttribute("ref", url);
+        this.node = new ReferableNode(refElement);
+    }
+    
+    public synchronized void initialize()
+    {
+        if (isInitialized)
+            return;
+        ReferableNode[] childNodes = node
+            .getChildren("folder");
+        children = new UpdateSiteFolder[childNodes.length];
+        for (int i = 0; i < children.length; i++)
         {
-            Element element = new SAXBuilder().build(url)
-                .getRootElement();
-            this.node = new ReferableNode(element);
-        }
-        catch (Exception e)
-        {
-            throw new RuntimeException(
-                "Exception occured while creating folder for site "
-                    + url, e);
+            children[i] = new UpdateSiteFolder(
+                childNodes[i]);
         }
     }
     
     private UpdateSiteFolder(ReferableNode node)
     {
-        
+        this.node = node;
     }
 }

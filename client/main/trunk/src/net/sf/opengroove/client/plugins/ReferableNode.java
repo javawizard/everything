@@ -84,6 +84,7 @@ public class ReferableNode
             nodes.add(child);
         }
         children = nodes.toArray(new ReferableNode[0]);
+        isInitialized = true;
     }
     
     public ReferableNode[] getChildren()
