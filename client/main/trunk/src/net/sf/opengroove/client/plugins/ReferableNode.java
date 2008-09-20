@@ -15,7 +15,11 @@ import org.jdom.Element;
  */
 public class ReferableNode
 {
-    private Element element;
+    private volatile boolean isInitialized = false;
+    
+    private volatile Element element;
+    
+    private volatile ReferableNode[] children;
     
     /**
      * Creates a referable node, based on the element specified. If the element
@@ -28,6 +32,25 @@ public class ReferableNode
      */
     public ReferableNode(Element element)
     {
+        this.element = element;
+    }
+    
+    public ReferableNode[] loadChildren()
+    {
+        // TODO Auto-generated method stub
+        return null;
+    }
+    
+    private void resolveReference()
+    {
         
+    }
+    
+    private synchronized void check()
+    {
+        if(isInitialized)
+            return;
+        while(element.getAttributes().size() == 1 && element.getAttribute("ref") != null)
+            resolveReference();
     }
 }
