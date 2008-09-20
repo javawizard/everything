@@ -9,7 +9,7 @@ package net.sf.opengroove.client.plugins;
  * @author Alexander Boyd
  * 
  */
-public class Folder
+public class UpdateSiteFolder
 {
     /*
      * An update site has a root folder that we can access, which represents the
@@ -22,4 +22,6 @@ public class Folder
      * UPDATE: This stuff will actually use ReferableNode, which handles file
      * referencing, so we don't need to worry about URL stuff anymore.
      */
+    
+    private ReferableNode node;
 }

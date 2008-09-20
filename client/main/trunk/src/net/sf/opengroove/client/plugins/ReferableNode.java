@@ -85,4 +85,43 @@ public class ReferableNode
         }
         children = nodes.toArray(new ReferableNode[0]);
     }
+    
+    public ReferableNode[] getChildren()
+    {
+        initialize();
+        return children;
+    }
+    
+    public ReferableNode[] getChildren(String tag)
+    {
+        initialize();
+        ArrayList<ReferableNode> results = new ArrayList<ReferableNode>();
+        for (ReferableNode child : children)
+        {
+            if (child.getTagName().equalsIgnoreCase(tag))
+                results.add(child);
+        }
+        return results.toArray(new ReferableNode[0]);
+    }
+    
+    public String getAttribute(String name)
+    {
+        initialize();
+        return element.getAttributeValue(name);
+    }
+    
+    public String getText()
+    {
+        initialize();
+        return element.getText();
+    }
+    
+    public String getTagName()
+    {
+        /*
+         * This doesn't need to call initialize() as the tag name will be the
+         * same on both the referrer and the referant.
+         */
+        return element.getName();
+    }
 }
