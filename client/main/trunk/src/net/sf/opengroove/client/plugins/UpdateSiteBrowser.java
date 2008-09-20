@@ -58,5 +58,6 @@ public class UpdateSiteBrowser extends JDialog
         JPanel contents = new JPanel();
         contents.setBorder(new EmptyBorder(10, 10, 10, 10));
         add(contents);
+        
     }
 }
