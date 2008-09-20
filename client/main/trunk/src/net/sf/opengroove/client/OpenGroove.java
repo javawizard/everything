@@ -228,8 +228,10 @@ public class OpenGroove
     
     public static enum Icons
     {
-        CONFIGURE_WORKSPACE_16("configure-workspace.png",
-            16), DELETE_WORKSPACE_16(
+        GENERIC_ADD_16("add.gif",16), GENERIC_CANCEL_16("cancel.gif",16), GENERIC_ADD_DISABLED_16(
+            "add_disabled.gif",16), GENERIC_CANCEL_DISABLED_16(
+            "cancel_disabled.gif",16), CONFIGURE_WORKSPACE_16(
+            "configure-workspace.png", 16), DELETE_WORKSPACE_16(
             "delete-workspace.png", 16), INVITE_TO_WORKSPACE_16(
             "invite-to-workspace.png", 16), POP_OUT_16(
             "pop-out.png", 16), WORKSPACE_INFO_16(
@@ -3800,7 +3802,7 @@ public class OpenGroove
      * @return a new image, which is the original image scaled to the width and
      *         height specified
      */
-    private static BufferedImage scaleImage(Image image,
+    public static BufferedImage scaleImage(Image image,
         int width, int height)
     {
         BufferedImage b = new BufferedImage(width, height,
@@ -3826,7 +3828,7 @@ public class OpenGroove
      * @param string
      * @return
      */
-    private static Image loadImage(String string)
+    public static Image loadImage(String string)
     {
         System.out.println("********about to load "
             + string);
