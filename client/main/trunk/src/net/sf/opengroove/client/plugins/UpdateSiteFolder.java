@@ -52,6 +52,37 @@ public class UpdateSiteFolder
         this.node = new ReferableNode(refElement);
     }
     
+    private UpdateSiteFolder(ReferableNode node)
+    {
+        this.node = node;
+    }
+    
+    public UpdateSiteFolder[] getChildren()
+    {
+        return children;
+    }
+    
+    public String getName()
+    {
+        initialize();
+        return node.getAttribute("name");
+    }
+    
+    public String getDescription()
+    {
+        initialize();
+        return node.getAttribute("description");
+    }
+    
+    public String getInitialReference()
+    {
+        /*
+         * We don't need to call initialize() here because we're not accessing
+         * any fields that would need to be initialized.
+         */
+        return node.getInitialReference();
+    }
+    
     public synchronized void initialize()
     {
         if (isInitialized)
@@ -66,8 +97,4 @@ public class UpdateSiteFolder
         }
     }
     
-    private UpdateSiteFolder(ReferableNode node)
-    {
-        this.node = node;
-    }
 }

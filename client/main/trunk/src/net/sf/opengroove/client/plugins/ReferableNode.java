@@ -26,6 +26,13 @@ public class ReferableNode
     
     private volatile ReferableNode[] children;
     
+    private String initialReference;
+    
+    public String getInitialReference()
+    {
+        return initialReference;
+    }
+    
     /**
      * Creates a referable node, based on the element specified. If the element
      * contains only a ref attribute, the url referenced is downloaded, and it's
@@ -38,6 +45,9 @@ public class ReferableNode
     public ReferableNode(Element element)
     {
         this.element = element;
+        if (element.getAttribute("ref") != null)
+            initialReference = element
+                .getAttributeValue("ref");
     }
     
     private void resolveReference()
