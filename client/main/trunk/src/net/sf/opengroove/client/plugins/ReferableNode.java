@@ -1,8 +1,11 @@
 package net.sf.opengroove.client.plugins;
 
+import java.net.URL;
 import java.util.ArrayList;
 
+import org.jdom.Document;
 import org.jdom.Element;
+import org.jdom.input.SAXBuilder;
 
 /**
  * A node that can have children and attributes, and will download a replacement
@@ -42,6 +45,18 @@ public class ReferableNode
         try
         {
             String ref = element.getAttributeValue("ref");
+            URL url = new URL(ref);
+            Document doc = new SAXBuilder().build(url);
+            Element newElement = doc.getRootElement();
+            if (!newElement.getName().equalsIgnoreCase(
+                element.getName()))
+                throw new RuntimeException(
+                    "Referrer has name "
+                        + element.getName()
+                        + " but referant has name "
+                        + newElement.getName()
+                        + ". The elements must have the same name.");
+            element = newElement;
         }
         catch (Exception e)
         {
