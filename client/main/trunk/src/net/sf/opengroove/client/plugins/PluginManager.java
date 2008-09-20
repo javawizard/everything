@@ -599,19 +599,13 @@ public class PluginManager
                     .getName();
             String updateSite = root
                 .getAttributeValue("update-site");
-            String versionString = root
-                .getAttributeValue("version");
             checkPresent(name);
             checkPresent(supervisorClass);
-            if (versionString == null
-                || versionString.equals(""))
-                versionString = "0.0";
             model.setName(name);
             model.setDescription(description);
             model.setLicense(license);
             model.setSupervisorClass(supervisorClass);
             model.setUpdateSite(updateSite);
-            model.setVersion(new Version(versionString));
             Element[] permissionNodes = (Element[]) root
                 .getChildren("permission").toArray(
                     new Element[0]);

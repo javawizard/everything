@@ -24,7 +24,6 @@ public class PluginModel
     private String license;
     private String supervisorClass;
     private String updateSite;
-    private Version version;
     private File jarSource;
     private DependencyModel[] dependencies;
     private IconModel[] icons;
@@ -75,11 +74,6 @@ public class PluginModel
         return updateSite;
     }
     
-    public Version getVersion()
-    {
-        return version;
-    }
-    
     public boolean isInternal()
     {
         return internal;
@@ -123,11 +117,6 @@ public class PluginModel
     public void setUpdateSite(String updateSite)
     {
         this.updateSite = updateSite;
-    }
-    
-    public void setVersion(Version version)
-    {
-        this.version = version;
     }
     
     public void setInternal(boolean internal)

@@ -9,6 +9,7 @@ import javax.swing.JDialog;
 import javax.swing.JPanel;
 import javax.swing.border.EmptyBorder;
 
+import net.sf.opengroove.client.UserContext;
 import net.sf.opengroove.client.ui.Breadcrumb;
 
 /**
@@ -27,35 +28,35 @@ public class UpdateSiteBrowser extends JDialog
      */
     private Breadcrumb breadcrumb;
     /**
-     * Contains the actual breadcrumb trail. <code>breadcrumb</code> is set to
-     * reflect this whenever it changes. This should always have at least one
-     * element. If the user is viewing the toplevel (IE they are currently
-     * viewing the list of available update sites), then this list should have
-     * only one element, which is an UpdatePath with it's update site and
-     * folders set to null, and it's name set to
+     * Contains the current folder that the user is viewing. Since
+     * UpdateSiteFolders track the folders used to drill down to them, not just
+     * the xml file that they were sourced from (they don't actually know about
+     * xml references), this can be used to show a breadcrumb representing the
+     * user's current path.
      */
-    private ArrayList<UpdatePath> trail = new ArrayList<UpdatePath>();
+    private UpdateSiteFolder folder;
     private String[] fixedUpdateSites;
     private File userUpdateSites;
     
     /**
-     * Creates a new modal UpdateSiteBrowser.
+     * Creates a new modal UpdateSiteBrowser. The browser will allow the user to
+     * add update sites, browse through update sites that they've added, and
+     * install plugins from those update sites.
      * 
      * @param parent
      *            The frame to use as the parent of this dialog
-     * @param fixedUpdateSites
-     *            A String[] which can contain the urls to a number of fixed
-     *            update sites. These are update sites that always appear in the
-     *            top level list and that the user cannot delete. For example,
-     *            OpenGroove typically has the OpenGroove update site as a fixed
-     *            update site.
+     * @param context
+     *            The context of the user that this update site browser is for.
+     *            Plugins installed using this browser will be placed into this
+     *            user's plugin folder.
      */
     public UpdateSiteBrowser(Frame parent,
-        String[] fixedUpdateSites, File userUpdateSites)
+        UserContext context)
     {
         super(parent, true);
         setLayout(new BorderLayout());
         JPanel contents = new JPanel();
         contents.setBorder(new EmptyBorder(10, 10, 10, 10));
+        add(contents);
     }
 }
