@@ -1,5 +1,7 @@
 package net.sf.opengroove.client.plugins;
 
+import java.util.ArrayList;
+
 import org.jdom.Element;
 
 /**
@@ -35,22 +37,37 @@ public class ReferableNode
         this.element = element;
     }
     
-    public ReferableNode[] loadChildren()
-    {
-        // TODO Auto-generated method stub
-        return null;
-    }
-    
     private void resolveReference()
     {
-        
+        try
+        {
+            String ref = element.getAttributeValue("ref");
+        }
+        catch (Exception e)
+        {
+            throw new IllegalArgumentException(
+                "Element passed into this node ("
+                    + element.getName()
+                    + ") contained a reference that couldn't "
+                    + "be obtained for some reason.", e);
+        }
     }
     
-    private synchronized void check()
+    public synchronized void initialize()
     {
-        if(isInitialized)
+        if (isInitialized)
             return;
-        while(element.getAttributes().size() == 1 && element.getAttribute("ref") != null)
+        while (element.getAttributes().size() == 1
+            && element.getAttribute("ref") != null)
             resolveReference();
+        ArrayList<ReferableNode> nodes = new ArrayList<ReferableNode>();
+        for (Element childElement : new ArrayList<Element>(
+            element.getChildren()))
+        {
+            ReferableNode child = new ReferableNode(
+                childElement);
+            nodes.add(child);
+        }
+        children = nodes.toArray(new ReferableNode[0]);
     }
 }

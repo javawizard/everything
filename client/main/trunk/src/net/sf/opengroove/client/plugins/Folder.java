@@ -18,5 +18,8 @@ public class Folder
      * on. It can also be passed a URL that it is to base it's contents on, and
      * it will download the xml file at the url and use it's root node as the
      * JDOM element representing the folder.
+     * 
+     * UPDATE: This stuff will actually use ReferableNode, which handles file
+     * referencing, so we don't need to worry about URL stuff anymore.
      */
 }
