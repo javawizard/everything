@@ -3299,10 +3299,13 @@ public class OpenGroove
         workspacesGradientPanel.setOpaque(true);
         launchbar.getContentPane().setLayout(
             new BorderLayout());
+        JPanel content = new JPanel();
+        content.setLayout(new BorderLayout());
         JTabbedPane launchbarTabbedPane = new JTabbedPane();
         context.setLaunchbarTabbedPane(launchbarTabbedPane);
         launchbarTabbedPane.setFocusable(false);
-        launchbar.getContentPane().add(launchbarTabbedPane);
+        content.add(launchbarTabbedPane);
+        launchbar.getContentPane().add(content);
         launchbarTabbedPane.add("Workspaces",
             new JScrollPane(workspacesGradientPanel));
         JPanel contactsPanel = new JPanel();
@@ -3672,6 +3675,7 @@ public class OpenGroove
                 }
             });
         convergiaMenu.add(alwaysOnTopItem);
+        convergiaMenu.setOpaque(false);
         JMenu helpMenu = new IMenu("Help", new IMenuItem[] {
             new IMenuItem("Help")
             {
@@ -3698,6 +3702,11 @@ public class OpenGroove
                     showAboutWindow();
                 }
             } });
+        // FIXME: remove the following opaque setters once the visual problem
+        // with the menu bar is resolved
+        convergiaMenu.setOpaque(false);
+        pluginsMenu.setOpaque(false);
+        helpMenu.setOpaque(false);
         bar.add(convergiaMenu);
         bar.add(pluginsMenu);
         bar.add(helpMenu);

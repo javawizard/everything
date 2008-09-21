@@ -30,12 +30,12 @@ public class Test044
         JButton button = new JButton(new ImageIcon(
             OpenGroove.Icons.GENERIC_ADD_16.getImage()));
         button.setFocusable(false);
-        button.setMargin(new Insets(0, 0, 0, 0));
+        button.setMargin(new Insets(1, 1, 1, 1));
         frame.add(button);
         JButton button2 = new JButton(new ImageIcon(
-            OpenGroove.Icons.GENERIC_CANCEL_16.getImage()));
+            OpenGroove.Icons.GENERIC_ADD_16.getImage()));
         button2.setFocusable(false);
-        button2.setMargin(new Insets(0, 0, 0, 0));
+//        button2.setMargin(new Insets(0, 0, 0, 0));
         frame.add(button2);
         frame.show();
     }
