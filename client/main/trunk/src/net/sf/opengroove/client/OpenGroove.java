@@ -228,9 +228,8 @@ public class OpenGroove
     
     public static enum Icons
     {
-        GENERIC_ADD_16("add.gif",16), GENERIC_CANCEL_16("cancel.gif",16), GENERIC_ADD_DISABLED_16(
-            "add_disabled.gif",16), GENERIC_CANCEL_DISABLED_16(
-            "cancel_disabled.gif",16), CONFIGURE_WORKSPACE_16(
+        GENERIC_ADD_16("add.png", 16), GENERIC_REMOVE_16(
+            "remove.png", 16), CONFIGURE_WORKSPACE_16(
             "configure-workspace.png", 16), DELETE_WORKSPACE_16(
             "delete-workspace.png", 16), INVITE_TO_WORKSPACE_16(
             "invite-to-workspace.png", 16), POP_OUT_16(
@@ -3602,7 +3601,6 @@ public class OpenGroove
         final UserContext context, final JFrame launchbar)
     {
         JMenuBar bar = new JMenuBar();
-        launchbar.setJMenuBar(bar);
         final JMenu convergiaMenu = new IMenu("OpenGroove",
             new IMenuItem[] {
                 new IMenuItem("Check for updates")
@@ -3703,6 +3701,7 @@ public class OpenGroove
         bar.add(convergiaMenu);
         bar.add(pluginsMenu);
         bar.add(helpMenu);
+        launchbar.setJMenuBar(bar);
         bar.invalidate();
         bar.validate();
     }
