@@ -31,6 +31,8 @@ public class UpdateSiteFolder
 
     private ReferableNode node;
     
+    private UpdateSiteFolder parent;
+    
     private volatile UpdateSiteFolder[] children;
     
     private volatile boolean isInitialized = false;
@@ -52,9 +54,11 @@ public class UpdateSiteFolder
         this.node = new ReferableNode(refElement);
     }
     
-    private UpdateSiteFolder(ReferableNode node)
+    private UpdateSiteFolder(UpdateSiteFolder parent,
+        ReferableNode node)
     {
         this.node = node;
+        this.parent = parent;
     }
     
     public UpdateSiteFolder[] getChildren()
@@ -83,6 +87,14 @@ public class UpdateSiteFolder
         return node.getInitialReference();
     }
     
+    /**
+     * Initializes this folder. This is automatically called from any methods
+     * that need initialization to be performed, so classes using this class
+     * typically don't need to worry about this method. However, it may be an
+     * advantage to use this method when a folder is to be initialized before it
+     * is used. If this folder's backing xml tag references another xml file,
+     * then the referant will be downloaded when this method is called.
+     */
     public synchronized void initialize()
     {
         if (isInitialized)
@@ -92,9 +104,23 @@ public class UpdateSiteFolder
         children = new UpdateSiteFolder[childNodes.length];
         for (int i = 0; i < children.length; i++)
         {
-            children[i] = new UpdateSiteFolder(
+            children[i] = new UpdateSiteFolder(this,
                 childNodes[i]);
         }
+        isInitialized = true;
+    }
+    
+    /**
+     * Returns this folder's parent, or null if this folder does not have a
+     * parent. Folders returned from the getChildren() method have a parent,
+     * namely the folder on which getChildren() was invoked. A folder created
+     * using {@link #UpdateSiteFolder(String)} does not have a parent.
+     * 
+     * @return
+     */
+    public UpdateSiteFolder getParent()
+    {
+        return parent;
     }
     
 }

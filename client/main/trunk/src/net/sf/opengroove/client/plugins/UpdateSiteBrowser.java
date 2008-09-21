@@ -32,11 +32,12 @@ public class UpdateSiteBrowser extends JDialog
      * UpdateSiteFolders track the folders used to drill down to them, not just
      * the xml file that they were sourced from (they don't actually know about
      * xml references), this can be used to show a breadcrumb representing the
-     * user's current path.
+     * user's current path. If this is null, then the 
      */
     private UpdateSiteFolder folder;
     private String[] fixedUpdateSites;
     private File userUpdateSites;
+    
     
     /**
      * Creates a new modal UpdateSiteBrowser. The browser will allow the user to
@@ -58,6 +59,15 @@ public class UpdateSiteBrowser extends JDialog
         JPanel contents = new JPanel();
         contents.setBorder(new EmptyBorder(10, 10, 10, 10));
         add(contents);
+        
+    }
+    /**
+     * The panel that allows the user to navigate update sites. 
+     * @author Alexander Boyd
+     *
+     */
+    protected class NavPane extends JPanel
+    {
         
     }
 }
