@@ -228,8 +228,9 @@ public class OpenGroove
     
     public static enum Icons
     {
-        GENERIC_ADD_16("add.png", 16), GENERIC_REMOVE_16(
-            "remove.png", 16), CONFIGURE_WORKSPACE_16(
+        UP_FOLDER_16("upfolder16.png", 16), GENERIC_ADD_16(
+            "add.png", 16), GENERIC_REMOVE_16("remove.png",
+            16), CONFIGURE_WORKSPACE_16(
             "configure-workspace.png", 16), DELETE_WORKSPACE_16(
             "delete-workspace.png", 16), INVITE_TO_WORKSPACE_16(
             "invite-to-workspace.png", 16), POP_OUT_16(

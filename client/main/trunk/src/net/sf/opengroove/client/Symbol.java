@@ -185,4 +185,26 @@ public enum Symbol
     {
         return value;
     }
+    
+    /**
+     * Used for debugging purposes. Prints a table to stdout containing each
+     * character and it's code point.
+     */
+    public static void printTable()
+    {
+        for (Symbol symbol : values())
+        {
+            System.out.println("Symbol "
+                + symbol.toString()
+                + " : 0x"
+                + Integer.toHexString((int) symbol
+                    .toString().charAt(0)) + " 0d"
+                + ((int) symbol.toString().charAt(0)));
+        }
+    }
+    
+    public static void main(String[] args)
+    {
+        printTable();
+    }
 }
