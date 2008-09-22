@@ -110,6 +110,7 @@ import net.sf.opengroove.client.ui.InviteToWorkspaceDialog;
 import net.sf.opengroove.client.ui.ItemChooser;
 import net.sf.opengroove.client.ui.StandardWizardPage;
 import net.sf.opengroove.client.ui.StatusDialog;
+import net.sf.opengroove.client.ui.WebsiteButton;
 import net.sf.opengroove.client.ui.frames.LoginFrame;
 import net.sf.opengroove.client.ui.frames.UserNotificationFrame;
 import net.sf.opengroove.client.ui.transitions.included.EmptyNotificationFrameTransition;
@@ -2907,43 +2908,19 @@ public class OpenGroove
         panel.setBorder(new EmptyBorder(10, 10, 10, 10));
         panel.add(new JLabel("OpenGroove version "
             + getDisplayableVersion()));
-        JideButton websiteButton = new JideButton(
-            "www.opengroove.org");
         panel.add(Box.createVerticalStrut(3));
-        panel.add(websiteButton);
+        try
+        {
+            panel.add(new WebsiteButton(
+                "www.opengroove.org", new URI(
+                    "http://www.opengroove.org")));
+        }
+        catch (URISyntaxException e)
+        {
+            e.printStackTrace();
+        }
         panel.add(Box.createVerticalStrut(3));
         panel.add(new JLabel("Created by Alexander Boyd"));
-        websiteButton
-            .setButtonStyle(websiteButton.HYPERLINK_STYLE);
-        websiteButton.setAlwaysShowHyperlink(true);
-        websiteButton.setForeground(Color.BLUE);
-        websiteButton
-            .addActionListener(new ActionListener()
-            {
-                
-                @Override
-                public void actionPerformed(ActionEvent e)
-                {
-                    try
-                    {
-                        Desktop
-                            .getDesktop()
-                            .browse(
-                                new URI(
-                                    "http://www.opengroove.org"));
-                    }
-                    catch (IOException e1)
-                    {
-                        // TODO Auto-generated catch block
-                        e1.printStackTrace();
-                    }
-                    catch (URISyntaxException e1)
-                    {
-                        // TODO Auto-generated catch block
-                        e1.printStackTrace();
-                    }
-                }
-            });
     }
     
     /**

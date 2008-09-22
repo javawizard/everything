@@ -95,6 +95,8 @@ public class Storage
         featureStorage = iItem(tbase, "featuremanager");
         pluginStore = iItem(tbase, "plugins");
         helpStore = iItem(tbase, "help");
+        pluginInfoStore = iItem(tbase, "plugindesc");
+        updateSiteStore = iItem(tbase, "updatesites");
     }
     
     private static final Hashtable<String, Storage> singletons = new Hashtable<String, Storage>();
@@ -170,7 +172,14 @@ public class Storage
      */
     private File pluginInfoStore;
     /**
-     * For each update site present (including built-in ones)
+     * For each update site present (including built-in ones), there is a file
+     * present. It's name is irrelevant (it's usually a randomly-generated id).
+     * It's contents are a serialized LocalUpdateSite, which contains
+     * information about the update site's url, it's name (as last downloaded
+     * from the update site itself), and it's description (similarly
+     * downloaded). For built-in update sites, the UpdateSiteBrowser creates an
+     * update site here for each built in update site, so that it's name and
+     * description as sent back by the server can be tracked.
      */
     private File updateSiteStore;
     
