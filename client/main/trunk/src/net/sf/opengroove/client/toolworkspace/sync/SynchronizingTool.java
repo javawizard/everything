@@ -5,6 +5,11 @@ import javax.swing.JComponent;
 import net.sf.opengroove.client.toolworkspace.Tool;
 
 /**
+ * <b>This class is deprecated.</b> It is being replaced by the concept of
+ * engines (see www.opengroove.org/dev/workspace-synchronization), which
+ * will allow all tools to persist large chunks of data, and they can choose any
+ * model for that data (relations, hierarchy, chunks, etc.).<br/><br/>
+ * 
  * NOTE: this class is preferred over
  * net.sf.opengroove.client.toolworkspace.SynchronizingTool<br/><br/>
  * 
@@ -44,92 +49,100 @@ import net.sf.opengroove.client.toolworkspace.Tool;
  * @author Alexander Boyd
  * 
  */
+@Deprecated
 public abstract class SynchronizingTool extends Tool
 {
-	private boolean isShutdown = false;
-
-	/**
-	 * This method is normally used to initialize a tool. SynchronizingTool does
-	 * it's own initializing, so it overrides this method, and then calls
-	 * syncInitialize(). If you have any code for this method, put it there.
-	 */
-	@Override
-	public final void initialize()
-	{
-		try
-		{
-			syncInitialize();
-		} catch (Exception ex1)
-		{
-			ex1.printStackTrace();
-		}
-	}
-
-	@Override
-	protected void sendMessage(String to, String message)
-	{
-		super.sendMessage(to, "i|" + message);
-	}
-
-	protected abstract void syncInitialize();
-
-	/**
-	 * This method is normally used to initialize a tool. SynchronizingTool does
-	 * it's own initializing, so it overrides this method, and then calls
-	 * syncReceiveMessage(). If you have code for this method, put it there.
-	 */
-	@Override
-	public final void receiveMessage(String from, String message)
-	{
-		if (message.startsWith("sync|"))
-			processMessage(from, message.substring("sync|".length()));
-		else if (message.startsWith("i|"))
-			syncReceiveMessage(from, message.substring("i|".length()));
-	}
-
-	private void processMessage(String from, String message)
-	{
-	}
-
-	protected abstract void syncReceiveMessage(String from, String message);
-
-	/**
-	 * This method is normally used to initialize a tool. SynchronizingTool does
-	 * it's own initializing, so it overrides this method, and then calls
-	 * syncInitialize(). If you have any code for this method, put it there.
-	 */
-	@Override
-	public final void shutdown()
-	{
-		this.isShutdown = true;
-		try
-		{
-			syncShutdown();
-		} catch (Exception ex1)
-		{
-			ex1.printStackTrace();
-		}
-	}
-
-	protected abstract void syncShutdown();
-
-	/**
-	 * This method is normally used to initialize a tool. SynchronizingTool does
-	 * it's own initializing, so it overrides this method, and then calls
-	 * syncInitialize(). If you have code for this method, put it there.
-	 */
-	@Override
-	public final void userStatusChanged()
-	{
-		try
-		{
-			syncUserStatusChanged();
-		} catch (Exception ex1)
-		{
-			ex1.printStackTrace();
-		}
-	}
-
-	protected abstract void syncUserStatusChanged();
-
+    private boolean isShutdown = false;
+    
+    /**
+     * This method is normally used to initialize a tool. SynchronizingTool does
+     * it's own initializing, so it overrides this method, and then calls
+     * syncInitialize(). If you have any code for this method, put it there.
+     */
+    @Override
+    public final void initialize()
+    {
+        try
+        {
+            syncInitialize();
+        }
+        catch (Exception ex1)
+        {
+            ex1.printStackTrace();
+        }
+    }
+    
+    @Override
+    protected void sendMessage(String to, String message)
+    {
+        super.sendMessage(to, "i|" + message);
+    }
+    
+    protected abstract void syncInitialize();
+    
+    /**
+     * This method is normally used to initialize a tool. SynchronizingTool does
+     * it's own initializing, so it overrides this method, and then calls
+     * syncReceiveMessage(). If you have code for this method, put it there.
+     */
+    @Override
+    public final void receiveMessage(String from,
+        String message)
+    {
+        if (message.startsWith("sync|"))
+            processMessage(from, message.substring("sync|"
+                .length()));
+        else if (message.startsWith("i|"))
+            syncReceiveMessage(from, message.substring("i|"
+                .length()));
+    }
+    
+    private void processMessage(String from, String message)
+    {
+    }
+    
+    protected abstract void syncReceiveMessage(String from,
+        String message);
+    
+    /**
+     * This method is normally used to initialize a tool. SynchronizingTool does
+     * it's own initializing, so it overrides this method, and then calls
+     * syncInitialize(). If you have any code for this method, put it there.
+     */
+    @Override
+    public final void shutdown()
+    {
+        this.isShutdown = true;
+        try
+        {
+            syncShutdown();
+        }
+        catch (Exception ex1)
+        {
+            ex1.printStackTrace();
+        }
+    }
+    
+    protected abstract void syncShutdown();
+    
+    /**
+     * This method is normally used to initialize a tool. SynchronizingTool does
+     * it's own initializing, so it overrides this method, and then calls
+     * syncInitialize(). If you have code for this method, put it there.
+     */
+    @Override
+    public final void userStatusChanged()
+    {
+        try
+        {
+            syncUserStatusChanged();
+        }
+        catch (Exception ex1)
+        {
+            ex1.printStackTrace();
+        }
+    }
+    
+    protected abstract void syncUserStatusChanged();
+    
 }
