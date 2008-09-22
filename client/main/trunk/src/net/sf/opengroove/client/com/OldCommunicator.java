@@ -16,7 +16,7 @@ import java.util.HashMap;
 import java.util.List;
 
 import net.sf.opengroove.client.OpenGroove;
-import net.sf.opengroove.client.SubversionFileFilter;
+import net.sf.opengroove.client.storage.SubversionFileFilter;
 import net.sf.opengroove.client.workspace.SetList;
 
 

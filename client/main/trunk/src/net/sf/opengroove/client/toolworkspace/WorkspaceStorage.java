@@ -19,7 +19,7 @@ import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 
-import net.sf.opengroove.client.SubversionFileFilter;
+import net.sf.opengroove.client.storage.SubversionFileFilter;
 
 
 /**

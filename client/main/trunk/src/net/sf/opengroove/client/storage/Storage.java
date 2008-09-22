@@ -1,4 +1,4 @@
-package net.sf.opengroove.client;
+package net.sf.opengroove.client.storage;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;

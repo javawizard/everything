@@ -52,10 +52,10 @@ import org.jdom.input.SAXBuilder;
 import com.l2fprod.common.swing.JLinkButton;
 
 import net.sf.opengroove.client.OpenGroove;
-import net.sf.opengroove.client.Storage;
-import net.sf.opengroove.client.SubversionFileFilter;
 import net.sf.opengroove.client.UserContext;
 import net.sf.opengroove.client.download.PluginDownloadManager;
+import net.sf.opengroove.client.storage.Storage;
+import net.sf.opengroove.client.storage.SubversionFileFilter;
 import net.sf.opengroove.common.utils.Userids;
 
 /**

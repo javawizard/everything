@@ -28,11 +28,11 @@ import javax.swing.border.Border;
 import javax.swing.border.EtchedBorder;
 
 import net.sf.opengroove.client.OpenGroove;
-import net.sf.opengroove.client.CustomLoaderObjectReader;
 import net.sf.opengroove.client.IMenu;
 import net.sf.opengroove.client.IMenuItem;
 import net.sf.opengroove.client.notification.NotificationAdapter;
 import net.sf.opengroove.client.notification.TaskbarNotification;
+import net.sf.opengroove.client.storage.CustomLoaderObjectReader;
 import net.sf.opengroove.client.toolworkspace.Tool;
 
 import base64.Base64Coder;

@@ -8,7 +8,7 @@ import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
 
 import net.sf.opengroove.client.OpenGroove;
-import net.sf.opengroove.client.Storage;
+import net.sf.opengroove.client.storage.Storage;
 
 /**
  * This class is used to load plugin classes. A PluginClassLoader is created for

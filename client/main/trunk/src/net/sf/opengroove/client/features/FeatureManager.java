@@ -5,10 +5,10 @@ import java.util.ArrayList;
 import java.util.HashMap;
 
 import net.sf.opengroove.client.OpenGroove;
-import net.sf.opengroove.client.Storage;
 import net.sf.opengroove.client.com.MessageSink;
 import net.sf.opengroove.client.plugins.Plugin;
 import net.sf.opengroove.client.plugins.PluginManager;
+import net.sf.opengroove.client.storage.Storage;
 
 public class FeatureManager
 {

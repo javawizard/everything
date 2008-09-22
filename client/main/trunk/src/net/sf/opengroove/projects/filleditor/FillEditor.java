@@ -53,7 +53,7 @@ import javax.swing.filechooser.FileNameExtensionFilter;
 import com.jidesoft.spinner.PointSpinner;
 import com.sun.org.apache.bcel.internal.generic.GETSTATIC;
 
-import net.sf.opengroove.client.Storage;
+import net.sf.opengroove.client.storage.Storage;
 import net.sf.opengroove.client.ui.ColorChooserButton;
 import net.sf.opengroove.projects.filleditor.plugins.GradientPlugin;
 

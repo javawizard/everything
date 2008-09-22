@@ -2,7 +2,7 @@ package net.sf.opengroove.utils;
 
 import java.io.File;
 
-import net.sf.opengroove.client.Storage;
+import net.sf.opengroove.client.storage.Storage;
 
 public class LiveProperties
 {

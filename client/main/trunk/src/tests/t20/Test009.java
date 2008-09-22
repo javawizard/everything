@@ -2,7 +2,7 @@ package tests.t20;
 
 import java.io.File;
 
-import net.sf.opengroove.client.Storage;
+import net.sf.opengroove.client.storage.Storage;
 import net.sf.opengroove.client.workspace.WorkspaceWrapper;
 
 

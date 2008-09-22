@@ -1,5 +1,7 @@
 package net.sf.opengroove.client;
 
+import net.sf.opengroove.client.storage.Contact;
+import net.sf.opengroove.client.storage.LocalUser;
 import net.sf.opengroove.common.security.UserFingerprint;
 
 /**

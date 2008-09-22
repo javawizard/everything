@@ -1,9 +1,11 @@
-package net.sf.opengroove.client;
+package net.sf.opengroove.client.storage;
 
 import java.io.Serializable;
 import java.math.BigInteger;
 import java.util.Properties;
 
+import net.sf.opengroove.client.OpenGroove;
+import net.sf.opengroove.client.UserContext;
 import net.sf.opengroove.client.com.CommandCommunicator;
 import net.sf.opengroove.common.utils.Userids;
 import net.sf.opengroove.common.vcard.VCard;

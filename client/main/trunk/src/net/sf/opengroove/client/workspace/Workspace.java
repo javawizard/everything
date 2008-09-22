@@ -10,10 +10,10 @@ import javax.swing.JComponent;
 import javax.swing.JFrame;
 
 import net.sf.opengroove.client.OpenGroove;
-import net.sf.opengroove.client.Storage;
 import net.sf.opengroove.client.com.OldCommunicator;
 import net.sf.opengroove.client.notification.TaskbarNotification;
 import net.sf.opengroove.client.plugins.Plugin;
+import net.sf.opengroove.client.storage.Storage;
 
 import base64.Base64Coder;
 
