@@ -2956,6 +2956,7 @@ public class OpenGroove
         if (aboutWindow == null)
             initAboutWindow();
         aboutWindow.show();
+        bringToFront(aboutWindow);
     }
     
     private static final Object updateCheckLock = new Object();

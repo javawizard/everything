@@ -152,8 +152,27 @@ public class Storage
     private File contacts;
     
     private File featureStorage;
-    
+    /**
+     * This folder contains the plugin jar files representing the plugins that
+     * the user has installed, with each file bearing for it's name the id of
+     * the plugin, and with no file extension, similar to the rest of the
+     * storage files.
+     */
     private File pluginStore;
+    /**
+     * For each plugin installed (IE for each file under {@link #pluginStore}),
+     * there is a file under here, with it's name being the same as the name of
+     * the file under the aforementioned folder (or, in otherwords, the plugin's
+     * id). It's contents are a serialized LocalPlugin, representing the
+     * information about the plugin, such as whether or not it is enabled, the
+     * update site that the plugin should be updated from, what version level
+     * the user wishes to receive updates for, etc.
+     */
+    private File pluginInfoStore;
+    /**
+     * For each update site present (including built-in ones)
+     */
+    private File updateSiteStore;
     
     private File helpStore;
     
