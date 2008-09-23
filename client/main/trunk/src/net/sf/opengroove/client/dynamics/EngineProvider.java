@@ -14,16 +14,21 @@ package net.sf.opengroove.client.dynamics;
 public interface EngineProvider
 {
     /**
-     * Creates a new EngineReader. If <code>live</code> is true, then the
-     * engine reader should keep it's contents up-to-date with the contents of
-     * the engine itself, but the reader might block on a particular operation
-     * if the engine is in the process of applying a delta. If it is false, then
-     * the engine reader obtained provides a snapshot of the data at the time
-     * this method was called.
+     * Creates a new EngineReader. The engine reader is "live", in the sense
+     * that any changes that occur to the engine will be immediately accessible
+     * from the reader. If a new delta is to be applied to the engine, the
+     * reader's methods will block during that time.
      * 
-     * @return
+     * @return A newly-created EngineReader that can be used to read from this
+     *         engine
      */
-    public EngineReader createReader(boolean live);
+    public EngineReader createReader();
     
+    /**
+     * Creates a new EngineWriter. An EngineWriter is used to make changes to
+     * the engine.
+     * 
+     * @return a newly-created EngineWriter
+     */
     public EngineWriter createWriter();
 }
