@@ -92,7 +92,8 @@
        y1="16"
        x2="16"
        y2="320"
-       gradientUnits="userSpaceOnUse" />
+       gradientUnits="userSpaceOnUse"
+       gradientTransform="matrix(1.0043103,0,0,1.0065788,-1.0689674,-1.1052631)" />
   </defs>
   <sodipodi:namedview
      id="base"
@@ -111,10 +112,10 @@
      inkscape:current-layer="layer1"
      showgrid="false"
      inkscape:showpageshadow="false"
-     inkscape:window-width="1277"
+     inkscape:window-width="1276"
      inkscape:window-height="750"
-     inkscape:window-x="-5"
-     inkscape:window-y="-8"
+     inkscape:window-x="0"
+     inkscape:window-y="14"
      showguides="true">
     <inkscape:grid
        type="xygrid"
@@ -149,13 +150,13 @@
          style="fill:url(#linearGradient3204);fill-opacity:1;fill-rule:evenodd;" />
     </g>
     <rect
-       style="fill:url(#linearGradient3216);fill-opacity:1.0;fill-rule:evenodd;stroke:#5a5800;stroke-width:0;stroke-linecap:butt;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
+       style="fill:url(#linearGradient3216);fill-opacity:1;fill-rule:evenodd;stroke:#5a5800;stroke-width:0;stroke-linecap:butt;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
        id="rect3208"
-       width="464"
-       height="304"
-       x="16"
-       y="16"
-       ry="1.4656892" />
+       width="466"
+       height="306"
+       x="15"
+       y="15"
+       ry="1.4753318" />
     <text
        xml:space="preserve"
        style="font-size:144px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;text-align:start;line-height:125%;writing-mode:lr-tb;text-anchor:start;fill:#000000;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;font-family:Bitstream Vera Sans;-inkscape-font-specification:Bitstream Vera Sans"
