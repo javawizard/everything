@@ -105,7 +105,7 @@
      inkscape:pageopacity="0.0"
      inkscape:pageshadow="2"
      inkscape:zoom="1"
-     inkscape:cx="180.96494"
+     inkscape:cx="199.84805"
      inkscape:cy="170.17045"
      inkscape:document-units="px"
      inkscape:current-layer="layer1"
@@ -114,7 +114,8 @@
      inkscape:window-width="1277"
      inkscape:window-height="750"
      inkscape:window-x="-5"
-     inkscape:window-y="-8">
+     inkscape:window-y="-8"
+     showguides="true">
     <inkscape:grid
        type="xygrid"
        visible="true"
@@ -136,14 +137,17 @@
      inkscape:label="Layer 1"
      inkscape:groupmode="layer"
      id="layer1">
-    <path
-       style="fill:url(#linearGradient3196);fill-opacity:1.0;fill-rule:evenodd;stroke:#5a5800;stroke-width:0;stroke-linecap:butt;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
-       d="M 1.46875 0 C 0.65675819 0 -1.9844723e-18 0.65675819 0 1.46875 L 0 174.53125 C 0 175.34324 0.65675819 176 1.46875 176 L 17.46875 176 C 16.656759 176 16 175.34324 16 174.53125 L 16 17.46875 C 16 16.656759 16.656758 16 17.46875 16 L 478.53125 16 C 479.34325 16 480 16.656758 480 17.46875 L 480 174.53125 C 480 175.34324 479.34324 176 478.53125 176 L 494.53125 176 C 495.34324 176 496 175.34324 496 174.53125 L 496 1.46875 C 496 0.65675819 495.34325 -1.9844723e-18 494.53125 0 L 1.46875 0 z "
-       id="rect3180" />
-    <path
-       style="fill:url(#linearGradient3204);fill-opacity:1.0;fill-rule:evenodd;stroke:#5a5800;stroke-width:0;stroke-linecap:butt;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
-       d="M 1.46875 176 C 0.65675819 176 -1.9844723e-18 176.65676 0 177.46875 L 0 334.53125 C 0 335.34324 0.65675819 336 1.46875 336 L 494.53125 336 C 495.34324 336 496 335.34325 496 334.53125 L 496 177.46875 C 496 176.65676 495.34325 176 494.53125 176 L 478.53125 176 C 479.34325 176 480 176.65676 480 177.46875 L 480 318.53125 C 480 319.34325 479.34324 320 478.53125 320 L 17.46875 320 C 16.656759 320 16 319.34324 16 318.53125 L 16 177.46875 C 16 176.65676 16.656758 176 17.46875 176 L 1.46875 176 z "
-       id="rect3185" />
+    <g
+       id="g2412">
+      <path
+         id="rect3180"
+         d="M 1.46875 0 C 0.65675819 0 -1.9844723e-18 0.65675819 0 1.46875 L 0 174.53125 C 0 175.34324 0.65675819 176 1.46875 176 L 17.46875 176 C 16.656759 176 16 175.34324 16 174.53125 L 16 17.46875 C 16 16.656759 16.656758 16 17.46875 16 L 478.53125 16 C 479.34325 16 480 16.656758 480 17.46875 L 480 174.53125 C 480 175.34324 479.34324 176 478.53125 176 L 494.53125 176 C 495.34324 176 496 175.34324 496 174.53125 L 496 1.46875 C 496 0.65675819 495.34325 -1.9844723e-18 494.53125 0 L 1.46875 0 z "
+         style="fill:url(#linearGradient3196);fill-opacity:1;fill-rule:evenodd;" />
+      <path
+         id="rect3185"
+         d="M 1.46875 176 C 0.65675819 176 -1.9844723e-18 176.65676 0 177.46875 L 0 334.53125 C 0 335.34324 0.65675819 336 1.46875 336 L 494.53125 336 C 495.34324 336 496 335.34325 496 334.53125 L 496 177.46875 C 496 176.65676 495.34325 176 494.53125 176 L 478.53125 176 C 479.34325 176 480 176.65676 480 177.46875 L 480 318.53125 C 480 319.34325 479.34324 320 478.53125 320 L 17.46875 320 C 16.656759 320 16 319.34324 16 318.53125 L 16 177.46875 C 16 176.65676 16.656758 176 17.46875 176 L 1.46875 176 z "
+         style="fill:url(#linearGradient3204);fill-opacity:1;fill-rule:evenodd;" />
+    </g>
     <rect
        style="fill:url(#linearGradient3216);fill-opacity:1.0;fill-rule:evenodd;stroke:#5a5800;stroke-width:0;stroke-linecap:butt;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
        id="rect3208"
@@ -218,5 +222,13 @@
          id="tspan3240"
          x="139"
          y="188">www.opengroove.org</tspan></text>
+    <rect
+       style="fill-opacity:1;fill-rule:evenodd;fill:none;stroke:#00001b;stroke-opacity:1;stroke-width:1;stroke-miterlimit:4;stroke-dasharray:none"
+       id="rect3186"
+       width="496"
+       height="336"
+       x="0"
+       y="0"
+       ry="1.4656892" />
   </g>
 </svg>
