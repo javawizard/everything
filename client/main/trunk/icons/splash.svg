@@ -112,10 +112,10 @@
      inkscape:current-layer="layer1"
      showgrid="false"
      inkscape:showpageshadow="false"
-     inkscape:window-width="1276"
+     inkscape:window-width="1277"
      inkscape:window-height="750"
-     inkscape:window-x="0"
-     inkscape:window-y="14"
+     inkscape:window-x="-5"
+     inkscape:window-y="-8"
      showguides="true">
     <inkscape:grid
        type="xygrid"
@@ -231,5 +231,16 @@
        x="0"
        y="0"
        ry="1.4656892" />
+    <text
+       xml:space="preserve"
+       style="font-size:9px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;text-align:start;line-height:125%;writing-mode:lr-tb;text-anchor:start;fill:#000000;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;font-family:Segoe UI;-inkscape-font-specification:Segoe UI"
+       x="369"
+       y="314"
+       id="text2410"
+       sodipodi:linespacing="125%"><tspan
+         sodipodi:role="line"
+         x="369"
+         y="314"
+         id="tspan2414">Created by Alexander Boyd</tspan></text>
   </g>
 </svg>
