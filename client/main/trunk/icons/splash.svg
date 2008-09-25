@@ -112,10 +112,10 @@
      inkscape:current-layer="layer1"
      showgrid="false"
      inkscape:showpageshadow="false"
-     inkscape:window-width="1277"
+     inkscape:window-width="1276"
      inkscape:window-height="750"
-     inkscape:window-x="-5"
-     inkscape:window-y="-8"
+     inkscape:window-x="0"
+     inkscape:window-y="14"
      showguides="true">
     <inkscape:grid
        type="xygrid"
@@ -214,15 +214,15 @@
          y="111">Groove</tspan></text>
     <text
        xml:space="preserve"
-       style="font-size:22px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;text-align:start;line-height:100%;writing-mode:lr-tb;text-anchor:start;fill:#011e7e;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;font-family:Segoe UI;-inkscape-font-specification:Segoe UI"
-       x="139"
-       y="188"
+       style="font-size:24px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;text-align:start;line-height:100%;writing-mode:lr-tb;text-anchor:start;fill:#011e7e;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;font-family:Segoe UI;-inkscape-font-specification:Segoe UI"
+       x="134"
+       y="185"
        id="text3238"
        sodipodi:linespacing="100%"><tspan
          sodipodi:role="line"
          id="tspan3240"
-         x="139"
-         y="188">www.opengroove.org</tspan></text>
+         x="134"
+         y="185">www.opengroove.org</tspan></text>
     <rect
        style="fill-opacity:1;fill-rule:evenodd;fill:none;stroke:#00001b;stroke-opacity:1;stroke-width:1;stroke-miterlimit:4;stroke-dasharray:none"
        id="rect3186"
