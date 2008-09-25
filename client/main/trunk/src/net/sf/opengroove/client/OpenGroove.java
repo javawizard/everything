@@ -614,18 +614,6 @@ public class OpenGroove
                     }
                 }
             }.start();
-            /*
-             * FIXME: pick up here August 12, 2008, pretty much the rest of the
-             * main method needs to be split into it's own method that runs
-             * per-user, and replaced with the auto-login checks and stuff.
-             * There should, however, still be stuff for initializing the tray
-             * icon and putting a menu on it. Actually, this part might want to
-             * be in a different method that takes all of th logged in users and
-             * adds their context menu, and adds one for all other users that
-             * allows to log in as that user. There should also be a check here
-             * to see if there are no users, and if that's the case show the
-             * wizard that allows a user to add their account.
-             */
             File[] trayfiles = new File(".")
                 .listFiles(new FileFilter()
                 {
