@@ -1,4 +1,4 @@
-package net.sf.opengroove.client.plugins.ui;
+package net.sf.opengroove.client.plugins.internal;
 
 import javax.swing.JMenu;
 
