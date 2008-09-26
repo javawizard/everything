@@ -1,7 +1,7 @@
 create table $$prefix$$messages (
 id varchar(128),
 sender varchar(64),
-fromcomputer varchar(64),
+computer varchar(64),
 sent boolean
 );
 

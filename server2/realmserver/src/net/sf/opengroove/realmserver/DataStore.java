@@ -15,6 +15,17 @@ import net.sf.opengroove.realmserver.data.model.Subscription;
 import net.sf.opengroove.realmserver.data.model.User;
 import net.sf.opengroove.realmserver.data.model.UserSetting;
 
+/**
+ * The class that allows OpenGroove to access the database. It accesses it's
+ * data from OpenGrooveRealmServer.pdbClient and
+ * OpenGrooveRealmServer.ldbClient. In the future, I'll probably change this
+ * into a class that has most of it's methods as instance methods (instead of
+ * static methods like they are now), and then the realm server will construct a
+ * new DataStore, passing in it's persistant client and large client.
+ * 
+ * @author Alexander Boyd
+ * 
+ */
 public class DataStore
 {
     

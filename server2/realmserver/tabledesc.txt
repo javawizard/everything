@@ -163,7 +163,7 @@ This table holds the list of stored messages that are queued on this realm serve
 
 id varchar(128) The id of the message. It's recommended that this start with the userid of the sender of the message, to avoid message id collisions.
 sender varchar(64) The username (or userid if the message is from a user not on this realm server) of the message's sender.
-fromcomputer varchar(64)  The name of the computer that sent this message, the empty string if unavailable
+computer varchar(64)  The name of the computer that sent this message, the empty string if unavailable
 sent boolean true if this message has been finalized (or sent) by it's sender. If this is false, then the sender still has control over the message, and it should not be visible to any recipients. If this is true, then the sender has no control over the message, and recipients can read the message as they wish and remove themselves as a recipient from the message.
 
 

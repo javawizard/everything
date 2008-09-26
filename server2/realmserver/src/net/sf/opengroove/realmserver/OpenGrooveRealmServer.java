@@ -2890,7 +2890,7 @@ public class OpenGrooveRealmServer
                     command(), Status.OK, EMPTY);
             }
         };
-        new Command("", 0, false, false)
+        new Command("createmessage", 0, false, false)
         {
             
             @Override
@@ -2902,7 +2902,7 @@ public class OpenGrooveRealmServer
             }
             
         };
-        new Command("", 0, false, false)
+        new Command("setmessagesize", 0, false, false)
         {
             
             @Override
@@ -2914,7 +2914,7 @@ public class OpenGrooveRealmServer
             }
             
         };
-        new Command("", 0, false, false)
+        new Command("getmessagesize", 0, false, false)
         {
             
             @Override
@@ -2926,7 +2926,7 @@ public class OpenGrooveRealmServer
             }
             
         };
-        new Command("", 0, false, false)
+        new Command("readmessagedata", 0, false, false)
         {
             
             @Override
@@ -2938,7 +2938,7 @@ public class OpenGrooveRealmServer
             }
             
         };
-        new Command("", 0, false, false)
+        new Command("writemessagedata", 0, false, false)
         {
             
             @Override
@@ -2950,7 +2950,7 @@ public class OpenGrooveRealmServer
             }
             
         };
-        new Command("", 0, false, false)
+        new Command("readmessagehash", 0, false, false)
         {
             
             @Override
@@ -2962,7 +2962,7 @@ public class OpenGrooveRealmServer
             }
             
         };
-        new Command("", 0, false, false)
+        new Command("deletemessage", 0, false, false)
         {
             
             @Override
@@ -2974,7 +2974,7 @@ public class OpenGrooveRealmServer
             }
             
         };
-        new Command("", 0, false, false)
+        new Command("sendmessage", 0, false, false)
         {
             
             @Override
