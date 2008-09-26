@@ -3066,33 +3066,6 @@ public class OpenGrooveRealmServer
             serverRealmAddress);
     }
     
-    /**
-     * verifies that the user has enough space in their message cache to add the
-     * specified amount of data to it.
-     * 
-     * @param username
-     *            The user's username
-     * @param thisMessageSize
-     *            The amount of new data to add to the user's cache
-     * @throws SQLException
-     *             If an SQL error occures while querying the database
-     * @throws FailedResponseException
-     *             If the user does not have enough space in their message cache
-     *             to add the specified amount of data
-     */
-    public static void verifyWithinMessageQuota(
-        String username, int thisMessageSize)
-        throws SQLException
-    {
-        if (DataStore.getStoredMessageTotalSize(username)
-            + thisMessageSize >= (DataStore.getUserQuota(
-            username, "messagecache") * 1l) * 1024)
-            throw new FailedResponseException(
-                Status.QUOTAEXCEEDED,
-                "You don't have enough message space left");
-    }
-    
-    
     public static <T> String delimited(T[] items,
         ToString<T> generator, String delimiter)
     {

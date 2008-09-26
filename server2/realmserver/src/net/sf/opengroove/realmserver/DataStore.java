@@ -7,6 +7,8 @@ import com.ibatis.sqlmap.client.SqlMapClient;
 
 import net.sf.opengroove.realmserver.data.model.Computer;
 import net.sf.opengroove.realmserver.data.model.ComputerSetting;
+import net.sf.opengroove.realmserver.data.model.Message;
+import net.sf.opengroove.realmserver.data.model.MessageRecipient;
 import net.sf.opengroove.realmserver.data.model.SearchUsers;
 import net.sf.opengroove.realmserver.data.model.Subscription;
 import net.sf.opengroove.realmserver.data.model.User;
@@ -330,6 +332,88 @@ public class DataStore
     }
     
     // !ADDTOSQL
+    
+    public static void deleteMessageRecipients(String v)
+        throws SQLException
+    {
+        getLdbClient().delete("deleteMessageRecipients", v);
+    }
+    
+    public static String[] listOutboundMessages(Message v)
+        throws SQLException
+    {
+        return (String[]) getLdbClient().queryForList(
+            "listOutboundMessages", v).toArray(
+            new String[0]);
+    }
+    
+    public static String[] listInboundMessages(
+        MessageRecipient v) throws SQLException
+    {
+        return (String[]) getLdbClient().queryForList(
+            "listInboundMessages", v)
+            .toArray(new String[0]);
+    }
+    
+    public static void updateMessage(Message v)
+        throws SQLException
+    {
+        getLdbClient().update("updateMessage", v);
+    }
+    
+    public static Message getMessage(String v)
+        throws SQLException
+    {
+        return (Message) getLdbClient().queryForObject(
+            "getMessage", v);
+    }
+    
+    public static void deleteMessage(String v)
+        throws SQLException
+    {
+        getLdbClient().delete("deleteMessage", v);
+    }
+    
+    public static Integer isMessageSender(Message v)
+        throws SQLException
+    {
+        return (Integer) getLdbClient().queryForObject(
+            "isMessageSender", v);
+    }
+    
+    public static Integer isMessageRecipient(
+        MessageRecipient v) throws SQLException
+    {
+        return (Integer) getLdbClient().queryForObject(
+            "isMessageRecipient", v);
+    }
+    
+    public static void deleteMessageRecipient(
+        MessageRecipient v) throws SQLException
+    {
+        getLdbClient().delete("deleteMessageRecipient", v);
+    }
+    
+    public static MessageRecipient[] listMessageRecipients(
+        String v) throws SQLException
+    {
+        return (MessageRecipient[]) getLdbClient()
+            .queryForList("listMessageRecipients", v)
+            .toArray(new MessageRecipient[0]);
+    }
+    
+    public static void addMessageRecipient(
+        MessageRecipient v) throws SQLException
+    {
+        getLdbClient().insert("addMessageRecipient", v);
+    }
+    
+    public static void addMessage(Message v)
+        throws SQLException
+    {
+        getLdbClient().insert("addMessage", v);
+    }
+    
     public static boolean checkMessageExists(String v)
         throws SQLException
     {
