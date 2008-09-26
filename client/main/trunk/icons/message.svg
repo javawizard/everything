@@ -16,7 +16,10 @@
    inkscape:version="0.46"
    version="1.0"
    sodipodi:docname="message.svg"
-   inkscape:output_extension="org.inkscape.output.svg.inkscape">
+   inkscape:output_extension="org.inkscape.output.svg.inkscape"
+   inkscape:export-filename="C:\workspace3.0\OpenGroove Client\icons\message.png"
+   inkscape:export-xdpi="7.2727275"
+   inkscape:export-ydpi="7.2727275">
   <defs
      id="defs4">
     <marker
@@ -96,11 +99,11 @@
      inkscape:pageopacity="0.0"
      inkscape:pageshadow="2"
      inkscape:zoom="1"
-     inkscape:cx="124.5"
+     inkscape:cx="-31.5"
      inkscape:cy="121.98851"
      inkscape:document-units="px"
      inkscape:current-layer="layer1"
-     showgrid="false"
+     showgrid="true"
      inkscape:showpageshadow="false"
      inkscape:window-width="1277"
      inkscape:window-height="750"
@@ -128,7 +131,7 @@
      inkscape:groupmode="layer"
      id="layer1">
     <rect
-       style="fill:url(#linearGradient3165);fill-opacity:1;fill-rule:evenodd;stroke:#002b64;stroke-width:5;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
+       style="fill:url(#linearGradient3165);fill-opacity:1;fill-rule:evenodd;stroke:#000000;stroke-width:6.00000019;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1;stroke-linejoin:miter"
        id="rect2387"
        width="192"
        height="128"
@@ -136,8 +139,16 @@
        y="64"
        ry="1.4753318" />
     <path
-       style="fill:none;fill-rule:evenodd;stroke:#002757;stroke-width:4;stroke-linecap:butt;stroke-linejoin:round;stroke-opacity:1;stroke-miterlimit:4;stroke-dasharray:none"
+       style="fill:none;fill-rule:evenodd;stroke:#001b41;stroke-width:5;stroke-linecap:butt;stroke-linejoin:round;stroke-opacity:1;stroke-miterlimit:4;stroke-dasharray:none"
        d="M 32,64 L 128,144 L 224,64 L 128,144 L 32,64 z"
        id="path5801" />
+    <rect
+       style="fill:none;fill-opacity:1;fill-rule:evenodd;stroke:none;stroke-width:6;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
+       id="rect3175"
+       width="192"
+       height="192"
+       x="32"
+       y="32"
+       ry="1.4753318" />
   </g>
 </svg>

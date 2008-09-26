@@ -1890,19 +1890,23 @@ public class OpenGroove
                                  * If we're in here then the user needs to input
                                  * their server's security keys.
                                  */
-                                statusDialog.hide();
-                                JOptionPane
-                                    .showMessageDialog(
-                                        newAccountFrame,
-                                        "OpenGroove needs your realm's "
-                                            + "security keys to continue.\n"
-                                            + "When you are prompted, select the file that "
-                                            + "contains your realm's security keys.\n"
-                                            + "If you don't know your realm's security keys, contact\n"
-                                            + "your realm's administrator. You could try going to\n"
-                                            + Userids
-                                                .toRealm(userid)
-                                            + " for more information.");
+                                // statusDialog.hide();
+                                System.out
+                                    .println("showing dialog message");
+//                                JOptionPane
+//                                    .showMessageDialog(
+//                                        statusDialog,
+//                                        "OpenGroove needs your realm's "
+//                                            + "security keys to continue.\n"
+//                                            + "When you are prompted, select the file that "
+//                                            + "contains your realm's security keys.\n"
+//                                            + "If you don't know your realm's security keys, contact\n"
+//                                            + "your realm's administrator. You could try going to\n"
+//                                            + Userids
+//                                                .toRealm(userid)
+//                                            + " for more information.");
+                                System.out
+                                    .println("creating file chooser");
                                 JFileChooser chooser = new JFileChooser();
                                 chooser
                                     .setMultiSelectionEnabled(false);
@@ -1910,11 +1914,37 @@ public class OpenGroove
                                     .setFileFilter(new FileNameExtensionFilter(
                                         "OpenGroove Server Security Key files",
                                         "ogvs"));
-                                if (chooser
-                                    .showOpenDialog(newAccountFrame) != JFileChooser.APPROVE_OPTION)
+                                System.out
+                                    .println("creating layered dialog");
+                                final JDialog layeredDialog = new JDialog(
+                                    statusDialog, "ogfile",
+                                    true);
+                                System.out
+                                    .println("relocating layered dialog");
+                                layeredDialog
+                                    .setLocationRelativeTo(null);
+                                System.out
+                                    .println("showing layered dialog");
+                                new Thread()
                                 {
+                                    public void run()
+                                    {
+                                        layeredDialog
+                                            .show();
+                                    }
+                                }.start();
+                                System.out
+                                    .println("showing chooser");
+                                if (chooser
+                                    .showOpenDialog(layeredDialog) != JFileChooser.APPROVE_OPTION)
+                                {
+                                    layeredDialog.dispose();
+                                    statusDialog.dispose();
                                     return;
                                 }
+                                System.out
+                                    .println("successfully chose server file");
+                                layeredDialog.dispose();
                                 File securityKeyFile = chooser
                                     .getSelectedFile();
                                 try
@@ -1929,16 +1959,10 @@ public class OpenGroove
                                 {
                                     JOptionPane
                                         .showMessageDialog(
-                                            newAccountFrame,
+                                            statusDialog,
                                             "The file you selected is corrupt, or could not be read.");
                                     return;
                                 }
-                                statusDialog.dispose();
-                                statusDialog = new StatusDialog(
-                                    newAccountFrame,
-                                    "Please wait while we validate your username and password...");
-                                statusDialog
-                                    .showImmediate();
                                 try
                                 {
                                     Thread.sleep(300);
