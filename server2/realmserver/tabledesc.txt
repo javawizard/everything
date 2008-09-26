@@ -163,18 +163,8 @@ This table holds the list of stored messages that are queued on this realm serve
 
 id varchar(128) The id of the message. It's recommended that this start with the userid of the sender of the message, to avoid message id collisions.
 sender varchar(64) The username (or userid if the message is from a user not on this realm server) of the message's sender.
-recipient varchar(64) The username (or userid if the message is for a user not on this realm server) of the message's intended recipient.
 fromcomputer varchar(64)  The name of the computer that sent this message, the empty string if unavailable
-tocomputer varchar(64) The name of the computer that the message is intended for, the empty string to indicate that it's for all computers of the user specified. If a target computer is specified, all computers of that user will still have access to the message, but they can see that the message is not directly intended for them, and the message will be deleted if the intended computer soft-deletes it instead of requiring all online computers of that user to soft-delete it.
-maxchunks int The maximum number of chunks that will be in this message. This is used for space allocation.
-maxchunksize int The maximum chunk size, in bytes, for all chunks that will be in this message. This is used for space allocation.
-lifecycle int The message's current lifecycle status.
-lifecycleprogress int for lifecycle statuses that have a total progress amount so far, this is the progress so far.
-lifecycletotal int for lifecycle statuses that have a total progress amount so far, this is the progress level at which the task will be complete.
-needslifecycleupdate boolean true if info about the current lifecycle has changed and updates need to be sent to the sender of the message.
-finalized boolean True if the message is finalized, false if it is not. If a message is finalized, this means that the complete contents of the message have been uploaded and the message is ready to be sent off on it's way, or, if the recipient is on this realm server and the sender is not, that the message has been downloaded from the sending realm server and is available for download.
-approved boolean true if the user has approved the message for receiving, false if they haven't. If the message is from this realm server, then the message is counted towards the sender's message quota until approved it set to true by the receiver, at which point it's counted towards the receiver's quota. If the message is not from this realm server, and if this realm server is the sending realm server, then this is set to true when the receiving realm server tells this realm server that it is willing to receive the message now. If the message is not from this realm server, and if this realm server is the receiving realm server, this is set to true when the recipient of the message approves it, at which point the message can be downloaded from the sending realm server.
-metadata varchar(4096) the metadata of the message, in the format of Properties.store().
+sent boolean true if this message has been finalized (or sent) by it's sender. If this is false, then the sender still has control over the message, and it should not be visible to any recipients. If this is true, then the sender has no control over the message, and recipients can read the message as they wish and remove themselves as a recipient from the message.
 
 
 

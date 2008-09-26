@@ -2277,7 +2277,8 @@ public class OpenGrooveRealmServer
                 throws Exception
             {
                 // FIXME: needs to be redone to match the new spec for this
-                // command present at the command spec on www.opengroove.org
+                // command present at the command spec on
+                // www.opengroove.org/dev/protocol/commands/client---realm-server
                 String[] tokens = tokenize(data);
                 verifyAtLeast(tokens, 4);
                 String searchString = tokens[0];
