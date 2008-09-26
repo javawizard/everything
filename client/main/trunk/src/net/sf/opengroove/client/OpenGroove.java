@@ -1926,10 +1926,10 @@ public class OpenGroove
                                             ActionEvent e)
                                         {
                                             System.out
-                                                .println("hiding");
-                                            dialog.hide();
+                                                .println("disposing");
+                                            dialog.dispose();
                                             System.out
-                                                .println("hidden");
+                                                .println("disposed");
                                         }
                                     });
                                 dialog.getContentPane()
