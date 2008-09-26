@@ -7,3 +7,6 @@ sent boolean
 
 create table $$prefix$$messagerecipients (
 id varchar(128),
+recipient varchar(64),
+computer varchar(64)
+);

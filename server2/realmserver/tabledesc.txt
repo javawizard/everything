@@ -178,37 +178,13 @@ metadata varchar(4096) the metadata of the message, in the format of Properties.
 
 
 
-softdeletes
+messagerecipients:
 
-This table stores when a computer soft-deletes a particular message.
+This table holds the list of recipients for a message. Recipients are usually just a username. However, if the sender of the message is of this realm server, then the recipients can be of other realm servers (in which case they would be userids), and this realm server will contact the recipients' realm servers and send the message off to them, and then delete them as a recipient from this message.
 
-id varchar(128) the id of the message, from which, using the stored messages table, the username can be derived
-computer varchar(64) the name of the computer that has soft-deleted this message
-
-
-
-storedmessagedata:
-
-This table holds the actual contents of stored messages.
-
-id varchar(128) The id of the message that this data is for.
-block int The block number of this particular data chunk. Usually, block numbering starts at 0, and increments by one for each successive block. However, this is not required. The blocks of the message are assembled in ascending order, but that is the only constraint on block numbering.
-read boolean True if the chunk has been accessed at least once by the recipient, false if not.
-contents blob The actual contents of this block. The contents should be no larger than 64KB.
-
-
-
-workspaceitems:
-
-This table contains items posted to a workspace.
-
-columns TBD
-
-
-
-workspaceitemdeletes:
-
-This table contains the list of users that have deleted a particular workspace item.
+id varchar(128) The id of the message that this recipient is for
+recipient varchar(64) The username or userid of this recipient
+computer varchar(64) The name of the computer that this recipient entry targets. If this recipient is of another realm server, then this can be the empty string, in which case it will be expanded to a list of the recipient's computers by the recipient's realm server.
 
 
 
