@@ -222,6 +222,10 @@ public class UserContext
             updateContactStatus();
         }
     };
+    /**
+     * A timer that updates the icons for contacts in the contacts pane with the
+     * contact's current status, such as offline or idle.
+     */
     @TimerField
     private ConditionalTimer contactIconTimer = new ConditionalTimer(
         1000 * 9, Conditional.True)
@@ -329,7 +333,8 @@ public class UserContext
     private PopupMenu popupMenu;
     
     /**
-     * Starts all of this context's timers.
+     * Starts all of this context's timers. Specifically, starts all timers in
+     * any field on this user context that are annotated with {@link TimerField}.
      */
     public void startTimers()
     {
@@ -406,6 +411,17 @@ public class UserContext
         }
     }
     
+    /**
+     * Checks to see if the subscription indicated is present in the list of
+     * subscriptions passed in. If it is not, the subscription is uploaded to
+     * the server. If it is, nothing happens.
+     * 
+     * @param existing
+     *            An array of existing subscriptions
+     * @param subscription
+     *            The new subscription that will be uploaded if it's not a
+     *            member of <code>existing</code>
+     */
     protected void putSubscription(Subscription[] existing,
         Subscription subscription)
     {
@@ -452,6 +468,11 @@ public class UserContext
         }
     }
     
+    /**
+     * Gets the LocalUser that this context is for.
+     * 
+     * @return the local user that this context is for.
+     */
     public LocalUser getLocalUser()
     {
         return getStorage().getLocalUser();
@@ -460,7 +481,8 @@ public class UserContext
     /**
      * Returns a list of all timers for this UserContext.
      * 
-     * @return
+     * @return All of this context's timers; specifically, the contents of all
+     *         of this context's fields annotated with {@link TimerField}
      */
     public ConditionalTimer[] getTimers()
     {
@@ -609,11 +631,22 @@ public class UserContext
         this.helpViewer = helpViewer;
     }
     
+    /**
+     * Gets the storage instance associated with the user represented by this
+     * context.
+     * 
+     * @return
+     */
     public Storage getStorage()
     {
         return Storage.get(userid);
     }
     
+    /**
+     * Gets the WorkspaceManager associated with this context.
+     * 
+     * @return
+     */
     public WorkspaceManager getWorkspaceManager()
     {
         return workspaceManager;
@@ -647,10 +680,19 @@ public class UserContext
         this.userNotificationListener = userNotificationListener;
     }
     
+    /**
+     * The date format used to format dates
+     */
     private static SimpleDateFormat DATE_FORMAT = new SimpleDateFormat(
         "yyyy.MM.dd");
+    /**
+     * The date format used to format times
+     */
     private static SimpleDateFormat TIME_FORMAT = new SimpleDateFormat(
         "hh:mmaa");
+    /**
+     * The date format used to format date/time combinations
+     */
     private static SimpleDateFormat DATE_TIME_FORMAT = new SimpleDateFormat(
         "yyyy.MM.dd hh:mmaa");
     

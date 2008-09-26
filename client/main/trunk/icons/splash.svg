@@ -23,6 +23,28 @@
   <defs
      id="defs4">
     <linearGradient
+       id="linearGradient3191">
+      <stop
+         style="stop-color:#393aa3;stop-opacity:1;"
+         offset="0"
+         id="stop3193" />
+      <stop
+         style="stop-color:#292a76;stop-opacity:1;"
+         offset="1"
+         id="stop3195" />
+    </linearGradient>
+    <linearGradient
+       id="linearGradient3182">
+      <stop
+         style="stop-color:#30b3d8;stop-opacity:1;"
+         offset="0"
+         id="stop3184" />
+      <stop
+         style="stop-color:#249fc2;stop-opacity:1;"
+         offset="1"
+         id="stop3186" />
+    </linearGradient>
+    <linearGradient
        id="linearGradient3210">
       <stop
          style="stop-color:#1d60ab;stop-opacity:1;"
@@ -94,6 +116,24 @@
        y2="320"
        gradientUnits="userSpaceOnUse"
        gradientTransform="matrix(1.0043103,0,0,1.0065788,-1.0689674,-1.1052631)" />
+    <linearGradient
+       inkscape:collect="always"
+       xlink:href="#linearGradient3182"
+       id="linearGradient3188"
+       x1="48.59375"
+       y1="64.5"
+       x2="48.59375"
+       y2="125.3125"
+       gradientUnits="userSpaceOnUse" />
+    <linearGradient
+       inkscape:collect="always"
+       xlink:href="#linearGradient3191"
+       id="linearGradient3197"
+       x1="226.59375"
+       y1="63.5"
+       x2="226.59375"
+       y2="111.90625"
+       gradientUnits="userSpaceOnUse" />
   </defs>
   <sodipodi:namedview
      id="base"
@@ -106,16 +146,16 @@
      inkscape:pageopacity="0.0"
      inkscape:pageshadow="2"
      inkscape:zoom="1"
-     inkscape:cx="199.84805"
+     inkscape:cx="43.84805"
      inkscape:cy="170.17045"
      inkscape:document-units="px"
      inkscape:current-layer="layer1"
      showgrid="false"
      inkscape:showpageshadow="false"
-     inkscape:window-width="1276"
+     inkscape:window-width="1277"
      inkscape:window-height="750"
-     inkscape:window-x="0"
-     inkscape:window-y="14"
+     inkscape:window-x="-5"
+     inkscape:window-y="-8"
      showguides="true">
     <inkscape:grid
        type="xygrid"
@@ -192,7 +232,7 @@
          y="130" /></text>
     <text
        xml:space="preserve"
-       style="font-size:64px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;text-align:start;line-height:125%;writing-mode:lr-tb;text-anchor:start;fill:#28acd1;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;font-family:Bitstream Vera Sans;-inkscape-font-specification:Bitstream Vera Sans"
+       style="font-size:64px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;text-align:start;line-height:125%;writing-mode:lr-tb;text-anchor:start;fill:url(#linearGradient3188);fill-opacity:1.0;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;font-family:Bitstream Vera Sans;-inkscape-font-specification:Bitstream Vera Sans"
        x="45"
        y="112"
        id="text3226"
@@ -200,10 +240,11 @@
          sodipodi:role="line"
          id="tspan3228"
          x="45"
-         y="112">Open</tspan></text>
+         y="112"
+         style="fill-opacity:1.0;fill:url(#linearGradient3188)">Open</tspan></text>
     <text
        xml:space="preserve"
-       style="font-size:64px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;text-align:start;line-height:125%;writing-mode:lr-tb;text-anchor:start;fill:#2d2e80;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;font-family:Bitstream Vera Sans;-inkscape-font-specification:Bitstream Vera Sans"
+       style="font-size:64px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;text-align:start;line-height:125%;writing-mode:lr-tb;text-anchor:start;fill:url(#linearGradient3197);fill-opacity:1.0;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;font-family:Bitstream Vera Sans;-inkscape-font-specification:Bitstream Vera Sans"
        x="223"
        y="111"
        id="text3234"
@@ -211,7 +252,8 @@
          sodipodi:role="line"
          id="tspan3236"
          x="223"
-         y="111">Groove</tspan></text>
+         y="111"
+         style="fill-opacity:1.0;fill:url(#linearGradient3197)">Groove</tspan></text>
     <text
        xml:space="preserve"
        style="font-size:24px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;text-align:start;line-height:100%;writing-mode:lr-tb;text-anchor:start;fill:#011e7e;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;font-family:Segoe UI;-inkscape-font-specification:Segoe UI"
