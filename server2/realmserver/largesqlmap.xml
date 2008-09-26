@@ -6,5 +6,12 @@
 <sqlMap>
     <!-- !ADDTOSQL -->
 
+    <select id="checkMessageExists" 
+         parameterClass="java.lang.String" 
+         resultClass="java.lang.Integer" >
+        select count(*) from $$prefix$$messages where 
+        id = #value#
+    </select>
+
 
 </sqlMap>

@@ -157,7 +157,7 @@ columns TBD
 These tables reside in the large database:
 
 
-storedmessages:
+messages:
 
 This table holds the list of stored messages that are queued on this realm server right now. It doesn't actually contain the message data (except for the message's metadata, which is limited to 1024 characters total), which is stored in the large database table storedmessagedata.
 

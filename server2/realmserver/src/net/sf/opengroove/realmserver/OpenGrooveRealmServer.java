@@ -51,8 +51,6 @@ import javax.servlet.http.HttpServletResponse;
 
 import net.sf.opengroove.realmserver.data.model.Computer;
 import net.sf.opengroove.realmserver.data.model.ComputerSetting;
-import net.sf.opengroove.realmserver.data.model.StoredMessage;
-import net.sf.opengroove.realmserver.data.model.StoredMessageData;
 import net.sf.opengroove.realmserver.data.model.Subscription;
 import net.sf.opengroove.realmserver.data.model.User;
 import net.sf.opengroove.realmserver.data.model.UserSetting;

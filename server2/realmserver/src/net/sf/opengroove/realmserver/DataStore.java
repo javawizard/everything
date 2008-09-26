@@ -333,6 +333,8 @@ public class DataStore
     }
     
     // !ADDTOSQL
+
+public static Integer checkMessageExists(String v)throws SQLException{return (Integer) getLdbClient().queryForObject("checkMessageExists",v);}
     
     public static void updateStoredMessageInfo(
         StoredMessage v) throws SQLException
