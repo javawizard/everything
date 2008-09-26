@@ -456,7 +456,8 @@ public class OpenGrooveRealmServer
      * TODO: make this configurable when the server's administrator is setting
      * the server up
      */
-    private static File messageDataFolder = new File("messagedata");
+    private static File messageDataFolder = new File(
+        "messagedata");
     
     private static boolean setupStillRunning = true;
     
@@ -2888,6 +2889,150 @@ public class OpenGrooveRealmServer
                 connection.sendEncryptedPacket(packetId,
                     command(), Status.OK, EMPTY);
             }
+        };
+        new Command("", 0, false, false)
+        {
+            
+            @Override
+            public void handle(String packetId,
+                InputStream data,
+                ConnectionHandler connection)
+                throws Exception
+            {
+            }
+            
+        };
+        new Command("", 0, false, false)
+        {
+            
+            @Override
+            public void handle(String packetId,
+                InputStream data,
+                ConnectionHandler connection)
+                throws Exception
+            {
+            }
+            
+        };
+        new Command("", 0, false, false)
+        {
+            
+            @Override
+            public void handle(String packetId,
+                InputStream data,
+                ConnectionHandler connection)
+                throws Exception
+            {
+            }
+            
+        };
+        new Command("", 0, false, false)
+        {
+            
+            @Override
+            public void handle(String packetId,
+                InputStream data,
+                ConnectionHandler connection)
+                throws Exception
+            {
+            }
+            
+        };
+        new Command("", 0, false, false)
+        {
+            
+            @Override
+            public void handle(String packetId,
+                InputStream data,
+                ConnectionHandler connection)
+                throws Exception
+            {
+            }
+            
+        };
+        new Command("", 0, false, false)
+        {
+            
+            @Override
+            public void handle(String packetId,
+                InputStream data,
+                ConnectionHandler connection)
+                throws Exception
+            {
+            }
+            
+        };
+        new Command("", 0, false, false)
+        {
+            
+            @Override
+            public void handle(String packetId,
+                InputStream data,
+                ConnectionHandler connection)
+                throws Exception
+            {
+            }
+            
+        };
+        new Command("", 0, false, false)
+        {
+            
+            @Override
+            public void handle(String packetId,
+                InputStream data,
+                ConnectionHandler connection)
+                throws Exception
+            {
+            }
+            
+        };
+        new Command("", 0, false, false)
+        {
+            
+            @Override
+            public void handle(String packetId,
+                InputStream data,
+                ConnectionHandler connection)
+                throws Exception
+            {
+            }
+            
+        };
+        new Command("", 0, false, false)
+        {
+            
+            @Override
+            public void handle(String packetId,
+                InputStream data,
+                ConnectionHandler connection)
+                throws Exception
+            {
+            }
+            
+        };
+        new Command("", 0, false, false)
+        {
+            
+            @Override
+            public void handle(String packetId,
+                InputStream data,
+                ConnectionHandler connection)
+                throws Exception
+            {
+            }
+            
+        };
+        new Command("", 0, false, false)
+        {
+            
+            @Override
+            public void handle(String packetId,
+                InputStream data,
+                ConnectionHandler connection)
+                throws Exception
+            {
+            }
+            
         };
         System.out.println("loaded " + commands.size()
             + " commands");
