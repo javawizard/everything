@@ -351,6 +351,10 @@ public class OpenGrooveRealmServer
                     }
                 }
             }
+            /*
+             * TODO: WAY too many close-braces in a row. Figure out how to
+             * simplify this.
+             */
             catch (Exception e)
             {
                 e.printStackTrace();
@@ -418,7 +422,13 @@ public class OpenGrooveRealmServer
      * holds the realm's pending items.
      */
     private static Map<String, BlockingQueue<InterServerPacket>> interRealmCache = new HashMap<String, BlockingQueue<InterServerPacket>>();
-    @Deprecated
+    /**
+     * @deprecated Since switching to Jetty from NanoHTTPD (when I decided that
+     *             I was going to need a full-fledged servlet container instead
+     *             of a class that I could just extend), the folder that stores
+     *             web resources has changed.
+     */
+    @Deprecated()
     protected static final File HTTPD_RES_FOLDER = new File(
         "httpdres");
     /**
@@ -442,6 +452,11 @@ public class OpenGrooveRealmServer
     
     private static final File configFile = new File(
         "config.properties");
+    /*
+     * TODO: make this configurable when the server's administrator is setting
+     * the server up
+     */
+    private static File messageDataFolder = new File("messagedata");
     
     private static boolean setupStillRunning = true;
     
