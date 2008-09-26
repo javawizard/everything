@@ -7,6 +7,21 @@ public class Message
     private String computer;
     private boolean sent;
     
+    public Message(String id, String sender,
+        String computer, boolean sent)
+    {
+        super();
+        this.id = id;
+        this.sender = sender;
+        this.computer = computer;
+        this.sent = sent;
+    }
+
+    public Message()
+    {
+        super();
+    }
+
     public String getId()
     {
         return id;

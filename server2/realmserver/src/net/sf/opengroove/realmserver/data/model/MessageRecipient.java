@@ -6,6 +6,20 @@ public class MessageRecipient
     private String recipient;
     private String computer;
     
+    public MessageRecipient()
+    {
+        super();
+    }
+    
+    public MessageRecipient(String id, String recipient,
+        String computer)
+    {
+        super();
+        this.id = id;
+        this.recipient = recipient;
+        this.computer = computer;
+    }
+    
     public String getId()
     {
         return id;
