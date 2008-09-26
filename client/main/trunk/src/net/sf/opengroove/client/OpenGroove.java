@@ -1893,18 +1893,50 @@ public class OpenGroove
                                 // statusDialog.hide();
                                 System.out
                                     .println("showing dialog message");
-//                                JOptionPane
-//                                    .showMessageDialog(
-//                                        statusDialog,
-//                                        "OpenGroove needs your realm's "
-//                                            + "security keys to continue.\n"
-//                                            + "When you are prompted, select the file that "
-//                                            + "contains your realm's security keys.\n"
-//                                            + "If you don't know your realm's security keys, contact\n"
-//                                            + "your realm's administrator. You could try going to\n"
-//                                            + Userids
-//                                                .toRealm(userid)
-//                                            + " for more information.");
+                                // JOptionPane
+                                // .showMessageDialog(
+                                // statusDialog,
+                                // "OpenGroove needs your realm's "
+                                // + "security keys to continue.\n"
+                                // + "When you are prompted, select the file
+                                // that "
+                                // + "contains your realm's security keys.\n"
+                                // + "If you don't know your realm's security
+                                // keys, contact\n"
+                                // + "your realm's administrator. You could try
+                                // going to\n"
+                                // + Userids
+                                // .toRealm(userid)
+                                // + " for more information.");
+                                System.out
+                                    .println("creating dialog");
+                                final JDialog dialog = new JDialog(
+                                    statusDialog, true);
+                                dialog.setSize(400, 300);
+                                dialog
+                                    .setLocationRelativeTo(null);
+                                JButton button = new JButton(
+                                    "hide");
+                                button
+                                    .addActionListener(new ActionListener()
+                                    {
+                                        
+                                        @Override
+                                        public void actionPerformed(
+                                            ActionEvent e)
+                                        {
+                                            System.out
+                                                .println("hiding");
+                                            dialog.hide();
+                                            System.out
+                                                .println("hidden");
+                                        }
+                                    });
+                                dialog.getContentPane()
+                                    .add(button);
+                                System.out
+                                    .println("showing dialog");
+                                dialog.show();
                                 System.out
                                     .println("creating file chooser");
                                 JFileChooser chooser = new JFileChooser();
