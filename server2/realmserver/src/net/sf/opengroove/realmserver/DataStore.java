@@ -339,6 +339,13 @@ public class DataStore
         getLdbClient().delete("deleteMessageRecipients", v);
     }
     
+    /**
+     * Lists all outbound messages for the user anc computer specified.
+     * 
+     * @param v
+     * @return
+     * @throws SQLException
+     */
     public static String[] listOutboundMessages(Message v)
         throws SQLException
     {

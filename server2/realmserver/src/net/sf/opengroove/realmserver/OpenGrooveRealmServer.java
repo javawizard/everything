@@ -362,7 +362,75 @@ public class OpenGrooveRealmServer
     
     public static enum Status
     {
-        OK, FAIL, BADAUTH, BADCOMPUTER, QUOTAEXCEEDED, NOSUCHCOMPUTER, NOSUCHUSER, NORESULTS, ALREADYEXISTS, NOSUCHSUBSCRIPTION, UNAUTHORIZED, INVALIDREALM
+        /**
+         * Indicates that a command succeeded.
+         */
+        OK, /**
+             * indicates that a command failed for some reason.
+             */
+        FAIL,
+        /**
+         * Indicates that the user provided an incorrect username/password.
+         */
+        BADAUTH,
+        /**
+         * Indicates that the user provided an incorrect computer name when
+         * trying to authenticate
+         */
+        BADCOMPUTER,
+        /**
+         * Indicates that performing a command would exceed one of the user's
+         * quotas
+         */
+        QUOTAEXCEEDED,
+        /**
+         * Indicates that the computer specified in the command does not exist
+         */
+        NOSUCHCOMPUTER,
+        /**
+         * Indicates that the userid/username provided in the command does not
+         * exist
+         */
+        NOSUCHUSER,
+        /**
+         * Indicates that the command succeeded but has no results to return
+         */
+        NORESULTS,
+        /**
+         * Indicates that a resource or entity which was to be created already
+         * exists
+         */
+        ALREADYEXISTS,
+        /**
+         * Indicates that the subscription provided in the command does not
+         * exist
+         */
+        NOSUCHSUBSCRIPTION,
+        /**
+         * Indicates that the connected user is not authorized to perform this
+         * command at this time. Most commands require that a user be
+         * authenticated as a computer to perform. Calling a command when
+         * authenticated as a user but not as a user is a common cause of
+         * getting this error. See
+         * www.opengroove.org/dev/protocol/commands/client---realm-server for a
+         * list of commands and what authentication is required to execute them
+         */
+        UNAUTHORIZED,
+        /**
+         * Indicates that the realm of a userid provided is invalid
+         */
+        INVALIDREALM,
+        /**
+         * Indicates that the message id provided in the command was invalid.
+         * This will occur if the user attempts to create a message with an id
+         * that does not start with their username followed by a hyphen.
+         */
+        INVALIDMESSAGEID,
+        /**
+         * Indicates that there is no message with the id provided in the
+         * command
+         */
+        NOSUCHMESSAGE
     };
     
     public static final SecureRandom random = new SecureRandom();
@@ -2897,6 +2965,12 @@ public class OpenGrooveRealmServer
                 ConnectionHandler connection)
                 throws Exception
             {
+                String[] tokens = tokenize(data);
+                verifyAtLeast(tokens, 1);
+                String messageId = tokens[0];
+                if(!messageId.startsWith(Userids.toUserid(serverRealmAddress, connection.username) + "-"))
+                    throw new FailedResponseException(Status.);
+                    
             }
             
         };
@@ -2984,7 +3058,7 @@ public class OpenGrooveRealmServer
             }
             
         };
-        new Command("", 0, false, false)
+        new Command("listinboundmessages", 0, false, false)
         {
             
             @Override
@@ -2996,7 +3070,7 @@ public class OpenGrooveRealmServer
             }
             
         };
-        new Command("", 0, false, false)
+        new Command("listoutboundmessages", 0, false, false)
         {
             
             @Override
@@ -3008,19 +3082,7 @@ public class OpenGrooveRealmServer
             }
             
         };
-        new Command("", 0, false, false)
-        {
-            
-            @Override
-            public void handle(String packetId,
-                InputStream data,
-                ConnectionHandler connection)
-                throws Exception
-            {
-            }
-            
-        };
-        new Command("", 0, false, false)
+        new Command("getmessageinfo", 0, false, false)
         {
             
             @Override
