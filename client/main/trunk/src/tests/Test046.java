@@ -32,7 +32,7 @@ public class Test046
         map.put("hibernate.connection.password", "");
         map.put("hibernate.connection.url",
             "jdbc:h2:sandbox/test046/db");
-        EntityManagerFactory factory = Persistence
+        EntityManagerFactory factory = new HibernatePersistence()
             .createEntityManagerFactory("testunit", map);
     }
     
