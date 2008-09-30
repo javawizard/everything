@@ -1,4 +1,4 @@
-package tests;
+package tests.t40;
 
 import java.awt.Color;
 

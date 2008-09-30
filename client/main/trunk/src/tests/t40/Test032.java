@@ -1,4 +1,4 @@
-package tests;
+package tests.t40;
 
 import com.sun.speech.freetts.Voice;
 import com.sun.speech.freetts.en.us.cmu_us_kal.KevinVoiceDirectory;
