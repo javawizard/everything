@@ -84,10 +84,19 @@ public class ProxyStorage<E>
     }
     
     private ArrayList<TableColumn> getTableColumns(
-        String tableName)
+        String tableName) throws SQLException
     {
         ResultSet rs = dbInfo.getColumns(null, null,
             tableName, null);
+        ArrayList<TableColumn> results = new ArrayList<TableColumn>();
+        while (rs.next())
+        {
+            results.add(new TableColumn(rs
+                .getString("COLUMN_NAME"), rs
+                .getInt("DATA_TYPE"), rs
+                .getInt("COLUMN_TYPE")));
+        }
+        return results;
     }
     
     private ArrayList<String> getTableNames()
