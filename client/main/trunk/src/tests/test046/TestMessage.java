@@ -5,34 +5,22 @@ import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.Id;
 
+import net.sf.opengroove.common.proxystorage.Property;
+import net.sf.opengroove.common.proxystorage.ProxyBean;
+
 import org.hibernate.annotations.Fetch;
 import org.hibernate.annotations.FetchMode;
 
-@Entity
-public class TestMessage
+@ProxyBean
+public interface TestMessage
 {
-    @Id
-    private String name;
-    @Basic(fetch = FetchType.LAZY)
-    private String message;
+    @Property
+    public String getName();
     
-    public String getName()
-    {
-        return name;
-    }
+    public void setName(String name);
     
-    public String getMessage()
-    {
-        return message;
-    }
+    @Property
+    public String getMessage();
     
-    public void setName(String name)
-    {
-        this.name = name;
-    }
-    
-    public void setMessage(String message)
-    {
-        this.message = message;
-    }
+    public void setMessage(String message);
 }
