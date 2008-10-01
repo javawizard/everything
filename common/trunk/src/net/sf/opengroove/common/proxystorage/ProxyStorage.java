@@ -35,6 +35,11 @@ public class ProxyStorage<E>
     private Connection connection;
     
     private Class<E> root;
+    /**
+     * Internal classes that execute sequences of queries to the database
+     * synchronize on this object first to avoid getting corrupt data.
+     */
+    private final Object lock = new Object();
     
     public ProxyStorage(Class<E> root, File location)
         throws SQLException
