@@ -119,12 +119,46 @@ public class ProxyStorage<E>
         ArrayList<TableColumn> existing = getTableColumns(tableName);
         List<TableColumn> columns = Arrays.asList(lc);
         /*
-         * First, get rid of existing ones
+         * First, get rid of existing ones that aren't here now
          */
-        for(TableColumn column : existing)
+        for (TableColumn column : existing)
         {
-            
+            if (!columns.contains(column))
+            {
+                /*
+                 * We need to remove the column
+                 */
+                PreparedStatement st = connection
+                    .prepareStatement("alter table "
+                        + tableName + " drop column "
+                        + column.getName());
+                st.execute();
+                st.close();
+            }
         }
+        for (TableColumn column : columns)
+        {
+            if (!existing.contains(column))
+            {
+                /*
+                 * We need to add the column
+                 */
+                PreparedStatement st = connection
+                    .prepareStatement("alter table "
+                        + tableName
+                        + " add column "
+                        + column.getName()
+                        + getStringDataType(column
+                            .getType(), column.getSize()));
+                st.execute();
+                st.close();
+            }
+        }
+    }
+    
+    private String getStringDataType(int type, int size)
+    {
+        dbInfo.getTypeInfo();
     }
     
     private ArrayList<TableColumn> getTableColumns(
