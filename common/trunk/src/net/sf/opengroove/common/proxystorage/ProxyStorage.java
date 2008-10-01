@@ -4,9 +4,13 @@ import java.io.File;
 import java.sql.Connection;
 import java.sql.DatabaseMetaData;
 import java.sql.DriverManager;
+import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Types;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 
 /**
  * The ProxyStorage class is a class used for storing simple java beans to disk,
@@ -81,6 +85,46 @@ public class ProxyStorage<E>
     private void checkSystemTables() throws SQLException
     {
         ArrayList<String> tables = getTableNames();
+    }
+    
+    /**
+     * Creates a table with the name specified, and no columns.
+     * 
+     * @param name
+     *            The name of the table to create
+     */
+    private void createEmptyTable(String name)
+        throws SQLException
+    {
+        PreparedStatement statement = connection
+            .prepareStatement("create table " + name
+                + " ()");
+        statement.execute();
+        statement.close();
+    }
+    
+    /**
+     * Ensures that the table specified has exactly the columns specified.
+     * Currently, the type of an existing column is not checked. If a column is
+     * not present on the table specified but present in this list, then it will
+     * be added via an "alter table" statement; if a column exists on the table
+     * but not in this list, it will be similarly removed.
+     * 
+     * @param columns
+     * @throws SQLException
+     */
+    private void setTableColumns(String tableName,
+        TableColumn[] lc) throws SQLException
+    {
+        ArrayList<TableColumn> existing = getTableColumns(tableName);
+        List<TableColumn> columns = Arrays.asList(lc);
+        /*
+         * First, get rid of existing ones
+         */
+        for(TableColumn column : existing)
+        {
+            
+        }
     }
     
     private ArrayList<TableColumn> getTableColumns(
