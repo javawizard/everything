@@ -10,6 +10,7 @@ import java.util.Properties;
 
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
+import javax.persistence.EntityTransaction;
 import javax.persistence.Persistence;
 import javax.persistence.spi.ClassTransformer;
 import javax.persistence.spi.PersistenceUnitInfo;
@@ -154,8 +155,7 @@ public class Test046
                     @Override
                     public PersistenceUnitTransactionType getTransactionType()
                     {
-                        // TODO Auto-generated method stub
-                        return null;
+                        return PersistenceUnitTransactionType.RESOURCE_LOCAL;
                     }
                 }, map);
         System.out.println("creating entitymanager");
@@ -165,7 +165,12 @@ public class Test046
         TestMessage message = new TestMessage();
         message.setName("testname");
         message.setMessage("This is a test message.");
+        EntityTransaction transaction = manager
+            .getTransaction();
+        transaction.begin();
         manager.persist(message);
+        manager.flush();
+        transaction.commit();
     }
     
 }
