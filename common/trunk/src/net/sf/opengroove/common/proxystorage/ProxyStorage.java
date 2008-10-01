@@ -75,18 +75,28 @@ public class ProxyStorage<E>
      * are not, they are created. Additionally, if the proxystorage_statics
      * table does not contain a "sequencer" static, one is created with an
      * initial value of 1.
+     * 
+     * @throws SQLException
      */
-    private void checkSystemTables()
+    private void checkSystemTables() throws SQLException
     {
         ArrayList<String> tables = getTableNames();
     }
     
-    private ArrayList<String> getTableNames()throws SQLException
+    private ArrayList<TableColumn> getTableColumns(
+        String tableName)
+    {
+        ResultSet rs = dbInfo.getColumns(null, null,
+            tableName, null);
+    }
+    
+    private ArrayList<String> getTableNames()
+        throws SQLException
     {
         ResultSet rs = dbInfo.getTables(null, null, null,
             null);
         ArrayList<String> results = new ArrayList<String>();
-        while(rs.next())
+        while (rs.next())
         {
             results.add(rs.getString("TABLE_NAME"));
         }
