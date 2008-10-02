@@ -108,10 +108,7 @@ public class ProxyStorage<E>
         ResultSet rs = st.executeQuery();
         if (!rs.next())
         {
-            PreparedStatement st2 = connection
-                .prepareStatement("insert into proxystorage_statics values ('sequencer', 1)");
-            st2.execute();
-            st2.close();
+            execute("insert into proxystorage_statics values (\'sequencer\', 1)");
         }
         rs.close();
         st.close();
@@ -287,5 +284,22 @@ public class ProxyStorage<E>
      */
     private void checkTables(Class checkClass)
     {
+        String tableName = getTargetTableName(checkClass);
+    }
+    
+    /**
+     * Gets the name of the table that the class specified should store it's
+     * information in. This is usually the non-qualified name of the class,
+     * unless it has an
+     * 
+     * @Table annotation, in which case the table is the value of that
+     *        annotation.
+     * @param checkClass
+     * @return
+     */
+    private String getTargetTableName(Class checkClass)
+    {
+        // TODO Auto-generated method stub
+        return null;
     }
 }
