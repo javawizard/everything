@@ -85,10 +85,36 @@ public class ProxyStorage<E>
     private void checkSystemTables() throws SQLException
     {
         ArrayList<String> tables = getTableNames();
-        if(!tables.contains("proxystorage_statics"))
+        if (!tables.contains("proxystorage_statics"))
         {
             createEmptyTable("proxystorage_statics");
         }
+        setTableColumns(
+            "proxystorage_statics",
+            new TableColumn[] {
+                new TableColumn("name", Types.VARCHAR, 256),
+                new TableColumn("value", Types.BIGINT, 0) });
+        if (!tables.contains("proxystorage_collections"))
+        {
+            createEmptyTable("proxystorage_collections");
+        }
+        setTableColumns("proxystorage_collections",
+            new TableColumn[] {
+                new TableColumn("id", Types.BIGINT, 0),
+                new TableColumn("index", Types.INTEGER, 0),
+                new TableColumn("value", Types.BIGINT, 0) });
+        PreparedStatement st = connection
+            .prepareStatement("select name from proxystorage_statics where name = 'sequencer'");
+        ResultSet rs = st.executeQuery();
+        if (!rs.next())
+        {
+            PreparedStatement st2 = connection
+                .prepareStatement("insert into proxystorage_statics values ('sequencer', 1)");
+            st2.execute();
+            st2.close();
+        }
+        rs.close();
+        st.close();
     }
     
     /**
@@ -105,6 +131,28 @@ public class ProxyStorage<E>
                 + " ()");
         statement.execute();
         statement.close();
+    }
+    
+    /**
+     * Executes the string specified as an SQL statement, discarding it's result
+     * set if one is made available.
+     * 
+     * @param sql
+     * @return
+     * @throws SQLException
+     */
+    void execute(String sql) throws SQLException
+    {
+        PreparedStatement st = connection
+            .prepareStatement(sql);
+        try
+        {
+            st.execute();
+        }
+        finally
+        {
+            st.close();
+        }
     }
     
     /**
@@ -165,18 +213,26 @@ public class ProxyStorage<E>
         throws SQLException
     {
         ResultSet rs = dbInfo.getTypeInfo();
-        while (rs.next())
+        try
         {
-            if (rs.getInt("DATA_TYPE") == type)
+            while (rs.next())
             {
-                String typeName = rs.getString("TYPE_NAME");
-                if (type == Types.VARCHAR)
-                    typeName += "(" + size + ")";
-                return typeName;
+                if (rs.getInt("DATA_TYPE") == type)
+                {
+                    String typeName = rs
+                        .getString("TYPE_NAME");
+                    if (type == Types.VARCHAR)
+                        typeName += "(" + size + ")";
+                    return typeName;
+                }
             }
+            throw new IllegalArgumentException(
+                "That type is not supported by the db");
         }
-        throw new IllegalArgumentException(
-            "That type is not supported by the db");
+        finally
+        {
+            rs.close();
+        }
     }
     
     private ArrayList<TableColumn> getTableColumns(
