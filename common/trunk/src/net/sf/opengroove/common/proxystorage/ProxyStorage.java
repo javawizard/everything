@@ -85,6 +85,10 @@ public class ProxyStorage<E>
     private void checkSystemTables() throws SQLException
     {
         ArrayList<String> tables = getTableNames();
+        if(!tables.contains("proxystorage_statics"))
+        {
+            createEmptyTable("proxystorage_statics");
+        }
     }
     
     /**
@@ -107,10 +111,10 @@ public class ProxyStorage<E>
      * Ensures that the table specified has exactly the columns specified.
      * Currently, the type of an existing column is not checked. If a column is
      * not present on the table specified but present in this list, then it will
-     * be added via an "alter table" statement; if a column exists on the table
-     * but not in this list, it will be similarly removed.
+     * be added via an "alter table add column" statement; if a column exists on
+     * the table but not in this list, it will be removed via an "alter table
+     * drop column" statement.
      * 
-     * @param columns
      * @throws SQLException
      */
     private void setTableColumns(String tableName,
@@ -148,6 +152,7 @@ public class ProxyStorage<E>
                         + tableName
                         + " add column "
                         + column.getName()
+                        + " "
                         + getStringDataType(column
                             .getType(), column.getSize()));
                 st.execute();
@@ -157,8 +162,21 @@ public class ProxyStorage<E>
     }
     
     private String getStringDataType(int type, int size)
+        throws SQLException
     {
-        dbInfo.getTypeInfo();
+        ResultSet rs = dbInfo.getTypeInfo();
+        while (rs.next())
+        {
+            if (rs.getInt("DATA_TYPE") == type)
+            {
+                String typeName = rs.getString("TYPE_NAME");
+                if (type == Types.VARCHAR)
+                    typeName += "(" + size + ")";
+                return typeName;
+            }
+        }
+        throw new IllegalArgumentException(
+            "That type is not supported by the db");
     }
     
     private ArrayList<TableColumn> getTableColumns(
