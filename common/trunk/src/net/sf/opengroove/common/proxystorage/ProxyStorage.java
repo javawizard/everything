@@ -48,6 +48,7 @@ public class ProxyStorage<E>
     private DatabaseMetaData dbInfo;
     
     private Class<E> rootClass;
+    private ArrayList<Class> allClasses = new ArrayList<Class>();
     /**
      * Internal classes that execute sequences of queries to the database
      * synchronize on this object first to avoid getting corrupt data.
@@ -73,7 +74,7 @@ public class ProxyStorage<E>
             + location.getPath(), "sa", "");
         dbInfo = connection.getMetaData();
         checkSystemTables();
-        checkTables(rootClass);
+        checkTables(rootClass, allClasses);
         vacuum();
     }
     
