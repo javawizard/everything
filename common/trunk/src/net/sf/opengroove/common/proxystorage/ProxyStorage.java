@@ -1,6 +1,8 @@
 package net.sf.opengroove.common.proxystorage;
 
+import java.beans.Introspector;
 import java.io.File;
+import java.lang.reflect.Method;
 import java.sql.Connection;
 import java.sql.DatabaseMetaData;
 import java.sql.DriverManager;
@@ -206,6 +208,23 @@ public class ProxyStorage<E>
         }
     }
     
+    /**
+     * Returns a string value that can be used to represent this type within an
+     * SQL statement. For example, if type is {@link Types#BIGINT}, then the
+     * returned string would be "bigint" (in this case size is not used), and if
+     * the type was {@link Types#VARCHAR} and the size was 1234, then the
+     * returned string would be "varchar(1234)".
+     * 
+     * @param type
+     *            The type, as defined in {@link Types}
+     * @param size
+     *            The size of the data type, if the type is char or varchar
+     * @return A string representing the data type
+     * @throws SQLException
+     *             if an sql exception occurs while accessing the database
+     * @throws IllegalArgumentException
+     *             if the type specified is not supported by the database
+     */
     private String getStringDataType(int type, int size)
         throws SQLException
     {
@@ -281,25 +300,103 @@ public class ProxyStorage<E>
      * aren't present, they are created. If they are missing a column, the
      * column is added. If they have extra columns, the extra columns are
      * removed.
+     * 
+     * @throws SQLException
      */
     private void checkTables(Class checkClass)
+        throws SQLException
     {
         String tableName = getTargetTableName(checkClass);
+        checkTableExists(tableName);
+        ArrayList<TableColumn> columns = getTargetColumns(checkClass);
+        setTableColumns(tableName, columns
+            .toArray(new TableColumn[0]));
+    }
+    
+    /**
+     * Returns a list of columns that should be in the table for the class
+     * specified. There is a column called proxystorage_id that will be
+     * included, and then one column per property annotated with Property.
+     * 
+     * @param checkClass
+     *            The class to check
+     * @return A list of columns that should exist for the class
+     */
+    private ArrayList<TableColumn> getTargetColumns(
+        Class checkClass)
+    {
+        ArrayList<TableColumn> columns = new ArrayList<TableColumn>();
+        columns.add(new TableColumn("proxystorage_id",
+            Types.BIGINT, 0));
+        Method[] methods = checkClass.getMethods();
+        for (Method method : methods)
+        {
+            if (!method.isAnnotationPresent(Property.class))
+                continue;
+            if (!(method.getName().startsWith("get") || method
+                .getName().startsWith("is")))
+                continue;
+            String methodName = method.getName();
+            String propertyName = propertyNameFromGetter(methodName);
+            Class propertyClass = method.getReturnType();
+            int type;
+            if (propertyClass == Long.TYPE
+                || propertyClass == Long.class)
+                /*
+                 * Identity-equals checking is ok here, since there will never
+                 * be more than one class object at a time that represents the
+                 * same class
+                 */
+                type = Types.BIGINT;
+            else if (propertyClass == Integer.TYPE
+                || propertyClass == Integer.class)
+                type = Types.INTEGER;
+            else if (propertyClass == Boolean.TYPE
+                || propertyClass == Boolean.class)
+                type = Types.BOOLEAN;
+            else if(propertyClass)
+        }
+    }
+    
+    private String propertyNameFromGetter(String methodName)
+    {
+        String propertyName = methodName.startsWith("is") ? methodName
+            .substring("is".length())
+            : methodName.substring("get".length());
+        propertyName = Introspector
+            .decapitalize(propertyName);
+        return propertyName;
+    }
+    
+    /**
+     * If the table specified does not exist, creates it as a table with no
+     * columns. If the table specified does exist, it is not modified.
+     * 
+     * @param tableName
+     *            The name of the table to check for
+     * @throws SQLException
+     */
+    private void checkTableExists(String tableName)
+        throws SQLException
+    {
+        if (!getTableNames().contains(tableName))
+            createEmptyTable(tableName);
     }
     
     /**
      * Gets the name of the table that the class specified should store it's
      * information in. This is usually the non-qualified name of the class,
-     * unless it has an
+     * unless it has a Table annotation, in which case the table is the value of
+     * that annotation.
      * 
-     * @Table annotation, in which case the table is the value of that
-     *        annotation.
      * @param checkClass
      * @return
      */
     private String getTargetTableName(Class checkClass)
     {
-        // TODO Auto-generated method stub
-        return null;
+        if (checkClass.getAnnotation(Table.class) != null)
+            return ((Table) checkClass
+                .getAnnotation(Table.class)).getValue();
+        return checkClass.getSimpleName().toLowerCase();
     }
 }
