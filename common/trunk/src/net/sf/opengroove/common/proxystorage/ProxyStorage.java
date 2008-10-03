@@ -258,14 +258,14 @@ public class ProxyStorage<E>
         String tableName) throws SQLException
     {
         ResultSet rs = dbInfo.getColumns(null, null,
-            tableName, null);
+            tableName.toUpperCase(), null);
         ArrayList<TableColumn> results = new ArrayList<TableColumn>();
         while (rs.next())
         {
             results.add(new TableColumn(rs
                 .getString("COLUMN_NAME"), rs
                 .getInt("DATA_TYPE"), rs
-                .getInt("COLUMN_TYPE")));
+                .getInt("COLUMN_SIZE")));
         }
         return results;
     }
@@ -278,7 +278,8 @@ public class ProxyStorage<E>
         ArrayList<String> results = new CaseInsensitiveCheckList();
         while (rs.next())
         {
-            results.add(rs.getString("TABLE_NAME"));
+            results.add(rs.getString("TABLE_NAME")
+                .toUpperCase());
         }
         rs.close();
         return results;
@@ -331,6 +332,39 @@ public class ProxyStorage<E>
                 ProxyBean.class))
                 checkTables(method.getReturnType(),
                     alreadyChecked);
+            else if (method.getReturnType() == StoredList.class)
+            {
+                if (!method
+                    .isAnnotationPresent(ListType.class))
+                {
+                    throw new IllegalArgumentException(
+                        "The property with the getter "
+                            + method.getName()
+                            + " on the class "
+                            + checkClass.getName()
+                            + " is a StoredList, but it's parameter type "
+                            + "is not specified with a ListType annotation.");
+                }
+                ListType listTypeAnnotation = method
+                    .getAnnotation(ListType.class);
+                if (!listTypeAnnotation.value()
+                    .isAnnotationPresent(ProxyBean.class))
+                    throw new IllegalArgumentException(
+                        "The property with the getter "
+                            + method.getName()
+                            + " on the class "
+                            + checkClass.getName()
+                            + " is a StoredList, but it's parameter type ("
+                            + listTypeAnnotation.value()
+                                .getName()
+                            + ") does "
+                            + "not carry the ProxyBean annotation. If you were trying "
+                            + "to create a list of a primitive type wrapper or "
+                            + "a list of String, consider wrapping them in ProxyBean-annotated "
+                            + "objects that have only one property.");
+                checkTables(listTypeAnnotation.value(),
+                    alreadyChecked);
+            }
         }
     }
     

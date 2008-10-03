@@ -26,7 +26,6 @@ class TableColumn
     @Override
     public boolean equals(Object obj)
     {
-        System.out.println("checking for equals");
         if (this == obj)
             return true;
         if (obj == null)
@@ -34,8 +33,6 @@ class TableColumn
         if (getClass() != obj.getClass())
             return false;
         final TableColumn other = (TableColumn) obj;
-        System.out.println("comparing this name " + name
-            + " to other name " + other.name);
         if (name == null)
         {
             if (other.name != null)
