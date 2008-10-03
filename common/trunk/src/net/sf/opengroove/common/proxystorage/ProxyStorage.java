@@ -3,6 +3,7 @@ package net.sf.opengroove.common.proxystorage;
 import java.beans.Introspector;
 import java.io.File;
 import java.lang.reflect.Method;
+import java.math.BigInteger;
 import java.sql.Connection;
 import java.sql.DatabaseMetaData;
 import java.sql.DriverManager;
@@ -12,6 +13,7 @@ import java.sql.SQLException;
 import java.sql.Types;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.List;
 
 /**
@@ -303,14 +305,48 @@ public class ProxyStorage<E>
      * 
      * @throws SQLException
      */
-    private void checkTables(Class checkClass)
+    private void checkTables(Class checkClass,
+        ArrayList<Class> alreadyChecked)
         throws SQLException
     {
+        if (alreadyChecked.contains(checkClass))
+            return;
+        alreadyChecked.add(checkClass);
+        /*
+         * We use the alreadyChecked list here to make sure that a class won't
+         * get checked twice (and result in an infinite loop) if there is a
+         * circular loop in property class referencing (IE if, for example, a
+         * contact references a contact computer and the contact computer
+         * references it's owning contact)
+         */
         String tableName = getTargetTableName(checkClass);
         checkTableExists(tableName);
         ArrayList<TableColumn> columns = getTargetColumns(checkClass);
         setTableColumns(tableName, columns
             .toArray(new TableColumn[0]));
+        for (Method method : getGetterMethods(checkClass))
+        {
+            if (method.getReturnType().isAnnotationPresent(
+                ProxyBean.class))
+                checkTables(method.getReturnType(),
+                    alreadyChecked);
+        }
+    }
+    
+    private Method[] getGetterMethods(Class checkClass)
+    {
+        ArrayList<Method> results = new ArrayList<Method>();
+        Method[] methods = checkClass.getMethods();
+        for (Method method : methods)
+        {
+            if (!method.isAnnotationPresent(Property.class))
+                continue;
+            if (!(method.getName().startsWith("get") || method
+                .getName().startsWith("is")))
+                continue;
+            results.add(method);
+        }
+        return results.toArray(new Method[0]);
     }
     
     /**
@@ -328,18 +364,13 @@ public class ProxyStorage<E>
         ArrayList<TableColumn> columns = new ArrayList<TableColumn>();
         columns.add(new TableColumn("proxystorage_id",
             Types.BIGINT, 0));
-        Method[] methods = checkClass.getMethods();
-        for (Method method : methods)
+        for (Method method : getGetterMethods(checkClass))
         {
-            if (!method.isAnnotationPresent(Property.class))
-                continue;
-            if (!(method.getName().startsWith("get") || method
-                .getName().startsWith("is")))
-                continue;
             String methodName = method.getName();
             String propertyName = propertyNameFromGetter(methodName);
             Class propertyClass = method.getReturnType();
             int type;
+            int size = 0;
             if (propertyClass == Long.TYPE
                 || propertyClass == Long.class)
                 /*
@@ -354,8 +385,71 @@ public class ProxyStorage<E>
             else if (propertyClass == Boolean.TYPE
                 || propertyClass == Boolean.class)
                 type = Types.BOOLEAN;
-            else if(propertyClass)
+            else if (propertyClass == String.class
+                || propertyClass == BigInteger.class)
+            {
+                type = Types.VARCHAR;
+                if (method
+                    .isAnnotationPresent(Length.class))
+                {
+                    size = ((Length) method
+                        .getAnnotation(Length.class))
+                        .value();
+                }
+                else
+                {
+                    size = 1024;
+                }
+            }
+            else if (propertyClass == StoredList.class)
+            {
+                /*
+                 * The value should be a bigint or a long that holds the id of
+                 * the list
+                 */
+                type = Types.BIGINT;
+            }
+            else if (Collection.class
+                .isAssignableFrom(propertyClass))
+            {
+                /*
+                 * Collections aren't allowed (the user should use StoredList
+                 * instead). The main reason to have this here is so that the
+                 * user gets informed that they can use StoredList in place of
+                 * collections, instead of the user not knowing how they are
+                 * supposed to use a type of list.
+                 */
+                throw new IllegalArgumentException(
+                    "The class "
+                        + propertyClass.getName()
+                        + " contains a property ("
+                        + propertyName
+                        + ") which "
+                        + "is a Java Collection. Java Collection implementations "
+                        + "themselves aren't supported. You can, however, "
+                        + "use a "
+                        + StoredList.class.getName());
+            }
+            else if (propertyClass
+                .isAnnotationPresent(ProxyBean.class))
+            {
+                /*
+                 * The property is another proxy bean. The type of the column,
+                 * then, should be a long, or a bigint, which will hold the id
+                 * of the referenced bean.
+                 */
+                type = Types.BIGINT;
+            }
+            else
+                throw new RuntimeException("The class "
+                    + propertyClass.getName()
+                    + " contains a property ("
+                    + propertyName
+                    + ") which is not of a valid type.");
+            columns.add(new TableColumn(propertyName, type,
+                size));
         }
+        return columns;
     }
     
     private String propertyNameFromGetter(String methodName)
