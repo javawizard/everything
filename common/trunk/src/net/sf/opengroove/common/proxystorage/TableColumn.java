@@ -16,14 +16,17 @@ class TableColumn
     {
         final int prime = 31;
         int result = 1;
-        result = prime * result
-            + ((name == null) ? 0 : name.toLowerCase().hashCode());
+        result = prime
+            * result
+            + ((name == null) ? 0 : name.toLowerCase()
+                .hashCode());
         return result;
     }
     
     @Override
     public boolean equals(Object obj)
     {
+        System.out.println("checking for equals");
         if (this == obj)
             return true;
         if (obj == null)
@@ -31,6 +34,8 @@ class TableColumn
         if (getClass() != obj.getClass())
             return false;
         final TableColumn other = (TableColumn) obj;
+        System.out.println("comparing this name " + name
+            + " to other name " + other.name);
         if (name == null)
         {
             if (other.name != null)
