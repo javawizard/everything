@@ -275,7 +275,7 @@ public class ProxyStorage<E>
     {
         ResultSet rs = dbInfo.getTables(null, null, null,
             null);
-        ArrayList<String> results = new ArrayList<String>();
+        ArrayList<String> results = new CaseInsensitiveCheckList();
         while (rs.next())
         {
             results.add(rs.getString("TABLE_NAME"));

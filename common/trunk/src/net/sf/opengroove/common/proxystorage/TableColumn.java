@@ -17,7 +17,7 @@ class TableColumn
         final int prime = 31;
         int result = 1;
         result = prime * result
-            + ((name == null) ? 0 : name.hashCode());
+            + ((name == null) ? 0 : name.toLowerCase().hashCode());
         return result;
     }
     
@@ -36,7 +36,7 @@ class TableColumn
             if (other.name != null)
                 return false;
         }
-        else if (!name.equals(other.name))
+        else if (!name.equalsIgnoreCase(other.name))
             return false;
         return true;
     }
