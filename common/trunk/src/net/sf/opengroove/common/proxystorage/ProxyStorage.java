@@ -45,7 +45,11 @@ import java.util.List;
  */
 public class ProxyStorage<E>
 {
-    private Connection connection;
+    /**
+     * The connection to the database. This must be package-private instead of
+     * just private since StoredList uses it.
+     */
+    Connection connection;
     
     private DatabaseMetaData dbInfo;
     
@@ -568,8 +572,7 @@ public class ProxyStorage<E>
      *         {@link ProxyObject}.
      * @throws SQLException
      */
-    private Object getById(int id, Class c)
-        throws SQLException
+    Object getById(long id, Class c) throws SQLException
     {
         if (!isTargetIdPresent(id, c))
             return null;
@@ -587,7 +590,7 @@ public class ProxyStorage<E>
      * @return
      * @throws SQLException
      */
-    private boolean isTargetIdPresent(int id, Class c)
+    private boolean isTargetIdPresent(long id, Class c)
         throws SQLException
     {
         synchronized (lock)
@@ -596,7 +599,7 @@ public class ProxyStorage<E>
                 .prepareStatement("select count(*) from "
                     + getTargetTableName(c)
                     + " where proxystorage_id = ?");
-            st.setInt(1, id);
+            st.setLong(1, id);
             ResultSet rs = st.executeQuery();
             rs.next();
             boolean exists = rs.getInt(1) > 0;
@@ -631,9 +634,9 @@ public class ProxyStorage<E>
         InvocationHandler
     {
         private Class targetClass;
-        private int targetId;
+        private long targetId;
         
-        public ObjectHandler(Class targetClass, int targetId)
+        public ObjectHandler(Class targetClass, long targetId)
         {
             super();
             this.targetClass = targetClass;
@@ -663,7 +666,7 @@ public class ProxyStorage<E>
                             + " from "
                             + getTargetTableName(targetClass)
                             + " where proxystorage_id = ?");
-                    st.setInt(1, targetId);
+                    st.setLong(1, targetId);
                     ResultSet rs = st.executeQuery();
                     boolean isPresent = rs.next();
                     if (!isPresent)

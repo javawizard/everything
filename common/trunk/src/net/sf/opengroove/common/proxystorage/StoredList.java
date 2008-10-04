@@ -1,5 +1,7 @@
 package net.sf.opengroove.common.proxystorage;
 
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
 import java.util.AbstractList;
 
 /**
@@ -25,7 +27,8 @@ public class StoredList<T> extends AbstractList<T>
     private int id;
     private ProxyStorage storage;
     
-    StoredList(ProxyStorage storage,Class targetClass, int id)
+    StoredList(ProxyStorage storage, Class targetClass,
+        int id)
     {
         this.targetClass = targetClass;
         this.id = id;
@@ -35,8 +38,43 @@ public class StoredList<T> extends AbstractList<T>
     @Override
     public T get(int index)
     {
-        // TODO Auto-generated method stub
-        return null;
+        try
+        {
+            PreparedStatement st = storage.connection
+                .prepareStatement("select value from proxystorage_collections where id = ? and index ");
+            ResultSet rs = st.executeQuery();
+            if (!rs.next())
+            {
+                rs.close();
+                st.close();
+                throw new IndexOutOfBoundsException(
+                    "The index "
+                        + index
+                        + " is not within the allowed bounds for this "
+                        + "list. The list's id is " + id);
+            }
+            long ref = rs.getLong("value");
+            rs.close();
+            st.close();
+            Object result = storage.getById(ref,
+                targetClass);
+            if (result == null)
+            {
+                throw new IllegalStateException(
+                    "The object at index "
+                        + index
+                        + " with id "
+                        + ref
+                        + " has been removed from the database. This list's id is "
+                        + id);
+            }
+        }
+        catch (Exception e)
+        {
+            throw new IllegalStateException(
+                "An exception was encountered while performing the requested operation.",
+                e);
+        }
     }
     
     @Override
