@@ -404,7 +404,7 @@ public class ProxyStorage<E>
         for (Method method : getGetterMethods(checkClass))
         {
             String methodName = method.getName();
-            String propertyName = propertyNameFromGetter(methodName);
+            String propertyName = propertyNameFromAccessor(methodName);
             Class propertyClass = method.getReturnType();
             int type;
             int size = 0;
@@ -489,7 +489,8 @@ public class ProxyStorage<E>
         return columns;
     }
     
-    private String propertyNameFromGetter(String methodName)
+    private String propertyNameFromAccessor(
+        String methodName)
     {
         String propertyName = methodName.startsWith("is") ? methodName
             .substring("is".length())
@@ -571,7 +572,7 @@ public class ProxyStorage<E>
             return null;
         return Proxy.newProxyInstance(getClass()
             .getClassLoader(), new Class[] { c,
-            ProxyObject.class }, new ObjectHandler());
+            ProxyObject.class }, new ObjectHandler(c, id));
     }
     
     /**
@@ -629,12 +630,58 @@ public class ProxyStorage<E>
         private Class targetClass;
         private int targetId;
         
+        public ObjectHandler(Class targetClass, int targetId)
+        {
+            super();
+            this.targetClass = targetClass;
+            this.targetId = targetId;
+        }
+        
         @Override
         public Object invoke(Object proxy, Method method,
             Object[] args) throws Throwable
         {
-            return null;
         }
         
+    }
+    
+    /**
+     * Returns true if the method is annotated with Property, or if the method
+     * starts with "set" and the corresponding "get" method is annotated with
+     * Property.
+     * 
+     * @param method
+     * @return
+     */
+    private boolean isPropertyMethod(Method method)
+    {
+        if (method.isAnnotationPresent(Property.class))
+            return true;
+        if (!(method.getName().startsWith("is")
+            || method.getName().startsWith("get") || method
+            .getName().startsWith("set")))
+            return false;
+        String propertyName = propertyNameFromAccessor(method
+            .getName());
+        String capitalized = propertyName.substring(0,1).toUpperCase() + propertyName.substring(1);
+        Method getter;
+        try
+        {
+            getter = method.getDeclaringClass().getMethod("get" + capitalized, new Class[0]);
+        }
+        catch (NoSuchMethodException e)
+        {
+            try
+            {
+                getter = method.getDeclaringClass().getMethod("is" + capitalized, new Class[0])
+            }
+            catch(NoSuchMethodException e2)
+            {
+                return false;
+            }
+        }
+        if(!getter.isAnnotationPresent(Property.class))
+            return false;
+        return true;
     }
 }
