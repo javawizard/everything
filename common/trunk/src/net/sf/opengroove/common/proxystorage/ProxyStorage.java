@@ -641,6 +641,10 @@ public class ProxyStorage<E>
         public Object invoke(Object proxy, Method method,
             Object[] args) throws Throwable
         {
+            if(isPropertyMethod(method))
+            {
+                
+            }
         }
         
     }
@@ -673,7 +677,7 @@ public class ProxyStorage<E>
         {
             try
             {
-                getter = method.getDeclaringClass().getMethod("is" + capitalized, new Class[0])
+                getter = method.getDeclaringClass().getMethod("is" + capitalized, new Class[0]);
             }
             catch(NoSuchMethodException e2)
             {
