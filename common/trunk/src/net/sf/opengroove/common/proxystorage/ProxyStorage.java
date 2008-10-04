@@ -4,6 +4,7 @@ import java.beans.Introspector;
 import java.io.File;
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Method;
+import java.lang.reflect.Proxy;
 import java.math.BigInteger;
 import java.sql.Connection;
 import java.sql.DatabaseMetaData;
@@ -561,12 +562,16 @@ public class ProxyStorage<E>
      *         not exist, null will be returned. The object returned implements
      *         the interface defined by <code>c</code>, as well as
      *         {@link ProxyObject}.
-     * @throws SQLException 
+     * @throws SQLException
      */
-    private Object getById(int id, Class c) throws SQLException
+    private Object getById(int id, Class c)
+        throws SQLException
     {
-        if(!isTargetIdPresent(id,c))
+        if (!isTargetIdPresent(id, c))
             return null;
+        return Proxy.newProxyInstance(getClass()
+            .getClassLoader(), new Class[] { c,
+            ProxyObject.class }, new ObjectHandler());
     }
     
     /**
