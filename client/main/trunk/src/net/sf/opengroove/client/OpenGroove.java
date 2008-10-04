@@ -251,6 +251,8 @@ public class OpenGroove
             "user-gray.png", 16);
         private int size;
         
+        private File scaledFile;
+        
         private Icons(String iconPath, int size)
         {
             this.iconPath = iconPath;
@@ -279,6 +281,16 @@ public class OpenGroove
         public void setImage(Image image)
         {
             this.image = image;
+        }
+        
+        public File getScaledFile()
+        {
+            return scaledFile;
+        }
+        
+        public void setScaledFile(File scaledFile)
+        {
+            this.scaledFile = scaledFile;
         }
     }
     
@@ -721,9 +733,15 @@ public class OpenGroove
             {
                 for (Icons icon : Icons.values())
                 {
-                    icon.setImage(scaleImage(loadImage(icon
-                        .getIconPath()), icon.getSize(),
-                        icon.getSize()));
+                    BufferedImage image = scaleImage(
+                        loadImage(icon.getIconPath()), icon
+                            .getSize(), icon.getSize());
+                    icon.setImage(image);
+                    File tfile = File.createTempFile(
+                        "og-icon-", ".png");
+                    tfile.deleteOnExit();
+                    ImageIO.write(image, "PNG", tfile);
+                    icon.setScaledFile(tfile);
                 }
             }
             catch (Exception e)

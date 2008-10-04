@@ -14,6 +14,7 @@ import java.awt.event.MouseEvent;
 import java.io.File;
 import java.io.IOException;
 import java.lang.reflect.Field;
+import java.net.MalformedURLException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
@@ -828,19 +829,35 @@ public class UserContext
                         public String getToolTipText(
                             MouseEvent e)
                         {
+                            Contact tContact = getStorage()
+                                .getContact(
+                                    contact.getUserid());
                             String computersString = "";
                             int computersAdded = 0;
                             for (ContactComputer computer : new ArrayList<ContactComputer>(
-                                contact.getComputers()))
+                                tContact.getComputers()))
                             {
+                                String statusUri;
+                                try
+                                {
+                                    statusUri = getStatusIcon(
+                                        computer
+                                            .getStatus())
+                                        .getScaledFile()
+                                        .toURI().toURL()
+                                        .toString();
+                                }
+                                catch (MalformedURLException e1)
+                                {
+                                    e1.printStackTrace();
+                                    statusUri = null;
+                                }
+                                System.out
+                                    .println("status uri: "
+                                        + statusUri);
                                 computersAdded++;
-                                computersString += " &nbsp; <img src=\""
-                                    + new File(
-                                        getStatusIcon(
-                                            computer
-                                                .getStatus())
-                                            .getIconPath())
-                                        .toURI().toString()
+                                computersString += " &nbsp; <img width=\"16\" height=\"16\" src=\""
+                                    + statusUri
                                     + "\"/> "
                                     + computer.getName()
                                     + "<br/>";
@@ -848,9 +865,9 @@ public class UserContext
                             System.out.println("Added "
                                 + computersAdded
                                 + " computers for user "
-                                + contact.getUserid()
+                                + tContact.getUserid()
                                 + " with "
-                                + contact.getComputers()
+                                + tContact.getComputers()
                                     .size()
                                 + " computers in storage");
                             if (computersAdded == 0)
@@ -858,21 +875,22 @@ public class UserContext
                                 computersString = " &nbsp; <font color=\"#707070\">(No computers)</font>";
                             }
                             return "<html><b>"
-                                + contact.getDisplayName()
+                                + tContact.getDisplayName()
                                 + "</b><br/><br/>"
                                 + "<table border=\"0\" cellspacing=\"0\" cellpadding=\"0\">"
                                 + "<tr><td>Userid: &nbsp; &nbsp; </td><td>"
-                                + contact.getUserid()
+                                + tContact.getUserid()
                                 + "</td></tr>"
                                 + "<tr><td>Real name: &nbsp; &nbsp; </td><td>"
-                                + (contact.getRealName()
+                                + (tContact.getRealName()
                                     .equals("") ? "<font color=\"#707070\">(Not specified)</font>"
-                                    : contact.getRealName())
+                                    : tContact
+                                        .getRealName())
                                 + "</td></tr>"
                                 + "<tr><td>Local name: &nbsp; &nbsp; </td><td>"
-                                + (contact.getLocalName()
+                                + (tContact.getLocalName()
                                     .equals("") ? "<font color=\"#707070\">(Not specified)</font>"
-                                    : contact
+                                    : tContact
                                         .getLocalName())
                                 + "</td></tr></table><br/>Computers:<br/>"
                                 + computersString;
@@ -908,20 +926,24 @@ public class UserContext
                             public void actionPerformed(
                                 ActionEvent e)
                             {
+                                Contact tContact = getStorage()
+                                    .getContact(
+                                        contact.getUserid());
                                 if (JOptionPane
                                     .showConfirmDialog(
                                         getLaunchbar(),
                                         "Are you sure you want to delete the contact "
-                                            + contact
+                                            + tContact
                                                 .getDisplayName()
                                             + "?",
                                         null,
                                         JOptionPane.YES_NO_OPTION) == JOptionPane.YES_OPTION)
                                 {
-                                    contact
+                                    tContact
                                         .setUserContact(false);
                                     getStorage()
-                                        .setContact(contact);
+                                        .setContact(
+                                            tContact);
                                     refreshContactsPaneAsynchronously();
                                 }
                             }
@@ -1112,16 +1134,12 @@ public class UserContext
                      * contact does exist, so check the rest of the information
                      */
                     status.setNonexistant(false);
-                    // TODO: this just marks the user as never being idle. This
-                    // needs to actually download the updates from the server.
                     String[] contactComputers = com
                         .listComputers(contact.getUserid());
-                    // TODO: pick up September 15, 2008
-                    // Check each computer, add it's status into the contact
-                    // (and also mark the status down on the contact itself),
-                    // delete any local contact computers that don't exist on
-                    // the server, store all of that into this context's Storage
-                    // object
+                    System.out.println("contact "
+                        + contact.getUserid() + " has "
+                        + contactComputers.length
+                        + " computers");
                     for (String computerName : contactComputers)
                     {
                         ContactComputer computer = null;
@@ -1238,19 +1256,12 @@ public class UserContext
                     contact.getStatus().setOnline(
                         statusHolder.isOnline());
                 }// end of (if contact exists) statement
-                
                 status.setKnown(true);
-                /*
-                 * Re-update the contact in case something else is trying to
-                 * access it at the same time. We really should lock on the
-                 * contact so that there are no collisions, but if the user's
-                 * storage ends up going with the ProxyStorage system, the we
-                 * won't even need to do that as all modifications to the
-                 * properties will be "live".
-                 */
-                contact = getStorage().getContact(
-                    contact.getUserid());
                 contact.setStatus(status);
+                System.out
+                    .println("backstoring contact with "
+                        + contact.getComputers().size()
+                        + " computers");
                 getStorage().setContact(contact);
             }
             catch (Exception exception)
@@ -1278,6 +1289,11 @@ public class UserContext
             System.out
                 .println("setting contact to offline due to lack of server connection");
             contact.getStatus().setOnline(false);
+            for (ContactComputer computer : new ArrayList<ContactComputer>(
+                contact.getComputers()))
+            {
+                computer.getStatus().setOnline(false);
+            }
             getStorage().setContact(contact);
         }
         /*
