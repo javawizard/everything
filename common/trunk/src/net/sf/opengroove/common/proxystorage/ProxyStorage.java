@@ -636,7 +636,8 @@ public class ProxyStorage<E>
         private Class targetClass;
         private long targetId;
         
-        public ObjectHandler(Class targetClass, long targetId)
+        public ObjectHandler(Class targetClass,
+            long targetId)
         {
             super();
             this.targetClass = targetClass;
@@ -647,6 +648,35 @@ public class ProxyStorage<E>
         public Object invoke(Object proxy, Method method,
             Object[] args) throws Throwable
         {
+            if (method.getName().equalsIgnoreCase(
+                "getProxyStorageId")
+                && method.getReturnType() == Long.TYPE)
+                return targetId;
+            if (method.getName().equalsIgnoreCase(
+                "getProxyStorageClass")
+                && method.getReturnType() == Class.class)
+                return targetClass;
+            if (method.getName().equalsIgnoreCase(
+                "isProxyStoragePresent")
+                && method.getReturnType() == Boolean.TYPE)
+                return isTargetIdPresent(targetId,
+                    targetClass);
+            if (method.getName().equalsIgnoreCase("equals")
+                && args.length == 1)
+            {
+                Object compare = args[0];
+                if (!(compare instanceof ProxyObject))
+                    return false;
+                ProxyObject object = (ProxyObject) compare;
+                long objectId = object.getProxyStorageId();
+                return objectId == targetId;
+            }
+            if (method.getName().equalsIgnoreCase(
+                "hashCode")
+                && args.length == 0)
+            {
+                return (int) targetId * 31;
+            }
             if (isPropertyMethod(method))
             {
                 if (method.getName().startsWith("get")
@@ -714,6 +744,7 @@ public class ProxyStorage<E>
              * instance of that object, in which case the first match will be
              * returned or null if there wasn't a match.
              */
+            return null;
         }
     }
     

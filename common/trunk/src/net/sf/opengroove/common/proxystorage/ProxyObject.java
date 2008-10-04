@@ -14,6 +14,11 @@ import javax.swing.event.ChangeListener;
  */
 public interface ProxyObject
 {
+    public long getProxyStorageId();
+    public Class getProxyStorageClass();
+    public boolean isProxyStoragePresent();
+    public boolean equals(Object object);
+    public int hashCode();
     /**
      * Adds a listener that will be notified whenever any of this object's
      * properties are changed. The listener will also be notified when any of

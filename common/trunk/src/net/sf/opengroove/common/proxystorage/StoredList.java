@@ -2,6 +2,7 @@ package net.sf.opengroove.common.proxystorage;
 
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.AbstractList;
 
 /**
@@ -38,91 +39,168 @@ public class StoredList<T> extends AbstractList<T>
     @Override
     public T get(int index)
     {
-        try
+        synchronized (storage.lock)
         {
-            PreparedStatement st = storage.connection
-                .prepareStatement("select value from proxystorage_collections where id = ? and index ");
-            ResultSet rs = st.executeQuery();
-            if (!rs.next())
+            try
             {
+                PreparedStatement st = storage.connection
+                    .prepareStatement("select value from proxystorage_collections where id = ? and index ");
+                ResultSet rs = st.executeQuery();
+                if (!rs.next())
+                {
+                    rs.close();
+                    st.close();
+                    throw new IndexOutOfBoundsException(
+                        "The index "
+                            + index
+                            + " is not within the allowed bounds for this "
+                            + "list. The list's id is "
+                            + id);
+                }
+                long ref = rs.getLong("value");
                 rs.close();
                 st.close();
-                throw new IndexOutOfBoundsException(
-                    "The index "
-                        + index
-                        + " is not within the allowed bounds for this "
-                        + "list. The list's id is " + id);
+                Object result = storage.getById(ref,
+                    targetClass);
+                if (result == null)
+                {
+                    throw new IllegalStateException(
+                        "The object at index "
+                            + index
+                            + " with id "
+                            + ref
+                            + " has been removed from the "
+                            + "database. This list's id is "
+                            + id);
+                }
+                return (T) result;
             }
-            long ref = rs.getLong("value");
-            rs.close();
-            st.close();
-            Object result = storage.getById(ref,
-                targetClass);
-            if (result == null)
+            catch (Exception e)
             {
+                if (e instanceof RuntimeException)
+                    throw (RuntimeException) e;
                 throw new IllegalStateException(
-                    "The object at index " + index
-                        + " with id " + ref
-                        + " has been removed from the "
-                        + "database. This list's id is "
-                        + id);
+                    "An exception was encountered while performing the "
+                        + "requested operation.", e);
             }
-            return (T) result;
-        }
-        catch (Exception e)
-        {
-            if (e instanceof RuntimeException)
-                throw (RuntimeException) e;
-            throw new IllegalStateException(
-                "An exception was encountered while performing the "
-                    + "requested operation.", e);
         }
     }
     
     @Override
     public void add(int index, T element)
     {
-        // TODO Auto-generated method stub
-        super.add(index, element);
+        synchronized (storage.lock)
+        {
+            
+        }
     }
     
     @Override
     public T remove(int index)
     {
-        // TODO Auto-generated method stub
-        return super.remove(index);
+        synchronized (storage.lock)
+        {
+            /*
+             * Remove is a somewhat more complex operation than set, size, and
+             * get, because it has to execute a statement for each object after
+             * this one to decrement it's id by one.
+             */
+            try
+            {
+                T previous = get(index);
+                /*
+                 * the call to get(index) will take care of throwing an
+                 * IndexOutOfBoundsException if the index specified does not
+                 * reference a valid element of this list
+                 */
+            }
+            catch (Exception e)
+            {
+                if (e instanceof RuntimeException)
+                    throw (RuntimeException) e;
+                throw new IllegalStateException(
+                    "An exception was encountered while performing the "
+                        + "requested operation.", e);
+            }
+        }
     }
     
     @Override
     public T set(int index, T element)
     {
-        // TODO Auto-generated method stub
-        return super.set(index, element);
+        synchronized (storage.lock)
+        {
+            if (!(element instanceof ProxyObject))
+                throw new ClassCastException(
+                    "The element specified (an instance of "
+                        + element.getClass().getName()
+                        + " is not a ProxyObject.");
+            ProxyObject object = (ProxyObject) element;
+            try
+            {
+                PreparedStatement cst = storage.connection
+                    .prepareStatement("select count(*) from proxystorage_collections where id = ? and index = ?");
+                cst.setLong(1, id);
+                cst.setInt(2, index);
+                ResultSet crs = cst.executeQuery();
+                int existingCount = 0;
+                if (crs.next())
+                    existingCount = crs.getInt(1);
+                crs.close();
+                cst.close();
+                if (existingCount == 0)
+                    throw new IndexOutOfBoundsException(
+                        "There is no element at index "
+                            + index
+                            + " in the list with id " + id);
+                T previous = get(index);
+                PreparedStatement st = storage.connection
+                    .prepareStatement("update proxystorage_collections set value = ? where id = ? and index = ?");
+                long insertId = object.getProxyStorageId();
+                st.setLong(1, insertId);
+                st.setLong(2, id);
+                st.setInt(3, index);
+                st.execute();
+                st.close();
+                return previous;
+            }
+            catch (Exception e)
+            {
+                if (e instanceof RuntimeException)
+                    throw (RuntimeException) e;
+                throw new IllegalStateException(
+                    "An exception was encountered while performing the "
+                        + "requested operation.", e);
+            }
+        }
     }
     
     @Override
     public int size()
     {
-        try
+        synchronized (storage.lock)
         {
-            PreparedStatement st = storage.connection
-                .prepareStatement("select count(*) from proxystorage_collections where id = ?");
-            ResultSet rs = st.executeQuery();
-            boolean hasNext = rs.next();
-            int count = 0;
-            if(hasNext)
-                count = rs.getInt(1);
-            rs.close();
-            st.close();
-            return count;
-        }
-        catch (Exception e)
-        {
-            if (e instanceof RuntimeException)
-                throw (RuntimeException) e;
-            throw new IllegalStateException(
-                "An exception was encountered while performing the "
-                    + "requested operation.", e);
+            try
+            {
+                PreparedStatement st = storage.connection
+                    .prepareStatement("select count(*) from proxystorage_collections where id = ?");
+                ResultSet rs = st.executeQuery();
+                boolean hasNext = rs.next();
+                int count = 0;
+                if (hasNext)
+                    count = rs.getInt(1);
+                rs.close();
+                st.close();
+                return count;
+            }
+            catch (Exception e)
+            {
+                if (e instanceof RuntimeException)
+                    throw (RuntimeException) e;
+                throw new IllegalStateException(
+                    "An exception was encountered while performing the "
+                        + "requested operation.", e);
+            }
         }
     }
     
