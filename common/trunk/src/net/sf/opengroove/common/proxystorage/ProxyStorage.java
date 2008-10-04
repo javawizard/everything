@@ -53,9 +53,12 @@ public class ProxyStorage<E>
     private ArrayList<Class> allClasses = new ArrayList<Class>();
     /**
      * Internal classes that execute sequences of queries to the database
-     * synchronize on this object first to avoid getting corrupt data.
+     * synchronize on this object first to avoid getting corrupt data.<br/><br/>
+     * 
+     * This class is package-private (instead of private or protected) because
+     * StoredList acesses it.
      */
-    private final Object lock = new Object();
+    final Object lock = new Object();
     
     public ProxyStorage(Class<E> rootClass, File location)
         throws SQLException
@@ -687,7 +690,8 @@ public class ProxyStorage<E>
                         return new BigInteger(
                             ((String) result), 16);
                     /*
-                     * We've covered all simple cases now. If we're here, then the return type is either a stored list or a 
+                     * We've covered all simple cases now. If we're here, then
+                     * the return type is either a stored list or a
                      */
                 }
             }

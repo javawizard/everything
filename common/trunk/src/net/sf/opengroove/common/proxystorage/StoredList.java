@@ -12,13 +12,24 @@ import java.util.AbstractList;
  */
 public class StoredList<T> extends AbstractList<T>
 {
+    /**
+     * The class of the objects that are members of this list.
+     * {@link Class#isAnnotationPresent(Class) targetClass.isAnnotationPresent}
+     * should always return true.
+     */
     private Class targetClass;
+    /**
+     * The id of this list, which is used to get and set it's items in the
+     * proxystorage_collections table.
+     */
     private int id;
+    private ProxyStorage storage;
     
-    StoredList(Class targetClass, int id)
+    StoredList(ProxyStorage storage,Class targetClass, int id)
     {
         this.targetClass = targetClass;
         this.id = id;
+        this.storage = storage;
     }
     
     @Override
