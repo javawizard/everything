@@ -648,134 +648,142 @@ public class ProxyStorage<E>
         public Object invoke(Object proxy, Method method,
             Object[] args) throws Throwable
         {
-            if (method.getName().equalsIgnoreCase(
-                "getProxyStorageId")
-                && method.getReturnType() == Long.TYPE)
-                return targetId;
-            if (method.getName().equalsIgnoreCase(
-                "getProxyStorageClass")
-                && method.getReturnType() == Class.class)
-                return targetClass;
-            if (method.getName().equalsIgnoreCase(
-                "isProxyStoragePresent")
-                && method.getReturnType() == Boolean.TYPE)
-                return isTargetIdPresent(targetId,
-                    targetClass);
-            if (method.getName().equalsIgnoreCase("equals")
-                && args.length == 1)
+            synchronized (lock)
             {
-                Object compare = args[0];
-                if (!(compare instanceof ProxyObject))
-                    return false;
-                ProxyObject object = (ProxyObject) compare;
-                long objectId = object.getProxyStorageId();
-                return objectId == targetId;
-            }
-            if (method.getName().equalsIgnoreCase(
-                "hashCode")
-                && args.length == 0)
-            {
-                return (int) targetId * 31;
-            }
-            if (isPropertyMethod(method))
-            {
-                if (method.getName().startsWith("get")
-                    || method.getName().startsWith("is"))
+                if (method.getName().equalsIgnoreCase(
+                    "getProxyStorageId")
+                    && method.getReturnType() == Long.TYPE)
+                    return targetId;
+                if (method.getName().equalsIgnoreCase(
+                    "getProxyStorageClass")
+                    && method.getReturnType() == Class.class)
+                    return targetClass;
+                if (method.getName().equalsIgnoreCase(
+                    "isProxyStoragePresent")
+                    && method.getReturnType() == Boolean.TYPE)
+                    return isTargetIdPresent(targetId,
+                        targetClass);
+                if (method.getName().equalsIgnoreCase(
+                    "equals")
+                    && args.length == 1)
                 {
-                    /*
-                     * This method is a getter. We'll create a query to get the
-                     * resulting column out of the database, and then convert
-                     * the value into an object that can be returned from this
-                     * method.
-                     */
-                    String propertyName = propertyNameFromAccessor(method
-                        .getName());
-                    PreparedStatement st = connection
-                        .prepareStatement("select "
-                            + propertyName
-                            + " from "
-                            + getTargetTableName(targetClass)
-                            + " where proxystorage_id = ?");
-                    st.setLong(1, targetId);
-                    ResultSet rs = st.executeQuery();
-                    boolean isPresent = rs.next();
-                    if (!isPresent)
-                    {
-                        rs.close();
-                        st.close();
-                        throw new IllegalStateException(
-                            "The object that was queried has been deleted "
-                                + "from the database.");
-                    }
-                    Object result = rs
-                        .getObject(propertyName);
-                    rs.close();
-                    st.close();
-                    if (method.getReturnType() == Integer.TYPE
-                        || method.getReturnType() == Integer.class
-                        || method.getReturnType() == Long.TYPE
-                        || method.getReturnType() == Long.class
-                        || method.getReturnType() == Boolean.TYPE
-                        || method.getReturnType() == Boolean.class
-                        || method.getReturnType() == String.class)
-                    {
-                        if (result == null)
-                        {
-                            if (method.getReturnType() == Integer.TYPE)
-                                result = (int) 0;
-                            if (method.getReturnType() == Long.TYPE)
-                                result = (long) 0;
-                            if (method.getReturnType() == Boolean.TYPE)
-                                result = false;
-                        }
-                        return result;
-                    }
-                    if (method.getReturnType() == BigInteger.class)
-                    {
-                        if (result == null)
-                            return null;
-                        return new BigInteger(
-                            ((String) result), 16);
-                    }
-                    if (method.getReturnType() == StoredList.class)
+                    Object compare = args[0];
+                    if (!(compare instanceof ProxyObject))
+                        return false;
+                    ProxyObject object = (ProxyObject) compare;
+                    long objectId = object
+                        .getProxyStorageId();
+                    return objectId == targetId;
+                }
+                if (method.getName().equalsIgnoreCase(
+                    "hashCode")
+                    && args.length == 0)
+                {
+                    return (int) targetId * 31;
+                }
+                if (isPropertyMethod(method))
+                {
+                    if (method.getName().startsWith("get")
+                        || method.getName()
+                            .startsWith("is"))
                     {
                         /*
-                         * If a stored list is null, then a new one should be
-                         * created. We don't actually have to modify the
-                         * proxystorage_collections table to do this; we just
-                         * need to generate a new id, backstore the id to the
-                         * this object, and return a new stored list for it.
+                         * This method is a getter. We'll create a query to get
+                         * the resulting column out of the database, and then
+                         * convert the value into an object that can be returned
+                         * from this method.
                          */
+                        String propertyName = propertyNameFromAccessor(method
+                            .getName());
+                        PreparedStatement st = connection
+                            .prepareStatement("select "
+                                + propertyName
+                                + " from "
+                                + getTargetTableName(targetClass)
+                                + " where proxystorage_id = ?");
+                        st.setLong(1, targetId);
+                        ResultSet rs = st.executeQuery();
+                        boolean isPresent = rs.next();
+                        if (!isPresent)
+                        {
+                            rs.close();
+                            st.close();
+                            throw new IllegalStateException(
+                                "The object that was queried has been deleted "
+                                    + "from the database.");
+                        }
+                        Object result = rs
+                            .getObject(propertyName);
+                        rs.close();
+                        st.close();
+                        if (method.getReturnType() == Integer.TYPE
+                            || method.getReturnType() == Integer.class
+                            || method.getReturnType() == Long.TYPE
+                            || method.getReturnType() == Long.class
+                            || method.getReturnType() == Boolean.TYPE
+                            || method.getReturnType() == Boolean.class
+                            || method.getReturnType() == String.class)
+                        {
+                            if (result == null)
+                            {
+                                if (method.getReturnType() == Integer.TYPE)
+                                    result = (int) 0;
+                                if (method.getReturnType() == Long.TYPE)
+                                    result = (long) 0;
+                                if (method.getReturnType() == Boolean.TYPE)
+                                    result = false;
+                            }
+                            return result;
+                        }
+                        if (method.getReturnType() == BigInteger.class)
+                        {
+                            if (result == null)
+                                return null;
+                            return new BigInteger(
+                                ((String) result), 16);
+                        }
+                        if (method.getReturnType() == StoredList.class)
+                        {
+                            /*
+                             * If a stored list is null, then a new one should
+                             * be created. We don't actually have to modify the
+                             * proxystorage_collections table to do this; we
+                             * just need to generate a new id, backstore the id
+                             * to the this object, and return a new stored list
+                             * for it.
+                             */
+                        }
+                        if (method.getReturnType()
+                            .isAnnotationPresent(
+                                ProxyBean.class))
+                        {
+                            if (result == null)
+                                return null;
+                        }
+                        throw new IllegalArgumentException(
+                            "The method is a getter, but it's return "
+                                + "type is not a proper type.");
                     }
-                    if (method.getReturnType()
-                        .isAnnotationPresent(
-                            ProxyBean.class))
-                    {
-                        if (result == null)
-                            return null;
-                    }
-                    throw new IllegalArgumentException(
-                        "The method is a getter, but it's return "
-                            + "type is not a proper type.");
                 }
+                /*
+                 * TODO: The method isn't a property method. What we want to do
+                 * in the future is allow the creator of this proxy storage
+                 * instance to specify an invocation handler that is delegated
+                 * to if a particular method doesn't exist. We also want to
+                 * allow additional methods, such as search methods, to be
+                 * added. A search method would take (via annotations) the name
+                 * of the property that is a stored list on the object that the
+                 * search method is declared on, and a property within the type
+                 * of the stored list's children to search for, and, if the
+                 * property is a string, if like is to be used instead of =. The
+                 * return type of the search method could either be an array of
+                 * the object that the stored list contains (in which case all
+                 * matches will be returned), or a single instance of that
+                 * object, in which case the first match will be returned or
+                 * null if there wasn't a match.
+                 */
+                return null;
             }
-            /*
-             * TODO: The method isn't a property method. What we want to do in
-             * the future is allow the creator of this proxy storage instance to
-             * specify an invocation handler that is delegated to if a
-             * particular method doesn't exist. We also want to allow additional
-             * methods, such as search methods, to be added. A search method
-             * would take (via annotations) the name of the property that is a
-             * stored list on the object that the search method is declared on,
-             * and a property within the type of the stored list's children to
-             * search for, and, if the property is a string, if like is to be
-             * used instead of =. The return type of the search method could
-             * either be an array of the object that the stored list contains
-             * (in which case all matches will be returned), or a single
-             * instance of that object, in which case the first match will be
-             * returned or null if there wasn't a match.
-             */
-            return null;
         }
     }
     
