@@ -652,10 +652,62 @@ public class ProxyStorage<E>
                      * the value into an object that can be returned from this
                      * method.
                      */
+                    String propertyName = propertyNameFromAccessor(method
+                        .getName());
+                    PreparedStatement st = connection
+                        .prepareStatement("select "
+                            + propertyName
+                            + " from "
+                            + getTargetTableName(targetClass)
+                            + " where proxystorage_id = ?");
+                    st.setInt(1, targetId);
+                    ResultSet rs = st.executeQuery();
+                    boolean isPresent = rs.next();
+                    if (!isPresent)
+                    {
+                        rs.close();
+                        st.close();
+                        throw new IllegalStateException(
+                            "The object that was queried has been deleted "
+                                + "from the database.");
+                    }
+                    Object result = rs
+                        .getObject(propertyName);
+                    rs.close();
+                    st.close();
+                    if (method.getReturnType() == Integer.TYPE
+                        || method.getReturnType() == Integer.class
+                        || method.getReturnType() == Long.TYPE
+                        || method.getReturnType() == Long.class
+                        || method.getReturnType() == Boolean.TYPE
+                        || method.getReturnType() == Boolean.class
+                        || method.getReturnType() == String.class)
+                        return result;
+                    if (method.getReturnType() == BigInteger.class)
+                        return new BigInteger(
+                            ((String) result), 16);
+                    /*
+                     * We've covered all simple cases now. If we're here, then the return type is either a stored list or a 
+                     */
                 }
             }
+            /*
+             * TODO: The method isn't a property method. What we want to do in
+             * the future is allow the creator of this proxy storage instance to
+             * specify an invocation handler that is delegated to if a
+             * particular method doesn't exist. We also want to allow additional
+             * methods, such as search methods, to be added. A search method
+             * would take (via annotations) the name of the property that is a
+             * stored list on the object that the search method is declared on,
+             * and a property within the type of the stored list's children to
+             * search for, and, if the property is a string, if like is to be
+             * used instead of =. The return type of the search method could
+             * either be an array of the object that the stored list contains
+             * (in which case all matches will be returned), or a single
+             * instance of that object, in which case the first match will be
+             * returned or null if there wasn't a match.
+             */
         }
-        
     }
     
     /**
