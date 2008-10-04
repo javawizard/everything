@@ -113,6 +113,25 @@ public class StoredList<T> extends AbstractList<T>
                  * IndexOutOfBoundsException if the index specified does not
                  * reference a valid element of this list
                  */
+                PreparedStatement rst = storage.connection
+                    .prepareStatement("delete from proxystorage_collections "
+                        + "where id = ? and index = ?");
+                rst.execute();
+                rst.close();
+                /*
+                 * The element has been removed. Now we need to shift all
+                 * elements with an index greater than the one removed down one
+                 * position.
+                 */
+                PreparedStatement dst = storage.connection
+                    .prepareStatement("update proxystorage_collections"
+                        + " set index = index - 1 "
+                        + "where id = ? and index > ?");
+                dst.setLong(1, id);
+                dst.setInt(2, index);
+                dst.execute();
+                dst.close();
+                return previous;
             }
             catch (Exception e)
             {
