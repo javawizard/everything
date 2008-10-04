@@ -751,7 +751,29 @@ public class ProxyStorage<E>
                              * just need to generate a new id, backstore the id
                              * to the this object, and return a new stored list
                              * for it.
+                             * 
+                             * The object will be of type Long, so if it's not
+                             * present, we create a new one and set it on this
+                             * object. Then we create a new list off of the long
+                             * and return it.
                              */
+                            if (result == null)
+                            {
+                                /*
+                                 * The result is null. We'll create the new list
+                                 * now.
+                                 */
+                                result = new Long(nextId());
+                                PreparedStatement ist = connection
+                                    .prepareStatement("");
+                                ist.execute();
+                                ist.close();
+                            }
+                            return new StoredList(
+                                ProxyStorage.this,
+                                ((ListType) method
+                                    .getAnnotation(ListType.class))
+                                    .value(), (Long) result);
                         }
                         if (method.getReturnType()
                             .isAnnotationPresent(
@@ -784,6 +806,34 @@ public class ProxyStorage<E>
                  */
                 return null;
             }
+        }
+    }
+    
+    /**
+     * Gets the next id to use. The sequencer row in proxystorage_statics is
+     * incremented, and the new value returned.
+     * 
+     * @return A new id to use
+     * @throws SQLException
+     */
+    long nextId() throws SQLException
+    {
+        synchronized (lock)
+        {
+            PreparedStatement ist = connection
+                .prepareStatement("update proxystorage_statics set value = value + 1 where name = ?");
+            ist.setString(1, "sequencer");
+            ist.execute();
+            ist.close();
+            PreparedStatement rst = connection
+                .prepareStatement("select value from proxystorage_statics where name = ?");
+            rst.setString(1, "sequencer");
+            ResultSet rs = rst.executeQuery();
+            rs.next();
+            long newId = rs.getLong(1);
+            rs.close();
+            rst.close();
+            return newId;
         }
     }
     

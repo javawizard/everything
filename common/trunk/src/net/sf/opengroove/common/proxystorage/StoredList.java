@@ -26,11 +26,11 @@ public class StoredList<T> extends AbstractList<T>
      * The id of this list, which is used to get and set it's items in the
      * proxystorage_collections table.
      */
-    private int id;
+    private long id;
     private ProxyStorage storage;
     
     StoredList(ProxyStorage storage, Class targetClass,
-        int id)
+        long id)
     {
         this.targetClass = targetClass;
         this.id = id;
@@ -46,6 +46,7 @@ public class StoredList<T> extends AbstractList<T>
             {
                 PreparedStatement st = storage.connection
                     .prepareStatement("select value from proxystorage_collections where id = ? and index ");
+                st.setLong(1, id);
                 ResultSet rs = st.executeQuery();
                 if (!rs.next())
                 {
