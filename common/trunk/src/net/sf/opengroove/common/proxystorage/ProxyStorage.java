@@ -718,14 +718,45 @@ public class ProxyStorage<E>
                         || method.getReturnType() == Boolean.TYPE
                         || method.getReturnType() == Boolean.class
                         || method.getReturnType() == String.class)
+                    {
+                        if (result == null)
+                        {
+                            if (method.getReturnType() == Integer.TYPE)
+                                result = (int) 0;
+                            if (method.getReturnType() == Long.TYPE)
+                                result = (long) 0;
+                            if (method.getReturnType() == Boolean.TYPE)
+                                result = false;
+                        }
                         return result;
+                    }
                     if (method.getReturnType() == BigInteger.class)
+                    {
+                        if (result == null)
+                            return null;
                         return new BigInteger(
                             ((String) result), 16);
-                    /*
-                     * We've covered all simple cases now. If we're here, then
-                     * the return type is either a stored list or a
-                     */
+                    }
+                    if (method.getReturnType() == StoredList.class)
+                    {
+                        /*
+                         * If a stored list is null, then a new one should be
+                         * created. We don't actually have to modify the
+                         * proxystorage_collections table to do this; we just
+                         * need to generate a new id, backstore the id to the
+                         * this object, and return a new stored list for it.
+                         */
+                    }
+                    if (method.getReturnType()
+                        .isAnnotationPresent(
+                            ProxyBean.class))
+                    {
+                        if (result == null)
+                            return null;
+                    }
+                    throw new IllegalArgumentException(
+                        "The method is a getter, but it's return "
+                            + "type is not a proper type.");
                 }
             }
             /*
