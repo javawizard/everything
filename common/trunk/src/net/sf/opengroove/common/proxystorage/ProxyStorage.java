@@ -765,7 +765,14 @@ public class ProxyStorage<E>
                                  */
                                 result = new Long(nextId());
                                 PreparedStatement ist = connection
-                                    .prepareStatement("");
+                                    .prepareStatement("update "
+                                        + getTargetTableName(targetClass)
+                                        + " set "
+                                        + propertyName
+                                        + " = ? where proxystorage_id = ?");
+                                ist.setLong(1,
+                                    (Long) result);
+                                ist.setLong(2, targetId);
                                 ist.execute();
                                 ist.close();
                             }
@@ -781,10 +788,18 @@ public class ProxyStorage<E>
                         {
                             if (result == null)
                                 return null;
+                            return getById((Long) result,
+                                method.getReturnType());
                         }
                         throw new IllegalArgumentException(
                             "The method is a getter, but it's return "
                                 + "type is not a proper type.");
+                    }
+                    else
+                    {
+                        /*
+                         * The property is a setter.
+                         */
                     }
                 }
                 /*
