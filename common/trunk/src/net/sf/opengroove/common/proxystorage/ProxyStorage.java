@@ -2,6 +2,7 @@ package net.sf.opengroove.common.proxystorage;
 
 import java.beans.Introspector;
 import java.io.File;
+import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Method;
 import java.math.BigInteger;
 import java.sql.Connection;
@@ -527,5 +528,108 @@ public class ProxyStorage<E>
             return ((Table) checkClass
                 .getAnnotation(Table.class)).getValue();
         return checkClass.getSimpleName().toLowerCase();
+    }
+    
+    /**
+     * Creates a new instance of the proxy bean interface specified. The
+     * interface must be annotated with {@link ProxyBean}, and must be a type
+     * that is part of the ownership tree of which <code>E</code> must be the
+     * root.<br/><br/>
+     * 
+     * The new instance will be persisted in the database, but will not be owned
+     * by anything, so a call to vacuum() would remove it until it is assigned
+     * to another object that is in the tree.
+     * 
+     * @param c
+     *            The class of the interface to create a new instance of.
+     * @return The new instance.
+     */
+    public Object create(Class c)
+    {
+        
+    }
+    
+    /**
+     * Gets an object that has the specified id and is of the specified type.
+     * This method doesn't handle StoredLists; it only handles proxy beans.
+     * 
+     * @param id
+     *            The id of the object
+     * @param c
+     *            The class of the object
+     * @return A new object that represents the id specified. If the object does
+     *         not exist, null will be returned. The object returned implements
+     *         the interface defined by <code>c</code>, as well as
+     *         {@link ProxyObject}.
+     * @throws SQLException 
+     */
+    private Object getById(int id, Class c) throws SQLException
+    {
+        if(!isTargetIdPresent(id,c))
+            return null;
+    }
+    
+    /**
+     * Checks to see if the id specified refers to a valid row in the table for
+     * the target specified.
+     * 
+     * @param id
+     * @param c
+     * @return
+     * @throws SQLException
+     */
+    private boolean isTargetIdPresent(int id, Class c)
+        throws SQLException
+    {
+        synchronized (lock)
+        {
+            PreparedStatement st = connection
+                .prepareStatement("select count(*) from "
+                    + getTargetTableName(c)
+                    + " where proxystorage_id = ?");
+            st.setInt(1, id);
+            ResultSet rs = st.executeQuery();
+            rs.next();
+            boolean exists = rs.getInt(1) > 0;
+            rs.close();
+            st.close();
+            return exists;
+        }
+    }
+    
+    /**
+     * Gets the root of this ProxyStorage instance. When this is called for the
+     * first time in the life of a proxy storage location, a new instance will
+     * be created via {@link #create(Class)}. All of the other invocations will
+     * return an object that represents the root.
+     * 
+     * @return
+     */
+    public E getRoot()
+    {
+        
+    }
+    
+    /**
+     * The class that actually handles calls to proxy bean methods. Instances of
+     * proxy beans that are created use an instance of this as their invocation
+     * handler.
+     * 
+     * @author Alexander Boyd
+     * 
+     */
+    private class ObjectHandler implements
+        InvocationHandler
+    {
+        private Class targetClass;
+        private int targetId;
+        
+        @Override
+        public Object invoke(Object proxy, Method method,
+            Object[] args) throws Throwable
+        {
+            return null;
+        }
+        
     }
 }
