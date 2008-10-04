@@ -4,6 +4,7 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.AbstractList;
+import java.util.ArrayList;
 
 /**
  * A StoredList is a list that is stored in the ProxyStorage system. Read and
@@ -155,6 +156,20 @@ public class StoredList<T> extends AbstractList<T>
                     "An exception was encountered while performing the "
                         + "requested operation.", e);
             }
+        }
+    }
+    
+    /**
+     * Returns a new ArrayList that contains a snapshot of the contents of this
+     * stored list at this exact point in time.
+     * 
+     * @return
+     */
+    public ArrayList<T> isolate()
+    {
+        synchronized (storage.lock)
+        {
+            return new ArrayList<T>(this);
         }
     }
     
