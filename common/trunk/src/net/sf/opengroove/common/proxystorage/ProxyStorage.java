@@ -641,9 +641,18 @@ public class ProxyStorage<E>
         public Object invoke(Object proxy, Method method,
             Object[] args) throws Throwable
         {
-            if(isPropertyMethod(method))
+            if (isPropertyMethod(method))
             {
-                
+                if (method.getName().startsWith("get")
+                    || method.getName().startsWith("is"))
+                {
+                    /*
+                     * This method is a getter. We'll create a query to get the
+                     * resulting column out of the database, and then convert
+                     * the value into an object that can be returned from this
+                     * method.
+                     */
+                }
             }
         }
         
@@ -667,24 +676,29 @@ public class ProxyStorage<E>
             return false;
         String propertyName = propertyNameFromAccessor(method
             .getName());
-        String capitalized = propertyName.substring(0,1).toUpperCase() + propertyName.substring(1);
+        String capitalized = propertyName.substring(0, 1)
+            .toUpperCase()
+            + propertyName.substring(1);
         Method getter;
         try
         {
-            getter = method.getDeclaringClass().getMethod("get" + capitalized, new Class[0]);
+            getter = method.getDeclaringClass().getMethod(
+                "get" + capitalized, new Class[0]);
         }
         catch (NoSuchMethodException e)
         {
             try
             {
-                getter = method.getDeclaringClass().getMethod("is" + capitalized, new Class[0]);
+                getter = method.getDeclaringClass()
+                    .getMethod("is" + capitalized,
+                        new Class[0]);
             }
-            catch(NoSuchMethodException e2)
+            catch (NoSuchMethodException e2)
             {
                 return false;
             }
         }
-        if(!getter.isAnnotationPresent(Property.class))
+        if (!getter.isAnnotationPresent(Property.class))
             return false;
         return true;
     }
