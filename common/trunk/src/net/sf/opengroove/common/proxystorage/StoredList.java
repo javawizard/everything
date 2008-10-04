@@ -61,19 +61,21 @@ public class StoredList<T> extends AbstractList<T>
             if (result == null)
             {
                 throw new IllegalStateException(
-                    "The object at index "
-                        + index
-                        + " with id "
-                        + ref
-                        + " has been removed from the database. This list's id is "
+                    "The object at index " + index
+                        + " with id " + ref
+                        + " has been removed from the "
+                        + "database. This list's id is "
                         + id);
             }
+            return (T) result;
         }
         catch (Exception e)
         {
+            if (e instanceof RuntimeException)
+                throw (RuntimeException) e;
             throw new IllegalStateException(
-                "An exception was encountered while performing the requested operation.",
-                e);
+                "An exception was encountered while performing the "
+                    + "requested operation.", e);
         }
     }
     
@@ -101,8 +103,25 @@ public class StoredList<T> extends AbstractList<T>
     @Override
     public int size()
     {
-        // TODO Auto-generated method stub
-        return 0;
+        try
+        {
+            PreparedStatement st = storage.connection
+                .prepareStatement("select count(*) from proxystorage_collections where id = ?");
+            ResultSet rs = st.executeQuery();
+            boolean hasNext = rs.next();
+            int count = 0;
+            if(hasNext)
+                count = rs.getInt(1);
+            
+        }
+        catch (Exception e)
+        {
+            if (e instanceof RuntimeException)
+                throw (RuntimeException) e;
+            throw new IllegalStateException(
+                "An exception was encountered while performing the "
+                    + "requested operation.", e);
+        }
     }
     
 }
