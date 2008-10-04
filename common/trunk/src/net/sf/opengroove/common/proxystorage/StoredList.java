@@ -91,7 +91,70 @@ public class StoredList<T> extends AbstractList<T>
     {
         synchronized (storage.lock)
         {
-            
+            if (!(element instanceof ProxyObject))
+                throw new ClassCastException(
+                    "The element specified (an instance of "
+                        + element.getClass().getName()
+                        + " is not a ProxyObject.");
+            ProxyObject object = (ProxyObject) element;
+            try
+            {
+                /*
+                 * Similar to remove(index), adding an element is a complex
+                 * operation, because all elements with their index greater or
+                 * equal to the index of the element to insert need to have
+                 * their indexes shifted up by one.
+                 */
+                int size = size();
+                if (index < 0 || index > size)
+                    throw new IndexOutOfBoundsException(
+                        "The index "
+                            + index
+                            + " is out of bounds for the list with id "
+                            + id + " and size " + size);
+                /*
+                 * Ok, we've checked the index, and it is a valid index. Now
+                 * we'll shift all elements greater than or equal to the index
+                 * up by one. Then we'll do the actual adding.
+                 * 
+                 * TODO: this should probably all be done in one transaction to
+                 * avoid a stored list having a dangling index if the vm that
+                 * the proxy storage instance is running under crashes while
+                 * performing this operation.
+                 */
+                PreparedStatement ust = storage.connection
+                    .prepareStatement("update proxystorage_collections "
+                        + "set index = index + 1 "
+                        + "where id = ? and index >= ?");
+                ust.setLong(1, id);
+                ust.setInt(2, index);
+                ust.execute();
+                ust.close();
+                /*
+                 * All elements after the one that we are going to insert have
+                 * now been shifted up the list by one index. Now we'll do the
+                 * actual inserting.
+                 */
+                PreparedStatement st = storage.connection
+                    .prepareStatement("insert into proxystorage_collections "
+                        + "(id,index,value) values (?,?,?)");
+                st.setLong(1, id);
+                st.setInt(2, index);
+                st.setLong(3, object.getProxyStorageId());
+                st.execute();
+                st.close();
+                /*
+                 * The object has now been added.
+                 */
+            }
+            catch (Exception e)
+            {
+                if (e instanceof RuntimeException)
+                    throw (RuntimeException) e;
+                throw new IllegalStateException(
+                    "An exception was encountered while performing the "
+                        + "requested operation.", e);
+            }
         }
     }
     
