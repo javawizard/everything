@@ -112,7 +112,9 @@ public class StoredList<T> extends AbstractList<T>
             int count = 0;
             if(hasNext)
                 count = rs.getInt(1);
-            
+            rs.close();
+            st.close();
+            return count;
         }
         catch (Exception e)
         {
