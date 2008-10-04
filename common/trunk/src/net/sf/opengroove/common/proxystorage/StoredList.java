@@ -161,7 +161,10 @@ public class StoredList<T> extends AbstractList<T>
     
     /**
      * Returns a new ArrayList that contains a snapshot of the contents of this
-     * stored list at this exact point in time.
+     * stored list at this exact point in time. This should be used in
+     * preference to creating a new ArrayList with this StoredList passed in as
+     * a constructor since this StoredList could be modified while the new
+     * ArrayList is in the process of copying it's data.
      * 
      * @return
      */
