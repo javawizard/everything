@@ -386,4 +386,9 @@ public class StoredList<T> extends AbstractList<T>
         }
     }
     
+    long getProxyStorageId()
+    {
+        return id;
+    }
+    
 }

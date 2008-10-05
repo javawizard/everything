@@ -16,6 +16,8 @@ import java.sql.Types;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 
 import net.sf.opengroove.client.OpenGroove;
@@ -335,18 +337,142 @@ public class ProxyStorage<E>
          * particular id is orders of magnitude faster than testing to see if an
          * ArrayList contains a particular id.
          */
-        Object root = getRoot(false);
-        if(root == null)
+        ProxyObject root = (ProxyObject) getRoot(false);
+        if (root == null)
         {
             progress.set(1);
             return;
         }
+        HashMap<Class, HashSet<Long>> refs = new HashMap<Class, HashSet<Long>>();
+        try
+        {
+            buildReferenceList(refs, root
+                .getProxyStorageId(), rootClass, null);
+        }
+        catch (SQLException e)
+        {
+            throw new RuntimeException(e);
+        }
+        /*
+         * We now have all of the referenced objects. Now we iterate over the
+         * list of classes returned, and check each object in the corresponding
+         * table to see if it's referenced in the set. If it's not, we'll remove
+         * it. Don't forget to interate over proxystorage_collections as well.
+         */
     }
     
-    private void buildReferenceList(HashSet list, long id,
-        Class c)
+    /**
+     * Builds a list of all referenced entities, beginning with the id
+     * specified. This method is recursive. For list types, the class should be
+     * StoredList.
+     * 
+     * @param list
+     * @param id
+     * @param c
+     * @param subtype
+     *            The target class of the storedlist. If <code>c</code> is not
+     *            StoredList.class, then this is unused.
+     */
+    private void buildReferenceList(
+        HashMap<Class, HashSet<Long>> list, long id,
+        Class c, Class subtype) throws SQLException
     {
-        
+        Object object;
+        if (c != StoredList.class)
+            object = getById(id, c);
+        else
+            object = new StoredList(ProxyStorage.this,
+                subtype, id);
+        HashSet<Long> set = list.get(c);
+        if (set == null)
+        {
+            set = new HashSet();
+            list.put(c, set);
+        }
+        if (set.contains(id))
+            return;
+        set.add(id);
+        /*
+         * We've added the id to the set. Now we need to recurse on this
+         * element's children. If the element is a stored list, we recurse on
+         * each element in it. If the element is a proxy bean, we recurse on all
+         * methods that are annotated with Property and who's return type is
+         * annotated with ProxyBean.
+         */
+        if (c == StoredList.class)
+        {
+            StoredList storedList = (StoredList) object;
+            int size = storedList.size();
+            for (int i = 0; i < size; i++)
+            {
+                ProxyObject result = (ProxyObject) storedList
+                    .get(i);
+                buildReferenceList(list, result
+                    .getProxyStorageId(), subtype, null);
+            }
+        }
+        else
+        {
+            /*
+             * This is a regular old proxy bean. We'll scan through all methods
+             * as discussed above.
+             */
+            for (Method method : getGetterMethods(c))
+            {
+                if (method.getReturnType()
+                    .isAnnotationPresent(ProxyBean.class))
+                {
+                    /*
+                     * The method is a proxy bean. Now we'll run it and get the
+                     * id back.
+                     */
+                    try
+                    {
+                        ProxyObject result = (ProxyObject) method
+                            .invoke(object, new Object[0]);
+                        /*
+                         * result is now the subobject that we want to scan.
+                         */
+                        buildReferenceList(list, result
+                            .getProxyStorageId(), method
+                            .getReturnType(), null);
+                    }
+                    catch (Exception e)
+                    {
+                        /*
+                         * shoudn't happen
+                         */
+                        throw new RuntimeException(e);
+                    }
+                }
+                else
+                {
+                    /*
+                     * This method is a stored list.
+                     */
+                    try
+                    {
+                        StoredList result = (StoredList) method
+                            .invoke(object, new Object[0]);
+                        /*
+                         * result is now the subobject that we want to scan.
+                         */
+                        buildReferenceList(list, result
+                            .getProxyStorageId(),
+                            StoredList.class, method
+                                .getAnnotation(
+                                    ListType.class).value());
+                    }
+                    catch (Exception e)
+                    {
+                        /*
+                         * shoudn't happen
+                         */
+                        throw new RuntimeException(e);
+                    }
+                }
+            }
+        }
     }
     
     /**
