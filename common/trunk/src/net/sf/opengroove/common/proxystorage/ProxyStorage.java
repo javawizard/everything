@@ -18,6 +18,9 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 
+import net.sf.opengroove.client.OpenGroove;
+import net.sf.opengroove.common.utils.Progress;
+
 /**
  * The ProxyStorage class is a class used for storing simple java beans to disk,
  * in such a way that updating one instance of a particular persistant bean
@@ -84,7 +87,7 @@ public class ProxyStorage<E>
         dbInfo = connection.getMetaData();
         checkSystemTables();
         checkTables(rootClass, allClasses);
-        vacuum();
+        vacuum(new Progress());
     }
     
     /**
@@ -300,10 +303,49 @@ public class ProxyStorage<E>
      * called when creating the ProxyStorage, as it might remove an object that
      * has been created but not yet added into the hierarchy if called while the
      * proxy storage is in use.
+     * 
+     * @param progress
+     *            A progress object that will be updated as this vacuum
+     *            operation runs
      */
-    private void vacuum()
+    private void vacuum(Progress progress)
     {
-        // TODO Auto-generated method stub
+        /*
+         * We need to get all objects out of the db and scan for them. Objects
+         * reside in all of the tables for allClasses (a field), and in
+         * proxystorage_collections.
+         * 
+         * The fastest way to do this (and the way we do it here) is to find the
+         * root node and trace down through all proxy bean references and all
+         * stored list references, and the lists' corresponding proxy bean
+         * references. We use a recursive method to do that. We then have a map
+         * of object types to lists, where each of those lists contains a list
+         * of referenced objects. Then, we do another hierarchy pass, this time
+         * checking each object to see if it is on the list that we built. If it
+         * is not, we remove it. This algorithm results in only two passes being
+         * needed, one for determining whether objects are referenced, and the
+         * other for removing unreferenced objects.
+         * 
+         * In the future, we may want to consider building the list in a
+         * temporary database table in case the data is too large to be held in
+         * memory, and to speed up reference searches.
+         * 
+         * During the iteration, we'll use a HashSet instead of an ArrayList,
+         * due to the fact that testing to see if a HashSet contains a
+         * particular id is orders of magnitude faster than testing to see if an
+         * ArrayList contains a particular id.
+         */
+        Object root = getRoot(false);
+        if(root == null)
+        {
+            progress.set(1);
+            return;
+        }
+    }
+    
+    private void buildReferenceList(HashSet list, long id,
+        Class c)
+    {
         
     }
     
@@ -553,9 +595,88 @@ public class ProxyStorage<E>
      *            The class of the interface to create a new instance of.
      * @return The new instance.
      */
-    public Object create(Class c)
+    public <T> T create(Class<T> c)
     {
-        
+        if (!allClasses.contains(c))
+            throw new IllegalArgumentException(
+                "The class specified ("
+                    + c.getName()
+                    + ") is not a class in the root "
+                    + "tree of this proxy storage instance. "
+                    + "(the root class is "
+                    + rootClass.getName() + ")");
+        try
+        {
+            ArrayList<TableColumn> columns = getTableColumns(getTargetTableName(c));
+            String statement = "insert into "
+                + getTargetTableName(c)
+                + "( "
+                + delimited(columns
+                    .toArray(new TableColumn[0]),
+                    new ToString<TableColumn>()
+                    {
+                        
+                        @Override
+                        public String toString(
+                            TableColumn object)
+                        {
+                            return object.getName();
+                        }
+                    }, ",")
+                + " ) values ( "
+                + delimited(columns
+                    .toArray(new TableColumn[0]),
+                    new ToString<TableColumn>()
+                    {
+                        
+                        @Override
+                        public String toString(
+                            TableColumn object)
+                        {
+                            return "?";
+                        }
+                    }, ",") + ")";
+            PreparedStatement st = connection
+                .prepareStatement(statement);
+            int index = 0;
+            long newId = nextId();
+            for (TableColumn col : columns)
+            {
+                index += 1;
+                if (col.getName().equalsIgnoreCase(
+                    "proxystorage_id"))
+                    st.setLong(index, newId);
+                else
+                {
+                    st.setNull(index, col.getType());
+                }
+            }
+            st.execute();
+            st.close();
+            return (T) getById(newId, c);
+        }
+        catch (Exception e)
+        {
+            throw new RuntimeException(e);
+        }
+    }
+    
+    public static <T> String delimited(T[] items,
+        ToString<T> generator, String delimiter)
+    {
+        StringBuilder sb = new StringBuilder();
+        for (int i = 0; i < items.length; i++)
+        {
+            if (i != 0)
+                sb.append(delimiter);
+            sb.append(generator.toString(items[i]));
+        }
+        return sb.toString();
+    }
+    
+    public interface ToString<S>
+    {
+        public String toString(S object);
     }
     
     /**
@@ -617,9 +738,62 @@ public class ProxyStorage<E>
      * 
      * @return
      */
+    
     public E getRoot()
     {
-        
+        return getRoot(true);
+    }
+    
+    /**
+     * Gets the root object. If createIfNonexistant is false, then null is
+     * returned if this doesn't yet have a root. If it's true, then a new root
+     * is created and returned.
+     * 
+     * @param createIfNonexistant
+     * @return
+     */
+    public E getRoot(boolean createIfNonexistant)
+    {
+        try
+        {
+            PreparedStatement rst = connection
+                .prepareStatement("select value from proxystorage_statics where name = ?");
+            rst.setString(1, "root");
+            ResultSet rs = rst.executeQuery();
+            boolean hasNext = rs.next();
+            long existingId = 0;
+            if (hasNext)
+                existingId = rs.getLong("value");
+            rs.close();
+            rst.close();
+            if (hasNext)
+            {
+                return (E) getById(existingId, rootClass);
+            }
+            if (!createIfNonexistant)
+                return null;
+            /*
+             * If we're here then the root doesn't exist yet. We'll create a new
+             * root with create(), stick it's id into the statics table, and
+             * return it.
+             */
+            Object newObject = create(rootClass);
+            long newId = ((ProxyObject) newObject)
+                .getProxyStorageId();
+            PreparedStatement st = connection
+                .prepareStatement("insert into proxystorage_statics values (?,?)");
+            st.setString(1, "root");
+            st.setLong(2, newId);
+            st.execute();
+            st.close();
+            return (E) newObject;
+        }
+        catch (SQLException e)
+        {
+            throw new RuntimeException(
+                "An error occured while performing the requested operation.",
+                e);
+        }
     }
     
     /**
@@ -800,6 +974,35 @@ public class ProxyStorage<E>
                         /*
                          * The property is a setter.
                          */
+                        String propertyName = propertyNameFromAccessor(method
+                            .getName());
+                        PreparedStatement st = connection
+                            .prepareStatement("update "
+                                + getTargetTableName(targetClass)
+                                + " set "
+                                + propertyName
+                                + " = ? where proxystorage_id = ?");
+                        st.setLong(2, targetId);
+                        Object inputObject = args[0];
+                        if (inputObject.getClass() == StoredList.class)
+                        {
+                            throw new IllegalArgumentException(
+                                "Setters for stored lists are not allowed.");
+                        }
+                        if (inputObject.getClass() == BigInteger.class)
+                        {
+                            inputObject = ((BigInteger) inputObject)
+                                .toString(16);
+                        }
+                        if (inputObject instanceof ProxyObject)
+                        {
+                            inputObject = new Long(
+                                ((ProxyObject) inputObject)
+                                    .getProxyStorageId());
+                        }
+                        st.setObject(1, inputObject);
+                        st.execute();
+                        st.close();
                     }
                 }
                 /*

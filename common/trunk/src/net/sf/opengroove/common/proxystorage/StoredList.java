@@ -285,6 +285,7 @@ public class StoredList<T> extends AbstractList<T>
             {
                 PreparedStatement st = storage.connection
                     .prepareStatement("select count(*) from proxystorage_collections where id = ?");
+                st.setLong(1, id);
                 ResultSet rs = st.executeQuery();
                 boolean hasNext = rs.next();
                 int count = 0;
@@ -303,6 +304,30 @@ public class StoredList<T> extends AbstractList<T>
                         + "requested operation.", e);
             }
         }
+    }
+    
+    @Override
+    public int hashCode()
+    {
+        final int prime = 31;
+        int result = super.hashCode();
+        result = prime * result + (int) (id ^ (id >>> 32));
+        return result;
+    }
+    
+    @Override
+    public boolean equals(Object obj)
+    {
+        if (this == obj)
+            return true;
+        if (!super.equals(obj))
+            return false;
+        if (getClass() != obj.getClass())
+            return false;
+        final StoredList other = (StoredList) obj;
+        if (id != other.id)
+            return false;
+        return true;
     }
     
 }
