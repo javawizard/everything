@@ -19,6 +19,7 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import net.sf.opengroove.client.OpenGroove;
 import net.sf.opengroove.common.utils.Progress;
@@ -303,9 +304,9 @@ public class ProxyStorage<E>
      * Removes all objects that do not have the root as an ancestor. If there is
      * no current root, then this does nothing.
      * 
-     * This method uses a mark-and-sweep algorithm to remove
-     * objects. It should therefore not be called while the ProxyStorage object
-     * is in use to avoid losing data.
+     * This method uses a mark-and-sweep algorithm to remove objects. It should
+     * therefore not be called while the ProxyStorage object is in use to avoid
+     * losing data.
      * 
      * @param progress
      *            A progress object that will be updated as this vacuum
@@ -358,8 +359,78 @@ public class ProxyStorage<E>
          * We now have all of the referenced objects. Now we iterate over the
          * list of classes returned, and check each object in the corresponding
          * table to see if it's referenced in the set. If it's not, we'll remove
-         * it. Don't forget to interate over proxystorage_collections as well.
+         * it. For the class StoredList, we'll iterate over
+         * proxystorage_collections and use the "id" column instead of the
+         * "proxystorage_id" column.
          */
+        ArrayList<Class> toIterate = new ArrayList<Class>();
+        toIterate.addAll(allClasses);
+        toIterate.add(StoredList.class);
+        for (Class c : toIterate)
+        {
+            Set<Long> set = refs.get(c);
+            if (set == null)
+                /*
+                 * None of the objects of this class are referenced.
+                 */
+                set = new HashSet<Long>();
+            String tableName;
+            if (c == StoredList.class)
+                tableName = "proxystorage_collections";
+            else
+                tableName = getTargetTableName(c);
+            String idColumn = (c == StoredList.class) ? "id"
+                : "proxystorage_id";
+            try
+            {
+                PreparedStatement lst = connection
+                    .prepareStatement("select "
+                        + idColumn
+                        + " from "
+                        + tableName
+                        + " where not "
+                        + idColumn
+                        + " in ( "
+                        + delimited(set
+                            .toArray(new Long[0]),
+                            new ToString<Long>()
+                            {
+                                
+                                @Override
+                                public String toString(
+                                    Long object)
+                                {
+                                    return ""
+                                        + object
+                                            .longValue();
+                                }
+                            }, ",") + ")");
+                ResultSet rst = lst.executeQuery();
+                ArrayList<Long> toRemove = new ArrayList<Long>();
+                while (rst.next())
+                {
+                    toRemove.add(rst.getLong(0));
+                }
+                rst.close();
+                lst.close();
+                for (long removeId : toRemove)
+                {
+                    PreparedStatement st = connection
+                        .prepareStatement("delete from "
+                            + tableName + " where "
+                            + idColumn + " = ?");
+                    st.setLong(1, removeId);
+                    st.execute();
+                    st.close();
+                }
+            }
+            catch (SQLException e)
+            {
+                RuntimeException exception = new RuntimeException(
+                    "An error occured while scanning class table "
+                        + tableName);
+            }
+        }
     }
     
     /**
