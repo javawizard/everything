@@ -303,7 +303,7 @@ public class ProxyStorage<E>
      * Removes all objects that do not have the root as an ancestor. If there is
      * no current root, then this does nothing.
      * 
-     * This method uses a mark-and-sweep garbage collecting algorithm to remove
+     * This method uses a mark-and-sweep algorithm to remove
      * objects. It should therefore not be called while the ProxyStorage object
      * is in use to avoid losing data.
      * 
