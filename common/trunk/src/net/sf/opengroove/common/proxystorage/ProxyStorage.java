@@ -301,10 +301,11 @@ public class ProxyStorage<E>
     
     /**
      * Removes all objects that do not have the root as an ancestor. If there is
-     * no current root, then this does nothing. This should usually only be
-     * called when creating the ProxyStorage, as it might remove an object that
-     * has been created but not yet added into the hierarchy if called while the
-     * proxy storage is in use.
+     * no current root, then this does nothing.
+     * 
+     * This method uses a mark-and-sweep garbage collecting algorithm to remove
+     * objects. It should therefore not be called while the ProxyStorage object
+     * is in use to avoid losing data.
      * 
      * @param progress
      *            A progress object that will be updated as this vacuum
