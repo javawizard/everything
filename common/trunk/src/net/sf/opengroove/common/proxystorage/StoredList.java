@@ -9,7 +9,17 @@ import java.util.Collection;
 
 /**
  * A StoredList is a list that is stored in the ProxyStorage system. Read and
- * write operations all delegate to the database.
+ * write operations all delegate to the database.<br/><br/>
+ * 
+ * It's generally not a good idea to iterate over a stored list, unless it is
+ * known for certain that the list (or any other instances of it that correspond
+ * to the same database object) will not be modified elsewhere. The list's
+ * iterators are <b>not</b> fail-fast: The results are undefined if the list is
+ * modified while an iteration is in progress. In particular, if an iteration is
+ * in progress, and the list's size is reduced below the index of the current
+ * object that is being iterated over, the iterator will never return false from
+ * hasNext() again. <i>If the list needs to be iterated over</i>, the
+ * {@link #isolate()} method can be used to ensure iteration safety.
  * 
  * @author Alexander Boyd
  * 
@@ -166,7 +176,12 @@ public class StoredList<T> extends AbstractList<T>
      * stored list at this exact point in time. This should be used in
      * preference to creating a new ArrayList with this StoredList passed in as
      * a constructor since this StoredList could be modified while the new
-     * ArrayList is in the process of copying it's data.
+     * ArrayList is in the process of copying it's data.<br/><br/>
+     * 
+     * Whenever the contents of this list need to be iterated over, the
+     * iteration should be performed on a new list returned from this method,
+     * instead of this stored list itself. See
+     * {@link StoredList the class documentation} for more information.
      * 
      * @return
      */
