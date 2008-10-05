@@ -5,6 +5,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.AbstractList;
 import java.util.ArrayList;
+import java.util.Collection;
 
 /**
  * A StoredList is a list that is stored in the ProxyStorage system. Read and
@@ -328,6 +329,61 @@ public class StoredList<T> extends AbstractList<T>
         if (id != other.id)
             return false;
         return true;
+    }
+    
+    @Override
+    public boolean add(T e)
+    {
+        synchronized (storage.lock)
+        {
+            return super.add(e);
+        }
+    }
+    
+    @Override
+    public boolean addAll(int index,
+        Collection<? extends T> c)
+    {
+        synchronized (storage.lock)
+        {
+            return super.addAll(index, c);
+        }
+    }
+    
+    @Override
+    public void clear()
+    {
+        synchronized (storage.lock)
+        {
+            super.clear();
+        }
+    }
+    
+    @Override
+    public int indexOf(Object o)
+    {
+        synchronized (storage.lock)
+        {
+            return super.indexOf(o);
+        }
+    }
+    
+    @Override
+    public int lastIndexOf(Object o)
+    {
+        synchronized (storage.lock)
+        {
+            return super.lastIndexOf(o);
+        }
+    }
+    
+    @Override
+    protected void removeRange(int fromIndex, int toIndex)
+    {
+        synchronized (storage.lock)
+        {
+            super.removeRange(fromIndex, toIndex);
+        }
     }
     
 }
