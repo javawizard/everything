@@ -1,5 +1,10 @@
 package net.sf.opengroove.client.com;
-
+/**
+ * This class has been replaced by {@link PacketListener}.
+ * @deprecated
+ * @author Alexander Boyd
+ *
+ */
 public interface LowLevelMessageSink
 {
 	/**

@@ -43,5 +43,19 @@ public class Test046
         ProxyStorage<TestMessageList> storage = new ProxyStorage<TestMessageList>(
             TestMessageList.class, new File(
                 "sandbox/test046/db"));
+        System.out.println("about to do modifications");
+        TestMessageList list = storage.getRoot();
+        TestMessage message = storage
+            .create(TestMessage.class);
+        message.setName("testmessage");
+        message
+            .setMessage("This is the first test message.");
+        list.getList().add(message);
+        TestMessage m2 = storage.create(TestMessage.class);
+        list.getList().add(m2);
+        m2.setName("anothermessage");
+        m2
+            .setMessage("This is the second test message. This works!!!");
+        System.out.println(list.getList().remove(message));
     }
 }

@@ -16,7 +16,7 @@
           target: default              
          ================================= -->
 	<target name="javadoc">
-		<javadoc access="private" additionalparam="-J-Dfile.encoding=UTF-8 -subpackages net.sf.opengroove" author="true" source="1.6" sourcepath="src" splitindex="true" use="true" version="true" doctitle="OpenGroove Client Documentation" footer="&lt;a href='http://www.opengroove.org'&gt;OpenGroove&lt;/a&gt;">
+		<javadoc access="private" destdir="javadocs" additionalparam="-J-Dfile.encoding=UTF-8 -subpackages net.sf.opengroove" author="true" source="1.6" sourcepath="src" splitindex="true" use="true" version="true" doctitle="OpenGroove Client Documentation" footer="&lt;a href='http://www.opengroove.org'&gt;OpenGroove&lt;/a&gt;">
 			<link href="http://java.sun.com/javase/6/docs/api/" />
 		</javadoc>
 	</target>

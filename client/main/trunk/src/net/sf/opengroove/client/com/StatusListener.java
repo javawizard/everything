@@ -1,5 +1,12 @@
 package net.sf.opengroove.client.com;
 
+/**
+ * An interface that can be used to listen for various status changes in a
+ * Communicator or a CommandCommunicator.
+ * 
+ * @author Alexander Boyd
+ * 
+ */
 public interface StatusListener
 {
     /**
