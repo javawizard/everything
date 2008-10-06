@@ -45,4 +45,18 @@ public @interface Search
      * @return
      */
     public boolean exact() default true;
+    
+    /**
+     * This is only used if {@link #exact()} is false (and, by extension, the
+     * property type annotated is a string). If this is true, then the string is
+     * prefixed and suffixed with asterisks, thereby making it so that a search
+     * string can appear anywhere within the target property, instead of needing
+     * to match starting exactly at the beginning and ending exactly at the end.
+     * For example, with this equal to false, the string "abc*ghi" would match
+     * "abcdefghi" but not "123abcdefghijkl" or "123abcdefghi". With this set to
+     * true, however, all of the examples mentioned would match.
+     * 
+     * @return
+     */
+    public boolean anywhere() default true;
 }
