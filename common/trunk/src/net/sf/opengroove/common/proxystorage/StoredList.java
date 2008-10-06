@@ -56,8 +56,9 @@ public class StoredList<T> extends AbstractList<T>
             try
             {
                 PreparedStatement st = storage.connection
-                    .prepareStatement("select value from proxystorage_collections where id = ? and index ");
+                    .prepareStatement("select value from proxystorage_collections where id = ? and index = ?");
                 st.setLong(1, id);
+                st.setInt(2, index);
                 ResultSet rs = st.executeQuery();
                 if (!rs.next())
                 {
@@ -214,6 +215,8 @@ public class StoredList<T> extends AbstractList<T>
                 PreparedStatement rst = storage.connection
                     .prepareStatement("delete from proxystorage_collections "
                         + "where id = ? and index = ?");
+                rst.setLong(1, id);
+                rst.setInt(2, index);
                 rst.execute();
                 rst.close();
                 /*
@@ -404,6 +407,15 @@ public class StoredList<T> extends AbstractList<T>
     long getProxyStorageId()
     {
         return id;
+    }
+    
+    @Override
+    public boolean remove(Object o)
+    {
+        synchronized (storage.lock)
+        {
+            return super.remove(o);
+        }
     }
     
 }

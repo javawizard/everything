@@ -1039,10 +1039,14 @@ public class ProxyStorage<E>
                     "equals")
                     && args.length == 1)
                 {
+                    System.out.println("equals called");
                     Object compare = args[0];
                     if (!(compare instanceof ProxyObject))
                         return false;
                     ProxyObject object = (ProxyObject) compare;
+                    System.out.println("local id "
+                        + targetId + ", remote id "
+                        + object.getProxyStorageId());
                     long objectId = object
                         .getProxyStorageId();
                     return objectId == targetId;
