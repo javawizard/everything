@@ -398,13 +398,6 @@ public class ProxyStorage<E>
                                 public String toString(
                                     Long object)
                                 {
-                                    System.out
-                                        .println("id "
-                                            + object
-                                            + " in column "
-                                            + idColumn
-                                            + " allowed in table "
-                                            + tableName);
                                     return ""
                                         + object
                                             .longValue();
