@@ -374,19 +374,17 @@ public class ProxyStorage<E>
                  * None of the objects of this class are referenced.
                  */
                 set = new HashSet<Long>();
-            String tableName;
+            final String tableName;
             if (c == StoredList.class)
                 tableName = "proxystorage_collections";
             else
                 tableName = getTargetTableName(c);
-            String idColumn = (c == StoredList.class) ? "id"
+            final String idColumn = (c == StoredList.class) ? "id"
                 : "proxystorage_id";
             try
             {
                 PreparedStatement lst = connection
-                    .prepareStatement("select "
-                        + idColumn
-                        + " from "
+                    .prepareStatement("delete from "
                         + tableName
                         + " where not "
                         + idColumn
@@ -400,29 +398,20 @@ public class ProxyStorage<E>
                                 public String toString(
                                     Long object)
                                 {
+                                    System.out
+                                        .println("id "
+                                            + object
+                                            + " in column "
+                                            + idColumn
+                                            + " allowed in table "
+                                            + tableName);
                                     return ""
                                         + object
                                             .longValue();
                                 }
                             }, ",") + ")");
-                ResultSet rst = lst.executeQuery();
-                ArrayList<Long> toRemove = new ArrayList<Long>();
-                while (rst.next())
-                {
-                    toRemove.add(rst.getLong(0));
-                }
-                rst.close();
+                lst.execute();
                 lst.close();
-                for (long removeId : toRemove)
-                {
-                    PreparedStatement st = connection
-                        .prepareStatement("delete from "
-                            + tableName + " where "
-                            + idColumn + " = ?");
-                    st.setLong(1, removeId);
-                    st.execute();
-                    st.close();
-                }
             }
             catch (SQLException e)
             {
@@ -517,7 +506,7 @@ public class ProxyStorage<E>
                         throw new RuntimeException(e);
                     }
                 }
-                else
+                else if (method.getReturnType() == StoredList.class)
                 {
                     /*
                      * This method is a stored list.
@@ -1050,6 +1039,13 @@ public class ProxyStorage<E>
                     long objectId = object
                         .getProxyStorageId();
                     return objectId == targetId;
+                }
+                if (method
+                    .isAnnotationPresent(Search.class))
+                {
+                    /*
+                     * The method is a search method.
+                     */
                 }
                 if (method.getName().equalsIgnoreCase(
                     "hashCode")
