@@ -184,19 +184,20 @@ public class TaskbarNotificationFrame extends
         clickExitBorder = new BevelBorder(
             BevelBorder.LOWERED);
         exitButton = new JButton("X");
-        exitButton.setBorder(new CompoundBorder(
-            new CompoundBorder(new LineBorder(new Color(
-                200, 212, 245), 2), new LineBorder(
-                Color.GRAY, 1)),
-            new EmptyBorder(0, 2, 0, 2)));
+        exitButton.setMargin(new Insets(0, 2, 0, 2));
         exitButton.addActionListener(this);
         exitButton.setCursor(Cursor
             .getPredefinedCursor(Cursor.HAND_CURSOR));
+        JPanel exitPanel = new JPanel();
+        exitPanel.setLayout(new BorderLayout());
+        exitPanel.setBorder(new LineBorder(topPanel
+            .getBackground(), 2));
+        exitPanel.add(exitButton);
         Border topPanelBorder = BorderFactory
             .createMatteBorder(0, 0, 1, 0, Color.GRAY);
         topPanel.setBorder(topPanelBorder);
         topPanel.add(mainLabel, BorderLayout.CENTER);
-        topPanel.add(exitButton, BorderLayout.EAST);
+        topPanel.add(exitPanel, BorderLayout.EAST);
         content.add(pbar, BorderLayout.SOUTH);
         new Thread()
         {

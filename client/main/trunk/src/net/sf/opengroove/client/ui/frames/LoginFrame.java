@@ -34,6 +34,8 @@ import javax.swing.WindowConstants;
 
 import net.sf.opengroove.client.Statics;
 import net.sf.opengroove.client.ui.FillContainer;
+import net.sf.opengroove.client.ui.SVGPanel;
+
 import javax.swing.SwingUtilities;
 
 /**
@@ -52,7 +54,7 @@ public class LoginFrame extends javax.swing.JFrame
     {
         Statics.run();
     }
-    private FillContainer fillContainer;
+    private SVGPanel fillContainer;
     private JideButton helpButton;
     private JLabel useridLabel;
     private BalloonTip capsLockBalloon;
@@ -107,7 +109,9 @@ public class LoginFrame extends javax.swing.JFrame
             setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
             getContentPane().setLayout(thisLayout);
             {
-                fillContainer = new FillContainer();
+                fillContainer = new SVGPanel(new File(
+                    "icons/backdrops/loginframe.svg")
+                    .toURI().toURL().toString());
                 TableLayout fillContainerLayout = new TableLayout(
                     new double[][] {
                         { 12.0, TableLayout.PREFERRED,
@@ -120,8 +124,6 @@ public class LoginFrame extends javax.swing.JFrame
                 fillContainerLayout.setVGap(5);
                 getContentPane().add(fillContainer,
                     BorderLayout.CENTER);
-                fillContainer
-                    .setFillImageName("loginframe");
                 fillContainer
                     .setLayout(fillContainerLayout);
                 {
@@ -286,7 +288,9 @@ public class LoginFrame extends javax.swing.JFrame
                             });
                         northContents
                             .add(getPasswordField());
-                        passwordField.setBackground(new java.awt.Color(255,255,255));
+                        passwordField
+                            .setBackground(new java.awt.Color(
+                                255, 255, 255));
                     }
                     {
                         passwordFooterPanel = new JPanel();

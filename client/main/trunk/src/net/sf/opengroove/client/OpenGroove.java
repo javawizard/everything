@@ -111,6 +111,7 @@ import net.sf.opengroove.client.ui.FillContainer;
 import net.sf.opengroove.client.ui.ImportWorkspaceDialog;
 import net.sf.opengroove.client.ui.InviteToWorkspaceDialog;
 import net.sf.opengroove.client.ui.ItemChooser;
+import net.sf.opengroove.client.ui.SVGPanel;
 import net.sf.opengroove.client.ui.StandardWizardPage;
 import net.sf.opengroove.client.ui.StatusDialog;
 import net.sf.opengroove.client.ui.WebsiteButton;
@@ -3279,9 +3280,8 @@ public class OpenGroove
         launchbar.setIconImage(trayimage);
         launchbar.setSize(300, 500);
         loadLaunchbarMenus(userid, context, launchbar);
-        SimpleGradientPanel workspacesGradientPanel = new SimpleGradientPanel(
-            new Color(180, 200, 255), new Color(245, 249,
-                255), SimpleGradientPanel.VERTICAL);
+        SVGPanel workspacesGradientPanel = new SVGPanel(
+            new File("icons/backdrops/workspacestab.svg"));
         workspacesGradientPanel
             .setLayout(new BorderLayout());
         workspacesGradientPanel.setOpaque(true);
@@ -3300,9 +3300,8 @@ public class OpenGroove
         context.setContactsPanel(contactsPanel);
         contactsPanel.setLayout(new BoxLayout(
             contactsPanel, BoxLayout.Y_AXIS));
-        JPanel contactsTab = new SimpleGradientPanel(
-            new Color(180, 205, 255), new Color(245, 249,
-                255), SimpleGradientPanel.VERTICAL);
+        SVGPanel contactsTab = new SVGPanel(new File(
+            "icons/backdrops/contactstab.svg"));
         contactsTab.setLayout(new BorderLayout());
         JPanel contactsNorth = new JPanel();
         contactsNorth.setOpaque(false);

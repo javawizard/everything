@@ -7,6 +7,7 @@ import java.awt.Graphics2D;
 import java.awt.Image;
 import java.awt.geom.Dimension2D;
 import java.awt.image.BufferedImage;
+import java.io.File;
 
 import javax.swing.CellRendererPane;
 import javax.swing.JList;
@@ -18,6 +19,8 @@ import org.apache.batik.swing.gvt.GVTTreeRendererEvent;
 import org.apache.batik.swing.gvt.GVTTreeRendererListener;
 import org.apache.batik.swing.svg.GVTTreeBuilderAdapter;
 import org.apache.batik.swing.svg.GVTTreeBuilderEvent;
+import org.apache.batik.swing.svg.SVGDocumentLoaderAdapter;
+import org.apache.batik.swing.svg.SVGDocumentLoaderEvent;
 
 public class SVGPanel extends JPanel
 {
@@ -26,6 +29,11 @@ public class SVGPanel extends JPanel
     private JSVGCanvas canvas;
     
     public SVGPanel(String sourceUrl)
+    {
+        init(sourceUrl);
+    }
+    
+    private void init(String sourceUrl)
     {
         canvas = new JSVGCanvas()
         {
@@ -58,7 +66,41 @@ public class SVGPanel extends JPanel
                     SVGPanel.this.repaint();
                 }
             });
+        canvas
+            .addSVGDocumentLoaderListener(new SVGDocumentLoaderAdapter()
+            {
+                
+                @Override
+                public void documentLoadingCompleted(
+                    SVGDocumentLoaderEvent e)
+                {
+                    SVGPanel.this.repaint();
+                }
+            });
         canvas.setURI(sourceUrl);
+        try
+        {
+            BufferedImage tmp = new BufferedImage(1, 1,
+                BufferedImage.TYPE_INT_ARGB);
+            canvas.setSize(1, 1);
+            canvas.paint(tmp.createGraphics());
+        }
+        catch (Exception e)
+        {
+            e.printStackTrace();
+        }
+    }
+    
+    public SVGPanel(File file)
+    {
+        try
+        {
+            init(file.toURI().toURL().toString());
+        }
+        catch (Exception e)
+        {
+            throw new RuntimeException(e);
+        }
     }
     
     public void paintComponent(Graphics g)
