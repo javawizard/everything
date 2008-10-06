@@ -1037,7 +1037,27 @@ public class ProxyStorage<E>
                     .isAnnotationPresent(Search.class))
                 {
                     /*
-                     * The method is a search method.
+                     * The method is a search method. We'll check the search
+                     * type and perform the query.
+                     */
+                    Search annotation = method
+                        .getAnnotation(Search.class);
+                    String listProperty = annotation
+                        .listProperty();
+                    String searchProperty = annotation
+                        .searchProperty();
+                    /*
+                     * listProperty is the name of the column on this object
+                     * that contains the target list id. If the value of that
+                     * column is null, then we'll just return null or the empty
+                     * array, depending on the return type of this method. If
+                     * it's not null, then we'll run a select on the table for
+                     * the class that is the value of the list type annotation
+                     * on the getter for the listProperty, that narrows down
+                     * based on the search criteria passed into this method and
+                     * performs an inner select over to the
+                     * proxystorage_collections table, using the id of the
+                     * stored list obtained from the list property.
                      */
                 }
                 if (method.getName().equalsIgnoreCase(

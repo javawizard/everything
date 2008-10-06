@@ -6,7 +6,9 @@ package net.sf.opengroove.common.proxystorage;
  * objects in a particular stored list on that object will be searched, and a
  * list of those, or the first match, depending on whether the return type for
  * the method is an array of the object or a single instance of the object, will
- * be returned.
+ * be returned. The return type of the search method should either be the list
+ * type of the list to search, or an array of the list type of the list to
+ * search.
  * 
  * @author Alexander Boyd
  * 
@@ -26,6 +28,10 @@ public @interface Search
      * The name of the property that contains the data to be searched. This is a
      * property that should be present on the component type of the stored list
      * to search.
+     * 
+     * If, for some reason, this search wishes to operate on the proxy storage
+     * built-in id, then this string can be the literal "proxystorage_id", and
+     * the search method's argument must be of type long.
      * 
      * @return
      */
