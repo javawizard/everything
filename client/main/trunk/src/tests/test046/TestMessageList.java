@@ -15,6 +15,6 @@ public interface TestMessageList
     @ListType(TestMessage.class)
     public StoredList<TestMessage> getList();
     
-    @Search(anywhere = false, exact = true, listProperty = "list", searchProperty = "name")
+    @Search(exact = true, listProperty = "list", searchProperty = "name")
     public TestMessage getMessage(String name);
 }
