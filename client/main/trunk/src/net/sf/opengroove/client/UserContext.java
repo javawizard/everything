@@ -236,7 +236,8 @@ public class UserContext
         public void execute()
         {
             Contact[] contacts = getStorage()
-                .getAllContacts();
+                .getLocalUser().getContacts().toArray(
+                    new Contact[0]);
             for (Contact contact : contacts)
             {
                 updateContactIcon(contact.getUserid());
@@ -372,7 +373,8 @@ public class UserContext
             try
             {
                 Contact[] contacts = getStorage()
-                    .getAllContacts();
+                    .getLocalUser().getContacts().toArray(
+                        new Contact[0]);
                 Subscription[] subscriptions = com
                     .listSubscriptions();
                 for (Contact contact : contacts)
@@ -747,7 +749,8 @@ public class UserContext
         synchronized (refreshContactsLock)
         {
             Contact[] contactList = getStorage()
-                .getAllContacts();
+                .getLocalUser().getContacts().toArray(
+                    new Contact[0]);
             contactsPanel.removeAll();
             JProgressBar bar = new JProgressBar();
             bar.setIndeterminate(true);
@@ -926,24 +929,18 @@ public class UserContext
                             public void actionPerformed(
                                 ActionEvent e)
                             {
-                                Contact tContact = getStorage()
-                                    .getContact(
-                                        contact.getUserid());
                                 if (JOptionPane
                                     .showConfirmDialog(
                                         getLaunchbar(),
                                         "Are you sure you want to delete the contact "
-                                            + tContact
+                                            + contact
                                                 .getDisplayName()
                                             + "?",
                                         null,
                                         JOptionPane.YES_NO_OPTION) == JOptionPane.YES_OPTION)
                                 {
-                                    tContact
+                                    contact
                                         .setUserContact(false);
-                                    getStorage()
-                                        .setContact(
-                                            tContact);
                                     refreshContactsPaneAsynchronously();
                                 }
                             }
@@ -1055,7 +1052,8 @@ public class UserContext
         synchronized (contactStatusLock)
         {
             Contact[] contacts = getStorage()
-                .getAllContacts();
+                .getLocalUser().getContacts().toArray(
+                    new Contact[0]);
             ArrayList<Thread> threads = new ArrayList<Thread>();
             for (final Contact contact : contacts)
             {
@@ -1143,8 +1141,8 @@ public class UserContext
                     for (String computerName : contactComputers)
                     {
                         ContactComputer computer = null;
-                        for (ContactComputer test : new ArrayList<ContactComputer>(
-                            contact.getComputers()))
+                        for (ContactComputer test : contact
+                            .getComputers().isolate())
                         {
                             if (test.getName().equals(
                                 computerName))
@@ -1164,7 +1162,8 @@ public class UserContext
                         }
                         if (computer == null)
                         {
-                            computer = new ContactComputer();
+                            computer = contact
+                                .createComputer();
                             computer
                                 .setLag(Long.MAX_VALUE - 100);
                             computer.setName(computerName);
@@ -1257,12 +1256,10 @@ public class UserContext
                         statusHolder.isOnline());
                 }// end of (if contact exists) statement
                 status.setKnown(true);
-                contact.setStatus(status);
                 System.out
                     .println("backstoring contact with "
                         + contact.getComputers().size()
                         + " computers");
-                getStorage().setContact(contact);
             }
             catch (Exception exception)
             {
@@ -1294,7 +1291,6 @@ public class UserContext
             {
                 computer.getStatus().setOnline(false);
             }
-            getStorage().setContact(contact);
         }
         /*
          * Now, the updating of the launchbar contact icons with contact status.

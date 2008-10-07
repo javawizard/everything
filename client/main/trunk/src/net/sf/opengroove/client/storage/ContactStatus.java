@@ -2,33 +2,20 @@ package net.sf.opengroove.client.storage;
 
 import java.io.Serializable;
 
-public class ContactStatus implements Serializable
+import net.sf.opengroove.common.proxystorage.Property;
+import net.sf.opengroove.common.proxystorage.ProxyBean;
+
+@ProxyBean
+public interface ContactStatus
 {
+    @Property
+    public boolean isOnline();
     
-    /**
-     * 
-     */
-    private static final long serialVersionUID = 1097562916263112136L;
-    private boolean isOnline;
-    private boolean isActive;
-    private boolean isNonexistant;
-    private boolean isKnown;
-    private long idleTime;
+    @Property
+    public boolean isActive();
     
-    public boolean isOnline()
-    {
-        return isOnline;
-    }
-    
-    public boolean isActive()
-    {
-        return isActive;
-    }
-    
-    public boolean isNonexistant()
-    {
-        return isNonexistant;
-    }
+    @Property
+    public boolean isNonexistant();
     
     /**
      * Returns the time, measured in the server's time, that the contact last
@@ -36,41 +23,19 @@ public class ContactStatus implements Serializable
      * 
      * @return
      */
-    public long getIdleTime()
-    {
-        return idleTime;
-    }
+    @Property
+    public long getIdleTime();
     
-    public void setOnline(boolean isOnline)
-    {
-        System.out.println("setting contact online to "
-            + isOnline);
-        this.isOnline = isOnline;
-    }
+    public void setOnline(boolean isOnline);
     
-    public void setActive(boolean isActive)
-    {
-        this.isActive = isActive;
-    }
+    public void setActive(boolean isActive);
     
-    public void setNonexistant(boolean isNonexistant)
-    {
-        this.isNonexistant = isNonexistant;
-    }
+    public void setNonexistant(boolean isNonexistant);
     
-    public void setIdleTime(long idleTime)
-    {
-        this.idleTime = idleTime;
-    }
+    public void setIdleTime(long idleTime);
     
-    public boolean isKnown()
-    {
-        return isKnown;
-    }
+    @Property
+    public boolean isKnown();
     
-    public void setKnown(boolean isKnown)
-    {
-        this.isKnown = isKnown;
-    }
-    
+    public void setKnown(boolean isKnown);
 }

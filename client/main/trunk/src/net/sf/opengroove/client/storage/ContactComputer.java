@@ -25,8 +25,6 @@ public interface ContactComputer
     @Required
     public ContactStatus getStatus();
     
-    public void setStatus(ContactStatus status);
-    
     @Property
     public String getType();
     
