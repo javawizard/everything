@@ -360,6 +360,25 @@ public class OpenGroove
     private static final Object authLock = new Object();
     
     private static PopupMenu trayPopup;
+    private static final Thread gcThread = new Thread(
+        "OpenGroove-gc")
+    {
+        public void run()
+        {
+            while (true)
+            {
+                try
+                {
+                    Thread.sleep(20 * 1000);
+                }
+                catch (InterruptedException e)
+                {
+                    e.printStackTrace();
+                }
+                System.gc();
+            }
+        }
+    };
     
     /*
      * More rambling by me on converting this stuff over to multiple users
@@ -407,6 +426,8 @@ public class OpenGroove
      */
     public static void main(String[] args) throws Throwable
     {
+        gcThread.setDaemon(true);
+        gcThread.start();
         JFrame frame3 = new JFrame("opengroovemain");
         frame3.setSize(800, 10);
         // frame3.show();
@@ -1232,6 +1253,7 @@ public class OpenGroove
                                         {
                                             Contact contact = context
                                                 .getStorage()
+                                                .getLocalUser()
                                                 .getContact(
                                                     subscription
                                                         .getOnUser());
@@ -2772,7 +2794,8 @@ public class OpenGroove
                              * we store everything in a LocalUser object, and
                              * add it to the storage.
                              */
-                            LocalUser user = new LocalUser();
+                            LocalUser user = Storage
+                                .getStore().createUser();
                             user.setAutoSignOn(false);
                             user.setComputer(computerName);
                             user.setEmailAddress("");
@@ -3524,9 +3547,10 @@ public class OpenGroove
                 continue;
             }
             assert contactId != null;
-            if (context.getStorage().getContact(contactId) != null
-                && context.getStorage().getContact(
-                    contactId).isUserContact())
+            if (context.getStorage().getLocalUser()
+                .getContact(contactId) != null
+                && context.getStorage().getLocalUser()
+                    .getContact(contactId).isUserContact())
             {
                 JOptionPane
                     .showMessageDialog(context
@@ -3546,24 +3570,19 @@ public class OpenGroove
                 Contact contact = context.getStorage()
                     .getContact(contactId);
                 contact.setUserContact(true);
-                context.getStorage().setContact(contact);
             }
             else
             {
-                Contact contact = new Contact();
+                Contact contact = context.getStorage()
+                    .getLocalUser().createContact();
                 contact.setHasKeys(false);
                 contact.setLocalName("");
-                contact.setLastModified(
-                    Contact.Names.localName, System
-                        .currentTimeMillis());
                 contact.setRealName("");
                 contact.setUserContact(true);
                 contact.setUserid(contactId);
-                contact.setLastModified(
-                    Contact.Names.userContact, System
-                        .currentTimeMillis());
                 contact.setUserVerified(false);
-                context.getStorage().setContact(contact);
+                context.getStorage().getLocalUser()
+                    .getContacts().add(contact);
             }
             new Thread()
             {
