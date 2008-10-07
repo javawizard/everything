@@ -19,6 +19,9 @@ public class Test049
         ProxyStorage<TestMessageList> storage = new ProxyStorage<TestMessageList>(
             TestMessageList.class, new File(
                 "sandbox/test046/db"));
+        TestMessageList list = storage.getRoot();
+        System.out.println(list.getMessage("bogus"));
+        System.out.println(list.getMessage("1234"));
     }
     
 }
