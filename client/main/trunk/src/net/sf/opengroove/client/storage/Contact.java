@@ -13,34 +13,25 @@ import net.sf.opengroove.common.vcard.VCard;
 @ProxyBean
 public interface Contact
 {
-    
-    /**
-     * True if this contact does for sure exist. This is initially false when a
-     * contact is created, and is set to true when actual correspondence with
-     * the contact is received, or the contact's server indicates that this
-     * contact really does exist. Some operations, such as adding a user to a
-     * workspace, won't succeed unless that user has this field set to true.
-     */
-    private boolean existanceVerified;
-    
-    /**
-     * The list of this contact's computers. This is automatically synchronized
-     * every time the local user goes online.
-     */
-    private ArrayList<ContactComputer> computers = new ArrayList<ContactComputer>();
-    
+    @Property
     public String getUserid();
     
+    @Property
     public BigInteger getRsaEncPub();
     
+    @Property
     public BigInteger getRasEncMod();
     
+    @Property
     public BigInteger getRsaSigPub();
     
+    @Property
     public BigInteger getRsaSigMod();
     
+    @Property
     public boolean isUserContact();
     
+    @Property
     public boolean isUserVerified();
     
     public void setUserid(String userid);
@@ -57,12 +48,12 @@ public interface Contact
     
     public void setUserVerified(boolean isUserVerified);
     
+    @Property
     public boolean isHasKeys();
-    
-    public ArrayList<ContactComputer> getComputers();
     
     public void setHasKeys(boolean hasKeys);
     
+    @Property
     public String getLocalName();
     
     public void setLocalName(String localName);
@@ -75,39 +66,27 @@ public interface Contact
      * 
      * @return
      */
-    public String getDisplayName()
-    {
-        if (getLocalName() != null
-            && !getLocalName().equals(""))
-            return getLocalName();
-        if (getRealName() != null
-            && !getRealName().equals(""))
-            return getRealName();
-        return getUserid();
-    }
+    @Property
+    public String getDisplayName();
     
-    public String getRealName()
-    {
-        return realName;
-    }
+    @Property
+    public String getRealName();
     
-    public void setRealName(String realName)
-    {
-        this.realName = realName;
-    }
+    public void setRealName(String realName);
     
-    public ContactStatus getStatus()
-    {
-        if (status == null)
-        {
-            status = new ContactStatus();
-        }
-        return status;
-    }
+    @Property
+    @Required
+    public ContactStatus getStatus();
     
-    public void setStatus(ContactStatus status)
-    {
-        this.status = status;
-    }
+    public void setStatus(ContactStatus status);
     
+    @Property
+    @ListType(ContactComputer.class)
+    public StoredList<ContactComputer> getComputers();
+    
+    @Search(listProperty = "computers", searchProperty = "name")
+    public ContactComputer getComputer(String name);
+    
+    @Constructor
+    public ContactComputer createComputer();
 }

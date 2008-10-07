@@ -8,7 +8,8 @@ import java.io.Serializable;
  * @author Alexander Boyd
  * 
  */
-public class ContactComputer implements Serializable
+@ProxyBean
+public interface ContactComputer implements Serializable
 {
     
     /**
