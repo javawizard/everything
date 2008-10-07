@@ -145,6 +145,16 @@ public interface LocalUser
     @Property
     public String getPublicEmailAddress();
     
+    @Property
+    @ListType(ConfigProperty.class)
+    public StoredList<ConfigProperty> getProperties();
+    
+    @Constructor
+    public ConfigProperty createProperty();
+    
+    @Search(listProperty = "properties", searchProperty = "name")
+    public ConfigProperty getProperty(String name);
+    
     public static class CustomDelegate implements Delegate
     {
         

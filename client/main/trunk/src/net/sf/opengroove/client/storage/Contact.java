@@ -78,8 +78,6 @@ public interface Contact
     @Required
     public ContactStatus getStatus();
     
-    public void setStatus(ContactStatus status);
-    
     @Property
     @ListType(ContactComputer.class)
     public StoredList<ContactComputer> getComputers();

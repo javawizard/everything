@@ -19,6 +19,7 @@ import java.util.HashMap;
 import java.util.Hashtable;
 
 import net.sf.opengroove.client.workspace.WorkspaceWrapper;
+import net.sf.opengroove.common.proxystorage.ProxyStorage;
 import net.sf.opengroove.common.security.Hash;
 import net.sf.opengroove.common.utils.Userids;
 
@@ -34,15 +35,18 @@ public class Storage
 {
     private static File base;
     
-    private static ArrayList<String> deletedWorkspaces = new ArrayList<String>();
-    
-    private static File systemConfig;
-    
     private static File logFolder;
+    
+    private static DataStore dataStore;
+    
+    private static ProxyStorage<DataStore> proxyStorage;
     
     /**
      * Initializes the Storage class. This should only be called once per JVM
-     * instance.
+     * instance. This method may take a long time to return, since it creates a
+     * ProxyStorage instance to use as the backing data store, and ProxyStorage
+     * vacuums itself when first constructed (vacuuming uses a mark-and-sweep
+     * algorithm, which is inherently slow for a large data set).
      * 
      * @param file
      *            The file that the storage class should use to store all of
@@ -54,18 +58,15 @@ public class Storage
             throw new RuntimeException(
                 "Storage is already initialized");
         base = file;
-        auth = new File(base, "auth");
-        if (!auth.exists())
-            auth.mkdirs();
-        systemConfig = new File(base, "systemconfig");
-        if (!systemConfig.exists())
-            systemConfig.mkdirs();
         logFolder = new File(base, "logs");
         if (!logFolder.exists())
             logFolder.mkdirs();
+        proxyStorage = new ProxyStorage(DataStore.class,
+            new File("base", "proxystorage"));
+        dataStore = proxyStorage.getRoot();
     }
     
-    private String userid;
+    private LocalUser user;
     
     /**
      * Creates a storage object for the specified user id. The Storage class
@@ -78,25 +79,14 @@ public class Storage
      */
     protected Storage(String userid)
     {
-        this.userid = userid;
+        this.user = dataStore.getUser(userid);
         File tbase = new File(
             new File(base, "userspecific"), userid.replace(
                 ":", "$"));
         if (!tbase.exists())
             tbase.mkdirs();
-        mOutCache = iItem(tbase, "moutcache");
-        mInCache = iItem(tbase, "mincache");
-        mArchive = iItem(tbase, "marchive");
-        mAttachments = iItem(tbase, "mattachments");
-        contacts = iItem(tbase, "contacts");
-        workspaces = iItem(tbase, "workspaces");
-        workspaceDataStore = iItem(tbase, "workspacedstore");
-        config = iItem(tbase, "config");
-        featureStorage = iItem(tbase, "featuremanager");
         pluginStore = iItem(tbase, "plugins");
         helpStore = iItem(tbase, "help");
-        pluginInfoStore = iItem(tbase, "plugindesc");
-        updateSiteStore = iItem(tbase, "updatesites");
     }
     
     private static final Hashtable<String, Storage> singletons = new Hashtable<String, Storage>();
@@ -122,11 +112,6 @@ public class Storage
         return storage;
     }
     
-    public File getFeatureStorage()
-    {
-        return featureStorage;
-    }
-    
     private static File iItem(File tbase, String itemname)
     {
         File file = new File(tbase, itemname);
@@ -135,25 +120,6 @@ public class Storage
         return file;
     }
     
-    private static File auth;
-    
-    private File config;
-    
-    private File workspaceDataStore;
-    
-    private File workspaces;
-    
-    private File mInCache;
-    
-    private File mOutCache;
-    
-    private File mArchive;
-    
-    private File mAttachments;
-    
-    private File contacts;
-    
-    private File featureStorage;
     /**
      * This folder contains the plugin jar files representing the plugins that
      * the user has installed, with each file bearing for it's name the id of
@@ -161,27 +127,6 @@ public class Storage
      * storage files.
      */
     private File pluginStore;
-    /**
-     * For each plugin installed (IE for each file under {@link #pluginStore}),
-     * there is a file under here, with it's name being the same as the name of
-     * the file under the aforementioned folder (or, in otherwords, the plugin's
-     * id). It's contents are a serialized LocalPlugin, representing the
-     * information about the plugin, such as whether or not it is enabled, the
-     * update site that the plugin should be updated from, what version level
-     * the user wishes to receive updates for, etc.
-     */
-    private File pluginInfoStore;
-    /**
-     * For each update site present (including built-in ones), there is a file
-     * present. It's name is irrelevant (it's usually a randomly-generated id).
-     * It's contents are a serialized LocalUpdateSite, which contains
-     * information about the update site's url, it's name (as last downloaded
-     * from the update site itself), and it's description (similarly
-     * downloaded). For built-in update sites, the UpdateSiteBrowser creates an
-     * update site here for each built in update site, so that it's name and
-     * description as sent back by the server can be tracked.
-     */
-    private File updateSiteStore;
     
     private File helpStore;
     
@@ -197,8 +142,8 @@ public class Storage
      */
     public static LocalUser[] getUsers()
     {
-        return listObjectContentsAsArray(auth,
-            LocalUser.class);
+        return dataStore.getUsers().toArray(
+            new LocalUser[0]);
     }
     
     public static LocalUser[] getUsersLoggedIn()
@@ -226,17 +171,24 @@ public class Storage
     }
     
     /**
-     * Adds a new user, or updates an existing one if there is a user stored
-     * with the same realm and username.
+     * Creates a new local user. The user must be added before it will appear in
+     * the list of local users.
      * 
-     * @param user
-     *            The user to store
+     * @return
      */
-    public static void storeUser(LocalUser user)
+    public LocalUser createUser()
     {
-        File userFile = new File(auth, user.getUserid()
-            .replace(":", "$"));
-        writeObjectToFile(user, userFile);
+        return dataStore.createUser();
+    }
+    
+    public static DataStore getStore()
+    {
+        return dataStore;
+    }
+    
+    public static void addUser(LocalUser user)
+    {
+        dataStore.getUsers().add(user);
     }
     
     /**
@@ -246,8 +198,7 @@ public class Storage
      */
     public LocalUser getLocalUser()
     {
-        return (LocalUser) readObjectFromFile(new File(
-            auth, this.userid.replace(":", "$")));
+        return user;
     }
     
     /**
@@ -341,16 +292,7 @@ public class Storage
      */
     public static LocalUser getLocalUser(String userid)
     {
-        try
-        {
-            return (LocalUser) readObjectFromFile(new File(
-                auth, userid.replace(":", "$")));
-        }
-        catch (Exception e)
-        {
-            e.printStackTrace();
-            return null;
-        }
+        return dataStore.getUser(userid);
     }
     
     /**
@@ -375,44 +317,6 @@ public class Storage
     }
     
     /**
-     * Gets a list of contacts for this user. This list may be a bit large, so
-     * it's best not to over-use this method.
-     * 
-     * @return a list of contacts for this user.
-     */
-    public synchronized Contact[] getAllContacts()
-    {
-        File[] contactEntries = contacts.listFiles();
-        Contact[] contactArray = new Contact[contactEntries.length];
-        for (int i = 0; i < contactEntries.length; i++)
-        {
-            contactArray[i] = (Contact) readObjectFromFile(contactEntries[i]);
-        }
-        return contactArray;
-    }
-    
-    /**
-     * Gets a particular contact by the realm and username specified, returning
-     * null if the contact specified does not exist.
-     * 
-     * @param userid
-     *            The userid (or username, in which case the realm of this
-     *            storage instance will be used to create a userid) of the
-     *            contact to get
-     * @return The contact, or null if the contact does not exist on this
-     *         computer
-     */
-    public synchronized Contact getContact(String userid)
-    {
-        userid = resolve(userid);
-        if (!new File(contacts, userid.replace(":", "$"))
-            .exists())
-            return null;
-        return (Contact) readObjectFromFile(new File(
-            contacts, userid.replace(":", "$")));
-    }
-    
-    /**
      * If the specified value is a userid, returns it. If it is a username,
      * returns a userid made up of the realm of this storage instance's user and
      * the username specified.
@@ -422,69 +326,8 @@ public class Storage
      */
     private String resolve(String useridOrUsername)
     {
-        return Userids.resolveTo(useridOrUsername,
-            this.userid);
-    }
-    
-    public synchronized int getContactCount()
-    {
-        return contacts.list().length;
-    }
-    
-    /**
-     * adds or updates a contact. If the contact already exists (IE a contact
-     * with the same username and realm is present on the file system), the
-     * contact's information will be updated. If not, the contact will be
-     * created.
-     * 
-     * @param contact
-     */
-    
-    public synchronized void setContact(Contact contact)
-    {
-        File contactFile = new File(contacts, contact
-            .getUserid().replace(":", "$"));
-        /*
-         * TODO: is the following delete statement necessary? Perhaps the
-         * contact file should just be written over. Actually, this whole file
-         * needs to be reworked on that idea. Perhaps, then, the old file could
-         * be renamed to have $$.old on the end, and then write the new file as
-         * a file with $$.new on the end, rename that to the regular file name
-         * and delete the $$.old file. This would make it so that if OpenGroove
-         * were to unexpectedly terminate during an operation, nothing would be
-         * lost. Perhaps, then, the stuff in this file should just use the proxy
-         * storage system, and I should write what I just described into the
-         * proxy storage system.
-         * 
-         * TODO: All over this file is the magic string "$", for replacing the :
-         * character in userids, since : isn't allowed in filenames on most file
-         * systems. This should probably be put into a static constant, or
-         * better yet, moved into a method on Userids.java that handles
-         * converting userids to a disk-friendly format. Actually, the
-         * ProxyStorage system would probably resolve the problem entirely, see
-         * the todo item above this one.
-         */
-        if (contactFile.exists())
-            contactFile.delete();
-        writeObjectToFile(contact, contactFile);
-    }
-    
-    /**
-     * Deletes the contact specified, throwing a RuntimeException if the
-     * operation failed.
-     * 
-     * @param realm
-     *            the realm of the contact to delete
-     * @param username
-     *            the username of the contact to delete
-     */
-    public synchronized void deleteContact(String userid)
-    {
-        userid = resolve(userid);
-        if (!new File(contacts, userid.replace(":", "$"))
-            .delete())
-            throw new RuntimeException(
-                "The contact could not be deleted.");
+        return Userids.resolveTo(useridOrUsername, user
+            .getUserid());
     }
     
     /**
@@ -686,43 +529,6 @@ public class Storage
     }
     
     /**
-     * Lists the workspace information for all workspaces that this user has.
-     * 
-     * @return
-     */
-    public synchronized WorkspaceWrapper[] listWorkspaces()
-    {
-        return listObjectContentsAsArray(workspaces,
-            WorkspaceWrapper.class);
-    }
-    
-    public synchronized void addOrUpdateWorkspace(
-        WorkspaceWrapper workspace)
-    {
-        if (!deletedWorkspaces.contains(workspace.getId()))
-            writeObjectToFile(workspace, new File(
-                workspaces, workspace.getId()));
-    }
-    
-    public synchronized void removeWorkspace(
-        WorkspaceWrapper workspace)
-    {
-        new File(workspaces, workspace.getId()).delete();
-        deletedWorkspaces.add(workspace.getId());
-    }
-    
-    public WorkspaceWrapper getWorkspaceById(String id)
-    {
-        return (WorkspaceWrapper) readObjectFromFile(new File(
-            workspaces, id));
-    }
-    
-    public File getWorkspaceDataStore()
-    {
-        return workspaceDataStore;
-    }
-    
-    /**
      * This method is used to get the folder that holds all of this user's
      * installed plugins.
      * 
@@ -733,11 +539,12 @@ public class Storage
         return pluginStore;
     }
     
-    public String getConfigProperty(String key)
+    public synchronized String getConfigProperty(String key)
     {
-        if (!new File(config, key).exists())
+        ConfigProperty property = user.getProperty(key);
+        if (property == null)
             return null;
-        return readFile(new File(config, key));
+        return property.getValue();
     }
     
     /**
@@ -749,24 +556,39 @@ public class Storage
      * @param defaultValue
      * @return
      */
-    public String getConfigProperty(String key,
-        String defaultValue)
+    public synchronized String getConfigProperty(
+        String key, String defaultValue)
     {
-        String p = getConfigProperty(key);
-        if (p == null)
+        ConfigProperty property = user.getProperty(key);
+        if (property == null)
         {
-            setConfigProperty(key, defaultValue);
+            property = user.createProperty();
+            property.setName(key);
+            property.setValue(defaultValue);
+            user.getProperties().add(property);
             return defaultValue;
         }
-        return p;
+        return property.getValue();
     }
     
-    public void setConfigProperty(String key, String value)
+    public synchronized void setConfigProperty(String key,
+        String value)
     {
-        if (value == null)
-            new File(config, key).delete();
-        else
-            writeFile(value, new File(config, key));
+        ConfigProperty property = user.getProperty(key);
+        if (property != null && key == null)
+        {
+            user.getProperties().remove(property);
+            return;
+        }
+        if (property == null)
+        {
+            property = user.createProperty();
+            property.setName(key);
+            property.setValue(value);
+            user.getProperties().add(property);
+            return;
+        }
+        property.setValue(value);
     }
     
     /**
@@ -776,36 +598,35 @@ public class Storage
      * @param key
      * @return
      */
-    public static String getSystemConfigProperty(String key)
+    public static synchronized String getSystemConfigProperty(
+        String key)
     {
-        if (!new File(systemConfig, key).exists())
+        ConfigProperty property = dataStore
+            .getProperty(key);
+        if (property == null)
             return null;
-        return readFile(new File(systemConfig, key));
+        return property.getValue();
     }
     
-    public static void setSystemConfigProperty(String key,
-        String value)
+    public static synchronized void setSystemConfigProperty(
+        String key, String value)
     {
-        if (value == null && key == "autologinuser")
+        ConfigProperty property = dataStore
+            .getProperty(key);
+        if (property != null && key == null)
         {
-            System.out
-                .println("%%%%%%autologinuser set to null");
-            Exception e = new Exception();
-            StackTraceElement[] st = e.getStackTrace();
-            System.out.println("st1 " + st[0]);
-            System.out.println("st2" + st[1]);
-            System.out.println();
-            System.out.println();
+            dataStore.getProperties().remove(property);
+            return;
         }
-        if (value == null)
-            new File(systemConfig, key).delete();
-        else
-            writeFile(value, new File(systemConfig, key));
-    }
-    
-    public static void addUser(LocalUser user)
-    {
-        storeUser(user);
+        if (property == null)
+        {
+            property = dataStore.createProperty();
+            property.setName(key);
+            property.setValue(value);
+            dataStore.getProperties().add(property);
+            return;
+        }
+        property.setValue(value);
     }
     
 }

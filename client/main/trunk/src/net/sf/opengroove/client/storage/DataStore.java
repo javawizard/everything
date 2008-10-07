@@ -32,4 +32,15 @@ public interface DataStore
      */
     @Constructor
     public LocalUser createUser();
+    
+    @Property
+    @ListType(ConfigProperty.class)
+    public StoredList<ConfigProperty> getProperties();
+    
+    @Constructor
+    public ConfigProperty createProperty();
+    
+    @Search(listProperty = "properties", searchProperty = "name")
+    public ConfigProperty getProperty(String name);
+    
 }

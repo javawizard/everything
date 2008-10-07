@@ -2,6 +2,8 @@ package net.sf.opengroove.client.storage;
 
 import java.io.Serializable;
 
+import net.sf.opengroove.common.proxystorage.*;
+
 /**
  * This class stores information about a contact's computer.
  * 
@@ -9,67 +11,26 @@ import java.io.Serializable;
  * 
  */
 @ProxyBean
-public interface ContactComputer implements Serializable
+public interface ContactComputer
 {
+    @Property
+    public long getLag();
     
-    /**
-     * 
-     */
-    private static final long serialVersionUID = -5092427115370001261L;
-    /**
-     * The contact's computer name.
-     */
-    private String name;
-    /**
-     * The type of computer that the contact is
-     */
-    private String type;
-    /**
-     * The server's lag relative to the contact's time.
-     */
-    private long lag;
-    private ContactStatus status;
+    public void setLag(long lag);
     
-    public long getLag()
-    {
-        return lag;
-    }
+    @Property
+    public String getName();
     
-    public void setLag(long lag)
-    {
-        this.lag = lag;
-    }
+    @Property
+    @Required
+    public ContactStatus getStatus();
     
-    public String getName()
-    {
-        return name;
-    }
+    public void setStatus(ContactStatus status);
     
-    public ContactStatus getStatus()
-    {
-        if (status == null)
-            status = new ContactStatus();
-        return status;
-    }
+    @Property
+    public String getType();
     
-    public void setStatus(ContactStatus status)
-    {
-        this.status = status;
-    }
+    public void setName(String name);
     
-    public String getType()
-    {
-        return type;
-    }
-    
-    public void setName(String name)
-    {
-        this.name = name;
-    }
-    
-    public void setType(String type)
-    {
-        this.type = type;
-    }
-    
+    public void setType(String type);
 }
