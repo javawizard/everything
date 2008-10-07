@@ -1,5 +1,9 @@
 package net.sf.opengroove.common.proxystorage;
 
+import java.lang.annotation.Documented;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+
 /**
  * Methods on an object annotated with ProxyBean can be annotated with this to
  * indicate that the method is a search method. When the method is called,
@@ -13,6 +17,8 @@ package net.sf.opengroove.common.proxystorage;
  * @author Alexander Boyd
  * 
  */
+@Retention(RetentionPolicy.RUNTIME)
+@Documented
 public @interface Search
 {
     /**

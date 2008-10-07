@@ -897,10 +897,11 @@ public class ProxyStorage<E>
     {
         synchronized (lock)
         {
+            String statement = "select count(*) from "
+                + getTargetTableName(c)
+                + " where proxystorage_id = ?";
             PreparedStatement st = connection
-                .prepareStatement("select count(*) from "
-                    + getTargetTableName(c)
-                    + " where proxystorage_id = ?");
+                .prepareStatement(statement);
             st.setLong(1, id);
             ResultSet rs = st.executeQuery();
             rs.next();
@@ -1022,14 +1023,10 @@ public class ProxyStorage<E>
                     "equals")
                     && args.length == 1)
                 {
-                    System.out.println("equals called");
                     Object compare = args[0];
                     if (!(compare instanceof ProxyObject))
                         return false;
                     ProxyObject object = (ProxyObject) compare;
-                    System.out.println("local id "
-                        + targetId + ", remote id "
-                        + object.getProxyStorageId());
                     long objectId = object
                         .getProxyStorageId();
                     return objectId == targetId;
@@ -1099,8 +1096,9 @@ public class ProxyStorage<E>
                         .substring(0, 1).toUpperCase()
                         + searchProperty.substring(1);
                     Method listGetterMethod = method
-                        .getDeclaringClass().getMethod(
-                            capitalizedListProperty,
+                        .getDeclaringClass()
+                        .getMethod(
+                            "get" + capitalizedListProperty,
                             new Class[0]);
                     ListType listTypeAnnotation = listGetterMethod
                         .getAnnotation(ListType.class);
@@ -1116,8 +1114,8 @@ public class ProxyStorage<E>
                     Class listType = listTypeAnnotation
                         .value();
                     Method searchGetterMethod = listType
-                        .getMethod(
-                            capitalizedSearchProperty,
+                        .getMethod("get"
+                            + capitalizedSearchProperty,
                             new Class[0]);
                     /*
                      * At this point, we have method objects representing the
@@ -1191,6 +1189,10 @@ public class ProxyStorage<E>
                     && args.length == 0)
                 {
                     return (int) targetId * 31;
+                }
+                if (method.getName().equals("toString"))
+                {
+                    return "ProxyStorage-id" + targetId;
                 }
                 if (isPropertyMethod(method))
                 {
