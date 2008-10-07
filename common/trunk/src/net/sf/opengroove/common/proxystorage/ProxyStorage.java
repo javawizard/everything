@@ -1442,6 +1442,7 @@ public class ProxyStorage<E>
                         st.setObject(1, inputObject);
                         st.execute();
                         st.close();
+                        return null;
                     }
                 }
                 /*
@@ -1539,7 +1540,9 @@ public class ProxyStorage<E>
             }
         }
         if (!getter.isAnnotationPresent(Property.class))
+        {
             return false;
+        }
         return true;
     }
 }
