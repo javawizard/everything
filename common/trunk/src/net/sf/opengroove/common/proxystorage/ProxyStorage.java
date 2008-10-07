@@ -75,7 +75,7 @@ public class ProxyStorage<E>
     final Object lock = new Object();
     
     public ProxyStorage(Class<E> rootClass, File location)
-        throws SQLException
+
     {
         this.rootClass = rootClass;
         try
@@ -89,11 +89,20 @@ public class ProxyStorage<E>
                     + "used as the backend for ProxyStorage, "
                     + "and so is required.", e);
         }
-        connection = DriverManager.getConnection("jdbc:h2:"
-            + location.getPath(), "sa", "");
-        dbInfo = connection.getMetaData();
-        checkSystemTables();
-        checkTables(rootClass, allClasses);
+        try
+        {
+            connection = DriverManager.getConnection(
+                "jdbc:h2:" + location.getPath(), "sa", "");
+            dbInfo = connection.getMetaData();
+            checkSystemTables();
+            checkTables(rootClass, allClasses);
+        }
+        catch (Exception e)
+        {
+            throw new RuntimeException(
+                "An exception occured while initializing the proxy storage",
+                e);
+        }
         vacuum(new Progress());
     }
     

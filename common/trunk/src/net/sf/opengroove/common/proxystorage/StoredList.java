@@ -27,6 +27,24 @@ import java.util.Collection;
  */
 public class StoredList<T> extends AbstractList<T>
 {
+    @Override
+    public Object[] toArray()
+    {
+        synchronized (storage.lock)
+        {
+            return super.toArray();
+        }
+    }
+    
+    @Override
+    public <N> N[] toArray(N[] a)
+    {
+        synchronized (storage.lock)
+        {
+            return super.toArray(a);
+        }
+    }
+    
     /**
      * The class of the objects that are members of this list.
      * {@link Class#isAnnotationPresent(Class) targetClass.isAnnotationPresent}
