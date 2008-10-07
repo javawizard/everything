@@ -96,9 +96,6 @@ public interface LocalUser
     public void setLag(long lag);
     
     @Property
-    public boolean getAutoSignOn();
-    
-    @Property
     public String getComputer();
     
     @Property
