@@ -1395,7 +1395,11 @@ public class ProxyStorage<E>
                  * object, in which case the first match will be returned or
                  * null if there wasn't a match.
                  */
-                return null;
+                throw new UnsupportedOperationException(
+                    "The method "
+                        + method.getName()
+                        + " is not supported for the proxy type "
+                        + targetClass.getName());
             }
         }
     }

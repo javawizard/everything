@@ -6,5 +6,5 @@ import java.lang.annotation.RetentionPolicy;
 @Retention(RetentionPolicy.RUNTIME)
 public @interface CustomProperty
 {
-    public Class<Delegate> value();
+    public Class<? extends Delegate> value();
 }
