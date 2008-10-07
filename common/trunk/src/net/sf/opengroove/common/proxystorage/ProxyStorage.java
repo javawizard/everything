@@ -1333,8 +1333,37 @@ public class ProxyStorage<E>
                             .isAnnotationPresent(
                                 ProxyBean.class))
                         {
+                            /*
+                             * TODO: if @Required is present, then instead of
+                             * returning null, create a new one, insert it, and
+                             * return it.
+                             */
+                            boolean isRequired = method
+                                .isAnnotationPresent(Required.class);
                             if (result == null)
-                                return null;
+                            {
+                                if (!isRequired)
+                                    return null;
+                                /*
+                                 * This property is required, but is null. We'll
+                                 * create a new one and set it on this object.
+                                 */
+                                ProxyObject newObject = (ProxyObject) create(method
+                                    .getReturnType());
+                                long newId = newObject
+                                    .getProxyStorageId();
+                                PreparedStatement ust = connection
+                                    .prepareStatement("update "
+                                        + getTargetTableName(targetClass)
+                                        + " set "
+                                        + propertyName
+                                        + " = ? where proxystorage_id = ?");
+                                ust.setLong(1, newId);
+                                ust.setLong(2, targetId);
+                                ust.executeUpdate();
+                                ust.close();
+                                result = newId;
+                            }
                             return getById((Long) result,
                                 method.getReturnType());
                         }
