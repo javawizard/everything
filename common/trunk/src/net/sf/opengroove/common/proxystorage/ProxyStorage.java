@@ -2,6 +2,7 @@ package net.sf.opengroove.common.proxystorage;
 
 import java.beans.Introspector;
 import java.io.File;
+import java.lang.reflect.Array;
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Method;
 import java.lang.reflect.Proxy;
@@ -1059,6 +1060,39 @@ public class ProxyStorage<E>
                      * proxystorage_collections table, using the id of the
                      * stored list obtained from the list property.
                      */
+                    PreparedStatement lst = connection
+                        .prepareStatement("select "
+                            + listProperty
+                            + " from "
+                            + getTargetTableName(targetClass)
+                            + " where proxystorage_id = ?");
+                    lst.setLong(1, targetId);
+                    ResultSet lrs = lst.executeQuery();
+                    if (!lrs.next())
+                        throw new RuntimeException(
+                            "mismatched object with id "
+                                + targetId + " and class "
+                                + targetClass.getName());
+                    long listId = lrs.getLong(1);
+                    if (lrs.wasNull())
+                    {
+                        lrs.close();
+                        lst.close();
+                        if (method.getReturnType()
+                            .isArray())
+                            return Array.newInstance(method
+                                .getReturnType()
+                                .getComponentType(), 0);
+                        else
+                            return null;
+                    }
+                    lrs.close();
+                    lst.close();
+                    /*
+                     * The list is not null, and we have it's id. Now we'll put
+                     * together a query to search for the actual objects.
+                     */
+                    Method listGetterMethod = 
                 }
                 if (method.getName().equalsIgnoreCase(
                     "hashCode")
