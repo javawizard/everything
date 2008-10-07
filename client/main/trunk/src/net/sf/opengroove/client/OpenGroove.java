@@ -128,7 +128,6 @@ import net.sf.opengroove.common.utils.Userids;
 
 import base64.Base64Coder;
 
-import com.elevenworks.swing.panel.SimpleGradientPanel;
 import com.jidesoft.dialog.AbstractDialogPage;
 import com.jidesoft.dialog.ButtonNames;
 import com.jidesoft.dialog.JideOptionPane;
