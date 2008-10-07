@@ -67,8 +67,8 @@ public @interface Search
      * For example, with this equal to false, the string "abc*ghi" would match
      * "abcdefghi" but not "123abcdefghijkl" or "123abcdefghi". With this set to
      * true, however, all of the examples mentioned would match.
-     * 
+
      * @return
      */
-    public boolean anywhere() default true;
+    public boolean anywhere() default false;
 }

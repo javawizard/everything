@@ -1190,6 +1190,12 @@ public class ProxyStorage<E>
                 {
                     return (int) targetId * 31;
                 }
+                if (method
+                    .isAnnotationPresent(Constructor.class))
+                {
+                    return ProxyStorage.this.create(method
+                        .getReturnType());
+                }
                 if (method.getName().equals("toString"))
                 {
                     return "ProxyStorage-id" + targetId;
