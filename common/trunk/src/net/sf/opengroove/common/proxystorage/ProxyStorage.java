@@ -1428,16 +1428,19 @@ public class ProxyStorage<E>
                             throw new IllegalArgumentException(
                                 "Setters for stored lists are not allowed.");
                         }
-                        if (inputObject.getClass() == BigInteger.class)
+                        if (inputObject != null)
                         {
-                            inputObject = ((BigInteger) inputObject)
-                                .toString(16);
-                        }
-                        if (inputObject instanceof ProxyObject)
-                        {
-                            inputObject = new Long(
-                                ((ProxyObject) inputObject)
-                                    .getProxyStorageId());
+                            if (inputObject.getClass() == BigInteger.class)
+                            {
+                                inputObject = ((BigInteger) inputObject)
+                                    .toString(16);
+                            }
+                            if (inputObject instanceof ProxyObject)
+                            {
+                                inputObject = new Long(
+                                    ((ProxyObject) inputObject)
+                                        .getProxyStorageId());
+                            }
                         }
                         st.setObject(1, inputObject);
                         st.execute();
