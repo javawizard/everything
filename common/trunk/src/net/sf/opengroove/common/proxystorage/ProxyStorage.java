@@ -1208,7 +1208,7 @@ public class ProxyStorage<E>
                 {
                     CustomProperty annotation = method
                         .getAnnotation(CustomProperty.class);
-                    Class<Delegate> delegateClass = annotation
+                    Class<? extends Delegate> delegateClass = annotation
                         .value();
                     Delegate delegate = delegateSingletons
                         .get(delegateClass);
@@ -1273,12 +1273,40 @@ public class ProxyStorage<E>
                         {
                             if (result == null)
                             {
-                                if (method.getReturnType() == Integer.TYPE)
-                                    result = (int) 0;
-                                if (method.getReturnType() == Long.TYPE)
-                                    result = (long) 0;
-                                if (method.getReturnType() == Boolean.TYPE)
-                                    result = false;
+                                if (method
+                                    .isAnnotationPresent(Default.class))
+                                {
+                                    Default values = method
+                                        .getAnnotation(Default.class);
+                                    if (method
+                                        .getReturnType() == Integer.TYPE)
+                                        result = values
+                                            .intValue();
+                                    if (method
+                                        .getReturnType() == Long.TYPE)
+                                        result = values
+                                            .longValue();
+                                    if (method
+                                        .getReturnType() == Boolean.TYPE)
+                                        result = values
+                                            .booleanValue();
+                                    if (method
+                                        .getReturnType() == String.class)
+                                        result = values
+                                            .stringValue();
+                                }
+                                else
+                                {
+                                    if (method
+                                        .getReturnType() == Integer.TYPE)
+                                        result = (int) 0;
+                                    if (method
+                                        .getReturnType() == Long.TYPE)
+                                        result = (long) 0;
+                                    if (method
+                                        .getReturnType() == Boolean.TYPE)
+                                        result = false;
+                                }
                             }
                             return result;
                         }
