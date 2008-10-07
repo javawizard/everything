@@ -1423,13 +1423,13 @@ public class ProxyStorage<E>
                                 + " = ? where proxystorage_id = ?");
                         st.setLong(2, targetId);
                         Object inputObject = args[0];
-                        if (inputObject.getClass() == StoredList.class)
-                        {
-                            throw new IllegalArgumentException(
-                                "Setters for stored lists are not allowed.");
-                        }
                         if (inputObject != null)
                         {
+                            if (inputObject.getClass() == StoredList.class)
+                            {
+                                throw new IllegalArgumentException(
+                                    "Setters for stored lists are not allowed.");
+                            }
                             if (inputObject.getClass() == BigInteger.class)
                             {
                                 inputObject = ((BigInteger) inputObject)
