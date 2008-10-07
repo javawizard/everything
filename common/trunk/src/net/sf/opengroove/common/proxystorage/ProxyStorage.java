@@ -1092,7 +1092,60 @@ public class ProxyStorage<E>
                      * The list is not null, and we have it's id. Now we'll put
                      * together a query to search for the actual objects.
                      */
-                    Method listGetterMethod = 
+                    String capitalizedListProperty = listProperty
+                        .substring(0, 1).toUpperCase()
+                        + listProperty.substring(1);
+                    String capitalizedSearchProperty = searchProperty
+                        .substring(0, 1).toUpperCase()
+                        + searchProperty.substring(1);
+                    Method listGetterMethod = method
+                        .getDeclaringClass().getMethod(
+                            capitalizedListProperty,
+                            new Class[0]);
+                    ListType listTypeAnnotation = listGetterMethod
+                        .getAnnotation(ListType.class);
+                    if (listTypeAnnotation == null)
+                        throw new RuntimeException(
+                            "@ListType annotation is not present on stored list getter "
+                                + listGetterMethod
+                                    .getName()
+                                + " for class "
+                                + listGetterMethod
+                                    .getDeclaringClass()
+                                    .getName());
+                    Class listType = listTypeAnnotation
+                        .value();
+                    Method searchGetterMethod = listType
+                        .getMethod(
+                            capitalizedSearchProperty,
+                            new Class[0]);
+                    /*
+                     * At this point, we have method objects representing the
+                     * stored list and the search property. Now we do the actual
+                     * search.
+                     */
+                    PreparedStatement st = connection
+                        .prepareStatement("select value from proxystorage_collections "
+                            + "where id = ? and value in (select proxystorage_id from "
+                            + getTargetTableName(listType)
+                            + " where "
+                            + searchProperty
+                            + " "
+                            + (annotation.exact() ? "="
+                                : "like")
+                            + " ?) order by index asc");
+                    st.setLong(1, listId);
+                    Object searchValue = args[0];
+                    if (annotation.exact())
+                    {
+                        searchValue = (annotation
+                            .anywhere() ? "%" : "")
+                            + ((String) searchValue)
+                                .replace("*", "%")
+                            + (annotation.anywhere() ? "%"
+                                : "");
+                    }
+                    st.setObject(2, searchValue);
                 }
                 if (method.getName().equalsIgnoreCase(
                     "hashCode")
