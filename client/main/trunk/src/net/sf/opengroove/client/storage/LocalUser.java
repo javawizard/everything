@@ -14,7 +14,7 @@ import net.sf.opengroove.common.vcard.VCard;
 @ProxyBean
 public interface LocalUser
 {
-    
+    @Property
     public String getUserid();
     
     /**
@@ -94,6 +94,9 @@ public interface LocalUser
     public long getServerTime();
     
     public void setLag(long lag);
+    
+    @Property
+    public boolean getAutoSignOn();
     
     @Property
     public String getComputer();

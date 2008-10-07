@@ -61,8 +61,8 @@ public class Storage
         logFolder = new File(base, "logs");
         if (!logFolder.exists())
             logFolder.mkdirs();
-        proxyStorage = new ProxyStorage(DataStore.class,
-            new File("base", "proxystorage"));
+        proxyStorage = new ProxyStorage<DataStore>(DataStore.class,
+            new File(base, "proxystorage"));
         dataStore = proxyStorage.getRoot();
     }
     
