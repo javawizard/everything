@@ -437,6 +437,11 @@ public class OpenGrooveRealmServer
     
     public static abstract class Command
     {
+        /**
+         * The maximum size that a packet is allowed to be when arriving for
+         * this command. There is a hard packet size limit of 65535 bytes, so
+         * this must not be larger than that.
+         */
         private int mps;
         private boolean whenUnauth;
         private boolean whenNoComputer;
@@ -2968,9 +2973,15 @@ public class OpenGrooveRealmServer
                 String[] tokens = tokenize(data);
                 verifyAtLeast(tokens, 1);
                 String messageId = tokens[0];
-                if(!messageId.startsWith(Userids.toUserid(serverRealmAddress, connection.username) + "-"))
-                    throw new FailedResponseException(Status.);
-                    
+                if (!messageId.startsWith(Userids
+                    .toUserid(serverRealmAddress,
+                        connection.username)
+                    + "-"))
+                    throw new FailedResponseException(
+                        Status.INVALIDMESSAGEID,
+                        "The message id you specified does not start with the "
+                            + "user's userid followed by a hyphen.");
+                
             }
             
         };
