@@ -1146,6 +1146,45 @@ public class ProxyStorage<E>
                                 : "");
                     }
                     st.setObject(2, searchValue);
+                    ResultSet rs = st.executeQuery();
+                    ArrayList<Long> resultIds = new ArrayList<Long>();
+                    while (rs.next())
+                    {
+                        resultIds.add(rs.getLong(1));
+                    }
+                    rs.close();
+                    st.close();
+                    /*
+                     * We now have the ids of the results, and the class
+                     * (listType) of the results. We'll now instantiate each one
+                     * and return them.
+                     */
+                    Object[] results = new Object[resultIds
+                        .size()];
+                    int index = 0;
+                    for (long resultId : resultIds)
+                    {
+                        results[index++] = getById(
+                            resultId, listType);
+                    }
+                    if (method.getReturnType().isArray())
+                    {
+                        Object resultArray = Array
+                            .newInstance(method
+                                .getReturnType()
+                                .getComponentType(),
+                                results.length);
+                        System.arraycopy(results, 0,
+                            resultArray, 0, results.length);
+                        return resultArray;
+                    }
+                    else
+                    {
+                        if (results.length == 0)
+                            return null;
+                        else
+                            return results[0];
+                    }
                 }
                 if (method.getName().equalsIgnoreCase(
                     "hashCode")
