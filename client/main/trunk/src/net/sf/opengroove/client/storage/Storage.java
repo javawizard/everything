@@ -185,6 +185,15 @@ public class Storage
     {
         return dataStore;
     }
+    /**
+     * Shorthand for <code>getLocalUser().getContact(id)</code>.
+     * @param id
+     * @return
+     */
+    public Contact getContact(String id)
+    {
+        return user.getContact(id);
+    }
     
     public static void addUser(LocalUser user)
     {
