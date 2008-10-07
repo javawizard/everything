@@ -20,6 +20,7 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import net.sf.opengroove.client.OpenGroove;
@@ -57,6 +58,8 @@ public class ProxyStorage<E>
      * just private since StoredList uses it.
      */
     Connection connection;
+    
+    protected static final Map<Class, Delegate> delegateSingletons = new HashMap<Class, Delegate>();
     
     private DatabaseMetaData dbInfo;
     
@@ -878,9 +881,12 @@ public class ProxyStorage<E>
     {
         if (!isTargetIdPresent(id, c))
             return null;
-        return Proxy.newProxyInstance(getClass()
+        ObjectHandler handler = new ObjectHandler(c, id);
+        Object proxy = Proxy.newProxyInstance(getClass()
             .getClassLoader(), new Class[] { c,
-            ProxyObject.class }, new ObjectHandler(c, id));
+            ProxyObject.class }, handler);
+        handler.instance = proxy;
+        return proxy;
     }
     
     /**
@@ -991,6 +997,7 @@ public class ProxyStorage<E>
     {
         private Class targetClass;
         private long targetId;
+        Object instance;
         
         public ObjectHandler(Class targetClass,
             long targetId)
@@ -1195,6 +1202,27 @@ public class ProxyStorage<E>
                 {
                     return ProxyStorage.this.create(method
                         .getReturnType());
+                }
+                if (method
+                    .isAnnotationPresent(CustomProperty.class))
+                {
+                    CustomProperty annotation = method
+                        .getAnnotation(CustomProperty.class);
+                    Class<Delegate> delegateClass = annotation
+                        .value();
+                    Delegate delegate = delegateSingletons
+                        .get(delegateClass);
+                    if (delegate == null)
+                    {
+                        delegate = delegateClass
+                            .newInstance();
+                        delegateSingletons.put(
+                            delegateClass, delegate);
+                    }
+                    return delegate.get(instance, method
+                        .getReturnType(),
+                        propertyNameFromAccessor(method
+                            .getName()));
                 }
                 if (method.getName().equals("toString"))
                 {
