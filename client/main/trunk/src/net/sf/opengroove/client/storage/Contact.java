@@ -6,90 +6,13 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Properties;
 
+import net.sf.opengroove.common.proxystorage.*;
 import net.sf.opengroove.common.utils.Userids;
 import net.sf.opengroove.common.vcard.VCard;
 
-public class Contact implements Serializable
+@ProxyBean
+public interface Contact
 {
-    private static final long serialVersionUID = -2910467169227988997L;
-    
-    // TODO: what to do about a contact's computers? They should probably be
-    // listed here (so that the user can choose to send a message to just a
-    // particular computer if they want)
-    /**
-     * This contact's userid. This must be a userid; it cannot be a username.
-     */
-    private String userid;
-    private ContactStatus status = new ContactStatus();
-    /**
-     * This field, along with {@link #rsaEncMod}, {@link #rsaSigMod}, and
-     * {@link #rsaSigPub}, constitute this contact's public security key. These
-     * will be null if hasKeys is false.
-     */
-    private BigInteger rsaEncPub;
-    private BigInteger rasEncMod;
-    private BigInteger rsaSigPub;
-    private BigInteger rsaSigMod;
-    /**
-     * True if the keys for this contact have been obtained, false if not.
-     * Messages to be sent to the contact will be queued until the key is
-     * available, and the same with received messages.
-     * 
-     * Keys are computer-specific. In otherwords, just because one computer has
-     * the keys for a specific user doesn't mean another computer does.
-     */
-    private boolean hasKeys;
-    private String realName;
-    /**
-     * True if the local user has verified this contact. This means that the
-     * local user has reviewed the hash of this contact's security keys and
-     * contacted the actual user represented by this contact to validate that
-     * those keys are correct, and then indicated to opengroove that they have
-     * done this.
-     * 
-     * Verification is computer-specific. In otherwords, if the local user has
-     * two computers, and verifies a particular user on one computer, that won't
-     * cause that user to show up as verified on any of the user's other
-     * computers.
-     */
-    private boolean isUserVerified;
-    private Properties properties = new Properties();
-    private Properties lastModified = new Properties();
-    
-    public long getLastModified(Names name)
-    {
-        String value = lastModified.getProperty("" + name);
-        if (value == null)
-            return 0;
-        try
-        {
-            return Long.parseLong(value);
-        }
-        catch (Exception exception)
-        {
-            return 0;
-        }
-    }
-    
-    public void setLastModified(Names name, long date)
-    {
-        lastModified.setProperty("" + name, "" + date);
-    }
-    
-    public Properties getLastModifiedProperties()
-    {
-        return lastModified;
-    }
-    
-    public Properties getProperties()
-    {
-        return properties;
-    }
-    
-    public static enum Names
-    {
-        userContact, localName
-    }
     
     /**
      * True if this contact does for sure exist. This is initially false when a
@@ -106,124 +29,43 @@ public class Contact implements Serializable
      */
     private ArrayList<ContactComputer> computers = new ArrayList<ContactComputer>();
     
-    public String getRealm()
-    {
-        return Userids.toRealm(userid);
-    }
+    public String getUserid();
     
-    public String getUsername()
-    {
-        return Userids.toUsername(userid);
-    }
+    public BigInteger getRsaEncPub();
     
-    public String getUserid()
-    {
-        return userid;
-    }
+    public BigInteger getRasEncMod();
     
-    public BigInteger getRsaEncPub()
-    {
-        return rsaEncPub;
-    }
+    public BigInteger getRsaSigPub();
     
-    public BigInteger getRasEncMod()
-    {
-        return rasEncMod;
-    }
+    public BigInteger getRsaSigMod();
     
-    public BigInteger getRsaSigPub()
-    {
-        return rsaSigPub;
-    }
+    public boolean isUserContact();
     
-    public BigInteger getRsaSigMod()
-    {
-        return rsaSigMod;
-    }
+    public boolean isUserVerified();
     
-    public boolean isUserContact()
-    {
-        return "true".equalsIgnoreCase(properties
-            .getProperty("" + Names.userContact));
-    }
+    public void setUserid(String userid);
     
-    public boolean isUserVerified()
-    {
-        return isUserVerified;
-    }
+    public void setRsaEncPub(BigInteger rsaEncPub);
     
-    public void setRealm(String realm)
-    {
-        this.userid = Userids.setRealm(userid, realm);
-    }
+    public void setRasEncMod(BigInteger rasEncMod);
     
-    public void setUsername(String username)
-    {
-        this.userid = Userids.setUsername(userid, username);
-    }
+    public void setRsaSigPub(BigInteger rsaSigPub);
     
-    public void setUserid(String userid)
-    {
-        this.userid = userid;
-    }
+    public void setRsaSigMod(BigInteger rsaSigMod);
     
-    public void setRsaEncPub(BigInteger rsaEncPub)
-    {
-        this.rsaEncPub = rsaEncPub;
-    }
+    public void setUserContact(boolean isUserContact);
     
-    public void setRasEncMod(BigInteger rasEncMod)
-    {
-        this.rasEncMod = rasEncMod;
-    }
+    public void setUserVerified(boolean isUserVerified);
     
-    public void setRsaSigPub(BigInteger rsaSigPub)
-    {
-        this.rsaSigPub = rsaSigPub;
-    }
+    public boolean isHasKeys();
     
-    public void setRsaSigMod(BigInteger rsaSigMod)
-    {
-        this.rsaSigMod = rsaSigMod;
-    }
+    public ArrayList<ContactComputer> getComputers();
     
-    public void setUserContact(boolean isUserContact)
-    {
-        properties.setProperty("" + Names.userContact, ""
-            + isUserContact);
-    }
+    public void setHasKeys(boolean hasKeys);
     
-    public void setUserVerified(boolean isUserVerified)
-    {
-        this.isUserVerified = isUserVerified;
-    }
+    public String getLocalName();
     
-    public boolean isHasKeys()
-    {
-        return hasKeys;
-    }
-    
-    public ArrayList<ContactComputer> getComputers()
-    {
-        return computers;
-    }
-    
-    public void setHasKeys(boolean hasKeys)
-    {
-        this.hasKeys = hasKeys;
-    }
-    
-    public String getLocalName()
-    {
-        return properties.getProperty("" + Names.localName,
-            "");
-    }
-    
-    public void setLocalName(String localName)
-    {
-        properties.setProperty("" + Names.localName,
-            localName);
-    }
+    public void setLocalName(String localName);
     
     /**
      * If getLocalName() is not null or equal to the empty string, then it's
