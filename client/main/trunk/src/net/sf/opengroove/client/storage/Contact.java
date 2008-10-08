@@ -13,6 +13,31 @@ import net.sf.opengroove.common.vcard.VCard;
 @ProxyBean
 public interface Contact
 {
+    public class CustomDelegate implements Delegate
+    {
+        
+        @Override
+        public Object get(Object on, Class propertyClass,
+            String property)
+        {
+            Contact contact = (Contact) on;
+            if (property.equals("displayName"))
+            {
+                String localName = contact.getLocalName();
+                if (localName != null
+                    && !localName.equals(""))
+                    return localName;
+                String realName = contact.getRealName();
+                if (realName != null
+                    && !realName.equals(""))
+                    return realName;
+                return contact.getUserid();
+            }
+            return null;
+        }
+        
+    }
+    
     @Property
     public String getUserid();
     
@@ -66,7 +91,7 @@ public interface Contact
      * 
      * @return
      */
-    @Property
+    @CustomProperty(CustomDelegate.class)
     public String getDisplayName();
     
     @Property

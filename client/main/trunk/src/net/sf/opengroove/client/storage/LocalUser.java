@@ -40,6 +40,7 @@ public interface LocalUser
     public StoredList<Contact> getContacts();
     
     @Search(listProperty = "contacts", searchProperty = "userid")
+    @Filter(parameterFilter=UsernameToUseridFilter.class)
     public Contact getContact(String userid);
     
     @Constructor
