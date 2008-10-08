@@ -74,7 +74,7 @@ import net.sf.opengroove.common.utils.Userids;
 public class UserContext
 {
     /*
-     * TODO: currently 15 seconds for testing purposes, probably change to
+     * TODO: currently 30 seconds for testing purposes, probably change to
      * something like 5 minutes when OpenGroove is released, or make it
      * user-configurable
      */
@@ -84,7 +84,7 @@ public class UserContext
      * the contact to be marked as idle, but high enough that a user pausing to
      * read over some information won't be marked idle immediately.
      */
-    private static final long IDLE_THRESHOLD = 1000 * 15;
+    private static final long IDLE_THRESHOLD = 1000 * 30;
     /**
      * This user's userid
      */
@@ -195,7 +195,11 @@ public class UserContext
     private ConditionalTimer myStatusUploadTimer = new ConditionalTimer(
         1000 * 30, connectionConditional)
     {
-        
+        /*
+         * TODO: change the upload time to be more like 3 minutes, or even
+         * longer than that (and add logic for the idle-checker to perform a
+         * single upload when the idle time passes the idle threshold)
+         */
         @Override
         public void execute()
         {
