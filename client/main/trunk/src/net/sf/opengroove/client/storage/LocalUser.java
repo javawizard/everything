@@ -91,7 +91,7 @@ public interface LocalUser
     @Property
     public long getLag();
     
-    @Property
+    @CustomProperty(CustomDelegate.class)
     public long getServerTime();
     
     public void setLag(long lag);
@@ -170,6 +170,9 @@ public interface LocalUser
             else if (property.equals("loggedIn"))
                 return OpenGroove.userContextMap.get(user
                     .getUserid()) != null;
+            else if (property.equals("serverTime"))
+                return System.currentTimeMillis()
+                    - user.getLag();
             return null;
         }
         
