@@ -182,8 +182,6 @@ public class UserContext
             lastMouseY = location.y;
             if (oldWasLastIdle && !wasLastIdle)
             {
-                System.out
-                    .println("local not idle anymore");
                 uploadCurrentStatus();
             }
         }
@@ -434,8 +432,6 @@ public class UserContext
     protected void putSubscription(Subscription[] existing,
         Subscription subscription)
     {
-        System.out
-            .println("attempting to post subscription");
         if (!com.getCommunicator().isActive())
             /*
              * No sense in trying to send a subscription to the server if we
@@ -454,8 +450,6 @@ public class UserContext
                  */
                 return;
         }
-        System.out
-            .println("no such existing subscription. adding");
         /*
          * If we get here, the subscription doesn't exist. We'll go ahead and
          * send it to the server now. We'll wrap it in a try/catch in case the
@@ -469,7 +463,6 @@ public class UserContext
         try
         {
             com.createSubscription(subscription);
-            System.out.println("subscription created");
         }
         catch (Exception exception)
         {
@@ -754,7 +747,6 @@ public class UserContext
     {
         synchronized (refreshContactsLock)
         {
-            System.out.println("refreshing contacts pane");
             Contact[] contactList = getStorage()
                 .getLocalUser().getContacts().toArray(
                     new Contact[0]);
@@ -861,9 +853,6 @@ public class UserContext
                                     e1.printStackTrace();
                                     statusUri = null;
                                 }
-                                System.out
-                                    .println("status uri: "
-                                        + statusUri);
                                 computersAdded++;
                                 computersString += " &nbsp; <img width=\"16\" height=\"16\" src=\""
                                     + statusUri
@@ -871,14 +860,6 @@ public class UserContext
                                     + computer.getName()
                                     + "<br/>";
                             }
-                            System.out.println("Added "
-                                + computersAdded
-                                + " computers for user "
-                                + contact.getUserid()
-                                + " with "
-                                + contact.getComputers()
-                                    .size()
-                                + " computers in storage");
                             if (computersAdded == 0)
                             {
                                 computersString = " &nbsp; <font color=\"#707070\">(No computers)</font>";
@@ -1090,9 +1071,6 @@ public class UserContext
          */
         if (com.getCommunicator().isActive())
         {
-            System.out
-                .println("updating contact status for "
-                    + contact.getUserid());
             try
             {
                 ContactStatus status = contact.getStatus();
@@ -1110,9 +1088,6 @@ public class UserContext
                     {
                         serverUserExists = com
                             .userExists(contact.getUserid());
-                        System.out
-                            .println("got existance for user "
-                                + contact.getUserid());
                         break;
                     }
                     catch (TimeoutException e)
@@ -1139,10 +1114,6 @@ public class UserContext
                     status.setNonexistant(false);
                     String[] contactComputers = com
                         .listComputers(contact.getUserid());
-                    System.out.println("contact "
-                        + contact.getUserid() + " has "
-                        + contactComputers.length
-                        + " computers");
                     for (String computerName : contactComputers)
                     {
                         ContactComputer computer = null;
@@ -1265,9 +1236,6 @@ public class UserContext
                  */
                 exception.printStackTrace();
             }
-            System.out
-                .println("finished updating contact status without incident for user "
-                    + contact.getUserid());
         }
         else
         {
@@ -1277,8 +1245,6 @@ public class UserContext
              * 
              * TODO: we might actually want to just set it to unknown here.
              */
-            System.out
-                .println("setting contact to offline due to lack of server connection");
             contact.getStatus().setOnline(false);
             for (ContactComputer computer : new ArrayList<ContactComputer>(
                 contact.getComputers()))
@@ -1306,9 +1272,6 @@ public class UserContext
                 button.setIcon(new ImageIcon(getStatusIcon(
                     getStorage().getContact(contactUserid)
                         .getStatus()).getImage()));
-            else
-                System.out.println("No contact button for "
-                    + contactUserid);
         }
     }
     
@@ -1398,7 +1361,6 @@ public class UserContext
     
     public void uploadCurrentStatus()
     {
-        System.out.println("uploading current status");
         try
         {
             if (com.getCommunicator().isActive())
