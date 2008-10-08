@@ -32,10 +32,13 @@ import javax.swing.JPanel;
 import javax.swing.JPopupMenu;
 import javax.swing.JProgressBar;
 import javax.swing.JTabbedPane;
+import javax.swing.JTextField;
 import javax.swing.JToolTip;
 import javax.swing.SwingConstants;
 import javax.swing.SwingUtilities;
 import javax.swing.border.EmptyBorder;
+import javax.swing.event.PopupMenuEvent;
+import javax.swing.event.PopupMenuListener;
 
 import com.jidesoft.swing.JideButton;
 
@@ -826,7 +829,7 @@ public class UserContext
                         new BorderLayout());
                     contactPanel.setOpaque(false);
                     contactPanel.setAlignmentX(0);
-                    JideButton contactButton = new JideButton(
+                    final JideButton contactButton = new JideButton(
                         contact.getDisplayName())
                     {
                         @Override
@@ -894,6 +897,35 @@ public class UserContext
                         .setButtonStyle(JideButton.HYPERLINK_STYLE);
                     contactButton
                         .setForeground(Color.BLACK);
+                    final JPopupMenu contactRenamePopup = new JPopupMenu();
+                    final JTextField contactRenameField = new JTextField(
+                        15);
+                    contactRenamePopup
+                        .add(contactRenameField);
+                    contactRenamePopup
+                        .addPopupMenuListener(new PopupMenuListener()
+                        {
+                            
+                            @Override
+                            public void popupMenuCanceled(
+                                PopupMenuEvent e)
+                            {
+                            }
+                            
+                            @Override
+                            public void popupMenuWillBecomeInvisible(
+                                PopupMenuEvent e)
+                            {
+                                System.out
+                                    .println("invisible");
+                            }
+                            
+                            @Override
+                            public void popupMenuWillBecomeVisible(
+                                PopupMenuEvent e)
+                            {
+                            }
+                        });
                     if (contact.isUserContact())
                     {
                         JPopupMenu menu = new JPopupMenu();
@@ -904,8 +936,11 @@ public class UserContext
                             public void actionPerformed(
                                 ActionEvent e)
                             {
-                                // TODO Auto-generated method stub
-                                
+                                contactRenameField
+                                    .setText(contact
+                                        .getDisplayName());
+                                contactRenamePopup.show(
+                                    contactButton, 0, 0);
                             }
                         });
                         menu.add(new IMenuItem("Delete")

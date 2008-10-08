@@ -188,6 +188,7 @@ public class TaskbarNotificationFrame extends
         exitButton.addActionListener(this);
         exitButton.setCursor(Cursor
             .getPredefinedCursor(Cursor.HAND_CURSOR));
+        exitButton.addMouseListener(this);
         JPanel exitPanel = new JPanel();
         exitPanel.setLayout(new BorderLayout());
         exitPanel.setBorder(new LineBorder(topPanel
@@ -542,6 +543,7 @@ public class TaskbarNotificationFrame extends
     
     public void mousePressed(MouseEvent e)
     {
+        toFront();
     }
     
     public void mouseReleased(MouseEvent e)
