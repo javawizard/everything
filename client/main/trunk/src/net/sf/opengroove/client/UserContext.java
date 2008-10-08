@@ -3,6 +3,7 @@ package net.sf.opengroove.client;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Font;
+import java.awt.Insets;
 import java.awt.MouseInfo;
 import java.awt.Point;
 import java.awt.PointerInfo;
@@ -22,6 +23,7 @@ import java.util.HashMap;
 
 import javax.swing.Box;
 import javax.swing.ImageIcon;
+import javax.swing.JButton;
 import javax.swing.JCheckBox;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
@@ -800,7 +802,9 @@ public class UserContext
             unknownLabel
                 .setToolTipText(ComponentUtils
                     .htmlTipWrap("This means that OpenGroove doesn't know what the "
-                        + "user's current status is."));
+                        + "user's current status is. This typically happens when you "
+                        + "have added the contact but haven't connected to the"
+                        + " internet since then."));
             nonexistantLabel
                 .setToolTipText(ComponentUtils
                     .htmlTipWrap("This means that OpenGroove has determined that "
@@ -813,6 +817,7 @@ public class UserContext
             userStatusMenu.add(idleLabel);
             userStatusMenu.add(unknownLabel);
             userStatusMenu.add(nonexistantLabel);
+            userStatusMenu.show(null, 0, 0);
             int contactsAdded = 0;
             for (final Contact contact : contactList)
             {
@@ -1225,41 +1230,30 @@ public class UserContext
                     /*
                      * Now we'll iterate over the computers again. This time,
                      * we're going to add their status stuff together to get the
-                     * value that should be used for the contact overall. The
-                     * contact status that we're about to create won't actually
-                     * be injected into the contact itself; we're just using it
-                     * for convienence, so that we don't have to re-declare all
-                     * of it's fields as local variables.
+                     * value that should be used for the contact overall.
                      */
-                    ContactStatus statusHolder = new ContactStatus();
-                    statusHolder.setIdleTime(-1);
+                    long idleTime = -1;
+                    boolean isActive = false;
+                    boolean isOnline = false;
                     for (ContactComputer computer : new ArrayList<ContactComputer>(
                         contact.getComputers()))
                     {
                         if (computer.getStatus().isActive())
-                            statusHolder.setActive(true);
+                            isActive = true;
                         if (computer.getStatus().isOnline())
-                            statusHolder.setOnline(true);
-                        statusHolder.setIdleTime(Math.max(
-                            statusHolder.getIdleTime(),
+                            isOnline = true;
+                        idleTime = Math.max(idleTime,
                             computer.getStatus()
-                                .getIdleTime()));
+                                .getIdleTime());
                     }
-                    if (statusHolder.getIdleTime() == -1)
-                        statusHolder
-                            .setIdleTime(getServerTime());
-                    contact.getStatus().setActive(
-                        statusHolder.isActive());
+                    if (idleTime == -1)
+                        idleTime = getServerTime();
+                    contact.getStatus().setActive(isActive);
                     contact.getStatus().setIdleTime(
-                        statusHolder.getIdleTime());
-                    contact.getStatus().setOnline(
-                        statusHolder.isOnline());
+                        idleTime);
+                    contact.getStatus().setOnline(isOnline);
                 }// end of (if contact exists) statement
                 status.setKnown(true);
-                System.out
-                    .println("backstoring contact with "
-                        + contact.getComputers().size()
-                        + " computers");
             }
             catch (Exception exception)
             {
