@@ -829,8 +829,7 @@ public class UserContext
                         new BorderLayout());
                     contactPanel.setOpaque(false);
                     contactPanel.setAlignmentX(0);
-                    final JideButton contactButton = new JideButton(
-                        contact.getDisplayName())
+                    final JideButton contactButton = new JideButton()
                     {
                         @Override
                         public String getToolTipText(
@@ -888,6 +887,8 @@ public class UserContext
                                 + computersString;
                         }
                     };
+                    setContactButtonText(contactButton,
+                        contact);
                     contactButton
                         .setToolTipText("Loading...");
                     contactButton
@@ -916,8 +917,15 @@ public class UserContext
                             public void popupMenuWillBecomeInvisible(
                                 PopupMenuEvent e)
                             {
-                                System.out
-                                    .println("invisible");
+                                String newName = contactRenameField
+                                    .getText();
+                                if (newName.trim().equals(
+                                    ""))
+                                    newName = "";
+                                contact
+                                    .setLocalName(newName);
+                                setContactButtonText(
+                                    contactButton, contact);
                             }
                             
                             @Override
@@ -1038,6 +1046,12 @@ public class UserContext
             launchbar.validate();
             launchbar.repaint();
         }
+    }
+    
+    protected void setContactButtonText(
+        JideButton contactButton, Contact contact)
+    {
+        contactButton.setText(contact.getDisplayName());
     }
     
     protected void refreshContactsPaneAsynchronously()

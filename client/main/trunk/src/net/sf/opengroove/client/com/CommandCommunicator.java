@@ -558,8 +558,30 @@ public class CommandCommunicator
         {
             if (!responseToken.trim().equals(""))
             {
-                subscriptions.add(stringToSubscription(
-                    responseToken.trim(), " "));
+                try
+                {
+                    subscriptions.add(stringToSubscription(
+                        responseToken.trim(), " "));
+                }
+                catch (IllegalArgumentException e)
+                {
+                    /*
+                     * Some weird error keeps cropping up where info coming from
+                     * the server gets corrupted. It only seems to happen every
+                     * once in a while, and when it happens, it persists
+                     * throughout the life of a connection. This leads me to
+                     * believe that it's something to do with a certain choice
+                     * of random security key for the conversation. Reconnecting
+                     * the communicator forces it to get a new key, and seems to
+                     * solve the problem.
+                     * 
+                     * TODO: Figure out a real fix for this problem. I spend a
+                     * couple of days on this problem alone but didn't get
+                     * anywhere.
+                     */
+                    communicator.reconnect();
+                    throw e;
+                }
             }
         }
         return subscriptions.toArray(new Subscription[0]);
