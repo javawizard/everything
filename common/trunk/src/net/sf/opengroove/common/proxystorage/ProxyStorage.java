@@ -1436,7 +1436,7 @@ public class ProxyStorage<E>
                                     .toString(16);
                             }
                             if (inputObject instanceof ProxyObject)
-                            {
+                            { 
                                 inputObject = new Long(
                                     ((ProxyObject) inputObject)
                                         .getProxyStorageId());
