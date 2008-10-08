@@ -61,6 +61,10 @@ public class ProxyStorage<E>
     
     protected static final Map<Class, Delegate> delegateSingletons = new HashMap<Class, Delegate>();
     
+    protected static final Map<Class, ParameterFilter> parameterFilterSingletons = new HashMap<Class, ParameterFilter>();
+    
+    protected static final Map<Class, ResultFilter> resultFilterSingletons = new HashMap<Class, ResultFilter>();
+    
     private DatabaseMetaData dbInfo;
     
     private Class<E> rootClass;
@@ -1022,6 +1026,30 @@ public class ProxyStorage<E>
         {
             synchronized (lock)
             {
+                if (method
+                    .isAnnotationPresent(Filter.class))
+                {
+                    Filter annotation = method
+                        .getAnnotation(Filter.class);
+                    if (annotation.parameterFilter() != null)
+                    {
+                        ParameterFilter filter = parameterFilterSingletons
+                            .get(annotation
+                                .parameterFilter());
+                        if (filter == null)
+                        {
+                            filter = annotation
+                                .parameterFilter()
+                                .newInstance();
+                            parameterFilterSingletons.put(
+                                annotation
+                                    .parameterFilter(),
+                                filter);
+                        }
+                        args = filter
+                            .filter(instance, args);
+                    }
+                }
                 if (method.getName().equalsIgnoreCase(
                     "getProxyStorageId")
                     && method.getReturnType() == Long.TYPE)
@@ -1436,7 +1464,7 @@ public class ProxyStorage<E>
                                     .toString(16);
                             }
                             if (inputObject instanceof ProxyObject)
-                            { 
+                            {
                                 inputObject = new Long(
                                     ((ProxyObject) inputObject)
                                         .getProxyStorageId());
