@@ -134,6 +134,38 @@
        x2="226.59375"
        y2="111.90625"
        gradientUnits="userSpaceOnUse" />
+    <filter
+       inkscape:collect="always"
+       id="filter3896"
+       x="-0.049521714"
+       width="1.0990434"
+       y="-0.13184584"
+       height="1.2636917">
+      <feGaussianBlur
+         inkscape:collect="always"
+         stdDeviation="3.3407813"
+         id="feGaussianBlur3898" />
+    </filter>
+    <filter
+       inkscape:collect="always"
+       id="filter3900"
+       x="-0.043762249"
+       width="1.0875245"
+       y="-0.20296191"
+       height="1.4059238">
+      <feGaussianBlur
+         inkscape:collect="always"
+         stdDeviation="4.0935938"
+         id="feGaussianBlur3902" />
+    </filter>
+    <filter
+       inkscape:collect="always"
+       id="filter3964">
+      <feGaussianBlur
+         inkscape:collect="always"
+         stdDeviation="0.27839844"
+         id="feGaussianBlur3966" />
+    </filter>
   </defs>
   <sodipodi:namedview
      id="base"
@@ -146,8 +178,8 @@
      inkscape:pageopacity="0.0"
      inkscape:pageshadow="2"
      inkscape:zoom="1"
-     inkscape:cx="156.41688"
-     inkscape:cy="170.17045"
+     inkscape:cx="222.50779"
+     inkscape:cy="196.21591"
      inkscape:document-units="px"
      inkscape:current-layer="layer1"
      showgrid="false"
@@ -156,7 +188,8 @@
      inkscape:window-height="750"
      inkscape:window-x="-5"
      inkscape:window-y="-8"
-     showguides="true">
+     showguides="true"
+     inkscape:guide-bbox="true">
     <inkscape:grid
        type="xygrid"
        visible="true"
@@ -232,7 +265,18 @@
          y="130" /></text>
     <text
        xml:space="preserve"
-       style="font-size:64px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;text-align:start;line-height:125%;writing-mode:lr-tb;text-anchor:start;fill:url(#linearGradient3188);fill-opacity:1.0;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;font-family:Bitstream Vera Sans;-inkscape-font-specification:Bitstream Vera Sans"
+       style="font-size:64px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;text-align:start;line-height:125%;writing-mode:lr-tb;text-anchor:start;fill:#000000;fill-opacity:0.58823532;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;font-family:Bitstream Vera Sans;-inkscape-font-specification:Bitstream Vera Sans;filter:url(#filter3896)"
+       x="48"
+       y="117"
+       id="text3207"
+       sodipodi:linespacing="125%"><tspan
+         sodipodi:role="line"
+         id="tspan3209"
+         x="48"
+         y="117">Open</tspan></text>
+    <text
+       xml:space="preserve"
+       style="font-size:64px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;text-align:start;line-height:125%;writing-mode:lr-tb;text-anchor:start;fill:url(#linearGradient3188);fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;font-family:Bitstream Vera Sans;-inkscape-font-specification:Bitstream Vera Sans;filter:url(#filter3964)"
        x="45"
        y="112"
        id="text3226"
@@ -242,6 +286,17 @@
          x="45"
          y="112"
          style="fill-opacity:1.0;fill:url(#linearGradient3188)">Open</tspan></text>
+    <text
+       xml:space="preserve"
+       style="font-size:64px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;text-align:start;line-height:125%;writing-mode:lr-tb;text-anchor:start;fill:#000000;fill-opacity:0.7254902;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;filter:url(#filter3900);font-family:Bitstream Vera Sans;-inkscape-font-specification:Bitstream Vera Sans"
+       x="225"
+       y="115"
+       id="text3211"
+       sodipodi:linespacing="125%"><tspan
+         sodipodi:role="line"
+         id="tspan3213"
+         x="225"
+         y="115">Groove</tspan></text>
     <text
        xml:space="preserve"
        style="font-size:64px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;text-align:start;line-height:125%;writing-mode:lr-tb;text-anchor:start;fill:url(#linearGradient3197);fill-opacity:1.0;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;font-family:Bitstream Vera Sans;-inkscape-font-specification:Bitstream Vera Sans"

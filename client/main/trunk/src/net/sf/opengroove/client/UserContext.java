@@ -84,7 +84,7 @@ public class UserContext
      * the contact to be marked as idle, but high enough that a user pausing to
      * read over some information won't be marked idle immediately.
      */
-    private static final long IDLE_THRESHOLD = 1000 * 30;
+    private static final long IDLE_THRESHOLD = 1000 * 15;
     /**
      * This user's userid
      */
@@ -193,7 +193,7 @@ public class UserContext
      * Uploads the current idle and active status.
      */
     private ConditionalTimer myStatusUploadTimer = new ConditionalTimer(
-        1000 * 60, connectionConditional)
+        1000 * 30, connectionConditional)
     {
         
         @Override
@@ -750,6 +750,7 @@ public class UserContext
     {
         synchronized (refreshContactsLock)
         {
+            System.out.println("refreshing contacts pane");
             Contact[] contactList = getStorage()
                 .getLocalUser().getContacts().toArray(
                     new Contact[0]);
@@ -817,7 +818,6 @@ public class UserContext
             userStatusMenu.add(idleLabel);
             userStatusMenu.add(unknownLabel);
             userStatusMenu.add(nonexistantLabel);
-            userStatusMenu.show(null, 0, 0);
             int contactsAdded = 0;
             for (final Contact contact : contactList)
             {
@@ -837,13 +837,10 @@ public class UserContext
                         public String getToolTipText(
                             MouseEvent e)
                         {
-                            Contact tContact = getStorage()
-                                .getContact(
-                                    contact.getUserid());
                             String computersString = "";
                             int computersAdded = 0;
-                            for (ContactComputer computer : new ArrayList<ContactComputer>(
-                                tContact.getComputers()))
+                            for (ContactComputer computer : contact
+                                .getComputers().isolate())
                             {
                                 String statusUri;
                                 try
@@ -873,9 +870,9 @@ public class UserContext
                             System.out.println("Added "
                                 + computersAdded
                                 + " computers for user "
-                                + tContact.getUserid()
+                                + contact.getUserid()
                                 + " with "
-                                + tContact.getComputers()
+                                + contact.getComputers()
                                     .size()
                                 + " computers in storage");
                             if (computersAdded == 0)
@@ -883,22 +880,21 @@ public class UserContext
                                 computersString = " &nbsp; <font color=\"#707070\">(No computers)</font>";
                             }
                             return "<html><b>"
-                                + tContact.getDisplayName()
+                                + contact.getDisplayName()
                                 + "</b><br/><br/>"
                                 + "<table border=\"0\" cellspacing=\"0\" cellpadding=\"0\">"
                                 + "<tr><td>Userid: &nbsp; &nbsp; </td><td>"
-                                + tContact.getUserid()
+                                + contact.getUserid()
                                 + "</td></tr>"
                                 + "<tr><td>Real name: &nbsp; &nbsp; </td><td>"
-                                + (tContact.getRealName()
+                                + (contact.getRealName()
                                     .equals("") ? "<font color=\"#707070\">(Not specified)</font>"
-                                    : tContact
-                                        .getRealName())
+                                    : contact.getRealName())
                                 + "</td></tr>"
                                 + "<tr><td>Local name: &nbsp; &nbsp; </td><td>"
-                                + (tContact.getLocalName()
+                                + (contact.getLocalName()
                                     .equals("") ? "<font color=\"#707070\">(Not specified)</font>"
-                                    : tContact
+                                    : contact
                                         .getLocalName())
                                 + "</td></tr></table><br/>Computers:<br/>"
                                 + computersString;
@@ -1235,8 +1231,8 @@ public class UserContext
                     long idleTime = -1;
                     boolean isActive = false;
                     boolean isOnline = false;
-                    for (ContactComputer computer : new ArrayList<ContactComputer>(
-                        contact.getComputers()))
+                    for (ContactComputer computer : contact
+                        .getComputers().isolate())
                     {
                         if (computer.getStatus().isActive())
                             isActive = true;
@@ -1306,6 +1302,9 @@ public class UserContext
                 button.setIcon(new ImageIcon(getStatusIcon(
                     getStorage().getContact(contactUserid)
                         .getStatus()).getImage()));
+            else
+                System.out.println("No contact button for "
+                    + contactUserid);
         }
     }
     

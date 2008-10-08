@@ -1001,4 +1001,20 @@ public class Communicator
             return -1;
         return socket.getPort();
     }
+    
+    /**
+     * Terminates this communicator's current connection, but keeps it running.
+     * The communicator will, naturally, try to connect again as soon as
+     * possible.
+     */
+    public void reconnect()
+    {
+        try
+        {
+            socket.close();
+        }
+        catch (Exception e)
+        {
+        }
+    }
 }

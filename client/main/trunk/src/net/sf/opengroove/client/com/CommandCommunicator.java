@@ -32,7 +32,8 @@ public class CommandCommunicator
     
     private int defaultTimeout = GLOBAL_DEFAULT_TIMEOUT;
     
-    public CommandCommunicator(Communicator communicator)
+    public CommandCommunicator(
+        final Communicator communicator)
     {
         this.communicator = communicator;
         communicator.addPacketListener(new PacketListener()
@@ -82,9 +83,19 @@ public class CommandCommunicator
                 else if (packet.getCommand()
                     .equalsIgnoreCase("subscriptionevent"))
                 {
-                    final Subscription subscription = stringToSubscription(
-                        new String(packet.getContents()),
-                        "\n");
+                    Subscription parsed;
+                    try
+                    {
+                        parsed = stringToSubscription(
+                            new String(packet.getContents()),
+                            "\n");
+                    }
+                    catch (IllegalArgumentException e)
+                    {
+                        communicator.reconnect();
+                        throw new RuntimeException(e);
+                    }
+                    final Subscription subscription = parsed;
                     subscriptionListeners
                         .notify(new Notifier<SubscriptionListener>()
                         {

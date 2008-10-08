@@ -1261,8 +1261,12 @@ public class OpenGroove
                                                 context
                                                     .updateOneContactStatus(contact);
                                             else
+                                            {
                                                 System.out
-                                                    .println("subscription received for nonexistant contact");
+                                                    .println("subscription received for nonexistant contact with userid "
+                                                        + subscription
+                                                            .getOnUser());
+                                            }
                                         }
                                     }
                                 }
