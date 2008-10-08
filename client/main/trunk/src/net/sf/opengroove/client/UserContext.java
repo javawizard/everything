@@ -934,6 +934,11 @@ public class UserContext
                             {
                             }
                         });
+                    contactRenameField
+                        .setToolTipText(ComponentUtils
+                            .htmlTipWrap("You can set a name you want for this contact "
+                                + "here. If you leave it blank, the contact's "
+                                + "name will be the contact's userid."));
                     if (contact.isUserContact())
                     {
                         JPopupMenu menu = new JPopupMenu();
@@ -946,7 +951,7 @@ public class UserContext
                             {
                                 contactRenameField
                                     .setText(contact
-                                        .getDisplayName());
+                                        .getLocalName());
                                 contactRenamePopup.show(
                                     contactButton, 0, 0);
                             }
