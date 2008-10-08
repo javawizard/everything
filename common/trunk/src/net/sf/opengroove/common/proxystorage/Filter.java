@@ -24,16 +24,16 @@ import java.lang.annotation.RetentionPolicy;
 public @interface Filter
 {
     /**
-     * The parameter filter to use.
+     * The parameter filter to use. If not specified, none will be used.
      * 
      * @return
      */
-    public Class<ParameterFilter> parameterFilter();
+    public Class<? extends ParameterFilter> parameterFilter() default ParameterFilter.class;
     
     /**
-     * The result filter to use.
+     * The result filter to use. If not specified, none will be used.
      * 
      * @return
      */
-    public Class<ResultFilter> resultFilter();
+    public Class<? extends ResultFilter> resultFilter() default ResultFilter.class;
 }

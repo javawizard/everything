@@ -1031,7 +1031,7 @@ public class ProxyStorage<E>
                 {
                     Filter annotation = method
                         .getAnnotation(Filter.class);
-                    if (annotation.parameterFilter() != null)
+                    if (annotation.parameterFilter() != ParameterFilter.class)
                     {
                         ParameterFilter filter = parameterFilterSingletons
                             .get(annotation
