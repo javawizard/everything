@@ -3809,8 +3809,8 @@ public class OpenGroove
         colSpecs[menus.length] = TableLayout.FILL;
         bar.setLayout(new TableLayout(colSpecs,
             new double[] { TableLayout.PREFERRED,
-                TableLayout.PREFERRED,
-                TableLayout.PREFERRED }));
+                6,
+                TableLayout.PREFERRED,3 }));
         for (int i = 0; i < menus.length; i++)
         {
             menus[i].setOpaque(false);
@@ -3820,9 +3820,11 @@ public class OpenGroove
             .add(rightPanel, "" + menus.length
                 + ", 0, r, t");
         bar.add(new JSeparator(), "0, 1, " + menus.length
-            + ", 2");
+            + ", 1, f, c");
         bar.add(lowerPanel, "0, 2, " + menus.length
             + ", 2, l, c");
+        bar.add(new JSeparator(), "0, 3, " + menus.length
+            + ", 3, f, c");
         bar.invalidate();
         bar.validate();
         return bar;
