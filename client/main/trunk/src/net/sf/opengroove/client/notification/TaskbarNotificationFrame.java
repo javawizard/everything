@@ -570,6 +570,8 @@ public class TaskbarNotificationFrame extends
             new TaskbarNotification[0]);
     }
     
+    public boolean containsNotification(String group, TaskbarNotification notification)
+    
     public int getInTime()
     {
         return inTime;

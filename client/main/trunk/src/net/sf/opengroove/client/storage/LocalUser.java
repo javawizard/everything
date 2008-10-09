@@ -35,6 +35,9 @@ public interface LocalUser
     @CustomProperty(CustomDelegate.class)
     public UserContext getContext();
     
+    @CustomProperty(CustomDelegate.class)
+    public String getDisplayName();
+    
     @Property
     @ListType(Contact.class)
     public StoredList<Contact> getContacts();
@@ -173,6 +176,13 @@ public interface LocalUser
             else if (property.equals("serverTime"))
                 return System.currentTimeMillis()
                     - user.getLag();
+            else if (property.equals("displayName"))
+            {
+                String realName = user.getRealName();
+                if (realName == null)
+                    return user.getUserid();
+                return realName;
+            }
             return null;
         }
         

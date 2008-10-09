@@ -302,6 +302,7 @@ public class Communicator
                     // the next while loop.
                     try
                     {
+                        timeoutCount = 0;
                         final ServerContext[] servers = ConnectionResolver
                             .lookup(Communicator.this.realm);
                         boolean setupConnection = false;
@@ -499,14 +500,6 @@ public class Communicator
                                     syncQueue
                                         .offer(iPacket);
                                 }
-                                else
-                                {
-                                    System.out
-                                        .println("command "
-                                            + iPacket
-                                                .getCommand()
-                                            + " received with nothig polling for it");
-                                }
                                 // Now we'll loop through all of the
                                 // PacketHandlers and send the packet to them.
                                 notifyPacketListeners(new Notifier<PacketListener>()
@@ -689,6 +682,13 @@ public class Communicator
         return query(packet, timeout, socket);
     }
     
+    private int timeoutCount;
+    /**
+     * If this many timeouts occur, then the communicator assumes that something
+     * has happened to it's connection, and it reconnects the connection.
+     */
+    private int MAX_TIMEOUTS = 20;
+    
     private Packet query(Packet packet, int timeout,
         Socket socket) throws IOException
     {
@@ -706,6 +706,19 @@ public class Communicator
                     "A connection error was encountered "
                         + "while waiting for a response.");
             if (responsePacket == null)
+            {
+                if (timeoutCount++ > MAX_TIMEOUTS)
+                {
+                    try
+                    {
+                        timeoutCount = 0;
+                        reconnect();
+                    }
+                    catch (Exception exception)
+                    {
+                        exception.printStackTrace();
+                    }
+                }
                 throw new TimeoutException(
                     "The specified timeout expired before "
                         + "a response was received. The command was "
@@ -716,6 +729,7 @@ public class Communicator
                                 .getContents().length, 128))
                         + " packet id "
                         + packet.getPacketId());
+            }
             if (!responsePacket.getResponse().trim()
                 .equalsIgnoreCase("OK"))
             {
@@ -749,7 +763,7 @@ public class Communicator
      * 
      * @param bytes
      *            the byte arrays to concatenate
-     * @return a byte array. who's length is the length of all of the input byte
+     * @return a byte array who's length is the length of all of the input byte
      *         arrays added together, and who's contents are the contents of the
      *         input byte arrays, one after another.
      */
@@ -1012,6 +1026,9 @@ public class Communicator
         try
         {
             socket.close();
+            in = null;
+            out = null;
+            socket = null;
         }
         catch (Exception e)
         {

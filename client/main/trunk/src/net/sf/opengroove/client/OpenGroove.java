@@ -94,6 +94,7 @@ import net.sf.opengroove.client.features.FeatureComponentHandler;
 import net.sf.opengroove.client.features.FeatureManager;
 import net.sf.opengroove.client.help.HelpViewer;
 import net.sf.opengroove.client.notification.FrameShowingNotification;
+import net.sf.opengroove.client.notification.GroupLabelResolver;
 import net.sf.opengroove.client.notification.NotificationAdapter;
 import net.sf.opengroove.client.notification.TaskbarNotificationFrame;
 import net.sf.opengroove.client.plugins.Plugin;
@@ -516,6 +517,33 @@ public class OpenGroove
             initLoginFrame();
             notificationFrame = new TaskbarNotificationFrame(
                 new SlideInNotificationFrameTransition());
+            notificationFrame
+                .setGroupLabelResolver(new GroupLabelResolver()
+                {
+                    
+                    @Override
+                    public String resolveLabel(String group)
+                    {
+                        if (group
+                            .equalsIgnoreCase("opengroove"))
+                            return "OpenGroove";
+                        /*
+                         * TODO: change this to resolve the real name of the
+                         * local user in question, if it is indeed a local user
+                         */
+                        if (Userids.isUserid(group))
+                        {
+                            LocalUser user = Storage
+                                .getLocalUser(group);
+                            if (user != null)
+                            {
+                                return user
+                                    .getDisplayName();
+                            }
+                        }
+                        return group;
+                    }
+                });
             new Thread("notification status updater")
             {
                 public void run()
@@ -1014,6 +1042,21 @@ public class OpenGroove
                     });
                 context.setUserid(userid);
                 context.setPassword(password);
+                context
+                    .setNonexistantContactNotification(new NotificationAdapter(
+                        notificationFrame,
+                        new JLabel(
+                            "One or more of your contacts do not exist"),
+                        false, false)
+                    {
+                        
+                        @Override
+                        public void clicked()
+                        {
+                            context
+                                .showNonexistantContactInfoDialog();
+                        }
+                    });
                 context
                     .setStatusListener(new StatusListener()
                     {
@@ -3300,7 +3343,7 @@ public class OpenGroove
         final UserContext context)
     {
         // TODO: move the icon loading into it's own method
-        final JFrame launchbar = new JFrame(userid
+        final JFrame launchbar = new JFrame(context.getDisplayName()
             + " - Launchbar - OpenGroove");
         context.setLaunchbar(launchbar);
         launchbar.setIconImage(trayimage);

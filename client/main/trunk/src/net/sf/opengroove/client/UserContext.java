@@ -8,6 +8,7 @@ import java.awt.MouseInfo;
 import java.awt.Point;
 import java.awt.PointerInfo;
 import java.awt.PopupMenu;
+import java.awt.Rectangle;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
@@ -48,6 +49,8 @@ import net.sf.opengroove.client.com.Subscription;
 import net.sf.opengroove.client.com.TimeoutException;
 import net.sf.opengroove.client.com.UserNotificationListener;
 import net.sf.opengroove.client.help.HelpViewer;
+import net.sf.opengroove.client.notification.NotificationAdapter;
+import net.sf.opengroove.client.notification.TaskbarNotification;
 import net.sf.opengroove.client.plugins.PluginManager;
 import net.sf.opengroove.client.storage.Contact;
 import net.sf.opengroove.client.storage.ContactComputer;
@@ -61,6 +64,7 @@ import net.sf.opengroove.common.concurrent.Conditional;
 import net.sf.opengroove.common.concurrent.ConditionalTimer;
 import net.sf.opengroove.common.utils.StringUtils;
 import net.sf.opengroove.common.utils.Userids;
+import net.sf.opengroove.common.utils.StringUtils.ToString;
 
 /**
  * A user context object is created for each user that logs in, and is passed
@@ -88,6 +92,7 @@ public class UserContext
      * read over some information won't be marked idle immediately.
      */
     private static final long IDLE_THRESHOLD = 1000 * 30;
+    private TaskbarNotification nonexistantContactNotification;
     /**
      * This user's userid
      */
@@ -818,6 +823,7 @@ public class UserContext
             userStatusMenu.add(unknownLabel);
             userStatusMenu.add(nonexistantLabel);
             int contactsAdded = 0;
+            boolean hasNonexistantContacts = false;
             for (final Contact contact : contactList)
             {
                 if (contact.isUserContact()
@@ -825,6 +831,8 @@ public class UserContext
                         .isSelected())
                 {
                     contactsAdded++;
+                    if(contact.getStatus().isNonexistant())
+                        hasNonexistantContacts = true;
                     JPanel contactPanel = new JPanel(
                         new BorderLayout());
                     contactPanel.setOpaque(false);
@@ -903,6 +911,18 @@ public class UserContext
                         15);
                     contactRenamePopup
                         .add(contactRenameField);
+                    contactRenameField
+                        .addActionListener(new ActionListener()
+                        {
+                            
+                            @Override
+                            public void actionPerformed(
+                                ActionEvent e)
+                            {
+                                contactRenamePopup
+                                    .setVisible(false);
+                            }
+                        });
                     contactRenamePopup
                         .addPopupMenuListener(new PopupMenuListener()
                         {
@@ -949,11 +969,16 @@ public class UserContext
                             public void actionPerformed(
                                 ActionEvent e)
                             {
+                                contactButton
+                                    .scrollRectToVisible(new Rectangle(
+                                        0, 0, 0, 0));
                                 contactRenameField
                                     .setText(contact
                                         .getLocalName());
                                 contactRenamePopup.show(
                                     contactButton, 0, 0);
+                                contactRenameField
+                                    .requestFocusInWindow();
                             }
                         });
                         menu.add(new IMenuItem("Delete")
@@ -1038,6 +1063,14 @@ public class UserContext
                     // launchbar.validate();
                     // launchbar.repaint();
                 }
+            }
+            if(hasNonexistantContacts)
+            {
+                if(OpenGroove.notificationFrame.is)
+            }
+            else
+            {
+                
             }
             if (contactsAdded == 0)
                 contactsPanel
@@ -1426,5 +1459,66 @@ public class UserContext
         {
             e.printStackTrace();
         }
+    }
+    
+    public TaskbarNotification getNonexistantContactNotification()
+    {
+        return nonexistantContactNotification;
+    }
+    
+    public void setNonexistantContactNotification(
+        TaskbarNotification nonexistantContactNotification)
+    {
+        this.nonexistantContactNotification = nonexistantContactNotification;
+    }
+    
+    public void showNonexistantContactInfoDialog()
+    {
+        ArrayList<Contact> contacts = getStorage()
+            .getLocalUser().getContacts().isolate();
+        ArrayList<Contact> nonexistantContacts = new ArrayList<Contact>();
+        for (Contact contact : contacts)
+        {
+            if (contact.getStatus().isNonexistant())
+                nonexistantContacts.add(contact);
+        }
+        /*
+         * We've built our list of nonexistant contacts. Now we show a
+         * JOptionPane with the list of contacts in it. If there are none,
+         * however, then we refresh the contacts pane (which should get rid of
+         * the taskbar notification).
+         */
+        if (nonexistantContacts.size() == 0)
+        {
+            refreshContactsPaneAsynchronously();
+            return;
+        }
+        launchbar.show();
+        JOptionPane
+            .showMessageDialog(
+                launchbar,
+                "<html>The following contacts do not exist:<br/><br/>"
+                    + StringUtils.delimited(
+                        nonexistantContacts
+                            .toArray(new Contact[0]),
+                        new ToString<Contact>()
+                        {
+                            
+                            @Override
+                            public String toString(
+                                Contact object)
+                            {
+                                return object
+                                    .getDisplayName();
+                            }
+                        }, "<br/>")
+                    + "<br/><br/>You should consider deleting "
+                    + (nonexistantContacts.size() == 1 ? "this contact"
+                        : "these contacts") + ".");
+    }
+    
+    public String getDisplayName()
+    {
+        return getLocalUser().getDisplayName();
     }
 }
