@@ -3350,8 +3350,25 @@ public class OpenGroove
         context.setLaunchbar(launchbar);
         launchbar.setIconImage(trayimage);
         launchbar.setSize(300, 500);
+        JPanel rightPanel = new JPanel();
+        /*
+         * In the future, rightPanel could contain some sort of OpenGroove icon
+         * that animates while a complex task is in progress, similar to
+         * Microsoft Groove. It could also contain additional controls. For now,
+         * though, we'll just leave it blank.
+         */
+        rightPanel.setOpaque(false);
+        JPanel lowerPanel = new JPanel();
+        lowerPanel.setOpaque(false);
+        lowerPanel.setLayout(new BorderLayout());
+        lowerPanel.setBorder(new EmptyBorder(6, 18, 6, 3));
+        context.setLocalStatusButton(new JideButton());
+        context.getLocalStatusButton().setOpaque(false);
+        context.getLocalStatusButton().setButtonStyle()
+        lowerPanel.add(context.getLocalStatusButton(),
+            BorderLayout.CENTER);
         JMenuBar bar = loadLaunchbarMenus(userid, context,
-            launchbar);
+            launchbar, rightPanel, lowerPanel);
         SVGPanel workspacesGradientPanel = new SVGPanel(
             new File("icons/backdrops/workspacestab.svg"));
         workspacesGradientPanel
@@ -3659,7 +3676,8 @@ public class OpenGroove
      */
     private static JMenuBar loadLaunchbarMenus(
         String userid, final UserContext context,
-        final JFrame launchbar)
+        final JFrame launchbar, JPanel rightPanel,
+        JPanel lowerPanel)
     {
         JMenuBar bar = new JMenuBar();
         final JMenu convergiaMenu = new IMenu("OpenGroove",
@@ -3733,7 +3751,6 @@ public class OpenGroove
                 }
             });
         convergiaMenu.add(alwaysOnTopItem);
-        convergiaMenu.setOpaque(false);
         JMenu helpMenu = new IMenu("Help", new IMenuItem[] {
             new IMenuItem("Help")
             {
@@ -3765,7 +3782,20 @@ public class OpenGroove
         double[] colSpecs = new double[menus.length + 1];
         Arrays.fill(colSpecs, 0, menus.length,
             TableLayout.PREFERRED);
-        bar.setLayout(new TableLayout());
+        colSpecs[menus.length] = TableLayout.FILL;
+        bar.setLayout(new TableLayout(colSpecs,
+            new double[] { TableLayout.PREFERRED,
+                TableLayout.PREFERRED }));
+        for (int i = 0; i < menus.length; i++)
+        {
+            menus[i].setOpaque(false);
+            bar.add(menus[i], "" + i + ", 0");
+        }
+        bar
+            .add(rightPanel, "" + menus.length
+                + ", 0, r, t");
+        bar.add(lowerPanel, "0, 1, " + menus.length
+            + ", 1, l, c");
         bar.invalidate();
         bar.validate();
         return bar;

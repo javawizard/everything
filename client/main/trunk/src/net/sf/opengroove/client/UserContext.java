@@ -122,6 +122,17 @@ public class UserContext
         }
     };
     /**
+     * A JideButton that contains the icon that represents the local user's
+     * current status
+     */
+    private JideButton localStatusButton;
+    /**
+     * A JideButton that contains the local user's username. It is displayed at
+     * the top of the screen, and can be clicked to change the local user's real
+     * name.
+     */
+    private JideButton localUsernameButton;
+    /**
      * A timer that downloads contact updates from the server, and uploads new
      * contact updates if there are any. This timer is interrupted any time an
      * imessage is received from another computer that indicates updates to
@@ -745,6 +756,58 @@ public class UserContext
     
     private final Object refreshContactsLock = new Object();
     
+    public UserContext()
+    {
+        userStatusMenu = new JPopupMenu();
+        JLabel onlineLabel = new JLabel("Online",
+            new ImageIcon(OpenGroove.Icons.USER_ONLINE_16
+                .getImage()), JLabel.LEFT);
+        JLabel offlineLabel = new JLabel("Offline",
+            new ImageIcon(OpenGroove.Icons.USER_OFFLINE_16
+                .getImage()), JLabel.LEFT);
+        JLabel idleLabel = new JLabel("Idle",
+            new ImageIcon(OpenGroove.Icons.USER_IDLE_16
+                .getImage()), JLabel.LEFT);
+        JLabel unknownLabel = new JLabel("Unknown",
+            new ImageIcon(OpenGroove.Icons.USER_UNKNOWN_16
+                .getImage()), JLabel.LEFT);
+        JLabel nonexistantLabel = new JLabel("Nonexistant",
+            new ImageIcon(
+                OpenGroove.Icons.USER_NONEXISTANT_16
+                    .getImage()), JLabel.LEFT);
+        onlineLabel
+            .setToolTipText(ComponentUtils
+                .htmlTipWrap("This means that the user is connected to the"
+                    + " internet and is using their computer."));
+        offlineLabel
+            .setToolTipText(ComponentUtils
+                .htmlTipWrap("This means that the user is not connected "
+                    + "to the internet, or their computer is off."));
+        idleLabel
+            .setToolTipText(ComponentUtils
+                .htmlTipWrap("This means that the user is connected "
+                    + "to the internet, but they are not using their computer right now."));
+        unknownLabel
+            .setToolTipText(ComponentUtils
+                .htmlTipWrap("This means that OpenGroove doesn't know what the "
+                    + "user's current status is. This typically happens when you "
+                    + "have added the contact but haven't connected to the"
+                    + " internet since then."));
+        nonexistantLabel
+            .setToolTipText(ComponentUtils
+                .htmlTipWrap("This means that OpenGroove has determined that "
+                    + "the user does not exist. The user may have "
+                    + "been deleted, or you might have entered the user's "
+                    + "userid incorrectly when adding them as a contact."));
+        userStatusMenu.add(new JLabel(" Key:"));
+        userStatusMenu.add(onlineLabel);
+        userStatusMenu.add(offlineLabel);
+        userStatusMenu.add(idleLabel);
+        userStatusMenu.add(unknownLabel);
+        userStatusMenu.add(nonexistantLabel);
+        
+    }
+    
     /**
      * Refreshes the contacts panel. This should generally not be run on the
      * EDT, as it may take some time to complete. It removes all components from
@@ -772,56 +835,7 @@ public class UserContext
                 launchbar.validate();
                 launchbar.repaint();
             }
-            final JPopupMenu userStatusMenu = new JPopupMenu();
-            JLabel onlineLabel = new JLabel("Online",
-                new ImageIcon(
-                    OpenGroove.Icons.USER_ONLINE_16
-                        .getImage()), JLabel.LEFT);
-            JLabel offlineLabel = new JLabel("Offline",
-                new ImageIcon(
-                    OpenGroove.Icons.USER_OFFLINE_16
-                        .getImage()), JLabel.LEFT);
-            JLabel idleLabel = new JLabel("Idle",
-                new ImageIcon(OpenGroove.Icons.USER_IDLE_16
-                    .getImage()), JLabel.LEFT);
-            JLabel unknownLabel = new JLabel("Unknown",
-                new ImageIcon(
-                    OpenGroove.Icons.USER_UNKNOWN_16
-                        .getImage()), JLabel.LEFT);
-            JLabel nonexistantLabel = new JLabel(
-                "Nonexistant", new ImageIcon(
-                    OpenGroove.Icons.USER_NONEXISTANT_16
-                        .getImage()), JLabel.LEFT);
-            onlineLabel
-                .setToolTipText(ComponentUtils
-                    .htmlTipWrap("This means that the user is connected to the"
-                        + " internet and is using their computer."));
-            offlineLabel
-                .setToolTipText(ComponentUtils
-                    .htmlTipWrap("This means that the user is not connected "
-                        + "to the internet, or their computer is off."));
-            idleLabel
-                .setToolTipText(ComponentUtils
-                    .htmlTipWrap("This means that the user is connected "
-                        + "to the internet, but they are not using their computer right now."));
-            unknownLabel
-                .setToolTipText(ComponentUtils
-                    .htmlTipWrap("This means that OpenGroove doesn't know what the "
-                        + "user's current status is. This typically happens when you "
-                        + "have added the contact but haven't connected to the"
-                        + " internet since then."));
-            nonexistantLabel
-                .setToolTipText(ComponentUtils
-                    .htmlTipWrap("This means that OpenGroove has determined that "
-                        + "the user does not exist. The user may have "
-                        + "been deleted, or you might have entered the user's "
-                        + "userid incorrectly when adding them as a contact."));
-            userStatusMenu.add(new JLabel(" Key:"));
-            userStatusMenu.add(onlineLabel);
-            userStatusMenu.add(offlineLabel);
-            userStatusMenu.add(idleLabel);
-            userStatusMenu.add(unknownLabel);
-            userStatusMenu.add(nonexistantLabel);
+            final JPopupMenu userStatusMenu = getUserStatusMenu();
             int contactsAdded = 0;
             boolean hasNonexistantContacts = false;
             for (final Contact contact : contactList)
@@ -1094,6 +1108,13 @@ public class UserContext
             launchbar.validate();
             launchbar.repaint();
         }
+    }
+    
+    private JPopupMenu userStatusMenu;
+    
+    private JPopupMenu getUserStatusMenu()
+    {
+        return userStatusMenu;
     }
     
     protected void setContactButtonText(
@@ -1530,5 +1551,27 @@ public class UserContext
     public String getDisplayName()
     {
         return getLocalUser().getDisplayName();
+    }
+    
+    public JideButton getLocalStatusButton()
+    {
+        return localStatusButton;
+    }
+    
+    public JideButton getLocalUsernameButton()
+    {
+        return localUsernameButton;
+    }
+    
+    public void setLocalStatusButton(
+        JideButton localStatusButton)
+    {
+        this.localStatusButton = localStatusButton;
+    }
+    
+    public void setLocalUsernameButton(
+        JideButton localUsernameButton)
+    {
+        this.localUsernameButton = localUsernameButton;
     }
 }
