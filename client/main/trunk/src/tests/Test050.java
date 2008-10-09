@@ -1,5 +1,11 @@
 package tests;
 
+import javax.swing.JMenu;
+import javax.swing.JMenuItem;
+
+import net.sf.opengroove.client.IMenu;
+import net.sf.opengroove.client.ui.TestFrame;
+
 public class Test050
 {
     
@@ -8,8 +14,16 @@ public class Test050
      */
     public static void main(String[] args)
     {
-        // TODO Auto-generated method stub
-        
+        TestFrame frame = new TestFrame();
+        JMenu menu = new IMenu("Testmenu", new JMenuItem[] {
+            new JMenuItem("Item 1"),
+            new JMenuItem("Item 2") });
+        JMenu menu2 = new IMenu("Testmenu2",
+            new JMenuItem[] { new JMenuItem("Item 1"),
+                new JMenuItem("Item 2") });
+        frame.getContentPane().add(menu);
+        frame.getContentPane().add(menu2);
+        frame.show();
     }
     
 }
