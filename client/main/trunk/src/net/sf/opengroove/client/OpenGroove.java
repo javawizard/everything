@@ -1,5 +1,7 @@
 package net.sf.opengroove.client;
 
+import info.clearthought.layout.TableLayout;
+
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Component;
@@ -3652,8 +3654,9 @@ public class OpenGroove
     /**
      * Loads the menu bar on the launchbar.
      */
-    private static void loadLaunchbarMenus(String userid,
-        final UserContext context, final JFrame launchbar)
+    private static JMenuBar loadLaunchbarMenus(
+        String userid, final UserContext context,
+        final JFrame launchbar)
     {
         JMenuBar bar = new JMenuBar();
         final JMenu convergiaMenu = new IMenu("OpenGroove",
@@ -3754,17 +3757,15 @@ public class OpenGroove
                     showAboutWindow();
                 }
             } });
-        // FIXME: remove the following opaque setters once the visual problem
-        // with the menu bar is resolved
-        convergiaMenu.setOpaque(false);
-        pluginsMenu.setOpaque(false);
-        helpMenu.setOpaque(false);
-        bar.add(convergiaMenu);
-        bar.add(pluginsMenu);
-        bar.add(helpMenu);
-        launchbar.setJMenuBar(bar);
+        JMenu[] menus = new JMenu[] { convergiaMenu,
+            pluginsMenu, helpMenu };
+        double[] colSpecs = new double[menus.length + 1];
+        Arrays.fill(colSpecs, 0, menus.length,
+            TableLayout.PREFERRED);
+        bar.setLayout(new TableLayout());
         bar.invalidate();
         bar.validate();
+        return bar;
     }
     
     /**
