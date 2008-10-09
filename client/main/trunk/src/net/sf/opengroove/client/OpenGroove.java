@@ -3350,7 +3350,8 @@ public class OpenGroove
         context.setLaunchbar(launchbar);
         launchbar.setIconImage(trayimage);
         launchbar.setSize(300, 500);
-        loadLaunchbarMenus(userid, context, launchbar);
+        JMenuBar bar = loadLaunchbarMenus(userid, context,
+            launchbar);
         SVGPanel workspacesGradientPanel = new SVGPanel(
             new File("icons/backdrops/workspacestab.svg"));
         workspacesGradientPanel
@@ -3358,6 +3359,8 @@ public class OpenGroove
         workspacesGradientPanel.setOpaque(true);
         launchbar.getContentPane().setLayout(
             new BorderLayout());
+        launchbar.getContentPane().add(bar,
+            BorderLayout.NORTH);
         JPanel content = new JPanel();
         content.setLayout(new BorderLayout());
         JTabbedPane launchbarTabbedPane = new JTabbedPane();
