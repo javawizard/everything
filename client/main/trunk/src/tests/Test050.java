@@ -21,6 +21,7 @@ public class Test050
         JMenu menu2 = new IMenu("Testmenu2",
             new JMenuItem[] { new JMenuItem("Item 1"),
                 new JMenuItem("Item 2") });
+        menu2.set
         frame.getContentPane().add(menu);
         frame.getContentPane().add(menu2);
         frame.show();
