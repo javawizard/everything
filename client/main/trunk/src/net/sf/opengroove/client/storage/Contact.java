@@ -99,6 +99,18 @@ public interface Contact
     
     public void setRealName(String realName);
     
+    /**
+     * The date that local information about this contact was last modified, in
+     * server time. This is used to synchronize contact information between the
+     * user's computers.
+     * 
+     * @return
+     */
+    @Property
+    public long getLastModified();
+    
+    public void setLastModifled(long value);
+    
     @Property
     @Required
     public ContactStatus getStatus();
