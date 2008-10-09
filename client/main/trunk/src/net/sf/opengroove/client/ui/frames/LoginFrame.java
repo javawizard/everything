@@ -33,6 +33,8 @@ import javax.swing.SwingConstants;
 import javax.swing.WindowConstants;
 
 import net.sf.opengroove.client.Statics;
+import net.sf.opengroove.client.storage.LocalUser;
+import net.sf.opengroove.client.storage.Storage;
 import net.sf.opengroove.client.ui.FillContainer;
 import net.sf.opengroove.client.ui.SVGPanel;
 
@@ -519,13 +521,31 @@ public class LoginFrame extends javax.swing.JFrame
         this.passwordHint = passwordHint;
     }
     
+    private String currentUsername;
+    
     public String getUserid()
     {
-        return useridLabel.getText();
+        return currentUsername;
     }
     
     public void setUserid(String userid)
     {
-        useridLabel.setText(userid);
+        currentUsername = userid;
+        if (userid != null)
+        {
+            LocalUser user = Storage.getLocalUser(userid);
+            if (user == null)
+            {
+                useridLabel.setText(userid);
+            }
+            else
+            {
+                useridLabel.setText(user.getDisplayName());
+            }
+        }
+        else
+        {
+            useridLabel.setText(userid);
+        }
     }
 }
