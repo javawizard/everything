@@ -3342,7 +3342,6 @@ public class OpenGroove
     private static void loadLaunchBar(String userid,
         final UserContext context)
     {
-        // TODO: move the icon loading into it's own method
         final JFrame launchbar = new JFrame(context.getDisplayName()
             + " - Launchbar - OpenGroove");
         context.setLaunchbar(launchbar);
