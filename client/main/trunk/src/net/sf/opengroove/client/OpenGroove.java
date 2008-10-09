@@ -1504,8 +1504,8 @@ public class OpenGroove
         if (newAccountFrame.isShowing())
         {
             /*
-             * The user is currently using the create new account wizard, so we
-             * bring it to the front instead.
+             * FIXME: This makes it so that the new account frame can't show the
+             * login frame when it's completed.
              */
             bringToFront(newAccountFrame);
             return;
@@ -3342,7 +3342,8 @@ public class OpenGroove
     private static void loadLaunchBar(String userid,
         final UserContext context)
     {
-        final JFrame launchbar = new JFrame(context.getDisplayName()
+        final JFrame launchbar = new JFrame(context
+            .getDisplayName()
             + " - Launchbar - OpenGroove");
         context.setLaunchbar(launchbar);
         launchbar.setIconImage(trayimage);

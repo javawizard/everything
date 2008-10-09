@@ -831,7 +831,7 @@ public class UserContext
                         .isSelected())
                 {
                     contactsAdded++;
-                    if(contact.getStatus().isNonexistant())
+                    if (contact.getStatus().isNonexistant())
                         hasNonexistantContacts = true;
                     JPanel contactPanel = new JPanel(
                         new BorderLayout());
@@ -1064,13 +1064,23 @@ public class UserContext
                     // launchbar.repaint();
                 }
             }
-            if(hasNonexistantContacts)
+            if (hasNonexistantContacts)
             {
-                if(OpenGroove.notificationFrame.is)
+                if (!OpenGroove.notificationFrame
+                    .containsNotification(userid,
+                        nonexistantContactNotification))
+                    OpenGroove.notificationFrame
+                        .addNotification(userid,
+                            nonexistantContactNotification,
+                            true);
             }
             else
             {
-                
+                if (OpenGroove.notificationFrame
+                    .containsNotification(userid,
+                        nonexistantContactNotification))
+                    OpenGroove.notificationFrame
+                        .removeNotification(nonexistantContactNotification);
             }
             if (contactsAdded == 0)
                 contactsPanel

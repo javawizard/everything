@@ -521,7 +521,7 @@ public class LoginFrame extends javax.swing.JFrame
         this.passwordHint = passwordHint;
     }
     
-    private String currentUsername;
+    private String currentUsername = "";
     
     public String getUserid()
     {
