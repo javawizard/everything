@@ -34,9 +34,9 @@ public class Test050
             TableLayout.PREFERRED, TableLayout.FILL }));
         JLabel lowerLabel = new JLabel("Alex Boyd");
         bar.add(menu, "0, 0");
-        bar.add(menu2, "0, 1");
-        bar.add(new JLabel(""), "0, 2, c, c");
-        bar.add(lowerLabel, "1, 0, 1, 2, c, c");
+        bar.add(menu2, "1, 0");
+        bar.add(new JLabel(""), "2, 0, c, c");
+        bar.add(lowerLabel, "0, 1, 2, 1, c, c");
         frame.getContentPane()
             .setLayout(new BorderLayout());
         frame.getContentPane().add(bar);
