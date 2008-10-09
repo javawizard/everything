@@ -1112,7 +1112,7 @@ public class UserContext
     
     private JPopupMenu userStatusMenu;
     
-    private JPopupMenu getUserStatusMenu()
+    public JPopupMenu getUserStatusMenu()
     {
         return userStatusMenu;
     }

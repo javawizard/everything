@@ -3364,8 +3364,32 @@ public class OpenGroove
         lowerPanel.setBorder(new EmptyBorder(6, 18, 6, 3));
         context.setLocalStatusButton(new JideButton());
         context.getLocalStatusButton().setOpaque(false);
-        context.getLocalStatusButton().setButtonStyle()
+        context.getLocalStatusButton().setButtonStyle(
+            JideButton.HYPERLINK_STYLE);
+        context.getLocalStatusButton().setIcon(
+            new ImageIcon(OpenGroove.Icons.USER_OFFLINE_16
+                .getImage()));
+        context.getLocalStatusButton().addActionListener(
+            new ActionListener()
+            {
+                
+                @Override
+                public void actionPerformed(ActionEvent e)
+                {
+                    context.getUserStatusMenu().show(
+                        context.getLocalStatusButton(), 0,
+                        0);
+                }
+            });
         lowerPanel.add(context.getLocalStatusButton(),
+            BorderLayout.WEST);
+        context.setLocalUsernameButton(new JideButton());
+        context.getLocalUsernameButton().setOpaque(false);
+        context.getLocalUsernameButton().setButtonStyle(
+            JideButton.HYPERLINK_STYLE);
+        context.getLocalUsernameButton().setText(
+            Storage.getLocalUser(userid).getDisplayName());
+        lowerPanel.add(context.getLocalUsernameButton(),
             BorderLayout.CENTER);
         JMenuBar bar = loadLaunchbarMenus(userid, context,
             launchbar, rightPanel, lowerPanel);
@@ -3785,6 +3809,7 @@ public class OpenGroove
         colSpecs[menus.length] = TableLayout.FILL;
         bar.setLayout(new TableLayout(colSpecs,
             new double[] { TableLayout.PREFERRED,
+                TableLayout.PREFERRED,
                 TableLayout.PREFERRED }));
         for (int i = 0; i < menus.length; i++)
         {
@@ -3794,8 +3819,10 @@ public class OpenGroove
         bar
             .add(rightPanel, "" + menus.length
                 + ", 0, r, t");
-        bar.add(lowerPanel, "0, 1, " + menus.length
-            + ", 1, l, c");
+        bar.add(new JSeparator(), "0, 1, " + menus.length
+            + ", 2");
+        bar.add(lowerPanel, "0, 2, " + menus.length
+            + ", 2, l, c");
         bar.invalidate();
         bar.validate();
         return bar;
