@@ -27,6 +27,8 @@ public class SVGPanel extends JPanel
 {
     private BufferedImage[] images;
     
+    private BufferedImage buffer;
+    
     private JSVGCanvas[] canvases;
     
     private SVGConstraints[] constraints;
@@ -42,7 +44,6 @@ public class SVGPanel extends JPanel
     {
         images = new BufferedImage[sourceUrls.length];
         canvases = new JSVGCanvas[sourceUrls.length];
-        
         for (int i = 0; i < sourceUrls.length; i++)
         {
             canvases[i] = new JSVGCanvas()
@@ -88,6 +89,9 @@ public class SVGPanel extends JPanel
                     }
                 });
             canvases[i].setURI(sourceUrls[i]);
+            canvases[i].setOpaque(false);
+            canvases[i]
+                .setBackground(new Color(0, 0, 0, 0));
         }
     }
     
@@ -113,6 +117,16 @@ public class SVGPanel extends JPanel
     
     public void paintComponent(Graphics g)
     {
+        if (buffer == null
+            || buffer.getWidth() != getWidth()
+            || buffer.getHeight() != getHeight())
+            buffer = new BufferedImage(getWidth(),
+                getHeight(), BufferedImage.TYPE_INT_ARGB);
+        int transparent = new Color(0, 0, 0, 0).getRGB();
+        for (int x = 0; x < buffer.getWidth(); x++)
+            for (int y = 0; y < buffer.getHeight(); y++)
+                buffer.setRGB(x, y, transparent);
+        Graphics2D bufferGraphics = buffer.createGraphics();
         for (int i = 0; i < canvases.length; i++)
         {
             Dimension2D svgDocumentSize = null;
@@ -183,8 +197,12 @@ public class SVGPanel extends JPanel
                 targetX = (int) extraX;
                 targetY = (int) extraY;
             }
-            g.drawImage(images[i], targetX, targetY,
-                targetWidth, targetHeight, null);
+            bufferGraphics.drawImage(images[i], targetX,
+                targetY, targetWidth, targetHeight, null);
         }
+        g.setColor(Color.WHITE);
+        g.fillRect(0, 0, getWidth(), getHeight());
+        g.drawImage(buffer, 0, 0, buffer.getWidth(), buffer
+            .getHeight(), null);
     }
 }

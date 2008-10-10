@@ -118,6 +118,7 @@ import net.sf.opengroove.client.ui.FillContainer;
 import net.sf.opengroove.client.ui.ImportWorkspaceDialog;
 import net.sf.opengroove.client.ui.InviteToWorkspaceDialog;
 import net.sf.opengroove.client.ui.ItemChooser;
+import net.sf.opengroove.client.ui.SVGConstraints;
 import net.sf.opengroove.client.ui.SVGPanel;
 import net.sf.opengroove.client.ui.StandardWizardPage;
 import net.sf.opengroove.client.ui.StatusDialog;
@@ -3500,7 +3501,10 @@ public class OpenGroove
         JMenuBar bar = loadLaunchbarMenus(userid, context,
             launchbar, rightPanel, lowerPanel);
         SVGPanel workspacesGradientPanel = new SVGPanel(
-            new File("icons/backdrops/workspacestab.svg"));
+            new File[] { new File(
+                "icons/backdrops/workspacestab.svg") },
+            new SVGConstraints[] { new SVGConstraints(true,
+                0, 0) });
         workspacesGradientPanel
             .setLayout(new BorderLayout());
         workspacesGradientPanel.setOpaque(true);
@@ -3521,8 +3525,11 @@ public class OpenGroove
         context.setContactsPanel(contactsPanel);
         contactsPanel.setLayout(new BoxLayout(
             contactsPanel, BoxLayout.Y_AXIS));
-        SVGPanel contactsTab = new SVGPanel(new File(
-            "icons/backdrops/contactstab.svg"));
+        SVGPanel contactsTab = new SVGPanel(
+            new File[] { new File(
+            "icons/backdrops/contactstab.svg") },
+        new SVGConstraints[] { new SVGConstraints(true,
+            0, 0) });
         contactsTab.setLayout(new BorderLayout());
         JPanel contactsNorth = new JPanel();
         contactsNorth.setOpaque(false);

@@ -36,6 +36,7 @@ import net.sf.opengroove.client.Statics;
 import net.sf.opengroove.client.storage.LocalUser;
 import net.sf.opengroove.client.storage.Storage;
 import net.sf.opengroove.client.ui.FillContainer;
+import net.sf.opengroove.client.ui.SVGConstraints;
 import net.sf.opengroove.client.ui.SVGPanel;
 
 import javax.swing.SwingUtilities;
@@ -111,9 +112,16 @@ public class LoginFrame extends javax.swing.JFrame
             setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
             getContentPane().setLayout(thisLayout);
             {
-                fillContainer = new SVGPanel(new File(
-                    "icons/backdrops/loginframe.svg")
-                    .toURI().toURL().toString());
+                fillContainer = new SVGPanel(new String[] {
+                    new File(
+                        "icons/backdrops/loginframe.svg")
+                        .toURI().toURL().toString(),
+                    new File(
+                        "icons/backdrops/loginframe-1.svg")
+                        .toURI().toURL().toString() },
+                    new SVGConstraints[] {
+                        new SVGConstraints(true, 0, 0),
+                        new SVGConstraints(false, 0, 0) });
                 TableLayout fillContainerLayout = new TableLayout(
                     new double[][] {
                         { 12.0, TableLayout.PREFERRED,
