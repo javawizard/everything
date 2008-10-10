@@ -1396,7 +1396,7 @@ public class OpenGroove
         {
             for (final LocalUser user : onlineUsers)
             {
-                Menu userMenu = new Menu(user.getUserid());
+                Menu userMenu = new Menu(user.getDisplayName());
                 MenuItem launchbarItem = new MenuItem(
                     "Launchbar");
                 launchbarItem
@@ -1422,7 +1422,7 @@ public class OpenGroove
         {
             for (final LocalUser user : offlineUsers)
             {
-                Menu userMenu = new Menu(user.getUserid());
+                Menu userMenu = new Menu(user.getDisplayName());
                 MenuItem loginItem = new MenuItem("Login");
                 loginItem
                     .addActionListener(new ActionListener()
@@ -3349,7 +3349,8 @@ public class OpenGroove
     private static void loadLaunchBar(String userid,
         final UserContext context)
     {
-        final JFrame launchbar = new JFrame(context.createLaunchbarTitle());
+        final JFrame launchbar = new JFrame(context
+            .createLaunchbarTitle());
         context.setLaunchbar(launchbar);
         launchbar.setIconImage(trayimage);
         launchbar.setSize(300, 500);
@@ -3458,15 +3459,17 @@ public class OpenGroove
         context.getLocalUser().addChangeListener(
             "realName", new PropertyChangeListener()
             {
-
+                
                 @Override
                 public void propertyChange(
                     PropertyChangeEvent evt)
                 {
                     context.getLocalUsernameButton()
-                    .setText(context.getDisplayName());
-                    context.getLaunchbar().setTitle(context.createLaunchbarTitle());
-                    notificationFrame.re
+                        .setText(context.getDisplayName());
+                    context.getLaunchbar().setTitle(
+                        context.createLaunchbarTitle());
+                    notificationFrame.reloadNotifications();
+                    refreshTrayMenu();
                 }
             });
         contactRenameField

@@ -407,7 +407,15 @@ public class TaskbarNotificationFrame extends
             0));
     }
     
-    private synchronized void reloadNotifications()
+    /**
+     * Reloads all notifications in this notification frame.<br/><br/>
+     * 
+     * This typically doesn't need to be called by other classes
+     * (TaskbarNotificationFrame takes care of calling it when it's needed), but
+     * if the label for a particular group changes, then this should be called
+     * to get the new label to propegate into the UI.
+     */
+    public synchronized void reloadNotifications()
     {
         System.out.println("removing all");
         notificationPanel.removeAll();
