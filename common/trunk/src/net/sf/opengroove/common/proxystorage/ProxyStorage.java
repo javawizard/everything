@@ -1,6 +1,7 @@
 package net.sf.opengroove.common.proxystorage;
 
 import java.beans.Introspector;
+import java.beans.PropertyChangeListener;
 import java.io.File;
 import java.lang.reflect.Array;
 import java.lang.reflect.InvocationHandler;
@@ -22,6 +23,8 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+
+import javax.swing.event.ChangeListener;
 
 import net.sf.opengroove.common.utils.Progress;
 
@@ -57,12 +60,19 @@ public class ProxyStorage<E>
      * just private since StoredList uses it.
      */
     Connection connection;
-    
+    /*
+     * These should be static, since there's no point creating multiple
+     * instances per proxystorage instance
+     */
     protected static final Map<Class, Delegate> delegateSingletons = new HashMap<Class, Delegate>();
     
     protected static final Map<Class, ParameterFilter> parameterFilterSingletons = new HashMap<Class, ParameterFilter>();
     
     protected static final Map<Class, ResultFilter> resultFilterSingletons = new HashMap<Class, ResultFilter>();
+    /**
+     * A map that maps proxy object ids to maps that map the object's property names to lists of listeners registered on those propertiews
+     */
+    private final HashMap<Long, HashMap<String, ArrayList<PropertyChangeListener>>> beanListeners = new HashMap<Long, HashMap<String, ArrayList<PropertyChangeListener>>>();
     
     private DatabaseMetaData dbInfo;
     

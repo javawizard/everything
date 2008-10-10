@@ -15,25 +15,35 @@ import javax.swing.event.ChangeListener;
 public interface ProxyObject
 {
     public long getProxyStorageId();
+    
     public Class getProxyStorageClass();
+    
     public boolean isProxyStoragePresent();
+    
     public boolean equals(Object object);
+    
     public int hashCode();
+    
     /**
-     * Adds a listener that will be notified whenever any of this object's
-     * properties are changed. The listener will also be notified when any of
-     * this object's StoredLists are changed.
+     * Adds a listener that will be notified when the specified property
+     * changes. Specifically, this listener will be notified whenever this
+     * property's setter is called. If a StoredList needs to be watched for
+     * changes in it's contents, TODO: add storedlist listener method on
+     * storedlist.java
      * 
      * @param listener
      *            The listener to add
      */
-    public void addChangeListener(ChangeListener listener);
+    public void addChangeListener(String property,
+        ChangeListener listener);
     
     /**
      * Removes a change listener previously added with
-     * {@link #addChangeListener(ChangeListener)}.
+     * {@link #addChangeListener(String, ChangeListener)}.
      * 
      * @param listener
+     *            The listener to remove
      */
-    public void removeChangeListener(ChangeListener listener);
+    public void removeChangeListener(String property,
+        ChangeListener listener);
 }
