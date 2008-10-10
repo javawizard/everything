@@ -1,5 +1,7 @@
 package net.sf.opengroove.common.proxystorage;
 
+import java.beans.PropertyChangeListener;
+
 import javax.swing.event.ChangeListener;
 
 /**
@@ -35,7 +37,7 @@ public interface ProxyObject
      *            The listener to add
      */
     public void addChangeListener(String property,
-        ChangeListener listener);
+        PropertyChangeListener listener);
     
     /**
      * Removes a change listener previously added with
@@ -45,5 +47,5 @@ public interface ProxyObject
      *            The listener to remove
      */
     public void removeChangeListener(String property,
-        ChangeListener listener);
+        PropertyChangeListener listener);
 }
