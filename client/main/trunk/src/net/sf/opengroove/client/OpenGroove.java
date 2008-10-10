@@ -429,6 +429,7 @@ public class OpenGroove
      */
     public static void main(String[] args) throws Throwable
     {
+        UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
         gcThread.setDaemon(true);
         gcThread.start();
         JFrame frame3 = new JFrame("opengroovemain");
@@ -3361,7 +3362,7 @@ public class OpenGroove
         JPanel lowerPanel = new JPanel();
         lowerPanel.setOpaque(false);
         lowerPanel.setLayout(new BorderLayout());
-        lowerPanel.setBorder(new EmptyBorder(6, 18, 6, 3));
+        lowerPanel.setBorder(new EmptyBorder(6, 3, 6, 3));
         context.setLocalStatusButton(new JideButton());
         context.getLocalStatusButton().setOpaque(false);
         context.getLocalStatusButton().setButtonStyle(
@@ -3822,9 +3823,9 @@ public class OpenGroove
         bar.add(new JSeparator(), "0, 1, " + menus.length
             + ", 1, f, c");
         bar.add(lowerPanel, "0, 2, " + menus.length
-            + ", 2, l, c");
+            + ", 2, c, c");
         bar.add(new JSeparator(), "0, 3, " + menus.length
-            + ", 3, f, c");
+            + ", 3, f, b");
         bar.invalidate();
         bar.validate();
         return bar;
