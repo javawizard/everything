@@ -33,6 +33,8 @@ import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.awt.event.MouseMotionAdapter;
 import java.awt.image.BufferedImage;
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
 import java.io.File;
 import java.io.FileFilter;
 import java.io.FileInputStream;
@@ -3347,9 +3349,7 @@ public class OpenGroove
     private static void loadLaunchBar(String userid,
         final UserContext context)
     {
-        final JFrame launchbar = new JFrame(context
-            .getDisplayName()
-            + " - Launchbar - OpenGroove");
+        final JFrame launchbar = new JFrame(context.createLaunchbarTitle());
         context.setLaunchbar(launchbar);
         launchbar.setIconImage(trayimage);
         launchbar.setSize(300, 500);
@@ -3364,7 +3364,7 @@ public class OpenGroove
         JPanel lowerPanel = new JPanel();
         lowerPanel.setOpaque(false);
         lowerPanel.setLayout(new BorderLayout());
-        lowerPanel.setBorder(new EmptyBorder(6, 3, 6, 3));
+        lowerPanel.setBorder(new EmptyBorder(6, 3, 6, 20));
         context.setLocalStatusButton(new JideButton());
         context.getLocalStatusButton().setOpaque(false);
         context.getLocalStatusButton().setButtonStyle(
@@ -3408,8 +3408,12 @@ public class OpenGroove
                 @Override
                 public void actionPerformed(ActionEvent e)
                 {
+                    contactRenameField.setText(context
+                        .getDisplayName());
                     contactRenamePopup.show(context
                         .getLocalUsernameButton(), 0, 0);
+                    contactRenameField
+                        .requestFocusInWindow();
                 }
             });
         contactRenamePopup.add(contactRenameField);
@@ -3420,8 +3424,6 @@ public class OpenGroove
                 @Override
                 public void actionPerformed(ActionEvent e)
                 {
-                    contactRenameField.setText(context
-                        .getDisplayName());
                     contactRenamePopup.setVisible(false);
                 }
             });
@@ -3445,14 +3447,26 @@ public class OpenGroove
                         newName = "";
                     context.getLocalUser().setRealName(
                         newName);
-                    context.getLocalUsernameButton()
-                        .setText(context.getDisplayName());
                 }
                 
                 @Override
                 public void popupMenuWillBecomeVisible(
                     PopupMenuEvent e)
                 {
+                }
+            });
+        context.getLocalUser().addChangeListener(
+            "realName", new PropertyChangeListener()
+            {
+
+                @Override
+                public void propertyChange(
+                    PropertyChangeEvent evt)
+                {
+                    context.getLocalUsernameButton()
+                    .setText(context.getDisplayName());
+                    context.getLaunchbar().setTitle(context.createLaunchbarTitle());
+                    notificationFrame.re
                 }
             });
         contactRenameField

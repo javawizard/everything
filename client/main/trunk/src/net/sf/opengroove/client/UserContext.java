@@ -1574,4 +1574,10 @@ public class UserContext
     {
         this.localUsernameButton = localUsernameButton;
     }
+    
+    public String createLaunchbarTitle()
+    {
+        return getLocalUser().getDisplayName()
+            + " - Launchbar - OpenGroove";
+    }
 }

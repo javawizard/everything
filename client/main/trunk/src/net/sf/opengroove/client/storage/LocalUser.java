@@ -12,7 +12,7 @@ import net.sf.opengroove.common.utils.Userids;
 import net.sf.opengroove.common.vcard.VCard;
 
 @ProxyBean
-public interface LocalUser
+public interface LocalUser extends ProxyObject
 {
     @Property
     public String getUserid();
