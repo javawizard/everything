@@ -794,11 +794,30 @@ public class OpenGroove
                         loadImage(icon.getIconPath()), icon
                             .getSize(), icon.getSize());
                     icon.setImage(image);
-                    File tfile = File.createTempFile(
-                        "og-icon-", ".png");
-                    tfile.deleteOnExit();
-                    ImageIO.write(image, "PNG", tfile);
-                    icon.setScaledFile(tfile);
+                    boolean createdTemp = false;
+                    int attempt = 0;
+                    while (attempt++ < 10 && !createdTemp)
+                    {
+                        try
+                        {
+                            File tfile = File
+                                .createTempFile("og-icon-",
+                                    ".png");
+                            tfile.deleteOnExit();
+                            ImageIO.write(image, "PNG",
+                                tfile);
+                            icon.setScaledFile(tfile);
+                            createdTemp = true;
+                        }
+                        catch (Exception e)
+                        {
+                            e.printStackTrace();
+                            Thread.sleep(200);
+                        }
+                    }
+                    if (!createdTemp)
+                        throw new RuntimeException(
+                            "temp not created, see previous stack trace");
                 }
             }
             catch (Exception e)
@@ -816,6 +835,7 @@ public class OpenGroove
                             + " - " + e.getMessage(), e1);
                 }
                 e.printStackTrace();
+                System.exit(0);
             }
             trayicon
                 .addMouseMotionListener(new MouseMotionAdapter()
@@ -1122,6 +1142,7 @@ public class OpenGroove
                         {
                             System.out
                                 .println("persistant connection lost");
+                            context.updateLocalStatusIcon();
                             new Thread()
                             {
                                 public void run()
@@ -1138,6 +1159,7 @@ public class OpenGroove
                         {
                             System.out
                                 .println("persistant connection ready");
+                            context.updateLocalStatusIcon();
                             new Thread()
                             {
                                 public void run()
@@ -3527,9 +3549,9 @@ public class OpenGroove
             contactsPanel, BoxLayout.Y_AXIS));
         SVGPanel contactsTab = new SVGPanel(
             new File[] { new File(
-            "icons/backdrops/contactstab.svg") },
-        new SVGConstraints[] { new SVGConstraints(true,
-            0, 0) });
+                "icons/backdrops/contactstab.svg") },
+            new SVGConstraints[] { new SVGConstraints(true,
+                0, 0) });
         contactsTab.setLayout(new BorderLayout());
         JPanel contactsNorth = new JPanel();
         contactsNorth.setOpaque(false);

@@ -157,6 +157,9 @@ public class SVGPanel extends JPanel
                     (int) svgDocumentSize.getHeight(),
                     BufferedImage.TYPE_INT_ARGB);
             }
+            for (int x = 0; x < images[i].getWidth(); x++)
+                for (int y = 0; y < images[i].getHeight(); y++)
+                    images[i].setRGB(x, y, transparent);
             canvases[i].setSize(new Dimension(
                 (int) svgDocumentSize.getWidth(),
                 (int) svgDocumentSize.getHeight()));

@@ -171,6 +171,11 @@ public class UserContext
      * otherwise
      */
     private boolean wasLastIdle = true;
+    /**
+     * Whether the contact status icon has been set to idle for this timeg oing
+     * idle.
+     */
+    private boolean markedIdleIcon = false;
     @TimerField
     /**
      * checks to see if the computer is idle, and updates the idle-related
@@ -194,13 +199,11 @@ public class UserContext
                 lastIdle = getServerTime();
                 wasLastIdle = false;
             }
-            else
-            {
-            }
             lastMouseX = location.x;
             lastMouseY = location.y;
             if (oldWasLastIdle && !wasLastIdle)
             {
+                updateLocalStatusIcon();
                 uploadCurrentStatus();
             }
         }
@@ -1579,5 +1582,35 @@ public class UserContext
     {
         return getLocalUser().getDisplayName()
             + " - Launchbar - OpenGroove";
+    }
+    
+    public void updateLocalStatusIcon()
+    {
+        if (!com.getCommunicator().isActive())
+        {
+            /*
+             * Offline
+             */
+            localStatusButton
+                .setIcon(new ImageIcon(
+                    OpenGroove.Icons.USER_OFFLINE_16
+                        .getImage()));
+            return;
+        }
+        if ((lastIdle + IDLE_THRESHOLD) < getServerTime())
+        {
+            /*
+             * Idle
+             */
+            localStatusButton.setIcon(new ImageIcon(
+                OpenGroove.Icons.USER_IDLE_16.getImage()));
+            return;
+        }
+        /*
+         * Online
+         */
+        localStatusButton.setIcon(new ImageIcon(
+            OpenGroove.Icons.USER_ONLINE_16.getImage()));
+        return;
     }
 }

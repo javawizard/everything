@@ -9,7 +9,7 @@
    xmlns:xlink="http://www.w3.org/1999/xlink"
    xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
    xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
-   width="350"
+   width="400"
    height="200"
    id="svg2469"
    sodipodi:version="0.32"
@@ -62,7 +62,7 @@
      inkscape:cy="92.773279"
      inkscape:document-units="px"
      inkscape:current-layer="layer1"
-     showgrid="true"
+     showgrid="false"
      inkscape:showpageshadow="false"
      inkscape:window-width="1277"
      inkscape:window-height="750"
@@ -94,15 +94,16 @@
      id="layer1">
     <text
        xml:space="preserve"
-       style="font-size:144px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;text-align:start;line-height:125%;writing-mode:lr-tb;text-anchor:start;fill:#e4eef7;fill-opacity:0.30851063;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;font-family:Bitstream Vera Sans;-inkscape-font-specification:Bitstream Vera Sans"
-       x="-40"
-       y="120"
+       style="font-size:150.40055846999999000px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;text-align:start;line-height:125%;writing-mode:lr-tb;text-anchor:start;fill:#f6fafe;fill-opacity:0.19680852;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;font-family:Bitstream Vera Sans;-inkscape-font-specification:Bitstream Vera Sans"
+       x="2.7020793"
+       y="106.0219"
        id="text2481"
-       sodipodi:linespacing="125%"><tspan
+       sodipodi:linespacing="125%"
+       transform="scale(0.9810884,1.0192761)"><tspan
          sodipodi:role="line"
          id="tspan2483"
-         x="-40"
-         y="120"
-         style="fill-opacity:0.30851063;fill:#e4eef7">Login</tspan></text>
+         x="2.7020793"
+         y="106.0219"
+         style="fill:#f6fafe;fill-opacity:0.19680852">Login</tspan></text>
   </g>
 </svg>
