@@ -72,6 +72,8 @@ import javax.swing.*;
 import javax.swing.UIManager.LookAndFeelInfo;
 import javax.swing.border.EmptyBorder;
 import javax.swing.border.LineBorder;
+import javax.swing.event.PopupMenuEvent;
+import javax.swing.event.PopupMenuListener;
 import javax.swing.filechooser.FileNameExtensionFilter;
 
 import org.awl.Wizard;
@@ -429,7 +431,7 @@ public class OpenGroove
      */
     public static void main(String[] args) throws Throwable
     {
-//        UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
+        // UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
         gcThread.setDaemon(true);
         gcThread.start();
         JFrame frame3 = new JFrame("opengroovemain");
@@ -3390,6 +3392,74 @@ public class OpenGroove
             JideButton.HYPERLINK_STYLE);
         context.getLocalUsernameButton().setText(
             Storage.getLocalUser(userid).getDisplayName());
+        context
+            .getLocalUsernameButton()
+            .setToolTipText(
+                ComponentUtils
+                    .htmlTipWrap("Click here to change your name. Changing "
+                        + "your name does not affect your userid."));
+        final JPopupMenu contactRenamePopup = new JPopupMenu();
+        final JTextField contactRenameField = new JTextField(
+            15);
+        context.getLocalUsernameButton().addActionListener(
+            new ActionListener()
+            {
+                
+                @Override
+                public void actionPerformed(ActionEvent e)
+                {
+                    contactRenamePopup.show(context
+                        .getLocalUsernameButton(), 0, 0);
+                }
+            });
+        contactRenamePopup.add(contactRenameField);
+        contactRenameField
+            .addActionListener(new ActionListener()
+            {
+                
+                @Override
+                public void actionPerformed(ActionEvent e)
+                {
+                    contactRenameField.setText(context
+                        .getDisplayName());
+                    contactRenamePopup.setVisible(false);
+                }
+            });
+        contactRenamePopup
+            .addPopupMenuListener(new PopupMenuListener()
+            {
+                
+                @Override
+                public void popupMenuCanceled(
+                    PopupMenuEvent e)
+                {
+                }
+                
+                @Override
+                public void popupMenuWillBecomeInvisible(
+                    PopupMenuEvent e)
+                {
+                    String newName = contactRenameField
+                        .getText();
+                    if (newName.trim().equals(""))
+                        newName = "";
+                    context.getLocalUser().setRealName(
+                        newName);
+                    context.getLocalUsernameButton()
+                        .setText(context.getDisplayName());
+                }
+                
+                @Override
+                public void popupMenuWillBecomeVisible(
+                    PopupMenuEvent e)
+                {
+                }
+            });
+        contactRenameField
+            .setToolTipText(ComponentUtils
+                .htmlTipWrap("Type a new name for yourself here. If you leave "
+                    + "this blank, then your userid will be used. "
+                    + "Everyone can see this."));
         lowerPanel.add(context.getLocalUsernameButton(),
             BorderLayout.CENTER);
         JMenuBar bar = loadLaunchbarMenus(userid, context,
@@ -3809,9 +3879,8 @@ public class OpenGroove
             TableLayout.PREFERRED);
         colSpecs[menus.length] = TableLayout.FILL;
         bar.setLayout(new TableLayout(colSpecs,
-            new double[] { TableLayout.PREFERRED,
-                6,
-                TableLayout.PREFERRED,3 }));
+            new double[] { TableLayout.PREFERRED, 6,
+                TableLayout.PREFERRED, 3 }));
         for (int i = 0; i < menus.length; i++)
         {
             menus[i].setOpaque(false);

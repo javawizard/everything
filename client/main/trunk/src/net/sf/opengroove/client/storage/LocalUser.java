@@ -156,6 +156,17 @@ public interface LocalUser
     @Constructor
     public ConfigProperty createProperty();
     
+    /**
+     * The date that local information about this user was last modified. This
+     * is used for server synchronization purposes.
+     * 
+     * @return
+     */
+    @Property
+    public long getLastModified();
+    
+    public void setLastModified(long lastModified);
+    
     @Search(listProperty = "properties", searchProperty = "name")
     public ConfigProperty getProperty(String name);
     
@@ -179,7 +190,7 @@ public interface LocalUser
             else if (property.equals("displayName"))
             {
                 String realName = user.getRealName();
-                if (realName == null)
+                if (realName == null || realName.trim().equals(""))
                     return user.getUserid();
                 return realName;
             }
