@@ -429,7 +429,7 @@ public class OpenGroove
      */
     public static void main(String[] args) throws Throwable
     {
-        UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
+//        UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
         gcThread.setDaemon(true);
         gcThread.start();
         JFrame frame3 = new JFrame("opengroovemain");
