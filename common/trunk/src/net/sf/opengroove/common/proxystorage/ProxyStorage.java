@@ -1,6 +1,7 @@
 package net.sf.opengroove.common.proxystorage;
 
 import java.beans.Introspector;
+import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.io.File;
 import java.lang.reflect.Array;
@@ -23,6 +24,9 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.ArrayBlockingQueue;
+import java.util.concurrent.ThreadPoolExecutor;
+import java.util.concurrent.TimeUnit;
 
 import javax.swing.event.ChangeListener;
 
@@ -55,6 +59,27 @@ import net.sf.opengroove.common.utils.Progress;
  */
 public class ProxyStorage<E>
 {
+    protected class PropertyChanged implements Runnable
+    {
+        private PropertyChangeListener listener;
+        private PropertyChangeEvent event;
+        
+        public PropertyChanged(
+            PropertyChangeListener listener,
+            PropertyChangeEvent event)
+        {
+            this.listener = listener;
+            this.event = event;
+        }
+        
+        @Override
+        public void run()
+        {
+            listener.propertyChange(event);
+        }
+        
+    }
+    
     /**
      * The connection to the database. This must be package-private instead of
      * just private since StoredList uses it.
@@ -70,9 +95,14 @@ public class ProxyStorage<E>
     
     protected static final Map<Class, ResultFilter> resultFilterSingletons = new HashMap<Class, ResultFilter>();
     /**
-     * A map that maps proxy object ids to maps that map the object's property names to lists of listeners registered on those propertiews
+     * A map that maps proxy object ids to maps that map the object's property
+     * names to lists of listeners registered on those propertiews
      */
     private final HashMap<Long, HashMap<String, ArrayList<PropertyChangeListener>>> beanListeners = new HashMap<Long, HashMap<String, ArrayList<PropertyChangeListener>>>();
+    
+    private final ThreadPoolExecutor listenerExecutor = new ThreadPoolExecutor(
+        20, 20, 30, TimeUnit.SECONDS,
+        new ArrayBlockingQueue<Runnable>(2000));
     
     private DatabaseMetaData dbInfo;
     
@@ -90,6 +120,7 @@ public class ProxyStorage<E>
     public ProxyStorage(Class<E> rootClass, File location)
 
     {
+        listenerExecutor.allowCoreThreadTimeOut(true);
         this.rootClass = rootClass;
         try
         {
@@ -1060,6 +1091,38 @@ public class ProxyStorage<E>
                     }
                 }
                 if (method.getName().equalsIgnoreCase(
+                    "addChangeListener")
+                    || method.getName().equalsIgnoreCase(
+                        "removeChangeListener"))
+                {
+                    String property = (String) args[0];
+                    PropertyChangeListener listener = (PropertyChangeListener) args[1];
+                    HashMap<String, ArrayList<PropertyChangeListener>> beanMap = beanListeners
+                        .get(targetId);
+                    if (beanMap == null)
+                    {
+                        beanMap = new HashMap<String, ArrayList<PropertyChangeListener>>();
+                        beanListeners
+                            .put(targetId, beanMap);
+                    }
+                    ArrayList listenerList = beanMap
+                        .get(property);
+                    if (listenerList == null)
+                    {
+                        listenerList = new ArrayList<PropertyChangeListener>();
+                        beanMap.put(property, listenerList);
+                    }
+                    if (method.getName().equalsIgnoreCase(
+                        "addChangeListener")
+                        && !listenerList.contains(listener))
+                        listenerList.add(listener);
+                    if (method.getName().equalsIgnoreCase(
+                        "removeChangeListener")
+                        && listenerList.contains(listener))
+                        listenerList.remove(listener);
+                    return null;
+                }
+                if (method.getName().equalsIgnoreCase(
                     "getProxyStorageId")
                     && method.getReturnType() == Long.TYPE)
                     return targetId;
@@ -1482,6 +1545,25 @@ public class ProxyStorage<E>
                         st.setObject(1, inputObject);
                         st.execute();
                         st.close();
+                        HashMap<String, ArrayList<PropertyChangeListener>> beanMap = beanListeners
+                            .get(targetId);
+                        if (beanMap != null)
+                        {
+                            ArrayList<PropertyChangeListener> listenerList = beanMap
+                                .get(propertyName);
+                            if (listenerList != null)
+                            {
+                                PropertyChangeEvent event = new PropertyChangeEvent(
+                                    instance, propertyName,
+                                    null, null);
+                                for (PropertyChangeListener listener : listenerList)
+                                {
+                                    listenerExecutor
+                                        .execute(new PropertyChanged(
+                                            listener, event));
+                                }
+                            }
+                        }
                         return null;
                     }
                 }
