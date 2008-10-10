@@ -198,6 +198,13 @@ public class UserContext
             {
                 lastIdle = getServerTime();
                 wasLastIdle = false;
+                markedIdleIcon = false;
+            }
+            else if (!markedIdleIcon
+                && (lastIdle + IDLE_THRESHOLD) < getServerTime())
+            {
+                markedIdleIcon = true;
+                updateLocalStatusIcon();
             }
             lastMouseX = location.x;
             lastMouseY = location.y;
