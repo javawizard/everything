@@ -1077,7 +1077,15 @@ public class OpenGroove
                             /*
                              * TODO: the user should be notified that they have
                              * an incorrect local passwod, and that they need to
-                             * change it.
+                             * change it. This would occur if they change their
+                             * password on a computer, since OpenGroove doesn't
+                             * propegate password changes to other computers for
+                             * security reasons. All other computers would get
+                             * this method called, at which point they could
+                             * show to the user that an incorrect local password
+                             * is present, and that they need to enter their
+                             * correct local password (IE the password that they
+                             * changed theirs to on the server).
                              */
                         }
                         
@@ -1396,7 +1404,8 @@ public class OpenGroove
         {
             for (final LocalUser user : onlineUsers)
             {
-                Menu userMenu = new Menu(user.getDisplayName());
+                Menu userMenu = new Menu(user
+                    .getDisplayName());
                 MenuItem launchbarItem = new MenuItem(
                     "Launchbar");
                 launchbarItem
@@ -1422,7 +1431,8 @@ public class OpenGroove
         {
             for (final LocalUser user : offlineUsers)
             {
-                Menu userMenu = new Menu(user.getDisplayName());
+                Menu userMenu = new Menu(user
+                    .getDisplayName());
                 MenuItem loginItem = new MenuItem("Login");
                 loginItem
                     .addActionListener(new ActionListener()
@@ -3385,6 +3395,14 @@ public class OpenGroove
                         0);
                 }
             });
+        context
+            .getLocalStatusButton()
+            .setToolTipText(
+                ComponentUtils
+                    .htmlTipWrap("This icon represents your current status. "
+                        + "Click for more info. Note that you cannot have "
+                        + "the status <i>nonexistant</i> or "
+                        + "<i>unknown</i> (only contacts can have those statuses)."));
         lowerPanel.add(context.getLocalStatusButton(),
             BorderLayout.WEST);
         context.setLocalUsernameButton(new JideButton());

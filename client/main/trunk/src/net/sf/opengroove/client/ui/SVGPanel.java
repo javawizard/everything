@@ -25,78 +25,85 @@ import org.apache.batik.swing.svg.SVGDocumentLoaderEvent;
 
 public class SVGPanel extends JPanel
 {
-    private BufferedImage image;
+    private BufferedImage[] images;
     
-    private JSVGCanvas canvas;
+    private JSVGCanvas[] canvases;
     
-    public SVGPanel(String sourceUrl)
+    private SVGConstraints[] constraints;
+    
+    public SVGPanel(String[] sourceUrls,
+        SVGConstraints[] constraints)
     {
-        init(sourceUrl);
+        this.constraints = constraints;
+        init(sourceUrls);
     }
     
-    private void init(String sourceUrl)
+    private void init(String[] sourceUrls)
     {
-        canvas = new JSVGCanvas()
+        images = new BufferedImage[sourceUrls.length];
+        canvases = new JSVGCanvas[sourceUrls.length];
+        
+        for (int i = 0; i < sourceUrls.length; i++)
         {
-            
-            @Override
-            public boolean isShowing()
+            canvases[i] = new JSVGCanvas()
             {
-                return true;
+                
+                @Override
+                public boolean isShowing()
+                {
+                    return true;
+                }
+            };
+            canvases[i]
+                .addGVTTreeRendererListener(new GVTTreeRendererAdapter()
+                {
+                    
+                    @Override
+                    public void gvtRenderingCompleted(
+                        GVTTreeRendererEvent event)
+                    {
+                        SVGPanel.this.repaint();
+                    }
+                });
+            canvases[i]
+                .addGVTTreeBuilderListener(new GVTTreeBuilderAdapter()
+                {
+                    
+                    @Override
+                    public void gvtBuildCompleted(
+                        GVTTreeBuilderEvent e)
+                    {
+                        SVGPanel.this.repaint();
+                    }
+                });
+            canvases[i]
+                .addSVGDocumentLoaderListener(new SVGDocumentLoaderAdapter()
+                {
+                    
+                    @Override
+                    public void documentLoadingCompleted(
+                        SVGDocumentLoaderEvent e)
+                    {
+                        SVGPanel.this.repaint();
+                    }
+                });
+            canvases[i].setURI(sourceUrls[i]);
+        }
+    }
+    
+    public SVGPanel(File[] files,
+        SVGConstraints[] constraints)
+    {
+        try
+        {
+            this.constraints = constraints;
+            String[] urls = new String[files.length];
+            for (int i = 0; i < urls.length; i++)
+            {
+                urls[i] = files[i].toURI().toURL()
+                    .toString();
             }
-        };
-        canvas
-            .addGVTTreeRendererListener(new GVTTreeRendererAdapter()
-            {
-                
-                @Override
-                public void gvtRenderingCompleted(
-                    GVTTreeRendererEvent event)
-                {
-                    SVGPanel.this.repaint();
-                }
-            });
-        canvas
-            .addGVTTreeBuilderListener(new GVTTreeBuilderAdapter()
-            {
-                
-                @Override
-                public void gvtBuildCompleted(
-                    GVTTreeBuilderEvent e)
-                {
-                    SVGPanel.this.repaint();
-                }
-            });
-        canvas
-            .addSVGDocumentLoaderListener(new SVGDocumentLoaderAdapter()
-            {
-                
-                @Override
-                public void documentLoadingCompleted(
-                    SVGDocumentLoaderEvent e)
-                {
-                    SVGPanel.this.repaint();
-                }
-            });
-        canvas.setURI(sourceUrl);
-        try
-        {
-            BufferedImage tmp = new BufferedImage(1, 1,
-                BufferedImage.TYPE_INT_ARGB);
-            canvas.setSize(1, 1);
-            canvas.paint(tmp.createGraphics());
-        }
-        catch (Exception e)
-        {
-            e.printStackTrace();
-        }
-    }
-    
-    public SVGPanel(File file)
-    {
-        try
-        {
-            init(file.toURI().toURL().toString());
+            init(urls);
         }
         catch (Exception e)
         {
@@ -106,47 +113,78 @@ public class SVGPanel extends JPanel
     
     public void paintComponent(Graphics g)
     {
-        Dimension2D svgDocumentSize = null;
-        try
+        for (int i = 0; i < canvases.length; i++)
         {
-            svgDocumentSize = canvas.getSVGDocumentSize();
+            Dimension2D svgDocumentSize = null;
+            try
+            {
+                svgDocumentSize = canvases[i]
+                    .getSVGDocumentSize();
+            }
+            catch (NullPointerException e)
+            {
+            }
+            if (svgDocumentSize == null)
+                return;
+            if (images[i] == null)// && svgDocumentSize != null
+            {
+                images[i] = new BufferedImage(
+                    (int) svgDocumentSize.getWidth(),
+                    (int) svgDocumentSize.getHeight(),
+                    BufferedImage.TYPE_INT_ARGB);
+            }
+            if (images[i].getWidth() != ((int) svgDocumentSize
+                .getWidth())
+                || images[i].getHeight() != ((int) svgDocumentSize
+                    .getHeight()))
+            {
+                images[i] = new BufferedImage(
+                    (int) svgDocumentSize.getWidth(),
+                    (int) svgDocumentSize.getHeight(),
+                    BufferedImage.TYPE_INT_ARGB);
+            }
+            canvases[i].setSize(new Dimension(
+                (int) svgDocumentSize.getWidth(),
+                (int) svgDocumentSize.getHeight()));
+            Graphics2D ig = images[i].createGraphics();
+            ig
+                .setRenderingHint(
+                    RenderingHints.KEY_INTERPOLATION,
+                    RenderingHints.VALUE_INTERPOLATION_BILINEAR);
+            ig.setRenderingHint(
+                RenderingHints.KEY_ANTIALIASING,
+                RenderingHints.VALUE_ANTIALIAS_ON);
+            ig.setColor(new Color(0, 0, 0, 0));
+            ig.fillRect(0, 0, images[i].getWidth(),
+                images[i].getHeight());
+            canvases[i].paint(ig);
+            SVGConstraints c = constraints[i];
+            int targetX;
+            int targetY;
+            int targetWidth;
+            int targetHeight;
+            if (c.isFull())
+            {
+                targetX = 0;
+                targetY = 0;
+                targetWidth = getWidth();
+                targetHeight = getHeight();
+            }
+            else
+            {
+                targetWidth = (int) svgDocumentSize
+                    .getWidth();
+                targetHeight = (int) svgDocumentSize
+                    .getHeight();
+                double extraX = getWidth() - targetWidth;
+                double extraY = getHeight() - targetHeight;
+                extraX *= c.getHorizontalAlignment();
+                extraY *= c.getVerticalAlignment();
+                targetX = (int) extraX;
+                targetY = (int) extraY;
+            }
+            g.drawImage(images[i], targetX, targetY,
+                targetWidth, targetHeight, null);
         }
-        catch (NullPointerException e)
-        {
-        }
-        if (svgDocumentSize == null)
-            return;
-        if (image == null)// && svgDocumentSize != null
-        {
-            image = new BufferedImage((int) svgDocumentSize
-                .getWidth(), (int) svgDocumentSize
-                .getHeight(), BufferedImage.TYPE_INT_ARGB);
-        }
-        if (image.getWidth() != ((int) svgDocumentSize
-            .getWidth())
-            || image.getHeight() != ((int) svgDocumentSize
-                .getHeight()))
-        {
-            image = new BufferedImage((int) svgDocumentSize
-                .getWidth(), (int) svgDocumentSize
-                .getHeight(), BufferedImage.TYPE_INT_ARGB);
-        }
-        canvas
-            .setSize(new Dimension((int) svgDocumentSize
-                .getWidth(), (int) svgDocumentSize
-                .getHeight()));
-        Graphics2D ig = image.createGraphics();
-        ig.setRenderingHint(
-            RenderingHints.KEY_INTERPOLATION,
-            RenderingHints.VALUE_INTERPOLATION_BILINEAR);
-        ig.setRenderingHint(
-            RenderingHints.KEY_ANTIALIASING,
-            RenderingHints.VALUE_ANTIALIAS_ON);
-        ig.setColor(new Color(0, 0, 0, 0));
-        ig.fillRect(0, 0, image.getWidth(), image
-            .getHeight());
-        canvas.paint(ig);
-        g.drawImage(image, 0, 0, getWidth(), getHeight(),
-            null);
     }
 }
