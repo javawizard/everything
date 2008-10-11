@@ -3947,7 +3947,8 @@ public class OpenGroove
                 TableLayout.PREFERRED, 3 }));
         for (int i = 0; i < menus.length; i++)
         {
-            menus[i].setOpaque(false);
+            // menus[i].setOpaque(false);
+            menus[i].setBackground(new Color(0, 0, 0, 0));
             bar.add(menus[i], "" + i + ", 0");
         }
         bar

@@ -99,7 +99,7 @@ public class LoginFrame extends javax.swing.JFrame
     
     public LoginFrame()
     {
-        super();
+        super("Log in - OpenGroove");
         initGUI();
         passwordField.requestFocusInWindow();
     }

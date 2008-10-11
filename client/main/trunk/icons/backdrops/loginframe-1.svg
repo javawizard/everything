@@ -58,8 +58,8 @@
      inkscape:pageopacity="0.0"
      inkscape:pageshadow="2"
      inkscape:zoom="1"
-     inkscape:cx="30.5"
-     inkscape:cy="92.773279"
+     inkscape:cx="11.28886"
+     inkscape:cy="33.742101"
      inkscape:document-units="px"
      inkscape:current-layer="layer1"
      showgrid="false"
@@ -94,16 +94,31 @@
      id="layer1">
     <text
        xml:space="preserve"
-       style="font-size:150.40055846999999000px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;text-align:start;line-height:125%;writing-mode:lr-tb;text-anchor:start;fill:#f6fafe;fill-opacity:0.19680852;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;font-family:Bitstream Vera Sans;-inkscape-font-specification:Bitstream Vera Sans"
+       style="font-size:200.64680481px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;text-align:start;line-height:125%;writing-mode:lr-tb;text-anchor:start;fill:#e6f2fe;fill-opacity:0.15686275;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;font-family:Bitstream Vera Sans;-inkscape-font-specification:Bitstream Vera Sans"
+       x="-201.18085"
+       y="95.042557"
+       id="text2386"
+       sodipodi:linespacing="125%"><tspan
+         sodipodi:role="line"
+         id="tspan2388"
+         x="-201.18085"
+         y="95.042557">OpenGro</tspan><tspan
+         sodipodi:role="line"
+         x="-201.18085"
+         y="345.85107"
+         id="tspan2390" /></text>
+    <text
+       xml:space="preserve"
+       style="font-size:150.40055847px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;text-align:start;line-height:125%;writing-mode:lr-tb;text-anchor:start;fill:#e5f1fe;fill-opacity:0.2745098;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;font-family:Bitstream Vera Sans;-inkscape-font-specification:Bitstream Vera Sans"
        x="2.7020793"
-       y="106.0219"
+       y="131.5302"
        id="text2481"
        sodipodi:linespacing="125%"
        transform="scale(0.9810884,1.0192761)"><tspan
          sodipodi:role="line"
          id="tspan2483"
          x="2.7020793"
-         y="106.0219"
-         style="fill:#f6fafe;fill-opacity:0.19680852">Login</tspan></text>
+         y="131.5302"
+         style="fill:#e5f1fe;fill-opacity:0.2745098">Login</tspan></text>
   </g>
 </svg>

@@ -205,6 +205,7 @@ public class UserContext
             {
                 markedIdleIcon = true;
                 updateLocalStatusIcon();
+                uploadCurrentStatus();
             }
             lastMouseX = location.x;
             lastMouseY = location.y;
@@ -915,7 +916,13 @@ public class UserContext
                                     .equals("") ? "<font color=\"#707070\">(Not specified)</font>"
                                     : contact
                                         .getLocalName())
-                                + "</td></tr></table><br/>Computers:<br/>"
+                                + "</td></tr></table><br/>"
+                                + (contact.isHasKeys() ? "You have downloaded this contact's keys."
+                                    : "You have not downloaded this contact's keys.")
+                                + "<br/>"
+                                + (contact.isUserVerified() ? "You have verified this contact."
+                                    : "You have not verified this contact.")
+                                + "Computers:<br/>"
                                 + computersString;
                         }
                     };
