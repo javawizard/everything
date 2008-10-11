@@ -4,12 +4,16 @@ import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Font;
+import java.awt.SystemTray;
+import java.awt.TrayIcon;
 import java.io.File;
 
 import javax.swing.Box;
 import javax.swing.BoxLayout;
+import javax.swing.JFileChooser;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JTextArea;
 import javax.swing.SwingConstants;
@@ -20,12 +24,32 @@ public class Installer
 {
     private static final String DOWNLOAD_URL = "http://sysup.ogis.opengroove.org";
     
+    public static JFileChooser fileChooser;
+    
     /**
      * @param args
      */
-    public static void main(String[] args)throws Throwable
+    public static void main(String[] args) throws Throwable
     {
-        JFrame frame = new JFrame();
+        fileChooser = new
+        JFileChooser();
+        boolean traySupported = !SystemTray.isSupported();
+        if (traySupported)
+        {
+            JFrame f = new JFrame("OpenGroove Installer");
+            f.setSize(0, 0);
+            f.setLocationRelativeTo(null);
+            f.show();
+            JOptionPane
+                .showMessageDialog(
+                    f,
+                    "<html>Your system does not support tray icons. OpenGroove <br/>"
+                        + "can't run on a system that does not support tray icons.<br/>"
+                        + "Click OK to exit the installer, or send us an email at <br/>"
+                        + "support@opengroove.org if you have questions.");
+            System.exit(0);
+        }
+        JFrame frame = new JFrame("OpenGroove Installer");
         frame.setSize(500, 550);
         frame.setLocationRelativeTo(null);
         JLabel mainLabel = new JLabel(
@@ -56,13 +80,15 @@ public class Installer
                 + "Windows Vista, you'll need to install the program somewhere "
                 + "that you have permission to modify, such as in your home "
                 + "folder (for example, "
-                + new File(System.getProperty("user.home"), "opengroove")
-                    .getCanonicalPath()
+                + new File(System.getProperty("user.home"),
+                    "opengroove").getCanonicalPath()
                 + "), not your "
-                + "Program Files folder. Choose where you want to install " +
-                		"OpenGroove, ");
+                + "Program Files folder. Choose where you want to install "
+                + "OpenGroove, make sure you have an internet "
+                + "connection, and click start.");
         installDescription.setAlignmentX(0);
         top.add(installDescription);
+        JTextField fileField = new JTextField();
         frame.show();
     }
 }
