@@ -922,7 +922,7 @@ public class UserContext
                                 + "<br/>"
                                 + (contact.isUserVerified() ? "You have verified this contact."
                                     : "You have not verified this contact.")
-                                + "Computers:<br/>"
+                                + "<br/><br/>Computers:<br/>"
                                 + computersString;
                         }
                     };

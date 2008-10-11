@@ -58,16 +58,16 @@
      inkscape:pageopacity="0.0"
      inkscape:pageshadow="2"
      inkscape:zoom="1"
-     inkscape:cx="11.28886"
+     inkscape:cx="57.415493"
      inkscape:cy="33.742101"
      inkscape:document-units="px"
      inkscape:current-layer="layer1"
      showgrid="false"
      inkscape:showpageshadow="false"
-     inkscape:window-width="1277"
+     inkscape:window-width="1276"
      inkscape:window-height="750"
-     inkscape:window-x="-5"
-     inkscape:window-y="-8">
+     inkscape:window-x="0"
+     inkscape:window-y="14">
     <inkscape:grid
        type="xygrid"
        id="grid2479"
@@ -85,6 +85,16 @@
         <dc:format>image/svg+xml</dc:format>
         <dc:type
            rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
+        <dc:creator>
+          <cc:Agent>
+            <dc:title>Alexander Boyd (javawizard2539)</dc:title>
+          </cc:Agent>
+        </dc:creator>
+        <dc:contributor>
+          <cc:Agent>
+            <dc:title>Fixed-size overlay backdrop for the OpenGroove login window</dc:title>
+          </cc:Agent>
+        </dc:contributor>
       </cc:Work>
     </rdf:RDF>
   </metadata>
@@ -96,29 +106,29 @@
        xml:space="preserve"
        style="font-size:200.64680481px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;text-align:start;line-height:125%;writing-mode:lr-tb;text-anchor:start;fill:#e6f2fe;fill-opacity:0.15686275;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;font-family:Bitstream Vera Sans;-inkscape-font-specification:Bitstream Vera Sans"
        x="-201.18085"
-       y="95.042557"
+       y="75.042557"
        id="text2386"
        sodipodi:linespacing="125%"><tspan
          sodipodi:role="line"
          id="tspan2388"
          x="-201.18085"
-         y="95.042557">OpenGro</tspan><tspan
+         y="75.042557">OpenGro</tspan><tspan
          sodipodi:role="line"
          x="-201.18085"
-         y="345.85107"
+         y="325.85107"
          id="tspan2390" /></text>
     <text
        xml:space="preserve"
        style="font-size:150.40055847px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;text-align:start;line-height:125%;writing-mode:lr-tb;text-anchor:start;fill:#e5f1fe;fill-opacity:0.2745098;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;font-family:Bitstream Vera Sans;-inkscape-font-specification:Bitstream Vera Sans"
        x="2.7020793"
-       y="131.5302"
+       y="111.90842"
        id="text2481"
        sodipodi:linespacing="125%"
        transform="scale(0.9810884,1.0192761)"><tspan
          sodipodi:role="line"
          id="tspan2483"
          x="2.7020793"
-         y="131.5302"
+         y="111.90842"
          style="fill:#e5f1fe;fill-opacity:0.2745098">Login</tspan></text>
   </g>
 </svg>
