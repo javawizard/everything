@@ -2,6 +2,7 @@ package net.sf.opengroove.client.installer;
 
 import java.awt.BorderLayout;
 import java.awt.Color;
+import java.awt.Dimension;
 import java.awt.Font;
 
 import javax.swing.Box;
@@ -22,21 +23,21 @@ public class Installer
     public static void main(String[] args)
     {
         JFrame frame = new JFrame();
-        frame.setSize(500, 450);
+        frame.setSize(500, 550);
         frame.setLocationRelativeTo(null);
         JLabel mainLabel = new JLabel(
-            "Welcome to the OpenGroove Installer");
-        mainLabel.setFont(Font.decode(null).deriveFont(22f)
+            "OpenGroove Installer");
+        mainLabel.setFont(Font.decode(null).deriveFont(28f)
             .deriveFont(Font.BOLD));
         mainLabel
             .setHorizontalAlignment(SwingConstants.CENTER);
+        mainLabel.setMaximumSize(new Dimension(
+            Integer.MAX_VALUE, Integer.MAX_VALUE));
         frame.getContentPane()
             .setLayout(new BorderLayout());
         JPanel top = new JPanel();
         top.setLayout(new BoxLayout(top, BoxLayout.Y_AXIS));
-        JPanel topWrapper = new JPanel();
-        topWrapper.setLayout()
-        frame.getContentPane().add(topWrapper, BorderLayout.NORTH);
+        frame.getContentPane().add(top, BorderLayout.NORTH);
         top.add(Box.createVerticalStrut(15));
         top.add(mainLabel);
         top.add(Box.createVerticalStrut(15));
