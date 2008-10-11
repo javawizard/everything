@@ -2,20 +2,27 @@ package net.sf.opengroove.client.installer;
 
 import java.awt.BorderLayout;
 import java.awt.Color;
+import java.awt.Desktop;
 import java.awt.Dimension;
 import java.awt.Font;
+import java.awt.Insets;
 import java.awt.SystemTray;
 import java.awt.TrayIcon;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.io.File;
 
 import javax.swing.Box;
 import javax.swing.BoxLayout;
+import javax.swing.JButton;
 import javax.swing.JFileChooser;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
+import javax.swing.JSeparator;
 import javax.swing.JTextArea;
+import javax.swing.JTextField;
 import javax.swing.SwingConstants;
 import javax.swing.border.EmptyBorder;
 import javax.swing.border.LineBorder;
@@ -31,10 +38,12 @@ public class Installer
      */
     public static void main(String[] args) throws Throwable
     {
-        fileChooser = new
-        JFileChooser();
-        boolean traySupported = !SystemTray.isSupported();
-        if (traySupported)
+        fileChooser = new JFileChooser();
+        fileChooser.setMultiSelectionEnabled(false);
+        fileChooser
+            .setFileSelectionMode(fileChooser.DIRECTORIES_ONLY);
+        boolean traySupported = SystemTray.isSupported();
+        if (!traySupported)
         {
             JFrame f = new JFrame("OpenGroove Installer");
             f.setSize(0, 0);
@@ -48,6 +57,23 @@ public class Installer
                         + "Click OK to exit the installer, or send us an email at <br/>"
                         + "support@opengroove.org if you have questions.");
             System.exit(0);
+        }
+        boolean desktopSupported = Desktop
+            .isDesktopSupported();
+        if (!desktopSupported)
+        {
+            JFrame f = new JFrame("OpenGroove Installer");
+            f.setSize(0, 0);
+            f.setLocationRelativeTo(null);
+            f.show();
+            JOptionPane
+                .showMessageDialog(
+                    f,
+                    "<html>Your system does not support AWT Native Desktop. You can still<br/>"
+                        + "install OpenGroove. However, some features, such as file-sharing<br/>"
+                        + "workspaces, will be disabled. Click OK to proceed with the installer,<br/>"
+                        + "or send us an email at support@opengroove.org if you have questions.");
+            f.dispose();
         }
         JFrame frame = new JFrame("OpenGroove Installer");
         frame.setSize(500, 550);
@@ -83,12 +109,45 @@ public class Installer
                 + new File(System.getProperty("user.home"),
                     "opengroove").getCanonicalPath()
                 + "), not your "
-                + "Program Files folder. Choose where you want to install "
-                + "OpenGroove, make sure you have an internet "
+                + "Program Files folder. Choose the folder that you want "
+                + "to install OpenGroove in, make sure you have an internet "
                 + "connection, and click start.");
         installDescription.setAlignmentX(0);
         top.add(installDescription);
+        top.add(Box.createVerticalStrut(10));
+        top.add(new JSeparator());
+        top.add(Box.createVerticalStrut(10));
         JTextField fileField = new JTextField();
+        fileField.setText(new File(System
+            .getProperty("user.home"), "opengroove")
+            .getCanonicalPath());
+        JPanel filePanel = new JPanel(new BorderLayout());
+        filePanel.setMaximumSize(null);
+        filePanel.setAlignmentX(0);
+        JLabel fileLabel = new JLabel("Choose a folder:  ");
+        filePanel.add(fileLabel, BorderLayout.WEST);
+        filePanel.add(fileField, BorderLayout.CENTER);
+        JButton fileButton = new JButton("Browse");
+        fileButton.setMargin(new Insets(0, 0, 0, 0));
+        filePanel.add(fileButton, BorderLayout.EAST);
+        fileButton.addActionListener(new ActionListener()
+        {
+            
+            @Override
+            public void actionPerformed(ActionEvent e)
+            {
+                File toShow = new File(fileField.getText());
+                while(!toShow.exists())
+                {
+                    toShow = toShow.getParentFile();
+                    if(toShow == null)
+                    {
+                        toShow 
+                    }
+                }
+            }
+        });
+        top.add(filePanel);
         frame.show();
     }
 }
