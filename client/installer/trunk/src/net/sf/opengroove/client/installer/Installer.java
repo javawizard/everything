@@ -11,6 +11,7 @@ import java.awt.TrayIcon;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.File;
+import java.io.IOException;
 
 import javax.swing.Box;
 import javax.swing.BoxLayout;
@@ -20,6 +21,7 @@ import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
+import javax.swing.JProgressBar;
 import javax.swing.JSeparator;
 import javax.swing.JTextArea;
 import javax.swing.JTextField;
@@ -75,7 +77,8 @@ public class Installer
                         + "or send us an email at support@opengroove.org if you have questions.");
             f.dispose();
         }
-        JFrame frame = new JFrame("OpenGroove Installer");
+        final JFrame frame = new JFrame(
+            "OpenGroove Installer");
         frame.setSize(500, 550);
         frame.setLocationRelativeTo(null);
         JLabel mainLabel = new JLabel(
@@ -109,15 +112,17 @@ public class Installer
                 + new File(System.getProperty("user.home"),
                     "opengroove").getCanonicalPath()
                 + "), not your "
-                + "Program Files folder. Choose the folder that you want "
+                + "Program Files folder.\n\nChoose the folder that you want "
                 + "to install OpenGroove in, make sure you have an internet "
-                + "connection, and click start.");
+                + "connection, and click start.\n\nA shortcut will be created on "
+                + "your desktop. You can move it to your start menu later, if"
+                + " you want.");
         installDescription.setAlignmentX(0);
         top.add(installDescription);
         top.add(Box.createVerticalStrut(10));
         top.add(new JSeparator());
         top.add(Box.createVerticalStrut(10));
-        JTextField fileField = new JTextField();
+        final JTextField fileField = new JTextField();
         fileField.setText(new File(System
             .getProperty("user.home"), "opengroove")
             .getCanonicalPath());
@@ -136,18 +141,71 @@ public class Installer
             @Override
             public void actionPerformed(ActionEvent e)
             {
-                File toShow = new File(fileField.getText());
-                while(!toShow.exists())
+                File toShow = new File(fileField.getText())
+                    .getParentFile();
+                while (toShow == null || !toShow.exists())
                 {
-                    toShow = toShow.getParentFile();
-                    if(toShow == null)
+                    if (toShow != null)
+                        toShow = toShow.getParentFile();
+                    if (toShow == null)
                     {
-                        toShow 
+                        toShow = new File(System
+                            .getProperty("user.home"));
+                        break;
                     }
+                }
+                fileChooser.setCurrentDirectory(toShow);
+                int option = fileChooser
+                    .showOpenDialog(frame);
+                if (option != JFileChooser.APPROVE_OPTION)
+                    return;
+                try
+                {
+                    fileField.setText(fileChooser
+                        .getSelectedFile()
+                        .getCanonicalPath());
+                }
+                catch (IOException e1)
+                {
+                    e1.printStackTrace();
                 }
             }
         });
         top.add(filePanel);
+        top.add(Box.createVerticalStrut(10));
+        JProgressBar progress = new JProgressBar(0, 1);
+        progress.setValue(0);
+        progress.setString("");
+        progress.setStringPainted(true);
+        progress.setAlignmentX(0);
+        final JButton startButton = new JButton("Start");
+        startButton.setAlignmentX(0);
+        startButton.setMaximumSize(new Dimension(
+            Integer.MAX_VALUE, Integer.MAX_VALUE));
+        startButton.addActionListener(new ActionListener()
+        {
+            
+            @Override
+            public void actionPerformed(ActionEvent e)
+            {
+                startButton.setEnabled(false);
+                new Thread()
+                {
+                    public void run()
+                    {
+                        File installFolder = new File(fileField.getText());
+                        if(!installFolder.exists())
+                        {
+                            startButton.setEnabled(true);
+                        }
+                    }
+                }.start();
+            }
+        });
+        top.add(startButton);
+        top.add(Box.createVerticalStrut(10));
+        top.add(progress);
         frame.show();
+        frame.setDefaultCloseOperation(frame.EXIT_ON_CLOSE);
     }
 }
