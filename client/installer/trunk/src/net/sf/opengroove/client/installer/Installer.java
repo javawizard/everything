@@ -193,11 +193,44 @@ public class Installer
                 {
                     public void run()
                     {
-                        File installFolder = new File(fileField.getText());
-                        if(!installFolder.exists())
+                        File installFolder = new File(
+                            fileField.getText());
+                        if (!installFolder.exists())
                         {
-                            startButton.setEnabled(true);
+                            if (JOptionPane
+                                .showConfirmDialog(
+                                    frame,
+                                    "The folder you chose does not exist. "
+                                        + "Should it be created?",
+                                    null,
+                                    JOptionPane.YES_NO_OPTION) == JOptionPane.YES_OPTION)
+                                installFolder.mkdirs();
+                            else
+                            {
+                                startButton
+                                    .setEnabled(true);
+                                return;
+                            }
                         }
+                        if (!installFolder.isDirectory())
+                        {
+                            JOptionPane
+                                .showMessageDialog(frame,
+                                    "The folder you chose is a file, not a folder.");
+                            startButton.setEnabled(true);
+                            return;
+                        }
+                        if (!(installFolder.canRead() && installFolder
+                            .canWrite()))
+                        {
+                            JOptionPane
+                                .showMessageDialog(
+                                    frame,
+                                    "The folder you chose cannot be written. Choose another folder.");
+                            startButton.setEnabled(true);
+                            return;
+                        }
+                        
                     }
                 }.start();
             }
