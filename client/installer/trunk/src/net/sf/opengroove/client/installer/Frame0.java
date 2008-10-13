@@ -50,7 +50,7 @@ public class Frame0 extends javax.swing.JFrame {
 			//START >>  jLabel1
 			jLabel1 = new JLabel();
 			getContentPane().add(jLabel1);
-			jLabel1.setText("Please wait while the Convergia Installer gets ready to install Convergia...");
+			jLabel1.setText("Please wait while the OpenGroove Installer gets ready to install OpenGroove...");
 			jLabel1.setBounds(77, 50, 538, 28);
 			//END <<  jLabel1
 			//START >>  jButton1

@@ -21,64 +21,68 @@ import javax.swing.SwingUtilities;
  */
 public class Frame3 extends javax.swing.JFrame
 {
-	private JButton jButton1;
-
-	private JLabel jLabel1;
-
-	/**
-	 * Auto-generated main method to display this JFrame
-	 */
-	public static void main(String[] args)
-	{
-		SwingUtilities.invokeLater(new Runnable()
-		{
-			public void run()
-			{
-				Frame3 inst = new Frame3();
-				inst.setLocationRelativeTo(null);
-				inst.setVisible(true);
-			}
-		});
-	}
-
-	public Frame3()
-	{
-		super();
-		initGUI();
-	}
-
-	private void initGUI()
-	{
-		try
-		{
-			setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
-			getContentPane().setLayout(null);
-			// START >> jButton1
-			jButton1 = new JButton();
-			jButton1.addActionListener(new ActionListener()
-			{
-
-				public void actionPerformed(ActionEvent e)
-				{
-					System.exit(0);
-				}
-			});
-			getContentPane().add(jButton1);
-			jButton1.setText("Close");
-			jButton1.setBounds(568, 438, 66, 26);
-			// START >> jLabel1
-			jLabel1 = new JLabel();
-			getContentPane().add(jLabel1);
-			jLabel1.setText("<html>Convergia has finished installing. You can start Convergia from<br/>your desktop. If you want Convergia to start when you log in to your computer, you can<br/>move the icon for Convergia from the desktop to your startup folder in the start menu.<br/>For more info about doing this, visit http://static.trivergia.com/intouch3");
-			jLabel1.setBounds(73, 62, 500, 77);
-			// END << jLabel1
-			// END << jButton1
-			pack();
-			this.setSize(650, 500);
-		} catch (Exception e)
-		{
-			e.printStackTrace();
-		}
-	}
-
+    private JButton jButton1;
+    
+    private JLabel jLabel1;
+    
+    /**
+     * Auto-generated main method to display this JFrame
+     */
+    public static void main(String[] args)
+    {
+        SwingUtilities.invokeLater(new Runnable()
+        {
+            public void run()
+            {
+                Frame3 inst = new Frame3();
+                inst.setLocationRelativeTo(null);
+                inst.setVisible(true);
+            }
+        });
+    }
+    
+    public Frame3()
+    {
+        super();
+        initGUI();
+    }
+    
+    private void initGUI()
+    {
+        try
+        {
+            setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
+            getContentPane().setLayout(null);
+            // START >> jButton1
+            jButton1 = new JButton();
+            jButton1.addActionListener(new ActionListener()
+            {
+                
+                public void actionPerformed(ActionEvent e)
+                {
+                    System.exit(0);
+                }
+            });
+            getContentPane().add(jButton1);
+            jButton1.setText("Close");
+            jButton1.setBounds(568, 438, 66, 26);
+            // START >> jLabel1
+            jLabel1 = new JLabel();
+            getContentPane().add(jLabel1);
+            jLabel1
+                .setText("<html>OpenGroove has finished installing. You can start OpenGroove from<br/>your desktop. If you want OpenGroove to start when you log in to your computer, you can<br/>move the icon for OpenGroove from the desktop to your startup folder in the start menu.<br/>For more info about doing this, visit TBD.<br/><br/>"
+                    + "Currently, a black window will open when you start OpenGroove. You<br/>"
+                    + "can close this when you see it, and OpenGroove will continue to run.");
+            jLabel1.setBounds(73, 62, 500, 77);
+            // END << jLabel1
+            // END << jButton1
+            pack();
+            this.setSize(650, 500);
+        }
+        catch (Exception e)
+        {
+            e.printStackTrace();
+        }
+    }
+    
 }

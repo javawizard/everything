@@ -50,7 +50,7 @@ public class Frame2 extends javax.swing.JFrame {
 			//START >>  jLabel1
 			statusLabel = new JLabel();
 			getContentPane().add(statusLabel);
-			statusLabel.setText("Convergia Installer is getting ready to install Convergia, please wait...");
+			statusLabel.setText("OpenGroove Installer is getting ready to install OpenGroove, please wait...");
 			statusLabel.setBounds(97, 58, 478, 21);
 			//END <<  jLabel1
 			//START >>  progressBar
