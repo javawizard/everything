@@ -1,4 +1,4 @@
-package com.trivergia.intouch3.installer;
+package net.sf.opengroove.client.installer;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;

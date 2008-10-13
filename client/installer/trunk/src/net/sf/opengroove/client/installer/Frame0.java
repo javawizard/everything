@@ -1,4 +1,4 @@
-package com.trivergia.intouch3.installer;
+package net.sf.opengroove.client.installer;
 import java.awt.BorderLayout;
 import javax.swing.JButton;
 import javax.swing.JLabel;

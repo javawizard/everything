@@ -1,4 +1,4 @@
-package com.trivergia.intouch3.installer;
+package net.sf.opengroove.client.installer;
 import javax.swing.JButton;
 import javax.swing.JLabel;
 import javax.swing.JProgressBar;
