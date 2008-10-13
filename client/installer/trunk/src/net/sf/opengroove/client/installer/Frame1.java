@@ -78,7 +78,15 @@ public class Frame1 extends javax.swing.JFrame
 			jTextArea1 = new JTextArea();
 			getContentPane().add(jTextArea1);
 			jTextArea1
-					.setText("Welcome to the OpenGroove Installer. Choose the following options, make sure you are connected to the internet, and click \"install\". The latest version of OpenGroove will be downloaded and installed in the folder you specify below.\n\nIf you are using Windows Vista, you will need to select a folder that is NOT in your Program Files folder.\n\nOpenGroove will install for the current user ONLY. If you need to use OpenGroove for multiple computer user accounts, you will need to manually install OpenGroove. For information on how to manually install OpenGroove, visit http://static.trivergia.com/intouch3");
+					.setText("Welcome to the OpenGroove Installer. Choose the following " +
+							"options, make sure you are connected to the internet, and " +
+							"click \"install\". The latest version of OpenGroove will be " +
+							"downloaded and installed in the folder you specify below." +
+							"\n\nIf you are using Windows Vista, you will need to select " +
+							"a folder that is NOT in your Program Files folder.\n\n" +
+							"OpenGroove will install for the current user ONLY. If you " +
+							"need to use OpenGroove for multiple computer user accounts, " +
+							"visit www.opengroove.org/install-all");
 			jTextArea1.setBounds(82, 30, 481, 187);
 			jTextArea1.setFont(new java.awt.Font("Dialog", 1, 12));
 			jTextArea1.setOpaque(false);
