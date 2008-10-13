@@ -32,7 +32,7 @@ public class Installer
 {
 	static boolean proceedFrom1 = false;
 
-	public static final String UPDATE_URL = "http://trivergia.com:8080/convergiaupdates.properties";
+	public static final String UPDATE_URL = "file://c:/ogupdates/updates.properties";
 
 	/**
 	 * @param args
@@ -50,8 +50,8 @@ public class Installer
 					.add(new JLabel(
 							"<html>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Your computer is not running Windows. To use the installer,<br/>"
 									+ "your computer needs to be running windows. However, you can still use<br/>"
-									+ "Convergia, but you will have to manually install it. for instructions<br/>"
-									+ "on how to manually install Convergia, visit http://convergia.sf.net/manualinstall.html"));
+									+ "OpenGroove, but you will have to manually install it. for instructions<br/>"
+									+ "on how to manually install OpenGroove, visit http://www.opengroove.org/manual-install"));
 			frame.show();
 			frame.setDefaultCloseOperation(frame.EXIT_ON_CLOSE);
 			return;
@@ -126,7 +126,7 @@ public class Installer
 		int versionindex = Integer.parseInt(p.getProperty("versionindex"));
 		URL url = new URL(p.getProperty("url"));
 		frame2.getStatusLabel().setText(
-				"Convergia Installer is downloading Convergia, please wait...");
+				"Please wait while the installer downloads OpenGroove...");
 		File jarfile = File.createTempFile("cvginstall", ".jar");
 		System.out.println("jarfile is " + jarfile.getAbsolutePath());
 		jarfile.deleteOnExit();
@@ -156,7 +156,7 @@ public class Installer
 		in.close();
 		System.out.println("downloaded");
 		frame2.getStatusLabel().setText(
-				"Convergia Installer is installing Convergia, please wait...");
+				"Please wait while OpenGroove is installed...");
 		installTo.mkdirs();
 		System.out.println("about to extract");
 		extractUpdates(jarfile, installTo, frame2.getProgressBar());
@@ -169,7 +169,7 @@ public class Installer
 		String runCommand = readFile(new File(installTo, "windowsrunscript"));
 		runCommand = runCommand.replace("%INSTALLDIR%", installPath);
 		writeFile(runCommand, new File(System.getProperty("user.home"),
-				"Desktop/Convergia.bat"));
+				"Desktop/OpenGroove.bat"));
 		frame2.dispose();
 		Frame3 frame3 = new Frame3();
 		frame3.setLocationRelativeTo(null);
