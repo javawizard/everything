@@ -9,7 +9,7 @@
   <downloadUrl>http://java.com/download</downloadUrl>
   <supportUrl>http://www.opengroove.org</supportUrl>
   <customProcName>true</customProcName>
-  <stayAlive>true</stayAlive>
+  <stayAlive>false</stayAlive>
   <classPath>
     <mainClass>net.sf.opengroove.client.Loader</mainClass>
     <cp>classes</cp>
