@@ -1,5 +1,6 @@
 <launch4jConfig>
-  <dontWrapJar>true</dontWrapJar>
+  <jar>opengrooveinstaller.jar</jar>
+  <dontWrapJar>false</dontWrapJar>
   <headerType>gui</headerType>
   <outfile>setup.exe</outfile>
   <errTitle>OpenGroove Installer</errTitle>
@@ -12,8 +13,6 @@
   <stayAlive>false</stayAlive>
   <classPath>
     <mainClass>net.sf.opengroove.client.installer.Installer</mainClass>
-    <cp>classes</cp>
-    <cp>lib/*</cp>
   </classPath>
   <jre>
     <path></path>
