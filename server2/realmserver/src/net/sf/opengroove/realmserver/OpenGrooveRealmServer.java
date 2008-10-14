@@ -287,7 +287,7 @@ public class OpenGrooveRealmServer
                         System.out
                             .println("usersetting subscription found");
                     }
-     
+                    
                     // FIXME: clean up the rat's-nest boolean arithmetic that
                     // follows
                     boolean acceptOnUser = (isUserSetting
@@ -776,9 +776,12 @@ public class OpenGrooveRealmServer
             try
             {
                 Crypto.enc(securityKey, packet, baos);
-                return sendPacketTo(new Packet(
+                Packet encPacket = new Packet(
                     new ByteArrayInputStream(baos
-                        .toByteArray())));
+                        .toByteArray()));
+                encPacket.setDescription(new String(packet,
+                    0, Math.min(packet.length, 128)));
+                return sendPacketTo(encPacket);
             }
             catch (IOException e)
             {
@@ -1120,8 +1123,8 @@ public class OpenGrooveRealmServer
         
         public synchronized boolean send(Packet packet)
         {
-            boolean canOffer =  queue.offer(packet);
-            if(!canOffer)
+            boolean canOffer = queue.offer(packet);
+            if (!canOffer)
                 System.out.println("can't offer");
             return canOffer;
         }
@@ -1141,7 +1144,8 @@ public class OpenGrooveRealmServer
                 while (true)
                 {
                     Packet packet = queue.take();
-                    System.out.println("spooling packet");
+                    System.out.println("spooling packet "
+                        + packet.getDescription());
                     synchronized (this)
                     {
                         synchronized (out)
