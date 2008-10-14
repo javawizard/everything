@@ -287,6 +287,7 @@ public class OpenGrooveRealmServer
                         System.out
                             .println("usersetting subscription found");
                     }
+     
                     // FIXME: clean up the rat's-nest boolean arithmetic that
                     // follows
                     boolean acceptOnUser = (isUserSetting
@@ -1119,7 +1120,10 @@ public class OpenGrooveRealmServer
         
         public synchronized boolean send(Packet packet)
         {
-            return queue.offer(packet);
+            boolean canOffer =  queue.offer(packet);
+            if(!canOffer)
+                System.out.println("can't offer");
+            return canOffer;
         }
         
         private boolean closed = false;
@@ -1143,6 +1147,7 @@ public class OpenGrooveRealmServer
                         synchronized (out)
                         {
                             copy(packet.getStream(), out);
+                            out.flush();
                         }
                     }
                     System.out
