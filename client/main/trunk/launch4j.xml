@@ -39,7 +39,7 @@
   <messages>
     <startupErr>An error occurred while starting OpenGroove. Visit www.opengroove.org/opengroove-error to get assistance.</startupErr>
     <bundledJreErr>OpenGroove was configured to use a bundled Java Runtime Environment, but it is missing. Visit www.opengroove.org/opengroove-error to get assistance.</bundledJreErr>
-    <jreVersionErr>OpenGroove can&apos;t find a Java Runtime Environment, which is needed. Visit java.com/download to obtain one, or visit www.opengroove.org/opengroove-error to get assistance.</jreVersionErr>
+    <jreVersionErr>OpenGroove can&apos;t find a Java Runtime Environment, which is needed. Visit www.java.com/download to obtain one, or visit www.opengroove.org/opengroove-error to get assistance.</jreVersionErr>
     <launcherErr>Your version of Java appears to be corrupted. Visit www.opengroove.org/opengroove-error to get assistance.</launcherErr>
     <instanceAlreadyExistsMsg>OpenGroove is already running. You cannot start OpenGroove multiple times. If you need help, visit www.opengroove.org/opengroove-error for assistance.</instanceAlreadyExistsMsg>
   </messages>
