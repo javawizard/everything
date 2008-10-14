@@ -39,21 +39,23 @@
 
 	<target name="upload" depends="jar" description="creates a jar file, then uploads it to the server. the update versionindex will be incremented by one.">
 		<get dest="tmpupd.properties" src="http://sysup.ogis.opengroove.org" />
-		<java classpath="bin" fork="true" failonerror="true" dir="." classname="com.trivergia.intouch3.uploader.IVersion">
+		<echo message="running iversion..."/>
+		<java classpath="classes" fork="true" failonerror="true" dir="." classname="com.trivergia.intouch3.uploader.IVersion">
 		</java>
-
+		<echo message="uploading jar..."/>
 		<exec executable="rsync" failonerror="true">
 			<arg value="-e" />
 			<arg value="ssh -i /c/id_rsa" />
 			<arg value="opengrooveupdates.jar" />
 			<arg value="root@trivergia.com:/apache/tomcat/webapps/ROOT/opengrooveupdates.jar" />
 		</exec>
+		<echo message="uploading descriptor..."/>
 		<exec executable="rsync" failonerror="true">
 			<arg value="-e" />
 			<arg value="ssh -i /c/id_rsa" />
 			<arg value="opengrooveupdates.properties" />
 			<arg value="root@trivergia.com:/apache/tomcat/webapps/ROOT/opengrooveupdates.properties" />
 		</exec>
-
+		<echo message="done."/>
 	</target>
 </project>
