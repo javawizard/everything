@@ -1126,6 +1126,8 @@ public class OpenGrooveRealmServer
             boolean canOffer = queue.offer(packet);
             if (!canOffer)
                 System.out.println("can't offer");
+            System.out.println("queued packet "
+                + packet.getDescription());
             return canOffer;
         }
         
