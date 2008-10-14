@@ -1,7 +1,6 @@
 <launch4jConfig>
   <dontWrapJar>true</dontWrapJar>
   <headerType>gui</headerType>
-  <jar>bogus.jar</jar>
   <outfile>opengroove.exe</outfile>
   <errTitle>OpenGroove</errTitle>
   <cmdLine></cmdLine>
@@ -11,8 +10,6 @@
   <supportUrl>http://www.opengroove.org</supportUrl>
   <customProcName>true</customProcName>
   <stayAlive>true</stayAlive>
-  <manifest></manifest>
-  <icon></icon>
   <classPath>
     <mainClass>net.sf.opengroove.client.Loader</mainClass>
     <cp>classes</cp>
