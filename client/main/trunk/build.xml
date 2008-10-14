@@ -20,4 +20,40 @@
 			<link href="http://java.sun.com/javase/6/docs/api/" />
 		</javadoc>
 	</target>
+	<target name="jar" description="creates a jar file, excluding the folder appdata and the jar file opengrooveupdates.jar, and saves it to opengrooveupdates.jar">
+
+		<jar destfile="opengrooveupdates.jar">
+
+			<fileset dir=".">
+				<include name="**/*" />
+				<exclude name="**/*.svn" />
+				<exclude name="convergiaupdates.jar" />
+				<exclude name="opengrooveupdates.jar" />
+				<exclude name="appdata/**/*" />
+				<exclude name="plugins/**/*" />
+				<exclude name="devplugins/**/*" />
+				<exclude name="javadocs/**/*" />
+			</fileset>
+		</jar>
+	</target>
+
+	<target name="upload" depends="jar" description="creates a jar file, then uploads it to the server. the update versionindex will be incremented by one.">
+		<get dest="tmpupd.properties" src="http://sysup.ogis.opengroove.org" />
+		<java classpath="bin" fork="true" failonerror="true" dir="." classname="com.trivergia.intouch3.uploader.IVersion">
+		</java>
+
+		<exec executable="rsync" failonerror="true">
+			<arg value="-e" />
+			<arg value="ssh -i /c/id_rsa" />
+			<arg value="opengrooveupdates.jar" />
+			<arg value="root@trivergia.com:/apache/tomcat/webapps/ROOT/opengrooveupdates.jar" />
+		</exec>
+		<exec executable="rsync" failonerror="true">
+			<arg value="-e" />
+			<arg value="ssh -i /c/id_rsa" />
+			<arg value="opengrooveupdates.properties" />
+			<arg value="root@trivergia.com:/apache/tomcat/webapps/ROOT/opengrooveupdates.properties" />
+		</exec>
+
+	</target>
 </project>

@@ -7,7 +7,7 @@
   <chdir>.</chdir>
   <priority>normal</priority>
   <downloadUrl>http://java.com/download</downloadUrl>
-  <supportUrl>http://www.opengroove.org</supportUrl>
+  <supportUrl>http://www.opengroove.org/opengroove-error</supportUrl>
   <customProcName>true</customProcName>
   <stayAlive>false</stayAlive>
   <classPath>
