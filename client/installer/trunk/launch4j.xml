@@ -28,7 +28,7 @@
     <txtFileVersion>0.1.1 revision 1051</txtFileVersion>
     <fileDescription>A setup program that installs OpenGroove, a groupware application</fileDescription>
     <copyright>2007 - 2008 Alexander Boyd, released under the terms of the BSD license</copyright>
-    <productVersion>0..1.1.1051</productVersion>
+    <productVersion>0.1.1.1051</productVersion>
     <txtProductVersion>0.1.1 revision 1051</txtProductVersion>
     <productName>OpenGroove Installer</productName>
     <companyName></companyName>
