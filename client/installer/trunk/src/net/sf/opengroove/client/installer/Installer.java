@@ -32,7 +32,7 @@ public class Installer
 {
     static boolean proceedFrom1 = false;
     
-    public static final String UPDATE_URL = "file://c:/ogupdates/updates.properties";
+    public static final String UPDATE_URL = "http://sysup.ogis.opengroove.org";
     
     /**
      * @param args
