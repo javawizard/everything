@@ -11,9 +11,6 @@
   <supportUrl>http://www.opengroove.org/opengroove-error</supportUrl>
   <customProcName>true</customProcName>
   <stayAlive>false</stayAlive>
-  <classPath>
-    <mainClass>net.sf.opengroove.client.installer.Installer</mainClass>
-  </classPath>
   <jre>
     <path></path>
     <minVersion>1.6.0</minVersion>
