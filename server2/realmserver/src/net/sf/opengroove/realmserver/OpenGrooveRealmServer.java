@@ -3077,6 +3077,17 @@ public class OpenGrooveRealmServer
                             + "there in a browser and finding a contact link or something) and "
                             + "report the problem, or go to www.opengroove.org and contact us "
                             + "with information about this problem.");
+                /*
+                 * We've created the file for the message's data at this point.
+                 * Now we'll remove any message recipients that might already
+                 * exist, and add the new recipients. The main reason for this
+                 * is that if the server crashes in the middle of adding
+                 * recipients, we'll want to remove them when the user creates
+                 * the message again. We also add the recipients before the
+                 * message for the same reason, so that if the server crashes,
+                 * either there is a message that is complete with recipients,
+                 * or there is no message at all.
+                 */
                 DataStore.addMessage(message);
             }
             
