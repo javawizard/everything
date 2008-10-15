@@ -20,16 +20,38 @@ public class MessageRecipient
         this.computer = computer;
     }
     
+    /**
+     * The id of the message that this recipient is for
+     * 
+     * @return
+     */
     public String getId()
     {
         return id;
     }
     
+    /**
+     * The userid (not username) of the message recipient. If this userid is not
+     * of this server's realm, then the server will forward the message to the
+     * appropriate realm and remove this recipient. If this userid is of this
+     * realm, then it means that either the message was created by a user on
+     * this realm, or the message was sent by another realm and forwarded to
+     * this realm in the aforementioned manner.
+     * 
+     * @return
+     */
     public String getRecipient()
     {
         return recipient;
     }
     
+    /**
+     * The name of the computer that this message is targeted to. If a message
+     * is to be sent to multiple of a particular recipient's computers, then
+     * there will be one message recipient for each recipient computer.
+     * 
+     * @return
+     */
     public String getComputer()
     {
         return computer;

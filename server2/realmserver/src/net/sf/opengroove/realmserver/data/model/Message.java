@@ -16,27 +16,58 @@ public class Message
         this.computer = computer;
         this.sent = sent;
     }
-
+    
     public Message()
     {
         super();
     }
-
+    
+    /**
+     * The id of the message. This should start with the user's userid, followed
+     * by a hyphen, and should not contain anything else other than letters,
+     * numbers, a : in the user's userid, and hyphens.
+     * 
+     * @return
+     */
+    
     public String getId()
     {
         return id;
     }
     
+    /**
+     * The userid of the message's sender.<br/><br/>
+     * 
+     * Recipients are stored as {@link MessageRecipient}}s.
+     * 
+     * @return
+     */
     public String getSender()
     {
         return sender;
     }
     
+    /**
+     * The name of the sender's computer that sent the message.
+     * 
+     * @return
+     */
     public String getComputer()
     {
         return computer;
     }
     
+    /**
+     * True if the message is marked as having been sent. When a message is
+     * created, it can be added to and edited by the sender, until the sender
+     * sends it. When the sender sends it, it sets this to true, at which point
+     * the message is available to it's recipients. Then, if a recipient is from
+     * another realm, the message is forwarded to that realm's server. While it
+     * is being sent, isSent() is false on the receiving realm server, and is
+     * set to true once the message has been fully transferred.
+     * 
+     * @return
+     */
     public boolean isSent()
     {
         return sent;
@@ -60,5 +91,15 @@ public class Message
     public void setSent(boolean sent)
     {
         this.sent = sent;
+    }
+    
+    /**
+     * Returns this message's id, but with : replaced by $.
+     * 
+     * @return
+     */
+    public String getFileId()
+    {
+        return id.replace(":", "$");
     }
 }

@@ -51,6 +51,7 @@ import javax.servlet.http.HttpServletResponse;
 
 import net.sf.opengroove.realmserver.data.model.Computer;
 import net.sf.opengroove.realmserver.data.model.ComputerSetting;
+import net.sf.opengroove.realmserver.data.model.Message;
 import net.sf.opengroove.realmserver.data.model.Subscription;
 import net.sf.opengroove.realmserver.data.model.User;
 import net.sf.opengroove.realmserver.data.model.UserSetting;
@@ -366,9 +367,10 @@ public class OpenGrooveRealmServer
         /**
          * Indicates that a command succeeded.
          */
-        OK, /**
-             * indicates that a command failed for some reason.
-             */
+        OK,
+        /**
+         * indicates that a command failed for some unknown reason.
+         */
         FAIL,
         /**
          * Indicates that the user provided an incorrect username/password.
@@ -704,6 +706,18 @@ public class OpenGrooveRealmServer
         private boolean completedHandshake;
         public String username;
         public String computerName;
+        
+        /**
+         * Returns a userid composed of this server's realm name and this
+         * connection's username.
+         * 
+         * @return
+         */
+        public String getUserid()
+        {
+            return Userids.toUserid(serverRealmAddress,
+                username);
+        }
         
         public long getLastInTime()
         {
@@ -3006,7 +3020,11 @@ public class OpenGrooveRealmServer
                 throws Exception
             {
                 String[] tokens = tokenize(data);
-                verifyAtLeast(tokens, 1);
+                /*
+                 * We need at least 2 tokens, one for the message's id, and one
+                 * for a recipient (a message must have at least one recipient)
+                 */
+                verifyAtLeast(tokens, 2);
                 String messageId = tokens[0];
                 if (!messageId.startsWith(Userids
                     .toUserid(serverRealmAddress,
@@ -3016,7 +3034,50 @@ public class OpenGrooveRealmServer
                         Status.INVALIDMESSAGEID,
                         "The message id you specified does not start with the "
                             + "user's userid followed by a hyphen.");
-                
+                if (!messageId
+                    .matches("[A-Za-z0-9\\-\\:]*"))
+                    throw new FailedResponseException(
+                        Status.INVALIDMESSAGEID,
+                        "The message id you specified contains characters "
+                            + "other than A-Z, a-z, 0-9, -, and :");
+                /*
+                 * The message id is a valid id. Before we actually create the
+                 * message, we need to make sure that the user hasn't created
+                 * one with the same id. Since a message id should never be
+                 * reused, we won't bother checking the messageData folder to
+                 * see if a message is there. Not checking could have the effect
+                 * that a reused message id could get deleted mid-upload, but we
+                 * don't care about that since duplicate message ids aren't
+                 * supposed to be used.
+                 */
+                Message message = DataStore
+                    .getMessage(messageId);
+                if (message != null)
+                {
+                    throw new FailedResponseException(
+                        Status.ALREADYEXISTS,
+                        "The message id specified represents a "
+                            + "message that already exists");
+                }
+                message = new Message();
+                message.setId(messageId);
+                message.setSender(connection.getUserid());
+                message
+                    .setComputer(connection.computerName);
+                message.setSent(false);
+                if (!new File(messageDataFolder, message
+                    .getFileId()).createNewFile())
+                    throw new FailedResponseException(
+                        Status.FAIL,
+                        "Creating the message's storage file failed. This is probably "
+                            + "due to a server malfunction. Contact the owner of this server (it's "
+                            + "realm name is "
+                            + serverRealmAddress
+                            + ", so you could try going "
+                            + "there in a browser and finding a contact link or something) and "
+                            + "report the problem, or go to www.opengroove.org and contact us "
+                            + "with information about this problem.");
+                DataStore.addMessage(message);
             }
             
         };
