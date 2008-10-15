@@ -1184,6 +1184,26 @@ public class OpenGrooveRealmServer
      */
     public static void main(String[] args) throws Exception
     {
+        Thread gcThread = new Thread("periodic-gc")
+        {
+            public void run()
+            {
+                while (true)
+                {
+                    try
+                    {
+                        Thread.sleep(45 * 1000);
+                    }
+                    catch (Exception exception)
+                    {
+                        exception.printStackTrace();
+                    }
+                    System.gc();
+                }
+            }
+        };
+        gcThread.setDaemon(true);
+        gcThread.start();
         System.out.println("OpenGroove Realm Server");
         System.out.println("www.opengroove.org");
         System.out.println("Initializing...");
