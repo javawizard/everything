@@ -1192,13 +1192,17 @@ public class OpenGrooveRealmServer
                 {
                     try
                     {
-                        Thread.sleep(45 * 1000);
+                        Thread.sleep(30 * 1000);
                     }
                     catch (Exception exception)
                     {
                         exception.printStackTrace();
                     }
+                    System.out
+                        .println("garbage collecting...");
                     System.gc();
+                    System.out
+                        .println("garbage collected.");
                 }
             }
         };
