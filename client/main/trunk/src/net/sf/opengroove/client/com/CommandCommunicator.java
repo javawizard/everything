@@ -15,7 +15,7 @@ import java.util.Date;
  */
 public class CommandCommunicator
 {
-    private static final int GLOBAL_DEFAULT_TIMEOUT = 5 * 1000;
+    private static final int GLOBAL_DEFAULT_TIMEOUT = 15 * 1000;
     // 5 seconds, this should be re-thought, as a value too low would prevent
     // downloading large message chunks on a slow network, and a value too high
     // could cause application freezing upon a dropped connection. Actually, a

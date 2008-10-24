@@ -698,7 +698,7 @@ public class Communicator
             BlockingQueue<Packet> queue = new LinkedBlockingQueue<Packet>(
                 1);
             syncBlocks.put(packet.getPacketId(), queue);
-            send(packet, socket, out);
+            send(packet, socket, socket.getOutputStream());
             Packet responsePacket = queue.poll(timeout,
                 TimeUnit.MILLISECONDS);
             if (responsePacket == CONNECTION_ERROR)

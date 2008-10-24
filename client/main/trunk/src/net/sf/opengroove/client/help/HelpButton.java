@@ -34,8 +34,8 @@ public class HelpButton extends JideButton
      * @param name
      *            the label, or text, that shows up on this button
      * @param path
-     *            the path to the help. this is passed to
-     *            OpenGroove.showHelpTopic()
+     *            the help path that is to be shown. This must always start with
+     *            "/help". 
      */
     public HelpButton(final HelpViewer viewer, String name,
         final String path)
@@ -46,7 +46,7 @@ public class HelpButton extends JideButton
             
             public void actionPerformed(ActionEvent e)
             {
-                OpenGroove.showHelpTopic(path);
+                viewer.showHelpTopic(path);
             }
         });
     }
