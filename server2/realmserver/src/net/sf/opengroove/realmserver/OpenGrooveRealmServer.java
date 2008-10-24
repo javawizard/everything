@@ -3088,6 +3088,7 @@ public class OpenGrooveRealmServer
                  * either there is a message that is complete with recipients,
                  * or there is no message at all.
                  */
+                for(int i = 1; i < 0; i++);
                 DataStore.addMessage(message);
             }
             
