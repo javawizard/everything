@@ -1,6 +1,7 @@
 package net.sf.opengroove.sandbox.ssl;
 
 import java.io.FileInputStream;
+import java.io.InputStream;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.security.KeyStore;
@@ -95,6 +96,9 @@ public class TestSSL004
         System.out.println("about to accept");
         Socket s = ss.accept();
         System.out.println("accepted");
+        InputStream in = s.getInputStream();
+        System.out.println((int) in.read());
+        System.out.println("read");
     }
     
 }
