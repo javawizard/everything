@@ -42,9 +42,9 @@ public class TestSSL003
             new FileInputStream("selfsigned.jks"), pass);
         KeyStore certstore = KeyStore.getInstance("JKS");
         certstore.load(null, pass);
-        PrivateKey signkey = (PrivateKey) certstore.getKey(
+        PrivateKey signkey = (PrivateKey) signstore.getKey(
             "key", pass);
-        X509Certificate signcert = (X509Certificate) certstore
+        X509Certificate signcert = (X509Certificate) signstore
             .getCertificate("key");
         X509V3CertificateGenerator gen = new X509V3CertificateGenerator();
         gen.setIssuerDN((X500Principal) signcert.getSubjectDN());
