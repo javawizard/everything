@@ -1,5 +1,7 @@
 package net.sf.opengroove.ca;
 
+import java.security.KeyStore;
+
 /**
  * A class for signing certificates with the OpenGroove CA Certificate. For
  * security reasons, the keystore that contains the CA certificate is not
@@ -14,7 +16,7 @@ public class CertificateAuthority
     /**
      * @param args
      */
-    public static void main(String[] args)
+    public static void main(String[] args) throws Throwable
     {
         if (args.length < 3)
         {
@@ -38,6 +40,11 @@ public class CertificateAuthority
                     + "Certificate itself.");
             return;
         }
+        String caFile = args[0];
+        String srcFile = args[1];
+        String dstFile = args[2];
+        KeyStore caStore = KeyStore.getInstance("JKS");
+        KeyStore
     }
     
 }
