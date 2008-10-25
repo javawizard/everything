@@ -68,7 +68,7 @@ public class TestSSL003
         gen.setPublicKey(pub);
         X509Certificate cert = gen.generate(signkey);
         certstore.setKeyEntry("key", prv, pass,
-            new Certificate[] { cert });
+            new Certificate[] { cert, signcert });
         certstore.store(new FileOutputStream("example.jks"), pass);
     }
     
