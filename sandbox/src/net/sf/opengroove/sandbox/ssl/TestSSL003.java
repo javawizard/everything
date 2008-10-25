@@ -47,7 +47,7 @@ public class TestSSL003
         X509Certificate signcert = (X509Certificate) signstore
             .getCertificate("key");
         X509V3CertificateGenerator gen = new X509V3CertificateGenerator();
-        gen.setIssuerDN((X500Principal) signcert.getSubjectDN());
+        gen.setIssuerDN(signcert.getSubjectX500Principal());
         gen.setNotBefore(new Date());
         gen.setNotAfter(new Date(System.currentTimeMillis()
             + TimeUnit.MILLISECONDS.convert(180,
