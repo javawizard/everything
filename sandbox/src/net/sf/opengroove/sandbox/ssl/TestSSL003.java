@@ -14,6 +14,8 @@ import java.security.interfaces.RSAPublicKey;
 import java.util.Date;
 import java.util.concurrent.TimeUnit;
 
+import javax.security.auth.x500.X500Principal;
+
 import org.bouncycastle.asn1.x509.X509Name;
 import org.bouncycastle.x509.X509V3CertificateGenerator;
 
@@ -45,7 +47,7 @@ public class TestSSL003
         X509Certificate signcert = (X509Certificate) certstore
             .getCertificate("key");
         X509V3CertificateGenerator gen = new X509V3CertificateGenerator();
-        gen.setIssuerDN(signcert.getSubjectX500Principal());
+        gen.setIssuerDN((X500Principal) signcert.getSubjectDN());
         gen.setNotBefore(new Date());
         gen.setNotAfter(new Date(System.currentTimeMillis()
             + TimeUnit.MILLISECONDS.convert(180,
