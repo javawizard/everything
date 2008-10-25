@@ -1,8 +1,11 @@
 package net.sf.opengroove.sandbox.ssl;
 
+import java.io.FileInputStream;
 import java.net.Socket;
+import java.security.KeyStore;
 import java.security.Principal;
 import java.security.PrivateKey;
+import java.security.cert.Certificate;
 import java.security.cert.X509Certificate;
 
 import javax.net.ssl.X509KeyManager;
@@ -16,12 +19,22 @@ import javax.net.ssl.X509KeyManager;
  */
 public class TestSSL004
 {
+    public static final char[] pass = "pass".toCharArray();
     
     /**
      * @param args
      */
-    public static void main(String[] args)
+    public static void main(String[] args) throws Throwable
     {
+        KeyStore keystore = KeyStore.getInstance("JKS");
+        keystore.load(new FileInputStream("example.jks"),
+            pass);
+        Certificate[] oChain = keystore
+            .getCertificateChain("key");
+        final PrivateKey key = (PrivateKey) keystore
+            .getKey("key", pass);
+        final X509Certificate[] chain = new X509Certificate[oChain.length];
+        System.arraycopy(oChain, 0, chain, 0, chain.length);
         X509KeyManager manager = new X509KeyManager()
         {
             
@@ -44,8 +57,7 @@ public class TestSSL004
             public X509Certificate[] getCertificateChain(
                 String alias)
             {
-                // TODO Auto-generated method stub
-                return null;
+                return chain;
             }
             
             @Override
@@ -58,8 +70,7 @@ public class TestSSL004
             @Override
             public PrivateKey getPrivateKey(String alias)
             {
-                // TODO Auto-generated method stub
-                return null;
+                return key;
             }
             
             @Override
