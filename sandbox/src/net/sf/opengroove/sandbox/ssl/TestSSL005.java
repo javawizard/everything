@@ -50,9 +50,10 @@ public class TestSSL005
                 throws CertificateException
             {
                 System.out.println("checkServerTrusted");
-                if (chain[chain.length - 1]
+                if (chain[0]
                     .equals(certificate))
                 {
+                    System.out.println("root-signed");
                     /*
                      * The first certificate is the CA certificate. We only
                      * allow the request through if there are only 2
@@ -62,7 +63,7 @@ public class TestSSL005
                      */
                     if (chain.length != 2)
                         throw new CertificateException();
-                    X509Certificate initial = chain[0];
+                    X509Certificate initial = chain[1];
                     initial.checkValidity();
                     try
                     {
@@ -73,6 +74,7 @@ public class TestSSL005
                     {
                         throw new CertificateException(e);
                     }
+                    System.out.println("root valid");
                     /*
                      * We've validated everything about the key. Now we
                      * successfully return.
