@@ -2,8 +2,12 @@ package net.sf.opengroove.sandbox.ssl;
 
 import java.io.FileInputStream;
 import java.net.Socket;
+import java.security.InvalidKeyException;
 import java.security.KeyStore;
+import java.security.NoSuchAlgorithmException;
+import java.security.NoSuchProviderException;
 import java.security.SecureRandom;
+import java.security.SignatureException;
 import java.security.cert.Certificate;
 import java.security.cert.CertificateException;
 import java.security.cert.X509Certificate;
@@ -27,7 +31,7 @@ public class TestSSL005
         KeyStore keystore = KeyStore.getInstance("JKS");
         keystore.load(new FileInputStream("example.jks"),
             pass);
-        X509Certificate certificate = (X509Certificate) keystore
+        final X509Certificate certificate = (X509Certificate) keystore
             .getCertificate("key");
         X509TrustManager manager = new X509TrustManager()
         {
@@ -46,6 +50,35 @@ public class TestSSL005
                 throws CertificateException
             {
                 System.out.println("checkServerTrusted");
+                if (chain[chain.length - 1]
+                    .equals(certificate))
+                {
+                    /*
+                     * The first certificate is the CA certificate. We only
+                     * allow the request through if there are only 2
+                     * certificates in the chain, if the second certificate has
+                     * a valid signature, and if it's signature matches the
+                     * first certificate.
+                     */
+                    if (chain.length != 2)
+                        throw new CertificateException();
+                    X509Certificate initial = chain[0];
+                    initial.checkValidity();
+                    try
+                    {
+                        initial.verify(certificate
+                            .getPublicKey());
+                    }
+                    catch (Exception e)
+                    {
+                        throw new CertificateException(e);
+                    }
+                    /*
+                     * We've validated everything about the key. Now we
+                     * successfully return.
+                     */
+                    return;
+                }
             }
             
             @Override
