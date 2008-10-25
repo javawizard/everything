@@ -31,7 +31,7 @@ public class TestSSL002
     public static void main(String[] args) throws Throwable
     {
         X509V3CertificateGenerator gen = new X509V3CertificateGenerator();
-        gen.setIssuerDN(new X509Name("CN=OpenGroove CA"));
+        gen.setIssuerDN(new X509Name("CN=OpenGroove Root CA"));
         gen.setNotBefore(new Date());
         gen.setNotAfter(new Date(System.currentTimeMillis()
             + TimeUnit.MILLISECONDS.convert(20 * 365,
@@ -39,7 +39,7 @@ public class TestSSL002
         gen.setSerialNumber(new BigInteger(""
             + System.currentTimeMillis()));
         gen.setSignatureAlgorithm("SHA512withRSA");
-        gen.setSubjectDN(new X509Name("CN=OpenGroove CA"));
+        gen.setSubjectDN(new X509Name("CN=OpenGroove Root CA"));
         KeyPairGenerator keygen = KeyPairGenerator
             .getInstance("RSA");
         keygen.initialize(3072);
@@ -56,6 +56,6 @@ public class TestSSL002
         keystore.setKeyEntry("key", prv, "pass"
             .toCharArray(), new Certificate[] { cert });
         keystore.store(new FileOutputStream(
-            "selfsigned.jks"), "pass".toCharArray());
+            "C:\\opengroove-ca.jks"), "pass".toCharArray());
     }
 }

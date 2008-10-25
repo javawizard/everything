@@ -29,8 +29,8 @@ public class TestSSL005
     public static void main(String[] args) throws Throwable
     {
         KeyStore keystore = KeyStore.getInstance("JKS");
-        keystore.load(new FileInputStream("example.jks"),
-            pass);
+        keystore.load(
+            new FileInputStream("selfsigned.jks"), pass);
         final X509Certificate certificate = (X509Certificate) keystore
             .getCertificate("key");
         X509TrustManager manager = new X509TrustManager()
@@ -50,7 +50,7 @@ public class TestSSL005
                 throws CertificateException
             {
                 System.out.println("checkServerTrusted");
-                if (chain[0]
+                if (chain[chain.length - 1]
                     .equals(certificate))
                 {
                     System.out.println("root-signed");
@@ -63,7 +63,13 @@ public class TestSSL005
                      */
                     if (chain.length != 2)
                         throw new CertificateException();
-                    X509Certificate initial = chain[1];
+                    X509Certificate initial = chain[0];
+                    System.out.println("initial DN : "
+                        + initial.getSubjectDN().getName());
+                    System.out
+                        .println("issuer DN : "
+                            + chain[1].getSubjectDN()
+                                .getName());
                     initial.checkValidity();
                     try
                     {
@@ -81,6 +87,10 @@ public class TestSSL005
                      */
                     return;
                 }
+                /*
+                 * If we get here, then the certificate isn't signed by the cert
+                 * stored in selfsigned.jks, so we prompt the user to accept it.
+                 */
             }
             
             @Override
