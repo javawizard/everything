@@ -91,19 +91,9 @@ public class CertificateAuthority
             + System.currentTimeMillis()));
         gen.setSignatureAlgorithm("SHA512withRSA");
         gen.setSubjectDN(srccert.getSubjectX500Principal());
-        KeyPairGenerator keygen = KeyPairGenerator
-            .getInstance("RSA");
-        keygen.initialize(3072);
-        System.out.println("generating keys...");
-        KeyPair keys = keygen.generateKeyPair();
-        System.out.println("keys generated.");
-        RSAPublicKey pub = (RSAPublicKey) keys.getPublic();
-        RSAPrivateKey prv = (RSAPrivateKey) keys
-            .getPrivate();
-        gen.setPublicKey(pub);
+        gen.setPublicKey(srccert.getPublicKey());
         X509Certificate cert = gen.generate(signkey);
-        dstStore.setKeyEntry("key", prv, pass,
-            new Certificate[] { cert, signcert });
+        dstStore.setCertificateEntry("key", cert);
         dstStore.store(new FileOutputStream(dstFile), pass);
         System.out
             .println("signing completed successfully.");
