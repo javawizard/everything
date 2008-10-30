@@ -14,6 +14,8 @@ import java.security.interfaces.RSAPublicKey;
 import java.util.Date;
 import java.util.concurrent.TimeUnit;
 
+import javax.security.auth.x500.X500Principal;
+
 import org.bouncycastle.x509.X509V3CertificateGenerator;
 
 /**
@@ -93,7 +95,8 @@ public class CertificateAuthority
         gen.setSubjectDN(srccert.getSubjectX500Principal());
         gen.setPublicKey(srccert.getPublicKey());
         X509Certificate cert = gen.generate(signkey);
-        dstStore.setCertificateEntry("key", cert);
+        dstStore.setKeyEntry("key", srccert.getPublicKey(),
+            pass, new Certificate[] { cert, signcert });
         dstStore.store(new FileOutputStream(dstFile), pass);
         System.out
             .println("signing completed successfully.");
