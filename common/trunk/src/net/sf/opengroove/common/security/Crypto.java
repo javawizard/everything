@@ -18,9 +18,14 @@ import DE.knp.MicroCrypt.Aes256;
  * 65535 bytes as an AES-encoded byte array. The methods on this class take care
  * of adding and removing padding as necessary.
  * 
+ * This class was previously used to handle socket encryption. It is being
+ * phased out in favor of SSL, and will be removed in the future.
+ * 
+ * @deprecated
  * @author Alexander Boyd
  * 
  */
+@Deprecated
 public class Crypto
 {
     private static SecureRandom random = new SecureRandom();
