@@ -5,7 +5,11 @@ import java.security.SecureRandom;
 
 import net.sf.opengroove.client.ui.TestFrame;
 import net.sf.opengroove.common.security.UserFingerprint;
-
+/**
+ * A class for testing fingerprints
+ * @author Alexander Boyd
+ *
+ */
 public class Test041
 {
     

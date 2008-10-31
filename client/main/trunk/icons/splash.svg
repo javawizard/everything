@@ -29,7 +29,7 @@
          offset="0"
          id="stop3193" />
       <stop
-         style="stop-color:#292a76;stop-opacity:1;"
+         style="stop-color:#282a77;stop-opacity:1;"
          offset="1"
          id="stop3195" />
     </linearGradient>
@@ -136,18 +136,6 @@
        gradientUnits="userSpaceOnUse" />
     <filter
        inkscape:collect="always"
-       id="filter3896"
-       x="-0.049521714"
-       width="1.0990434"
-       y="-0.13184584"
-       height="1.2636917">
-      <feGaussianBlur
-         inkscape:collect="always"
-         stdDeviation="3.3407813"
-         id="feGaussianBlur3898" />
-    </filter>
-    <filter
-       inkscape:collect="always"
        id="filter3900"
        x="-0.043762249"
        width="1.0875245"
@@ -166,6 +154,18 @@
          stdDeviation="0.27839844"
          id="feGaussianBlur3966" />
     </filter>
+    <filter
+       inkscape:collect="always"
+       id="filter3361"
+       x="-0.057775333"
+       width="1.1155507"
+       y="-0.15382014"
+       height="1.3076403">
+      <feGaussianBlur
+         inkscape:collect="always"
+         stdDeviation="3.8975781"
+         id="feGaussianBlur3363" />
+    </filter>
   </defs>
   <sodipodi:namedview
      id="base"
@@ -174,20 +174,20 @@
      borderopacity="1.0"
      gridtolerance="10000"
      guidetolerance="10"
-     objecttolerance="10"
+     objecttolerance="2"
      inkscape:pageopacity="0.0"
      inkscape:pageshadow="2"
      inkscape:zoom="1"
-     inkscape:cx="222.50779"
+     inkscape:cx="66.50779"
      inkscape:cy="196.21591"
      inkscape:document-units="px"
      inkscape:current-layer="layer1"
      showgrid="false"
      inkscape:showpageshadow="false"
-     inkscape:window-width="1276"
+     inkscape:window-width="1280"
      inkscape:window-height="750"
-     inkscape:window-x="0"
-     inkscape:window-y="14"
+     inkscape:window-x="-8"
+     inkscape:window-y="-8"
      showguides="true"
      inkscape:guide-bbox="true">
     <inkscape:grid
@@ -265,15 +265,15 @@
          y="130" /></text>
     <text
        xml:space="preserve"
-       style="font-size:64px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;text-align:start;line-height:125%;writing-mode:lr-tb;text-anchor:start;fill:#000000;fill-opacity:0.58823532;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;font-family:Bitstream Vera Sans;-inkscape-font-specification:Bitstream Vera Sans;filter:url(#filter3896)"
-       x="48"
-       y="117"
+       style="font-size:64px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;text-align:start;line-height:125%;writing-mode:lr-tb;text-anchor:start;fill:#000000;fill-opacity:0.66666669000000001;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;filter:url(#filter3361);font-family:Bitstream Vera Sans;-inkscape-font-specification:Bitstream Vera Sans"
+       x="46.60025"
+       y="113.9995"
        id="text3207"
        sodipodi:linespacing="125%"><tspan
          sodipodi:role="line"
          id="tspan3209"
-         x="48"
-         y="117">Open</tspan></text>
+         x="46.60025"
+         y="113.9995">Open</tspan></text>
     <text
        xml:space="preserve"
        style="font-size:64px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;text-align:start;line-height:125%;writing-mode:lr-tb;text-anchor:start;fill:url(#linearGradient3188);fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;font-family:Bitstream Vera Sans;-inkscape-font-specification:Bitstream Vera Sans;filter:url(#filter3964)"
@@ -289,17 +289,17 @@
     <text
        xml:space="preserve"
        style="font-size:64px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;text-align:start;line-height:125%;writing-mode:lr-tb;text-anchor:start;fill:#000000;fill-opacity:0.7254902;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;filter:url(#filter3900);font-family:Bitstream Vera Sans;-inkscape-font-specification:Bitstream Vera Sans"
-       x="224"
-       y="113"
+       x="223.40025"
+       y="112.19975"
        id="text3211"
        sodipodi:linespacing="125%"><tspan
          sodipodi:role="line"
          id="tspan3213"
-         x="224"
-         y="113">Groove</tspan></text>
+         x="223.40025"
+         y="112.19975">Groove</tspan></text>
     <text
        xml:space="preserve"
-       style="font-size:64px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;text-align:start;line-height:125%;writing-mode:lr-tb;text-anchor:start;fill:url(#linearGradient3197);fill-opacity:1.0;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;font-family:Bitstream Vera Sans;-inkscape-font-specification:Bitstream Vera Sans"
+       style="font-size:64px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;text-align:start;line-height:125%;writing-mode:lr-tb;text-anchor:start;fill:url(#linearGradient3197);fill-opacity:1;stroke:#000064;stroke-width:0.10000000000000001;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:0.38431373;font-family:Bitstream Vera Sans;-inkscape-font-specification:Bitstream Vera Sans;stroke-miterlimit:4;stroke-dasharray:none"
        x="223"
        y="111"
        id="text3234"
@@ -308,7 +308,7 @@
          id="tspan3236"
          x="223"
          y="111"
-         style="fill-opacity:1.0;fill:url(#linearGradient3197)">Groove</tspan></text>
+         style="fill-opacity:1;fill:url(#linearGradient3197);stroke:#000064;stroke-opacity:0.38431373;stroke-width:0.10000000000000001;stroke-miterlimit:4;stroke-dasharray:none">Groove</tspan></text>
     <text
        xml:space="preserve"
        style="font-size:24px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;text-align:start;line-height:100%;writing-mode:lr-tb;text-anchor:start;fill:#011e7e;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;font-family:Segoe UI;-inkscape-font-specification:Segoe UI"
@@ -331,13 +331,24 @@
     <text
        xml:space="preserve"
        style="font-size:9px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;text-align:start;line-height:125%;writing-mode:lr-tb;text-anchor:start;fill:#000000;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;font-family:Segoe UI;-inkscape-font-specification:Segoe UI"
-       x="369"
+       x="366.59991"
        y="314"
        id="text2410"
        sodipodi:linespacing="125%"><tspan
          sodipodi:role="line"
-         x="369"
+         x="366.59991"
          y="314"
          id="tspan2414">Created by Alexander Boyd</tspan></text>
+    <text
+       xml:space="preserve"
+       style="font-size:9px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;text-align:start;line-height:125%;writing-mode:lr-tb;text-anchor:start;fill:#000000;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;font-family:Segoe UI;-inkscape-font-specification:Segoe UI"
+       x="22"
+       y="313.99985"
+       id="text3349"
+       sodipodi:linespacing="125%"><tspan
+         sodipodi:role="line"
+         id="tspan3351"
+         x="22"
+         y="313.99985">Questions? Email support@opengroove.org</tspan></text>
   </g>
 </svg>
