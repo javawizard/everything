@@ -1,7 +1,6 @@
 package net.sf.opengroove.common.utils;
 
 import java.math.BigInteger;
-import java.math.MutableBigInteger;
 
 /**
  * This class holds utilities related to math. This class essentially contains
@@ -30,12 +29,81 @@ public class MathUtils
      * @param chars
      * @return
      */
-    public String toString(BigInteger number, String chars)
+    public static String toString(BigInteger number, String chars)
     {
         StringBuilder buffer = new StringBuilder();
-        /*
-         * TODO: this algorithm is not very efficient, but I didn't want to
-         * spend a ton of time on it for now
-         */
+        int intRadix = chars.length();
+        BigInteger radix = BigInteger.valueOf(intRadix);
+        if (intRadix < 2)
+            throw new IllegalArgumentException(
+                "at least 2 chars must be specified for the radix");
+        boolean isNegative = number.signum() == -1;
+        if (isNegative)
+        {
+            number = number.abs();
+            buffer.append("-");
+        }
+        while (number.signum() == 1)
+        {
+            int index = number.mod(radix).intValue();
+            buffer.insert(0, chars.charAt(index));
+            number = number.divide(radix);
+        }
+        return buffer.toString();
+    }
+    
+    /**
+     * Parses the string specified, using the chars specified as the digits.
+     * 
+     * @param value
+     *            The value to parse, which should contain only characters in
+     *            <code>chars</code>, except that it may begin with a "-"
+     *            character, in which case the resulting number will be negative
+     * @param chars
+     *            The digits to use when parsing
+     * @return The parsed number
+     */
+    public static BigInteger parse(String value, String chars)
+    {
+        int intRadix = chars.length();
+        BigInteger radix = BigInteger.valueOf(intRadix);
+        if (intRadix < 2)
+            throw new IllegalArgumentException(
+                "at least 2 chars must be specified for the radix");
+        boolean isNegative = false;
+        if (value.startsWith("-"))
+        {
+            value = value.substring(1);
+            isNegative = true;
+        }
+        BigInteger number = BigInteger.valueOf(0);
+        for (char c : value.toCharArray())
+        {
+            BigInteger index = BigInteger.valueOf(chars
+                .indexOf(c));
+            if (index.signum() == -1)
+                throw new RuntimeException(
+                    "The character "
+                        + c
+                        + " in the value "
+                        + value
+                        + " is not in the radix string specified.");
+            number = number.add(index);
+            number = number.multiply(radix);
+        }
+        if (isNegative)
+            number = number
+                .multiply(BigInteger.valueOf(-1));
+        return number;
+    }
+    
+    public static String toString(long number, String chars)
+    {
+        return toString(BigInteger.valueOf(number), chars);
+    }
+    
+    public static long parseLong(String value, String chars)
+    {
+        return parse(value, chars).longValue();
     }
 }
