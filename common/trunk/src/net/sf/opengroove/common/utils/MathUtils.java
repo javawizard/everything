@@ -12,6 +12,15 @@ import java.math.BigInteger;
 public class MathUtils
 {
     /**
+     * A string that can be passed into parse and toString of this class as a
+     * radix string. It contains all numbers and letters (upper-case only),
+     * except for those that have a number that looks like them, such as i (1)
+     * or o (0).
+     */
+    public static final String RADIX_ALPHA_CLEAR = "0123456789ABCDEFGHJKLMNQRSTVWXYZ";
+    public static final String RADIX_ALPHANUMERIC = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+    
+    /**
      * Converts a BigInteger to a String, using the chars specified as the
      * digits to encode. The first character is treated as the least, and the
      * last character as the most. If the number specified is 0, then the output
@@ -29,7 +38,8 @@ public class MathUtils
      * @param chars
      * @return
      */
-    public static String toString(BigInteger number, String chars)
+    public static String toString(BigInteger number,
+        String chars)
     {
         StringBuilder buffer = new StringBuilder();
         int intRadix = chars.length();
@@ -63,7 +73,8 @@ public class MathUtils
      *            The digits to use when parsing
      * @return The parsed number
      */
-    public static BigInteger parse(String value, String chars)
+    public static BigInteger parse(String value,
+        String chars)
     {
         int intRadix = chars.length();
         BigInteger radix = BigInteger.valueOf(intRadix);
