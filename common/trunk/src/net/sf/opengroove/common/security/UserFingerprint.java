@@ -2,6 +2,8 @@ package net.sf.opengroove.common.security;
 
 import java.math.BigInteger;
 
+import net.sf.opengroove.common.utils.MathUtils;
+
 public class UserFingerprint
 {
     public static String fingerprint(BigInteger encPub,
@@ -31,17 +33,44 @@ public class UserFingerprint
                 + sigPubHash.length, sigModHash.length);
         byte[] hashBytes = Hash.hashRaw(concat);
         BigInteger hashInt = new BigInteger(1, hashBytes);
-        String hashUnsplit = hashInt.toString(36);
+        String hashUnsplit = MathUtils.toString(hashInt,
+            MathUtils.RADIX_ALPHA_CLEAR);
         hashUnsplit = hashUnsplit.toUpperCase();
         String hash = "";
-        for (int i = 0; i < Math.min(hashUnsplit.length(),32); i += 4)
+        for (int i = 0; i < Math.min(hashUnsplit.length(),
+            25); i += 5)
         {
             String section = hashUnsplit.substring(i, Math
-                .min(i + 4, hashUnsplit.length()));
+                .min(i + 5, hashUnsplit.length()));
             if (i != 0)
                 hash += "-";
             hash += section;
         }
         return hash;
     }
+    
+    public static String fingerprint(byte[] data)
+    {
+        byte[] hashBytes = Hash.hashRaw(data);
+        BigInteger hashInt = new BigInteger(1, hashBytes);
+        String hashUnsplit = hashInt.toString(36);
+        hashUnsplit = hashUnsplit.toUpperCase();
+        String hash = "";
+        for (int i = 0; i < Math.min(hashUnsplit.length(),
+            30); i += 5)
+        {
+            String section = hashUnsplit.substring(i, Math
+                .min(i + 5, hashUnsplit.length()));
+            if (i != 0)
+                hash += "-";
+            hash += section;
+        }
+        return hash;
+    }
+    
+    public static String fingerprint(String data)
+    {
+        return fingerprint(data.getBytes());
+    }
+    
 }

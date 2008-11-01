@@ -11,6 +11,7 @@ import java.math.BigInteger;
 import java.security.Certificate;
 import java.security.Key;
 import java.security.KeyPair;
+import java.security.KeyPairGenerator;
 import java.security.KeyStore;
 import java.security.PrivateKey;
 import java.security.PublicKey;
@@ -114,7 +115,7 @@ public class CertificateUtils
         }
     }
     
-    public X509Certificate readCert(String in)
+    public static X509Certificate readCert(String in)
     {
         try
         {
@@ -132,7 +133,7 @@ public class CertificateUtils
         
     }
     
-    public String writeCert(X509Certificate cert)
+    public static String writeCert(X509Certificate cert)
     {
         try
         {
@@ -314,5 +315,85 @@ public class CertificateUtils
             throw new RuntimeException(
                 "Cryptographic exception", e);
         }
+    }
+    
+    /**
+     * Generates a keypair of the specified algorithm and size.
+     * 
+     * @param algorithm
+     *            The algorithm to use. This could be something like "RSA" or
+     *            "DSA".
+     * @param size
+     *            The size of the keypair to generate. What this means is
+     *            usually specific to the algorithm used. For RSA, this is the
+     *            size, in bits, that the modulus and decryption exponent will
+     *            be.
+     * @return
+     */
+    /*
+     * The text on the new few lines is exactly 380 characters (including spaces
+     * but not including the asterisks). This doesn't include this short note.
+     * 
+     * 
+     * this is some text to see how long of a string could be encoded using a
+     * single RSA key. Let's see how long this actually does on, and let's see
+     * if it assists in getting an approximate idea of how many characters can
+     * be encoded. An RSA key of 3072 bits can encode about 384 characters (it's
+     * actually 383 to avoid wrapping). This message is almost exactly 383
+     * characters. Thank you.
+     */
+    public static KeyPair createKeyPair(String algorithm,
+        int size)
+    {
+        try
+        {
+            KeyPairGenerator keygen = KeyPairGenerator
+                .getInstance(algorithm);
+            keygen.initialize(size);
+            KeyPair keys = keygen.generateKeyPair();
+            return keys;
+        }
+        catch (Exception e)
+        {
+            if (e instanceof RuntimeException)
+                throw (RuntimeException) e;
+            throw new RuntimeException(
+                "Cryptographic exception", e);
+        }
+    }
+    
+    /**
+     * Generates an RSA 3072-bit keypair.
+     * 
+     * @return
+     */
+    public static KeyPair createKeyPair()
+    {
+        return createKeyPair(3072);
+    }
+    
+    /**
+     * Creates an RSA keypair of the specified size.
+     * 
+     * @param size
+     *            The size, in bits, of the keypair. The private, or decryption,
+     *            exponent and the modulus will have this many bits.
+     * @return
+     */
+    public static KeyPair createKeyPair(int size)
+    {
+        return createKeyPair("RSA", size);
+    }
+    
+    public String fingerprint(X509Certificate certificate)
+    {
+        return UserFingerprint
+            .fingerprint(writeCert(certificate));
+    }
+    
+    public String fingerprint(X509Certificate[] chain)
+    {
+        return UserFingerprint
+            .fingerprint(writeCertChain(chain));
     }
 }
