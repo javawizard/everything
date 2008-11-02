@@ -8,7 +8,7 @@ public class CertPair
     private X509Certificate[] chain;
     private PrivateKey key;
     
-    X509Certificate[] getChain()
+    public X509Certificate[] getChain()
     {
         return chain;
     }
@@ -28,17 +28,17 @@ public class CertPair
         return chain[0];
     }
     
-    PrivateKey getKey()
+    public PrivateKey getKey()
     {
         return key;
     }
     
-    void setChain(X509Certificate[] chain)
+    public void setChain(X509Certificate[] chain)
     {
         this.chain = chain;
     }
     
-    void setKey(PrivateKey key)
+    public void setKey(PrivateKey key)
     {
         this.key = key;
     }
