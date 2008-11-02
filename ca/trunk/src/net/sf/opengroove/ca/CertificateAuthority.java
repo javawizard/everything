@@ -1,5 +1,6 @@
 package net.sf.opengroove.ca;
 
+import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.math.BigInteger;
@@ -63,13 +64,14 @@ public class CertificateAuthority
         String caFile = args[0];
         String srcFile = args[1];
         String dstFile = args[2];
-        CertPair signpair = CertificateUtils.readCertPair(StringU)
-        PrivateKey signkey = (PrivateKey) caStore.getKey(
-            "key", pass);
-        X509Certificate signcert = (X509Certificate) caStore
-            .getCertificate("key");
-        X509Certificate srccert = (X509Certificate) srcStore
-            .getCertificate("key");
+        CertPair signpair = CertificateUtils
+            .readCertPair(StringUtils.readFile(new File(
+                caFile)));
+        PrivateKey signkey = signpair.getKey();
+        X509Certificate signcert = signpair.getCert();
+        X509Certificate srccert = CertificateUtils
+            .readCert(StringUtils
+                .readFile(new File(srcFile)));
         String shouldSign = System.console().readLine(
             "Distinguished name : "
                 + srccert.getSubjectDN().getName()
@@ -86,10 +88,8 @@ public class CertificateAuthority
                 .getSubjectX500Principal(), 180,
             "SHA512withRSA", srccert.getPublicKey(),
             signkey);
-        dstStore.setKeyEntry("key", srccert.getPublicKey(),
-            pass, new Certificate[] { cert, signcert });
-        dstStore.store(new FileOutputStream(dstFile), pass);
-        System.out
-            .println("signing completed successfully.");
+        StringUtils.writeFile(CertificateUtils
+            .writeCertChain(new X509Certificate[] { cert,
+                signcert }), new File(dstFile));
     }
 }
