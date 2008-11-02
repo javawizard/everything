@@ -16,6 +16,10 @@ import java.util.concurrent.TimeUnit;
 
 import javax.security.auth.x500.X500Principal;
 
+import net.sf.opengroove.common.security.CertPair;
+import net.sf.opengroove.common.security.CertificateUtils;
+import net.sf.opengroove.common.utils.StringUtils;
+
 import org.bouncycastle.x509.X509V3CertificateGenerator;
 
 /**
@@ -42,30 +46,24 @@ public class CertificateAuthority
                 .println("Usage: java ... CertificateAuthority cafile srcfile dstfile");
             System.out.println();
             System.out
-                .println("cafile:    The java keystore file that contains the "
-                    + "OpenGroove CA Certificate and Private Key");
+                .println("cafile:    The file that contains the OpenGroove CA "
+                    + "Certificate and private key");
             System.out
-                .println("srcfile:   A java keystore file that should contain "
-                    + "only one entry, with an alias of \"key\". The certificate "
-                    + "represented by that alias is the one that will be signed.");
+                .println("srcfile:   The file that contains the certificate to "
+                    + "be signed");
             System.out
                 .println("dstfile:   A file that the signed certificate will be "
                     + "written to. If this already exists, it will be "
                     + "overwritten. When this program finishes, this file "
-                    + "will contain one alias, \"key\", which is a new key and "
-                    + "a certificate for that key, which represent the new "
-                    + "certificate that is signed by the OpenGroove CA.");
+                    + "will contain the new certificate chain to use "
+                    + "(which is the OpenGroove CA Certificate, and "
+                    + "the newly-signed source certificate).");
             return;
         }
         String caFile = args[0];
         String srcFile = args[1];
         String dstFile = args[2];
-        KeyStore caStore = KeyStore.getInstance("JKS");
-        KeyStore srcStore = KeyStore.getInstance("JKS");
-        KeyStore dstStore = KeyStore.getInstance("JKS");
-        caStore.load(new FileInputStream(caFile), pass);
-        srcStore.load(new FileInputStream(srcFile), pass);
-        dstStore.load(null, pass);
+        CertPair signpair = CertificateUtils.readCertPair(StringU)
         PrivateKey signkey = (PrivateKey) caStore.getKey(
             "key", pass);
         X509Certificate signcert = (X509Certificate) caStore
@@ -83,18 +81,11 @@ public class CertificateAuthority
             return;
         }
         System.out.println("signing...");
-        X509V3CertificateGenerator gen = new X509V3CertificateGenerator();
-        gen.setIssuerDN(signcert.getSubjectX500Principal());
-        gen.setNotBefore(new Date());
-        gen.setNotAfter(new Date(System.currentTimeMillis()
-            + TimeUnit.MILLISECONDS.convert(180,
-                TimeUnit.DAYS)));
-        gen.setSerialNumber(new BigInteger(""
-            + System.currentTimeMillis()));
-        gen.setSignatureAlgorithm("SHA512withRSA");
-        gen.setSubjectDN(srccert.getSubjectX500Principal());
-        gen.setPublicKey(srccert.getPublicKey());
-        X509Certificate cert = gen.generate(signkey);
+        X509Certificate cert = CertificateUtils.createCert(
+            srccert.getSubjectX500Principal(), signcert
+                .getSubjectX500Principal(), 180,
+            "SHA512withRSA", srccert.getPublicKey(),
+            signkey);
         dstStore.setKeyEntry("key", srccert.getPublicKey(),
             pass, new Certificate[] { cert, signcert });
         dstStore.store(new FileOutputStream(dstFile), pass);
