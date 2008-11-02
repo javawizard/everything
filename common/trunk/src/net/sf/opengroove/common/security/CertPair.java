@@ -33,6 +33,23 @@ public class CertPair
         return key;
     }
     
+    public CertPair()
+    {
+        super();
+    }
+    
+    public CertPair(X509Certificate cert, PrivateKey key)
+    {
+        this(new X509Certificate[] { cert }, key);
+    }
+    
+    public CertPair(X509Certificate[] chain, PrivateKey key)
+    {
+        super();
+        this.chain = chain;
+        this.key = key;
+    }
+    
     public void setChain(X509Certificate[] chain)
     {
         this.chain = chain;
