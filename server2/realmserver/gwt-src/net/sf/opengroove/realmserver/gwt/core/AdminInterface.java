@@ -13,9 +13,9 @@ import com.google.gwt.user.client.ui.Widget;
 public class AdminInterface implements EntryPoint
 {
     
-    @Override
     public void onModuleLoad()
     {
+        Window.setTitle("Log in - OpenGroove Realm Server Administration");
         RootPanel root = RootPanel.get();
         HTMLPanel loginPanel = new HTMLPanel(
             "<table border='0' cellpadding='2'>"
@@ -38,7 +38,6 @@ public class AdminInterface implements EntryPoint
         loginButton.addClickListener(new ClickListener()
         {
             
-            @Override
             public void onClick(Widget sender)
             {
                 Window.setTitle("Logging in as "
@@ -46,6 +45,7 @@ public class AdminInterface implements EntryPoint
             }
         });
         loginPanel.add(loginButton, "loginButton");
+        root.add(loginPanel);
     }
     
 }

@@ -4,4 +4,5 @@
       <!-- <inherits name='com.google.gwt.user.theme.chrome.Chrome'/> -->
       <!-- <inherits name='com.google.gwt.user.theme.dark.Dark'/>     -->
       <entry-point class='net.sf.opengroove.realmserver.gwt.core.AdminInterface'/>
+      <source path="core"/>
 </module>
