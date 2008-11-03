@@ -53,13 +53,10 @@ Unless noted, these settings <i>cannot</i> be changed later.</td></tr>
 <tr><td>Realm name<sup><a target="_blank"
 href="http://www.opengroove.org/help/server-realm-name">?</a></sup>:</td>
 <td><input type="text" name="serverhostname" value="${param.serverhostname}"/></td></tr>
-<tr><td>Force all connections to use encryption<sup><a target="_blank"
-href="http://www.opengroove.org/help/force-encryption">?</a></sup>:</td><td><input
-type="checkbox" checked="checked" name="forceencryption" value="true"/></td>
 <tr><td colspan="2"><hr/></td></tr>
 <tr><td colspan="2">You're ready to set up your server! Click Setup to begin!
-<tr><td>&nbsp;</td><td><input type="submit" 
-onclick="return confirm('Are you sure you want to setup the server? This will take about a minute.');"
+<tr><td>&nbsp;</td><td><input name="submitButton" type="submit" 
+onclick="if(!confirm('Are you sure you want to setup the server? This will take a minute or two.'))return false;document.mainForm.submitButton.disabled=true;return true;"
 value="Setup"/></td></tr></table>
 </body></html>
 

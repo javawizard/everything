@@ -18,7 +18,10 @@ import java.math.BigInteger;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.net.URLEncoder;
+import java.security.KeyPair;
+import java.security.PrivateKey;
 import java.security.SecureRandom;
+import java.security.cert.X509Certificate;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
@@ -39,6 +42,7 @@ import java.util.concurrent.ScheduledThreadPoolExecutor;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 
+import javax.security.auth.x500.X500Principal;
 import javax.servlet.Filter;
 import javax.servlet.FilterChain;
 import javax.servlet.FilterConfig;
@@ -57,6 +61,9 @@ import net.sf.opengroove.realmserver.data.model.User;
 import net.sf.opengroove.realmserver.data.model.UserSetting;
 import net.sf.opengroove.realmserver.web.LoginFilter;
 import net.sf.opengroove.realmserver.web.RendererServlet;
+import net.sf.opengroove.realmserver.web.rpc.AnonLinkImpl;
+import net.sf.opengroove.realmserver.web.rpc.AuthLinkImpl;
+import net.sf.opengroove.common.security.CertificateUtils;
 import net.sf.opengroove.common.security.Crypto;
 import net.sf.opengroove.common.security.Hash;
 import net.sf.opengroove.common.security.RSA;
@@ -515,6 +522,8 @@ public class OpenGrooveRealmServer
     public static Connection ldb;
     public static SqlMapClient pdbclient;
     public static SqlMapClient ldbclient;
+    public static X509Certificate serverCertificate;
+    public static PrivateKey serverCertificateKey;
     /**
      * The prefix string for tables in the persistant database
      */
@@ -1593,6 +1602,37 @@ public class OpenGrooveRealmServer
                                     16));
                             setConfig("rsa-sgn-mod", rsaSgn
                                 .getModulus().toString(16));
+                            /*
+                             * We've generated the standard keys. Now we need to
+                             * generate an X.509 self-signed certificate and
+                             * private key. The distinguished name of the
+                             * certificate will consist of only a common name,
+                             * which is the hostname for their server that they
+                             * provided.
+                             */
+                            KeyPair certpair = CertificateUtils
+                                .createKeyPair("RSA", 3072);
+                            X509Certificate gencert = CertificateUtils
+                                .createCert(
+                                    new X500Principal("CN="
+                                        + serverhostname),
+                                    new X500Principal("CN="
+                                        + serverhostname),
+                                    365 * 100, null,
+                                    certpair.getPublic(),
+                                    certpair.getPrivate());
+                            setConfig(
+                                "certificate-chain",
+                                CertificateUtils
+                                    .writeCertChain(new X509Certificate[] { gencert }));
+                            setConfig("certificate-self",
+                                CertificateUtils
+                                    .writeCert(gencert));
+                            setConfig(
+                                "certificate-private-key",
+                                CertificateUtils
+                                    .writePrivateKey(certpair
+                                        .getPrivate()));
                         }
                         catch (Exception e)
                         {
@@ -1752,6 +1792,10 @@ public class OpenGrooveRealmServer
             new RendererServlet(readFile(new File(
                 "webconfig/layout.properties")))),
             "/layout/*");
+        context.addServlet(new ServletHolder(
+            new AnonLinkImpl()), "/bypass/anonlink");
+        context.addServlet(new ServletHolder(
+            new AuthLinkImpl()), "/authlink");
         context.addServlet(new ServletHolder(
             new HttpServlet()
             {
@@ -3088,7 +3132,8 @@ public class OpenGrooveRealmServer
                  * either there is a message that is complete with recipients,
                  * or there is no message at all.
                  */
-                for(int i = 1; i < 0; i++);
+                for (int i = 1; i < 0; i++)
+                    ;
                 DataStore.addMessage(message);
             }
             
