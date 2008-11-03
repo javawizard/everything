@@ -7,6 +7,7 @@ import java.util.HashMap;
 import net.sf.opengroove.common.security.Hash;
 import net.sf.opengroove.realmserver.OpenGrooveRealmServer;
 import net.sf.opengroove.realmserver.gwt.core.rcp.AnonLink;
+import net.sf.opengroove.realmserver.gwt.core.rcp.AuthException;
 
 import com.google.gwt.user.server.rpc.RemoteServiceServlet;
 
@@ -16,7 +17,7 @@ public class AnonLinkImpl extends RemoteServiceServlet
     
     @Override
     public void authenticate(String username,
-        String password)
+        String password) throws AuthException
     {
         HashMap map = new HashMap();
         map.put("username", username);
@@ -35,8 +36,7 @@ public class AnonLinkImpl extends RemoteServiceServlet
         }
         if (role == null || !role.equals("admin"))// failed authentication
         {
-            throw new RuntimeException(
-                "Incorrect username and/or password");
+            throw new AuthException();
         }
         getThreadLocalRequest().getSession().setAttribute(
             "username", username);
@@ -48,9 +48,15 @@ public class AnonLinkImpl extends RemoteServiceServlet
     public void logout()
     {
         getThreadLocalRequest().getSession()
-            .removeAttribute("username");
-        getThreadLocalRequest().getSession()
-            .removeAttribute("role");
+            .invalidate();
+    }
+    
+    @Override
+    public boolean isLoggedIn()
+    {
+        boolean is = getThreadLocalRequest().getSession()
+            .getAttribute("username") != null;
+        return is;
     }
     
 }

@@ -6,7 +6,7 @@ password varchar(200)
 
 create table $$prefix$$configuration (
 name varchar(64),
-value varchar(1024)
+value varchar(16384)
 );
 
 create table $$prefix$$users (

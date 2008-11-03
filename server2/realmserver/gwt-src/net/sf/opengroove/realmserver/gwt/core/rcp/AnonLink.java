@@ -13,11 +13,13 @@ import com.google.gwt.user.client.rpc.RemoteService;
 public interface AnonLink extends RemoteService
 {
     public void authenticate(String username,
-        String password);
+        String password)throws AuthException;
     
     /*
      * This method is on AnonLink instead of AuthLink since it can be called
      * when the user is not logged in; it just won't have any effect
      */
     public void logout();
+    
+    public boolean isLoggedIn();
 }

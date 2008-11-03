@@ -59,6 +59,7 @@ import net.sf.opengroove.realmserver.data.model.Message;
 import net.sf.opengroove.realmserver.data.model.Subscription;
 import net.sf.opengroove.realmserver.data.model.User;
 import net.sf.opengroove.realmserver.data.model.UserSetting;
+import net.sf.opengroove.realmserver.gwt.core.rcp.NotificationException;
 import net.sf.opengroove.realmserver.web.LoginFilter;
 import net.sf.opengroove.realmserver.web.RendererServlet;
 import net.sf.opengroove.realmserver.web.rpc.AnonLinkImpl;
@@ -1221,11 +1222,7 @@ public class OpenGrooveRealmServer
                     {
                         exception.printStackTrace();
                     }
-                    System.out
-                        .println("garbage collecting...");
                     System.gc();
-                    System.out
-                        .println("garbage collected.");
                 }
             }
         };
@@ -1636,6 +1633,7 @@ public class OpenGrooveRealmServer
                         }
                         catch (Exception e)
                         {
+                            e.printStackTrace();
                             StringWriter sw = new StringWriter();
                             e
                                 .printStackTrace(new PrintWriter(
@@ -3445,9 +3443,10 @@ public class OpenGrooveRealmServer
         context.addServlet(resource, "/");
     }
     
-    public static String sendUserNotifications(String to,
+    public static void sendUserNotifications(String to,
         String subject, String message, String priority,
         final int dismissMinutes)
+        throws NotificationException
     {
         final Date start = new Date();
         final Date end = new Date(start.getTime()
@@ -3467,21 +3466,24 @@ public class OpenGrooveRealmServer
             recipientConnections = getConnectionsForUser(to
                 .substring("user:".length()));
             if (recipientConnections.length == 0)
-                return "fThe user specified is not online.";
+                throw new NotificationException(
+                    "The user specified is not online");
         }
         else if (to.startsWith("computer:"))
         {
             String[] tokens = to.split("\\/", 2);
             if (tokens.length < 2)
-                return "fInvalid target user spec";
+                throw new NotificationException(
+                    "Invalid target user spec");
             ConnectionHandler computerConnection = getConnectionForComputer(
                 tokens[0], tokens[1]);
             if (computerConnection == null)
-                return "fThe computer specified is not online.";
+                throw new NotificationException(
+                    "The computer specified is not online");
             recipientConnections = new ConnectionHandler[] { computerConnection };
         }
         else
-            throw new RuntimeException(
+            throw new NotificationException(
                 "Invalid scope specified");
         tasks.execute(new Runnable()
         {
@@ -3503,7 +3505,6 @@ public class OpenGrooveRealmServer
                 }
             }
         });
-        return "t";
     }
     
     private static String getConfig(String key)
