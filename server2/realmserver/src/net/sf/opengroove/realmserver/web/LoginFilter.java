@@ -43,15 +43,10 @@ public class LoginFilter implements Filter
             HttpServletRequest request = (HttpServletRequest) sRequest;
             HttpServletResponse response = (HttpServletResponse) sResponse;
             HttpSession session = request.getSession(false);
-            if (request.getRequestURI().equals("/login"))
+            if (request.getRequestURI().equals("")
+                || request.getRequestURI().equals("/"))
             {
-                login(request, response, chain);
-                return;
-            }
-            else if (request.getRequestURI().equals(
-                "/logout"))
-            {
-                logout(request, response, chain);
+                response.sendRedirect("/bypass/");
                 return;
             }
             else if (request.getRequestURI().startsWith(
@@ -76,47 +71,11 @@ public class LoginFilter implements Filter
         }
     }
     
-    private void logout(HttpServletRequest request,
-        HttpServletResponse response, FilterChain chain)
-        throws IOException
-    {
-        request.getSession().removeAttribute("username");
-        request.getSession().invalidate();
-        response.sendRedirect("/");
-    }
-    
-    private void login(HttpServletRequest request,
-        HttpServletResponse response, FilterChain chain)
-        throws SQLException, IOException
-    {
-        String username = request.getParameter("username");
-        String password = request.getParameter("password");
-        HashMap map = new HashMap();
-        map.put("username", username);
-        String hash = Hash.hash(password);
-        map.put("password", hash);
-        String role = (String) OpenGrooveRealmServer.pdbclient
-            .queryForObject("authenticateWebUser", map);
-        if (role == null || !role.equals("admin"))// failed authentication
-        {
-            response
-                .sendRedirect("/bypass/login.jsp?errormessage="
-                    + URLEncoder
-                        .encode("Incorrect username and/or password."));
-            return;
-        }
-        request.getSession().setAttribute("username",
-            username);
-        request.getSession().setAttribute("role", role);
-        response.sendRedirect("/layout");
-    }
-    
     private void routeToLogin(HttpServletRequest request,
         HttpServletResponse response, FilterChain chain)
         throws ServletException, IOException
     {
-        request.getRequestDispatcher("/bypass/login.jsp")
-            .forward(request, response);
+        
     }
     
     private void routeNormally(HttpServletRequest request,
