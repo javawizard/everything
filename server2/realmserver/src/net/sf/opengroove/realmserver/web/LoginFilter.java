@@ -46,7 +46,8 @@ public class LoginFilter implements Filter
             if (request.getRequestURI().equals("")
                 || request.getRequestURI().equals("/"))
             {
-                response.sendRedirect("/bypass/");
+                response
+                    .sendRedirect("/bypass/gwt/net.sf.opengroove.realmserver.gwt.AdminInterface/");
                 return;
             }
             else if (request.getRequestURI().startsWith(
@@ -75,7 +76,14 @@ public class LoginFilter implements Filter
         HttpServletResponse response, FilterChain chain)
         throws ServletException, IOException
     {
-        
+        if (request.getRequestURI().equals("/authlink"))
+        {
+            response.sendError(403);
+        }
+        else
+        {
+            response.sendRedirect("/");
+        }
     }
     
     private void routeNormally(HttpServletRequest request,

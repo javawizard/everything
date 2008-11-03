@@ -3445,20 +3445,10 @@ public class OpenGrooveRealmServer
         context.addServlet(resource, "/");
     }
     
-    public static String handleWebNotify(
-        HttpServletRequest request)
+    public static String sendUserNotifications(String to,
+        String subject, String message, String priority,
+        final int dismissMinutes)
     {
-        final String to = request.getParameter("to");
-        final String subject = request
-            .getParameter("subject");
-        final String message = request
-            .getParameter("message");
-        final String priority = request
-            .getParameter("priority");
-        final String dismissString = request
-            .getParameter("dismiss");
-        final int dismissMinutes = Integer
-            .parseInt(dismissString);
         final Date start = new Date();
         final Date end = new Date(start.getTime()
             + TimeUnit.MINUTES.toMillis(dismissMinutes));

@@ -11,5 +11,7 @@ import com.google.gwt.user.client.rpc.RemoteService;
  */
 public interface AuthLink extends RemoteService
 {
-    
+    public void sendUserNotification(String to,
+        String subject, String message, String priority,
+        int dismissMinutes);
 }
