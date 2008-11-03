@@ -5,5 +5,7 @@ import com.google.gwt.user.client.rpc.AsyncCallback;
 public interface AnonLinkAsync
 {
     public void authenticate(String username,
-        String password, AsyncCallback<Void> callback);    
+        String password, AsyncCallback<Void> callback);
+    
+    public void logout(AsyncCallback<Void> callback);
 }
