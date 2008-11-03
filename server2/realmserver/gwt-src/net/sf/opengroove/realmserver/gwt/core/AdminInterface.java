@@ -4,7 +4,9 @@ import com.google.gwt.core.client.EntryPoint;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.ClickListener;
+import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.HTMLPanel;
+import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.PasswordTextBox;
 import com.google.gwt.user.client.ui.RootPanel;
 import com.google.gwt.user.client.ui.TextBox;
@@ -15,9 +17,10 @@ public class AdminInterface implements EntryPoint
     
     public void onModuleLoad()
     {
-        Window.setTitle("Log in - OpenGroove Realm Server Administration");
-        RootPanel root = RootPanel.get();
-        HTMLPanel loginPanel = new HTMLPanel(
+        Window
+            .setTitle("Log in - OpenGroove Realm Server Administration");
+        final RootPanel root = RootPanel.get();
+        final HTMLPanel loginPanel = new HTMLPanel(
             "<table border='0' cellpadding='2'>"
                 + "<tr><td colspan='2'>Please enter your username and "
                 + "password to log in."
@@ -40,8 +43,13 @@ public class AdminInterface implements EntryPoint
             
             public void onClick(Widget sender)
             {
-                Window.setTitle("Logging in as "
-                    + usernameField.getText());
+                root.remove(loginPanel);
+                Label loggedInLabel = new Label(
+                    "You have successfully logged in as "
+                        + usernameField.getText());
+                FlowPanel flow = new FlowPanel();
+                flow.add(loggedInLabel);
+                root.add(flow);
             }
         });
         loginPanel.add(loginButton, "loginButton");
