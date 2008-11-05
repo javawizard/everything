@@ -48,6 +48,19 @@ public class StringUtils
         return sb.toString();
     }
     
+    public static String delimited(String[] items,
+        String delimiter)
+    {
+        return delimited(items, new ToString<String>()
+        {
+            
+            public String toString(String object)
+            {
+                return object;
+            }
+        }, delimiter);
+    }
+    
     public interface ToString<S>
     {
         public String toString(S object);
