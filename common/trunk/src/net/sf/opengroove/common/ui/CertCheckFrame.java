@@ -1,4 +1,4 @@
-package net.sf.opengroove.common;
+package net.sf.opengroove.common.ui;
 
 import java.awt.BorderLayout;
 import javax.swing.BorderFactory;
@@ -96,6 +96,7 @@ public class CertCheckFrame extends javax.swing.JDialog
                     lowerRightPanel.setLayout(lowerRightPanelLayout);
                     {
                         trustButton = new JButton();
+                        trustButton.setToolTipText(ComponentUtils);
                         lowerRightPanel.add(trustButton);
                         trustButton.setText("Trust");
                     }
