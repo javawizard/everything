@@ -31,7 +31,7 @@ public class CertCheckFrame extends javax.swing.JDialog
     private JPanel lowerRightPanel;
     private JPanel lowerPanel;
     private JPanel centerPanel;
-
+    
     /**
      * Auto-generated main method to display this JDialog
      */
@@ -74,41 +74,69 @@ public class CertCheckFrame extends javax.swing.JDialog
                     .createEmptyBorder(20, 10, 10, 10));
                 {
                     topLabel = new JLabel();
-                    topLabelPanel.add(topLabel, BorderLayout.CENTER);
+                    topLabelPanel.add(topLabel,
+                        BorderLayout.CENTER);
                     topLabel.setText("Invalid Certificate");
-                    topLabel.setHorizontalAlignment(SwingConstants.CENTER);
-                    topLabel.setFont(new java.awt.Font("Dialog",1,28));
+                    topLabel
+                        .setHorizontalAlignment(SwingConstants.CENTER);
+                    topLabel.setFont(new java.awt.Font(
+                        "Dialog", 1, 28));
                 }
             }
             {
                 centerPanel = new JPanel();
-                getContentPane().add(centerPanel, BorderLayout.CENTER);
+                getContentPane().add(centerPanel,
+                    BorderLayout.CENTER);
             }
             {
                 lowerPanel = new JPanel();
                 BorderLayout lowerPanelLayout = new BorderLayout();
-                getContentPane().add(lowerPanel, BorderLayout.SOUTH);
+                getContentPane().add(lowerPanel,
+                    BorderLayout.SOUTH);
                 lowerPanel.setLayout(lowerPanelLayout);
                 {
                     lowerRightPanel = new JPanel();
-                    BoxLayout lowerRightPanelLayout = new BoxLayout(lowerRightPanel, javax.swing.BoxLayout.X_AXIS);
-                    lowerPanel.add(lowerRightPanel, BorderLayout.EAST);
-                    lowerRightPanel.setLayout(lowerRightPanelLayout);
+                    BoxLayout lowerRightPanelLayout = new BoxLayout(
+                        lowerRightPanel,
+                        javax.swing.BoxLayout.X_AXIS);
+                    lowerPanel.add(lowerRightPanel,
+                        BorderLayout.EAST);
+                    lowerRightPanel
+                        .setLayout(lowerRightPanelLayout);
                     {
                         trustButton = new JButton();
-                        trustButton.setToolTipText(ComponentUtils);
+                        trustButton
+                            .setToolTipText(ComponentUtils
+                                .htmlTipWrap("Trusts this certificate for this connection only. "
+                                    + "if OpenGroove needs to reconnect, or you disconnect "
+                                    + "from the internet and later reconnect, you will "
+                                    + "be prompted again whether to trust this "
+                                    + "certificate."));
                         lowerRightPanel.add(trustButton);
                         trustButton.setText("Trust");
                     }
                     {
                         trustAlwaysButton = new JButton();
-                        lowerRightPanel.add(trustAlwaysButton);
-                        trustAlwaysButton.setText("Trust Always");
+                        trustAlwaysButton
+                            .setToolTipText(ComponentUtils
+                                .htmlTipWrap("Trusts this certificate indefinitely. "
+                                    + "You will not be prompted again if you "
+                                    + "want to trust this certificate."));
+                        lowerRightPanel
+                            .add(trustAlwaysButton);
+                        trustAlwaysButton
+                            .setText("Trust Always");
                     }
                     {
                         noTrustButton = new JButton();
+                        noTrustButton
+                            .setToolTipText(ComponentUtils
+                                .htmlTipWrap("Don't trust this certificate. You will still "
+                                    + "be prompted the next time OpenGroove attempts "
+                                    + "to connect if this certificate is not trusted."));
                         lowerRightPanel.add(noTrustButton);
-                        noTrustButton.setText("Don't Trust");
+                        noTrustButton
+                            .setText("Don't Trust");
                     }
                 }
             }
