@@ -1882,8 +1882,8 @@ public class OpenGrooveRealmServer
                 return null;
             }
         };
-        SSLContext sslContext = SSLContext.getInstance(
-            "TLS");
+        SSLContext sslContext = SSLContext
+            .getInstance("TLS");
         sslContext.init(new KeyManager[] { keyManager },
             new TrustManager[] {}, new SecureRandom());
         SSLServerSocketFactory sslFactory = sslContext
@@ -1891,6 +1891,8 @@ public class OpenGrooveRealmServer
         serverSocket = (SSLServerSocket) sslFactory
             .createServerSocket(Integer
                 .parseInt(getConfig("serverport")));
+        serverSocket
+            .setEnabledCipherSuites(new String[] { "TLS_RSA_WITH_AES_256_CBC_SHA" });
         System.out.println("Supported cipher suites:");
         System.out.println(StringUtils.delimited(
             serverSocket.getSupportedCipherSuites(), "\n"));
