@@ -8,17 +8,23 @@ import java.io.OutputStream;
 
 public class DatagramUtils
 {
-    public byte[] read(InputStream stream)
-        throws IOException
+    public static byte[] read(InputStream stream,
+        int maxLength) throws IOException
     {
         DataInputStream din = new DataInputStream(stream);
         int packetLength = din.readInt();
+        if (packetLength > maxLength)
+            throw new IOException(
+                "A packet of size "
+                    + packetLength
+                    + " was received, but that is larger than the max packet size "
+                    + maxLength);
         byte[] bytes = new byte[packetLength];
         din.readFully(bytes);
         return bytes;
     }
     
-    public void write(byte[] bytes, OutputStream out)
+    public static void write(byte[] bytes, OutputStream out)
         throws IOException
     {
         DataOutputStream dout = new DataOutputStream(out);
