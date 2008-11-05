@@ -1,7 +1,5 @@
 package net.sf.opengroove.common.utils;
 
-import net.sf.opengroove.client.com.ListenerManager;
-import net.sf.opengroove.client.com.Notifier;
 
 public class Progress
 {
