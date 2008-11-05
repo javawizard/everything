@@ -49,6 +49,7 @@ import javax.net.ssl.KeyManager;
 import javax.net.ssl.SSLContext;
 import javax.net.ssl.SSLServerSocket;
 import javax.net.ssl.SSLServerSocketFactory;
+import javax.net.ssl.SSLSocket;
 import javax.net.ssl.TrustManager;
 import javax.net.ssl.X509KeyManager;
 import javax.security.auth.x500.X500Principal;
@@ -73,6 +74,7 @@ import net.sf.opengroove.realmserver.web.LoginFilter;
 import net.sf.opengroove.realmserver.web.RendererServlet;
 import net.sf.opengroove.realmserver.web.rpc.AnonLinkImpl;
 import net.sf.opengroove.realmserver.web.rpc.AuthLinkImpl;
+import net.sf.opengroove.common.com.DatagramUtils;
 import net.sf.opengroove.common.security.CertificateUtils;
 import net.sf.opengroove.common.security.Crypto;
 import net.sf.opengroove.common.security.Hash;
@@ -717,16 +719,13 @@ public class OpenGrooveRealmServer
     
     public static class ConnectionHandler extends Thread
     {
-        private Socket socket;
+        private SSLSocket socket;
         private InputStream internalInputStream;
         private TimedInputStream in;
         private OutputStream internalOutputStream;
         private TimedOutputStream out;
         private PacketSpooler spooler;
         public int allowedIdleMilliseconds = 10000;
-        private byte[] securityKeyBytes;
-        public Aes256 securityKey;
-        private boolean completedHandshake;
         public String username;
         public String computerName;
         
@@ -752,7 +751,7 @@ public class OpenGrooveRealmServer
             return out.getLastTime();
         }
         
-        public ConnectionHandler(Socket socket)
+        public ConnectionHandler(SSLSocket socket)
             throws IOException
         {
             this.socket = socket;
@@ -809,7 +808,7 @@ public class OpenGrooveRealmServer
             ByteArrayOutputStream baos = new ByteArrayOutputStream();
             try
             {
-                Crypto.enc(securityKey, packet, baos);
+                DatagramUtils.write(packet, baos);
                 Packet encPacket = new Packet(
                     new ByteArrayInputStream(baos
                         .toByteArray()));
@@ -837,7 +836,7 @@ public class OpenGrooveRealmServer
                 // Ok, we've set up the connection. Now it's time to do the
                 // handshake.
                 String s = "";
-                for (int i = 0; i < 30; i++)
+                for (int i = 0; i < 200; i++)
                 {
                     int read = in.read();
                     s += (char) read;
@@ -849,158 +848,40 @@ public class OpenGrooveRealmServer
                             "too much initialization data sent by the client");
                 }
                 s = s.trim();
-                if (!s.equalsIgnoreCase("OpenGroove"))
+                if (!s.toLowerCase().startsWith(
+                    "OpenGroove".toLowerCase()))
+                /*
+                 * startsWith instead of equals to allow for additional data to
+                 * be passed in the future. My idea is to add the ability in the
+                 * future to have one server serve different realms. The main
+                 * difficulty with this would be handling the SSL stuff, since
+                 * the target domain wouldn't be known until after the
+                 * certificate had been negotiated, so this may end up unused.
+                 */
                 {
                     // Incorrect connection, probably an HTTP client or
                     // something
                     throw new ProtocolMismatchException(
-                        "Invalid header string sent by client");
+                        "Invalid header string sent by client, it "
+                            + "should be \"OpenGroove\" with a newline after");
                 }
                 // Ok, correct header, now we send back our header
                 out
                     .write("OpenGrooveServer\r\n"
                         .getBytes());
                 out.flush();
-                // The next thing coming from the client should be the hexcoded
-                // security key (possibly preceded by a newline, since the code
-                // that
-                // read the header doesn't check for a newline if it receives a
-                // carriage return)
-                s = "";
-                for (int i = 0; i < 1024; i++)
-                {
-                    int read = in.read();
-                    s += (char) read;
-                    if ((read == '\r' || read == '\n')
-                        && i != 0)
-                        break;
-                    if (i == 1023)
-                        throw new ProtocolMismatchException(
-                            "too much initialization data sent by the client");
-                }
-                s = s.trim();
-                // this should be the aes-256 key to use, encoded using rsa.
-                // Only the first 32 bytes of the decoded key are significant
-                // and the rest are just random garbage used as secure padding.
-                BigInteger keyEncPub = new BigInteger(s, 16);
-                BigInteger keyDecrypted = RSA.decrypt(
-                    rsaEncryptionPrivateKey,
-                    rsaEncryptionModulus, keyEncPub);
-                byte[] keyWithPadding = keyDecrypted
-                    .toByteArray();
-                securityKeyBytes = new byte[32];
-                System.arraycopy(keyWithPadding, 0,
-                    securityKeyBytes, 0, 32);
-                System.out.println("using aes key "
-                    + Hash.hexcode(securityKeyBytes));
-                securityKey = new Aes256(securityKeyBytes);
-                // we now have the aes-256 security key. Now the client will
-                // send us a random number encrypted with the server's rsa
-                // public key, which we must decrypt using our private key and
-                // send back encrypted with aes.
-                s = "";
-                for (int i = 0; i < 1024; i++)
-                {
-                    int read = in.read();
-                    s += (char) read;
-                    if ((read == '\r' || read == '\n')
-                        && i != 0)
-                        break;
-                    if (i == 1023)
-                        throw new ProtocolMismatchException(
-                            "too much initialization data sent by the client");
-                }
-                s = s.trim();
-                BigInteger challengeRandomEncInteger = new BigInteger(
-                    s, 16);
-                System.out
-                    .println("challengerandomencinteger "
-                        + challengeRandomEncInteger
-                            .toString(16));
-                BigInteger challengeRandomInteger = RSA
-                    .decrypt(rsaEncryptionPrivateKey,
-                        rsaEncryptionModulus,
-                        challengeRandomEncInteger);
-                System.out
-                    .println("challengerandominteger "
-                        + challengeRandomInteger
-                            .toString(16));
-                byte[] challengeRandomBytes = new byte[16];
-                System.arraycopy(challengeRandomInteger
-                    .toByteArray(), 0,
-                    challengeRandomBytes, 0, 16);
-                System.out
-                    .println("received as check bytes "
-                        + Hash
-                            .hexcode(challengeRandomBytes));
-                byte[] challengeRandomAes = new byte[16];
-                securityKey.encrypt(challengeRandomBytes,
-                    0, challengeRandomAes, 0);
-                BigInteger challengeRandomAesInteger = new BigInteger(
-                    challengeRandomAes);
-                System.out
-                    .println("sending as check response "
-                        + challengeRandomAesInteger
-                            .toString(16));
-                out.write((""
-                    + challengeRandomAesInteger
-                        .toString(16) + "\r\n").getBytes());
-                out.flush();
-                // Now the client should send us the letter 'c' but NOT followed
-                // by a newline. This is used to sync up stream positions, since
-                // we're not sure whether the client ends packets with \r, \n,
-                // or \r\n.
-                for (int i = 0; i < 5; i++)
-                {
-                    if (in.read() == 'c')
-                        break;
-                    if (i == 4)
-                        throw new ProtocolMismatchException(
-                            "no terminating 'c' at end of handshake");
-                }
-                // Ok, the client's stream of data to us is in sync. Now we send
-                // the letter 'c' to the client so that the client can
-                // synchronize our data stream.
-                out.write('c');
-                // Now we send a random number, encrypted using aes-256, to the
-                // client, using the Crypto packet notation instead of hexcoded
-                // newline-separated notation. The client should reply with the
-                // number, but hashed, and encoded with aes-256. This is used to
-                // prevent against replay attacks.
-                byte[] randomBytes = new byte[16];
-                random.nextBytes(randomBytes);
-                Crypto.enc(securityKey, randomBytes, out);
-                System.out.println("sent antireplay "
-                    + Hash.hexcode(randomBytes));
-                byte[] randomHashBytes = Crypto.dec(
-                    securityKey, in, 200);
-                String randomHashString = Hash
-                    .hash(randomBytes);
-                byte[] randomHash = randomHashString
-                    .getBytes();
-                System.out.println("hash received "
-                    + Hash.hexcode(randomHashBytes)
-                    + " and correct "
-                    + Hash.hexcode(randomHash));
-                if (!Arrays.equals(randomHashBytes,
-                    randomHash))
-                {
-                    throw new ProtocolMismatchException(
-                        "Incorrect random hash received");
-                }
                 // The handshake is now complete. Now we start listening for
-                // packets (using Crypto.dec), and deal with them accordingly.
-                // Keep attempting to receive packets until an exception is
+                // packets and deal with them accordingly.
+                // We keep attempting to receive packets until an exception is
                 // thrown. (when the quit command is called, the command class
                 // closes the connection, so an exception will be thrown on the
                 // next read)
-                completedHandshake = true;
                 while ((!socket.isClosed())
                     && (!socket.isInputShutdown())
                     && (!socket.isOutputShutdown()))
                 {
-                    byte[] packet = Crypto.dec(securityKey,
-                        in, 65535);
+                    byte[] packet = DatagramUtils.read(in,
+                        65535);
                     processIncomingPacket(packet);
                 }
                 //
@@ -1893,12 +1774,6 @@ public class OpenGrooveRealmServer
                 .parseInt(getConfig("serverport")));
         serverSocket
             .setEnabledCipherSuites(new String[] { "TLS_RSA_WITH_AES_256_CBC_SHA" });
-        System.out.println("Supported cipher suites:");
-        System.out.println(StringUtils.delimited(
-            serverSocket.getSupportedCipherSuites(), "\n"));
-        System.out.println("Enabled cipher suites:");
-        System.out.println(StringUtils.delimited(
-            serverSocket.getEnabledCipherSuites(), "\n"));
         loadCommands();
         tasks.prestartAllCoreThreads();
         internalTasks.prestartAllCoreThreads();
@@ -1908,7 +1783,8 @@ public class OpenGrooveRealmServer
         {
             try
             {
-                Socket socket = serverSocket.accept();
+                SSLSocket socket = (SSLSocket) serverSocket
+                    .accept();
                 if (connections.size() > MAX_CONNECTIONS)
                 {
                     socket.close();
