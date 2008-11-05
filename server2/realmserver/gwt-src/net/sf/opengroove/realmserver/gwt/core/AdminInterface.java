@@ -5,6 +5,8 @@ import net.sf.opengroove.realmserver.gwt.core.rcp.AnonLinkAsync;
 import net.sf.opengroove.realmserver.gwt.core.rcp.AuthException;
 import net.sf.opengroove.realmserver.gwt.core.rcp.AuthLink;
 import net.sf.opengroove.realmserver.gwt.core.rcp.AuthLinkAsync;
+import net.sf.opengroove.realmserver.gwt.core.rcp.UserException;
+import net.sf.opengroove.realmserver.gwt.core.rcp.model.GUser;
 
 import com.google.gwt.core.client.EntryPoint;
 import com.google.gwt.core.client.GWT;
@@ -16,7 +18,9 @@ import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.ClickListener;
 import com.google.gwt.user.client.ui.DialogBox;
 import com.google.gwt.user.client.ui.DockPanel;
+import com.google.gwt.user.client.ui.FlexTable;
 import com.google.gwt.user.client.ui.FlowPanel;
+import com.google.gwt.user.client.ui.Grid;
 import com.google.gwt.user.client.ui.HTML;
 import com.google.gwt.user.client.ui.HTMLPanel;
 import com.google.gwt.user.client.ui.HasVerticalAlignment;
@@ -27,6 +31,8 @@ import com.google.gwt.user.client.ui.KeyboardListenerAdapter;
 import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.PasswordTextBox;
 import com.google.gwt.user.client.ui.RootPanel;
+import com.google.gwt.user.client.ui.SourcesTabEvents;
+import com.google.gwt.user.client.ui.TabListener;
 import com.google.gwt.user.client.ui.TabPanel;
 import com.google.gwt.user.client.ui.TextBox;
 import com.google.gwt.user.client.ui.VerticalPanel;
@@ -35,9 +41,9 @@ import com.google.gwt.user.client.ui.DockPanel.DockLayoutConstant;
 
 public class AdminInterface implements EntryPoint
 {
-    private AnonLinkAsync anonLink;
+    public static AnonLinkAsync anonLink;
     
-    private AuthLinkAsync authLink;
+    public static AuthLinkAsync authLink;
     /**
      * The base server url, without a trailing slash. For example,
      * "http://localhost:34567".
@@ -61,6 +67,8 @@ public class AdminInterface implements EntryPoint
     private FlowPanel rootContainer;
     
     private TabPanel tabs;
+    
+    private Grid userListTable;
     
     public void onModuleLoad()
     {
@@ -230,9 +238,46 @@ public class AdminInterface implements EntryPoint
         tabs = new TabPanel();
         tabs.setAnimationEnabled(false);
         loadWelcomeTab();
+        loadUsersTab();
+        loadNotificationTab();
+        loadPKITab();
         tabs.selectTab(0);
         rootContainer.add(tabs);
         tabs.setWidth("100%");
+    }
+    
+    private void loadPKITab()
+    {
+        VerticalPanel tab = new VerticalPanel();
+        tab.setSpacing(5);
+        tab
+            .add(new HTML(
+                "If this server is not listed in the public directory, clients that want to \r\n"
+                    + "connect to it will need it\'s public key. You can download the public key by\r\n"
+                    + "clicking <a target='_blank' href=\"/serverkey.ogvs\">here</a>. Make sure to provide this to all clients that\r\n"
+                    + "want to connect to your server. When distributing public keys, you must ensure\r\n"
+                    + "that they are not tampered with. However, a malicious attacker cannot use the\r\n"
+                    + "public key to cause damage to your system, so you don\'t need to take measures\r\n"
+                    + "to prevent it from being spread."));
+        tab
+            .add(new HTML(
+                "<b>The server public-key system is deprecated.</b> We're "
+                    + "currently in the process of changing the server to use X.509 "
+                    + "certificates and SSL in place of our own custom PKI solution. "
+                    + "This means that this security file will only work until we switch, "
+                    + "at which point it won't be needed. When we do switch, OpenGroove "
+                    + "will automatically download the certificate and key file from the "
+                    + "server, and ask the user if they want to trust that particular "
+                    + "certificate and key by presenting the user with the fingerprint. "
+                    + "When we get everything switched over here, you will be able to see "
+                    + "your server's fingerprint on this page so that you can post it on"
+                    + " your website, so that people using your server can know what "
+                    + "your fingerprint is and be able to trust your server. In addition, "
+                    + "servers will be able to obtain a certificate signed by the "
+                    + "OpenGroove CA, which will make it so that the user doesn't"
+                    + " have to find out your server's fingerprint and choose to "
+                    + "trust it."));
+        tabs.add(tab, "PKI");
     }
     
     private void loadWelcomeTab()
@@ -293,7 +338,213 @@ public class AdminInterface implements EntryPoint
     
     private void loadUsersTab()
     {
-        
+        final VerticalPanel tab = new VerticalPanel();
+        tab.setSpacing(5);
+        tab
+            .add(new Label(
+                "This tab allows you to manage your OpenGroove users. These "
+                    + "are the users that can connect to your server using "
+                    + "OpenGroove itself. If you're looking for how to change "
+                    + "user access settings (IE whether or not a user "
+                    + "can create their own account on this server), go "
+                    + "to the Settings tab."));
+        tab.add(new HTML("<b>Users:</b>"));
+        Button createUserButton = new Button("Create user");
+        createUserButton
+            .addClickListener(new ClickListener()
+            {
+                
+                public void onClick(Widget sender)
+                {
+                    promptToCreateUser();
+                }
+            });
+        tab.add(createUserButton);
+        userListTable = new Grid(0, 0);
+        tab.add(userListTable);
+        tabs.add(tab, "Users");
+        tabs.addTabListener(new TabListener()
+        {
+            
+            public void onTabSelected(
+                SourcesTabEvents sender, int tabIndex)
+            {
+                if (tabs.getWidgetIndex(tab) == tabIndex)
+                {
+                    refreshUserList();
+                }
+            }
+            
+            public boolean onBeforeTabSelected(
+                SourcesTabEvents sender, int tabIndex)
+            {
+                return true;
+            }
+        });
+    }
+    
+    protected void promptToCreateUser()
+    {
+        final DialogBox newUserInfoBox = new DialogBox();
+        newUserInfoBox.setText("Create a user");
+        HTMLPanel panel = new HTMLPanel(
+            "<table border='0' cellspacing='0' cellpadding='2'>"
+                + "<tr><td><b>Username:</b> &nbsp; </td>"
+                + "<td><div id='usernameField'/></td></tr>"
+                + "<tr><td><b>Password:</b> &nbsp; </td>"
+                + "<td><div id='passwordField'/></td></tr>"
+                + "<tr><td><b>Password again:</b> &nbsp; </td>"
+                + "<td><div id='passwordAgainField'/></td></tr>"
+                + "<tr><td colspan='2' align='right'>"
+                + "<div id='buttons'/></td></tr>");
+        final TextBox usernameField = new TextBox();
+        usernameField.setVisibleLength(20);
+        panel.add(usernameField, "usernameField");
+        final PasswordTextBox passwordField = new PasswordTextBox();
+        passwordField.setVisibleLength(20);
+        panel.add(passwordField, "passwordField");
+        final PasswordTextBox passwordAgainField = new PasswordTextBox();
+        passwordAgainField.setVisibleLength(20);
+        panel.add(passwordAgainField, "passwordAgainField");
+        DockPanel buttonPanel = new DockPanel();
+        Button createButton = new Button("Create");
+        Button cancelButton = new Button("Cancel");
+        buttonPanel.add(createButton, buttonPanel.WEST);
+        buttonPanel.add(cancelButton, buttonPanel.EAST);
+        createButton.addClickListener(new ClickListener()
+        {
+            
+            public void onClick(Widget sender)
+            {
+                String username = usernameField.getText();
+                String password = passwordField.getText();
+                String passwordAgain = passwordAgainField
+                    .getText();
+                newUserInfoBox.hide();
+                final DialogBox creatingBox = new DialogBox();
+                creatingBox.setText("Creating...");
+                creatingBox.center();
+                creatingBox.show();
+                authLink.createUser(username, password,
+                    passwordAgain,
+                    new AsyncCallback<Void>()
+                    {
+                        
+                        public void onFailure(
+                            Throwable caught)
+                        {
+                            String message;
+                            if (caught instanceof UserException)
+                            {
+                                message = caught
+                                    .getMessage();
+                            }
+                            else
+                            {
+                                message = "An exception occured "
+                                    + "while creating the user: "
+                                    + caught.getClass()
+                                        .getName()
+                                    + " - "
+                                    + caught.getMessage();
+                            }
+                            creatingBox.hide();
+                            newUserInfoBox.show();
+                            Window.alert(message);
+                        }
+                        
+                        public void onSuccess(Void result)
+                        {
+                            creatingBox.hide();
+                            Window
+                                .alert("The user has been successfully created.");
+                            refreshUserList();
+                        }
+                    });
+            }
+        });
+        cancelButton.addClickListener(new ClickListener()
+        {
+            
+            public void onClick(Widget sender)
+            {
+                newUserInfoBox.hide();
+            }
+        });
+        panel.add(buttonPanel, "buttons");
+        newUserInfoBox.setWidget(panel);
+        newUserInfoBox.center();
+        newUserInfoBox.show();
+    }
+    
+    private void refreshUserList()
+    {
+        final DialogBox refreshingDialog = new DialogBox();
+        refreshingDialog.setText("Loading...");
+        refreshingDialog
+            .setWidget(new Label(
+                "Please wait while OGRSAdmin refreshes the user list..."));
+        refreshingDialog.center();
+        refreshingDialog.show();
+        authLink.getUsers(new AsyncCallback<GUser[]>()
+        {
+            
+            public void onFailure(Throwable caught)
+            {
+                refreshingDialog.hide();
+                Window
+                    .alert("An error occured while refreshing the user list. "
+                        + "Switch to another tab and then back to this "
+                        + "one to try again.");
+            }
+            
+            public void onSuccess(GUser[] result)
+            {
+                refreshingDialog.hide();
+                userListTable.resize(result.length, 3);
+                userListTable.setBorderWidth(0);
+                userListTable.setCellPadding(2);
+                for (int i = 0; i < result.length; i++)
+                {
+                    final GUser user = result[i];
+                    userListTable.setWidget(i, 0,
+                        new Label(user.getUsername()));
+                    Button notifyButton = new Button(
+                        "Send notification");
+                    notifyButton
+                        .addClickListener(new ClickListener()
+                        {
+                            
+                            public void onClick(
+                                Widget sender)
+                            {
+                                NotificationSender
+                                    .promptForSend("user:"
+                                        + user
+                                            .getUsername(),
+                                        "", "", "info", -1);
+                            }
+                        });
+                    userListTable.setWidget(i, 1,
+                        notifyButton);
+                    Button deleteButton = new Button(
+                        "Delete");
+                    deleteButton
+                        .addClickListener(new ClickListener()
+                        {
+                            
+                            public void onClick(
+                                Widget sender)
+                            {
+                                Window
+                                    .alert("We haven't added the ability to delete users yet.");
+                            }
+                        });
+                    userListTable.setWidget(i, 2,
+                        deleteButton);
+                }
+            }
+        });
     }
     
     private void loadNotificationTab()
@@ -306,8 +557,18 @@ public class AdminInterface implements EntryPoint
                     + "OpenGroove users using this server, schedule notifications "
                     + "to be sent in the future, and creat notification templates "
                     + "(notifications that you expect to send often)."));
-        Button sendToAll = new Button("Send a notification to all connected users");
-        sendToAll.addClickListener();
+        Button sendToAll = new Button(
+            "Send a notification to all connected users");
+        sendToAll.addClickListener(new ClickListener()
+        {
+            
+            public void onClick(Widget sender)
+            {
+                NotificationSender.promptForSend("all", "",
+                    "", "", -1);
+            }
+        });
+        tab.add(sendToAll);
         tabs.add(tab, "Notification");
     }
     
