@@ -19,8 +19,11 @@ import java.net.ServerSocket;
 import java.net.Socket;
 import java.net.URLEncoder;
 import java.security.KeyPair;
+import java.security.Principal;
 import java.security.PrivateKey;
+import java.security.Provider;
 import java.security.SecureRandom;
+import java.security.Security;
 import java.security.cert.X509Certificate;
 import java.sql.Connection;
 import java.sql.DriverManager;
@@ -42,6 +45,12 @@ import java.util.concurrent.ScheduledThreadPoolExecutor;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 
+import javax.net.ssl.KeyManager;
+import javax.net.ssl.SSLContext;
+import javax.net.ssl.SSLServerSocket;
+import javax.net.ssl.SSLServerSocketFactory;
+import javax.net.ssl.TrustManager;
+import javax.net.ssl.X509KeyManager;
 import javax.security.auth.x500.X500Principal;
 import javax.servlet.Filter;
 import javax.servlet.FilterChain;
@@ -68,9 +77,11 @@ import net.sf.opengroove.common.security.CertificateUtils;
 import net.sf.opengroove.common.security.Crypto;
 import net.sf.opengroove.common.security.Hash;
 import net.sf.opengroove.common.security.RSA;
+import net.sf.opengroove.common.utils.StringUtils;
 import net.sf.opengroove.common.utils.Userids;
 
 import org.apache.jasper.servlet.JspServlet;
+import org.bouncycastle.jce.provider.BouncyCastleProvider;
 import org.mortbay.jetty.Server;
 import org.mortbay.jetty.servlet.Context;
 import org.mortbay.jetty.servlet.DefaultServlet;
@@ -523,8 +534,6 @@ public class OpenGrooveRealmServer
     public static Connection ldb;
     public static SqlMapClient pdbclient;
     public static SqlMapClient ldbclient;
-    public static X509Certificate serverCertificate;
-    public static PrivateKey serverCertificateKey;
     /**
      * The prefix string for tables in the persistant database
      */
@@ -533,6 +542,10 @@ public class OpenGrooveRealmServer
      * The prefix string for tables in the large database
      */
     public static String lfix;
+    
+    public static X509Certificate[] serverCertificateChain;
+    
+    public static PrivateKey serverCertificatePrivateKey;
     
     private static final File configFile = new File(
         "config.properties");
@@ -550,7 +563,7 @@ public class OpenGrooveRealmServer
     private static Properties config = new Properties();
     
     protected static boolean doneSettingUp = false;
-    public static ServerSocket serverSocket;
+    public static SSLServerSocket serverSocket;
     private static ArrayList<ConnectionHandler> connections = new ArrayList<ConnectionHandler>();
     public static BigInteger rsaEncryptionPublicKey;
     public static BigInteger rsaEncryptionModulus;
@@ -594,11 +607,11 @@ public class OpenGrooveRealmServer
     
     public static final ThreadPoolExecutor tasks = new ThreadPoolExecutor(
         20, 400, 20, TimeUnit.SECONDS,
-        new LinkedBlockingQueue<Runnable>(3000));
+        new LinkedBlockingQueue<Runnable>(5000));
     
     protected static final byte[] EMPTY = new byte[0];
     
-    private static final int MAX_CONNECTIONS = 300;
+    private static final int MAX_CONNECTIONS = 500;
     
     public static class TimedInputStream extends
         FilterInputStream
@@ -759,9 +772,6 @@ public class OpenGrooveRealmServer
         public boolean sendPacketTo(Packet packet)
             throws IOException
         {
-            if (!completedHandshake)
-                throw new IllegalStateException(
-                    "The handshake has not yet completed.");
             return spooler.send(packet);
         }
         
@@ -1148,14 +1158,11 @@ public class OpenGrooveRealmServer
         public synchronized boolean send(Packet packet)
         {
             boolean canOffer = queue.offer(packet);
-            if (!canOffer)
-                System.out.println("can't offer");
-            System.out.println("queued packet "
-                + packet.getDescription());
             return canOffer;
         }
         
         private boolean closed = false;
+        private final Object sendLock = new Object();
         
         public void close() throws IOException
         {
@@ -1170,18 +1177,11 @@ public class OpenGrooveRealmServer
                 while (true)
                 {
                     Packet packet = queue.take();
-                    System.out.println("spooling packet "
-                        + packet.getDescription());
-                    synchronized (this)
+                    synchronized (sendLock)
                     {
-                        synchronized (out)
-                        {
-                            copy(packet.getStream(), out);
-                            out.flush();
-                        }
+                        copy(packet.getStream(), out);
+                        out.flush();
                     }
-                    System.out
-                        .println("packet spool complete");
                 }
             }
             catch (Exception e)
@@ -1208,6 +1208,7 @@ public class OpenGrooveRealmServer
      */
     public static void main(String[] args) throws Exception
     {
+        Security.addProvider(new BouncyCastleProvider());
         Thread gcThread = new Thread("periodic-gc")
         {
             public void run()
@@ -1216,7 +1217,7 @@ public class OpenGrooveRealmServer
                 {
                     try
                     {
-                        Thread.sleep(30 * 1000);
+                        Thread.sleep(60 * 1000);
                     }
                     catch (Exception exception)
                     {
@@ -1831,9 +1832,71 @@ public class OpenGrooveRealmServer
             getConfig("rsa-sgn-mod"), 16);
         rsaSignaturePrivateKey = new BigInteger(
             getConfig("rsa-sgn-prv"), 16);
+        serverCertificateChain = CertificateUtils
+            .readCertChain(getConfig("certificate-chain"));
+        serverCertificatePrivateKey = CertificateUtils
+            .readPrivateKey(getConfig("certificate-private-key"));
         serverRealmAddress = getConfig("realm");
-        serverSocket = new ServerSocket(Integer
-            .parseInt(getConfig("serverport")));
+        X509KeyManager keyManager = new X509KeyManager()
+        {
+            
+            @Override
+            public String chooseClientAlias(
+                String[] keyType, Principal[] issuers,
+                Socket socket)
+            {
+                return "key";
+            }
+            
+            @Override
+            public String chooseServerAlias(String keyType,
+                Principal[] issuers, Socket socket)
+            {
+                return "key";
+            }
+            
+            @Override
+            public X509Certificate[] getCertificateChain(
+                String alias)
+            {
+                return serverCertificateChain;
+            }
+            
+            @Override
+            public String[] getClientAliases(
+                String keyType, Principal[] issuers)
+            {
+                return null;
+            }
+            
+            @Override
+            public PrivateKey getPrivateKey(String alias)
+            {
+                return serverCertificatePrivateKey;
+            }
+            
+            @Override
+            public String[] getServerAliases(
+                String keyType, Principal[] issuers)
+            {
+                return null;
+            }
+        };
+        SSLContext sslContext = SSLContext.getInstance(
+            "TLS");
+        sslContext.init(new KeyManager[] { keyManager },
+            new TrustManager[] {}, new SecureRandom());
+        SSLServerSocketFactory sslFactory = sslContext
+            .getServerSocketFactory();
+        serverSocket = (SSLServerSocket) sslFactory
+            .createServerSocket(Integer
+                .parseInt(getConfig("serverport")));
+        System.out.println("Supported cipher suites:");
+        System.out.println(StringUtils.delimited(
+            serverSocket.getSupportedCipherSuites(), "\n"));
+        System.out.println("Enabled cipher suites:");
+        System.out.println(StringUtils.delimited(
+            serverSocket.getEnabledCipherSuites(), "\n"));
         loadCommands();
         tasks.prestartAllCoreThreads();
         internalTasks.prestartAllCoreThreads();
