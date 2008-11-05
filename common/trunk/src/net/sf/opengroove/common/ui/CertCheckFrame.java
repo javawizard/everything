@@ -1,5 +1,8 @@
 package net.sf.opengroove.common.ui;
 
+import com.jidesoft.swing.MultilineLabel;
+import info.clearthought.layout.TableLayout;
+
 import java.awt.BorderLayout;
 import javax.swing.BorderFactory;
 import javax.swing.BoxLayout;
@@ -26,6 +29,11 @@ public class CertCheckFrame extends javax.swing.JDialog
     private JPanel topLabelPanel;
     private JLabel topLabel;
     private JButton trustButton;
+    private JLabel issuerLabel;
+    private JLabel issuerInternalLabel;
+    private JLabel issuedToLabel;
+    private JLabel certificateSubjectLabel;
+    private MultilineLabel initialDescriptionLabel;
     private JButton noTrustButton;
     private JButton trustAlwaysButton;
     private JPanel lowerRightPanel;
@@ -85,8 +93,42 @@ public class CertCheckFrame extends javax.swing.JDialog
             }
             {
                 centerPanel = new JPanel();
+                TableLayout centerPanelLayout = new TableLayout(new double[][] {{20.0, TableLayout.FILL, TableLayout.FILL}, {TableLayout.PREFERRED, TableLayout.FILL, TableLayout.PREFERRED, TableLayout.PREFERRED, TableLayout.FILL, TableLayout.FILL}});
+                centerPanelLayout.setHGap(5);
+                centerPanelLayout.setVGap(5);
+                centerPanel.setLayout(centerPanelLayout);
                 getContentPane().add(centerPanel,
                     BorderLayout.CENTER);
+                centerPanel.setBorder(BorderFactory
+                    .createEmptyBorder(0, 10, 10, 10));
+                {
+                    initialDescriptionLabel = new MultilineLabel();
+                    centerPanel.add(
+                        initialDescriptionLabel,
+                        "0, 0, 2, 0");
+                    initialDescriptionLabel
+                        .setText("The certificate of the server that OpenGroove is connecting to appears to be invalid. Here are the details of the certificate:");
+                }
+                {
+                    certificateSubjectLabel = new JLabel();
+                    centerPanel.add(certificateSubjectLabel, "1, 2");
+                    certificateSubjectLabel.setText("Issued to:");
+                }
+                {
+                    issuedToLabel = new JLabel();
+                    centerPanel.add(getIssuedToLabel(), "2, 2");
+                    issuedToLabel.setText("UNKNOWN");
+                }
+                {
+                    issuerInternalLabel = new JLabel();
+                    centerPanel.add(issuerInternalLabel, "1, 3");
+                    issuerInternalLabel.setText("Issued by:");
+                }
+                {
+                    issuerLabel = new JLabel();
+                    centerPanel.add(getIssuerLabel(), "2, 3");
+                    issuerLabel.setText("UNKNOWN");
+                }
             }
             {
                 lowerPanel = new JPanel();
@@ -148,4 +190,12 @@ public class CertCheckFrame extends javax.swing.JDialog
         }
     }
     
+    public JLabel getIssuedToLabel() {
+        return issuedToLabel;
+    }
+    
+    public JLabel getIssuerLabel() {
+        return issuerLabel;
+    }
+
 }
