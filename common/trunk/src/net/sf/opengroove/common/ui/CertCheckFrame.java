@@ -4,6 +4,11 @@ import com.jidesoft.swing.MultilineLabel;
 import info.clearthought.layout.TableLayout;
 
 import java.awt.BorderLayout;
+import java.awt.Frame;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.security.cert.X509Certificate;
+
 import javax.swing.BorderFactory;
 import javax.swing.BoxLayout;
 import javax.swing.JButton;
@@ -14,7 +19,7 @@ import javax.swing.JPanel;
 import javax.swing.SwingConstants;
 import javax.swing.SwingUtilities;
 
-/**
+/*
  * This code was edited or generated using CloudGarden's Jigloo SWT/Swing GUI
  * Builder, which is free for non-commercial use. If Jigloo is being used
  * commercially (ie, by a corporation, company or business for any purpose
@@ -24,11 +29,55 @@ import javax.swing.SwingUtilities;
  * PURCHASED FOR THIS MACHINE, SO JIGLOO OR THIS CODE CANNOT BE USED LEGALLY FOR
  * ANY CORPORATE OR COMMERCIAL PURPOSE.
  */
+/**
+ * This dialog prompts a user whether or not to accept a particular X.509
+ * certificate. It is generally used when the certificate is not valid for some
+ * reason or other.
+ * 
+ * @author Alexander Boyd
+ */
 public class CertCheckFrame extends javax.swing.JDialog
 {
+    public enum TrustResult
+    {
+        TRUST, TRUST_ALWAYS, DONT_TRUST
+    }
+    
+    /**
+     * Opens up a CertCheckFrame to ask the user if they want to trust the
+     * certificate specified.
+     * 
+     * @param certificate
+     *            The certificate to check. This certificate's details will be
+     *            shown.
+     * @param reasons
+     *            The reasons why this certificate is not to be trusted,
+     *            separated by newlines. For example, if
+     *            {@link X509Certificate#checkValidity()} returns false when
+     *            called on the certificate specified, then <code>reasons</code>
+     *            could include a message like "This certificate has expired or
+     *            is not yet valid".
+     * @return
+     */
+    public static TrustResult checkTrust(Frame owner,
+        X509Certificate certificate, String reasons)
+    {
+        
+    }
+    
+    private TrustResult result;
     private JPanel topLabelPanel;
     private JLabel topLabel;
     private JButton trustButton;
+    private MultilineLabel endInternalLabel;
+    private JLabel fingerprintLabel;
+    private JLabel certificateInternalFingerprint;
+    private JLabel certificateInvalidLabel;
+    private MultilineLabel certificateInvalidReasonHeader;
+    private JLabel validToLabel;
+    private JLabel validFromLabel;
+    private JLabel validToInternalLabel;
+    private JLabel validFromInternalLabel;
     private JLabel issuerLabel;
     private JLabel issuerInternalLabel;
     private JLabel issuedToLabel;
@@ -57,9 +106,9 @@ public class CertCheckFrame extends javax.swing.JDialog
         });
     }
     
-    public CertCheckFrame(JFrame frame)
+    private CertCheckFrame(JFrame frame)
     {
-        super(frame);
+        super(frame, true);
         initGUI();
     }
     
@@ -79,7 +128,7 @@ public class CertCheckFrame extends javax.swing.JDialog
                 topLabelPanel
                     .setLayout(topLabelPanelLayout);
                 topLabelPanel.setBorder(BorderFactory
-                    .createEmptyBorder(20, 10, 10, 10));
+                    .createEmptyBorder(20, 10, 20, 10));
                 {
                     topLabel = new JLabel();
                     topLabelPanel.add(topLabel,
@@ -93,7 +142,20 @@ public class CertCheckFrame extends javax.swing.JDialog
             }
             {
                 centerPanel = new JPanel();
-                TableLayout centerPanelLayout = new TableLayout(new double[][] {{20.0, TableLayout.FILL, TableLayout.FILL}, {TableLayout.PREFERRED, TableLayout.FILL, TableLayout.PREFERRED, TableLayout.PREFERRED, TableLayout.FILL, TableLayout.FILL}});
+                TableLayout centerPanelLayout = new TableLayout(
+                    new double[][] {
+                        { 20.0, 0.35, TableLayout.FILL },
+                        { TableLayout.PREFERRED, 7.0,
+                            TableLayout.PREFERRED,
+                            TableLayout.PREFERRED,
+                            TableLayout.PREFERRED,
+                            TableLayout.PREFERRED, 7.0,
+                            TableLayout.PREFERRED, 7.0,
+                            TableLayout.PREFERRED, 7.0,
+                            TableLayout.PREFERRED, 7.0,
+                            TableLayout.PREFERRED, 7.0,
+                            TableLayout.PREFERRED,
+                            TableLayout.FILL } });
                 centerPanelLayout.setHGap(5);
                 centerPanelLayout.setVGap(5);
                 centerPanel.setLayout(centerPanelLayout);
@@ -111,23 +173,106 @@ public class CertCheckFrame extends javax.swing.JDialog
                 }
                 {
                     certificateSubjectLabel = new JLabel();
-                    centerPanel.add(certificateSubjectLabel, "1, 2");
-                    certificateSubjectLabel.setText("Issued to:");
+                    centerPanel.add(
+                        certificateSubjectLabel, "1, 2");
+                    certificateSubjectLabel
+                        .setText("Issued to:");
                 }
                 {
                     issuedToLabel = new JLabel();
-                    centerPanel.add(getIssuedToLabel(), "2, 2");
+                    centerPanel.add(issuedToLabel, "2, 2");
                     issuedToLabel.setText("UNKNOWN");
+                    issuedToLabel
+                        .setFont(new java.awt.Font(
+                            "Dialog", 0, 12));
                 }
                 {
                     issuerInternalLabel = new JLabel();
-                    centerPanel.add(issuerInternalLabel, "1, 3");
-                    issuerInternalLabel.setText("Issued by:");
+                    centerPanel.add(issuerInternalLabel,
+                        "1, 3");
+                    issuerInternalLabel
+                        .setText("Issued by:");
                 }
                 {
                     issuerLabel = new JLabel();
-                    centerPanel.add(getIssuerLabel(), "2, 3");
+                    centerPanel.add(issuerLabel, "2, 3");
                     issuerLabel.setText("UNKNOWN");
+                    issuerLabel.setFont(new java.awt.Font(
+                        "Dialog", 0, 12));
+                }
+                {
+                    validFromInternalLabel = new JLabel();
+                    centerPanel.add(validFromInternalLabel,
+                        "1, 4");
+                    validFromInternalLabel
+                        .setText("Valid from:");
+                }
+                {
+                    validToInternalLabel = new JLabel();
+                    centerPanel.add(validToInternalLabel,
+                        "1, 5");
+                    validToInternalLabel
+                        .setText("Valid until:");
+                }
+                {
+                    validFromLabel = new JLabel();
+                    centerPanel.add(getValidFromLabel(),
+                        "2, 4");
+                    validFromLabel.setText("UNKNOWN");
+                    validFromLabel
+                        .setFont(new java.awt.Font(
+                            "Dialog", 0, 12));
+                }
+                {
+                    validToLabel = new JLabel();
+                    centerPanel.add(getValidToLabel(),
+                        "2, 5");
+                    validToLabel.setText("UNKNOWN");
+                    validToLabel.setFont(new java.awt.Font(
+                        "Dialog", 0, 12));
+                }
+                {
+                    certificateInvalidReasonHeader = new MultilineLabel();
+                    centerPanel.add(
+                        certificateInvalidReasonHeader,
+                        "0, 7, 2, 7");
+                    certificateInvalidReasonHeader
+                        .setText("This certificate is invalid because:");
+                }
+                {
+                    certificateInvalidLabel = new JLabel();
+                    centerPanel.add(
+                        getCertificateInvalidLabel(),
+                        "1, 9");
+                    certificateInvalidLabel
+                        .setText("UNKNOWN");
+                    certificateInvalidLabel
+                        .setFont(new java.awt.Font(
+                            "Dialog", 0, 12));
+                }
+                {
+                    certificateInternalFingerprint = new JLabel();
+                    centerPanel.add(
+                        certificateInternalFingerprint,
+                        "0, 11, 2, 11");
+                    certificateInternalFingerprint
+                        .setText("The certificate's fingerprint is:");
+                }
+                {
+                    fingerprintLabel = new JLabel();
+                    centerPanel.add(getFingerprintLabel(),
+                        "1, 13, 2, 13");
+                    fingerprintLabel.setText("UNKNOWN");
+                    fingerprintLabel
+                        .setFont(new java.awt.Font(
+                            "Dialog", 0, 12));
+                }
+                {
+                    endInternalLabel = new MultilineLabel();
+                    centerPanel.add(endInternalLabel,
+                        "0, 15, 2, 15");
+                    endInternalLabel
+                        .setText("Do you want to trust this certificate? You should only trust it if you are sure that it is authentic. If you're not sure, contact the owner of your realm server and ask them for their server's fingerprint, and make sure that it matches the fingerprint displayed here. If this doesn't help, contact us at support@opengroove.org and we will help you.");
                 }
             }
             {
@@ -149,25 +294,49 @@ public class CertCheckFrame extends javax.swing.JDialog
                         trustButton = new JButton();
                         trustButton
                             .setToolTipText(ComponentUtils
-                                .htmlTipWrap("Trusts this certificate for this connection only. "
-                                    + "if OpenGroove needs to reconnect, or you disconnect "
+                                .htmlTipWrap("Trust this certificate for this connection only. "
+                                    + "if OpenGroove needs to reconnect, or if you disconnect "
                                     + "from the internet and later reconnect, you will "
                                     + "be prompted again whether to trust this "
                                     + "certificate."));
                         lowerRightPanel.add(trustButton);
                         trustButton.setText("Trust");
+                        trustButton
+                            .addActionListener(new ActionListener()
+                            {
+                                
+                                public void actionPerformed(
+                                    ActionEvent e)
+                                {
+                                    result = TrustResult.TRUST;
+                                    dispose();
+                                }
+                            });
                     }
                     {
                         trustAlwaysButton = new JButton();
                         trustAlwaysButton
                             .setToolTipText(ComponentUtils
-                                .htmlTipWrap("Trusts this certificate indefinitely. "
+                                .htmlTipWrap("Trust this certificate indefinitely. "
                                     + "You will not be prompted again if you "
-                                    + "want to trust this certificate."));
+                                    + "want to trust this certificate. TODO:"
+                                    + " add note that the user can remove via OG/"
+                                    + "Options/Certificates tab"));
                         lowerRightPanel
                             .add(trustAlwaysButton);
                         trustAlwaysButton
                             .setText("Trust Always");
+                        trustAlwaysButton
+                            .addActionListener(new ActionListener()
+                            {
+                                
+                                public void actionPerformed(
+                                    ActionEvent e)
+                                {
+                                    result = TrustResult.TRUST_ALWAYS;
+                                    dispose();
+                                }
+                            });
                     }
                     {
                         noTrustButton = new JButton();
@@ -179,10 +348,21 @@ public class CertCheckFrame extends javax.swing.JDialog
                         lowerRightPanel.add(noTrustButton);
                         noTrustButton
                             .setText("Don't Trust");
+                        noTrustButton
+                            .addActionListener(new ActionListener()
+                            {
+                                
+                                public void actionPerformed(
+                                    ActionEvent e)
+                                {
+                                    result = TrustResult.DONT_TRUST;
+                                    dispose();
+                                }
+                            });
                     }
                 }
             }
-            this.setSize(475, 408);
+            this.setSize(475, 578);
         }
         catch (Exception e)
         {
@@ -190,12 +370,34 @@ public class CertCheckFrame extends javax.swing.JDialog
         }
     }
     
-    public JLabel getIssuedToLabel() {
+    public JLabel getIssuedToLabel()
+    {
         return issuedToLabel;
     }
     
-    public JLabel getIssuerLabel() {
+    public JLabel getIssuerLabel()
+    {
         return issuerLabel;
     }
-
+    
+    public JLabel getValidFromLabel()
+    {
+        return validFromLabel;
+    }
+    
+    public JLabel getValidToLabel()
+    {
+        return validToLabel;
+    }
+    
+    public JLabel getCertificateInvalidLabel()
+    {
+        return certificateInvalidLabel;
+    }
+    
+    public JLabel getFingerprintLabel()
+    {
+        return fingerprintLabel;
+    }
+    
 }
