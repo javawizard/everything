@@ -15,12 +15,16 @@ import java.io.OutputStream;
 import java.math.BigInteger;
 import java.net.Socket;
 import java.security.SecureRandom;
+import java.security.cert.X509Certificate;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+import javax.net.SocketFactory;
 import javax.net.ssl.KeyManager;
 import javax.net.ssl.SSLContext;
+import javax.net.ssl.SSLSession;
+import javax.net.ssl.SSLSocket;
 import javax.net.ssl.TrustManager;
 import javax.swing.JButton;
 import javax.swing.JFileChooser;
@@ -35,10 +39,12 @@ import DE.knp.MicroCrypt.Aes256;
 
 import net.sf.opengroove.realmserver.ProtocolMismatchException;
 import net.sf.opengroove.common.com.DatagramUtils;
+import net.sf.opengroove.common.security.CertificateUtils;
 import net.sf.opengroove.common.security.Crypto;
 import net.sf.opengroove.common.security.Hash;
 import net.sf.opengroove.common.security.PromptTrustManager;
 import net.sf.opengroove.common.security.RSA;
+import net.sf.opengroove.common.utils.StringUtils;
 
 public class OpenGrooveTelnet
 {
@@ -49,6 +55,7 @@ public class OpenGrooveTelnet
      */
     public static void main(String[] args) throws Throwable
     {
+        Statics.run();
         JFrame frame = new JFrame("OpenGroove Telnet");
         frame.setSize(500, 300);
         frame.setLocationRelativeTo(null);
@@ -97,10 +104,32 @@ public class OpenGrooveTelnet
         // default: 63745
         SSLContext context = SSLContext.getInstance("TLS");
         context.init(new KeyManager[0],
-            new TrustManager[] {new PromptTrustManager(frame,)}, new SecureRandom());
-        Socket socket = new Socket(host, port);
-        top
-            .append("Negotiating handshake with server...\n");
+            new TrustManager[] { new PromptTrustManager(
+                frame, CertificateUtils
+                    .readCert(StringUtils
+                        .readFile(new File("cacert.pem"))),
+                new ArrayList<X509Certificate>(), null) },
+            new SecureRandom());
+        SocketFactory socketFactory = context
+            .getSocketFactory();
+        SSLSocket socket = (SSLSocket) socketFactory
+            .createSocket(host, port);
+        top.append("Performing SSL handshake...\n");
+        try
+        {
+            SSLSession session = socket.getSession();
+            X509Certificate serverCert = (X509Certificate) session
+                .getPeerCertificates()[0];
+            top
+                .append("Server certificate was issued to dn: "
+                    + serverCert.getSubjectX500Principal()
+                        .getName() + "\n");
+        }
+        catch (Exception e)
+        {
+            top
+                .append("The server's certificate is invalid.\n");
+        }
         final OutputStream out = socket.getOutputStream();
         InputStream in = socket.getInputStream();
         out.write("OpenGroove\n".getBytes());

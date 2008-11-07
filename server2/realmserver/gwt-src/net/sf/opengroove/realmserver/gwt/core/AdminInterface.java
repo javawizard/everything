@@ -252,31 +252,10 @@ public class AdminInterface implements EntryPoint
         tab.setSpacing(5);
         tab
             .add(new HTML(
-                "If this server is not listed in the public directory, clients that want to \r\n"
-                    + "connect to it will need it\'s public key. You can download the public key by\r\n"
-                    + "clicking <a target='_blank' href=\"/serverkey.ogvs\">here</a>. Make sure to provide this to all clients that\r\n"
-                    + "want to connect to your server. When distributing public keys, you must ensure\r\n"
-                    + "that they are not tampered with. However, a malicious attacker cannot use the\r\n"
-                    + "public key to cause damage to your system, so you don\'t need to take measures\r\n"
-                    + "to prevent it from being spread."));
-        tab
-            .add(new HTML(
-                "<b>The server public-key system is deprecated.</b> We're "
-                    + "currently in the process of changing the server to use X.509 "
-                    + "certificates and SSL in place of our own custom PKI solution. "
-                    + "This means that this security file will only work until we switch, "
-                    + "at which point it won't be needed. When we do switch, OpenGroove "
-                    + "will automatically download the certificate and key file from the "
-                    + "server, and ask the user if they want to trust that particular "
-                    + "certificate and key by presenting the user with the fingerprint. "
-                    + "When we get everything switched over here, you will be able to see "
-                    + "your server's fingerprint on this page so that you can post it on"
-                    + " your website, so that people using your server can know what "
-                    + "your fingerprint is and be able to trust your server. In addition, "
-                    + "servers will be able to obtain a certificate signed by the "
-                    + "OpenGroove CA, which will make it so that the user doesn't"
-                    + " have to find out your server's fingerprint and choose to "
-                    + "trust it."));
+                "Your server's fingerprint is "
+                    + ". You'll need to provide this to "
+                    + "people if they're trying to use your server and your "
+                    + "server's certificate isn't signed by the OpenGroove CA."));
         tabs.add(tab, "PKI");
     }
     
