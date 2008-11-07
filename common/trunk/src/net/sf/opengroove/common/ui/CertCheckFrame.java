@@ -81,6 +81,7 @@ public class CertCheckFrame extends javax.swing.JDialog
             .setText(reasons);
         dialog.getFingerprintLabel().setText(
             CertificateUtils.fingerprint(certificate));
+        dialog.setLocationRelativeTo(owner);
         dialog.show();
         return dialog.result;
     }
@@ -264,7 +265,7 @@ public class CertCheckFrame extends javax.swing.JDialog
                     certificateInvalidLabel = new JLabel();
                     centerPanel.add(
                         getCertificateInvalidLabel(),
-                        "1, 9");
+                        "1, 9, 2, 9");
                     certificateInvalidLabel
                         .setText("UNKNOWN");
                     certificateInvalidLabel
@@ -383,7 +384,7 @@ public class CertCheckFrame extends javax.swing.JDialog
                     }
                 }
             }
-            this.setSize(475, 578);
+            this.setSize(475, 609);
         }
         catch (Exception e)
         {
