@@ -15,6 +15,7 @@ import java.security.KeyPairGenerator;
 import java.security.KeyStore;
 import java.security.PrivateKey;
 import java.security.PublicKey;
+import java.security.SignatureException;
 import java.security.cert.X509Certificate;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -385,15 +386,82 @@ public class CertificateUtils
         return createKeyPair("RSA", size);
     }
     
-    public String fingerprint(X509Certificate certificate)
+    public static String fingerprint(
+        X509Certificate certificate)
     {
         return UserFingerprint
             .fingerprint(writeCert(certificate));
     }
     
-    public String fingerprint(X509Certificate[] chain)
+    public static String fingerprint(X509Certificate[] chain)
     {
         return UserFingerprint
             .fingerprint(writeCertChain(chain));
+    }
+    
+    /**
+     * Checks that the signatures in this chain are valid. Specifically, for
+     * each pair of certificates made up of chain[n] and chain[n+1], where n <
+     * chain.length - 1 and n >= 0, chain[n].{@link X509Certificate#verify(PublicKey) verify}
+     * (chain[n+1].{@link X509Certificate#getPublicKey() getPublicKey}()) is
+     * called, and if it throws an exception, false is returned from this
+     * method. If none of the invocations throw an exception, true is returned.
+     * 
+     * @param chain
+     *            The chain to check
+     * @return True if all signatures are valid, false otherwise
+     */
+    public static boolean checkSignatureChainValid(
+        X509Certificate[] chain)
+    {
+        for (int i = 0; i < chain.length - 1; i++)
+        {
+            try
+            {
+                chain[i]
+                    .verify(chain[i + 1].getPublicKey());
+            }
+            catch (Exception e)
+            {
+                if (!(e instanceof SignatureException))
+                    e.printStackTrace();
+                return false;
+            }
+        }
+        return true;
+    }
+    
+    public static boolean checkChainDateValid(
+        X509Certificate[] chain)
+    {
+        for (X509Certificate cert : chain)
+        {
+            try
+            {
+                cert.checkValidity();
+            }
+            catch (Exception e)
+            {
+                return false;
+            }
+        }
+        return true;
+    }
+    
+    /**
+     * Checks if the two certificates are equal by encoding them using the
+     * writeCert method and checking to see if the resulting encodings are
+     * equals.
+     * 
+     * @param c1
+     *            The first certificate to compare
+     * @param c2
+     *            The second certificate to compare
+     * @return True if c1 is equal to c2, false otherwise.
+     */
+    public static boolean isEncodedEqual(
+        X509Certificate c1, X509Certificate c2)
+    {
+        return writeCert(c1).equals(writeCert(c2));
     }
 }
