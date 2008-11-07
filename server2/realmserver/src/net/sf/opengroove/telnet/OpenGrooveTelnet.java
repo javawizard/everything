@@ -19,6 +19,9 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+import javax.net.ssl.KeyManager;
+import javax.net.ssl.SSLContext;
+import javax.net.ssl.TrustManager;
 import javax.swing.JButton;
 import javax.swing.JFileChooser;
 import javax.swing.JFrame;
@@ -31,17 +34,15 @@ import javax.swing.filechooser.FileNameExtensionFilter;
 import DE.knp.MicroCrypt.Aes256;
 
 import net.sf.opengroove.realmserver.ProtocolMismatchException;
+import net.sf.opengroove.common.com.DatagramUtils;
 import net.sf.opengroove.common.security.Crypto;
 import net.sf.opengroove.common.security.Hash;
+import net.sf.opengroove.common.security.PromptTrustManager;
 import net.sf.opengroove.common.security.RSA;
 
 public class OpenGrooveTelnet
 {
     public final static SecureRandom random = new SecureRandom();
-    
-    public static BigInteger rsaPublic;
-    
-    public static BigInteger rsaMod;
     
     /**
      * @param args
@@ -94,6 +95,9 @@ public class OpenGrooveTelnet
         top.append("Connecting to server " + serverId
             + "...\n");
         // default: 63745
+        SSLContext context = SSLContext.getInstance("TLS");
+        context.init(new KeyManager[0],
+            new TrustManager[] {new PromptTrustManager(frame,)}, new SecureRandom());
         Socket socket = new Socket(host, port);
         top
             .append("Negotiating handshake with server...\n");
@@ -117,62 +121,6 @@ public class OpenGrooveTelnet
             throw new ProtocolMismatchException(
                 "Invalid initial response sent");
         }
-        BigInteger aesRandomNumber = new BigInteger(3060,
-            random);
-        byte[] securityKeyBytes = new byte[32];
-        System.arraycopy(aesRandomNumber.toByteArray(), 0,
-            securityKeyBytes, 0, 32);
-        final Aes256 securityKey = new Aes256(
-            securityKeyBytes);
-        // System.out.println("using aes key "
-        // + Hash.hexcode(securityKeyBytes));
-        BigInteger securityKeyEncrypted = RSA.encrypt(
-            rsaPublic, rsaMod, aesRandomNumber);
-        out
-            .write((securityKeyEncrypted.toString(16) + "\n")
-                .getBytes());
-        BigInteger randomServerCheckInteger = new BigInteger(
-            3060, random);
-        // System.out.println("randomservercheckinteger "
-        // + randomServerCheckInteger.toString(16));
-        byte[] randomServerCheckBytes = new byte[16];
-        System.arraycopy(randomServerCheckInteger
-            .toByteArray(), 0, randomServerCheckBytes, 0,
-            16);
-        BigInteger serverCheckEncrypted = RSA.encrypt(
-            rsaPublic, rsaMod, randomServerCheckInteger);
-        // System.out.println("servercheckencrypted "
-        // + serverCheckEncrypted.toString(16));
-        out
-            .write((serverCheckEncrypted.toString(16) + "\n")
-                .getBytes());
-        out.flush();
-        s = "";
-        for (int i = 0; i < 1024; i++)
-        {
-            int read = in.read();
-            s += (char) read;
-            if ((read == '\r' || read == '\n') && i != 0)
-                break;
-            if (i == 1023)
-                throw new ProtocolMismatchException(
-                    "too much second initialization data sent by the server");
-        }
-        s = s.trim();
-        byte[] confirmServerCheckBytes = new byte[16];
-        // FIXME: arrayindexoutofboundsexception for small arrays
-        securityKey.decrypt(new BigInteger(s, 16)
-            .toByteArray(), 0, confirmServerCheckBytes, 0);
-        if (!Arrays.equals(randomServerCheckBytes,
-            confirmServerCheckBytes))
-            throw new RuntimeException(
-                "Server failed check bytes with sent "
-                    + Hash.hexcode(randomServerCheckBytes)
-                    + " and received "
-                    + Hash.hexcode(confirmServerCheckBytes)
-                    + " and unenc received "
-                    + Hash.hexcode(new BigInteger(s, 16)
-                        .toByteArray()));
         out.write('c');
         out.flush();
         for (int i = 0; i < 5; i++)
@@ -183,17 +131,6 @@ public class OpenGrooveTelnet
                 throw new ProtocolMismatchException(
                     "no terminating 'c' at end of handshake");
         }
-        byte[] antiReplayMessage = Crypto.dec(securityKey,
-            in, 200);
-        // System.out.println("received antireply "
-        // + Hash.hexcode(antiReplayMessage));
-        String antiReplayHash = Hash
-            .hash(antiReplayMessage);
-        // System.out.println("sending antireply hash "
-        // + Hash.hexcode(antiReplayHash.getBytes()));
-        Crypto.enc(securityKey, antiReplayHash.getBytes(),
-            out);
-        out.flush();
         top
             .append("Successfully set up connection to server. Type commands to "
                 + "send in the lower text area\n");
@@ -224,7 +161,7 @@ public class OpenGrooveTelnet
                         bottom.setText("Sending...");
                         try
                         {
-                            Crypto.enc(securityKey, message
+                            DatagramUtils.write(message
                                 .getBytes(), out);
                             out.flush();
                         }
@@ -249,8 +186,8 @@ public class OpenGrooveTelnet
             try
             {
                 // System.out.println("about to decrypt");
-                byte[] message = Crypto.dec(securityKey,
-                    in, 65535);
+                byte[] message = DatagramUtils.read(in,
+                    65535);
                 // System.out.println("decrypted");
                 String messageString = new String(message);
                 synchronized (top)

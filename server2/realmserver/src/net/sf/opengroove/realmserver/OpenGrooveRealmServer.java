@@ -870,6 +870,22 @@ public class OpenGrooveRealmServer
                     .write("OpenGrooveServer\r\n"
                         .getBytes());
                 out.flush();
+                // Now the client should send us the letter 'c' but NOT followed
+                // by a newline. This is used to sync up stream positions, since
+                // we're not sure whether the client ends packets with \r, \n,
+                // or \r\n.
+                for (int i = 0; i < 5; i++)
+                {
+                    if (in.read() == 'c')
+                        break;
+                    if (i == 4)
+                        throw new ProtocolMismatchException(
+                            "no terminating 'c' at end of handshake");
+                }
+                // Ok, the client's stream of data to us is in sync. Now we send
+                // the letter 'c' to the client so that the client can
+                // synchronize our data stream.
+                out.write('c');
                 // The handshake is now complete. Now we start listening for
                 // packets and deal with them accordingly.
                 // We keep attempting to receive packets until an exception is
