@@ -5,6 +5,7 @@ import info.clearthought.layout.TableLayout;
 
 import java.awt.BorderLayout;
 import java.awt.Frame;
+import java.awt.Window;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.security.cert.X509Certificate;
@@ -18,6 +19,9 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.SwingConstants;
 import javax.swing.SwingUtilities;
+
+import net.sf.opengroove.common.security.CertificateUtils;
+import net.sf.opengroove.common.security.UserFingerprint;
 
 /*
  * This code was edited or generated using CloudGarden's Jigloo SWT/Swing GUI
@@ -57,12 +61,28 @@ public class CertCheckFrame extends javax.swing.JDialog
      *            called on the certificate specified, then <code>reasons</code>
      *            could include a message like "This certificate has expired or
      *            is not yet valid".
-     * @return
+     * @return A TrustResult, indicating which of the buttons the user pressed
      */
-    public static TrustResult checkTrust(Frame owner,
+    public static TrustResult checkTrust(Window owner,
         X509Certificate certificate, String reasons)
     {
-        
+        CertCheckFrame dialog = new CertCheckFrame(owner);
+        dialog.getIssuedToLabel()
+            .setText(
+                certificate.getSubjectX500Principal()
+                    .getName());
+        dialog.getIssuerLabel().setText(
+            certificate.getIssuerX500Principal().getName());
+        dialog.getValidFromLabel().setText(
+            certificate.getNotBefore().toString());
+        dialog.getValidToLabel().setText(
+            certificate.getNotAfter().toString());
+        dialog.getCertificateInvalidLabel()
+            .setText(reasons);
+        dialog.getFingerprintLabel().setText(
+            CertificateUtils.fingerprint(certificate));
+        dialog.show();
+        return dialog.result;
     }
     
     private TrustResult result;
@@ -106,9 +126,10 @@ public class CertCheckFrame extends javax.swing.JDialog
         });
     }
     
-    private CertCheckFrame(JFrame frame)
+    private CertCheckFrame(Window frame)
     {
-        super(frame, true);
+        super(frame);
+        setModal(true);
         initGUI();
     }
     
