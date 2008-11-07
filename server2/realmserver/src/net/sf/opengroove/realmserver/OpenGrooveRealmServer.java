@@ -1012,9 +1012,7 @@ public class OpenGrooveRealmServer
                         + e.getStatus() + " and message "
                         + e.getMessage()
                         + " in reply to command "
-                        + commandName
-                        + " with first 128 equal to "
-                        + first128);
+                        + commandName);
                 sendEncryptedPacket(
                     packetId,
                     commandName,
