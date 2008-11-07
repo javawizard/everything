@@ -52,25 +52,6 @@ public class OpenGrooveTelnet
         frame.setSize(500, 300);
         frame.setLocationRelativeTo(null);
         frame.show();
-        // JFileChooser fc = new JFileChooser();
-        // fc.setFileFilter(new FileNameExtensionFilter(
-        // "OpenGroove Server Key", "ogvs"));
-        // fc.showDialog(null, "Open");
-        // File file = fc.getSelectedFile();
-        File file = new File(
-            "C:/Users/amboyd/Documents/serverkey.ogvs");
-        if (file == null)
-            System.exit(0);
-        String keyMerged = readFile(file);
-        keyMerged = keyMerged.trim();
-        String[] keySplit = keyMerged.split("x");
-        if (keySplit.length != 4)
-        {
-            System.out.println("Invalid key");
-            System.exit(0);
-        }
-        rsaPublic = new BigInteger(keySplit[0], 16);
-        rsaMod = new BigInteger(keySplit[1], 16);
         // String serverId = JOptionPane
         // .showInputDialog(
         // frame,
