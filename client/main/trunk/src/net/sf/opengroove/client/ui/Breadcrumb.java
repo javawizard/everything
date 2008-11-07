@@ -18,6 +18,7 @@ import javax.swing.JViewport;
 
 import net.sf.opengroove.client.com.ListenerManager;
 import net.sf.opengroove.client.com.Notifier;
+import net.sf.opengroove.common.ui.ComponentUtils;
 
 /**
  * This class shows a simple breadcrumb component. An application can hand it a

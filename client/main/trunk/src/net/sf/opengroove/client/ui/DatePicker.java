@@ -1,6 +1,8 @@
 package net.sf.opengroove.client.ui;
 
 import java.awt.Color;
+import net.sf.opengroove.common.ui.ComponentUtils;
+
 import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.FontMetrics;

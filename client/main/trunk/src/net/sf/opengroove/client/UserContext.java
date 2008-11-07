@@ -57,7 +57,6 @@ import net.sf.opengroove.client.storage.ContactComputer;
 import net.sf.opengroove.client.storage.ContactStatus;
 import net.sf.opengroove.client.storage.LocalUser;
 import net.sf.opengroove.client.storage.Storage;
-import net.sf.opengroove.client.ui.ComponentUtils;
 import net.sf.opengroove.client.ui.frames.SearchForUsersFrame;
 import net.sf.opengroove.client.workspace.WorkspaceManager;
 import net.sf.opengroove.common.concurrent.Conditional;
@@ -65,6 +64,7 @@ import net.sf.opengroove.common.concurrent.ConditionalTimer;
 import net.sf.opengroove.common.utils.StringUtils;
 import net.sf.opengroove.common.utils.Userids;
 import net.sf.opengroove.common.utils.StringUtils.ToString;
+import net.sf.opengroove.common.ui.ComponentUtils;
 
 /**
  * A user context object is created for each user that logs in, and is passed
