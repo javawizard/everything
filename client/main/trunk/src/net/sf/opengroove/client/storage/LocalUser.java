@@ -2,12 +2,14 @@ package net.sf.opengroove.client.storage;
 
 import java.io.Serializable;
 import java.math.BigInteger;
+import java.security.cert.X509Certificate;
 import java.util.Properties;
 
 import net.sf.opengroove.client.OpenGroove;
 import net.sf.opengroove.client.UserContext;
 import net.sf.opengroove.client.com.CommandCommunicator;
 import net.sf.opengroove.common.proxystorage.*;
+import net.sf.opengroove.common.security.CertificateUtils;
 import net.sf.opengroove.common.utils.Userids;
 import net.sf.opengroove.common.vcard.VCard;
 
@@ -170,6 +172,21 @@ public interface LocalUser extends ProxyObject
     @Search(listProperty = "properties", searchProperty = "name")
     public ConfigProperty getProperty(String name);
     
+    /**
+     * A list of all of the certificates that this user has chosen to trust.
+     * This does not include the OpenGroove CA Certificate. Each string in this
+     * list is the PEM encoded form of the certificate. This can be parsed into
+     * an {@link X509Certificate} object by calling
+     * {@link CertificateUtils#readCert(String)} and passing in a string in this
+     * list.
+     * 
+     * @return A list that stores all of the end certificates (IE not CA
+     *         certificates) that this user has chosen to trust
+     */
+    @Property
+    @ListType(String.class)
+    public StoredList<String> getTrustedCertificates();
+    
     public static class CustomDelegate implements Delegate
     {
         
@@ -190,7 +207,8 @@ public interface LocalUser extends ProxyObject
             else if (property.equals("displayName"))
             {
                 String realName = user.getRealName();
-                if (realName == null || realName.trim().equals(""))
+                if (realName == null
+                    || realName.trim().equals(""))
                     return user.getUserid();
                 return realName;
             }
