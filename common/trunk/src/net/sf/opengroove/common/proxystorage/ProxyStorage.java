@@ -19,6 +19,7 @@ import java.sql.Types;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -29,6 +30,8 @@ import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 
 import javax.swing.event.ChangeListener;
+
+import org.apache.commons.collections.map.LRUMap;
 
 import net.sf.opengroove.common.utils.Progress;
 
@@ -94,6 +97,12 @@ public class ProxyStorage<E>
     protected static final Map<Class, ParameterFilter> parameterFilterSingletons = new HashMap<Class, ParameterFilter>();
     
     protected static final Map<Class, ResultFilter> resultFilterSingletons = new HashMap<Class, ResultFilter>();
+    /**
+     * Maps longs to objects (object ids to the objects themselves), but lrumap
+     * doesn't support generics
+     */
+    protected static Map objectCache = Collections
+        .synchronizedMap(new LRUMap(500));
     /**
      * A map that maps proxy object ids to maps that map the object's property
      * names to lists of listeners registered on those propertiews
@@ -932,14 +941,20 @@ public class ProxyStorage<E>
      */
     Object getById(long id, Class c) throws SQLException
     {
-        if (!isTargetIdPresent(id, c))
-            return null;
-        ObjectHandler handler = new ObjectHandler(c, id);
-        Object proxy = Proxy.newProxyInstance(getClass()
-            .getClassLoader(), new Class[] { c,
-            ProxyObject.class }, handler);
-        handler.instance = proxy;
-        return proxy;
+        synchronized (lock)
+        {
+            if (!isTargetIdPresent(id, c))
+                return null;
+            if (objectCache.containsKey(id))
+                return objectCache.get(id);
+            ObjectHandler handler = new ObjectHandler(c, id);
+            Object proxy = Proxy.newProxyInstance(
+                getClass().getClassLoader(), new Class[] {
+                    c, ProxyObject.class }, handler);
+            handler.instance = proxy;
+            objectCache.put(id, proxy);
+            return proxy;
+        }
     }
     
     /**
