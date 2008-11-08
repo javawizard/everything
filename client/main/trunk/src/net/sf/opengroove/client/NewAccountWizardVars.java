@@ -1,8 +1,11 @@
 package net.sf.opengroove.client;
 
 import java.math.BigInteger;
+import java.util.ArrayList;
+import java.util.List;
 
 import net.sf.opengroove.client.com.ServerSecurityKey;
+import net.sf.opengroove.client.storage.TrustedCertificate;
 
 /**
  * This class contains variables related to the new account wizard. An instance
@@ -61,4 +64,5 @@ public class NewAccountWizardVars
      * closed), false if it did not
      */
     public boolean finishedWizard;
+    protected List<TrustedCertificate> trustedCerts = new ArrayList<TrustedCertificate>();
 }

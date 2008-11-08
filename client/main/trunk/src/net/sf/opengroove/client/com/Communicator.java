@@ -1,26 +1,45 @@
 package net.sf.opengroove.client.com;
 
+import java.awt.Window;
 import java.io.ByteArrayOutputStream;
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.math.BigInteger;
 import java.net.Socket;
 import java.security.SecureRandom;
+import java.security.cert.X509Certificate;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.TimeUnit;
 
+import javax.net.SocketFactory;
+import javax.net.ssl.KeyManager;
+import javax.net.ssl.SSLContext;
+import javax.net.ssl.SSLSession;
+import javax.net.ssl.SSLSocket;
+import javax.net.ssl.TrustManager;
+
 import DE.knp.MicroCrypt.Aes256;
 
+import net.sf.opengroove.client.storage.LocalUser;
+import net.sf.opengroove.client.storage.Storage;
+import net.sf.opengroove.client.storage.TrustedCertificate;
+import net.sf.opengroove.common.com.DatagramUtils;
+import net.sf.opengroove.common.security.CertificateUtils;
 import net.sf.opengroove.common.security.Crypto;
 import net.sf.opengroove.common.security.Hash;
+import net.sf.opengroove.common.security.PromptTrustManager;
 import net.sf.opengroove.common.security.RSA;
+import net.sf.opengroove.common.security.TrustAlwaysListener;
+import net.sf.opengroove.common.utils.StringUtils;
 
 /**
  * This class can be used to communicate with an OpenGroove server. It takes
@@ -69,8 +88,6 @@ public class Communicator
         3, 5, 10, 10, 10, 10, 10, 10, 20, 20, 20, 20, 30,
         30, 30 };
     private int waitIndex = 0;
-    private BigInteger serverRsaPublic;
-    private BigInteger serverRsaMod;
     private String realm;
     private boolean authenticateOnConnect = false;
     /**
@@ -84,7 +101,7 @@ public class Communicator
     private String connectionUsername;
     private String connectionComputer;
     private String connectionPassword;
-    private Socket socket;
+    private SSLSocket socket;
     private InputStream in;
     private OutputStream out;
     private Thread coordinator;
@@ -139,10 +156,19 @@ public class Communicator
     
     private boolean isRunning = true;
     /**
-     * The security key for the current connection. Information sent across the
-     * connection is encrypted and decrypted with this key.
+     * A list of certificates that are trusted. If this communicator is for a
+     * local user, then this will typically be the StoredList obtained from the
+     * LocalUser object's getTrustedCertificates() method. If the user chooses
+     * "trust always" when prompted on whether or not to trust a certificate,
+     * then the certificate will be added to this list.<br/><br/>
+     * 
+     * The items of this list should be X509 certificates, encoded in the PEM
+     * format.
+     * {@link CertificateUtils#writeCert(java.security.cert.X509Certificate)}
+     * can be used to encode an X509Certificate into a format suitable for
+     * adding to this list.
      */
-    private Aes256 securityKey;
+    private List<TrustedCertificate> trustedCertificateList;
     /**
      * If this is true, then this is a one-time-only communicator. This means
      * that the constructor
@@ -165,6 +191,10 @@ public class Communicator
      * is placed here.
      */
     private Exception oneTimeException;
+    /**
+     * The OpenGroove CA Certificate.
+     */
+    private X509Certificate rootCertificate;
     
     /**
      * Creates a new Communicator object. The communicator will attempt to
@@ -176,6 +206,10 @@ public class Communicator
      * present. This ensures that no packets will be received without a packet
      * listener to sink them.
      * 
+     * @param certErrorOwner
+     *            A window that will be used as the parent of the certificate
+     *            error dialog. If this is null, the certificate error dialog
+     *            will be shown without a parent window.
      * @param realm
      *            The name of the realm to connect to. A server will be
      *            automatically selected from among the specified realm's
@@ -222,19 +256,20 @@ public class Communicator
      *            connecting.
      */
     
-    public Communicator(String realm, boolean auth,
-        boolean isOneTime, String connectionType,
-        String connectionUsername,
+    public Communicator(final Window certErrorOwner,
+        String realm, boolean auth, boolean isOneTime,
+        String connectionType, String connectionUsername,
         String connectionComputer,
         String connectionPassword,
-        BigInteger serverRsaPublic,
-        BigInteger serverRsaMod,
+        List<TrustedCertificate> trustedCertificates,
         StatusListener initialStatusListener,
         PacketListener initialPacketListener)
     {
         this.realm = realm;
-        this.serverRsaPublic = serverRsaPublic;
-        this.serverRsaMod = serverRsaMod;
+        this.trustedCertificateList = trustedCertificates;
+        this.rootCertificate = CertificateUtils
+            .readCert(StringUtils.readFile(new File(
+                "cacert.pem")));
         this.authenticateOnConnect = auth;
         this.isOneTime = isOneTime;
         this.connectionType = connectionType;
@@ -306,16 +341,71 @@ public class Communicator
                         final ServerContext[] servers = ConnectionResolver
                             .lookup(Communicator.this.realm);
                         boolean setupConnection = false;
-                        Socket tSocket = null;
+                        SSLSocket tSocket = null;
                         for (int i = 0; i < servers.length; i++)
                         {
                             final int fI = i;
                             try
                             {
-                                tSocket = new Socket(
-                                    servers[i]
-                                        .getHostname(),
-                                    servers[i].getPort());
+                                SSLContext context = SSLContext
+                                    .getInstance("TLS");
+                                ArrayList<X509Certificate> builtCertificateList = new ArrayList<X509Certificate>();
+                                for (TrustedCertificate s : trustedCertificateList)
+                                {
+                                    builtCertificateList
+                                        .add(CertificateUtils
+                                            .readCert(s
+                                                .getEncoded()));
+                                }
+                                PromptTrustManager trustmanager = new PromptTrustManager(
+                                    certErrorOwner,
+                                    rootCertificate,
+                                    trustedCertificateList == null ? new ArrayList<X509Certificate>()
+                                        : builtCertificateList,
+                                    new TrustAlwaysListener()
+                                    {
+                                        
+                                        public void trustAlways(
+                                            X509Certificate endCertificate)
+                                        {
+                                            String encoded = CertificateUtils
+                                                .writeCert(endCertificate);
+                                            TrustedCertificate tcert = Storage
+                                                .createTrustedCertificate(encoded);
+                                            trustedCertificateList
+                                                .add(tcert);
+                                        }
+                                    });
+                                context
+                                    .init(
+                                        new KeyManager[0],
+                                        new TrustManager[] { trustmanager },
+                                        new SecureRandom());
+                                SocketFactory socketFactory = context
+                                    .getSocketFactory();
+                                tSocket = (SSLSocket) socketFactory
+                                    .createSocket(
+                                        servers[i]
+                                            .getHostname(),
+                                        servers[i]
+                                            .getPort());
+                                SSLSession session = tSocket
+                                    .getSession();
+                                X509Certificate serverCert = (X509Certificate) session
+                                    .getPeerCertificates()[0];
+                                if (!serverCert
+                                    .getSubjectX500Principal()
+                                    .getName()
+                                    .equalsIgnoreCase(
+                                        "CN="
+                                            + Communicator.this.realm))
+                                    throw new RuntimeException(
+                                        "The certificate was issued to "
+                                            + serverCert
+                                                .getSubjectX500Principal()
+                                                .getName()
+                                            + " but the realm needs a certificate issued to CN="
+                                            + Communicator.this.realm);
                                 notifyStatusListeners(new Notifier<StatusListener>()
                                 {
                                     
@@ -329,7 +419,7 @@ public class Communicator
                                                 servers[fI]);
                                     }
                                 });
-                                securityKey = performHandshake(tSocket);
+                                performHandshake(tSocket);
                                 setupConnection = true;
                                 break;
                             }
@@ -411,8 +501,8 @@ public class Communicator
                                 socket.close();
                                 return;
                             }
-                            byte[] packet = Crypto.dec(
-                                securityKey, in, 65535);
+                            byte[] packet = DatagramUtils
+                                .read(in, 65535);
                             byte[] first128bytes = new byte[Math
                                 .min(128, packet.length)];
                             System.arraycopy(packet, 0,
@@ -811,7 +901,7 @@ public class Communicator
             throw new IOException(
                 "The communicator doesn't have an active "
                     + "connection to the server right now.");
-        Crypto.enc(securityKey, concat((""
+        DatagramUtils.write(concat((""
             + packet.getPacketId() + " "
             + packet.getCommand() + " ").getBytes(), packet
             .getContents()), out);
@@ -820,19 +910,16 @@ public class Communicator
     /**
      * This method performs a handshake with the server. This does not include
      * running the authenticate command, it only includes negotiating security
-     * keys with the server, and everything up to where you can use Crypto.ec()
-     * and Crypto.dc() to send and receive packets.
+     * keys with the server, and everything up to where you can communicate over
+     * this socket using the methods in DatagramUtils.
      * 
      * @param socket
      *            The socket on which to perform the handshake
-     * @return An AES-256 security key generated during the handshake. This
-     *         should be passed to all calls of Crypto.ec() and Crypto.dc() used
-     *         to communicate with this socket.
      * @throws IOException
      *             if an I/O error occures
      */
-    private synchronized Aes256 performHandshake(
-        Socket socket) throws IOException
+    private synchronized void performHandshake(
+        SSLSocket socket) throws IOException
     {
         final OutputStream out = socket.getOutputStream();
         InputStream in = socket.getInputStream();
@@ -854,57 +941,6 @@ public class Communicator
             throw new ProtocolMismatchException(
                 "Invalid initial response sent");
         }
-        BigInteger aesRandomNumber = new BigInteger(3060,
-            random);
-        byte[] securityKeyBytes = new byte[32];
-        System.arraycopy(aesRandomNumber.toByteArray(), 0,
-            securityKeyBytes, 0, 32);
-        final Aes256 securityKey = new Aes256(
-            securityKeyBytes);
-        BigInteger securityKeyEncrypted = RSA.encrypt(
-            serverRsaPublic, serverRsaMod, aesRandomNumber);
-        out
-            .write((securityKeyEncrypted.toString(16) + "\n")
-                .getBytes());
-        BigInteger randomServerCheckInteger = new BigInteger(
-            3060, random);
-        byte[] randomServerCheckBytes = new byte[16];
-        System.arraycopy(randomServerCheckInteger
-            .toByteArray(), 0, randomServerCheckBytes, 0,
-            16);
-        BigInteger serverCheckEncrypted = RSA.encrypt(
-            serverRsaPublic, serverRsaMod,
-            randomServerCheckInteger);
-        out
-            .write((serverCheckEncrypted.toString(16) + "\n")
-                .getBytes());
-        out.flush();
-        s = "";
-        for (int i = 0; i < 1024; i++)
-        {
-            int read = in.read();
-            s += (char) read;
-            if ((read == '\r' || read == '\n') && i != 0)
-                break;
-            if (i == 1023)
-                throw new ProtocolMismatchException(
-                    "too much second initialization data sent by the server");
-        }
-        s = s.trim();
-        byte[] confirmServerCheckBytes = new byte[16];
-        // FIXME: arrayindexoutofboundsexception for small arrays
-        securityKey.decrypt(new BigInteger(s, 16)
-            .toByteArray(), 0, confirmServerCheckBytes, 0);
-        if (!Arrays.equals(randomServerCheckBytes,
-            confirmServerCheckBytes))
-            throw new RuntimeException(
-                "Server failed check bytes with sent "
-                    + Hash.hexcode(randomServerCheckBytes)
-                    + " and received "
-                    + Hash.hexcode(confirmServerCheckBytes)
-                    + " and unenc received "
-                    + Hash.hexcode(new BigInteger(s, 16)
-                        .toByteArray()));
         out.write('c');
         out.flush();
         for (int i = 0; i < 5; i++)
@@ -915,14 +951,6 @@ public class Communicator
                 throw new ProtocolMismatchException(
                     "no terminating 'c' at end of handshake");
         }
-        byte[] antiReplayMessage = Crypto.dec(securityKey,
-            in, 200);
-        String antiReplayHash = Hash
-            .hash(antiReplayMessage);
-        Crypto.enc(securityKey, antiReplayHash.getBytes(),
-            out);
-        out.flush();
-        return securityKey;
     }
     
     private static volatile long cid = 1;

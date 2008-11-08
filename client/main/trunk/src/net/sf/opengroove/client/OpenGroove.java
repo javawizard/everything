@@ -44,6 +44,7 @@ import java.net.Socket;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
+import java.security.Security;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -94,6 +95,8 @@ import javax.swing.border.EmptyBorder;
 import javax.swing.event.PopupMenuEvent;
 import javax.swing.event.PopupMenuListener;
 import javax.swing.filechooser.FileNameExtensionFilter;
+
+import org.bouncycastle.jce.provider.BouncyCastleProvider;
 
 import net.sf.opengroove.client.com.CommandCommunicator;
 import net.sf.opengroove.client.com.Communicator;
@@ -435,6 +438,7 @@ public class OpenGroove
         // UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
         gcThread.setDaemon(true);
         gcThread.start();
+        Security.addProvider(new BouncyCastleProvider());
         JFrame frame3 = new JFrame("opengroovemain");
         frame3.setSize(800, 10);
         // frame3.show();
@@ -1262,12 +1266,16 @@ public class OpenGroove
                             }
                         }
                     });
-                Communicator com = new Communicator(Userids
-                    .toRealm(userid), true, false,
-                    "normal", Userids.toUsername(userid),
-                    user.getComputer(), password, user
-                        .getServerRsaPub(), user
-                        .getServerRsaMod(), context
+                JFrame launchbar = new JFrame(context
+                    .createLaunchbarTitle());
+                launchbar.setLocationRelativeTo(null);
+                context.setLaunchbar(launchbar);
+                Communicator com = new Communicator(
+                    launchbar, Userids.toRealm(userid),
+                    true, false, "normal", Userids
+                        .toUsername(userid), user
+                        .getComputer(), password, user
+                        .getTrustedCertificates(), context
                         .getStatusListener(), null);
                 CommandCommunicator commandCom = new CommandCommunicator(
                     com);
@@ -1949,11 +1957,10 @@ public class OpenGroove
                         // closing denied, so we'll explicitly set when we want
                         // to allow it instead of explicitly setting when we
                         // want to deny it.
-                        String userid = useridField
+                        final String userid = useridField
+                            .getText().toLowerCase();
+                        final String password = passwordField
                             .getText();
-                        String password = passwordField
-                            .getText();
-                        userid = userid.toLowerCase();
                         if (Storage.getLocalUser(userid) != null)
                         {
                             JOptionPane
@@ -1997,176 +2004,120 @@ public class OpenGroove
                          * authenticate, to make sure that they entered a
                          * correct userid and password.
                          */
-                        StatusDialog statusDialog = new StatusDialog(
+                        final StatusDialog statusDialog = new StatusDialog(
                             newAccountFrame,
                             "Please wait while we validate your username and password...");
                         statusDialog.showImmediate();
-                        try
+                        new Thread()
                         {
-                            vars.userid = userid;
-                            vars.password = password;
-                            System.out.println();
-                            if (vars.serverKey == null
-                                || !vars.serverKey
-                                    .equals(Userids
-                                        .toRealm(userid)))
-                            {
-                                /*
-                                 * If we're in here then the user needs to input
-                                 * their server's security keys.
-                                 */
-                                statusDialog.hide();
-                                JOptionPane
-                                    .showMessageDialog(
-                                        newAccountFrame,
-                                        "OpenGroove needs your realm's "
-                                            + "security keys to continue.\n"
-                                            + "When you are prompted, select the file that "
-                                            + "contains your realm's security keys.\n"
-                                            + "If you don't know your realm's security keys, contact\n"
-                                            + "your realm's administrator. You could try going to\n"
-                                            + Userids
-                                                .toRealm(userid)
-                                            + " for more information.");
-                                JFileChooser chooser = new JFileChooser();
-                                chooser
-                                    .setMultiSelectionEnabled(false);
-                                chooser
-                                    .setFileFilter(new FileNameExtensionFilter(
-                                        "OpenGroove Server Security Key files",
-                                        "ogvs"));
-                                if (chooser
-                                    .showOpenDialog(newAccountFrame) != JFileChooser.APPROVE_OPTION)
-                                {
-                                    return;
-                                }
-                                File securityKeyFile = chooser
-                                    .getSelectedFile();
-                                try
-                                {
-                                    ServerSecurityKey key = ServerSecurityKey
-                                        .parse(securityKeyFile);
-                                    key.realm = Userids
-                                        .toRealm(userid);
-                                    vars.serverKey = key;
-                                }
-                                catch (Exception e2)
-                                {
-                                    JOptionPane
-                                        .showMessageDialog(
-                                            newAccountFrame,
-                                            "The file you selected is corrupt, or could not be read.");
-                                    return;
-                                }
-                                statusDialog.dispose();
-                                statusDialog = new StatusDialog(
-                                    newAccountFrame,
-                                    "Please wait while we validate your username and password...");
-                                statusDialog
-                                    .showImmediate();
-                                try
-                                {
-                                    Thread.sleep(300);
-                                }
-                                catch (Exception exception)
-                                {
-                                    exception
-                                        .printStackTrace();
-                                }
-                                statusDialog.repaint();
-                            }
-                            CommandCommunicator lcom = null;
-                            try
+                            public void run()
                             {
                                 try
                                 {
-                                    lcom = new CommandCommunicator(
-                                        new Communicator(
-                                            Userids
-                                                .toRealm(userid),
-                                            false,
-                                            true,
-                                            "normal",
-                                            Userids
-                                                .toUsername(userid),
-                                            "",
-                                            password,
-                                            vars.serverKey.rsaPublic,
-                                            vars.serverKey.rsaMod,
-                                            null, null));
-                                }
-                                catch (Exception e2)
-                                {
-                                    /*
-                                     * Clear the security key in case that was
-                                     * the cause of the problem, might want to
-                                     * set it to just clear it if the
-                                     * communicator handshake failed in the
-                                     * future
-                                     */
-                                    vars.serverKey = null;
-                                    e2.printStackTrace();
-                                    statusDialog.hide();
-                                    JOptionPane
-                                        .showMessageDialog(
-                                            newAccountFrame,
-                                            "A connection to the server could not be established. Make "
-                                                + "sure you're connected to the internet and that you entered "
-                                                + "a correct userid.\n"
-                                                + "If you entered the security keys for this server, you may have entered them incorrectly.");
-                                    return;
-                                }
-                                try
-                                {
-                                    String res = lcom
-                                        .authenticate(
-                                            "normal",
-                                            Userids
-                                                .toUsername(userid),
-                                            "", password);
-                                    if (!res
-                                        .equalsIgnoreCase("OK"))
-                                        throw new RuntimeException(
-                                            "Expected status OK, but received "
-                                                + res);
-                                }
-                                catch (Exception e2)
-                                {
-                                    e2.printStackTrace();
-                                    statusDialog.hide();
-                                    JOptionPane
-                                        .showMessageDialog(
-                                            newAccountFrame,
-                                            "Your realm server reported that your userid or password was incorrect.");
-                                    return;
-                                }
-                                statusDialog.hide();
-                                setAllowClosing(true);
-                            }
-                            finally
-                            {
-                                if (lcom != null)
+                                    vars.userid = userid;
+                                    vars.password = password;
+                                    System.out.println();
+                                    CommandCommunicator lcom = null;
                                     try
                                     {
-                                        lcom
-                                            .getCommunicator()
-                                            .shutdown();
+                                        try
+                                        {
+                                            lcom = new CommandCommunicator(
+                                                new Communicator(
+                                                    newAccountFrame,
+                                                    Userids
+                                                        .toRealm(userid),
+                                                    false,
+                                                    true,
+                                                    "normal",
+                                                    Userids
+                                                        .toUsername(userid),
+                                                    "",
+                                                    password,
+                                                    vars.trustedCerts,
+                                                    null,
+                                                    null));
+                                        }
+                                        catch (Exception e2)
+                                        {
+                                            /*
+                                             * Clear the security key in case
+                                             * that was the cause of the
+                                             * problem, might want to set it to
+                                             * just clear it if the communicator
+                                             * handshake failed in the future
+                                             */
+                                            vars.serverKey = null;
+                                            e2
+                                                .printStackTrace();
+                                            statusDialog
+                                                .hide();
+                                            JOptionPane
+                                                .showMessageDialog(
+                                                    newAccountFrame,
+                                                    "A connection to the server could not be established. Make "
+                                                        + "sure you're connected to the internet and that you entered "
+                                                        + "a correct userid.\n"
+                                                        + "If you entered the security keys for this server, you may have entered them incorrectly.");
+                                            return;
+                                        }
+                                        try
+                                        {
+                                            String res = lcom
+                                                .authenticate(
+                                                    "normal",
+                                                    Userids
+                                                        .toUsername(userid),
+                                                    "",
+                                                    password);
+                                            if (!res
+                                                .equalsIgnoreCase("OK"))
+                                                throw new RuntimeException(
+                                                    "Expected status OK, but received "
+                                                        + res);
+                                        }
+                                        catch (Exception e2)
+                                        {
+                                            e2
+                                                .printStackTrace();
+                                            statusDialog
+                                                .hide();
+                                            JOptionPane
+                                                .showMessageDialog(
+                                                    newAccountFrame,
+                                                    "Your realm server reported that your userid or password was incorrect.");
+                                            return;
+                                        }
+                                        statusDialog.hide();
+                                        newAccountWizardPane
+                                            .setCurrentPage(LABEL_ENTER_KEYS);
                                     }
-                                    catch (Exception exception)
+                                    finally
                                     {
-                                        exception
-                                            .printStackTrace();
+                                        if (lcom != null)
+                                            try
+                                            {
+                                                lcom
+                                                    .getCommunicator()
+                                                    .shutdown();
+                                            }
+                                            catch (Exception exception)
+                                            {
+                                                exception
+                                                    .printStackTrace();
+                                            }
                                     }
+                                }
+                                finally
+                                {
+                                    newAccountWizardPane
+                                        .setNextPage(newAccountWizardPane
+                                            .getPageByTitle(LABEL_ENTER_KEYS));
+                                    statusDialog.dispose();
+                                    statusDialog.hide();
+                                }
                             }
-                        }
-                        finally
-                        {
-                            newAccountWizardPane
-                                .setNextPage(newAccountWizardPane
-                                    .getPageByTitle(LABEL_ENTER_KEYS));
-                            statusDialog.dispose();
-                            statusDialog.hide();
-                        }
+                        }.start();
                     }
                 });
             }
@@ -2248,12 +2199,11 @@ public class OpenGroove
                         String sigModString = vars.sigMod
                             .toString(16);
                         com = new CommandCommunicator(
-                            new Communicator(Userids
-                                .toRealm(vars.userid),
+                            new Communicator(
+                                newAccountFrame, Userids
+                                    .toRealm(vars.userid),
                                 false, true, "normal", "",
-                                "", "",
-                                vars.serverKey.rsaPublic,
-                                vars.serverKey.rsaMod,
+                                "", "", vars.trustedCerts,
                                 null, null));
                         com.authenticate("normal", Userids
                             .toUsername(vars.userid), "",
@@ -2426,12 +2376,11 @@ public class OpenGroove
                     try
                     {
                         com = new CommandCommunicator(
-                            new Communicator(Userids
-                                .toRealm(vars.userid),
+                            new Communicator(
+                                newAccountFrame, Userids
+                                    .toRealm(vars.userid),
                                 false, true, "normal", "",
-                                "", "",
-                                vars.serverKey.rsaPublic,
-                                vars.serverKey.rsaMod,
+                                "", "", vars.trustedCerts,
                                 null, null));
                         com.authenticate("normal", Userids
                             .toUsername(vars.userid), "",
@@ -2556,6 +2505,7 @@ public class OpenGroove
                                     {
                                         com = new CommandCommunicator(
                                             new Communicator(
+                                                newAccountFrame,
                                                 Userids
                                                     .toRealm(vars.userid),
                                                 false,
@@ -2564,8 +2514,7 @@ public class OpenGroove
                                                 "",
                                                 "",
                                                 "",
-                                                vars.serverKey.rsaPublic,
-                                                vars.serverKey.rsaMod,
+                                                vars.trustedCerts,
                                                 null, null));
                                         com
                                             .authenticate(
@@ -2817,16 +2766,13 @@ public class OpenGroove
                             {
                                 com = new CommandCommunicator(
                                     new Communicator(
+                                        newAccountFrame,
                                         Userids
                                             .toRealm(vars.userid),
-                                        false,
-                                        true,
-                                        "normal",
+                                        false, true,
+                                        "normal", "", "",
                                         "",
-                                        "",
-                                        "",
-                                        vars.serverKey.rsaPublic,
-                                        vars.serverKey.rsaMod,
+                                        vars.trustedCerts,
                                         null, null));
                                 com
                                     .authenticate(
@@ -2902,6 +2848,8 @@ public class OpenGroove
                                 .setServerRsaPub(vars.serverKey.rsaPublic);
                             user.setStoredPassword(null);
                             user.setUserid(vars.userid);
+                            user.getTrustedCertificates()
+                                .addAll(vars.trustedCerts);
                             Storage.addUser(user);
                             refreshTrayMenu();
                             setAllowClosing(true);
@@ -3380,9 +3328,7 @@ public class OpenGroove
     private static void loadLaunchBar(String userid,
         final UserContext context)
     {
-        final JFrame launchbar = new JFrame(context
-            .createLaunchbarTitle());
-        context.setLaunchbar(launchbar);
+        final JFrame launchbar = context.getLaunchbar();
         launchbar.setIconImage(trayimage);
         launchbar.setSize(300, 500);
         JPanel rightPanel = new JPanel();

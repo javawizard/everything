@@ -61,8 +61,8 @@ public class Storage
         logFolder = new File(base, "logs");
         if (!logFolder.exists())
             logFolder.mkdirs();
-        proxyStorage = new ProxyStorage<DataStore>(DataStore.class,
-            new File(base, "proxystorage"));
+        proxyStorage = new ProxyStorage<DataStore>(
+            DataStore.class, new File(base, "proxystorage"));
         dataStore = proxyStorage.getRoot();
     }
     
@@ -185,8 +185,10 @@ public class Storage
     {
         return dataStore;
     }
+    
     /**
      * Shorthand for <code>getLocalUser().getContact(id)</code>.
+     * 
      * @param id
      * @return
      */
@@ -636,6 +638,15 @@ public class Storage
             return;
         }
         property.setValue(value);
+    }
+    
+    public static TrustedCertificate createTrustedCertificate(
+        String encoded)
+    {
+        TrustedCertificate tcert = proxyStorage
+            .create(TrustedCertificate.class);
+        tcert.setEncoded(encoded);
+        return tcert;
     }
     
 }
