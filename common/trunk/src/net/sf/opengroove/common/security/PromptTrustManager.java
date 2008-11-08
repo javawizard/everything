@@ -96,82 +96,97 @@ public class PromptTrustManager implements X509TrustManager
     public void checkServerTrusted(X509Certificate[] chain,
         String s) throws CertificateException
     {
-        if (!s.equals("RSA"))
-            throw new CertificateException(
-                "Only the RSA algorithm is supported, the one used is "
-                    + s);
-        if (chain.length != 1 && chain.length != 2)
-            throw new CertificateException(
-                "Currently, only chains of length 1 or 2 are allowed.");
-        boolean isSignatureChainValid = CertificateUtils
-            .checkSignatureChainValid(chain);
-        boolean isChainDateValid = CertificateUtils
-            .checkChainDateValid(chain);
-        boolean isSignedChain = chain.length == 2;
-        X509Certificate endCertificate = chain[0];
-        X509Certificate rootCertificate = chain[chain.length - 1];
-        boolean rootTrusted = false;
-        if (isSignedChain)
+        try
         {
-            boolean isValidRoot = rootCertificate
-                .getSubjectX500Principal().equals(
-                    this.rootCertificate
-                        .getSubjectX500Principal())
-                && CertificateUtils
-                    .checkSignatureChainValid(new X509Certificate[] {
-                        endCertificate,
-                        this.rootCertificate });
-            if (isValidRoot)
-                rootTrusted = true;
-        }
-        else
-        {
-            for (X509Certificate cert : endCertificates)
+            if (!s.equals("RSA"))
+                throw new CertificateException(
+                    "Only the RSA algorithm is supported, the one used is "
+                        + s);
+            if (chain.length != 1 && chain.length != 2)
+                throw new CertificateException(
+                    "Currently, only chains of length 1 or 2 are allowed.");
+            boolean isSignatureChainValid = CertificateUtils
+                .checkSignatureChainValid(chain);
+            boolean isChainDateValid = CertificateUtils
+                .checkChainDateValid(chain);
+            boolean isSignedChain = chain.length == 2;
+            X509Certificate endCertificate = chain[0];
+            X509Certificate rootCertificate = chain[chain.length - 1];
+            boolean rootTrusted = false;
+            if (isSignedChain)
             {
-                if (CertificateUtils.isEncodedEqual(cert,
-                    endCertificate))
-                {
+                boolean isValidRoot = rootCertificate
+                    .getSubjectX500Principal().equals(
+                        this.rootCertificate
+                            .getSubjectX500Principal())
+                    && CertificateUtils
+                        .checkSignatureChainValid(new X509Certificate[] {
+                            endCertificate,
+                            this.rootCertificate });
+                if (isValidRoot)
                     rootTrusted = true;
-                    break;
+            }
+            else
+            {
+                for (X509Certificate cert : endCertificates)
+                {
+                    if (CertificateUtils.isEncodedEqual(
+                        cert, endCertificate))
+                    {
+                        rootTrusted = true;
+                        break;
+                    }
                 }
             }
+            boolean isTrusted = isChainDateValid
+                && isSignatureChainValid && rootTrusted;
+            if (isTrusted)
+                return;
+            /*
+             * Something's wrong with the certificate, so we'll show a dialog
+             * asking the user what to do.
+             */
+            ArrayList<String> problemStrings = new ArrayList<String>();
+            if (!isChainDateValid)
+                problemStrings
+                    .add("The certificate has expired or is not yet valid.");
+            if (!isSignatureChainValid)
+                problemStrings
+                    .add("The certificate's signature is invalid.");
+            if (!rootTrusted)
+                problemStrings
+                    .add("The certificate has not been signed by "
+                        + "the OpenGroove Certificate Authority.");
+            String reason = StringUtils
+                .delimited(problemStrings
+                    .toArray(new String[0]), "\n");
+            TrustResult trustResult = CertCheckFrame
+                .checkTrust(dialogOwner, endCertificate,
+                    reason);
+            if (trustResult == TrustResult.DONT_TRUST)
+                throw new CertificateException(
+                    "The user chose not to trust the certificate.");
+            /*
+             * The user chose to trust the certificate. Before returning, we'll
+             * notify the TrustAlwaysListener if it's not null and the trust
+             * result is TRUST_ALWAYS.
+             */
+            if (trustResult == TrustResult.TRUST_ALWAYS)
+            {
+                endCertificates.add(endCertificate);
+                if (listener != null)
+                    listener.trustAlways(endCertificate);
+            }
         }
-        boolean isTrusted = isChainDateValid
-            && isSignatureChainValid && rootTrusted;
-        if (isTrusted)
-            return;
-        /*
-         * Something's wrong with the certificate, so we'll show a dialog asking
-         * the user what to do.
-         */
-        ArrayList<String> problemStrings = new ArrayList<String>();
-        if (!isChainDateValid)
-            problemStrings
-                .add("The certificate has expired or is not yet valid.");
-        if (!isSignatureChainValid)
-            problemStrings
-                .add("The certificate's signature is invalid.");
-        if (!rootTrusted)
-            problemStrings
-                .add("The certificate has not been signed by "
-                    + "the OpenGroove Certificate Authority.");
-        String reason = StringUtils.delimited(
-            problemStrings.toArray(new String[0]), "\n");
-        TrustResult trustResult = CertCheckFrame
-            .checkTrust(dialogOwner, endCertificate, reason);
-        if (trustResult == TrustResult.DONT_TRUST)
-            throw new CertificateException(
-                "The user chose not to trust the certificate.");
-        /*
-         * The user chose to trust the certificate. Before returning, we'll
-         * notify the TrustAlwaysListener if it's not null and the trust result
-         * is TRUST_ALWAYS.
-         */
-        if (trustResult == TrustResult.TRUST_ALWAYS)
+        catch (CertificateException e)
         {
-            endCertificates.add(endCertificate);
-            if (listener != null)
-                listener.trustAlways(endCertificate);
+            e.printStackTrace();
+            throw e;
+        }
+        catch (RuntimeException e)
+        {
+            e.printStackTrace();
+            throw e;
         }
     }
     
