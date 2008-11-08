@@ -184,8 +184,8 @@ public interface LocalUser extends ProxyObject
      *         certificates) that this user has chosen to trust
      */
     @Property
-    @ListType(String.class)
-    public StoredList<String> getTrustedCertificates();
+    @ListType(TrustedCertificate.class)
+    public StoredList<TrustedCertificate> getTrustedCertificates();
     
     public static class CustomDelegate implements Delegate
     {
