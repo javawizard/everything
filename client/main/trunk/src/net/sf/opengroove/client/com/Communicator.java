@@ -823,11 +823,21 @@ public class Communicator
             if (!responsePacket.getResponse().trim()
                 .equalsIgnoreCase("OK"))
             {
+                if (responsePacket.getResponse().trim()
+                    .equalsIgnoreCase("UNAUTHORIZED"))
+                {
+                    reconnect();
+                }
                 throw new FailedResponseException(
                     responsePacket.getResponse(),
                     "For response code: \""
                         + responsePacket.getResponse()
-                        + "\" and message "
+                        + "\" with responsecontents "
+                        + new String(responsePacket
+                            .getContents(), 0, Math
+                            .min(responsePacket
+                                .getContents().length, 128))
+                        + " and message "
                         + new String(packet.getContents(),
                             0, Math.min(packet
                                 .getContents().length, 128)));

@@ -1766,7 +1766,7 @@ public class OpenGroove
         final String LABEL_ENTER_KEYS = "Select your security keys";
         final String LABEL_MORE_INFO = "Enter some additional information";
         final String LABEL_COMPUTER = "Choose a name for this computer";
-        final String LABEL_DONE = "Finished";
+        final String LABEL_DONE = "Successfully added account";
         if (welcome)
         {
             StandardWizardPage welcomePage = new StandardWizardPage(
@@ -1933,6 +1933,16 @@ public class OpenGroove
                     {
                         if (e.getID() != PageEvent.PAGE_CLOSING)
                             return;
+                        if (!(e.getSource() instanceof JButton))
+                        {
+                            /*
+                             * If we get here then the page close is a result of
+                             * someone calling setCurrenPage on the wizard, so
+                             * we want to honor that request
+                             */
+                            setAllowClosing(true);
+                            return;
+                        }
                         if (!((JButton) e.getSource())
                             .getName().equals(
                                 ButtonNames.NEXT))
@@ -2256,6 +2266,9 @@ public class OpenGroove
                         .setText("Your security keys have been successfully generated. Click "
                             + "next to continue.");
                     label.setVisible(true);
+                    newAccountWizardPane
+                        .setNextPage(newAccountWizardPane
+                            .getPageByTitle(LABEL_COMPUTER));
                     setNextAllowed(true);
                 }
             };
@@ -2454,12 +2467,17 @@ public class OpenGroove
                     progress.setString("");
                     progress.setIndeterminate(false);
                     setNextAllowed(true);
+                    newAccountWizardPane
+                        .setNextPage(newAccountWizardPane
+                            .getPageByTitle(LABEL_COMPUTER));
                 }
             };
             
             @Override
             protected void init()
             {
+                System.out
+                    .println("about to check account");
                 progress = new JProgressBar();
                 progress.setIndeterminate(true);
                 progress.setStringPainted(true);
@@ -2503,6 +2521,8 @@ public class OpenGroove
                                     CommandCommunicator com = null;
                                     try
                                     {
+                                        System.out
+                                            .println("checking for security keys");
                                         com = new CommandCommunicator(
                                             new Communicator(
                                                 newAccountFrame,
@@ -2516,6 +2536,8 @@ public class OpenGroove
                                                 "",
                                                 vars.trustedCerts,
                                                 null, null));
+                                        System.out
+                                            .println("security key auth");
                                         com
                                             .authenticate(
                                                 "normal",
@@ -2523,6 +2545,8 @@ public class OpenGroove
                                                     .toUsername(vars.userid),
                                                 "",
                                                 vars.password);
+                                        System.out
+                                            .println("downloading remote keys");
                                         String existingEncPub = com
                                             .getUserSetting(
                                                 "",
@@ -2543,6 +2567,8 @@ public class OpenGroove
                                                 "",
                                                 ""
                                                     + UserSettings.KEY_SIG_MOD);
+                                        System.out
+                                            .println("performing checks for new keys");
                                         boolean needsNewKeys = existingEncPub == null
                                             || existingEncMod == null
                                             || existingSigPub == null
@@ -2681,8 +2707,7 @@ public class OpenGroove
         // };
         // pages.append(generalInfoPage);
         StandardWizardPage computerNamePage = new StandardWizardPage(
-            "Select a computer name", false, true, true,
-            false)
+            LABEL_COMPUTER, false, true, true, false)
         {
             private JTextField field;
             
@@ -2729,131 +2754,172 @@ public class OpenGroove
                     @Override
                     public void pageEventFired(PageEvent e)
                     {
+                        if (!(e.getSource() instanceof JButton))
+                        {
+                            setAllowClosing(true);
+                            return;
+                        }
                         if (e.getID() == PageEvent.PAGE_CLOSING)
                         {
-                            /*
-                             * We'll try to create the computer on the server.
-                             * If this fails, we don't allow closing, and we
-                             * show a message telling the user that it failed,
-                             * and the reason (IE an internet error, a computer
-                             * with that name already exists, etc.). If it
-                             * succeeds, then we create a local user, inject all
-                             * of the info we've collected thus far, and forward
-                             * on to the next page, which is a page telling the
-                             * user that they've successfully created an
-                             * OpenGroove account, and they can click finish to
-                             * open the login screen for their account.
-                             */
                             setAllowClosing(false);
-                            String computerName = field
-                                .getText();
-                            if (!computerName.replaceAll(
-                                "[^a-zA-Z0-9]", "-")
-                                .equalsIgnoreCase(
-                                    computerName))
+                            setNextAllowed(false);
+                            new Thread()
                             {
-                                JOptionPane
-                                    .showMessageDialog(
-                                        newAccountFrame,
-                                        "The computer name you specified contains invalid characters.");
-                                return;
-                            }
-                            computerName = computerName
-                                .toLowerCase();
-                            field.setText(computerName);
-                            CommandCommunicator com = null;
-                            try
-                            {
-                                com = new CommandCommunicator(
-                                    new Communicator(
-                                        newAccountFrame,
-                                        Userids
-                                            .toRealm(vars.userid),
-                                        false, true,
-                                        "normal", "", "",
-                                        "",
-                                        vars.trustedCerts,
-                                        null, null));
-                                com
-                                    .authenticate(
-                                        "normal",
-                                        Userids
-                                            .toUsername(vars.userid),
-                                        "", vars.password);
-                                try
+                                public void run()
                                 {
-                                    com.createComputer(
-                                        computerName, "pc");
-                                }
-                                catch (Exception e2)
-                                {
-                                    if (!(e2 instanceof FailedResponseException))
-                                        throw e2;
-                                    JOptionPane
-                                        .showMessageDialog(
-                                            newAccountFrame,
-                                            "That computer name is already in use.");
-                                    return;
-                                }
-                            }
-                            catch (Exception e2)
-                            {
-                                e2.printStackTrace();
-                                JOptionPane
-                                    .showMessageDialog(
-                                        newAccountFrame,
-                                        "An error occured while connecting to your server.");
-                                return;
-                            }
-                            finally
-                            {
-                                if (com != null)
+                                    /*
+                                     * We'll try to create the computer on the
+                                     * server. If this fails, we don't allow
+                                     * closing, and we show a message telling
+                                     * the user that it failed, and the reason
+                                     * (IE an internet error, a computer with
+                                     * that name already exists, etc.). If it
+                                     * succeeds, then we create a local user,
+                                     * inject all of the info we've collected
+                                     * thus far, and forward on to the next
+                                     * page, which is a page telling the user
+                                     * that they've successfully created an
+                                     * OpenGroove account, and they can click
+                                     * finish to open the login screen for their
+                                     * account.
+                                     */
+                                    String computerName = field
+                                        .getText();
+                                    if (!computerName
+                                        .replaceAll(
+                                            "[^a-zA-Z0-9]",
+                                            "-")
+                                        .equalsIgnoreCase(
+                                            computerName))
+                                    {
+                                        JOptionPane
+                                            .showMessageDialog(
+                                                newAccountFrame,
+                                                "The computer name you specified contains invalid characters.");
+                                        return;
+                                    }
+                                    computerName = computerName
+                                        .toLowerCase();
+                                    field
+                                        .setText(computerName);
+                                    CommandCommunicator com = null;
                                     try
                                     {
+                                        com = new CommandCommunicator(
+                                            new Communicator(
+                                                newAccountFrame,
+                                                Userids
+                                                    .toRealm(vars.userid),
+                                                false,
+                                                true,
+                                                "normal",
+                                                "",
+                                                "",
+                                                "",
+                                                vars.trustedCerts,
+                                                null, null));
                                         com
-                                            .getCommunicator()
-                                            .shutdown();
+                                            .authenticate(
+                                                "normal",
+                                                Userids
+                                                    .toUsername(vars.userid),
+                                                "",
+                                                vars.password);
+                                        try
+                                        {
+                                            com
+                                                .createComputer(
+                                                    computerName,
+                                                    "pc");
+                                        }
+                                        catch (Exception e2)
+                                        {
+                                            if (!(e2 instanceof FailedResponseException))
+                                                throw e2;
+                                            JOptionPane
+                                                .showMessageDialog(
+                                                    newAccountFrame,
+                                                    "That computer name is already in use.");
+                                            return;
+                                        }
                                     }
-                                    catch (Exception exception)
+                                    catch (Exception e2)
                                     {
-                                        exception
+                                        e2
                                             .printStackTrace();
+                                        JOptionPane
+                                            .showMessageDialog(
+                                                newAccountFrame,
+                                                "An error occured while connecting to your server.");
+                                        return;
                                     }
-                            }
-                            /*
-                             * Ok, we've successfully created the computer. Now
-                             * we store everything in a LocalUser object, and
-                             * add it to the storage.
-                             */
-                            LocalUser user = Storage
-                                .getStore().createUser();
-                            user.setAutoSignOn(false);
-                            user.setComputer(computerName);
-                            user.setEmailAddress("");
-                            user.setEncPassword(Hash
-                                .hash(vars.password));
-                            user.setLag(0);
-                            user.setLocalVisible(false);
-                            user.setPasswordHint(null);
-                            user.setRasEncMod(vars.encMod);
-                            user.setRsaEncPrv(vars.encPrv);
-                            user.setRsaEncPub(vars.encPub);
-                            user.setRsaSigMod(vars.sigMod);
-                            user.setRsaSigPrv(vars.sigPrv);
-                            user.setRsaSigPub(vars.sigPub);
-                            user.setSearchVisible(false);
-                            user
-                                .setServerRsaMod(vars.serverKey.rsaMod);
-                            user
-                                .setServerRsaPub(vars.serverKey.rsaPublic);
-                            user.setStoredPassword(null);
-                            user.setUserid(vars.userid);
-                            user.getTrustedCertificates()
-                                .addAll(vars.trustedCerts);
-                            Storage.addUser(user);
-                            refreshTrayMenu();
-                            setAllowClosing(true);
-                            vars.finishedWizard = true;
+                                    finally
+                                    {
+                                        if (com != null)
+                                            try
+                                            {
+                                                com
+                                                    .getCommunicator()
+                                                    .shutdown();
+                                            }
+                                            catch (Exception exception)
+                                            {
+                                                exception
+                                                    .printStackTrace();
+                                            }
+                                    }
+                                    /*
+                                     * Ok, we've successfully created the
+                                     * computer. Now we store everything in a
+                                     * LocalUser object, and add it to the
+                                     * storage.
+                                     */
+                                    LocalUser user = Storage
+                                        .getStore()
+                                        .createUser();
+                                    user
+                                        .setAutoSignOn(false);
+                                    user
+                                        .setComputer(computerName);
+                                    user
+                                        .setEmailAddress("");
+                                    user
+                                        .setEncPassword(Hash
+                                            .hash(vars.password));
+                                    user.setLag(0);
+                                    user
+                                        .setLocalVisible(false);
+                                    user
+                                        .setPasswordHint(null);
+                                    user
+                                        .setRasEncMod(vars.encMod);
+                                    user
+                                        .setRsaEncPrv(vars.encPrv);
+                                    user
+                                        .setRsaEncPub(vars.encPub);
+                                    user
+                                        .setRsaSigMod(vars.sigMod);
+                                    user
+                                        .setRsaSigPrv(vars.sigPrv);
+                                    user
+                                        .setRsaSigPub(vars.sigPub);
+                                    user
+                                        .setSearchVisible(false);
+                                    user
+                                        .setStoredPassword(null);
+                                    user
+                                        .setUserid(vars.userid);
+                                    user
+                                        .getTrustedCertificates()
+                                        .addAll(
+                                            vars.trustedCerts);
+                                    Storage.addUser(user);
+                                    refreshTrayMenu();
+                                    newAccountWizardPane
+                                        .setCurrentPage(LABEL_DONE);
+                                    vars.finishedWizard = true;
+                                }
+                            }.start();
                         }
                     }
                 });
@@ -2861,8 +2927,7 @@ public class OpenGroove
         };
         pages.append(computerNamePage);
         StandardWizardPage finishedPage = new StandardWizardPage(
-            "Successfully added account", false, false,
-            true, true)
+            LABEL_DONE, false, false, true, true)
         {
             
             @Override
