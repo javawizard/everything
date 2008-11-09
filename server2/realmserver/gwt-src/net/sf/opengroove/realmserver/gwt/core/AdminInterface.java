@@ -7,7 +7,10 @@ import net.sf.opengroove.realmserver.gwt.core.rcp.AuthLink;
 import net.sf.opengroove.realmserver.gwt.core.rcp.AuthLinkAsync;
 import net.sf.opengroove.realmserver.gwt.core.rcp.UserException;
 import net.sf.opengroove.realmserver.gwt.core.rcp.model.GUser;
+import net.sf.opengroove.realmserver.gwt.core.rcp.model.PKIGeneralInfo;
 
+import com.extjs.gxt.ui.client.widget.Info;
+import com.extjs.gxt.ui.client.widget.InfoConfig;
 import com.google.gwt.core.client.EntryPoint;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.user.client.Window;
@@ -156,7 +159,7 @@ public class AdminInterface implements EntryPoint
     {
         RootPanel root = RootPanel.get();
         HTMLPanel wrapper = new HTMLPanel(
-            "<table width='100%' border='0' cellspacing='0' cellpadding='12'>"
+            "<table width='100%' border='0' cellspacing='12' cellpadding=''>"
                 + "<tr><td>"
                 + "<table border='0' cellspacing='0' cellpadding='3'>"
                 + "<tr><td colspan='2'><span style='font-size: 30'>"
@@ -248,15 +251,96 @@ public class AdminInterface implements EntryPoint
     
     private void loadPKITab()
     {
-        VerticalPanel tab = new VerticalPanel();
+        final VerticalPanel tab = new VerticalPanel();
         tab.setSpacing(5);
-        tab
-            .add(new HTML(
-                "Your server's fingerprint is "
-                    + ". You'll need to provide this to "
-                    + "people if they're trying to use your server and your "
-                    + "server's certificate isn't signed by the OpenGroove CA."));
+        tabs.addTabListener(new TabListener()
+        {
+            
+            public boolean onBeforeTabSelected(
+                SourcesTabEvents sender, int tabIndex)
+            {
+                return true;
+            }
+            
+            public void onTabSelected(
+                SourcesTabEvents sender, int tabIndex)
+            {
+                if (tabs.getWidgetIndex(tab) == tabIndex)
+                {
+                    refreshPKITab(tab);
+                }
+            }
+        });
         tabs.add(tab, "PKI");
+    }
+    
+    protected void refreshPKITab(final VerticalPanel tab)
+    {
+        final DialogBox refreshingDialog = new DialogBox();
+        refreshingDialog.setText("Loading...");
+        refreshingDialog
+            .setWidget(new Label(
+                "Please wait while OGRSAdmin refreshes the user list..."));
+        refreshingDialog.center();
+        refreshingDialog.show();
+        authLink
+            .getPKIGeneralInfo(new AsyncCallback<PKIGeneralInfo>()
+            {
+                
+                public void onFailure(Throwable caught)
+                {
+                    refreshingDialog.hide();
+                    removeAll(tab);
+                    tab.add(new Label(
+                        "The PKI tab couldn't be loaded. Try "
+                            + "refreshing this page."));
+                }
+                
+                public void onSuccess(PKIGeneralInfo result)
+                {
+                    refreshingDialog.hide();
+                    removeAll(tab);
+                    tab
+                        .add(new HTML(
+                            "Your server's certificate fingerprint is "
+                                + result
+                                    .getCertFingerprint()
+                                + ". You'll need to provide this to "
+                                + "people if they're trying to use your server and your "
+                                + "server's certificate isn't signed by the OpenGroove CA."));
+                    if (!result.isCertValidDate())
+                    {
+                        tab
+                            .add(new HTML(
+                                "Your server's certificate has expired. "
+                                    + "You'll need to generate a new certificate "
+                                    + "and, if your previous certificate was signed "
+                                    + "by the OpenGroove CA, you'll need to get the"
+                                    + " new one signed as well."));
+                    }
+                    if (!result.isHasSignedCert())
+                    {
+                        tab
+                            .add(new HTML(
+                                "<b>Your server's certificate has not been "
+                                    + "signed by the OpenGroove CA.</b> This means that "
+                                    + "users wanting to connect to your server will always "
+                                    + "get a message stating that the server's certificate is "
+                                    + "invalid. In addition, users of your realm server will "
+                                    + "not be able to communicate with users of other realm "
+                                    + "severs. Getting a certificate signed by the OpenGroove "
+                                    + "CA is free. You can click the \"Get your certificate "
+                                    + "signed\" button below to get started."));
+                    }
+                    tab
+                        .add(new Label(
+                            "Your certificate will expire on "
+                                + result.getCertExpiresOn()
+                                + ". If you don't want to cause problems "
+                                + "with users connecting to your server, you should "
+                                + "generate a new certificate or get yours re-signed before then."));
+                }
+            });
     }
     
     private void loadWelcomeTab()
@@ -435,9 +519,11 @@ public class AdminInterface implements EntryPoint
                         public void onSuccess(Void result)
                         {
                             creatingBox.hide();
-                            Window
-                                .alert("The user has been successfully created.");
                             refreshUserList();
+                            showInfoBox(
+                                "Successfully created user",
+                                "The user has been successfully created. "
+                                    + "They can now log in to OpenGroove.");
                         }
                     });
             }
@@ -454,6 +540,16 @@ public class AdminInterface implements EntryPoint
         newUserInfoBox.setWidget(panel);
         newUserInfoBox.center();
         newUserInfoBox.show();
+    }
+    
+    public static void showInfoBox(String title,
+        String message)
+    {
+        InfoConfig config = new InfoConfig(title, message);
+        config.display = 6000;
+        config.title = title;
+        config.text = message;
+        Info.display(config);
     }
     
     private void refreshUserList()
@@ -482,12 +578,12 @@ public class AdminInterface implements EntryPoint
                 refreshingDialog.hide();
                 userListTable.resize(result.length, 3);
                 userListTable.setBorderWidth(0);
-                userListTable.setCellPadding(2);
+                userListTable.setCellSpacing(3);
                 for (int i = 0; i < result.length; i++)
                 {
                     final GUser user = result[i];
                     userListTable.setWidget(i, 0,
-                        new Label(user.getUsername()));
+                        new Label(user.getUsername() + "  "));
                     Button notifyButton = new Button(
                         "Send notification");
                     notifyButton

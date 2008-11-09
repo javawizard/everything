@@ -434,7 +434,7 @@ public class OpenGrooveRealmServer
          * Indicates that the connected user is not authorized to perform this
          * command at this time. Most commands require that a user be
          * authenticated as a computer to perform. Calling a command when
-         * authenticated as a user but not as a user is a common cause of
+         * authenticated as a user but not as a computer is a common cause of
          * getting this error. See
          * www.opengroove.org/dev/protocol/commands/client---realm-server for a
          * list of commands and what authentication is required to execute them
@@ -996,11 +996,11 @@ public class OpenGrooveRealmServer
                         "The command specified is not a valid command");
                 if (username == null
                     && !command.whenUnauth())
-                    throw new FailedResponseException(
+                    throw new FailedResponseException(Status.UNAUTHORIZED,
                         "You must run the authenticate command before this one.");
                 if (computerName == null
                     && !command.whenNoComputer())
-                    throw new FailedResponseException(
+                    throw new FailedResponseException(Status.UNAUTHORIZED,
                         "This command can only be run when authenticated as a computer.");
                 command.handle(packetId, data, this);
             }
@@ -1127,6 +1127,8 @@ public class OpenGrooveRealmServer
         System.out.println("OpenGroove Realm Server");
         System.out.println("www.opengroove.org");
         System.out.println("Initializing...");
+        ogcaCert = CertificateUtils.readCert(StringUtils
+            .readFile(new File("cacert.pem")));
         /*
          * Configuration that needs to be gathered before we can get up and
          * running:
@@ -3502,6 +3504,7 @@ public class OpenGrooveRealmServer
     }
     
     private static long nextId;
+    public static X509Certificate ogcaCert;
     
     public static synchronized String generateId()
     {

@@ -1,6 +1,7 @@
 package net.sf.opengroove.realmserver.gwt.core.rcp;
 
 import net.sf.opengroove.realmserver.gwt.core.rcp.model.GUser;
+import net.sf.opengroove.realmserver.gwt.core.rcp.model.PKIGeneralInfo;
 
 import com.google.gwt.user.client.rpc.RemoteService;
 
@@ -22,4 +23,6 @@ public interface AuthLink extends RemoteService
         throws UserException;
     
     public GUser[] getUsers();
+    
+    public PKIGeneralInfo getPKIGeneralInfo();
 }

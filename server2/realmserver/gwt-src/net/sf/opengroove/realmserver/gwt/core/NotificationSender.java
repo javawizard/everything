@@ -64,7 +64,7 @@ public class NotificationSender
         final DialogBox dialog = new DialogBox();
         dialog.setText("Send notification");
         HTMLPanel panel = new HTMLPanel(
-            "<table border='0' cellspacing='0' cellpadding='3'>"
+            "<table border='0' cellspacing='6' cellpadding='0'>"
                 + "<tr><td><b>To: &nbsp; </b></td><td><div id='toField'/></td></tr>"
                 + "<tr><td><b>Subject: &nbsp; </b></td><td><div id='subjectField'/></td></tr>"
                 + "<tr><td><b>Priority: &nbsp; </b></td><td><div id='priorityField'/></td></tr>"
@@ -199,8 +199,10 @@ public class NotificationSender
                                 Void result)
                             {
                                 sendingDialog.hide();
-                                Window
-                                    .alert("The notification has been successfully sent.");
+                                AdminInterface
+                                    .showInfoBox(
+                                        "Notification sent",
+                                        "The notification has been successfully sent.");
                                 /*
                                  * The above message should probably be changed
                                  * to reflect that fact that the notification
