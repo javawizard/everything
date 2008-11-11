@@ -285,14 +285,21 @@ public class UserContext
      * local time.
      */
     @TimerField
-    private ConditionalTimer timeSyncTimer;
+    private ConditionalTimer timeSyncTimer = new ConditionalTimer(
+        1000 * 60 * 3)
+    {
+        
+        public void execute()
+        {
+        }
+    };
     /**
      * A timer that checks to make sure that subscriptions are present for all
      * of the contacts that exist.
      */
     @TimerField
     private ConditionalTimer subscriptionTimer = new ConditionalTimer(
-        1000 * 60 * 2, connectionConditional)
+        1000 * 60 * 5, connectionConditional)
     {
         public void execute()
         {
