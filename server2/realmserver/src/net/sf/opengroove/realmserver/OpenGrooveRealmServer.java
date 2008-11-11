@@ -66,6 +66,7 @@ import javax.servlet.http.HttpServletResponse;
 import net.sf.opengroove.realmserver.data.model.Computer;
 import net.sf.opengroove.realmserver.data.model.ComputerSetting;
 import net.sf.opengroove.realmserver.data.model.Message;
+import net.sf.opengroove.realmserver.data.model.MessageRecipient;
 import net.sf.opengroove.realmserver.data.model.Subscription;
 import net.sf.opengroove.realmserver.data.model.User;
 import net.sf.opengroove.realmserver.data.model.UserSetting;
@@ -996,11 +997,13 @@ public class OpenGrooveRealmServer
                         "The command specified is not a valid command");
                 if (username == null
                     && !command.whenUnauth())
-                    throw new FailedResponseException(Status.UNAUTHORIZED,
+                    throw new FailedResponseException(
+                        Status.UNAUTHORIZED,
                         "You must run the authenticate command before this one.");
                 if (computerName == null
                     && !command.whenNoComputer())
-                    throw new FailedResponseException(Status.UNAUTHORIZED,
+                    throw new FailedResponseException(
+                        Status.UNAUTHORIZED,
                         "This command can only be run when authenticated as a computer.");
                 command.handle(packetId, data, this);
             }
@@ -1127,6 +1130,8 @@ public class OpenGrooveRealmServer
         System.out.println("OpenGroove Realm Server");
         System.out.println("www.opengroove.org");
         System.out.println("Initializing...");
+        if (!messageDataFolder.exists())
+            messageDataFolder.mkdirs();
         ogcaCert = CertificateUtils.readCert(StringUtils
             .readFile(new File("cacert.pem")));
         /*
@@ -3075,7 +3080,8 @@ public class OpenGrooveRealmServer
                             + ", so you could try going "
                             + "there in a browser and finding a contact link or something) and "
                             + "report the problem, or go to www.opengroove.org and contact us "
-                            + "with information about this problem.");
+                            + "with information about this problem. (send an email to "
+                            + "support@opengroove.org for questions.)");
                 /*
                  * We've created the file for the message's data at this point.
                  * Now we'll remove any message recipients that might already
@@ -3087,8 +3093,66 @@ public class OpenGrooveRealmServer
                  * either there is a message that is complete with recipients,
                  * or there is no message at all.
                  */
-                for (int i = 1; i < 0; i++)
-                    ;
+                MessageRecipient[] existingRecipients = DataStore
+                    .listMessageRecipients(messageId);
+                for (MessageRecipient recipient : existingRecipients)
+                {
+                    DataStore
+                        .deleteMessageRecipient(recipient);
+                }
+                for (int i = 1; i < tokens.length; i++)
+                {
+                    String[] recipientTokens = tokens[i]
+                        .split(" ", 2);
+                    if (recipientTokens.length == 1)
+                        recipientTokens = new String[] {
+                            recipientTokens[0], "" };
+                    String recipientUserid = resolveToUserid(recipientTokens[0]);
+                    String recipientComputer = recipientTokens[1];
+                    recipientComputer = recipientComputer
+                        .trim();
+                    boolean hasRecipientComputer = !recipientComputer
+                        .equals("");
+                    boolean recipientIsLocal = Userids
+                        .toRealm(recipientUserid)
+                        .equalsIgnoreCase(
+                            serverRealmAddress);
+                    if (recipientIsLocal
+                        && !hasRecipientComputer)
+                    {
+                        /*
+                         * The recipient is local and the recipient computer is
+                         * not defined. We'll expand the recipient into a list
+                         * of all of it's computers, and add each of them as a
+                         * recipient.
+                         */
+                        Computer[] expandedComputers = DataStore
+                            .listComputersByUser(relativeId(recipientUserid));
+                        for (Computer expandedComputer : expandedComputers)
+                        {
+                            DataStore
+                                .addMessageRecipient(new MessageRecipient(
+                                    messageId,
+                                    recipientUserid,
+                                    expandedComputer
+                                        .getComputername()));
+                        }
+                    }
+                    else
+                    {
+                        /*
+                         * The recipient is of a different realm or the
+                         * recipient computer is defined.We'll add the
+                         * recipient. If the recipient computer doesn't exist,
+                         * this will be picked up when all other recipients have
+                         * received and deleted the message.
+                         */
+                        DataStore
+                            .addMessageRecipient(new MessageRecipient(
+                                messageId, recipientUserid,
+                                recipientComputer));
+                    }
+                }
                 DataStore.addMessage(message);
             }
             
@@ -3218,6 +3282,19 @@ public class OpenGrooveRealmServer
     }
     
     /**
+     * If the input is a userid, returns it. If the input is a username, returns
+     * a userid made up of this server's realm and the input.
+     * 
+     * @param string
+     * @return
+     */
+    protected static String resolveToUserid(String string)
+    {
+        return Userids.resolveTo(string, Userids.toUserid(
+            serverRealmAddress, ""));
+    }
+    
+    /**
      * Throws a FailedResponseException with {@link Status#INVALIDREALM} if the
      * input specified is not a username (in othewords, userids are not
      * allowed). This is currently used to validate that all users specified in
@@ -3239,6 +3316,14 @@ public class OpenGrooveRealmServer
                     + "\" was supposed to be a username, but it wasn't.");
     }
     
+    /**
+     * If the string is a userid of this realm, converts it to a username. If
+     * it's already a username, returns it. If it's a userid of a different
+     * realm, returns it.
+     * 
+     * @param recipientUser
+     * @return
+     */
     protected static String relativeId(String recipientUser)
     {
         if (recipientUser.equals(""))
