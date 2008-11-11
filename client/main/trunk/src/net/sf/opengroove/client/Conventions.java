@@ -10,7 +10,7 @@ package net.sf.opengroove.client;
 public class Conventions
 {
     /**
-     * Formats a menu path. The arguments are a bunch of strings, each one
+     *  Formats a menu path. The arguments are a bunch of strings, each one
      * representing a progressive item within a menu. The result is the
      * formatted version of the paths entered. Currently, it returns the items
      * specified, but with a &rarr; character inbetween each one. For example, calling:<br/><br/>
