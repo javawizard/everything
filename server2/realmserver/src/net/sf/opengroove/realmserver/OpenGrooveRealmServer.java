@@ -3,6 +3,7 @@ package net.sf.opengroove.realmserver;
 import java.io.BufferedReader;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
+import java.io.EOFException;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
@@ -12,6 +13,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.PrintWriter;
+import java.io.RandomAccessFile;
 import java.io.StringReader;
 import java.io.StringWriter;
 import java.math.BigInteger;
@@ -455,7 +457,13 @@ public class OpenGrooveRealmServer
          * Indicates that there is no message with the id provided in the
          * command
          */
-        NOSUCHMESSAGE
+        NOSUCHMESSAGE,
+        /**
+         * Indicates that a data range specified is out of range. For example,
+         * if a message is 5 bytes long and bytes 1 through 6 are read, then
+         * this error will occur, since there is no 6th byte.
+         */
+        INDEXOUTOFBOUNDS
     };
     
     public static final SecureRandom random = new SecureRandom();
@@ -615,6 +623,7 @@ public class OpenGrooveRealmServer
     protected static final byte[] EMPTY = new byte[0];
     
     private static final int MAX_CONNECTIONS = 500;
+    protected static final int MAX_MESSAGE_SIZE = 2 * 1000 * 1000 * 1000;
     
     public static class TimedInputStream extends
         FilterInputStream
@@ -3202,6 +3211,13 @@ public class OpenGrooveRealmServer
                 verifyCanReadMessage(message,
                     connection.username,
                     connection.computerName);
+                File messageFile = new File(
+                    messageDataFolder, message.getFileId());
+                if (!messageFile.exists())
+                    messageFile.createNewFile();
+                long size = messageFile.length();
+                connection.sendEncryptedPacket(packetId,
+                    command(), Status.OK, "" + size);
             }
             
         };
@@ -3214,6 +3230,53 @@ public class OpenGrooveRealmServer
                 ConnectionHandler connection)
                 throws Exception
             {
+                String[] tokens = tokenize(data);
+                verifyAtLeast(tokens, 3);
+                String messageId = tokens[0];
+                int offset;
+                int length;
+                try
+                {
+                    offset = Integer.parseInt(tokens[1]);
+                    length = Integer.parseInt(tokens[2]);
+                }
+                catch (NumberFormatException e)
+                {
+                    throw new FailedResponseException(
+                        Status.FAIL,
+                        "The offset or the length/amount was not a number.");
+                }
+                if (length > 64000)
+                    throw new FailedResponseException(
+                        Status.INDEXOUTOFBOUNDS,
+                        "The length is too long (it can't "
+                            + "be longer than 64000 bytes)");
+                Message message = DataStore
+                    .getMessage(messageId);
+                verifyCanReadMessage(message,
+                    connection.username,
+                    connection.computerName);
+                File messageFile = new File(
+                    messageDataFolder, message.getFileId());
+                if (!messageFile.exists())
+                    messageFile.createNewFile();
+                RandomAccessFile in = new RandomAccessFile(
+                    messageFile, "r");
+                in.seek(offset);
+                byte[] fileData = new byte[length];
+                try
+                {
+                    in.readFully(fileData);
+                }
+                catch (EOFException e)
+                {
+                    throw new FailedResponseException(
+                        Status.INDEXOUTOFBOUNDS,
+                        "You're trying to read past the end of the message");
+                }
+                connection.sendEncryptedPacket(packetId,
+                    command(), Status.OK, concat(
+                        new byte[] { 'c' }, fileData));
             }
             
         };
@@ -3226,6 +3289,55 @@ public class OpenGrooveRealmServer
                 ConnectionHandler connection)
                 throws Exception
             {
+                byte[] dataBytes = readToBytes(data);
+                byte[] first128 = new byte[Math.min(
+                    dataBytes.length, 128)];
+                System.arraycopy(dataBytes, 0, first128, 0,
+                    first128.length);
+                String first128string = new String(first128);
+                String[] tokens = tokenizeByLines(first128string);
+                verifyAtLeast(tokens, 3);
+                String messageId = tokens[0];
+                int offset;
+                int length;
+                try
+                {
+                    offset = Integer.parseInt(tokens[1]);
+                    length = Integer.parseInt(tokens[2]);
+                }
+                catch (NumberFormatException e)
+                {
+                    throw new FailedResponseException(
+                        Status.FAIL,
+                        "The offset or the length/amount was not a number.");
+                }
+                int actualDataIndex = tokens[0].length()
+                    + tokens[1].length()
+                    + tokens[2].length() + 3;
+                if (length > 64000)
+                    throw new FailedResponseException(
+                        Status.INDEXOUTOFBOUNDS,
+                        "The length is too long (it can't "
+                            + "be longer than 64000 bytes)");
+                if ((offset + length) > MAX_MESSAGE_SIZE)
+                    throw new FailedResponseException(
+                        Status.INDEXOUTOFBOUNDS,
+                        "Messages cannot be larger than 2GB");
+                if ((length + actualDataIndex) > dataBytes.length)
+                    throw new FailedResponseException(
+                        Status.INDEXOUTOFBOUNDS, "");
+                Message message = DataStore
+                    .getMessage(messageId);
+                verifyCanReadMessage(message,
+                    connection.username,
+                    connection.computerName);
+                File messageFile = new File(
+                    messageDataFolder, message.getFileId());
+                if (!messageFile.exists())
+                    messageFile.createNewFile();
+                RandomAccessFile in = new RandomAccessFile(
+                    messageFile, "r");
+                in.seek(offset);
             }
             
         };
@@ -3323,6 +3435,9 @@ public class OpenGrooveRealmServer
     protected static void verifyCanReadMessage(
         Message message, String username, String computer)
     {
+        if (message == null)
+            throw new FailedResponseException(
+                Status.NOSUCHMESSAGE, "");
         username = resolveToUserid(username);
         if (message.isSent())
         {
@@ -3339,6 +3454,9 @@ public class OpenGrooveRealmServer
     private static void verifyIsMessageCreator(
         Message message, String username, String computer)
     {
+        if (message == null)
+            throw new FailedResponseException(
+                Status.NOSUCHMESSAGE, "");
         username = resolveToUserid(username);
         boolean isMessageCreator = username
             .equalsIgnoreCase(message.getSender())
@@ -3355,6 +3473,9 @@ public class OpenGrooveRealmServer
     private static void verifyIsMessageRecipient(
         Message message, String username, String computer)
     {
+        if (message == null)
+            throw new FailedResponseException(
+                Status.NOSUCHMESSAGE, "");
         username = resolveToUserid(username);
         try
         {
