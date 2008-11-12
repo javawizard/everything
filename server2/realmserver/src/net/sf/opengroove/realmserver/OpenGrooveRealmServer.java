@@ -2306,6 +2306,11 @@ public class OpenGrooveRealmServer
                     .getUser(connection.username);
                 user.setPassword(Hash.hash(newPassword));
                 DataStore.updateUser(user);
+                /*
+                 * TODO: In the future, we should kick all of the user's current
+                 * connections off of the server. That way, all other computers
+                 * will have to provide the new password.
+                 */
                 connection.sendEncryptedPacket(packetId,
                     "setpassword", Status.OK, EMPTY);
             }
@@ -3154,6 +3159,10 @@ public class OpenGrooveRealmServer
                     }
                 }
                 DataStore.addMessage(message);
+                connection
+                    .sendEncryptedPacket(packetId,
+                        command(), Status.OK,
+                        "The message has been successfully created.");
             }
             
         };
@@ -3166,6 +3175,10 @@ public class OpenGrooveRealmServer
                 ConnectionHandler connection)
                 throws Exception
             {
+                /*
+                 * TODO: implement this command. The OpenGroove Client probably
+                 * won't use it, so it's not top priority.
+                 */
             }
             
         };
@@ -3178,6 +3191,17 @@ public class OpenGrooveRealmServer
                 ConnectionHandler connection)
                 throws Exception
             {
+                String[] tokens = tokenize(data);
+                verifyAtLeast(tokens, 1);
+                String messageId = tokens[0];
+                Message message = DataStore
+                    .getMessage(messageId);
+                if (message == null)
+                    throw new FailedResponseException(
+                        Status.NOSUCHMESSAGE, "");
+                verifyCanReadMessage(message,
+                    connection.username,
+                    connection.computerName);
             }
             
         };
@@ -3279,6 +3303,75 @@ public class OpenGrooveRealmServer
         };
         System.out.println("loaded " + commands.size()
             + " commands");
+    }
+    
+    /**
+     * This method checks to make sure that the userid/username specified is
+     * allowed read access to the message specified. If the message has not been
+     * sent, then this user must be the creator, or sender, of the message. If
+     * the message has been sent, then this user must be one of the message's
+     * recipients. If any of these validations fail, a FailedResponseException
+     * with status UNAUTHORIZED is thrown. This method should only be called for
+     * userids/usernames of this realm server; an exception will be thrown if
+     * this is not the case.
+     * 
+     * @param message
+     *            The id of the message to check
+     * @param username
+     *            The userid or username to check
+     */
+    protected static void verifyCanReadMessage(
+        Message message, String username, String computer)
+    {
+        username = resolveToUserid(username);
+        if (message.isSent())
+        {
+            verifyIsMessageRecipient(message, username,
+                computer);
+        }
+        else
+        {
+            verifyIsMessageCreator(message, username,
+                computer);
+        }
+    }
+    
+    private static void verifyIsMessageCreator(
+        Message message, String username, String computer)
+    {
+        username = resolveToUserid(username);
+        boolean isMessageCreator = username
+            .equalsIgnoreCase(message.getSender())
+            && computer.equalsIgnoreCase(message
+                .getComputer());
+        if (!isMessageCreator)
+        {
+            throw new FailedResponseException(
+                Status.UNAUTHORIZED,
+                "This user is not the message's creator.");
+        }
+    }
+    
+    private static void verifyIsMessageRecipient(
+        Message message, String username, String computer)
+    {
+        username = resolveToUserid(username);
+        try
+        {
+            boolean isMessageRecipient = DataStore
+                .isMessageRecipient(new MessageRecipient(
+                    message.getId(), username, computer)) > 0;
+            if (!isMessageRecipient)
+                throw new FailedResponseException(
+                    Status.UNAUTHORIZED,
+                    "This user is not one of the message's recipients.");
+        }
+        catch (SQLException e)
+        {
+            e.printStackTrace();
+            throw new FailedResponseException(Status.FAIL,
+                "An internal server error occured.");
+        }
     }
     
     /**
