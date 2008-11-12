@@ -100,6 +100,8 @@ import com.ibatis.sqlmap.client.SqlMapClientBuilder;
 
 public class OpenGrooveRealmServer
 {
+    public static final long MIN_FREE_DISK_SPACE = 500 * 1000 * 1000;
+    
     public interface ToString<S>
     {
         public String toString(S object);
@@ -3328,16 +3330,25 @@ public class OpenGrooveRealmServer
                         Status.INDEXOUTOFBOUNDS, "");
                 Message message = DataStore
                     .getMessage(messageId);
-                verifyCanReadMessage(message,
+                verifyCanWriteMessage(message,
                     connection.username,
                     connection.computerName);
                 File messageFile = new File(
                     messageDataFolder, message.getFileId());
                 if (!messageFile.exists())
                     messageFile.createNewFile();
-                RandomAccessFile in = new RandomAccessFile(
-                    messageFile, "r");
-                in.seek(offset);
+                if ((messageFile.getUsableSpace() - length) < MIN_FREE_DISK_SPACE)
+                    throw new FailedResponseException(
+                        Status.FAIL,
+                        "The server has run out of disk space.");
+                RandomAccessFile out = new RandomAccessFile(
+                    messageFile, "rw");
+                out.seek(offset);
+                out.write(dataBytes, actualDataIndex,
+                    length);
+                out.close();
+                connection.sendEncryptedPacket(packetId,
+                    command(), Status.OK, "");
             }
             
         };
@@ -3415,6 +3426,34 @@ public class OpenGrooveRealmServer
         };
         System.out.println("loaded " + commands.size()
             + " commands");
+    }
+    
+    /**
+     * Essentially the same as verifyCanReadMessage, but throws an exception if
+     * the message has already been sent.
+     * 
+     * @param message
+     * @param username
+     * @param computerName
+     */
+    protected static void verifyCanWriteMessage(
+        Message message, String username, String computer)
+    {
+        if (message == null)
+            throw new FailedResponseException(
+                Status.NOSUCHMESSAGE, "");
+        username = resolveToUserid(username);
+        if (message.isSent())
+        {
+            throw new FailedResponseException(
+                Status.UNAUTHORIZED,
+                "The message has already been sent.");
+        }
+        else
+        {
+            verifyIsMessageCreator(message, username,
+                computer);
+        }
     }
     
     /**
