@@ -100,6 +100,52 @@ import com.ibatis.sqlmap.client.SqlMapClientBuilder;
 
 public class OpenGrooveRealmServer
 {
+    /**
+     * A Runnable that sends the messageavailable command to all recipients of
+     * this message on this realm server.
+     * 
+     * @author Alexander Boyd
+     * 
+     */
+    public static class MessageAvailableNotifier implements
+        Runnable
+    {
+        private String messageId;
+        
+        public MessageAvailableNotifier(String messageId)
+        {
+            super();
+            this.messageId = messageId;
+        }
+        
+        public void run()
+        {
+            // TODO Auto-generated method stub
+            
+        }
+        
+    }
+    
+    public static class InterRealmMessageSender implements
+        Runnable
+    {
+        
+        private String messageId;
+        
+        public void run()
+        {
+            // TODO Auto-generated method stub
+            
+        }
+        
+        public InterRealmMessageSender(String messageId)
+        {
+            super();
+            this.messageId = messageId;
+        }
+        
+    }
+    
     public static final long MIN_FREE_DISK_SPACE = 500 * 1000 * 1000;
     
     public interface ToString<S>
@@ -620,7 +666,7 @@ public class OpenGrooveRealmServer
     
     public static final ThreadPoolExecutor tasks = new ThreadPoolExecutor(
         20, 400, 20, TimeUnit.SECONDS,
-        new LinkedBlockingQueue<Runnable>(5000));
+        new LinkedBlockingQueue<Runnable>(10000));
     
     protected static final byte[] EMPTY = new byte[0];
     
@@ -3450,6 +3496,12 @@ public class OpenGrooveRealmServer
                 verifyCanWriteMessage(message,
                     connection.username,
                     connection.computerName);
+                message.setSent(true);
+                DataStore.updateMessage(message);
+                tasks.execute(new MessageAvailableNotifier(
+                    messageId));
+                tasks.execute(new InterRealmMessageSender(
+                    messageId));
             }
         };
         new Command("listinboundmessages", 0, false, false)
