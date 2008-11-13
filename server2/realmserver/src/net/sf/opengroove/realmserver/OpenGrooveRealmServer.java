@@ -3277,8 +3277,7 @@ public class OpenGrooveRealmServer
                         "You're trying to read past the end of the message");
                 }
                 connection.sendEncryptedPacket(packetId,
-                    command(), Status.OK, concat(
-                        new byte[] { 'c' }, fileData));
+                    command(), Status.OK, fileData);
             }
             
         };
@@ -3297,7 +3296,7 @@ public class OpenGrooveRealmServer
                 System.arraycopy(dataBytes, 0, first128, 0,
                     first128.length);
                 String first128string = new String(first128);
-                String[] tokens = tokenizeByLines(first128string);
+                String[] tokens = first128string.split(" ");
                 verifyAtLeast(tokens, 3);
                 String messageId = tokens[0];
                 int offset;
@@ -3373,6 +3372,42 @@ public class OpenGrooveRealmServer
                 ConnectionHandler connection)
                 throws Exception
             {
+                String[] tokens = tokenize(data);
+                verifyAtLeast(tokens, 1);
+                String messageId = tokens[0];
+                Message message = DataStore
+                    .getMessage(messageId);
+                verifyCanReadMessage(message,
+                    connection.username,
+                    connection.computerName);
+                /*
+                 * At this point, the message exists, and we are allowed to read
+                 * the message. This means that if it hasn't been sent then we
+                 * are the sender, and if it has then we are a recipient. All we
+                 * need to do now is check to see if the message has been sent.
+                 * If it has, we remove this username/computer as a recipient.
+                 * If it hasn't, we remove all recipients and the message. We
+                 * don't need to worry about removing the storage file.
+                 */
+                boolean isSender = message.isSent();
+                if (isSender)
+                {
+                    DataStore.deleteMessage(messageId);
+                    for (MessageRecipient recipient : DataStore
+                        .listMessageRecipients(messageId))
+                    {
+                        DataStore
+                            .deleteMessageRecipient(recipient);
+                    }
+                }
+                else
+                {
+                    DataStore
+                        .deleteMessageRecipient(new MessageRecipient(
+                            messageId,
+                            resolveToUserid(connection.username),
+                            connection.computerName));
+                }
             }
             
         };
@@ -3385,8 +3420,37 @@ public class OpenGrooveRealmServer
                 ConnectionHandler connection)
                 throws Exception
             {
+                /*
+                 * This command is somewhat more complex than it would seem. At
+                 * first glance, it appears that all you have to do, besides
+                 * authorization checks, is mark the message as sent in the
+                 * database. You indeed have to do this, but the recipients
+                 * should also be notified that they have a new message waiting
+                 * for them, and the message needs to be sent to inter-realm
+                 * servers for the realms of message recipients not of this
+                 * realm. In addition, if this realm doesn't have OpenGroove CA
+                 * signed keys and if one of the message's recipients is of a
+                 * different realm, then we should send a user notification
+                 * (unless we've sent one recently) to the sender of the
+                 * message, telling them that this server's keys are not signed
+                 * and so they can't send messages to other realms.
+                 * 
+                 * After the authorization checks (IE making sure that this user
+                 * is the sender of the message and that the message has not
+                 * been sent yet), we'll mark the message as sent. Then, we'll
+                 * put a task in the task executor to notify all local
+                 * recipients that the message is here. Then, we'll put a task
+                 * in the task executor to handle sending the message to other
+                 * realms.
+                 */
+                String[] tokens = tokenizeAndVerify(data, 1);
+                String messageId = tokens[0];
+                Message message = DataStore
+                    .getMessage(messageId);
+                verifyCanWriteMessage(message,
+                    connection.username,
+                    connection.computerName);
             }
-            
         };
         new Command("listinboundmessages", 0, false, false)
         {
@@ -3426,6 +3490,14 @@ public class OpenGrooveRealmServer
         };
         System.out.println("loaded " + commands.size()
             + " commands");
+    }
+    
+    protected static String[] tokenizeAndVerify(
+        InputStream data, int i) throws IOException
+    {
+        String[] tokens = tokenize(data);
+        verifyAtLeast(tokens, i);
+        return tokens;
     }
     
     /**
