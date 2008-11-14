@@ -333,6 +333,8 @@ public class DataStore
     
     // !ADDTOSQL
 
+public static MessageRecipient[] listOrphanMessageRecipients()throws SQLException{return (MessageRecipient[]) getLdbClient().queryForList("listOrphanMessageRecipients").toArray(new MessageRecipient[0]);}
+
 public static Message[] listMessagesWithoutRecipients()throws SQLException{return (Message[]) getLdbClient().queryForList("listMessagesWithoutRecipients").toArray(new Message[0]);}
     
     public static void deleteMessageRecipients(String v)

@@ -313,6 +313,20 @@ public class OpenGrooveRealmServer
         
         public void run()
         {
+            try
+            {
+                Message[] readMessages = DataStore
+                    .listMessagesWithoutRecipients();
+                for (Message message : readMessages)
+                {
+                    DataStore
+                        .deleteMessage(message.getId());
+                }
+            }
+            catch (Exception exception)
+            {
+                exception.printStackTrace();
+            }
         }
         
     }

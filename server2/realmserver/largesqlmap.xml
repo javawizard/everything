@@ -6,6 +6,18 @@
 <sqlMap>
     <!-- !ADDTOSQL -->
 
+    <select id="listOrphanMessageRecipients" 
+         resultClass="net.sf.opengroove.realmserver.data.model.MessageRecipient" >
+        select * from $$prefix$$messagerecipients
+        where not
+        (
+            $$prefix$$messagerecipients.id in
+            (
+                select id from $$prefix$$messages
+            )
+        )
+    </select>
+
     <select id="listMessagesWithoutRecipients" 
          resultClass="net.sf.opengroove.realmserver.data.model.Message" >
         select * from $$prefix$$messages where not 
