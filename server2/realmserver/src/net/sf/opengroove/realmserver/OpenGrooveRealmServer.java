@@ -120,28 +120,62 @@ public class OpenGrooveRealmServer
         
         public void run()
         {
-            // TODO Auto-generated method stub
-            
+            try
+            {
+                Message message = DataStore
+                    .getMessage(messageId);
+                if (message == null)
+                {
+                    /*
+                     * This won't usually happen. Typically, this would only
+                     * happen if the message was sent but the executor queue was
+                     * stopped up due to a long-running task, and all recipients
+                     * read and deleted the message and the scheduled executor
+                     * removed it from the database before this task got around
+                     * to being executed. Either way, the message has already
+                     * been read, so we'll just return.
+                     */
+                    return;
+                }
+                MessageRecipient[] recipients = DataStore
+                    .listMessageRecipients(messageId);
+                for(MessageRecipient recipient : recipients)
+                {
+                    
+                }
+            }
+            catch (Exception e)
+            {
+                throw new RuntimeException(e);
+            }
         }
         
     }
     
+    /**
+     * A Runnable that schedules the specified message for sending to the
+     * inter-realm servers of all of it's recipients that are of a different
+     * realm.
+     * 
+     * @author Alexander Boyd
+     * 
+     */
     public static class InterRealmMessageSender implements
         Runnable
     {
-        
         private String messageId;
-        
-        public void run()
-        {
-            // TODO Auto-generated method stub
-            
-        }
         
         public InterRealmMessageSender(String messageId)
         {
             super();
             this.messageId = messageId;
+        }
+        
+        public void run()
+        {
+            /*
+             * FIXME: actually implement this runnable
+             */
         }
         
     }
