@@ -28,13 +28,33 @@ public class GCanvas extends Widget
             for (int c = 0; c < width; c++)
             {
                 Element colElement = DOM.createTD();
-                colElement.setId(idPrefix + "-" + c + "-"
-                    + r);
+                colElement.setId(getId(c, r));
                 colElement.setAttribute("style",
                     "width: 1px; height: 1px");
                 colElement.setAttribute("bgcolor",
                     defaultColor);
                 rowElement.appendChild(colElement);
+            }
+        }
+    }
+    
+    private String getId(int x, int y)
+    {
+        return idPrefix + "-" + x + "-" + y;
+    }
+    
+    public void fillRect(String color, int x, int y,
+        int width, int height)
+    {
+        for (int cx = x; cx < x + width; cx++)
+        {
+            for (int cy = y; cy < y + height; cy++)
+            {
+                Element cElement = DOM
+                    .getElementById(getId(cx, cy));
+                if (cElement == null)
+                    continue;
+                cElement.setAttribute("bgcolor", color);
             }
         }
     }
