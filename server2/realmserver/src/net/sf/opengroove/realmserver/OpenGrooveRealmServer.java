@@ -139,9 +139,48 @@ public class OpenGrooveRealmServer
                 }
                 MessageRecipient[] recipients = DataStore
                     .listMessageRecipients(messageId);
-                for(MessageRecipient recipient : recipients)
+                for (MessageRecipient recipient : recipients)
                 {
-                    
+                    try
+                    {
+                        String userid = recipient
+                            .getRecipient();
+                        String computer = recipient
+                            .getComputer();
+                        if (!Userids.toRealm(userid)
+                            .equalsIgnoreCase(
+                                serverRealmAddress))
+                        {
+                            continue;
+                        }
+                        if (computer == null
+                            || computer.equals(""))
+                        {
+                            continue;
+                        }
+                        /*
+                         * The computer is not null and the user is of this
+                         * realm. Now we'll see if this user is online.
+                         */
+                        ConnectionHandler connection = getConnectionForComputer(
+                            Userids.toUsername(userid),
+                            computer);
+                        if (connection != null)
+                        {
+                            /*
+                             * The user is online, so we'll send them a
+                             * messageavailable message.
+                             */
+                            connection.sendEncryptedPacket(
+                                generateId(),
+                                "messageavailable",
+                                Status.OK, messageId);
+                        }
+                    }
+                    catch (Exception e)
+                    {
+                        e.printStackTrace();
+                    }
                 }
             }
             catch (Exception e)
@@ -149,7 +188,6 @@ public class OpenGrooveRealmServer
                 throw new RuntimeException(e);
             }
         }
-        
     }
     
     /**
