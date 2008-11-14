@@ -6,6 +6,19 @@
 <sqlMap>
     <!-- !ADDTOSQL -->
 
+    <select id="listMessagesWithoutRecipients" 
+         resultClass="net.sf.opengroove.realmserver.data.model.Message" >
+        select * from $$prefix$$messages where not 
+        (
+            $$prefix$$messages.id in 
+            (
+                select id from 
+                $$prefix$$messagerecipients
+            )
+        )
+        
+    </select>
+
     <delete id="deleteMessageRecipients" 
          parameterClass="java.lang.String" >
         delete from $$prefix$$messagerecipients

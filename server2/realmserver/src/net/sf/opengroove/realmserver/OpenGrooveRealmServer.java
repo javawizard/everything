@@ -301,6 +301,22 @@ public class OpenGrooveRealmServer
         }
     }
     
+    /**
+     * A task that removes messages without any recipients.
+     * 
+     * @author Alexander Boyd
+     * 
+     */
+    public static class ReadMessageRemover implements
+        Runnable
+    {
+        
+        public void run()
+        {
+        }
+        
+    }
+    
     public static final long MIN_FREE_DISK_SPACE = 500 * 1000 * 1000;
     
     public interface ToString<S>

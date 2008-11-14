@@ -332,6 +332,8 @@ public class DataStore
     }
     
     // !ADDTOSQL
+
+public static Message[] listMessagesWithoutRecipients()throws SQLException{return (Message[]) getLdbClient().queryForList("listMessagesWithoutRecipients").toArray(new Message[0]);}
     
     public static void deleteMessageRecipients(String v)
         throws SQLException
