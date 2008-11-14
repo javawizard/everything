@@ -218,6 +218,65 @@ public class OpenGrooveRealmServer
         
     }
     
+    public static ArrayList<String> messageDeletionCanidates = new ArrayList<String>();
+    
+    /**
+     * A runnable that is added to internalTasks upon OpenGroove Realm Server
+     * startup. It is built such that it has to run twice after a message
+     * becomes available for deletion for that message to be deleted. Every time
+     * it runs, it first checks all messages in it's canidate list (I'll explain
+     * that in a sec), and, if they have no backing db message, deletes the
+     * filesystem file. Then, it scans through all files and adds those that
+     * don't have a backing db message to it's canidate list. Essentially, then,
+     * when a message is deleted, the first execution of this runnable adds it
+     * to the canidate list, and the second execution deletes it. The reason for
+     * this double-pass is so a file won't be deleted for a message that is
+     * about to be created.<br/><br/>
+     * 
+     * It is imperative that multiple instances of this runnable never exist at
+     * the same time.
+     * 
+     * @author Alexander Boyd
+     * 
+     */
+    public static class MessageDataRemover implements
+        Runnable
+    {
+        
+        public void run()
+        {
+            for (String messageId : messageDeletionCanidates)
+            {
+                try
+                {
+                    File messageFile = new File(
+                        messageDataFolder, Message
+                            .getFileId(messageId));
+                    if (!messageFile.exists())
+                        continue;
+                    Message message = DataStore
+                        .getMessage(messageId);
+                    if (message != null)
+                        continue;
+                    /*
+                     * The file exists but the message doesn't, so we'll delete
+                     * the file.
+                     */
+                    messageFile.delete();
+                }
+                catch (Exception exception)
+                {
+                    exception.printStackTrace();
+                }
+            }
+            messageDeletionCanidates.clear();
+            /*
+             * Now we need to iterate over all message files and add as
+             * canidates those without a backing message.
+             */
+        }
+    }
+    
     public static final long MIN_FREE_DISK_SPACE = 500 * 1000 * 1000;
     
     public interface ToString<S>

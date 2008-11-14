@@ -98,8 +98,13 @@ public class Message
      * 
      * @return
      */
+    public static String getFileId(String messageId)
+    {
+        return messageId.replace(":", "$");
+    }
+    
     public String getFileId()
     {
-        return id.replace(":", "$");
+        return getFileId(id);
     }
 }
