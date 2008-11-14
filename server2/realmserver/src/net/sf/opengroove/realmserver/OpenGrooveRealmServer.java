@@ -3779,6 +3779,18 @@ public class OpenGrooveRealmServer
                 ConnectionHandler connection)
                 throws Exception
             {
+                String[] tokens = tokenizeAndVerify(data, 1);
+                String messageId = tokens[0];
+                Message message = DataStore
+                    .getMessage(messageId);
+                verifyCanReadMessage(message,
+                    connection.username,
+                    connection.computerName);
+                connection.sendEncryptedPacket(packetId,
+                    command(), Status.OK, ""
+                        + message.getSender() + "\n"
+                        + message.getComputer() + "\n"
+                        + message.isSent());
             }
             
         };
