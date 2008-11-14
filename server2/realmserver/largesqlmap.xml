@@ -42,6 +42,7 @@
          resultClass="java.lang.String" >
         select id from $$prefix$$messages
         where sender = #sender# and computer = #computer#
+        and sent = false
     </select>
 
     <select id="listInboundMessages" 
@@ -51,6 +52,7 @@
         where id in
         (
             select id from $$prefix$$messages
+            where sent = true
         )
         and recipient = #recipient# and computer = #computer#
     </select>

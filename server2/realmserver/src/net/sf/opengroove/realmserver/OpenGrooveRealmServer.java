@@ -3664,6 +3664,8 @@ public class OpenGrooveRealmServer
                             resolveToUserid(connection.username),
                             connection.computerName));
                 }
+                connection.sendEncryptedPacket(packetId,
+                    command(), Status.OK, "");
             }
             
         };
@@ -3712,6 +3714,8 @@ public class OpenGrooveRealmServer
                     messageId));
                 tasks.execute(new InterRealmMessageSender(
                     messageId));
+                connection.sendEncryptedPacket(packetId,
+                    command(), Status.OK, "");
             }
         };
         new Command("listinboundmessages", 0, false, false)
@@ -3723,6 +3727,20 @@ public class OpenGrooveRealmServer
                 ConnectionHandler connection)
                 throws Exception
             {
+                String[] messageIds = DataStore
+                    .listInboundMessages(new MessageRecipient(
+                        null,
+                        resolveToUserid(connection.username),
+                        connection.computerName));
+                if (messageIds.length == 0)
+                    connection.sendEncryptedPacket(
+                        packetId, command(),
+                        Status.NORESULTS, "");
+                else
+                    connection.sendEncryptedPacket(
+                        packetId, command(), Status.OK,
+                        StringUtils.delimited(messageIds,
+                            "\n"));
             }
             
         };
@@ -3735,6 +3753,20 @@ public class OpenGrooveRealmServer
                 ConnectionHandler connection)
                 throws Exception
             {
+                String[] messageIds = DataStore
+                    .listOutboundMessages(new Message(
+                        null,
+                        resolveToUserid(connection.username),
+                        connection.computerName, false));
+                if (messageIds.length == 0)
+                    connection.sendEncryptedPacket(
+                        packetId, command(),
+                        Status.NORESULTS, "");
+                else
+                    connection.sendEncryptedPacket(
+                        packetId, command(), Status.OK,
+                        StringUtils.delimited(messageIds,
+                            "\n"));
             }
             
         };
