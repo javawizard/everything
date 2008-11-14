@@ -274,6 +274,30 @@ public class OpenGrooveRealmServer
              * Now we need to iterate over all message files and add as
              * canidates those without a backing message.
              */
+            File[] messageFiles = messageDataFolder
+                .listFiles();
+            for (File messageFile : messageFiles)
+            {
+                try
+                {
+                    if (messageFile.isDirectory())
+                        /*
+                         * Probably some folder put in by subversion
+                         */
+                        continue;
+                    Message message = DataStore
+                        .getMessage(Message
+                            .getMessageId(messageFile
+                                .getName()));
+                    if (message == null)
+                        messageDeletionCanidates
+                            .add(message.getId());
+                }
+                catch (Exception exception)
+                {
+                    exception.printStackTrace();
+                }
+            }
         }
     }
     

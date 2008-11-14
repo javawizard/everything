@@ -102,6 +102,15 @@ public class Message
     {
         return messageId.replace(":", "$");
     }
+    /**
+     * Returns this message's id, but with : replaced by $.
+     * 
+     * @return
+     */
+    public static String getMessageId(String fileId)
+    {
+        return fileId.replace("$", ":");
+    }
     
     public String getFileId()
     {
