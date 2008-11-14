@@ -3645,7 +3645,7 @@ public class OpenGrooveRealmServer
                  * If it hasn't, we remove all recipients and the message. We
                  * don't need to worry about removing the storage file.
                  */
-                boolean isSender = message.isSent();
+                boolean isSender = !message.isSent();
                 if (isSender)
                 {
                     DataStore.deleteMessage(messageId);
