@@ -327,8 +327,21 @@ public class OpenGrooveRealmServer
             {
                 exception.printStackTrace();
             }
+            try
+            {
+                MessageRecipient[] orphanRecipients = DataStore
+                    .listOrphanMessageRecipients();
+                for (MessageRecipient recipient : orphanRecipients)
+                {
+                    DataStore
+                        .deleteMessageRecipient(recipient);
+                }
+            }
+            catch (Exception e)
+            {
+                e.printStackTrace();
+            }
         }
-        
     }
     
     public static final long MIN_FREE_DISK_SPACE = 500 * 1000 * 1000;
