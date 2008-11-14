@@ -2171,7 +2171,7 @@ public class OpenGrooveRealmServer
                     e.printStackTrace();
                 }
             }
-        }, 30, 300, TimeUnit.SECONDS);
+        }, 30, 307, TimeUnit.SECONDS);
         // task for removing idle connection handlers (connection handlers where
         // nothing has been sent or received within the connection's idle time
         // limit)
@@ -2184,6 +2184,18 @@ public class OpenGrooveRealmServer
                 
             }
         }, 30, 63, TimeUnit.SECONDS);
+        /*
+         * TODO: Perhaps, in the future, this runnable should adapt itself to
+         * the current message throughput; for example, it would schedule itself
+         * to run more often if messages are coming through frequently, and
+         * schedule itself to run less often if message amount slows down.
+         */
+        internalTasks.scheduleWithFixedDelay(
+            new MessageDataRemover(), 1, 15,
+            TimeUnit.MINUTES);
+        internalTasks.scheduleWithFixedDelay(
+            new ReadMessageRemover(), 1, 11,
+            TimeUnit.MINUTES);
     }
     
     private static ConnectionHandler getConnectionForComputer(
