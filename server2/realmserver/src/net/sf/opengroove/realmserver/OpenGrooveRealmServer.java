@@ -291,7 +291,9 @@ public class OpenGrooveRealmServer
                                 .getName()));
                     if (message == null)
                         messageDeletionCanidates
-                            .add(message.getId());
+                            .add(Message
+                                .getMessageId(messageFile
+                                    .getName()));
                 }
                 catch (Exception exception)
                 {
@@ -2191,10 +2193,10 @@ public class OpenGrooveRealmServer
          * schedule itself to run less often if message amount slows down.
          */
         internalTasks.scheduleWithFixedDelay(
-            new MessageDataRemover(), 1, 15,
+            new MessageDataRemover(), 1, 1,
             TimeUnit.MINUTES);
         internalTasks.scheduleWithFixedDelay(
-            new ReadMessageRemover(), 1, 11,
+            new ReadMessageRemover(), 1, 1,
             TimeUnit.MINUTES);
     }
     
