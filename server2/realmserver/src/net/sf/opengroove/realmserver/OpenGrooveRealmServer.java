@@ -2193,10 +2193,10 @@ public class OpenGrooveRealmServer
          * schedule itself to run less often if message amount slows down.
          */
         internalTasks.scheduleWithFixedDelay(
-            new MessageDataRemover(), 1, 1,
+            new MessageDataRemover(), 1, 15,
             TimeUnit.MINUTES);
         internalTasks.scheduleWithFixedDelay(
-            new ReadMessageRemover(), 1, 1,
+            new ReadMessageRemover(), 1, 11,
             TimeUnit.MINUTES);
     }
     
