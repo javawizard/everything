@@ -1,5 +1,7 @@
 package net.sf.opengroove.client.com;
 
+import net.sf.opengroove.client.com.model.Subscription;
+
 /**
  * An interface for listening for subscription events. A
  * <code>SubscriptionListener</code> can be registered with a

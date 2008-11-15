@@ -6,6 +6,10 @@ import java.io.StringReader;
 import java.util.ArrayList;
 import java.util.Date;
 
+import net.sf.opengroove.client.com.model.Subscription;
+import net.sf.opengroove.client.com.model.UserSearch;
+import net.sf.opengroove.client.com.model.UserStatus;
+
 /**
  * This class wraps the Communicator class, and provides methods for doing
  * common interaction tasks with the server.

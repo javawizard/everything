@@ -1,4 +1,4 @@
-package net.sf.opengroove.client.com;
+package net.sf.opengroove.client.com.model;
 
 public class UserSearch
 {
