@@ -37,12 +37,17 @@ public interface InboundMessage
      */
     public static final int STAGE_DECODED = 5;
     /**
+     * Indicates that a message listener has been notified of the message's
+     * arrival.
+     */
+    public static final int STAGE_DISPATCHED = 6;
+    /**
      * Indicates that the message has been read and is no longer needed.
      * Generally, the target message hierarchy handler will be the one that sets
      * the message to this state. When a message is set to this state, it is
      * eligibele for deletion, and will typically be deleted soon after.
      */
-    public static final int STAGE_READ = 6;
+    public static final int STAGE_READ = 7;
     
     @Property
     public String getTarget();
