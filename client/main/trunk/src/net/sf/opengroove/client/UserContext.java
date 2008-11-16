@@ -45,9 +45,9 @@ import com.jidesoft.swing.JideButton;
 
 import net.sf.opengroove.client.com.CommandCommunicator;
 import net.sf.opengroove.client.com.StatusListener;
-import net.sf.opengroove.client.com.Subscription;
 import net.sf.opengroove.client.com.TimeoutException;
 import net.sf.opengroove.client.com.UserNotificationListener;
+import net.sf.opengroove.client.com.model.Subscription;
 import net.sf.opengroove.client.help.HelpViewer;
 import net.sf.opengroove.client.notification.NotificationAdapter;
 import net.sf.opengroove.client.notification.TaskbarNotification;
@@ -286,7 +286,7 @@ public class UserContext
      */
     @TimerField
     private ConditionalTimer timeSyncTimer = new ConditionalTimer(
-        1000 * 60 * 3)
+        1000 * 60 * 3, connectionConditional)
     {
         
         public void execute()

@@ -187,6 +187,25 @@ public interface LocalUser extends ProxyObject
     @ListType(TrustedCertificate.class)
     public StoredList<TrustedCertificate> getTrustedCertificates();
     
+    @Property
+    @ListType(InboundMessage.class)
+    public StoredList<InboundMessage> getInboundMessages();
+    
+    @Property
+    @ListType(OutboundMessage.class)
+    public StoredList<OutboundMessage> getOutboundMessages();
+    
+    @Search(listProperty = "outboundMessages", searchProperty = "stage")
+    public OutboundMessage[] listOutboundMessagesForStage(
+        int stage);
+    
+    @Search(listProperty = "inboundMessages", searchProperty = "stage")
+    public OutboundMessage[] listInboundMessagesForStage(
+        int stage);
+    
+    @Search(listProperty = "inboundMessages", searchProperty = "id")
+    public InboundMessage getInboundMessageById(String id);
+    
     public static class CustomDelegate implements Delegate
     {
         

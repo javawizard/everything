@@ -87,6 +87,22 @@ public class Storage
             tbase.mkdirs();
         pluginStore = iItem(tbase, "plugins");
         helpStore = iItem(tbase, "help");
+        inboundMessageStore = iItem(tbase,
+            "inboundmessages");
+        outboundMessageStore = iItem(tbase,
+            "outboundmessages");
+        inboundMessagePlaintextStore = iItem(
+            inboundMessageStore, "plaintext");
+        inboundMessageEncodedStore = iItem(
+            inboundMessageStore, "encoded");
+        inboundMessageEncryptedStore = iItem(
+            inboundMessageStore, "encrypted");
+        outboundMessagePlaintextStore = iItem(
+            outboundMessageStore, "plaintext");
+        outboundMessageEncodedStore = iItem(
+            outboundMessageStore, "encoded");
+        outboundMessageEncryptedStore = iItem(
+            outboundMessageStore, "encrypted");
     }
     
     private static final Hashtable<String, Storage> singletons = new Hashtable<String, Storage>();
@@ -129,6 +145,22 @@ public class Storage
     private File pluginStore;
     
     private File helpStore;
+    
+    private File inboundMessageStore;
+    
+    private File outboundMessageStore;
+    
+    private File inboundMessagePlaintextStore;
+    
+    private File inboundMessageEncodedStore;
+    
+    private File inboundMessageEncryptedStore;
+    
+    private File outboundMessagePlaintextStore;
+    
+    private File outboundMessageEncodedStore;
+    
+    private File outboundMessageEncryptedStore;
     
     public File getHelpStore()
     {
@@ -647,6 +679,36 @@ public class Storage
             .create(TrustedCertificate.class);
         tcert.setEncoded(encoded);
         return tcert;
+    }
+
+    public File getInboundMessagePlaintextStore()
+    {
+        return inboundMessagePlaintextStore;
+    }
+
+    public File getInboundMessageEncodedStore()
+    {
+        return inboundMessageEncodedStore;
+    }
+
+    public File getInboundMessageEncryptedStore()
+    {
+        return inboundMessageEncryptedStore;
+    }
+
+    public File getOutboundMessagePlaintextStore()
+    {
+        return outboundMessagePlaintextStore;
+    }
+
+    public File getOutboundMessageEncodedStore()
+    {
+        return outboundMessageEncodedStore;
+    }
+
+    public File getOutboundMessageEncryptedStore()
+    {
+        return outboundMessageEncryptedStore;
     }
     
 }
