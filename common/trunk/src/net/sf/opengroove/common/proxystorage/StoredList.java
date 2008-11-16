@@ -127,7 +127,7 @@ public class StoredList<T> extends AbstractList<T>
                 throw new ClassCastException(
                     "The element specified (an instance of "
                         + element.getClass().getName()
-                        + " is not a ProxyObject.");
+                        + ") is not a ProxyObject.");
             ProxyObject object = (ProxyObject) element;
             try
             {
@@ -416,6 +416,11 @@ public class StoredList<T> extends AbstractList<T>
     @Override
     protected void removeRange(int fromIndex, int toIndex)
     {
+        /*
+         * This method, in particular, would benefit from an implementation that
+         * performs the delete in 2 queries instead of leaving it up to the
+         * superclass, which ends up using 2 queries per index to be deleted
+         */
         synchronized (storage.lock)
         {
             super.removeRange(fromIndex, toIndex);

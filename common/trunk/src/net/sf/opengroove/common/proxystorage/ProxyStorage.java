@@ -99,10 +99,9 @@ public class ProxyStorage<E>
     protected static final Map<Class, ResultFilter> resultFilterSingletons = new HashMap<Class, ResultFilter>();
     /**
      * Maps longs to objects (object ids to the objects themselves), but lrumap
-     * doesn't support generics
+     * doesn't support generics which is why the mapping isn't shown as generics
      */
-    protected static Map objectCache = Collections
-        .synchronizedMap(new LRUMap(500));
+    protected static Map objectCache;
     /**
      * A map that maps proxy object ids to maps that map the object's property
      * names to lists of listeners registered on those propertiews
@@ -127,12 +126,23 @@ public class ProxyStorage<E>
     final Object lock = new Object();
     
     public ProxyStorage(Class<E> rootClass, File location)
+    {
+        this(rootClass, location, 800);
+    }
+    
+    public ProxyStorage(Class<E> rootClass, File location, int cacheSize)
 
     {
+        objectCache = Collections
+            .synchronizedMap(new LRUMap(cacheSize));
         listenerExecutor.allowCoreThreadTimeOut(true);
         this.rootClass = rootClass;
         try
         {
+            /*
+             * TODO: in the future, allow the user to use their own database by
+             * passing in a connection object instead of a file
+             */
             Class.forName("org.h2.Driver");
         }
         catch (ClassNotFoundException e)
