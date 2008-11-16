@@ -1,6 +1,10 @@
 package net.sf.opengroove.client.storage;
 
+import net.sf.opengroove.common.proxystorage.ListType;
+import net.sf.opengroove.common.proxystorage.Property;
 import net.sf.opengroove.common.proxystorage.ProxyBean;
+import net.sf.opengroove.common.proxystorage.Search;
+import net.sf.opengroove.common.proxystorage.StoredList;
 
 @ProxyBean
 public interface InboundMessage
@@ -29,8 +33,47 @@ public interface InboundMessage
     /**
      * Indicates that the message has been decoded. This means that it's
      * destination info has been extracted into the message's InboundMessage
-     * object and the actual message contents
+     * object and the actual message contents separated into another file.
      */
     public static final int STAGE_DECODED = 5;
+    /**
+     * Indicates that the message has been read and is no longer needed.
+     * Generally, the target message hierarchy handler will be the one that sets
+     * the message to this state. When a message is set to this state, it is
+     * eligibele for deletion, and will typically be deleted soon after.
+     */
     public static final int STAGE_READ = 6;
+    
+    @Property
+    public String getTarget();
+    
+    public void setTarget(String target);
+    
+    @Property
+    public String getId();
+    
+    public void setId(String id);
+    
+    @Property
+    public int getStage();
+    
+    public void setStage(int stage);
+    
+    @Property
+    public String getSender();
+    
+    public void setSender(String sender);
+    
+    @Property
+    public String getSendingComputer();
+    
+    public void setSendingComputer(String computer);
+    
+    @Property
+    @ListType(MessageProperty.class)
+    public StoredList<MessageProperty> getProperties();
+    
+    @Search(listProperty = "properties", searchProperty = "name")
+    public MessageProperty getProperty(String name);
+    
 }
