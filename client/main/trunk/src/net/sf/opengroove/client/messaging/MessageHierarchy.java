@@ -3,6 +3,7 @@ package net.sf.opengroove.client.messaging;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.HashMap;
 
 import net.sf.opengroove.client.storage.InboundMessage;
 import net.sf.opengroove.client.storage.OutboundMessage;
@@ -22,7 +23,11 @@ import net.sf.opengroove.common.utils.StringUtils;
  */
 public abstract class MessageHierarchy
 {
-    private ArrayList<MessageHierarchy> children = new ArrayList<MessageHierarchy>();
+    /**
+     * A map that maps names to child elements. When a child is added to this
+     * hierarchy element, it is placed in this map with it's name as the key.
+     */
+    private HashMap<String, MessageHierarchy> children = new HashMap<String, MessageHierarchy>();
     /**
      * The MessageDeliverer associated with this hierarchy. Generally, only the
      * top level hierarchy element should have a deliverer. The rest of them
@@ -35,6 +40,11 @@ public abstract class MessageHierarchy
      * hierarchy path to denote this hierarchy element. This must not be changed
      * after this element is added to another hierarchy element, and generally
      * shouldn't change anyway after construction.
+     * 
+     * This is irrelevant for the toplevel hierarchy element, and won't be used
+     * if present. The toplevel hierarchy element is addressed using the empty
+     * string, and it's children are addressed by using a pathname consisting
+     * only of that particular child's name.
      */
     private String name;
     /**
@@ -54,7 +64,7 @@ public abstract class MessageHierarchy
     
     public void add(MessageHierarchy element)
     {
-        children.add(element);
+        children.put(element.name, element);
         element.parent = this;
     }
     
@@ -69,7 +79,9 @@ public abstract class MessageHierarchy
     public void beforeHandleLowerMessage(
         InboundMessage message)
     {
-        
+        /*
+         * Do nothing. Subclasses can override this method if they want.
+         */
     }
     
     /**
@@ -83,7 +95,9 @@ public abstract class MessageHierarchy
     public void afterHandleLowerMessage(
         InboundMessage message)
     {
-        
+        /*
+         * Do nothing. Subclasses can override this method if they want.
+         */
     }
     
     /**
@@ -109,7 +123,9 @@ public abstract class MessageHierarchy
     public void handleInvalidLowerMessage(
         InboundMessage message)
     {
-        
+        /*
+         * Do nothing. Subclasses can override this method if they want.
+         */
     }
     
     /**
@@ -136,7 +152,35 @@ public abstract class MessageHierarchy
     private void sendDownward(InboundMessage message,
         ArrayList<String> currentPath)
     {
-        
+        if (currentPath.size() == 0
+            || (currentPath.size() == 1 && currentPath.get(
+                0).equals("")))
+        {
+            /*
+             * Addressed to us.
+             */
+            handleMessage(message);
+        }
+        else
+        {
+            /*
+             * Addressed to a child of us.
+             */
+            String nextElement = currentPath.get(0);
+            currentPath.remove(0);
+            beforeHandleLowerMessage(message);
+            MessageHierarchy child = children
+                .get(nextElement);
+            if (child == null)
+            {
+                handleInvalidLowerMessage(message);
+            }
+            else
+            {
+                child.sendDownward(message, currentPath);
+            }
+            afterHandleLowerMessage(message);
+        }
     }
     
     /**
