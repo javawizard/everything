@@ -187,7 +187,7 @@ public abstract class MessageHierarchy
      */
     public void sendMessage(OutboundMessage message)
     {
-        
+        sendUpward(message, new ArrayList<String>(), true);
     }
     
     /**
@@ -205,7 +205,9 @@ public abstract class MessageHierarchy
     public void sendMessage(OutboundMessage message,
         String relativePath)
     {
-        
+        throw new IllegalStateException(
+            "This hasn't been implemented yet. Only sendMessage "
+                + "and sendAbsoluteMessage have.");
     }
     
     /**
@@ -219,7 +221,7 @@ public abstract class MessageHierarchy
     public void sendAbsoluteMessage(
         OutboundMessage message, String absolutePath)
     {
-        
+        sendUpward(message, parsePath(absolutePath), false);
     }
     
     /**
