@@ -82,7 +82,7 @@ public abstract class MessageHierarchy
      * Adds
      * @param sender
      */
-    public void setMessageSender(MessageSender sender)
+    public void setMessageSender(MessageDeliverer sender)
     {
         
     }

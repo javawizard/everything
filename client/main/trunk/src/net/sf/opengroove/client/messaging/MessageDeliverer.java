@@ -8,7 +8,7 @@ package net.sf.opengroove.client.messaging;
  * @author Alexander Boyd
  * 
  */
-public interface MessageSender
+public interface MessageDeliverer
 {
     /**
      * TODO: this needs to have an argument, but I haven't decided what type the
