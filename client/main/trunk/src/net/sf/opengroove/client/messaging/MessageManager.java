@@ -20,7 +20,8 @@ package net.sf.opengroove.client.messaging;
  * Before the message manager is started, it needs to be provided with a
  * CommandCommunicator and a root MessageHierarchyListener. After messages have
  * been downloaded, decrypted, and decoded, it will inject them into the
- * MessageHierarchyListener provided. The listeners
+ * MessageHierarchyListener provided. It will not, however, delete ehe message
+ * until the stage is set to READ. It will also check upon startup for 
  * 
  * @author Alexander Boyd
  * 
