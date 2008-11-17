@@ -1,5 +1,7 @@
 package net.sf.opengroove.client.messaging;
 
+import net.sf.opengroove.client.storage.OutboundMessage;
+
 /**
  * An interface that classes can implement to indicate that they know how to
  * send messages. The topmost MessageHierarchy instance in any given hierarchy
@@ -11,8 +13,9 @@ package net.sf.opengroove.client.messaging;
 public interface MessageDeliverer
 {
     /**
-     * TODO: this needs to have an argument, but I haven't decided what type the
-     * argument should be.
+     * Actually sends the specified message.
      */
-    public void sendMessage();
+    public void sendMessage(OutboundMessage message);
+    
+    public OutboundMessage createMessage();
 }

@@ -82,9 +82,11 @@ public abstract class MessageHierarchy
     /**
      * Sets the message deliverer for this hierarchy. It takes care of actually
      * sending a message. It also takes care of creating new message objects
-     * when a message is to be created (shoudl this be the case or should a
+     * when a message is to be created (should this be the case or should a
      * message to send just have recipient info and such, probably, so that it's
-     * target can be built up as it propegates up the hierarchy)
+     * target can be built up as it propegates up the hierarchy, or should a new
+     * message object be created by the MessageDeliverer and propegated down or
+     * something...)
      * 
      * @param sender
      */
