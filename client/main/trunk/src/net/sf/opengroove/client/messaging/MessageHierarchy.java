@@ -1,24 +1,68 @@
 package net.sf.opengroove.client.messaging;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+
 import net.sf.opengroove.client.storage.InboundMessage;
+import net.sf.opengroove.client.storage.OutboundMessage;
+import net.sf.opengroove.common.utils.StringUtils;
 
 /**
  * A class for allowing hierarchical organization of message sending and
  * receiving. It extends the listener concept to provide hierarchical listening
  * and message sending.
  * 
- * 
+ * When paths are referenced as ArrayLists, the first element is the highest in
+ * the hierarchy and the last element is the lowest (IE path element n denotes a
+ * hierarchy element who's parent is path element n - 1)
  * 
  * @author Alexander Boyd
  * 
  */
 public abstract class MessageHierarchy
 {
+    private ArrayList<MessageHierarchy> children = new ArrayList<MessageHierarchy>();
+    /**
+     * The MessageDeliverer associated with this hierarchy. Generally, only the
+     * top level hierarchy element should have a deliverer. The rest of them
+     * will delegate to their parent. In fact, the deliverer will not be used if
+     * this hierarchy element has a parent.
+     */
+    private MessageDeliverer deliverer;
+    /**
+     * The name of this hierarchy element. This is the string that appears in a
+     * hierarchy path to denote this hierarchy element. This must not be changed
+     * after this element is added to another hierarchy element, and generally
+     * shouldn't change anyway after construction.
+     */
+    private String name;
+    /**
+     * The parent hierarchy element of this hierarchy element. received messages
+     * should always come from it, and sent messages will always be routed to
+     * it. If this is null (meaning that this hierarchy element has no parent),
+     * then {@link #deliverer} must not be null. If they are both null, then an
+     * exception will be thrown when any of the sendMessage methods are called,
+     * or when the sendAbsoluteMessage method is called.
+     */
+    private MessageHierarchy parent;
+    
+    public MessageHierarchy(String name)
+    {
+        this.name = name;
+    }
+    
+    public void add(MessageHierarchy element)
+    {
+        children.add(element);
+        element.parent = this;
+    }
+    
     /**
      * Called as a message propegates down through the hierarchy, before the
      * message propegates. This will be called before the target listener's
      * handleMessage method is called. This will also be called before
-     * handleInvalidLowerMessage is called.
+     * handleInvalidLowerMessage is called. Subclasses can override this method.
      * 
      * @param message
      */
@@ -31,7 +75,8 @@ public abstract class MessageHierarchy
     /**
      * Called after a message has been handled by it's target, as the message
      * propegates back up. This will also be called after the closest target's
-     * handleInvalidLowerMessage if the message is invalid.
+     * handleInvalidLowerMessage if the message is invalid. Subclasses can
+     * override this method.
      * 
      * @param message
      */
@@ -56,7 +101,8 @@ public abstract class MessageHierarchy
      * because the element that it targets does not exist. This will only be
      * called on the hierarchy element closest to where the message was supposed
      * to go; Hierarchy elements higher up will only receive calls to
-     * afterHandleLowerMessage and beforeHandleLowerMessage.
+     * afterHandleLowerMessage and beforeHandleLowerMessage. Subclasses are
+     * strongly encouraged to override this method.
      * 
      * @param message
      */
@@ -80,6 +126,20 @@ public abstract class MessageHierarchy
     }
     
     /**
+     * Sends a message downward. currentPath should not contain this hierarchy's
+     * name. If currentPath is empty, then this hierarchy element is the target
+     * and will dispatch the message accordingly.
+     * 
+     * @param message
+     * @param currentPath
+     */
+    private void sendDownward(InboundMessage message,
+        ArrayList<String> currentPath)
+    {
+        
+    }
+    
+    /**
      * Sets the message deliverer for this hierarchy. It takes care of actually
      * sending a message. It also takes care of creating new message objects
      * when a message is to be created (should this be the case or should a
@@ -90,8 +150,130 @@ public abstract class MessageHierarchy
      * 
      * @param sender
      */
-    public void setMessageSender(MessageDeliverer sender)
+    public void setMessageDeliverer(MessageDeliverer sender)
     {
         
+    }
+    
+    /**
+     * Creates a new outbound message, which, by default, has none of it's
+     * options set besides it's stage. It's stage should not be modified. After
+     * configuring the resulting message, it can be passed to one of the
+     * sendMessage methods. The target for the message does not need to be set
+     * before sending. Actually, sending it will overwrite the target.
+     * 
+     * @return
+     */
+    public OutboundMessage createMessage()
+    {
+        if (deliverer == null)
+        {
+            if (parent == null)
+                throw new IllegalStateException(
+                    "This hierarchy does not have a deliverer or a parent. At least one of these is required to create a new message.");
+            else
+                return parent.createMessage();
+        }
+        return deliverer.createMessage();
+    }
+    
+    /**
+     * Sends the message specified. It's recipient information and metadata
+     * should have already been set. It's target will be set to this hierarchy
+     * element (following it's path up to the toplevel hierarchy element). The
+     * message should not be modified after this call.
+     * 
+     * @param message
+     */
+    public void sendMessage(OutboundMessage message)
+    {
+        
+    }
+    
+    /**
+     * Sends the message specified to a path relative to this hierarchy element.
+     * The path string can contain "." and ".." sequences. A path string of "."
+     * means this hierarchy element. A path string of ".." means the parent
+     * hierarchy element. A path string of "something" would mean a hierarchy
+     * element that is a sibling of this one (not a child) by the name
+     * "something". For a child named "something" of this element, you would
+     * have to use the path string "./something".
+     * 
+     * @param message
+     * @param relativePath
+     */
+    public void sendMessage(OutboundMessage message,
+        String relativePath)
+    {
+        
+    }
+    
+    /**
+     * Sends a message to an absolute path. An empty path references the
+     * toplevel hierarchy element. A path of "something" would be the hierarchy
+     * element under the toplevel hierarchy element, named "something".
+     * 
+     * @param message
+     * @param absolutePath
+     */
+    public void sendAbsoluteMessage(
+        OutboundMessage message, String absolutePath)
+    {
+        
+    }
+    
+    /**
+     * Sends a message upward, optionally prepending this hierarchy element's
+     * path before sending it. If this element has no parent (and the message
+     * will be dispatched to the deliverer), then the path will not be
+     * prepended, even if addPath is true.
+     * 
+     * @param message
+     * @param currentPath
+     * @param addPath
+     */
+    private void sendUpward(OutboundMessage message,
+        ArrayList<String> currentPath, boolean addPath)
+    {
+        if (parent == null)
+        {
+            /*
+             * We're at the toplevel, so we need to send this to the deliverer
+             * if there is one.
+             */
+            if (deliverer == null)
+                throw new IllegalStateException(
+                    "No deliverer and no parent");
+            message.setTarget(buildPath(currentPath));
+            deliverer.sendMessage(message);
+        }
+        else
+        {
+            /*
+             * if addPath is true, then we'll prepend this element's path, then
+             * send the message to this element's parent.
+             */
+            if (addPath)
+                currentPath.add(0, name);
+            parent
+                .sendUpward(message, currentPath, addPath);
+        }
+    }
+    
+    private static String buildPath(
+        ArrayList<String> pathComponents)
+    {
+        return StringUtils.delimited(pathComponents
+            .toArray(new String[0]), "/");
+    }
+    
+    private static ArrayList<String> parsePath(String path)
+    {
+        ArrayList<String> pathComponents = new ArrayList<String>();
+        String[] tokens = path.split("\\/");
+        if (tokens.length == 1 && tokens[0].equals(""))
+            return new ArrayList<String>();
+        pathComponents.addAll(Arrays.asList(tokens));
+        return pathComponents;
     }
 }
