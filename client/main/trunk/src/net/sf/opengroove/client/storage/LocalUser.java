@@ -191,6 +191,12 @@ public interface LocalUser extends ProxyObject
     @ListType(InboundMessage.class)
     public StoredList<InboundMessage> getInboundMessages();
     
+    @Constructor
+    public OutboundMessage createOutboundMessage();
+    
+    @Constructor
+    public InboundMessage createInboundMessage();
+    
     @Property
     @ListType(OutboundMessage.class)
     public StoredList<OutboundMessage> getOutboundMessages();
