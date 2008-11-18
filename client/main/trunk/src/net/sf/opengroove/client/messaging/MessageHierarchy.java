@@ -138,7 +138,8 @@ public abstract class MessageHierarchy
      */
     public void injectMessage(InboundMessage message)
     {
-        
+        sendDownward(message,
+            parsePath(message.getTarget()));
     }
     
     /**
