@@ -1,6 +1,9 @@
 package net.sf.opengroove.client.messaging;
 
+import java.io.DataOutputStream;
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
 import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.concurrent.ArrayBlockingQueue;
@@ -11,9 +14,11 @@ import net.sf.opengroove.client.TimerField;
 import net.sf.opengroove.client.com.CommandCommunicator;
 import net.sf.opengroove.client.storage.InboundMessage;
 import net.sf.opengroove.client.storage.LocalUser;
+import net.sf.opengroove.client.storage.MessageProperty;
 import net.sf.opengroove.client.storage.OutboundMessage;
 import net.sf.opengroove.client.storage.Storage;
 import net.sf.opengroove.common.concurrent.ConditionalTimer;
+import net.sf.opengroove.common.utils.StringUtils;
 
 /**
  * This class manages messaging for OpenGroove users. It essentially implements
@@ -97,19 +102,98 @@ public class MessageManager implements MessageDeliverer
                      */
                     OutboundMessage[] messages = localUser
                         .listOutboundMessagesForStage(OutboundMessage.STAGE_INITIALIZED);
-                    for (OutboundMessage message : messages)
+                    for (OutboundMessage message2 : messages)
                     {
-                        File messagePlaintextFile = new File(
-                            storage
-                                .getOutboundMessagePlaintextStore(),
-                            message.getId());
-                        File messageEncodedFile = new File(
-                            storage
-                                .getOutboundMessageEncodedStore(),
-                            message.getId());
-                        if (!messagePlaintextFile.exists())
+                        try
                         {
-                            
+                            OutboundMessage message = message2;
+                            File messagePlaintextFile = new File(
+                                storage
+                                    .getOutboundMessagePlaintextStore(),
+                                message.getId());
+                            File messageEncodedFile = new File(
+                                storage
+                                    .getOutboundMessageEncodedStore(),
+                                message.getId());
+                            if (!messagePlaintextFile
+                                .exists())
+                            {
+                                System.err
+                                    .println("No data for message "
+                                        + message.getId()
+                                        + ". The message will be deleted.");
+                                localUser
+                                    .getOutboundMessages()
+                                    .remove(message);
+                            }
+                            if (messageEncodedFile.exists())
+                                /*
+                                 * Something interrupted the previous encoding,
+                                 * so we'll just delete it and start over.
+                                 */
+                                if (!messageEncodedFile
+                                    .delete())
+                                    throw new RuntimeException(
+                                        "Couldn't delete previous encoding.");
+                            messageEncodedFile
+                                .createNewFile();
+                            /*
+                             * We now have the message plaintext file, and an
+                             * empty file to encode it into. We'll begin
+                             * encoding.
+                             */
+                            FileInputStream in = new FileInputStream(
+                                messagePlaintextFile);
+                            FileOutputStream out = new FileOutputStream(
+                                messageEncodedFile);
+                            DataOutputStream dout = new DataOutputStream(
+                                out);
+                            /*
+                             * First, we write the target path.
+                             */
+                            String targetPath = message
+                                .getTarget();
+                            dout.writeInt(targetPath
+                                .getBytes().length);
+                            dout.write(targetPath
+                                .getBytes());
+                            /*
+                             * Now we write the message properties.
+                             */
+                            for (MessageProperty property : message
+                                .getProperties().isolate())
+                            {
+                                String name = property
+                                    .getName();
+                                String value = property
+                                    .getValue();
+                                byte[] nameBytes = name
+                                    .getBytes();
+                                byte[] valueBytes = value
+                                    .getBytes();
+                                dout
+                                    .writeInt(nameBytes.length);
+                                dout.write(nameBytes);
+                                dout
+                                    .writeInt(valueBytes.length);
+                                dout.write(valueBytes);
+                            }
+                            /*
+                             * The message properties have been written. Now
+                             * we'll copy the actual message data.
+                             */
+                            StringUtils.copy(in, dout);
+                            in.close();
+                            dout.flush();
+                            dout.close();
+                            message
+                                .setStage(OutboundMessage.STAGE_ENCODED);
+                            messagePlaintextFile.delete();
+                            notifyOutboundEncrypter();
+                        }
+                        catch (Exception exception)
+                        {
+                            exception.printStackTrace();
                         }
                     }
                 }
@@ -146,6 +230,14 @@ public class MessageManager implements MessageDeliverer
                         .listOutboundMessagesForStage(OutboundMessage.STAGE_ENCODED);
                     for (OutboundMessage message : messages)
                     {
+                        try
+                        {
+                            
+                        }
+                        catch (Exception exception)
+                        {
+                            exception.printStackTrace();
+                        }
                         
                     }
                 }
@@ -182,6 +274,14 @@ public class MessageManager implements MessageDeliverer
                         .listOutboundMessagesForStage(OutboundMessage.STAGE_ENCRYPTED);
                     for (OutboundMessage message : messages)
                     {
+                        try
+                        {
+                            
+                        }
+                        catch (Exception exception)
+                        {
+                            exception.printStackTrace();
+                        }
                         
                     }
                 }
@@ -218,6 +318,14 @@ public class MessageManager implements MessageDeliverer
                         .listOutboundMessagesForStage(OutboundMessage.STAGE_UPLOADED);
                     for (OutboundMessage message : messages)
                     {
+                        try
+                        {
+                            
+                        }
+                        catch (Exception exception)
+                        {
+                            exception.printStackTrace();
+                        }
                         
                     }
                 }
@@ -261,6 +369,14 @@ public class MessageManager implements MessageDeliverer
                         .listInboundMessagesForStage(InboundMessage.STAGE_IMPORTED);
                     for (InboundMessage message : messages)
                     {
+                        try
+                        {
+                            
+                        }
+                        catch (Exception exception)
+                        {
+                            exception.printStackTrace();
+                        }
                         
                     }
                 }
@@ -297,6 +413,14 @@ public class MessageManager implements MessageDeliverer
                         .listInboundMessagesForStage(InboundMessage.STAGE_DOWNLOADED);
                     for (InboundMessage message : messages)
                     {
+                        try
+                        {
+                            
+                        }
+                        catch (Exception exception)
+                        {
+                            exception.printStackTrace();
+                        }
                         
                     }
                 }
@@ -333,6 +457,14 @@ public class MessageManager implements MessageDeliverer
                         .listInboundMessagesForStage(InboundMessage.STAGE_LOCALIZED);
                     for (InboundMessage message : messages)
                     {
+                        try
+                        {
+                            
+                        }
+                        catch (Exception exception)
+                        {
+                            exception.printStackTrace();
+                        }
                         
                     }
                 }
@@ -369,6 +501,14 @@ public class MessageManager implements MessageDeliverer
                         .listInboundMessagesForStage(InboundMessage.STAGE_DECRYPTED);
                     for (InboundMessage message : messages)
                     {
+                        try
+                        {
+                            
+                        }
+                        catch (Exception exception)
+                        {
+                            exception.printStackTrace();
+                        }
                         
                     }
                 }
@@ -405,6 +545,14 @@ public class MessageManager implements MessageDeliverer
                         .listInboundMessagesForStage(InboundMessage.STAGE_DECODED);
                     for (InboundMessage message : messages)
                     {
+                        try
+                        {
+                            
+                        }
+                        catch (Exception exception)
+                        {
+                            exception.printStackTrace();
+                        }
                         
                     }
                 }
