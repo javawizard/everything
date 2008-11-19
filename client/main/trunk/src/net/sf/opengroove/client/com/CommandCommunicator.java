@@ -902,9 +902,30 @@ public class CommandCommunicator
     private StoredMessage getMessageInfo(String messageId)
         throws IOException
     {
-        Packet response = communicator.query(new Packet(
-            null, "getmessageinfo", messageId.getBytes()),
-            defaultTimeout);
+        try
+        {
+            Packet response = communicator.query(
+                new Packet(null, "getmessageinfo",
+                    messageId.getBytes()), defaultTimeout);
+            String[] tokens = tokenizeByLines(new String(
+                response.getContents()));
+            StoredMessage message = new StoredMessage();
+            message.setMessageId(messageId);
+            message.setSender(tokens[0]);
+            message.setComputer(tokens[1]);
+            message.setSent(tokens[3]
+                .equalsIgnoreCase("true"));
+            return message;
+        }
+        catch (FailedResponseException e)
+        {
+            if (e.getResponseCode().equalsIgnoreCase(
+                "nosuchmessage")
+                || e.getResponseCode().equalsIgnoreCase(
+                    "unauthorized"))
+                return null;
+            throw e;
+        }
     }
     
     /**
