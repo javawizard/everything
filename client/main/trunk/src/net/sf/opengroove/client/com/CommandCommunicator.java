@@ -6,9 +6,12 @@ import java.io.StringReader;
 import java.util.ArrayList;
 import java.util.Date;
 
+import net.sf.opengroove.client.com.model.StoredMessageRecipient;
 import net.sf.opengroove.client.com.model.Subscription;
 import net.sf.opengroove.client.com.model.UserSearch;
 import net.sf.opengroove.client.com.model.UserStatus;
+import net.sf.opengroove.common.utils.StringUtils;
+import net.sf.opengroove.common.utils.StringUtils.ToString;
 
 /**
  * This class wraps the Communicator class, and provides methods for doing
@@ -35,6 +38,12 @@ public class CommandCommunicator
     private Communicator communicator;
     
     private int defaultTimeout = GLOBAL_DEFAULT_TIMEOUT;
+    /**
+     * The long timeout. This timeout is used for commands that transfer large
+     * amounts of data, so that the command will not time out because of upload
+     * speed restrictions. By default, this is 35 seconds.
+     */
+    private int longTimeout = 35 * 1000;
     
     public CommandCommunicator(
         final Communicator communicator)
@@ -259,6 +268,8 @@ public class CommandCommunicator
     
     /**
      * Searches for users.
+     * 
+     * TODO: this needs to be redone to match the new user search spec
      * 
      * @param searchText
      *            The text to search for. If this text is present in either the
@@ -773,6 +784,68 @@ public class CommandCommunicator
             .query(new Packet(null, "setcomputersetting",
                 (computer + "\n" + key + "\n" + value)
                     .getBytes()), defaultTimeout);
+    }
+    
+    public void createMessage(String messageId,
+        StoredMessageRecipient[] recipients)
+        throws IOException
+    {
+        communicator.query(new Packet(null,
+            "createmessage",
+            (messageId + "\n" + StringUtils.delimited(
+                recipients,
+                new ToString<StoredMessageRecipient>()
+                {
+                    
+                    public String toString(
+                        StoredMessageRecipient object)
+                    {
+                        return object.getUserid()
+                            + (object.getComputer() == null ? ""
+                                : " "
+                                    + object.getComputer());
+                    }
+                }, "\n")).getBytes()), defaultTimeout);
+    }
+    
+    public int getMessageSize(String messageId)
+        throws IOException
+    {
+        Packet response = communicator.query(new Packet(
+            null, "getmessagesize", messageId.getBytes()),
+            defaultTimeout);
+        String responseString = new String(response
+            .getContents());
+        return Integer.parseInt(responseString.trim());
+    }
+    
+    public byte[] readMessageData(String messageId,
+        int offset, int length) throws IOException
+    {
+        return communicator
+            .query(
+                new Packet(
+                    null,
+                    "readmessagedata",
+                    (messageId + "\n" + offset + "\n" + length)
+                        .getBytes()), longTimeout)
+            .getContents();
+    }
+    
+    public void writeMessageData(String messageId,
+        int offset, int length, byte[] bytes)
+        throws IOException
+    {
+        communicator.query(new Packet(null,
+            "writemessagedata", Communicator
+                .concat((messageId + " " + offset + " "
+                    + length + " ").getBytes(), bytes)),
+            longTimeout);
+    }
+    
+    public void deleteMessage(String messageId)
+    {
+        
     }
     
     /**
