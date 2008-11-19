@@ -1,5 +1,7 @@
 package net.sf.opengroove.client.storage;
 
+import net.sf.opengroove.common.proxystorage.CustomProperty;
+import net.sf.opengroove.common.proxystorage.Delegate;
 import net.sf.opengroove.common.proxystorage.ListType;
 import net.sf.opengroove.common.proxystorage.Property;
 import net.sf.opengroove.common.proxystorage.ProxyBean;
@@ -9,6 +11,20 @@ import net.sf.opengroove.common.proxystorage.StoredList;
 @ProxyBean
 public interface OutboundMessage
 {
+    public static class CustomDelegate implements Delegate
+    {
+        
+        public Object get(Object on, Class propertyClass,
+            String property)
+        {
+            OutboundMessage message = (OutboundMessage) on;
+            if (property.equalsIgnoreCase("fileid"))
+                return message.getId().replace(":", "$");
+            return null;
+        }
+        
+    }
+    
     /**
      * Indicates that the message has been initialized, and it's plaintext data
      * written and metadata stored on this object.
@@ -59,4 +75,7 @@ public interface OutboundMessage
     
     @Search(listProperty = "properties", searchProperty = "name")
     public MessageProperty getProperty(String name);
+    
+    @CustomProperty(CustomDelegate.class)
+    public String getFileId();
 }

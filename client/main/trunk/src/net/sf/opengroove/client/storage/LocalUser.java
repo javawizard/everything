@@ -206,7 +206,7 @@ public interface LocalUser extends ProxyObject
         int stage);
     
     @Search(listProperty = "inboundMessages", searchProperty = "stage")
-    public OutboundMessage[] listInboundMessagesForStage(
+    public InboundMessage[] listInboundMessagesForStage(
         int stage);
     
     @Search(listProperty = "inboundMessages", searchProperty = "id")

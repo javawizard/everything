@@ -17,6 +17,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Hashtable;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import net.sf.opengroove.client.workspace.WorkspaceWrapper;
 import net.sf.opengroove.common.proxystorage.ProxyStorage;
@@ -451,12 +452,13 @@ public class Storage
                     + transmissionFolder.getAbsolutePath());
     }
     
-    private static volatile int cIdVar = 0;
+    private static AtomicInteger cIdVar = new AtomicInteger(
+        1);
     
     public static synchronized String createIdentifier()
     {
         return "i" + System.currentTimeMillis() + "z"
-            + cIdVar++;
+            + cIdVar.getAndIncrement();
     }
     
     /**
@@ -680,32 +682,32 @@ public class Storage
         tcert.setEncoded(encoded);
         return tcert;
     }
-
+    
     public File getInboundMessagePlaintextStore()
     {
         return inboundMessagePlaintextStore;
     }
-
+    
     public File getInboundMessageEncodedStore()
     {
         return inboundMessageEncodedStore;
     }
-
+    
     public File getInboundMessageEncryptedStore()
     {
         return inboundMessageEncryptedStore;
     }
-
+    
     public File getOutboundMessagePlaintextStore()
     {
         return outboundMessagePlaintextStore;
     }
-
+    
     public File getOutboundMessageEncodedStore()
     {
         return outboundMessageEncodedStore;
     }
-
+    
     public File getOutboundMessageEncryptedStore()
     {
         return outboundMessageEncryptedStore;

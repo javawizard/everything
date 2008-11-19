@@ -1,5 +1,6 @@
 package net.sf.opengroove.client.messaging;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -12,11 +13,22 @@ import net.sf.opengroove.common.utils.StringUtils;
 /**
  * A class for allowing hierarchical organization of message sending and
  * receiving. It extends the listener concept to provide hierarchical listening
- * and message sending.
+ * and message sending.<br/><br/>
  * 
  * When paths are referenced as ArrayLists, the first element is the highest in
  * the hierarchy and the last element is the lowest (IE path element n denotes a
- * hierarchy element who's parent is path element n - 1)
+ * hierarchy element who's parent is path element n - 1)<br/><br/>
+ * 
+ * When a message is received, the data contents of the message are stored in
+ * the file obtained by getInboundMessageFile(). When an inbound message is
+ * marked as read, it is recommended that the corresponding file be deleted.
+ * This is not required, however, as OpenGroove will periodically scan and
+ * delete files where the message is marked as read or where the message doesn't
+ * exist.<Br/><br/>
+ * 
+ * When a message is to be sent, A message object is created by a call to
+ * createMessage(). Then the data is written to the file returned by
+ * getOutboundMessage().
  * 
  * @author Alexander Boyd
  * 
@@ -207,6 +219,8 @@ public abstract class MessageHierarchy
      * sendMessage methods. The target for the message does not need to be set
      * before sending. Actually, sending it will overwrite the target.
      * 
+     * Here's an explanation of how
+     * 
      * @return
      */
     public OutboundMessage createMessage()
@@ -220,6 +234,34 @@ public abstract class MessageHierarchy
                 return parent.createMessage();
         }
         return deliverer.createMessage();
+    }
+    
+    public File getOutboundMessageFile(String messageId)
+    {
+        if (deliverer == null)
+        {
+            if (parent == null)
+                throw new IllegalStateException(
+                    "This hierarchy does not have a deliverer or a parent. At least one of these is required to get a message's file.");
+            else
+                return parent
+                    .getOutboundMessageFile(messageId);
+        }
+        return deliverer.getOutboundMessageFile(messageId);
+    }
+    
+    public File getInboundMessageFile(String messageId)
+    {
+        if (deliverer == null)
+        {
+            if (parent == null)
+                throw new IllegalStateException(
+                    "This hierarchy does not have a deliverer or a parent. At least one of these is required to get a message's file.");
+            else
+                return parent
+                    .getInboundMessageFile(messageId);
+        }
+        return deliverer.getInboundMessageFile(messageId);
     }
     
     /**

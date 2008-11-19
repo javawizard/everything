@@ -1,5 +1,7 @@
 package net.sf.opengroove.client.messaging;
 
+import java.io.File;
+
 import net.sf.opengroove.client.storage.OutboundMessage;
 
 /**
@@ -18,4 +20,8 @@ public interface MessageDeliverer
     public void sendMessage(OutboundMessage message);
     
     public OutboundMessage createMessage();
+    
+    public File getInboundMessageFile(String messageId);
+    
+    public File getOutboundMessageFile(String messageId);
 }

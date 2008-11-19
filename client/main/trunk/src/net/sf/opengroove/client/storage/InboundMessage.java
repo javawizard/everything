@@ -23,7 +23,7 @@ public interface InboundMessage
      * Indicates that the message has been deleted from the server. The message
      * is not decrypted yet.
      */
-    public static final int STAGE_LOCAL = 3;
+    public static final int STAGE_LOCALIZED = 3;
     /**
      * Indicates that the message has been decrypted and it's signature
      * verified. Messages with an invalid signature or encryption will never
