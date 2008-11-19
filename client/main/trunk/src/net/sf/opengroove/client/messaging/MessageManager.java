@@ -2,6 +2,7 @@ package net.sf.opengroove.client.messaging;
 
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.BlockingQueue;
+import java.util.concurrent.TimeUnit;
 
 import net.sf.opengroove.client.com.CommandCommunicator;
 import net.sf.opengroove.client.storage.LocalUser;
@@ -43,9 +44,79 @@ public class MessageManager implements MessageDeliverer
     private String userid;
     private MessageHierarchy hierarchyElement;
     private CommandCommunicator communicator;
+    private final Object runObject = new Object();
+    private final Object quitObject = new Object();
+    private final int delay = 1000 * 60 * 5;
+    private final int delayVariance = 1000 * 60;
     
     // stage threads
-    private Thread thread = new Thread()
+    private Thread outboundEncoderThread = new Thread()
+    {
+        public void run()
+        {
+            while (true)
+            {
+                Object object = outboundEncoderQueue
+                    .poll(delay
+                        + (delayVariance * Math.random()),
+                        TimeUnit.MILLISECONDS);
+                if (object == quitObject)
+                    return;
+                /*
+                 * Do actual processing here
+                 */
+            }
+        }
+    };
+    private Thread outboundEncrypterThread = new Thread()
+    {
+        public void run()
+        {
+        }
+    };
+    private Thread outboundUploaderThread = new Thread()
+    {
+        public void run()
+        {
+        }
+    };
+    private Thread outboundSenderThread = new Thread()
+    {
+        public void run()
+        {
+        }
+    };
+    private Thread inboundImporterThread = new Thread()
+    {
+        public void run()
+        {
+        }
+    };
+    private Thread inboundDownloaderThread = new Thread()
+    {
+        public void run()
+        {
+        }
+    };
+    private Thread inboundLocalizerThread = new Thread()
+    {
+        public void run()
+        {
+        }
+    };
+    private Thread inboundDecrypterThread = new Thread()
+    {
+        public void run()
+        {
+        }
+    };
+    private Thread inboundDecoderThread = new Thread()
+    {
+        public void run()
+        {
+        }
+    };
+    private Thread inboundDispatcherThread = new Thread()
     {
         public void run()
         {
@@ -76,52 +147,52 @@ public class MessageManager implements MessageDeliverer
     // stage notifier methods
     public void notifyOutboundEncoder()
     {
-        outboundEncoderQueue.offer(new Object());
+        outboundEncoderQueue.offer(runObject);
     }
     
     public void notifyOutboundEncrypter()
     {
-        outboundEncrypterQueue.offer(new Object());
+        outboundEncrypterQueue.offer(runObject);
     }
     
     public void notifyOutboundUploader()
     {
-        outboundUploaderQueue.offer(new Object());
+        outboundUploaderQueue.offer(runObject);
     }
     
     public void notifyOutboundSender()
     {
-        outboundSenderQueue.offer(new Object());
+        outboundSenderQueue.offer(runObject);
     }
     
     public void notifyInboundImporter()
     {
-        inboundImporterQueue.offer(new Object());
+        inboundImporterQueue.offer(runObject);
     }
     
     public void notifyInboundDownloader()
     {
-        inboundDownloaderQueue.offer(new Object());
+        inboundDownloaderQueue.offer(runObject);
     }
     
     public void notifyInboundLocalizer()
     {
-        inboundLocalizerQueue.offer(new Object());
+        inboundLocalizerQueue.offer(runObject);
     }
     
     public void notifyInboundDecrypter()
     {
-        inboundDecrypterQueue.offer(new Object());
+        inboundDecrypterQueue.offer(runObject);
     }
     
     public void notifyInboundDecoder()
     {
-        inboundDecoderQueue.offer(new Object());
+        inboundDecoderQueue.offer(runObject);
     }
     
     public void notifyInboundDispatcher()
     {
-        inboundDispatcherQueue.offer(new Object());
+        inboundDispatcherQueue.offer(runObject);
     }
     
     // methods
@@ -148,6 +219,23 @@ public class MessageManager implements MessageDeliverer
          * All we have to do is add the message to the local user's list of
          * messages (if it's not already present), and notify the message
          * encoder that it has messages available
+         */
+    }
+    
+    public void start()
+    {
+        /*
+         * Start all of the threads running, and scan for messages to delete.
+         * Then feed all queues the runObject so that they will perform an
+         * initial pass.
+         */
+    }
+    
+    public void stop()
+    {
+        /*
+         * Feed al queues the quitObject so that the threads will quit. This
+         * needs to be forced on all of the queues.
          */
     }
     
