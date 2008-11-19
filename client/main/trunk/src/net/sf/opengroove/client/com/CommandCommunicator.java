@@ -160,6 +160,23 @@ public class CommandCommunicator
                             }
                         });
                 }
+                else if (packet.getCommand()
+                    .equalsIgnoreCase("messageavailable"))
+                {
+                    final String messageId = new String(packet
+                        .getContents());
+                    messageAvailableListeners
+                        .notify(new Notifier<MessageAvailableListener>()
+                        {
+
+                            public void notify(
+                                MessageAvailableListener listener)
+                            {
+                                listener
+                                    .messageAvailable(messageId);
+                            }
+                        });
+                }
             }
         });
     }
@@ -969,6 +986,20 @@ public class CommandCommunicator
         SubscriptionListener listener)
     {
         subscriptionListeners.removeListener(listener);
+    }
+    
+    private ListenerManager<MessageAvailableListener> messageAvailableListeners = new ListenerManager<MessageAvailableListener>();
+    
+    public void addMessageAvailableListener(
+        MessageAvailableListener listener)
+    {
+        messageAvailableListeners.addListener(listener);
+    }
+    
+    public void removeMessageAvailableListener(
+        MessageAvailableListener listener)
+    {
+        messageAvailableListeners.removeListener(listener);
     }
     
     private ListenerManager<ImmediateMessageListener> imessageListeners = new ListenerManager<ImmediateMessageListener>();
