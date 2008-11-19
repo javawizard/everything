@@ -6,6 +6,7 @@ import java.io.StringReader;
 import java.util.ArrayList;
 import java.util.Date;
 
+import net.sf.opengroove.client.com.model.StoredMessage;
 import net.sf.opengroove.client.com.model.StoredMessageRecipient;
 import net.sf.opengroove.client.com.model.Subscription;
 import net.sf.opengroove.client.com.model.UserSearch;
@@ -844,8 +845,66 @@ public class CommandCommunicator
     }
     
     public void deleteMessage(String messageId)
+        throws IOException
     {
-        
+        communicator.query(new Packet(null,
+            "deletemessage", messageId.getBytes()),
+            defaultTimeout);
+    }
+    
+    public void sendMessage(String messageId)
+        throws IOException
+    {
+        communicator.query(new Packet(null, "sendmessage",
+            messageId.getBytes()), defaultTimeout);
+    }
+    
+    public String[] listInboundMessages()
+        throws IOException
+    {
+        try
+        {
+            Packet response = communicator.query(
+                new Packet(null, "listinboundmessages",
+                    new byte[0]), defaultTimeout);
+            return tokenizeByLines(new String(response
+                .getContents()));
+        }
+        catch (FailedResponseException e)
+        {
+            /*
+             * We'll assume it's a NORESULTS code
+             */
+            return new String[0];
+        }
+    }
+    
+    public String[] listOutboundMessages()
+        throws IOException
+    {
+        try
+        {
+            Packet response = communicator.query(
+                new Packet(null, "listoutboundmessages",
+                    new byte[0]), defaultTimeout);
+            return tokenizeByLines(new String(response
+                .getContents()));
+        }
+        catch (FailedResponseException e)
+        {
+            /*
+             * We'll assume it's a NORESULTS code
+             */
+            return new String[0];
+        }
+    }
+    
+    private StoredMessage getMessageInfo(String messageId)
+        throws IOException
+    {
+        Packet response = communicator.query(new Packet(
+            null, "getmessageinfo", messageId.getBytes()),
+            defaultTimeout);
     }
     
     /**
