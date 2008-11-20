@@ -18,6 +18,8 @@ import javax.crypto.spec.SecretKeySpec;
 
 import net.sf.opengroove.client.TimerField;
 import net.sf.opengroove.client.com.CommandCommunicator;
+import net.sf.opengroove.client.com.FailedResponseException;
+import net.sf.opengroove.client.com.model.StoredMessage;
 import net.sf.opengroove.client.com.model.StoredMessageRecipient;
 import net.sf.opengroove.client.storage.Contact;
 import net.sf.opengroove.client.storage.InboundMessage;
@@ -431,6 +433,9 @@ public class MessageManager implements MessageDeliverer
             }
         }
     };
+    
+    private byte[] outboundUploaderBuffer = new byte[32768];
+    
     @StageThread
     private Thread outboundUploaderThread = new Thread()
     {
@@ -460,7 +465,128 @@ public class MessageManager implements MessageDeliverer
                     {
                         try
                         {
-                            
+                            /*
+                             * We need to see if the message exists. If it
+                             * doesn't, we'll create it. Then we'll get the
+                             * current size of the message from the server, skip
+                             * that many bytes in the stream that we're
+                             * uploading, and upload the rest in chunks of
+                             * 32,768 bytes.
+                             * 
+                             * TODO: this chunk upload size should be
+                             * configurable in the future, so that if it's too
+                             * large (IE a user's network fails after they've
+                             * transferred, say, 20KB), then they can shrink it.
+                             * Or perhaps this class should adapt to that and if
+                             * it keeps getting failures then it will scale it's
+                             * chunk size down to even 1KB, until it keeps
+                             * succeeding and then it will scale back up.
+                             */
+                            try
+                            {
+                                StoredMessage messageInfo = communicator
+                                    .getMessageInfo(message
+                                        .getId());
+                                if (messageInfo.isSent())
+                                {
+                                    /*
+                                     * The message has already been sent. This
+                                     * isn't supposed to happen, so we'll alert
+                                     * the user of the error.
+                                     */
+                                    System.err
+                                        .println("message already exists");
+                                    continue;
+                                }
+                            }
+                            catch (FailedResponseException e)
+                            {
+                                if (e.getResponseCode()
+                                    .equalsIgnoreCase(
+                                        "NOSUCHMESSAGE"))
+                                {
+                                    communicator
+                                        .createMessage(
+                                            message.getId(),
+                                            translateToServerRecipients(message
+                                                .getRecipients()
+                                                .isolate()));
+                                }
+                                else
+                                {
+                                    System.err
+                                        .println("couldn't create message because: "
+                                            + e
+                                                .getResponseCode());
+                                    continue;
+                                }
+                            }
+                            /*
+                             * At this point the message exists and has not yet
+                             * been sent. Now we'll get the message's current
+                             * size and begin uploading from that point.
+                             */
+                            File messageEncrypted = new File(
+                                storage
+                                    .getOutboundMessageEncryptedStore(),
+                                message.getFileId());
+                            if (!messageEncrypted.exists())
+                            {
+                                System.err
+                                    .println("nonexistant encryption for message "
+                                        + message.getId()
+                                        + ", sending back to the encryptor");
+                                message
+                                    .setStage(OutboundMessage.STAGE_ENCODED);
+                                continue;
+                            }
+                            FileInputStream in = new FileInputStream(
+                                messageEncrypted);
+                            int messageSize = communicator
+                                .getMessageSize(message
+                                    .getId());
+                            long bytesToSkip = messageSize;
+                            while (bytesToSkip > 0)
+                                bytesToSkip -= in
+                                    .skip(bytesToSkip);
+                            /*
+                             * We've skipped the stream to where we need to
+                             * start uploading. Now we begin uploading actual
+                             * data. The way we'll do this is by reading into an
+                             * array of bytes from the file, and then uploading
+                             * those. The buffer will only be 32,768 bytes in
+                             * size.
+                             */
+                            int l;
+                            int position = messageSize;
+                            while ((l = in
+                                .read(outboundUploaderBuffer)) != -1)
+                            {
+                                /*
+                                 * We'll create a new buffer now to hold exactly
+                                 * the number of bytes read.
+                                 */
+                                byte[] buffer = new byte[l];
+                                System.arraycopy(
+                                    outboundUploaderBuffer,
+                                    0, buffer, 0, l);
+                                /*
+                                 * Now we'll write the data to the message.
+                                 */
+                                communicator
+                                    .writeMessageData(
+                                        message.getId(),
+                                        position, l, buffer);
+                                position += l;
+                            }
+                            /*
+                             * The message data has now been uploaded. We'll
+                             * send the message onto the next stage now.
+                             */
+                            message
+                                .setStage(OutboundMessage.STAGE_UPLOADED);
+                            messageEncrypted.delete();
+                            notifyOutboundSender();
                         }
                         catch (Exception exception)
                         {
@@ -782,6 +908,13 @@ public class MessageManager implements MessageDeliverer
     public void notifyOutboundEncoder()
     {
         outboundEncoderQueue.offer(runObject);
+    }
+    
+    protected StoredMessageRecipient[] translateToServerRecipients(
+        ArrayList<OutboundMessageRecipient> isolate)
+    {
+        // TODO Auto-generated method stub
+        return null;
     }
     
     public void notifyOutboundEncrypter()

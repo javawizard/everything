@@ -916,7 +916,7 @@ public class CommandCommunicator
         }
     }
     
-    private StoredMessage getMessageInfo(String messageId)
+    public StoredMessage getMessageInfo(String messageId)
         throws IOException
     {
         try
