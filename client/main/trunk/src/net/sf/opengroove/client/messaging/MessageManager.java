@@ -5,19 +5,30 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.lang.reflect.Field;
+import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.TimeUnit;
 
+import javax.crypto.Cipher;
+import javax.crypto.CipherOutputStream;
+import javax.crypto.spec.IvParameterSpec;
+import javax.crypto.spec.SecretKeySpec;
+
 import net.sf.opengroove.client.TimerField;
 import net.sf.opengroove.client.com.CommandCommunicator;
+import net.sf.opengroove.client.com.model.StoredMessageRecipient;
+import net.sf.opengroove.client.storage.Contact;
 import net.sf.opengroove.client.storage.InboundMessage;
 import net.sf.opengroove.client.storage.LocalUser;
 import net.sf.opengroove.client.storage.MessageProperty;
 import net.sf.opengroove.client.storage.OutboundMessage;
+import net.sf.opengroove.client.storage.OutboundMessageRecipient;
 import net.sf.opengroove.client.storage.Storage;
 import net.sf.opengroove.common.concurrent.ConditionalTimer;
+import net.sf.opengroove.common.security.CertificateUtils;
+import net.sf.opengroove.common.security.RSA;
 import net.sf.opengroove.common.utils.StringUtils;
 
 /**
@@ -232,7 +243,180 @@ public class MessageManager implements MessageDeliverer
                     {
                         try
                         {
-                            
+                            /*
+                             * We'll only proceed if we have all of the security
+                             * keys for all of the recipients.
+                             */
+                            ArrayList<String> recipientUsers = new ArrayList<String>();
+                            for (OutboundMessageRecipient recipient : message
+                                .getRecipients().isolate())
+                            {
+                                if (!recipientUsers
+                                    .contains(recipient
+                                        .getUserid()))
+                                    recipientUsers
+                                        .add(recipient
+                                            .getUserid());
+                            }
+                            Contact[] userContacts = new Contact[recipientUsers
+                                .size()];
+                            boolean hasAllContacts = true;
+                            for (int i = 0; i < userContacts.length; i++)
+                            {
+                                userContacts[i] = storage
+                                    .getContact(recipientUsers
+                                        .get(i));
+                                if (userContacts[i] == null)
+                                {
+                                    hasAllContacts = false;
+                                    break;
+                                }
+                                if (!userContacts[i]
+                                    .isHasKeys())
+                                {
+                                    hasAllContacts = false;
+                                    break;
+                                }
+                            }
+                            if (!hasAllContacts)
+                                /*
+                                 * This message doesn't have all of it's
+                                 * contacts or contact security keys, so we'll
+                                 * move on to the next message to send.
+                                 */
+                                continue;
+                            /*
+                             * If we get here then we have a contact object for
+                             * each user in the list and the contacts all have
+                             * security keys. Now we do the actual encrypting.
+                             */
+                            File messageEncoded = new File(
+                                storage
+                                    .getOutboundMessageEncodedStore(),
+                                message.getFileId());
+                            File messageEncrypted = new File(
+                                storage
+                                    .getOutboundMessageEncryptedStore(),
+                                message.getFileId());
+                            if (!messageEncoded.exists())
+                            {
+                                System.err
+                                    .println("Encoded version of message "
+                                        + message.getId()
+                                        + " does not exist. The message will be "
+                                        + "sent back one stage for "
+                                        + "re-encoding.");
+                                message
+                                    .setStage(OutboundMessage.STAGE_INITIALIZED);
+                                continue;
+                            }
+                            /*
+                             * We have the encoded version of the message. Now
+                             * we'll see if there's already an encrypted version
+                             * of the message, and if there is, we'll delete it.
+                             */
+                            if (messageEncrypted.exists())
+                                if (!messageEncrypted
+                                    .delete())
+                                    throw new RuntimeException(
+                                        "failed delete");
+                            messageEncrypted
+                                .createNewFile();
+                            FileOutputStream fout = new FileOutputStream(
+                                messageEncrypted);
+                            FileInputStream in = new FileInputStream(
+                                messageEncoded);
+                            DataOutputStream out = new DataOutputStream(
+                                fout);
+                            /*
+                             * The first thing we need to do is generate a
+                             * symmetric key.
+                             */
+                            byte[] aesKey = CertificateUtils
+                                .generateSymmetricKey()
+                                .getEncoded();
+                            /*
+                             * We have our key for encrypting our message. Now
+                             * we write the number of user recipients. Then, we
+                             * write each one, followed by the aes key encoded
+                             * using that user's public encryption key.
+                             */
+                            out
+                                .writeInt(userContacts.length);
+                            for (Contact contact : userContacts)
+                            {
+                                out
+                                    .writeInt(contact
+                                        .getUserid()
+                                        .getBytes().length);
+                                out
+                                    .write(contact
+                                        .getUserid()
+                                        .getBytes());
+                                BigInteger keyInteger = new BigInteger(
+                                    aesKey);
+                                BigInteger encryptedKeyInteger = RSA
+                                    .encrypt(
+                                        contact
+                                            .getRsaEncPub(),
+                                        contact
+                                            .getRasEncMod(),
+                                        keyInteger);
+                                byte[] encryptedKeyBytes = encryptedKeyInteger
+                                    .toByteArray();
+                                out
+                                    .writeInt(encryptedKeyBytes.length);
+                                out
+                                    .write(encryptedKeyBytes);
+                            }
+                            /*
+                             * We've written the encryption keys for all the
+                             * contacts. Now we'll write the message signature.
+                             */
+                            byte[] hash = CertificateUtils
+                                .hash(new FileInputStream(
+                                    messageEncoded));
+                            BigInteger hashInt = new BigInteger(
+                                hash);
+                            BigInteger signatureInt = RSA
+                                .encrypt(localUser
+                                    .getRsaSigPrv(),
+                                    localUser
+                                        .getRsaSigMod(),
+                                    hashInt);
+                            byte[] signature = signatureInt
+                                .toByteArray();
+                            out.writeInt(signature.length);
+                            out.write(signature);
+                            /*
+                             * We've written the signature now. All that's left
+                             * is to encrypt the message.
+                             */
+                            out.flush();
+                            Cipher cipher = Cipher
+                                .getInstance("AES/CBC/PKCS7Padding");
+                            cipher.init(
+                                Cipher.ENCRYPT_MODE,
+                                new SecretKeySpec(aesKey,
+                                    "AES"),
+                                new IvParameterSpec(
+                                    new byte[8]));
+                            CipherOutputStream cout = new CipherOutputStream(
+                                out, cipher);
+                            StringUtils.copy(in, cout);
+                            cout.flush();
+                            cout.close();
+                            out.flush();
+                            out.close();
+                            /*
+                             * The message has now been encrypted! We'll mark it
+                             * as such in the database and send it on to the
+                             * next stage.
+                             */
+                            message
+                                .setStage(OutboundMessage.STAGE_ENCRYPTED);
+                            messageEncoded.delete();
+                            notifyOutboundUploader();
                         }
                         catch (Exception exception)
                         {
