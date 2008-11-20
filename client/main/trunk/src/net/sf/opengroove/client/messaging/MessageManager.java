@@ -630,7 +630,30 @@ public class MessageManager implements MessageDeliverer
                     {
                         try
                         {
-                            
+                            try
+                            {
+                                communicator
+                                    .sendMessage(message
+                                        .getId());
+                            }
+                            catch (FailedResponseException e)
+                            {
+                                /*
+                                 * Do nothing, the only feasible way for this to
+                                 * happen is if the message has already been
+                                 * sent
+                                 */
+                                System.out
+                                    .println("sending message "
+                                        + message.getId()
+                                        + " appears to have already been done with code "
+                                        + e
+                                            .getResponseCode());
+                            }
+                            message
+                                .setStage(OutboundMessage.STAGE_SENT);
+                            localUser.getOutboundMessages()
+                                .remove(message);
                         }
                         catch (Exception exception)
                         {

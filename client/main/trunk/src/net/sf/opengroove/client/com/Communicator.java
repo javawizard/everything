@@ -824,7 +824,7 @@ public class Communicator
                 .equalsIgnoreCase("OK"))
             {
                 if (responsePacket.getResponse().trim()
-                    .equalsIgnoreCase("UNAUTHORIZED"))
+                    .equalsIgnoreCase("AUTHUNAUTHORIZED"))
                 {
                     reconnect();
                 }
