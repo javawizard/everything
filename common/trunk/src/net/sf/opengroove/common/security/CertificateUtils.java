@@ -1,5 +1,6 @@
 package net.sf.opengroove.common.security;
 
+import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
@@ -10,9 +11,12 @@ import java.lang.reflect.Array;
 import java.math.BigInteger;
 import java.security.Certificate;
 import java.security.Key;
+import java.security.KeyFactory;
 import java.security.KeyPair;
 import java.security.KeyPairGenerator;
 import java.security.KeyStore;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 import java.security.PrivateKey;
 import java.security.PublicKey;
 import java.security.SignatureException;
@@ -22,6 +26,10 @@ import java.util.Arrays;
 import java.util.Date;
 import java.util.concurrent.TimeUnit;
 
+import javax.crypto.Cipher;
+import javax.crypto.KeyGenerator;
+import javax.crypto.spec.IvParameterSpec;
+import javax.crypto.spec.SecretKeySpec;
 import javax.security.auth.x500.X500Principal;
 
 import org.bouncycastle.openssl.PEMReader;
@@ -463,5 +471,98 @@ public class CertificateUtils
         X509Certificate c1, X509Certificate c2)
     {
         return writeCert(c1).equals(writeCert(c2));
+    }
+    
+    /**
+     * Generates a symmetric key with the specified algorithm and size.
+     * 
+     * @param algorithm
+     * @param size
+     * @return
+     */
+    public static Key generateSymmetricKey(
+        String algorithm, int size)
+    {
+        try
+        {
+            KeyGenerator generator = KeyGenerator
+                .getInstance(algorithm);
+            generator.init(size);
+            return generator.generateKey();
+        }
+        catch (Exception e)
+        {
+            throw new RuntimeException(e);
+        }
+    }
+    
+    /**
+     * Generates an AES-256 key.
+     * 
+     * @return
+     */
+    public static Key generateSymmetricKey()
+    {
+        return generateSymmetricKey("AES", 256);
+    }
+    
+    public byte[] encryptAES(byte[] bytes, byte[] key)
+    {
+        try
+        {
+            SecretKeySpec spec = new SecretKeySpec(key,
+                "AES");
+            Cipher cipher = Cipher
+                .getInstance("AES/CBC/PKCS7Padding");
+            cipher.init(Cipher.ENCRYPT_MODE, spec,
+                new IvParameterSpec(new byte[8]));
+            byte[] data = cipher.doFinal(bytes);
+            return data;
+        }
+        catch (Exception e)
+        {
+            throw new RuntimeException(e);
+        }
+    }
+    
+    public byte[] decryptAES(byte[] bytes, byte[] key)
+    {
+        try
+        {
+            SecretKeySpec spec = new SecretKeySpec(key,
+                "AES");
+            Cipher cipher = Cipher
+                .getInstance("AES/CBC/PKCS7Padding");
+            cipher.init(Cipher.DECRYPT_MODE, spec,
+                new IvParameterSpec(new byte[8]));
+            byte[] data = cipher.doFinal(bytes);
+            return data;
+        }
+        catch (Exception e)
+        {
+            throw new RuntimeException(e);
+        }
+    }
+    
+    public static byte[] hash(InputStream stream)
+        throws IOException
+    {
+        MessageDigest digest;
+        try
+        {
+            digest = MessageDigest.getInstance("SHA-512");
+        }
+        catch (NoSuchAlgorithmException e)
+        {
+            throw new RuntimeException(e);
+        }
+        byte[] bytes = new byte[1024];
+        int i;
+        while ((i = stream.read(bytes)) != -1)
+        {
+            digest.update(bytes, 0, i);
+        }
+        stream.close();
+        return digest.digest();
     }
 }
