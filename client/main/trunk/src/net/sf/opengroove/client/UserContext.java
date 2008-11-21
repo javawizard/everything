@@ -16,6 +16,7 @@ import java.awt.event.MouseEvent;
 import java.io.File;
 import java.io.IOException;
 import java.lang.reflect.Field;
+import java.math.BigInteger;
 import java.net.MalformedURLException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -158,7 +159,7 @@ public class UserContext
      * few seconds, and if the mouse has moved since the last check, the idle
      * time is reset. If it hasn't, the idle time is not reset, so that if the
      * mouse isn't moved for an extended period of time, the computer will end
-     * up being marked as idle.
+     * up being marked as idle.\
      */
     private int lastMouseY;
     /**
@@ -282,7 +283,8 @@ public class UserContext
     /**
      * A timer that gets the server's time and sets the lag of this user's
      * backing LocalUser to be the difference between the server's time and the
-     * local time.
+     * local time. It also uploads this information to the public-lag user
+     * property.
      */
     @TimerField
     private ConditionalTimer timeSyncTimer = new ConditionalTimer(
@@ -291,6 +293,7 @@ public class UserContext
         
         public void execute()
         {
+            
         }
     };
     /**
@@ -1365,6 +1368,67 @@ public class UserContext
                     contact.getStatus().setIdleTime(
                         idleTime);
                     contact.getStatus().setOnline(isOnline);
+                    /*
+                     * TODO: download the user's public keys from the server if
+                     * we don't already have them and if they are present
+                     */
+                    try
+                    {
+                        boolean alreadyHasKeys = contact
+                            .isHasKeys();
+                        if (!alreadyHasKeys)
+                        {
+                            String contactUserid = contact
+                                .getUserid();
+                            /*
+                             * We don't have this contact's keys, so we'll
+                             * attempt to download them now.
+                             */
+                            String encPub = com
+                                .getUserSetting(
+                                    contactUserid,
+                                    UserSettings.KEY_ENC_PUB
+                                        .toString());
+                            String encMod = com
+                                .getUserSetting(
+                                    contactUserid,
+                                    UserSettings.KEY_ENC_MOD
+                                        .toString());
+                            String sigPub = com
+                                .getUserSetting(
+                                    contactUserid,
+                                    UserSettings.KEY_SIG_PUB
+                                        .toString());
+                            String sigMod = com
+                                .getUserSetting(
+                                    contactUserid,
+                                    UserSettings.KEY_SIG_MOD
+                                        .toString());
+                            if (encPub != null
+                                && encMod != null
+                                && sigPub != null
+                                && sigMod != null)
+                            {
+                                contact
+                                    .setRsaEncPub(new BigInteger(
+                                        encPub, 16));
+                                contact
+                                    .setRsaEncMod(new BigInteger(
+                                        encMod, 16));
+                                contact
+                                    .setRsaSigPub(new BigInteger(
+                                        sigPub, 16));
+                                contact
+                                    .setRsaSigMod(new BigInteger(
+                                        sigMod, 16));
+                                contact.setHasKeys(true);
+                            }
+                        }
+                    }
+                    catch (Exception e)
+                    {
+                        e.printStackTrace();
+                    }
                 }// end of (if contact exists) statement
                 status.setKnown(true);
             }

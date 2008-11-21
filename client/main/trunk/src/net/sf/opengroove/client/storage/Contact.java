@@ -45,7 +45,7 @@ public interface Contact
     public BigInteger getRsaEncPub();
     
     @Property
-    public BigInteger getRasEncMod();
+    public BigInteger getRsaEncMod();
     
     @Property
     public BigInteger getRsaSigPub();
@@ -63,7 +63,7 @@ public interface Contact
     
     public void setRsaEncPub(BigInteger rsaEncPub);
     
-    public void setRasEncMod(BigInteger rasEncMod);
+    public void setRsaEncMod(BigInteger rasEncMod);
     
     public void setRsaSigPub(BigInteger rsaSigPub);
     

@@ -362,7 +362,7 @@ public class MessageManager implements MessageDeliverer
                                         contact
                                             .getRsaEncPub(),
                                         contact
-                                            .getRasEncMod(),
+                                            .getRsaEncMod(),
                                         keyInteger);
                                 byte[] encryptedKeyBytes = encryptedKeyInteger
                                     .toByteArray();

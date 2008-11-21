@@ -19,7 +19,7 @@ public class FingerprintUtils
         if (!contact.isHasKeys())
             return null;
         return UserFingerprint.fingerprint(contact
-            .getRsaEncPub(), contact.getRasEncMod(),
+            .getRsaEncPub(), contact.getRsaEncMod(),
             contact.getRsaSigPub(), contact.getRsaSigMod());
     }
     
