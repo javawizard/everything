@@ -178,15 +178,15 @@
      inkscape:pageopacity="0.0"
      inkscape:pageshadow="2"
      inkscape:zoom="1"
-     inkscape:cx="66.50779"
+     inkscape:cx="249.38333"
      inkscape:cy="196.21591"
      inkscape:document-units="px"
      inkscape:current-layer="layer1"
      showgrid="false"
      inkscape:showpageshadow="false"
-     inkscape:window-width="1280"
+     inkscape:window-width="1277"
      inkscape:window-height="750"
-     inkscape:window-x="-8"
+     inkscape:window-x="-5"
      inkscape:window-y="-8"
      showguides="true"
      inkscape:guide-bbox="true">
@@ -331,17 +331,6 @@
     <text
        xml:space="preserve"
        style="font-size:9px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;text-align:start;line-height:125%;writing-mode:lr-tb;text-anchor:start;fill:#000000;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;font-family:Segoe UI;-inkscape-font-specification:Segoe UI"
-       x="366.59991"
-       y="314"
-       id="text2410"
-       sodipodi:linespacing="125%"><tspan
-         sodipodi:role="line"
-         x="366.59991"
-         y="314"
-         id="tspan2414">Created by Alexander Boyd</tspan></text>
-    <text
-       xml:space="preserve"
-       style="font-size:9px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;text-align:start;line-height:125%;writing-mode:lr-tb;text-anchor:start;fill:#000000;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;font-family:Segoe UI;-inkscape-font-specification:Segoe UI"
        x="22"
        y="313.99985"
        id="text3349"
@@ -350,5 +339,28 @@
          id="tspan3351"
          x="22"
          y="313.99985">Questions? Email support@opengroove.org</tspan></text>
+    <text
+       xml:space="preserve"
+       style="font-size:9px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;text-align:start;line-height:125%;writing-mode:lr-tb;text-anchor:start;fill:#000000;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;font-family:Segoe UI;-inkscape-font-specification:Segoe UI"
+       x="410"
+       y="279"
+       id="text2432"
+       sodipodi:linespacing="125%"><tspan
+         sodipodi:role="line"
+         id="tspan2434"
+         x="410"
+         y="279">Created by:</tspan><tspan
+         sodipodi:role="line"
+         x="410"
+         y="290.25"
+         id="tspan2436">Alexander Boyd</tspan><tspan
+         sodipodi:role="line"
+         x="410"
+         y="301.5"
+         id="tspan2438">Jonathan Kloster</tspan><tspan
+         sodipodi:role="line"
+         x="410"
+         y="312.75"
+         id="tspan2440">Mark Boyd</tspan></text>
   </g>
 </svg>
