@@ -50,6 +50,8 @@ import net.sf.opengroove.client.com.TimeoutException;
 import net.sf.opengroove.client.com.UserNotificationListener;
 import net.sf.opengroove.client.com.model.Subscription;
 import net.sf.opengroove.client.help.HelpViewer;
+import net.sf.opengroove.client.messaging.MessageHierarchy;
+import net.sf.opengroove.client.messaging.MessageManager;
 import net.sf.opengroove.client.notification.NotificationAdapter;
 import net.sf.opengroove.client.notification.TaskbarNotification;
 import net.sf.opengroove.client.plugins.PluginManager;
@@ -107,6 +109,10 @@ public class UserContext
      * The plugin manager that manages this user's plugins
      */
     private PluginManager plugins;
+    private MessageManager messageManager;
+    private MessageHierarchy rootMessageHierarchy;
+    private MessageHierarchy internalMessageHierarchy;
+    private MessageHierarchy pluginMessageHierarchy;
     /**
      * A conditional that is true if there is currently a connection to the
      * server.
@@ -1697,5 +1703,49 @@ public class UserContext
         localStatusButton.setIcon(new ImageIcon(
             OpenGroove.Icons.USER_ONLINE_16.getImage()));
         return;
+    }
+    
+    public MessageManager getMessageManager()
+    {
+        return messageManager;
+    }
+    
+    public MessageHierarchy getRootMessageHierarchy()
+    {
+        return rootMessageHierarchy;
+    }
+    
+    public MessageHierarchy getInternalMessageHierarchy()
+    {
+        return internalMessageHierarchy;
+    }
+    
+    public MessageHierarchy getPluginMessageHierarchy()
+    {
+        return pluginMessageHierarchy;
+    }
+    
+    public void setMessageManager(
+        MessageManager messageManager)
+    {
+        this.messageManager = messageManager;
+    }
+    
+    public void setRootMessageHierarchy(
+        MessageHierarchy rootMessageHierarchy)
+    {
+        this.rootMessageHierarchy = rootMessageHierarchy;
+    }
+    
+    public void setInternalMessageHierarchy(
+        MessageHierarchy internalMessageHierarchy)
+    {
+        this.internalMessageHierarchy = internalMessageHierarchy;
+    }
+    
+    public void setPluginMessageHierarchy(
+        MessageHierarchy pluginMessageHierarchy)
+    {
+        this.pluginMessageHierarchy = pluginMessageHierarchy;
     }
 }

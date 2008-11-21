@@ -673,6 +673,27 @@ public class MessageManager implements MessageDeliverer
     {
         public void run()
         {
+            while (true)
+            {
+                try
+                {
+                    Object object = inboundImporterQueue
+                        .poll(
+                            (long) (delay + (delayVariance * Math
+                                .random())),
+                            TimeUnit.MILLISECONDS);
+                    if (object == quitObject)
+                        return;
+                    /*
+                     * Now we download a list of inbound messages from the
+                     * server, and add those that aren't already present
+                     * locally.
+                     */
+                }
+                catch (Exception e)
+                {
+                }
+            }
         }
     };
     @StageThread
@@ -1020,10 +1041,26 @@ public class MessageManager implements MessageDeliverer
     public void start()
     {
         /*
+         * TODO: scan for message files without a backing message in that stage
+         * and delete them. Only do this when the manager starts to avoid
+         * clobbering files for messages that are about to be advanced to that
+         * stage.
+         */
+        /*
          * Start all of the threads running, and scan for messages to delete.
          * Then feed all queues the runObject so that they will perform an
          * initial pass.
          */
+        Thread[] threads = getStageThreads();
+        for (Thread thread : threads)
+        {
+            thread.start();
+        }
+        BlockingQueue[] queues = getStageQueues();
+        for (BlockingQueue queue : queues)
+        {
+            queue.offer(runObject);
+        }
     }
     
     public void stop()
