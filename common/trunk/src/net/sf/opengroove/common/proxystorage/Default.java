@@ -30,6 +30,13 @@ public @interface Default
     public long longValue();
     
     /**
+     * For double properties, the default double type.
+     * 
+     * @return
+     */
+    public double doubleValue();
+    
+    /**
      * For boolean properties, the default boolean type.
      * 
      * @return
