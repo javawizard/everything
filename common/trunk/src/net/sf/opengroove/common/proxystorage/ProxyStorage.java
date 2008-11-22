@@ -130,7 +130,8 @@ public class ProxyStorage<E>
         this(rootClass, location, 800);
     }
     
-    public ProxyStorage(Class<E> rootClass, File location, int cacheSize)
+    public ProxyStorage(Class<E> rootClass, File location,
+        int cacheSize)
 
     {
         objectCache = Collections
@@ -724,6 +725,9 @@ public class ProxyStorage<E>
             else if (propertyClass == Integer.TYPE
                 || propertyClass == Integer.class)
                 type = Types.INTEGER;
+            else if (propertyClass == Double.TYPE
+                || propertyClass == Double.class)
+                type = Types.DOUBLE;
             else if (propertyClass == Boolean.TYPE
                 || propertyClass == Boolean.class)
                 type = Types.BOOLEAN;
@@ -1401,6 +1405,8 @@ public class ProxyStorage<E>
                             || method.getReturnType() == Integer.class
                             || method.getReturnType() == Long.TYPE
                             || method.getReturnType() == Long.class
+                            || method.getReturnType() == Double.TYPE
+                            || method.getReturnType() == Double.class
                             || method.getReturnType() == Boolean.TYPE
                             || method.getReturnType() == Boolean.class
                             || method.getReturnType() == String.class)
@@ -1421,6 +1427,10 @@ public class ProxyStorage<E>
                                         result = values
                                             .longValue();
                                     if (method
+                                        .getReturnType() == Double.TYPE)
+                                        result = values
+                                            .doubleValue();
+                                    if (method
                                         .getReturnType() == Boolean.TYPE)
                                         result = values
                                             .booleanValue();
@@ -1437,6 +1447,9 @@ public class ProxyStorage<E>
                                     if (method
                                         .getReturnType() == Long.TYPE)
                                         result = (long) 0;
+                                    if (method
+                                        .getReturnType() == Double.TYPE)
+                                        result = (double) 0;
                                     if (method
                                         .getReturnType() == Boolean.TYPE)
                                         result = false;
