@@ -7,7 +7,7 @@ import net.sf.opengroove.common.proxystorage.ProxyBean;
 import net.sf.opengroove.common.proxystorage.StoredList;
 
 @ProxyBean
-public interface SettingsCoordinator
+public interface SettingStore
 {
     @Property
     @ListType(SettingValue.class)
