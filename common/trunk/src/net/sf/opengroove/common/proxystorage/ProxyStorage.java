@@ -34,6 +34,7 @@ import javax.swing.event.ChangeListener;
 import org.apache.commons.collections.map.LRUMap;
 
 import net.sf.opengroove.common.utils.Progress;
+import net.sf.opengroove.common.utils.StringUtils;
 
 /**
  * The ProxyStorage class is a class used for storing simple java beans to disk,
@@ -1279,7 +1280,7 @@ public class ProxyStorage<E>
                             + " ?) order by index asc");
                     st.setLong(1, listId);
                     Object searchValue = args[0];
-                    if (annotation.exact())
+                    if (!annotation.exact())
                     {
                         searchValue = (annotation
                             .anywhere() ? "%" : "")
@@ -1289,6 +1290,161 @@ public class ProxyStorage<E>
                                 : "");
                     }
                     st.setObject(2, searchValue);
+                    ResultSet rs = st.executeQuery();
+                    ArrayList<Long> resultIds = new ArrayList<Long>();
+                    while (rs.next())
+                    {
+                        resultIds.add(rs.getLong(1));
+                    }
+                    rs.close();
+                    st.close();
+                    /*
+                     * We now have the ids of the results, and the class
+                     * (listType) of the results. We'll now instantiate each one
+                     * and return them.
+                     */
+                    Object[] results = new Object[resultIds
+                        .size()];
+                    int index = 0;
+                    for (long resultId : resultIds)
+                    {
+                        results[index++] = getById(
+                            resultId, listType);
+                    }
+                    if (method.getReturnType().isArray())
+                    {
+                        Object resultArray = Array
+                            .newInstance(method
+                                .getReturnType()
+                                .getComponentType(),
+                                results.length);
+                        System.arraycopy(results, 0,
+                            resultArray, 0, results.length);
+                        return resultArray;
+                    }
+                    else
+                    {
+                        if (results.length == 0)
+                            return null;
+                        else
+                            return results[0];
+                    }
+                }
+                if (method
+                    .isAnnotationPresent(CompoundSearch.class))
+                {
+                    /*
+                     * The method is a compound search method. We'll check the
+                     * search type and perform the query.
+                     */
+                    CompoundSearch annotation = method
+                        .getAnnotation(CompoundSearch.class);
+                    String listProperty = annotation
+                        .listProperty();
+                    String[] searchProperties = annotation
+                        .searchProperties();
+                    PreparedStatement lst = connection
+                        .prepareStatement("select "
+                            + listProperty
+                            + " from "
+                            + getTargetTableName(targetClass)
+                            + " where proxystorage_id = ?");
+                    lst.setLong(1, targetId);
+                    ResultSet lrs = lst.executeQuery();
+                    if (!lrs.next())
+                        throw new RuntimeException(
+                            "mismatched object with id "
+                                + targetId + " and class "
+                                + targetClass.getName());
+                    long listId = lrs.getLong(1);
+                    if (lrs.wasNull())
+                    {
+                        lrs.close();
+                        lst.close();
+                        if (method.getReturnType()
+                            .isArray())
+                            return Array.newInstance(method
+                                .getReturnType()
+                                .getComponentType(), 0);
+                        else
+                            return null;
+                    }
+                    lrs.close();
+                    lst.close();
+                    /*
+                     * The list is not null, and we have it's id. Now we'll put
+                     * together a query to search for the actual objects.
+                     */
+                    String capitalizedListProperty = listProperty
+                        .substring(0, 1).toUpperCase()
+                        + listProperty.substring(1);
+                    Method listGetterMethod = method
+                        .getDeclaringClass()
+                        .getMethod(
+                            "get" + capitalizedListProperty,
+                            new Class[0]);
+                    ListType listTypeAnnotation = listGetterMethod
+                        .getAnnotation(ListType.class);
+                    if (listTypeAnnotation == null)
+                        throw new RuntimeException(
+                            "@ListType annotation is not present on stored list getter "
+                                + listGetterMethod
+                                    .getName()
+                                + " for class "
+                                + listGetterMethod
+                                    .getDeclaringClass()
+                                    .getName());
+                    Class listType = listTypeAnnotation
+                        .value();
+                    String[] searchQueryStrings = new String[searchProperties.length];
+                    Method[] searchQueryMethods = new Method[searchProperties.length];
+                    for (int i = 0; i < searchProperties.length; i++)
+                    {
+                        String capitalizedSearchProperty = searchProperties[0]
+                            .substring(0, 1).toUpperCase()
+                            + searchProperties[i]
+                                .substring(1);
+                        Method searchGetterMethod = listType
+                            .getMethod(
+                                "get"
+                                    + capitalizedSearchProperty,
+                                new Class[0]);
+                        searchQueryMethods[i] = searchGetterMethod;
+                        searchQueryStrings[i] = searchProperties[i]
+                            + " "
+                            + (annotation.exact()[i] ? "="
+                                : "like") + " ?";
+                    }
+                    String searchQuery = StringUtils
+                        .delimited(searchQueryStrings,
+                            " and ");
+                    /*
+                     * At this point, we have method objects representing the
+                     * stored list and the search property. Now we do the actual
+                     * search.
+                     */
+                    PreparedStatement st = connection
+                        .prepareStatement("select value from proxystorage_collections "
+                            + "where id = ? and value in (select proxystorage_id from "
+                            + getTargetTableName(listType)
+                            + " where "
+                            + searchQuery
+                            + ") order by index asc");
+                    st.setLong(1, listId);
+                    for (int i = 0; i < searchProperties.length; i++)
+                    {
+                        Object searchValue = args[0];
+                        if (!annotation.exact()[i])
+                        {
+                            searchValue = (annotation
+                                .anywhere()[i] ? "%" : "")
+                                + ((String) searchValue)
+                                    .replace("*", "%")
+                                + (annotation.anywhere()[i] ? "%"
+                                    : "");
+                        }
+                        st.setObject(i + 2, searchValue);
+                    }
                     ResultSet rs = st.executeQuery();
                     ArrayList<Long> resultIds = new ArrayList<Long>();
                     while (rs.next())
