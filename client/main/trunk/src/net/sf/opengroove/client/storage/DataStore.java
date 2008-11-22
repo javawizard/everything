@@ -1,7 +1,16 @@
 package net.sf.opengroove.client.storage;
 
+import net.sf.opengroove.client.settings.SettingStore;
 import net.sf.opengroove.common.proxystorage.*;
 
+/**
+ * The root procy storage object for OpenGroove. A single instance of this is
+ * obtained by OpenGroove upon startup, and is used to store all user
+ * information.
+ * 
+ * @author Alexander Boyd
+ * 
+ */
 @ProxyBean
 public interface DataStore
 {
@@ -42,5 +51,10 @@ public interface DataStore
     
     @Search(listProperty = "properties", searchProperty = "name")
     public ConfigProperty getProperty(String name);
+    
+    @Property
+    public SettingStore getSettingStore();
+    
+    public void setSettingStore(SettingStore store);
     
 }

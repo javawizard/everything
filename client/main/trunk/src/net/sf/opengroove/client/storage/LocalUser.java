@@ -8,6 +8,7 @@ import java.util.Properties;
 import net.sf.opengroove.client.OpenGroove;
 import net.sf.opengroove.client.UserContext;
 import net.sf.opengroove.client.com.CommandCommunicator;
+import net.sf.opengroove.client.settings.SettingStore;
 import net.sf.opengroove.common.proxystorage.*;
 import net.sf.opengroove.common.security.CertificateUtils;
 import net.sf.opengroove.common.utils.Userids;
@@ -241,4 +242,10 @@ public interface LocalUser extends ProxyObject
         }
         
     }
+    
+    @Property
+    public SettingStore getSettingStore();
+    public void setSettingStore(SettingStore store);
+    @Constructor
+    public SettingStore createSettingStore();
 }

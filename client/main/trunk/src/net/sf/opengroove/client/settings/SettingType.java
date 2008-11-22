@@ -29,7 +29,7 @@ public interface SettingType<C extends JComponent, P extends SettingParameters, 
      * @param component
      * @param value
      */
-    public void storeValue(C component, SettingValue value);
+    public void storeValue(C component, SettingValue value, P parameters);
     
     /**
      * Validates that the contents of the specified component are valid, using
@@ -51,7 +51,7 @@ public interface SettingType<C extends JComponent, P extends SettingParameters, 
      * @param component
      * @return
      */
-    public JComponent createReadOnlyComponent(C component);
+    public JComponent createReadOnlyComponent(C component, P parameters);
     
     /**
      * Loads the value in the setting value specified into the component
@@ -67,5 +67,13 @@ public interface SettingType<C extends JComponent, P extends SettingParameters, 
      */
     public void loadValue(C component, SettingValue value,
         P parameters);
-    public V
+    
+    /**
+     * Gets the value in a form suitable for passing out of calls to
+     * getSettingValue() on SettingsManager.
+     * 
+     * @param value
+     * @return
+     */
+    public V getValue(SettingValue value, P parameters);
 }
