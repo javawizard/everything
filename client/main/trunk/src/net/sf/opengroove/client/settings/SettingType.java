@@ -10,9 +10,18 @@ import javax.swing.JComponent;
  * displaying settings and generating the corresponding widgets.
  * 
  * @author Alexander Boyd
- * 
+ * @param <C>
+ *            The type of component that this setting type uses
+ * @param
+ *            <P>
+ *            The class of setting parameters that this type uses. If this type
+ *            doesn't need parameters, this can just be SettingParameters.
+ * @param <V>
+ *            The setting value object that holds actual values for the setting.
+ *            This is the type returned to callers of the getSettingValue()
+ *            method on SettingsManager.
  */
-public interface SettingType<C extends JComponent, P extends SettingParameters>
+public interface SettingType<C extends JComponent, P extends SettingParameters, V>
 {
     /**
      * Stores the value in the component into the setting value provided.
@@ -58,4 +67,5 @@ public interface SettingType<C extends JComponent, P extends SettingParameters>
      */
     public void loadValue(C component, SettingValue value,
         P parameters);
+    public V
 }
