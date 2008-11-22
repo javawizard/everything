@@ -29,14 +29,17 @@ public interface SettingType<C extends JComponent, P extends SettingParameters, 
      * @param component
      * @param value
      */
-    public void storeValue(C component, SettingStoredValue value, P parameters);
+    public void storeValue(C component, SettingValue value,
+        P parameters);
     
     /**
      * Validates that the contents of the specified component are valid, using
      * the parameters specified.
      * 
      * @param component
-     * @return
+     * @return null if the contents are valid, a string decribing the problem if
+     *         the contents are not. If this is not null, the user will be shown
+     *         it, and they will not be allowed to exit the settings dialog.
      */
     public String validate(C component, P parameters);
     
@@ -46,12 +49,17 @@ public interface SettingType<C extends JComponent, P extends SettingParameters, 
      * Creates a component that displays a read-only view of the value contained
      * within the component specified. It is recommended that the component
      * returned update itself with changes to the component specified; this is,
-     * however, not required.
+     * however, not required.<br/><br/>
+     * 
+     * The component returned should be as compact as possible; returned
+     * components should, for example, omit buttons instead of include disabled
+     * ones if the editable form of the component includes buttons.
      * 
      * @param component
      * @return
      */
-    public JComponent createReadOnlyComponent(C component, P parameters);
+    public JComponent createReadOnlyComponent(C component,
+        P parameters);
     
     /**
      * Loads the value in the setting value specified into the component
@@ -65,7 +73,7 @@ public interface SettingType<C extends JComponent, P extends SettingParameters, 
      * @param component
      * @param value
      */
-    public void loadValue(C component, SettingStoredValue value,
+    public void loadValue(C component, SettingValue value,
         P parameters);
     
     /**
@@ -75,5 +83,5 @@ public interface SettingType<C extends JComponent, P extends SettingParameters, 
      * @param value
      * @return
      */
-    public V getValue(SettingStoredValue value, P parameters);
+    public V getValue(SettingValue value, P parameters);
 }

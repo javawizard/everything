@@ -56,4 +56,59 @@ public class SettingValue
     {
         this.booleanValue = booleanValue;
     }
+    public int hashCode()
+    {
+        final int prime = 31;
+        int result = 1;
+        result = prime * result
+            + (booleanValue ? 1231 : 1237);
+        long temp;
+        temp = Double.doubleToLongBits(doubleValue);
+        result = prime * result
+            + (int) (temp ^ (temp >>> 32));
+        result = prime * result + intValue;
+        result = prime * result
+            + (int) (longValue ^ (longValue >>> 32));
+        result = prime * result
+            + ((spec == null) ? 0 : spec.hashCode());
+        result = prime
+            * result
+            + ((stringValue == null) ? 0 : stringValue
+                .hashCode());
+        return result;
+    }
+    public boolean equals(Object obj)
+    {
+        if (this == obj)
+            return true;
+        if (obj == null)
+            return false;
+        if (getClass() != obj.getClass())
+            return false;
+        final SettingValue other = (SettingValue) obj;
+        if (booleanValue != other.booleanValue)
+            return false;
+        if (Double.doubleToLongBits(doubleValue) != Double
+            .doubleToLongBits(other.doubleValue))
+            return false;
+        if (intValue != other.intValue)
+            return false;
+        if (longValue != other.longValue)
+            return false;
+        if (spec == null)
+        {
+            if (other.spec != null)
+                return false;
+        }
+        else if (!spec.equals(other.spec))
+            return false;
+        if (stringValue == null)
+        {
+            if (other.stringValue != null)
+                return false;
+        }
+        else if (!stringValue.equals(other.stringValue))
+            return false;
+        return true;
+    }
 }
