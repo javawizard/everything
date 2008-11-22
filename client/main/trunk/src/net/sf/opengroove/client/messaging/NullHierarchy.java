@@ -19,6 +19,10 @@ public class NullHierarchy extends MessageHierarchy
     
     public void handleMessage(InboundMessage message)
     {
+        System.err
+            .println("message delivered directly to NullHierarchy, this isn't allowed");
+        message.setStage(InboundMessage.STAGE_READ);
+        getInboundMessageFile(message.getId()).delete();
     }
     
 }

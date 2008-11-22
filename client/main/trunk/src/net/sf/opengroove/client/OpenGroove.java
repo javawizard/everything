@@ -111,6 +111,8 @@ import net.sf.opengroove.client.com.UserNotificationListener;
 import net.sf.opengroove.client.com.FieldFile.Fields;
 import net.sf.opengroove.client.com.model.Subscription;
 import net.sf.opengroove.client.features.FeatureManager;
+import net.sf.opengroove.client.messaging.MessageManager;
+import net.sf.opengroove.client.messaging.NullHierarchy;
 import net.sf.opengroove.client.notification.FrameShowingNotification;
 import net.sf.opengroove.client.notification.GroupLabelResolver;
 import net.sf.opengroove.client.notification.NotificationAdapter;
@@ -1270,6 +1272,22 @@ public class OpenGroove
                     .createLaunchbarTitle());
                 launchbar.setLocationRelativeTo(null);
                 context.setLaunchbar(launchbar);
+                context
+                    .setRootMessageHierarchy(new NullHierarchy(
+                        ""));
+                context
+                    .setInternalMessageHierarchy(new NullHierarchy(
+                        "internal"));
+                context
+                    .setPluginMessageHierarchy(new NullHierarchy(
+                        "plugins"));
+                setupInboundUserMessaging(context, userid);
+                context.getRootMessageHierarchy().add(
+                    context.getInternalMessageHierarchy());
+                context.getRootMessageHierarchy().add(
+                    context.getPluginMessageHierarchy());
+                context.getRootMessageHierarchy().add(
+                    context.getUserMessageHierarchy());
                 Communicator com = new Communicator(
                     launchbar, Userids.toRealm(userid),
                     true, false, "normal", Userids
@@ -1279,6 +1297,10 @@ public class OpenGroove
                         .getStatusListener(), null);
                 CommandCommunicator commandCom = new CommandCommunicator(
                     com);
+                MessageManager messageManager = new MessageManager(
+                    userid, commandCom, context
+                        .getRootMessageHierarchy());
+                context.setMessageManager(messageManager);
                 commandCom
                     .addUserNotificationListener(context
                         .getUserNotificationListener());
@@ -1287,7 +1309,10 @@ public class OpenGroove
                  * TODO: set this as an object on the user context instead of
                  * just adding it, in case we replace the communicator while the
                  * user is logged in (an unlikely but possible event if
-                 * OpenGroove goes the way I'm thinking it will go)
+                 * OpenGroove goes the way I'm thinking it will go). I'm
+                 * thinking this could happen if they change their password.
+                 * Then again, perhaps I could just include methods on
+                 * CommandCommunicator for doing this.
                  */
                 context.getCom().addSubscriptionListener(
                     new SubscriptionListener()
@@ -1362,6 +1387,7 @@ public class OpenGroove
                     });
                 // loadFeatures();
                 // loadCurrentUserLookAndFeel();
+                setupOutboundUserMessaging(context, userid);
                 loadLaunchBar(userid, context);
                 context.refreshContactsPane();
                 context.startTimers();
@@ -1398,6 +1424,39 @@ public class OpenGroove
                 .requestFocusInWindow();
             refreshTrayMenu();
         }
+    }
+    
+    /**
+     * Sets up outbound user messaging.
+     * 
+     * @param context
+     * @param userid
+     */
+    private static void setupOutboundUserMessaging(
+        UserContext context, String userid)
+    {
+        /*
+         * TODO do we actually need to do anything here?
+         */
+    }
+    
+    /**
+     * Sets up inbound user messaging. This creates a message hierarchy and adds
+     * it to the context specified. It also creates the message history window
+     * (for both inbound and outbound messages) and adds it to the context.
+     * 
+     * @param context
+     * @param userid
+     */
+    private static void setupInboundUserMessaging(
+        UserContext context, String userid)
+    {
+        /*
+         * TODO: actually implement this method. Some sort of "preferences"
+         * windos in OpenGroove should probably be done first, so the user can
+         * specify how long to retain message attachments and how long to retain
+         * messages themselves.
+         */
     }
     
     /**

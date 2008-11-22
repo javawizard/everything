@@ -113,6 +113,7 @@ public class UserContext
     private MessageHierarchy rootMessageHierarchy;
     private MessageHierarchy internalMessageHierarchy;
     private MessageHierarchy pluginMessageHierarchy;
+    private MessageHierarchy userMessageHierarchy;
     /**
      * A conditional that is true if there is currently a connection to the
      * server.
@@ -1747,5 +1748,16 @@ public class UserContext
         MessageHierarchy pluginMessageHierarchy)
     {
         this.pluginMessageHierarchy = pluginMessageHierarchy;
+    }
+    
+    public MessageHierarchy getUserMessageHierarchy()
+    {
+        return userMessageHierarchy;
+    }
+    
+    public void setUserMessageHierarchy(
+        MessageHierarchy userMessageHierarchy)
+    {
+        this.userMessageHierarchy = userMessageHierarchy;
     }
 }
