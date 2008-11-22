@@ -10,18 +10,8 @@ import javax.swing.JComponent;
  * displaying settings and generating the corresponding widgets.
  * 
  * @author Alexander Boyd
- * @param <C>
- *            The type of component that this setting type uses
- * @param
- *            <P>
- *            The class of setting parameters that this type uses. If this type
- *            doesn't need parameters, this can just be SettingParameters.
- * @param <V>
- *            The setting value object that holds actual values for the setting.
- *            This is the type returned to callers of the getSettingValue()
- *            method on SettingsManager.
  */
-public interface SettingType<C extends JComponent, P extends SettingParameters, V>
+public interface SettingType
 {
     /**
      * Stores the value in the component into the setting value provided.
@@ -29,8 +19,8 @@ public interface SettingType<C extends JComponent, P extends SettingParameters, 
      * @param component
      * @param value
      */
-    public void storeValue(C component, SettingValue value,
-        P parameters);
+    public void storeValue(JComponent component,
+        SettingValue value, SettingParameters parameters);
     
     /**
      * Validates that the contents of the specified component are valid, using
@@ -41,9 +31,11 @@ public interface SettingType<C extends JComponent, P extends SettingParameters, 
      *         the contents are not. If this is not null, the user will be shown
      *         it, and they will not be allowed to exit the settings dialog.
      */
-    public String validate(C component, P parameters);
+    public String validate(JComponent component,
+        SettingParameters parameters);
     
-    public C createComponent(P parameters);
+    public JComponent createComponent(
+        SettingParameters parameters);
     
     /**
      * Creates a component that displays a read-only view of the value contained
@@ -58,8 +50,8 @@ public interface SettingType<C extends JComponent, P extends SettingParameters, 
      * @param component
      * @return
      */
-    public JComponent createReadOnlyComponent(C component,
-        P parameters);
+    public JComponent createReadOnlyComponent(
+        JComponent component, SettingParameters parameters);
     
     /**
      * Loads the value in the setting value specified into the component
@@ -73,8 +65,8 @@ public interface SettingType<C extends JComponent, P extends SettingParameters, 
      * @param component
      * @param value
      */
-    public void loadValue(C component, SettingValue value,
-        P parameters);
+    public void loadValue(JComponent component,
+        SettingValue value, SettingParameters parameters);
     
     /**
      * Gets the value in a form suitable for passing out of calls to
@@ -83,5 +75,6 @@ public interface SettingType<C extends JComponent, P extends SettingParameters, 
      * @param value
      * @return
      */
-    public V getValue(SettingValue value, P parameters);
+    public Object getValue(SettingValue value,
+        SettingParameters parameters);
 }
