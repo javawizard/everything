@@ -11,16 +11,16 @@ import net.sf.opengroove.common.proxystorage.StoredList;
 public interface SettingStore
 {
     @Property
-    @ListType(SettingValue.class)
-    public StoredList<SettingValue> getSettings();
+    @ListType(SettingStoredValue.class)
+    public StoredList<SettingStoredValue> getSettings();
     
     @Constructor
-    public SettingValue createSettingValue();
+    public SettingStoredValue createSettingValue();
     
     @CompoundSearch(listProperty = "settings", searchProperties = {
         "tabId", "subnavId", "groupId", "settingId" }, exact = {
         true, true, true, true }, anywhere = { false,
         false, false, false })
-    public SettingValue getSettingValue(String tabId,
+    public SettingStoredValue getSettingValue(String tabId,
         String subnavId, String groupId, String settingId);
 }

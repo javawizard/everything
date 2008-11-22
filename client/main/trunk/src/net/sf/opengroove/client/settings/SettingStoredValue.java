@@ -4,7 +4,7 @@ import net.sf.opengroove.common.proxystorage.Property;
 import net.sf.opengroove.common.proxystorage.ProxyBean;
 
 @ProxyBean
-public interface SettingValue
+public interface SettingStoredValue
 {
     @Property
     public String getTabId();

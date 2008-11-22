@@ -2,6 +2,7 @@ package net.sf.opengroove.client.settings;
 
 import java.awt.BorderLayout;
 import java.awt.Window;
+import java.util.ArrayList;
 import java.util.HashMap;
 
 import javax.swing.ButtonGroup;
@@ -31,6 +32,8 @@ public class SettingsManager
         private SettingSpec spec;
         private SettingType type;
     }
+    
+    private ArrayList<Setting> currentSettings = new ArrayList<Setting>();
     
     private static HashMap<String, SettingType> registeredTypes = new HashMap<String, SettingType>();
     
@@ -80,5 +83,30 @@ public class SettingsManager
         contentOuterPanel.setLayout(new BorderLayout());
         lowerPanel.setLayout(new BorderLayout());
         buttonsPanel.setLayout(new BorderLayout());
+        mainPanel.add(contentOuterPanel,
+            BorderLayout.CENTER);
+        mainPanel.add(lowerPanel, BorderLayout.SOUTH);
+        lowerPanel.add(buttonsPanel, BorderLayout.EAST);
+        contentOuterPanel.add(contentPanel,
+            BorderLayout.CENTER);
+        contentOuterPanel.add(tabBar, BorderLayout.WEST);
+        loadButtons();
+        loadDefaultTypes();
+    }
+    
+    /**
+     * Loads and registers the default setting types.
+     */
+    private void loadDefaultTypes()
+    {
+    }
+    
+    /**
+     * Loads the OK and CANCEL buttons.
+     */
+    private void loadButtons()
+    {
+        // TODO Auto-generated method stub
+        
     }
 }
