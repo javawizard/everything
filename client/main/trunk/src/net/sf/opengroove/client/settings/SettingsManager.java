@@ -1,10 +1,16 @@
 package net.sf.opengroove.client.settings;
 
+import java.awt.BorderLayout;
+import java.awt.Window;
 import java.util.HashMap;
 
+import javax.swing.ButtonGroup;
 import javax.swing.JDialog;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
+import javax.swing.JTabbedPane;
+
+import net.sf.opengroove.client.OpenGroove;
 
 import com.l2fprod.common.swing.JButtonBar;
 
@@ -49,4 +55,30 @@ public class SettingsManager
      * hashmaps that map ids to tabbedpanes or panels.
      */
 
+    private HashMap<String, JTabbedPane> tabMap = new HashMap<String, JTabbedPane>();
+    private HashMap<String, HashMap<String, JPanel>> subnavMap = new HashMap<String, HashMap<String, JPanel>>();
+    private HashMap<String, HashMap<String, HashMap<String, JPanel>>> groupMap = new HashMap<String, HashMap<String, HashMap<String, JPanel>>>();
+    private ButtonGroup tabButtonGroup = new ButtonGroup();
+    private JPanel contentPanel = new JPanel();
+    private JPanel contentOuterPanel = new JPanel();
+    private JPanel mainPanel = new JPanel();
+    private JPanel lowerPanel = new JPanel();
+    private JPanel buttonsPanel = new JPanel();
+    private JButtonBar tabBar = new JButtonBar(
+        JButtonBar.VERTICAL);
+    
+    public SettingsManager(Window dialogParent,
+        String dialogTitle, SettingStore store)
+    {
+        this.store = store;
+        this.frame = new JDialog(dialogParent);
+        frame.setTitle(dialogTitle);
+        frame.setIconImage(OpenGroove.getWindowIcon());
+        frame.setModal(true);
+        mainPanel.setLayout(new BorderLayout());
+        contentPanel.setLayout(new BorderLayout());
+        contentOuterPanel.setLayout(new BorderLayout());
+        lowerPanel.setLayout(new BorderLayout());
+        buttonsPanel.setLayout(new BorderLayout());
+    }
 }
