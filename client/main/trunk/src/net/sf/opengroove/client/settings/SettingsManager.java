@@ -29,8 +29,20 @@ public class SettingsManager
     
     public class Setting
     {
+        /**
+         * The spec of this setting
+         */
         private SettingSpec spec;
+        /**
+         * This setting's type
+         */
         private SettingType type;
+        /**
+         * The value of this setting as of the last time that the status dialog
+         * was saved. This can be compared with the current value of a setting
+         * when closing the dialog to see what settings have changed.
+         */
+        private SettingValue loadedValue;
     }
     
     private ArrayList<Setting> currentSettings = new ArrayList<Setting>();
