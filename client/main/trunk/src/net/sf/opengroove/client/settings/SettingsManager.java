@@ -334,7 +334,8 @@ public class SettingsManager
         if (tabComponents.containsKey(id)
             || tabMap.containsKey(id))
             return;
-        JToggleButton tabButton = new JToggleButton(name);
+        final JToggleButton tabButton = new JToggleButton(
+            name);
         if (icon != null)
         {
             tabButton.setIcon(icon);
@@ -352,7 +353,7 @@ public class SettingsManager
          * components map. We'll also add it to the content panel if this is the
          * first one added.
          */
-        JTabbedPane pane = new JTabbedPane();
+        final JTabbedPane pane = new JTabbedPane();
         tabMap.put(id, pane);
         tabComponents.put(id, pane);
         if (tabBar.getComponentCount() == 1)
@@ -362,6 +363,18 @@ public class SettingsManager
             new HashMap<String, HashMap<String, JPanel>>());
         subnavComponents.put(id,
             new HashMap<String, JComponent>());
+        tabButton.addActionListener(new ActionListener()
+        {
+            
+            public void actionPerformed(ActionEvent e)
+            {
+                if (tabButton.isSelected())
+                {
+                    contentPanel.removeAll();
+                    contentPanel.add(pane);
+                }
+            }
+        });
         groupComponents
             .put(
                 id,
