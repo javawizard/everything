@@ -8,54 +8,67 @@ public class SettingValue
     private long longValue;
     private double doubleValue;
     private boolean booleanValue;
+    
     public SettingSpec getSpec()
     {
         return spec;
     }
+    
     public String getStringValue()
     {
         return stringValue;
     }
+    
     public int getIntValue()
     {
         return intValue;
     }
+    
     public long getLongValue()
     {
         return longValue;
     }
+    
     public double getDoubleValue()
     {
         return doubleValue;
     }
-    public boolean isBooleanValue()
+    
+    public boolean getBooleanValue()
     {
         return booleanValue;
     }
+    
     public void setSpec(SettingSpec spec)
     {
         this.spec = spec;
     }
+    
     public void setStringValue(String stringValue)
     {
         this.stringValue = stringValue;
     }
+    
     public void setIntValue(int intValue)
     {
         this.intValue = intValue;
     }
+    
     public void setLongValue(long longValue)
     {
         this.longValue = longValue;
     }
+    
     public void setDoubleValue(double doubleValue)
     {
         this.doubleValue = doubleValue;
     }
+    
     public void setBooleanValue(boolean booleanValue)
     {
         this.booleanValue = booleanValue;
     }
+    
     public int hashCode()
     {
         final int prime = 31;
@@ -77,6 +90,7 @@ public class SettingValue
                 .hashCode());
         return result;
     }
+    
     public boolean equals(Object obj)
     {
         if (this == obj)
@@ -110,5 +124,35 @@ public class SettingValue
         else if (!stringValue.equals(other.stringValue))
             return false;
         return true;
+    }
+    
+    /**
+     * Copies the actual values from the setting specified to this one. This
+     * does not copy the spec.
+     * 
+     * @param storedValue
+     */
+    public void copyFrom(SettingStoredValue storedValue)
+    {
+        booleanValue = storedValue.getBooleanValue();
+        doubleValue = storedValue.getDoubleValue();
+        intValue = storedValue.getIntValue();
+        longValue = storedValue.getLongValue();
+        stringValue = storedValue.getStringValue();
+    }
+    
+    /**
+     * Copies the actual values of this setting to the setting specified. This
+     * does not copy the spec.
+     * 
+     * @param storedValue
+     */
+    public void copyTo(SettingStoredValue storedValue)
+    {
+        storedValue.setBooleanValue(booleanValue);
+        storedValue.setDoubleValue(doubleValue);
+        storedValue.setIntValue(intValue);
+        storedValue.setLongValue(longValue);
+        storedValue.setStringValue(stringValue);
     }
 }

@@ -1,17 +1,33 @@
 package net.sf.opengroove.client.settings;
 
 import java.awt.BorderLayout;
+import java.awt.Color;
+import java.awt.Dimension;
 import java.awt.Window;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.util.ArrayList;
 import java.util.HashMap;
 
+import javax.swing.BoxLayout;
 import javax.swing.ButtonGroup;
+import javax.swing.Icon;
+import javax.swing.JButton;
+import javax.swing.JComponent;
 import javax.swing.JDialog;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.JTabbedPane;
+import javax.swing.JToggleButton;
+import javax.swing.border.CompoundBorder;
+import javax.swing.border.EmptyBorder;
+import javax.swing.border.LineBorder;
+import javax.swing.border.TitledBorder;
 
 import net.sf.opengroove.client.OpenGroove;
+import net.sf.opengroove.client.settings.types.CheckboxType;
+import net.sf.opengroove.client.settings.types.TextType;
+import net.sf.opengroove.common.ui.ComponentUtils;
 
 import com.l2fprod.common.swing.JButtonBar;
 
@@ -19,7 +35,26 @@ import com.l2fprod.common.swing.JButtonBar;
  * A class that manages settings for a particular user. It is supplied upon
  * creation with a SettingStore object, a proxy storage bean which is typically
  * stored as part of a LocalUser or as part of the general local storage. It
- * makes available a dialog which can be used
+ * makes available a dialog which can be shown to the user to allow the user to
+ * change the settings contained.<br/><br/>
+ * 
+ * SettingsManager registers some types in it's static initializer. Those are
+ * described below, along with the class that implements the type (see the
+ * respective classes for documentation on a particular type).<br/> <table
+ * border="1" cellspacing="0" cellpadding="1">
+ * <tr>
+ * <th>Type</th>
+ * <th>Class</th>
+ * </tr>
+ * <tr>
+ * <td>text</td>
+ * <td>{@link TextType}</td>
+ * </tr>
+ * <tr>
+ * <td>checkbox</td>
+ * <td>{@link CheckboxType}</td>
+ * </tr>
+ * </table>
  * 
  * @author Alexander Boyd
  * 
@@ -43,6 +78,11 @@ public class SettingsManager
          * when closing the dialog to see what settings have changed.
          */
         private SettingValue loadedValue;
+        /**
+         * The listeners that have registered an interest in this setting. They
+         * will be notified when this setting changes.
+         */
+        private ArrayList<SettingListener> listeners = new ArrayList<SettingListener>();
     }
     
     private ArrayList<Setting> currentSettings = new ArrayList<Setting>();
@@ -71,8 +111,11 @@ public class SettingsManager
      */
 
     private HashMap<String, JTabbedPane> tabMap = new HashMap<String, JTabbedPane>();
+    private HashMap<String, JComponent> tabComponents = new HashMap<String, JComponent>();
     private HashMap<String, HashMap<String, JPanel>> subnavMap = new HashMap<String, HashMap<String, JPanel>>();
+    private HashMap<String, HashMap<String, JComponent>> subnavComponents = new HashMap<String, HashMap<String, JComponent>>();
     private HashMap<String, HashMap<String, HashMap<String, JPanel>>> groupMap = new HashMap<String, HashMap<String, HashMap<String, JPanel>>>();
+    private HashMap<String, HashMap<String, HashMap<String, JComponent>>> groupComponents = new HashMap<String, HashMap<String, HashMap<String, JComponent>>>();
     private ButtonGroup tabButtonGroup = new ButtonGroup();
     private JPanel contentPanel = new JPanel();
     private JPanel contentOuterPanel = new JPanel();
@@ -94,7 +137,8 @@ public class SettingsManager
         contentPanel.setLayout(new BorderLayout());
         contentOuterPanel.setLayout(new BorderLayout());
         lowerPanel.setLayout(new BorderLayout());
-        buttonsPanel.setLayout(new BorderLayout());
+        buttonsPanel.setLayout(new BoxLayout(buttonsPanel,
+            BoxLayout.X_AXIS));
         mainPanel.add(contentOuterPanel,
             BorderLayout.CENTER);
         mainPanel.add(lowerPanel, BorderLayout.SOUTH);
@@ -102,23 +146,234 @@ public class SettingsManager
         contentOuterPanel.add(contentPanel,
             BorderLayout.CENTER);
         contentOuterPanel.add(tabBar, BorderLayout.WEST);
+        frame.getContentPane()
+            .setLayout(new BorderLayout());
+        frame.getContentPane().add(mainPanel,
+            BorderLayout.CENTER);
+        frame.setSize(550, 600);
         loadButtons();
+    }
+    
+    static
+    {
         loadDefaultTypes();
     }
     
     /**
      * Loads and registers the default setting types.
      */
-    private void loadDefaultTypes()
+    private static void loadDefaultTypes()
     {
+        registerType("checkbox", new CheckboxType());
+        registerType("text", new TextType());
+    }
+    
+    public static void registerType(String string,
+        SettingType textType)
+    {
+        registeredTypes.put(string, textType);
     }
     
     /**
-     * Loads the OK and CANCEL buttons.
+     * Loads the ok, cancel, and changes buttons.
      */
     private void loadButtons()
     {
-        // TODO Auto-generated method stub
+        JButton cancel = new JButton("Cancel");
+        JButton changes = new JButton("Changes");
+        JButton ok = new JButton("OK");
+        cancel
+            .setToolTipText(ComponentUtils
+                .htmlTipWrap("If you click this, all of the changes you "
+                    + "have made to your settings since you opened "
+                    + "this dialog will be discarded."));
+        changes
+            .setToolTipText(ComponentUtils
+                .htmlTipWrap("Not sure what you've changed? "
+                    + "Click on this button to see the changes "
+                    + "you've made."));
+        ok
+            .setToolTipText(ComponentUtils
+                .htmlTipWrap("Saves your settings and closes this dialog."));
+        buttonsPanel.add(ok);
+        buttonsPanel.add(changes);
+        buttonsPanel.add(cancel);
+        cancel.addActionListener(new ActionListener()
+        {
+            
+            public void actionPerformed(ActionEvent e)
+            {
+            }
+        });
+        changes.addActionListener(new ActionListener()
+        {
+            
+            public void actionPerformed(ActionEvent e)
+            {
+                // TODO Auto-generated method stub
+                
+            }
+        });
+        ok.addActionListener(new ActionListener()
+        {
+            
+            public void actionPerformed(ActionEvent e)
+            {
+                // TODO Auto-generated method stub
+                
+            }
+        });
+    }
+    
+    public synchronized void addTab(String id, Icon icon,
+        String name, String description)
+    {
+        if (tabComponents.containsKey(id)
+            || tabMap.containsKey(id))
+            return;
+        JToggleButton tabButton = new JToggleButton(name);
+        if (icon != null)
+        {
+            tabButton.setIcon(icon);
+            tabButton
+                .setVerticalTextPosition(tabButton.BOTTOM);
+            tabButton
+                .setHorizontalTextPosition(tabButton.CENTER);
+        }
+        tabButtonGroup.add(tabButton);
+        tabBar.add(tabButton);
+        if (tabBar.getComponentCount() == 1)
+            tabButton.setSelected(true);
+        /*
+         * Now we create a tabbed pane and put it in the tab map and the tab
+         * components map. We'll also add it to the content panel if this is the
+         * first one added.
+         */
+        JTabbedPane pane = new JTabbedPane();
+        tabMap.put(id, pane);
+        tabComponents.put(id, pane);
+        if (tabBar.getComponentCount() == 1)
+            contentPanel.add(pane);
+        subnavMap.put(id, new HashMap<String, JPanel>());
+        groupMap.put(id,
+            new HashMap<String, HashMap<String, JPanel>>());
+        subnavComponents.put(id,
+            new HashMap<String, JComponent>());
+        groupComponents
+            .put(
+                id,
+                new HashMap<String, HashMap<String, JComponent>>());
+    }
+    
+    public synchronized void addSubnav(String tabId,
+        String id, String name, String description)
+    {
+        if (subnavMap.get(tabId) == null)
+            throw new IllegalArgumentException(
+                "Invalid tab");
+        if (subnavMap.get(tabId).get(id) != null)
+            return;
+        JTabbedPane tab = tabMap.get(tabId);
+        JPanel panel = new JPanel();
+        panel.setLayout(new BoxLayout(panel,
+            BoxLayout.Y_AXIS));
+        JPanel outerPanel = new JPanel();
+        outerPanel.setLayout(new BorderLayout());
+        outerPanel.add(panel, BorderLayout.NORTH);
+        subnavMap.get(tabId).put(id, panel);
+        subnavComponents.get(tabId).put(id, outerPanel);
+        groupMap.get(tabId).put(id,
+            new HashMap<String, JPanel>());
+        groupComponents.get(tabId).put(id,
+            new HashMap<String, JComponent>());
+        tab.add(name, outerPanel);
+        /*
+         * Add the default group
+         */
+        addGroup(tabId, id, "", "", "");
+    }
+    
+    public synchronized void addGroup(String tabId,
+        String subnavId, String id, String name,
+        String description)
+    {
+        if (groupMap.get(tabId) == null)
+            throw new IllegalArgumentException(
+                "nonexistant tab");
+        if (groupMap.get(tabId).get(subnavId) == null)
+            throw new IllegalArgumentException(
+                "nonexistant subnav");
+        if (groupMap.get(tabId).get(subnavId).get(id) != null)
+            return;
+        JPanel subnav = subnavMap.get(tabId).get(subnavId);
+        JPanel groupPanel = new JPanel();
+        JPanel internalGroupPanel = new JPanel();
+        /*
+         * groupPanel contains the components and expand/collapse stuff,
+         * internalGroupPanel will hold the actual settings.
+         * 
+         * For now, we'll just add a titled border. In the future, I'll add some
+         * sort of expandable/collabsible header.
+         */
+        groupPanel.setLayout(new BorderLayout());
+        internalGroupPanel.setLayout(new BoxLayout(
+            internalGroupPanel, BoxLayout.Y_AXIS));
+        groupPanel.setMaximumSize(new Dimension(
+            Integer.MAX_VALUE, Integer.MAX_VALUE));
+        groupPanel.setAlignmentX(0);
+        groupPanel.setAlignmentY(0);
+        groupPanel.add(internalGroupPanel,
+            BorderLayout.CENTER);
+        if (!name.equals(""))
+            groupPanel.setBorder(new CompoundBorder(
+                new CompoundBorder(new EmptyBorder(3, 2, 5,
+                    2), new TitledBorder(new LineBorder(
+                    Color.GRAY), name)), new EmptyBorder(2,
+                    2, 2, 2)));
+        else
+            groupPanel.setBorder(new CompoundBorder(
+                new CompoundBorder(new EmptyBorder(3, 2, 5,
+                    2), new EmptyBorder(1, 1, 1, 1)),
+                new EmptyBorder(2, 2, 2, 2)));
+        groupComponents.get(tabId).get(subnavId).put(id,
+            groupPanel);
+        groupMap.get(tabId).get(subnavId).put(id,
+            groupPanel);
+        subnav.add(groupPanel);
+    }
+    
+    public synchronized void addSetting(String tabId,
+        String subnavId, String groupId, String id,
+        String name, String description, SettingType type,
+        SettingParameters parameters)
+    {
         
+    }
+    
+    /**
+     * This method shows the dialog for this SettingsManager over the window
+     * passed to the settingsmanager's constructor. This method will block until
+     * the user clicks one of the buttons and hides the dialog.
+     */
+    public synchronized void showDialog()
+    {
+        loadSettingComponents();
+        frame.show();
+        frame.dispose();
+    }
+    
+    private synchronized void loadSettingComponents()
+    {
+        for (Setting setting : currentSettings)
+        {
+            SettingType type = setting.type;
+            SettingSpec spec = setting.spec;
+            SettingStoredValue storedValue = store
+                .getSettingValue(spec.getTabId(), spec
+                    .getSubnavId(), spec.getGroupId(), spec
+                    .getSettingId());
+            SettingValue value = new SettingValue();
+            value.copyFrom(storedValue);
+        }
     }
 }
