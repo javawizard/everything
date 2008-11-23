@@ -448,6 +448,7 @@ public class OpenGroove
      */
     public static void main(String[] args) throws Throwable
     {
+        System.out.println("vm starting");
         // UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
         gcThread.setDaemon(true);
         gcThread.start();
@@ -1309,8 +1310,8 @@ public class OpenGroove
                     context.getInternalMessageHierarchy());
                 context.getRootMessageHierarchy().add(
                     context.getPluginMessageHierarchy());
-//                context.getRootMessageHierarchy().add(
-//                    context.getUserMessageHierarchy());
+                // context.getRootMessageHierarchy().add(
+                // context.getUserMessageHierarchy());
                 Communicator com = new Communicator(
                     launchbar, Userids.toRealm(userid),
                     true, false, "normal", Userids
@@ -1463,6 +1464,10 @@ public class OpenGroove
             "Inbound", "");
         settingsManager.addSubnav("messaging", "outbound",
             "Outbound", "");
+        settingsManager.addGroup("messaging", "inbound",
+            "retain", "Retention", "");
+        settingsManager.addGroup("messaging", "inbound",
+            "attachtypes", "Attachment Types", "");
     }
     
     /**

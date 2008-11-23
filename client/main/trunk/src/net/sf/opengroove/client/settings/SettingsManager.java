@@ -3,6 +3,7 @@ package net.sf.opengroove.client.settings;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Dimension;
+import java.awt.Font;
 import java.awt.Window;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -16,6 +17,7 @@ import javax.swing.JButton;
 import javax.swing.JComponent;
 import javax.swing.JDialog;
 import javax.swing.JFrame;
+import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JTabbedPane;
@@ -145,6 +147,12 @@ public class SettingsManager
             BoxLayout.X_AXIS));
         mainPanel.add(contentOuterPanel,
             BorderLayout.CENTER);
+        JLabel topLabel = new JLabel("OpenGroove Settings");
+        topLabel.setFont(Font.decode("").deriveFont(24f)
+            .deriveFont(Font.BOLD));
+        topLabel.setHorizontalAlignment(topLabel.CENTER);
+        topLabel.setBorder(new EmptyBorder(8, 8, 8, 8));
+        mainPanel.add(topLabel, BorderLayout.NORTH);
         mainPanel.add(lowerPanel, BorderLayout.SOUTH);
         lowerPanel.add(buttonsPanel, BorderLayout.EAST);
         contentOuterPanel.add(contentPanel,
@@ -324,6 +332,7 @@ public class SettingsManager
                         }
                     }
                 }
+                frame.hide();
             }
         });
     }
@@ -368,11 +377,11 @@ public class SettingsManager
             
             public void actionPerformed(ActionEvent e)
             {
-                if (tabButton.isSelected())
-                {
-                    contentPanel.removeAll();
-                    contentPanel.add(pane);
-                }
+                contentPanel.removeAll();
+                contentPanel.add(pane);
+                contentPanel.invalidate();
+                contentPanel.validate();
+                contentPanel.repaint();
             }
         });
         groupComponents
@@ -474,6 +483,7 @@ public class SettingsManager
     public void showDialog()
     {
         loadSettingComponents();
+        frame.setLocationRelativeTo(frame.getOwner());
         frame.show();
         frame.dispose();
     }
