@@ -563,11 +563,14 @@ public class ProxyStorage<E>
                         ProxyObject result = (ProxyObject) method
                             .invoke(object, new Object[0]);
                         /*
-                         * result is now the subobject that we want to scan.
+                         * result is now the subobject that we want to scan. If
+                         * it's null, we'll skip over it.
                          */
-                        buildReferenceList(list, result
-                            .getProxyStorageId(), method
-                            .getReturnType(), null);
+                        if (result != null)
+                            buildReferenceList(list, result
+                                .getProxyStorageId(),
+                                method.getReturnType(),
+                                null);
                     }
                     catch (Exception e)
                     {
