@@ -16,6 +16,7 @@ import javax.swing.JButton;
 import javax.swing.JComponent;
 import javax.swing.JDialog;
 import javax.swing.JFrame;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JTabbedPane;
 import javax.swing.JToggleButton;
@@ -78,6 +79,8 @@ public class SettingsManager
          * when closing the dialog to see what settings have changed.
          */
         private SettingValue loadedValue;
+        private JComponent component;
+        private SettingParameters parameters;
         /**
          * The listeners that have registered an interest in this setting. They
          * will be notified when this setting changes.
@@ -203,6 +206,11 @@ public class SettingsManager
             
             public void actionPerformed(ActionEvent e)
             {
+                frame.hide();
+                /*
+                 * We don't need to do any setting value changes; those will be
+                 * done when the dialog is shown next time.
+                 */
             }
         });
         changes.addActionListener(new ActionListener()
@@ -210,8 +218,12 @@ public class SettingsManager
             
             public void actionPerformed(ActionEvent e)
             {
-                // TODO Auto-generated method stub
-                
+                JOptionPane
+                    .showMessageDialog(
+                        frame,
+                        "This isn't supported yet. We'll work to add it. "
+                            + "If you really want it, contact us (see the "
+                            + "'contact us' menu item in the launchbar)");
             }
         });
         ok.addActionListener(new ActionListener()
@@ -219,8 +231,81 @@ public class SettingsManager
             
             public void actionPerformed(ActionEvent e)
             {
-                // TODO Auto-generated method stub
-                
+                /*
+                 * First thing to do is to scan and validate that all setting inputs are valid.
+                 */
+                for (Setting setting : new ArrayList<Setting>(
+                    currentSettings))
+                {
+                    SettingValue newValue = setting.loadedValue;
+                    String validString = setting.type.validate()
+                }
+                /*
+                 * We need to scan for changes in all of the settings (by
+                 * copying the loaded value, having the type store the value,
+                 * and comparing them for changes), and store those that have
+                 * changed and notify their listeners.
+                 */
+                for (Setting setting : new ArrayList<Setting>(
+                    currentSettings))
+                {
+                    SettingValue oldValue = setting.loadedValue;
+                    SettingValue newValue = (SettingValue) oldValue
+                        .clone();
+                    setting.type.storeValue(
+                        setting.component, newValue,
+                        setting.parameters);
+                    if (oldValue.equals(newValue))
+                        /*
+                         * This setting wasn't changed.
+                         */
+                        return;
+                    /*
+                     * The setting has been changed. We'll store it and then
+                     * notify the setting's listeners.
+                     */
+                    SettingStoredValue storedValue = store
+                        .getSettingValue(setting.spec
+                            .getTabId(), setting.spec
+                            .getSubnavId(), setting.spec
+                            .getGroupId(), setting.spec
+                            .getSettingId());
+                    if (storedValue == null)
+                    {
+                        storedValue = store
+                            .createSettingValue();
+                        storedValue.setTabId(setting.spec
+                            .getTabId());
+                        storedValue
+                            .setSubnavId(setting.spec
+                                .getSubnavId());
+                        storedValue.setGroupId(setting.spec
+                            .getGroupId());
+                        storedValue
+                            .setSettingId(setting.spec
+                                .getSettingId());
+                        store.getSettings()
+                            .add(storedValue);
+                    }
+                    newValue.copyTo(storedValue);
+                    /*
+                     * The value is now stored. All that's left is to notify the
+                     * setting's listeners.
+                     */
+                    Object newValue = setting.type.getValue(newValue,setting.parameters);
+                    for (SettingListener listener : new ArrayList<SettingListener>(
+                        setting.listeners))
+                    {
+                        try
+                        {
+                            listener.settingChanged(setting.spec)
+                        }
+                        catch (Exception exception)
+                        {
+                            exception.printStackTrace();
+                        }
+                    }
+                }
             }
         });
     }
@@ -355,7 +440,7 @@ public class SettingsManager
      * passed to the settingsmanager's constructor. This method will block until
      * the user clicks one of the buttons and hides the dialog.
      */
-    public synchronized void showDialog()
+    public void showDialog()
     {
         loadSettingComponents();
         frame.show();
@@ -372,8 +457,25 @@ public class SettingsManager
                 .getSettingValue(spec.getTabId(), spec
                     .getSubnavId(), spec.getGroupId(), spec
                     .getSettingId());
+            if (storedValue == null)
+            {
+                storedValue = store.createSettingValue();
+                storedValue.setTabId(setting.spec
+                    .getTabId());
+                storedValue.setSubnavId(setting.spec
+                    .getSubnavId());
+                storedValue.setGroupId(setting.spec
+                    .getGroupId());
+                storedValue.setSettingId(setting.spec
+                    .getSettingId());
+                store.getSettings().add(storedValue);
+            }
             SettingValue value = new SettingValue();
             value.copyFrom(storedValue);
+            value.setSpec(setting.spec);
+            setting.loadedValue = value;
+            type.loadValue(setting.component, value,
+                setting.parameters);
         }
     }
 }

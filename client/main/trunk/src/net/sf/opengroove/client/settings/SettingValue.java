@@ -1,6 +1,6 @@
 package net.sf.opengroove.client.settings;
 
-public class SettingValue
+public class SettingValue implements Cloneable
 {
     private SettingSpec spec;
     private String stringValue;
@@ -8,6 +8,24 @@ public class SettingValue
     private long longValue;
     private double doubleValue;
     private boolean booleanValue;
+    
+    /**
+     * Creates a new settingvalue object that is an exact copy of this one. The
+     * spec is not copied, however, so changes should not be made to it without
+     * copying it first.
+     */
+    public Object clone()
+    {
+        try
+        {
+            return super.clone();
+        }
+        catch (CloneNotSupportedException e)
+        {
+            e.printStackTrace();
+            throw new RuntimeException(e);
+        }
+    }
     
     public SettingSpec getSpec()
     {
