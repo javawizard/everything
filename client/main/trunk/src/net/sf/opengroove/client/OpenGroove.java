@@ -68,6 +68,7 @@ import javax.swing.Box;
 import javax.swing.BoxLayout;
 import javax.swing.ButtonGroup;
 import javax.swing.DefaultListModel;
+import javax.swing.Icon;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
@@ -307,6 +308,11 @@ public class OpenGroove
         public void setScaledFile(File scaledFile)
         {
             this.scaledFile = scaledFile;
+        }
+        
+        public Icon getIcon()
+        {
+            return new ImageIcon(getImage());
         }
     }
     
@@ -1446,7 +1452,17 @@ public class OpenGroove
     private static void loadBuiltInSettings(
         SettingsManager settingsManager, LocalUser user)
     {
-        
+        settingsManager.addTab("general", Icons.SETTINGS_48
+            .getIcon(), "General", "");
+        settingsManager.addTab("messaging",
+            Icons.MESSAGE_CONFIG_48.getIcon(), "Messaging",
+            "");
+        settingsManager.addSubnav("general", "startup",
+            "Startup", "");
+        settingsManager.addSubnav("messaging", "inbound",
+            "Inbound", "");
+        settingsManager.addSubnav("messaging", "outbound",
+            "Outbound", "");
     }
     
     /**
