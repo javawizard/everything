@@ -55,6 +55,7 @@ import net.sf.opengroove.client.messaging.MessageManager;
 import net.sf.opengroove.client.notification.NotificationAdapter;
 import net.sf.opengroove.client.notification.TaskbarNotification;
 import net.sf.opengroove.client.plugins.PluginManager;
+import net.sf.opengroove.client.settings.SettingsManager;
 import net.sf.opengroove.client.storage.Contact;
 import net.sf.opengroove.client.storage.ContactComputer;
 import net.sf.opengroove.client.storage.ContactStatus;
@@ -114,6 +115,7 @@ public class UserContext
     private MessageHierarchy internalMessageHierarchy;
     private MessageHierarchy pluginMessageHierarchy;
     private MessageHierarchy userMessageHierarchy;
+    private SettingsManager settingsManager;
     /**
      * A conditional that is true if there is currently a connection to the
      * server.
@@ -1759,5 +1761,16 @@ public class UserContext
         MessageHierarchy userMessageHierarchy)
     {
         this.userMessageHierarchy = userMessageHierarchy;
+    }
+    
+    public SettingsManager getSettingsManager()
+    {
+        return settingsManager;
+    }
+    
+    public void setSettingsManager(
+        SettingsManager settingsManager)
+    {
+        this.settingsManager = settingsManager;
     }
 }

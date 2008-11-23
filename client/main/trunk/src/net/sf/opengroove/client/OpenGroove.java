@@ -118,6 +118,8 @@ import net.sf.opengroove.client.notification.GroupLabelResolver;
 import net.sf.opengroove.client.notification.NotificationAdapter;
 import net.sf.opengroove.client.notification.TaskbarNotificationFrame;
 import net.sf.opengroove.client.plugins.PluginManager;
+import net.sf.opengroove.client.settings.SettingStore;
+import net.sf.opengroove.client.settings.SettingsManager;
 import net.sf.opengroove.client.storage.Contact;
 import net.sf.opengroove.client.storage.LocalUser;
 import net.sf.opengroove.client.storage.Storage;
@@ -259,7 +261,10 @@ public class OpenGroove
             "user-yellow.png", 16), USER_NONEXISTANT_16(
             "user-red.png", 16), USER_UNKNOWN_16(
             "user-purple.png", 16), USER_OFFLINE_16(
-            "user-gray.png", 16);
+            "user-gray.png", 16), SETTINGS_48(
+            "settings48.png", 48), MESAGE_CONFIG_16(
+            "messageconfig16.png", 16), MESSAGE_CONFIG_48(
+            "messageconfig48.png", 48);
         private int size;
         
         private File scaledFile;
@@ -1032,7 +1037,7 @@ public class OpenGroove
                             loginFrame,
                             "<html>You're already logged in. This is probably a bug if <br/>"
                                 + "you're seeing this, so be sure to contact us about it. <br/>"
-                                + "Use the help / contact us option in the launchbar menu.");
+                                + "Use the help &rarr; contact us option in the launchbar menu.");
                     return;
                 }
                 String encPassword = Hash.hash(password);
@@ -1272,6 +1277,18 @@ public class OpenGroove
                     .createLaunchbarTitle());
                 launchbar.setLocationRelativeTo(null);
                 context.setLaunchbar(launchbar);
+                SettingStore settingStore = user
+                    .getSettingStore();
+                if (settingStore == null)
+                {
+                    settingStore = user
+                        .createSettingStore();
+                    user.setSettingStore(settingStore);
+                }
+                SettingsManager settingsManager = new SettingsManager(
+                    launchbar, "Settings", settingStore);
+                context.setSettingsManager(settingsManager);
+                loadBuiltInSettings(settingsManager, user);
                 context
                     .setRootMessageHierarchy(new NullHierarchy(
                         ""));
@@ -1424,6 +1441,12 @@ public class OpenGroove
                 .requestFocusInWindow();
             refreshTrayMenu();
         }
+    }
+    
+    private static void loadBuiltInSettings(
+        SettingsManager settingsManager, LocalUser user)
+    {
+        
     }
     
     /**
