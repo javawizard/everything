@@ -79,6 +79,7 @@ public class SettingsManager
          * when closing the dialog to see what settings have changed.
          */
         private SettingValue loadedValue;
+        private String name;
         private JComponent component;
         private SettingParameters parameters;
         /**
@@ -232,13 +233,26 @@ public class SettingsManager
             public void actionPerformed(ActionEvent e)
             {
                 /*
-                 * First thing to do is to scan and validate that all setting inputs are valid.
+                 * First thing to do is to scan and validate that all setting
+                 * inputs are valid.
                  */
                 for (Setting setting : new ArrayList<Setting>(
                     currentSettings))
                 {
-                    SettingValue newValue = setting.loadedValue;
-                    String validString = setting.type.validate()
+                    String validString = setting.type
+                        .validate(setting.component,
+                            setting.parameters);
+                    if (validString != null)
+                    {
+                        JOptionPane
+                            .showMessageDialog(
+                                frame,
+                                "<html>The setting:<br/><br/>"
+                                    + setting.name
+                                    + "<br/><br/>Is not valid for this reason:<br/><br/>"
+                                    + validString);
+                        return;
+                    }
                 }
                 /*
                  * We need to scan for changes in all of the settings (by
@@ -292,13 +306,17 @@ public class SettingsManager
                      * The value is now stored. All that's left is to notify the
                      * setting's listeners.
                      */
-                    Object newValue = setting.type.getValue(newValue,setting.parameters);
+                    Object newValueObject = setting.type
+                        .getValue(newValue,
+                            setting.parameters);
                     for (SettingListener listener : new ArrayList<SettingListener>(
                         setting.listeners))
                     {
                         try
                         {
-                            listener.settingChanged(setting.spec)
+                            listener.settingChanged(
+                                setting.spec,
+                                newValueObject);
                         }
                         catch (Exception exception)
                         {
