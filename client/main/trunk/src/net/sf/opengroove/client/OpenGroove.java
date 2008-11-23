@@ -1309,8 +1309,8 @@ public class OpenGroove
                     context.getInternalMessageHierarchy());
                 context.getRootMessageHierarchy().add(
                     context.getPluginMessageHierarchy());
-                context.getRootMessageHierarchy().add(
-                    context.getUserMessageHierarchy());
+//                context.getRootMessageHierarchy().add(
+//                    context.getUserMessageHierarchy());
                 Communicator com = new Communicator(
                     launchbar, Userids.toRealm(userid),
                     true, false, "normal", Userids
