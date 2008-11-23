@@ -4097,17 +4097,7 @@ public class OpenGroove
     protected static void showOptionsWindow(
         UserContext context)
     {
-        final ConfigureOpenGrooveDialog dialog = new ConfigureOpenGrooveDialog(
-            context);
-        // showStatusInfo(dialog);
-        new Thread()
-        {
-            public void run()
-            {
-                dialog.show();
-                dialog.dispose();
-            }
-        }.start();
+        context.getSettingsManager().showDialog();
     }
     
     /**
