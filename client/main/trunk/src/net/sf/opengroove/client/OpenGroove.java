@@ -119,6 +119,8 @@ import net.sf.opengroove.client.notification.GroupLabelResolver;
 import net.sf.opengroove.client.notification.NotificationAdapter;
 import net.sf.opengroove.client.notification.TaskbarNotificationFrame;
 import net.sf.opengroove.client.plugins.PluginManager;
+import net.sf.opengroove.client.settings.SettingListener;
+import net.sf.opengroove.client.settings.SettingSpec;
 import net.sf.opengroove.client.settings.SettingStore;
 import net.sf.opengroove.client.settings.SettingsManager;
 import net.sf.opengroove.client.settings.types.CheckboxParameters;
@@ -1481,11 +1483,28 @@ public class OpenGroove
                 + "deleted when the message window is "
                 + "closed if they have been saved.",
             "checkbox", new CheckboxParameters(true));
-        settingsManager.addSetting("messaging", "inbound",
-            "retain", "discardunread",
-            "Discard unread messages if disk space is getting low",
-            "",
-            "checkbox", new CheckboxParameters(false));
+        settingsManager
+            .addSetting(
+                "messaging",
+                "inbound",
+                "retain",
+                "discardunread",
+                "Discard unread messages if disk space is getting low",
+                "", "checkbox", new CheckboxParameters(
+                    false));
+        settingsManager.addSettingListener("messaging",
+            "inbound", "retain", "discardunread",
+            new SettingListener()
+            {
+                
+                public void settingChanged(
+                    SettingSpec spec, Object newValue)
+                {
+                    System.out
+                        .println("setting discardunread changed to "
+                            + newValue);
+                }
+            });
         settingsManager.addGroup("messaging", "inbound",
             "attachtypes", "Attachment Types", "");
     }

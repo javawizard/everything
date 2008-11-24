@@ -427,6 +427,13 @@ public class SettingsManager
         addGroup(tabId, id, "", "", "");
     }
     
+    public void addGroup(SettingSpec spec, String id,
+        String name, String description)
+    {
+        addGroup(spec.getTabId(), spec.getSubnavId(), id,
+            name, description);
+    }
+    
     public synchronized void addGroup(String tabId,
         String subnavId, String id, String name,
         String description)
@@ -479,6 +486,16 @@ public class SettingsManager
         groupMap.get(tabId).get(subnavId).put(id,
             internalGroupPanel);
         subnav.add(groupPanel);
+    }
+    
+    public synchronized void addSetting(
+        SettingSpec parentSpec, String id, String name,
+        String description, String typeId,
+        SettingParameters parameters)
+    {
+        addSetting(parentSpec.getTabId(), parentSpec
+            .getSubnavId(), parentSpec.getGroupId(), id,
+            name, description, typeId, parameters);
     }
     
     public synchronized void addSetting(String tabId,
@@ -596,7 +613,7 @@ public class SettingsManager
             if (storedValue == null)
             {
                 System.out
-                .println("creating stored value upon loading");
+                    .println("creating stored value upon loading");
                 storedValue = store.createSettingValue();
                 storedValue.setTabId(setting.spec
                     .getTabId());
