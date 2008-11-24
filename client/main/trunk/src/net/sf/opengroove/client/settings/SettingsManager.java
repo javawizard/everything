@@ -405,6 +405,8 @@ public class SettingsManager
         JPanel outerPanel = new JPanel();
         outerPanel.setLayout(new BorderLayout());
         outerPanel.add(panel, BorderLayout.NORTH);
+//        panel.setOpaque(false);
+//        outerPanel.setOpaque(false);
         subnavMap.get(tabId).put(id, panel);
         subnavComponents.get(tabId).put(id, outerPanel);
         groupMap.get(tabId).put(id,
@@ -443,6 +445,8 @@ public class SettingsManager
         groupPanel.setLayout(new BorderLayout());
         internalGroupPanel.setLayout(new BoxLayout(
             internalGroupPanel, BoxLayout.Y_AXIS));
+//        groupPanel.setOpaque(false);
+//        internalGroupPanel.setOpaque(false);
         groupPanel.setMaximumSize(new Dimension(
             Integer.MAX_VALUE, Integer.MAX_VALUE));
         groupPanel.setAlignmentX(0);
@@ -472,7 +476,36 @@ public class SettingsManager
         String name, String description, SettingType type,
         SettingParameters parameters)
     {
-        
+        SettingSpec spec = new SettingSpec();
+        spec.setTabId(tabId);
+        spec.setSubnavId(subnavId);
+        spec.setGroupId(groupId);
+        spec.setSettingId(id);
+    }
+    
+    public synchronized void addSettingListener(
+        String tabId, String subnavId, String groupId,
+        String settingId, SettingListener listener)
+    {
+        SettingSpec spec = new SettingSpec();
+        spec.setTabId(tabId);
+        spec.setSubnavId(subnavId);
+        spec.setGroupId(groupId);
+        spec.setSettingId(settingId);
+        addSettingListener(spec, listener);
+    }
+    
+    public synchronized void addSettingListener(
+        SettingSpec spec, SettingListener listener)
+    {
+        for (Setting setting : new ArrayList<Setting>(
+            currentSettings))
+        {
+            if (setting.spec.equals(spec))
+            {
+                setting.listeners.add(listener);
+            }
+        }
     }
     
     /**

@@ -467,7 +467,9 @@ public class OpenGroove
                 try
                 {
                     frame3.setTitle("accepting");
+                    System.out.println("creating socket");
                     ss = new ServerSocket(LOCK_PORT);
+                    System.out.println("created socket");
                     frame3.setTitle("breaking");
                     break;
                 }
@@ -485,7 +487,9 @@ public class OpenGroove
         {
             try
             {
+                System.out.println("creating socket");
                 ss = new ServerSocket(LOCK_PORT);
+                System.out.println("created socket");
             }
             catch (Exception e)
             {
@@ -502,6 +506,7 @@ public class OpenGroove
         }
         if (waitForLock)
         {
+            System.out.println("waiting");
             Thread.sleep(6000);
         }
         try
@@ -520,7 +525,9 @@ public class OpenGroove
                 }
             }.start();
             sfile.mkdirs();
+            System.out.println("loading storage");
             Storage.initStorage(sfile);
+            System.out.println("loading initial images");
             trayimage = scaleImage(blockTransparify(ImageIO
                 .read(new File("trayicon.png")), new Color(
                 255, 0, 0)), 16, 16);
