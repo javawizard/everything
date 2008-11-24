@@ -512,12 +512,15 @@ public class SettingsManager
             TableLayout.PREFERRED);
         MultilineLabel settingLabel = new MultilineLabel(
             name);
-        settingLabel.setToolTipText(description);
+        settingLabel.setToolTipText(ComponentUtils
+            .htmlTipWrap(description));
         settingLabel.setFont(Font.decode(null).deriveFont(
             Font.BOLD));
         groupPanel.add(settingLabel, "0," + insertIndex);
         JComponent settingComponent = type
             .createComponent(parameters);
+        settingComponent.setToolTipText(ComponentUtils
+            .htmlTipWrap(description));
         groupPanel
             .add(settingComponent, "1," + insertIndex);
         groupPanel.invalidate();

@@ -7,6 +7,12 @@ public class CheckboxParameters implements
 {
     private boolean isInverted;
     
+    public CheckboxParameters(boolean isInverted)
+    {
+        super();
+        this.isInverted = isInverted;
+    }
+
     public boolean isInverted()
     {
         return isInverted;

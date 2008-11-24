@@ -121,6 +121,7 @@ import net.sf.opengroove.client.notification.TaskbarNotificationFrame;
 import net.sf.opengroove.client.plugins.PluginManager;
 import net.sf.opengroove.client.settings.SettingStore;
 import net.sf.opengroove.client.settings.SettingsManager;
+import net.sf.opengroove.client.settings.types.CheckboxParameters;
 import net.sf.opengroove.client.storage.Contact;
 import net.sf.opengroove.client.storage.LocalUser;
 import net.sf.opengroove.client.storage.Storage;
@@ -1473,7 +1474,13 @@ public class OpenGroove
             "Outbound", "");
         settingsManager.addGroup("messaging", "inbound",
             "retain", "Retention", "");
-        settingsManager.addSetting("messaging","inbound","retain","retainattachments","Retain attachments")
+        settingsManager.addSetting("messaging", "inbound",
+            "retain", "retainattachments",
+            "Retain attachments after storing them",
+            "If this is unchecked, message attachments will be "
+                + "deleted when the message window is "
+                + "closed if they have been saved.",
+            "checkbox", new CheckboxParameters(true));
         settingsManager.addGroup("messaging", "inbound",
             "attachtypes", "Attachment Types", "");
     }
