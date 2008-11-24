@@ -60,7 +60,14 @@ import com.l2fprod.common.swing.JButtonBar;
  * <td>checkbox</td>
  * <td>{@link CheckboxType}</td>
  * </tr>
- * </table>
+ * </table><br/><br/>
+ * 
+ * TODO: perhaps the settings sutff should be redone to use something like
+ * SettingTab objects and SettingSubnav objects and SettingGroup objects, and
+ * when you create a tab you get a SettingTab object and you can call addSubnav
+ * on it and you get back a SettingSubnav object, etc. You could also get a
+ * particular tab by it's id or a subnav by it's id from it's tab. This seems a
+ * lot easier to manage than the current string-passing model.
  * 
  * @author Alexander Boyd
  * 
@@ -632,5 +639,14 @@ public class SettingsManager
             type.loadValue(setting.component, value,
                 setting.parameters);
         }
+    }
+    
+    public synchronized Object getSettingValue(
+        SettingSpec spec)
+    {
+        Setting setting = settingMap.get(spec);
+        if (setting == null)
+            throw new IllegalArgumentException(
+                "That setting does not exist.");
     }
 }

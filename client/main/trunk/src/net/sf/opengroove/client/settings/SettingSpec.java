@@ -7,6 +7,21 @@ public class SettingSpec
     private String groupId;
     private String settingId;
     
+    public SettingSpec()
+    {
+        super();
+    }
+
+    public SettingSpec(String tabId, String subnavId,
+        String groupId, String settingId)
+    {
+        super();
+        this.tabId = tabId;
+        this.subnavId = subnavId;
+        this.groupId = groupId;
+        this.settingId = settingId;
+    }
+
     public String getTabId()
     {
         return tabId;

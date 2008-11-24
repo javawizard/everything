@@ -1463,50 +1463,12 @@ public class OpenGroove
     private static void loadBuiltInSettings(
         SettingsManager settingsManager, LocalUser user)
     {
-        settingsManager.addTab("general", Icons.SETTINGS_48
+        settingsManager.addTab("g", Icons.SETTINGS_48
             .getIcon(), "General", "");
-        settingsManager.addTab("messaging",
+        
+        settingsManager.addTab("msg",
             Icons.MESSAGE_CONFIG_48.getIcon(), "Messaging",
             "");
-        settingsManager.addSubnav("general", "startup",
-            "Startup", "");
-        settingsManager.addSubnav("messaging", "inbound",
-            "Inbound", "");
-        settingsManager.addSubnav("messaging", "outbound",
-            "Outbound", "");
-        settingsManager.addGroup("messaging", "inbound",
-            "retain", "Retention", "");
-        settingsManager.addSetting("messaging", "inbound",
-            "retain", "retainattachments",
-            "Retain attachments after storing them",
-            "If this is unchecked, message attachments will be "
-                + "deleted when the message window is "
-                + "closed if they have been saved.",
-            "checkbox", new CheckboxParameters(true));
-        settingsManager
-            .addSetting(
-                "messaging",
-                "inbound",
-                "retain",
-                "discardunread",
-                "Discard unread messages if disk space is getting low",
-                "", "checkbox", new CheckboxParameters(
-                    false));
-        settingsManager.addSettingListener("messaging",
-            "inbound", "retain", "discardunread",
-            new SettingListener()
-            {
-                
-                public void settingChanged(
-                    SettingSpec spec, Object newValue)
-                {
-                    System.out
-                        .println("setting discardunread changed to "
-                            + newValue);
-                }
-            });
-        settingsManager.addGroup("messaging", "inbound",
-            "attachtypes", "Attachment Types", "");
     }
     
     /**
