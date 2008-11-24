@@ -1433,17 +1433,23 @@ public class ProxyStorage<E>
                      * stored list and the search property. Now we do the actual
                      * search.
                      */
+                    String searchSql = "select value from proxystorage_collections "
+                        + "where id = ? and value in (select proxystorage_id from "
+                        + getTargetTableName(listType)
+                        + " where "
+                        + searchQuery
+                        + ") order by index asc";
+                    System.out
+                        .println("performing compound search with sql: "
+                            + searchSql);
                     PreparedStatement st = connection
-                        .prepareStatement("select value from proxystorage_collections "
-                            + "where id = ? and value in (select proxystorage_id from "
-                            + getTargetTableName(listType)
-                            + " where "
-                            + searchQuery
-                            + ") order by index asc");
+                        .prepareStatement(searchSql);
                     st.setLong(1, listId);
+                    System.out.println("parameter 1 = "
+                        + listId);
                     for (int i = 0; i < searchProperties.length; i++)
                     {
-                        Object searchValue = args[0];
+                        Object searchValue = args[i];
                         if (!annotation.exact()[i])
                         {
                             searchValue = (annotation
@@ -1454,6 +1460,9 @@ public class ProxyStorage<E>
                                     : "");
                         }
                         st.setObject(i + 2, searchValue);
+                        System.out
+                            .println("parameter " + (i + 2)
+                                + " = " + searchValue);
                     }
                     ResultSet rs = st.executeQuery();
                     ArrayList<Long> resultIds = new ArrayList<Long>();
