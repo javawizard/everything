@@ -1431,7 +1431,7 @@ public class OpenGroove
                 // workspaceManager.reloadWorkspaces();
                 // workspaceManager.reloadWorkspaceMembers();
                 // reloadLaunchbarWorkspaces(context);
-                loginFrame.hide();
+                loginFrame.dispose();
                 userContextMap.put(userid, context);
                 JLabel successLoggedInLabel = new JLabel(
                     "You have successfully logged into OpenGroove.");
@@ -3054,7 +3054,7 @@ public class OpenGroove
                 @Override
                 public void actionPerformed(ActionEvent e)
                 {
-                    newAccountFrame.hide();
+                    newAccountFrame.dispose();
                 }
             });
         newAccountWizardPane
@@ -3066,7 +3066,7 @@ public class OpenGroove
                 {
                     if (vars.finishedWizard)
                         showLoginWindow(vars.userid);
-                    newAccountFrame.hide();
+                    newAccountFrame.dispose();
                 }
             });
         newAccountWizardPane.initComponents();
@@ -3760,7 +3760,7 @@ public class OpenGroove
         p.add(pad(wrap(createWorkspaceButton), 2, 2));
         p.add(pad(workspacePanel, 2, 6));
         launchbar
-            .setDefaultCloseOperation(WindowConstants.HIDE_ON_CLOSE);
+            .setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
         if (context.getStorage().getConfigProperty(
             "launchbarx") != null
             && context.getStorage().getConfigProperty(

@@ -648,5 +648,14 @@ public class SettingsManager
         if (setting == null)
             throw new IllegalArgumentException(
                 "That setting does not exist.");
+        SettingType type = setting.type;
+        SettingStoredValue storedValue = store
+            .getSettingValue(spec.getTabId(), spec
+                .getSubnavId(), spec.getGroupId(), spec
+                .getSettingId());
+        SettingValue value = new SettingValue();
+        if (storedValue != null)
+            value.copyFrom(storedValue);
+        return type.getValue(value, setting.parameters);
     }
 }
