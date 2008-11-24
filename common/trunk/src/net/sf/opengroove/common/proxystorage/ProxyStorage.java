@@ -1410,7 +1410,7 @@ public class ProxyStorage<E>
                     Method[] searchQueryMethods = new Method[searchProperties.length];
                     for (int i = 0; i < searchProperties.length; i++)
                     {
-                        String capitalizedSearchProperty = searchProperties[0]
+                        String capitalizedSearchProperty = searchProperties[i]
                             .substring(0, 1).toUpperCase()
                             + searchProperties[i]
                                 .substring(1);
