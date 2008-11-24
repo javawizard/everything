@@ -299,6 +299,8 @@ public class SettingsManager
                             .getSettingId());
                     if (storedValue == null)
                     {
+                        System.out
+                            .println("creating stored value upon saving");
                         storedValue = store
                             .createSettingValue();
                         storedValue.setTabId(setting.spec
@@ -593,6 +595,8 @@ public class SettingsManager
                     .getSettingId());
             if (storedValue == null)
             {
+                System.out
+                .println("creating stored value upon loading");
                 storedValue = store.createSettingValue();
                 storedValue.setTabId(setting.spec
                     .getTabId());
