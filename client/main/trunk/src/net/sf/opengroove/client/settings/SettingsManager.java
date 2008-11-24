@@ -1,5 +1,7 @@
 package net.sf.opengroove.client.settings;
 
+import info.clearthought.layout.TableLayout;
+
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Dimension;
@@ -92,6 +94,8 @@ public class SettingsManager
     }
     
     private ArrayList<Setting> currentSettings = new ArrayList<Setting>();
+    
+    private HashMap<SettingSpec, Setting> settingMap = new HashMap<SettingSpec, Setting>();
     
     private static HashMap<String, SettingType> registeredTypes = new HashMap<String, SettingType>();
     
@@ -405,8 +409,8 @@ public class SettingsManager
         JPanel outerPanel = new JPanel();
         outerPanel.setLayout(new BorderLayout());
         outerPanel.add(panel, BorderLayout.NORTH);
-//        panel.setOpaque(false);
-//        outerPanel.setOpaque(false);
+        // panel.setOpaque(false);
+        // outerPanel.setOpaque(false);
         subnavMap.get(tabId).put(id, panel);
         subnavComponents.get(tabId).put(id, outerPanel);
         groupMap.get(tabId).put(id,
@@ -443,10 +447,11 @@ public class SettingsManager
          * sort of expandable/collabsible header.
          */
         groupPanel.setLayout(new BorderLayout());
-        internalGroupPanel.setLayout(new BoxLayout(
-            internalGroupPanel, BoxLayout.Y_AXIS));
-//        groupPanel.setOpaque(false);
-//        internalGroupPanel.setOpaque(false);
+        internalGroupPanel.setLayout(new TableLayout(
+            new double[] { 0.50, TableLayout.FILL },
+            new double[] {}));
+        // groupPanel.setOpaque(false);
+        // internalGroupPanel.setOpaque(false);
         groupPanel.setMaximumSize(new Dimension(
             Integer.MAX_VALUE, Integer.MAX_VALUE));
         groupPanel.setAlignmentX(0);
@@ -467,7 +472,7 @@ public class SettingsManager
         groupComponents.get(tabId).get(subnavId).put(id,
             groupPanel);
         groupMap.get(tabId).get(subnavId).put(id,
-            groupPanel);
+            internalGroupPanel);
         subnav.add(groupPanel);
     }
     
@@ -476,11 +481,25 @@ public class SettingsManager
         String name, String description, SettingType type,
         SettingParameters parameters)
     {
+        if (groupMap.get(tabId) == null)
+            throw new IllegalArgumentException(
+                "invalid tab id");
+        if (groupMap.get(tabId).get(subnavId) == null)
+            throw new IllegalArgumentException(
+                "invalid subnav id");
+        if (groupMap.get(tabId).get(subnavId).get(groupId) == null)
+            throw new IllegalArgumentException(
+                "invalid group id");
+        JPanel groupPanel = groupMap.get(tabId).get(
+            subnavId).get(groupId);
+        TableLayout groupLayout = (TableLayout) groupPanel
+            .getLayout();
         SettingSpec spec = new SettingSpec();
         spec.setTabId(tabId);
         spec.setSubnavId(subnavId);
         spec.setGroupId(groupId);
         spec.setSettingId(id);
+        
     }
     
     public synchronized void addSettingListener(
