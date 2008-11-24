@@ -135,6 +135,8 @@ public class ProxyStorage<E>
         int cacheSize)
 
     {
+        System.out.println("loading proxystorage on file "
+            + location);
         objectCache = Collections
             .synchronizedMap(new LRUMap(cacheSize));
         listenerExecutor.allowCoreThreadTimeOut(true);
@@ -156,8 +158,11 @@ public class ProxyStorage<E>
         }
         try
         {
+            System.out
+                .println("connecting to proxystorage db");
             connection = DriverManager.getConnection(
                 "jdbc:h2:" + location.getPath(), "sa", "");
+            System.out.println("connected");
             dbInfo = connection.getMetaData();
             checkSystemTables();
             checkTables(rootClass, allClasses);
@@ -168,7 +173,9 @@ public class ProxyStorage<E>
                 "An exception occured while initializing the proxy storage",
                 e);
         }
+        System.out.println("performing initial vacuum...");
         vacuum(new Progress());
+        System.out.println("initial vacuum performed.");
     }
     
     /**
