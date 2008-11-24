@@ -1439,14 +1439,14 @@ public class ProxyStorage<E>
                         + " where "
                         + searchQuery
                         + ") order by index asc";
-                    System.out
-                        .println("performing compound search with sql: "
-                            + searchSql);
+//                    System.out
+//                        .println("performing compound search with sql: "
+//                            + searchSql);
                     PreparedStatement st = connection
                         .prepareStatement(searchSql);
                     st.setLong(1, listId);
-                    System.out.println("parameter 1 = "
-                        + listId);
+//                    System.out.println("parameter 1 = "
+//                        + listId);
                     for (int i = 0; i < searchProperties.length; i++)
                     {
                         Object searchValue = args[i];
@@ -1460,9 +1460,9 @@ public class ProxyStorage<E>
                                     : "");
                         }
                         st.setObject(i + 2, searchValue);
-                        System.out
-                            .println("parameter " + (i + 2)
-                                + " = " + searchValue);
+//                        System.out
+//                            .println("parameter " + (i + 2)
+//                                + " = " + searchValue);
                     }
                     ResultSet rs = st.executeQuery();
                     ArrayList<Long> resultIds = new ArrayList<Long>();
