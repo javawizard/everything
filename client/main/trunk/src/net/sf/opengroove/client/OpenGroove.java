@@ -1473,6 +1473,7 @@ public class OpenGroove
             "Outbound", "");
         settingsManager.addGroup("messaging", "inbound",
             "retain", "Retention", "");
+        settingsManager.addSetting("messaging","inbound","retain","retainattachments","Retain attachments")
         settingsManager.addGroup("messaging", "inbound",
             "attachtypes", "Attachment Types", "");
     }

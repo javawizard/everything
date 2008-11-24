@@ -34,6 +34,7 @@ import net.sf.opengroove.client.settings.types.CheckboxType;
 import net.sf.opengroove.client.settings.types.TextType;
 import net.sf.opengroove.common.ui.ComponentUtils;
 
+import com.jidesoft.swing.MultilineLabel;
 import com.l2fprod.common.swing.JButtonBar;
 
 /**
@@ -478,9 +479,13 @@ public class SettingsManager
     
     public synchronized void addSetting(String tabId,
         String subnavId, String groupId, String id,
-        String name, String description, SettingType type,
+        String name, String description, String typeId,
         SettingParameters parameters)
     {
+        SettingType type = registeredTypes.get(typeId);
+        if (type == null)
+            throw new IllegalArgumentException(
+                "nonexistant type (try, for example, text or checkbox)");
         if (groupMap.get(tabId) == null)
             throw new IllegalArgumentException(
                 "invalid tab id");
@@ -490,16 +495,46 @@ public class SettingsManager
         if (groupMap.get(tabId).get(subnavId).get(groupId) == null)
             throw new IllegalArgumentException(
                 "invalid group id");
-        JPanel groupPanel = groupMap.get(tabId).get(
-            subnavId).get(groupId);
-        TableLayout groupLayout = (TableLayout) groupPanel
-            .getLayout();
         SettingSpec spec = new SettingSpec();
         spec.setTabId(tabId);
         spec.setSubnavId(subnavId);
         spec.setGroupId(groupId);
         spec.setSettingId(id);
-        
+        if (settingMap.get(spec) != null)
+            throw new RuntimeException(
+                "the setting id specified already exists");
+        JPanel groupPanel = groupMap.get(tabId).get(
+            subnavId).get(groupId);
+        TableLayout groupLayout = (TableLayout) groupPanel
+            .getLayout();
+        int insertIndex = groupLayout.getNumRow();
+        groupLayout.insertRow(insertIndex,
+            TableLayout.PREFERRED);
+        MultilineLabel settingLabel = new MultilineLabel(
+            name);
+        settingLabel.setToolTipText(description);
+        settingLabel.setFont(Font.decode(null).deriveFont(
+            Font.BOLD));
+        groupPanel.add(settingLabel, "0," + insertIndex);
+        JComponent settingComponent = type
+            .createComponent(parameters);
+        groupPanel
+            .add(settingComponent, "1," + insertIndex);
+        groupPanel.invalidate();
+        groupPanel.validate();
+        groupPanel.repaint();
+        frame.invalidate();
+        frame.validate();
+        frame.repaint();
+        Setting setting = new Setting();
+        setting.component = settingComponent;
+        setting.loadedValue = new SettingValue();
+        setting.name = name;
+        setting.parameters = parameters;
+        setting.spec = spec;
+        setting.type = type;
+        currentSettings.add(setting);
+        settingMap.put(spec, setting);
     }
     
     public synchronized void addSettingListener(
