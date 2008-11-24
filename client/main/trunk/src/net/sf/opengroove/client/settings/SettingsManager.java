@@ -286,7 +286,7 @@ public class SettingsManager
                         /*
                          * This setting wasn't changed.
                          */
-                        return;
+                        continue;
                     /*
                      * The setting has been changed. We'll store it and then
                      * notify the setting's listeners.
@@ -448,9 +448,11 @@ public class SettingsManager
          * sort of expandable/collabsible header.
          */
         groupPanel.setLayout(new BorderLayout());
-        internalGroupPanel.setLayout(new TableLayout(
-            new double[] { 0.50, TableLayout.FILL },
-            new double[] {}));
+        TableLayout groupLayout = new TableLayout(
+            new double[] { 0.50, 8, TableLayout.FILL },
+            new double[] {});
+        groupLayout.setVGap(4);
+        internalGroupPanel.setLayout(groupLayout);
         // groupPanel.setOpaque(false);
         // internalGroupPanel.setOpaque(false);
         groupPanel.setMaximumSize(new Dimension(
@@ -515,14 +517,15 @@ public class SettingsManager
         settingLabel.setToolTipText(ComponentUtils
             .htmlTipWrap(description));
         settingLabel.setFont(Font.decode(null).deriveFont(
-            Font.BOLD));
+            Font.PLAIN));
         groupPanel.add(settingLabel, "0," + insertIndex);
         JComponent settingComponent = type
             .createComponent(parameters);
         settingComponent.setToolTipText(ComponentUtils
             .htmlTipWrap(description));
+        groupPanel.add(new JLabel(), "1," + insertIndex);
         groupPanel
-            .add(settingComponent, "1," + insertIndex);
+            .add(settingComponent, "2," + insertIndex);
         groupPanel.invalidate();
         groupPanel.validate();
         groupPanel.repaint();

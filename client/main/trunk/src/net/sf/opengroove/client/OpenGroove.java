@@ -1481,6 +1481,11 @@ public class OpenGroove
                 + "deleted when the message window is "
                 + "closed if they have been saved.",
             "checkbox", new CheckboxParameters(true));
+        settingsManager.addSetting("messaging", "inbound",
+            "retain", "discardunread",
+            "Discard unread messages if disk space is getting low",
+            "",
+            "checkbox", new CheckboxParameters(false));
         settingsManager.addGroup("messaging", "inbound",
             "attachtypes", "Attachment Types", "");
     }
