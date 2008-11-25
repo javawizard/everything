@@ -12,6 +12,7 @@ import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.Graphics2D;
 import java.awt.Image;
+import java.awt.Insets;
 import java.awt.Menu;
 import java.awt.MenuItem;
 import java.awt.PopupMenu;
@@ -79,6 +80,7 @@ import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JMenu;
 import javax.swing.JMenuBar;
+import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JPasswordField;
@@ -266,7 +268,8 @@ public class OpenGroove
             "user-red.png", 16), USER_UNKNOWN_16(
             "user-purple.png", 16), USER_OFFLINE_16(
             "user-gray.png", 16), SETTINGS_48(
-            "settings48.png", 48), MESAGE_CONFIG_16(
+                "settings48.png", 48),SETTINGS_16(
+                    "settings16.png", 48), MESSAGE_CONFIG_16(
             "messageconfig16.png", 16), MESSAGE_CONFIG_48(
             "messageconfig48.png", 48);
         private int size;
@@ -1469,6 +1472,13 @@ public class OpenGroove
         settingsManager.addTab("msg",
             Icons.MESSAGE_CONFIG_48.getIcon(), "Messaging",
             "");
+        settingsManager.addSubnav("g", "lb", "Launchbar",
+            "");
+        settingsManager.addSetting("g", "lb", "",
+            "alwaysontop", "Always on top",
+            "If this is checked, the launchbar will "
+                + "show up on top of all other windows.",
+            "checkbox", new CheckboxParameters(false));
     }
     
     /**
@@ -1690,7 +1700,7 @@ public class OpenGroove
          */
         loginFrame.setUserid(userid);
         loginFrame.setPasswordHint(user.getPasswordHint());
-        loginFrame.setAlwaysOnTop(true);
+        // loginFrame.setAlwaysOnTop(true);
         loginFrame.show();
         bringToFront(loginFrame);
         loginFrame.getPasswordField()
@@ -1750,7 +1760,7 @@ public class OpenGroove
             });
         loginFrame.setLocationRelativeTo(null);
         loginFrame.setResizable(false);
-        loginFrame.setAlwaysOnTop(true);
+        // loginFrame.setAlwaysOnTop(true);
         
     }
     
@@ -3129,7 +3139,7 @@ public class OpenGroove
          * it's own frame, instead of a dialog, that could be always-on-top.
          */
         aboutWindow = new JFrame("About OpenGroove");
-        aboutWindow.setAlwaysOnTop(true);
+        // aboutWindow.setAlwaysOnTop(true);
         aboutWindow.setSize(400, 300);
         aboutWindow.setLocationRelativeTo(null);
         aboutWindow.getContentPane().setLayout(
@@ -3171,6 +3181,8 @@ public class OpenGroove
     }
     
     private static final Object updateCheckLock = new Object();
+    private static final SettingSpec SETTING_SPEC_LAUNCHBAR_ALWAYS_ON_TOP = new SettingSpec(
+        "g", "lb", "", "alwaysontop");
     
     /**
      * checks for updates to OpenGroove, and downloads them if available. In the
@@ -3506,8 +3518,18 @@ public class OpenGroove
          * that animates while a complex task is in progress, similar to
          * Microsoft Groove. It could also contain additional controls. For now,
          * though, we'll just leave it blank.
+         * 
+         * UPDATE: actually, we're going to add some controls to it, mainly the
+         * message button that allows us to see message history, and the
+         * settings button which allows us to edit settings.
          */
         rightPanel.setOpaque(false);
+        rightPanel.setLayout(new BoxLayout(rightPanel,
+            BoxLayout.X_AXIS));
+        JLinkButton messageHistoryButton = new JLinkButton(
+            Icons.MESSAGE_CONFIG_16.getIcon());
+        JLinkButton settingsLinkButton = new JLinkButton(
+            Icons.SETTINGS_16.getIcon());
         JPanel lowerPanel = new JPanel();
         lowerPanel.setOpaque(false);
         lowerPanel.setLayout(new BorderLayout());
@@ -3992,37 +4014,21 @@ public class OpenGroove
                         .showManageInstalledPluginsDialog();
                 }
             } });
-        final JCheckBoxMenuItem alwaysOnTopItem = new JCheckBoxMenuItem(
-            "Always on top");
-        if (context.getStorage().getConfigProperty(
-            "alwaysontop") != null)
-        {
-            alwaysOnTopItem.setSelected(true);
-            launchbar.setAlwaysOnTop(true);
-        }
-        alwaysOnTopItem
-            .addActionListener(new ActionListener()
+        launchbar
+            .setAlwaysOnTop((Boolean) context
+                .getSetting(SETTING_SPEC_LAUNCHBAR_ALWAYS_ON_TOP));
+        context.getSettingsManager().addSettingListener(
+            SETTING_SPEC_LAUNCHBAR_ALWAYS_ON_TOP,
+            new SettingListener()
             {
                 
-                public void actionPerformed(ActionEvent e)
+                public void settingChanged(
+                    SettingSpec spec, Object newValue)
                 {
-                    if (alwaysOnTopItem.isSelected())
-                    {
-                        launchbar.setAlwaysOnTop(true);
-                        context.getStorage()
-                            .setConfigProperty(
-                                "alwaysontop", "");
-                    }
-                    else
-                    {
-                        launchbar.setAlwaysOnTop(false);
-                        context.getStorage()
-                            .setConfigProperty(
-                                "alwaysontop", null);
-                    }
+                    launchbar
+                        .setAlwaysOnTop((Boolean) newValue);
                 }
             });
-        convergiaMenu.add(alwaysOnTopItem);
         JMenu helpMenu = new IMenu("Help", new IMenuItem[] {
             new IMenuItem("Help")
             {
@@ -4049,8 +4055,8 @@ public class OpenGroove
                     showAboutWindow();
                 }
             } });
-        JMenu[] menus = new JMenu[] { convergiaMenu,
-            pluginsMenu, helpMenu };
+        JComponent[] menus = new JComponent[] {
+            convergiaMenu, pluginsMenu, helpMenu };
         double[] colSpecs = new double[menus.length + 1];
         Arrays.fill(colSpecs, 0, menus.length,
             TableLayout.PREFERRED);

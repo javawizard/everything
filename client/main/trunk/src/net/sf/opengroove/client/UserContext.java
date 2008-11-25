@@ -55,6 +55,7 @@ import net.sf.opengroove.client.messaging.MessageManager;
 import net.sf.opengroove.client.notification.NotificationAdapter;
 import net.sf.opengroove.client.notification.TaskbarNotification;
 import net.sf.opengroove.client.plugins.PluginManager;
+import net.sf.opengroove.client.settings.SettingSpec;
 import net.sf.opengroove.client.settings.SettingsManager;
 import net.sf.opengroove.client.storage.Contact;
 import net.sf.opengroove.client.storage.ContactComputer;
@@ -1772,5 +1773,17 @@ public class UserContext
         SettingsManager settingsManager)
     {
         this.settingsManager = settingsManager;
+    }
+    
+    public Object getSetting(String tab, String subnav,
+        String group, String setting)
+    {
+        return getSettingsManager().getSettingValue(
+            new SettingSpec(tab, subnav, group, setting));
+    }
+    
+    public Object getSetting(SettingSpec spec)
+    {
+        return getSettingsManager().getSettingValue(spec);
     }
 }
