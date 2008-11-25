@@ -93,6 +93,7 @@ import javax.swing.JTabbedPane;
 import javax.swing.JTextField;
 import javax.swing.LookAndFeel;
 import javax.swing.ToolTipManager;
+import javax.swing.UIManager;
 import javax.swing.WindowConstants;
 import javax.swing.border.EmptyBorder;
 import javax.swing.event.PopupMenuEvent;
@@ -268,8 +269,8 @@ public class OpenGroove
             "user-red.png", 16), USER_UNKNOWN_16(
             "user-purple.png", 16), USER_OFFLINE_16(
             "user-gray.png", 16), SETTINGS_48(
-                "settings48.png", 48),SETTINGS_16(
-                    "settings16.png", 48), MESSAGE_CONFIG_16(
+            "settings48.png", 48), SETTINGS_16(
+            "settings16.png", 16), MESSAGE_CONFIG_16(
             "messageconfig16.png", 16), MESSAGE_CONFIG_48(
             "messageconfig48.png", 48);
         private int size;
@@ -3530,6 +3531,28 @@ public class OpenGroove
             Icons.MESSAGE_CONFIG_16.getIcon());
         JLinkButton settingsLinkButton = new JLinkButton(
             Icons.SETTINGS_16.getIcon());
+        messageHistoryButton.setFocusable(false);
+        settingsLinkButton.setFocusable(false);
+        messageHistoryButton.setToolTipText(ComponentUtils
+            .htmlTipWrap("View message history"));
+        settingsLinkButton.setToolTipText(ComponentUtils
+            .htmlTipWrap("Edit OpenGroove's Settings"));
+        messageHistoryButton.setMargin(new Insets(0, 0, 0,
+            0));
+        settingsLinkButton
+            .setMargin(new Insets(0, 0, 0, 0));
+        settingsLinkButton
+            .addActionListener(new ActionListener()
+            {
+                
+                public void actionPerformed(ActionEvent e)
+                {
+                    context.getSettingsManager()
+                        .showDialog();
+                }
+            });
+        rightPanel.add(messageHistoryButton);
+        rightPanel.add(settingsLinkButton);
         JPanel lowerPanel = new JPanel();
         lowerPanel.setOpaque(false);
         lowerPanel.setLayout(new BorderLayout());
@@ -3994,7 +4017,7 @@ public class OpenGroove
                             }
                         }.start();
                     }
-                }, new IMenuItem("Options")
+                }, new IMenuItem("Settings")
                 {
                     
                     public void actionPerformed(
