@@ -711,7 +711,7 @@ public class OpenGrooveRealmServer
          * if a message is 5 bytes long and bytes 1 through 6 are read, then
          * this error will occur, since there is no 6th byte.
          */
-        INDEXOUTOFBOUNDS
+        INDEXOUTOFBOUNDS, AUTHUNAUTHORIZED
     };
     
     public static final SecureRandom random = new SecureRandom();
@@ -1255,7 +1255,7 @@ public class OpenGrooveRealmServer
                 if (username == null
                     && !command.whenUnauth())
                     throw new FailedResponseException(
-                        Status.UNAUTHORIZED,
+                        Status.AUTHUNAUTHORIZED,
                         "You must run the authenticate command before this one.");
                 if (computerName == null
                     && !command.whenNoComputer())

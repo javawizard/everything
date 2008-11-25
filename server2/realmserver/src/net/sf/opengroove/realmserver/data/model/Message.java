@@ -1,5 +1,8 @@
 package net.sf.opengroove.realmserver.data.model;
 
+import java.net.URLDecoder;
+import java.net.URLEncoder;
+
 public class Message
 {
     private String id;
@@ -100,8 +103,9 @@ public class Message
      */
     public static String getFileId(String messageId)
     {
-        return messageId.replace(":", "$");
+        return URLEncoder.encode(messageId);
     }
+    
     /**
      * Returns this message's id, but with : replaced by $.
      * 
@@ -109,7 +113,7 @@ public class Message
      */
     public static String getMessageId(String fileId)
     {
-        return fileId.replace("$", ":");
+        return URLDecoder.decode(fileId);
     }
     
     public String getFileId()
