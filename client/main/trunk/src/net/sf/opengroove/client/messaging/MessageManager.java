@@ -687,8 +687,51 @@ public class MessageManager implements MessageDeliverer
                     /*
                      * Now we download a list of inbound messages from the
                      * server, and add those that aren't already present
-                     * locally.
+                     * locally. If there are any messages at all (whether on the
+                     * server or already local), we'll notify the inbound
+                     * downloader. In the future, this should probably be
+                     * changed to only notify the downloader if the message is
+                     * in the IMPORTED state.
                      */
+                    String[] messageIds = communicator
+                        .listInboundMessages();
+                    boolean wereMessages = false;
+                    for (String messageId : messageIds)
+                    {
+                        InboundMessage inboundMessage = localUser
+                            .getInboundMessageById(messageId);
+                        if (inboundMessage != null)
+                            /*
+                             * The message is already present locally.
+                             */
+                            continue;
+                        /*
+                         * The message is not present locally. We'll create it
+                         * and add it to the user's list of inbound messages.
+                         */
+                        StoredMessage storedMessage = communicator
+                            .getMessageInfo(messageId);
+                        inboundMessage = localUser
+                            .createInboundMessage();
+                        inboundMessage.setId(messageId);
+                        inboundMessage
+                            .setSender(storedMessage
+                                .getSender());
+                        inboundMessage
+                            .setSendingComputer(storedMessage
+                                .getComputer());
+                        inboundMessage
+                            .setStage(InboundMessage.STAGE_IMPORTED);
+                        /*
+                         * The inbound message's target isn't known at this
+                         * point (it only becomes known after decoding the
+                         * message), so we won't set it here.
+                         * 
+                         * Now we add it to the list of stored messages and
+                         * notify the downloader.
+                         */
+                        localUser.getInboundMessages().add(inboundMessage);
+                    }
                 }
                 catch (Exception e)
                 {
@@ -1029,13 +1072,19 @@ public class MessageManager implements MessageDeliverer
         return message;
     }
     
-    public void sendMessage(OutboundMessage message)
+    public synchronized void sendMessage(
+        OutboundMessage message)
     {
         /*
          * All we have to do is add the message to the local user's list of
          * messages (if it's not already present), and notify the message
-         * encoder that it has messages available
+         * encoder that it has messages available.
          */
+        if (localUser.getOutboundMessages().isolate()
+            .contains(message))
+            return;
+        localUser.getOutboundMessages().add(message);
+        notifyOutboundEncoder();
     }
     
     public void start()
