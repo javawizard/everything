@@ -4,8 +4,10 @@ import java.io.DataOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
+import java.io.RandomAccessFile;
 import java.lang.reflect.Field;
 import java.math.BigInteger;
+import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.BlockingQueue;
@@ -479,8 +481,8 @@ public class MessageManager implements MessageDeliverer
                              * transferred, say, 20KB), then they can shrink it.
                              * Or perhaps this class should adapt to that and if
                              * it keeps getting failures then it will scale it's
-                             * chunk size down to 1KB or even 256B, until it keeps
-                             * succeeding and then it will scale back up.
+                             * chunk size down to 1KB or even 256B, until it
+                             * keeps succeeding and then it will scale back up.
                              */
                             try
                             {
@@ -778,7 +780,75 @@ public class MessageManager implements MessageDeliverer
                     {
                         try
                         {
-                            
+                            String messageId = message
+                                .getId();
+                            /*
+                             * First, we'll get the message's size. Then, we'll
+                             * get the size of the local message file. If the
+                             * local message file's size is greater than the
+                             * size of the message on the server, then we'll
+                             * just let it go for now (but we'll print an error
+                             * message), although in the future we should warn
+                             * the user that a message download has been
+                             * corrupted, or delete the message file and start
+                             * over again.
+                             */
+                            int messageSize = communicator
+                                .getMessageSize(messageId);
+                            File messageFile = new File(
+                                storage
+                                    .getInboundMessageEncryptedStore(),
+                                URLEncoder.encode(message
+                                    .getId()));
+                            if (!messageFile.exists())
+                                messageFile.createNewFile();
+                            int localMessageSize = (int) messageFile
+                                .length();
+                            if (localMessageSize >= messageSize)
+                            {
+                                /*
+                                 * The message has already been downloaded but
+                                 * hasn't been sent to the next stage. We'll
+                                 * send it to the localizer.
+                                 */
+                                message
+                                    .setStage(InboundMessage.STAGE_DOWNLOADED);
+                                notifyInboundLocalizer();
+                                continue;
+                            }
+                            /*
+                             * The message hasn't been fully downloaded. We'll
+                             * start at the position indicated by the local
+                             * message file's size, since that size means we
+                             * already have that much of the message's data.
+                             */
+                            RandomAccessFile out = new RandomAccessFile(
+                                messageFile, "rw");
+                            int nextReadIndex = localMessageSize;
+                            while (nextReadIndex < messageSize)
+                            {
+                                byte[] bytes = communicator
+                                    .readMessageData(
+                                        messageId,
+                                        nextReadIndex,
+                                        Math
+                                            .min(
+                                                32768,
+                                                messageSize
+                                                    - nextReadIndex));
+                                out.seek(nextReadIndex);
+                                out.write(bytes);
+                                nextReadIndex += bytes.length;
+                            }
+                            /*
+                             * The message has now been completely downloaded.
+                             * We'll close the file and send the message onto
+                             * the localizer.
+                             */
+                            out.close();
+                            message
+                                .setStage(InboundMessage.STAGE_DOWNLOADED);
+                            notifyInboundLocalizer();
                         }
                         catch (Exception exception)
                         {
@@ -793,6 +863,17 @@ public class MessageManager implements MessageDeliverer
             }
         }
     };
+    /**
+     * The name of this thread is somewhat misleading. Most developers would
+     * interpret this to be some sort of language modifier or something, and I
+     * kind of am thinking of renaming it because of this exact conflict. What
+     * this thread actually does do is deletes the message off of the server. In
+     * this sense, it makes the message local (because it's no longer remote, or
+     * on the server), or it localizes the message.<br/><br/>
+     * 
+     * If this ends up causing enough confusion, I'll probably rename it or
+     * something.
+     */
     @StageThread
     private Thread inboundLocalizerThread = new Thread()
     {
@@ -822,7 +903,55 @@ public class MessageManager implements MessageDeliverer
                     {
                         try
                         {
-                            
+                            /*
+                             * Essentially, all this stage does is deletes the
+                             * server-side message, so we'll do that now. If we
+                             * get a FailedResponseException indicating either
+                             * UNAUTHORIZED or NOSUCHMESSAGE, then the job has
+                             * already been done and we'll forward onto the
+                             * decrypter. If the call is successful then we have
+                             * just deleted the message, so we'll forward
+                             * anyway.
+                             */
+                            try
+                            {
+                                communicator
+                                    .deleteMessage(message
+                                        .getId());
+                            }
+                            catch (FailedResponseException exception)
+                            {
+                                if (exception
+                                    .getResponseCode()
+                                    .equalsIgnoreCase(
+                                        "UNAUTHORIZED")
+                                    || exception
+                                        .getResponseCode()
+                                        .equalsIgnoreCase(
+                                            "NOSUCHMESSAGE"))
+                                {
+                                    /*
+                                     * The message has already been deleted, so
+                                     * we won't do anything.
+                                     */
+                                }
+                                else
+                                {
+                                    /*
+                                     * An error happened while deleting the
+                                     * message.
+                                     */
+                                    throw exception;
+                                }
+                            }
+                            /*
+                             * If we get here then either the message didn't
+                             * exist or we deleted it, so we'll forward to the
+                             * next stage, the decrypter.
+                             */
+                            message
+                                .setStage(InboundMessage.STAGE_LOCALIZED);
+                            notifyInboundDecrypter();
                         }
                         catch (Exception exception)
                         {
@@ -1151,15 +1280,15 @@ public class MessageManager implements MessageDeliverer
     public File getInboundMessageFile(String messageId)
     {
         return new File(storage
-            .getInboundMessagePlaintextStore(), messageId
-            .replace(":", "$"));
+            .getInboundMessagePlaintextStore(), URLEncoder
+            .encode(messageId));
     }
     
     public File getOutboundMessageFile(String messageId)
     {
         return new File(storage
-            .getOutboundMessagePlaintextStore(), messageId
-            .replace(":", "$"));
+            .getOutboundMessagePlaintextStore(), URLEncoder
+            .encode(messageId));
     }
     
     private BlockingQueue[] getStageQueues()

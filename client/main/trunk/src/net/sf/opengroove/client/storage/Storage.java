@@ -13,6 +13,7 @@ import java.io.OutputStream;
 import java.io.Serializable;
 import java.io.UnsupportedEncodingException;
 import java.lang.reflect.Array;
+import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
@@ -82,8 +83,8 @@ public class Storage
     {
         this.user = dataStore.getUser(userid);
         File tbase = new File(
-            new File(base, "userspecific"), userid.replace(
-                ":", "$"));
+            new File(base, "userspecific"), URLEncoder
+                .encode(userid));
         if (!tbase.exists())
             tbase.mkdirs();
         pluginStore = iItem(tbase, "plugins");

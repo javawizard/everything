@@ -1,5 +1,7 @@
 package net.sf.opengroove.client.storage;
 
+import java.net.URLEncoder;
+
 import net.sf.opengroove.common.proxystorage.CustomProperty;
 import net.sf.opengroove.common.proxystorage.Delegate;
 import net.sf.opengroove.common.proxystorage.ListType;
@@ -19,7 +21,7 @@ public interface OutboundMessage
         {
             OutboundMessage message = (OutboundMessage) on;
             if (property.equalsIgnoreCase("fileid"))
-                return message.getId().replace(":", "$");
+                return URLEncoder.encode(message.getId());
             return null;
         }
         
