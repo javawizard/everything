@@ -479,7 +479,7 @@ public class MessageManager implements MessageDeliverer
                              * transferred, say, 20KB), then they can shrink it.
                              * Or perhaps this class should adapt to that and if
                              * it keeps getting failures then it will scale it's
-                             * chunk size down to even 1KB, until it keeps
+                             * chunk size down to 1KB or even 256B, until it keeps
                              * succeeding and then it will scale back up.
                              */
                             try
@@ -693,9 +693,9 @@ public class MessageManager implements MessageDeliverer
                      * changed to only notify the downloader if the message is
                      * in the IMPORTED state.
                      */
+                    boolean wereMessagesImported = false;
                     String[] messageIds = communicator
                         .listInboundMessages();
-                    boolean wereMessages = false;
                     for (String messageId : messageIds)
                     {
                         InboundMessage inboundMessage = localUser
@@ -709,6 +709,7 @@ public class MessageManager implements MessageDeliverer
                          * The message is not present locally. We'll create it
                          * and add it to the user's list of inbound messages.
                          */
+                        wereMessagesImported = true;
                         StoredMessage storedMessage = communicator
                             .getMessageInfo(messageId);
                         inboundMessage = localUser
@@ -730,7 +731,16 @@ public class MessageManager implements MessageDeliverer
                          * Now we add it to the list of stored messages and
                          * notify the downloader.
                          */
-                        localUser.getInboundMessages().add(inboundMessage);
+                        localUser.getInboundMessages().add(
+                            inboundMessage);
+                    }
+                    if (wereMessagesImported)
+                    {
+                        /*
+                         * Messages were imported. We should therefore notify
+                         * the message downloader.
+                         */
+                        notifyInboundDownloader();
                     }
                 }
                 catch (Exception e)
