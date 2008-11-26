@@ -995,7 +995,104 @@ public class MessageManager implements MessageDeliverer
                     {
                         try
                         {
-                            
+                            File messageEncryptedFile = new File(
+                                storage
+                                    .getInboundMessageEncryptedStore(),
+                                URLEncoder.encode(message
+                                    .getId()));
+                            File messageEncodedFile = new File(
+                                storage
+                                    .getInboundMessageEncodedStore(),
+                                URLEncoder.encode(message
+                                    .getId()));
+                            /*
+                             * We're essentially decrypting from
+                             * messageEncryptedFile to messageEncodedFile.
+                             * 
+                             * The first thing we need to do is check that we
+                             * have the security keys for the contact that sent
+                             * the message. If we don't, we'll skip the message,
+                             * since we need the contact's keys to be able to
+                             * verify the message's signature.
+                             * 
+                             * If messageEncodedFile already exists, we'll just
+                             * start over with the decryption by deleting it. If
+                             * it can't be deleted, then we'll throw an
+                             * exception. Anyway, if messageEncryptedFile
+                             * doesn't exist, we'll similarly throw an
+                             * exception. At that point, messageEncryptedFile
+                             * does exist and messageEncodedFile doesn't or has
+                             * a size of 0. Then we'll search the header until
+                             * we find the encrypted key that corresponds to
+                             * this username. We can then skip the rest of the
+                             * header, up until the message signature. We'll
+                             * decrypt the signature using the sender's public
+                             * signing key (which we will have already
+                             * obtained). We'll then store this hash value until
+                             * after the actual message decryption. Then, we'll
+                             * create a cipher output stream that will decrypt
+                             * the message for us, and read bytes off of the
+                             * message and into this output stream, which will
+                             * be pointed at the message's encoded file. Once
+                             * this is complete, we'll hash the contents of the
+                             * encoded message and compare it to the hash found
+                             * in the message's signature. If they match, we'll
+                             * forward the message onto the decoding stage. If
+                             * they don't, we'll delete the message (by marking
+                             * it as read and unlinking it) and print an error
+                             * out that indicates that the message had an
+                             * invalid signature. In the future, we might want
+                             * to have some means of notifying the user of this
+                             * besides just printing it out to the console.
+                             */
+                            String messageSender = message
+                                .getSender();
+                            Contact senderContact = storage
+                                .getContact(messageSender);
+                            if (senderContact == null)
+                            {
+                                senderContact = localUser
+                                    .createContact();
+                                senderContact
+                                    .setHasKeys(false);
+                                senderContact
+                                    .setLastModifled(0);
+                                senderContact
+                                    .setUserContact(false);
+                                senderContact
+                                    .setUserid(messageSender);
+                                senderContact
+                                    .setUserVerified(false);
+                                localUser.getContacts()
+                                    .add(senderContact);
+                                if (localUser.getContext() != null)
+                                {
+                                    new Thread()
+                                    {
+                                        public void run()
+                                        {
+                                            localUser
+                                                .getContext()
+                                                .updateContactStatus();
+                                        }
+                                    }.start();
+                                }
+                            }
+                            if (!senderContact.isHasKeys())
+                            {
+                                /*
+                                 * We don't have this contact's keys yet. Since
+                                 * there currently isn't a queue-based approach
+                                 * for recurring user tasks like there is for
+                                 * message management, we'll just skip over the
+                                 * message and wait for the contact status
+                                 * thread to download the keys.
+                                 */
+                                continue;
+                            }
+                            /*
+                             * 
+                             */
                         }
                         catch (Exception exception)
                         {
@@ -1360,6 +1457,14 @@ public class MessageManager implements MessageDeliverer
             }
         }
         return timers.toArray(new Thread[0]);
+    }
+    
+    public void notifyAllThreads()
+    {
+        for (BlockingQueue queue : getStageQueues())
+        {
+            queue.offer(runObject);
+        }
     }
     
 }

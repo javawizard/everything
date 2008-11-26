@@ -3206,6 +3206,8 @@ public class OpenGroove
                         SYSTEM_UPDATE_SITE);
                     Properties p = new Properties();
                     p.load(updateUrl.openStream());
+                    System.out.println("version properties loaded:");
+                    p.list(System.out);
                     String localVersion;
                     try
                     {

@@ -1432,6 +1432,14 @@ public class UserContext
                                     .setRsaSigMod(new BigInteger(
                                         sigMod, 16));
                                 contact.setHasKeys(true);
+                                /*
+                                 * Since there may be pending inbound or
+                                 * outbound messages for the contact specified,
+                                 * we'll notify all stages of the message
+                                 * listener.
+                                 */
+                                getMessageManager()
+                                    .notifyAllThreads();
                             }
                         }
                     }
