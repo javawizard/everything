@@ -146,4 +146,22 @@ public class StringUtils
         }
     }
     
+    /**
+     * Returns a byte array of exactly the size specified, using the contents of
+     * the byte array specified. If the byte array is smaller than the size
+     * requested, the extra space will be filled with 0s, and if the byte array
+     * is larger than the size requested, the leading bytes will be removed.
+     * 
+     * @param bytes
+     * @param length
+     * @return
+     */
+    public byte[] exactLength(byte[] bytes, int length)
+    {
+        byte[] newBytes = new byte[length];
+        System.arraycopy(bytes, 0, newBytes, 0, Math.min(
+            bytes.length, newBytes.length));
+        return newBytes;
+    }
+    
 }
