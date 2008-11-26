@@ -156,7 +156,7 @@ public class StringUtils
      * @param length
      * @return
      */
-    public byte[] exactLength(byte[] bytes, int length)
+    public static byte[] exactLength(byte[] bytes, int length)
     {
         byte[] newBytes = new byte[length];
         System.arraycopy(bytes, 0, newBytes, 0, Math.min(
