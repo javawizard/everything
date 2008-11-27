@@ -209,4 +209,18 @@ public class RSA
         BigInteger decrypted = decrypt(prv, mod, encrypted);
         return decrypted.equals(randomNumber);
     }
+    
+    public byte[] encrypt(BigInteger publicKey,
+        BigInteger modulus, byte[] message)
+    {
+        return CertificateUtils.encryptRsa(message,
+            publicKey, modulus);
+    }
+    
+    public byte[] decrypt(BigInteger privateKey,
+        BigInteger modulus, byte[] message)
+    {
+        return CertificateUtils.decryptRsa(message,
+            privateKey, modulus);
+    }
 }
