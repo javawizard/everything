@@ -569,7 +569,7 @@ public class CertificateUtils
         return digest.digest();
     }
     
-    public byte[] encryptRsa(byte[] bytes, BigInteger key,
+    public static byte[] encryptRsa(byte[] bytes, BigInteger key,
         BigInteger modulus)
     {
         try
@@ -600,7 +600,7 @@ public class CertificateUtils
         
     }
     
-    public byte[] decryptRsa(byte[] bytes, BigInteger key,
+    public static byte[] decryptRsa(byte[] bytes, BigInteger key,
         BigInteger modulus)
     {
         try
