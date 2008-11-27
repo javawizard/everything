@@ -210,14 +210,14 @@ public class RSA
         return decrypted.equals(randomNumber);
     }
     
-    public byte[] encrypt(BigInteger publicKey,
+    public static byte[] encrypt(BigInteger publicKey,
         BigInteger modulus, byte[] message)
     {
         return CertificateUtils.encryptRsa(message,
             publicKey, modulus);
     }
     
-    public byte[] decrypt(BigInteger privateKey,
+    public static byte[] decrypt(BigInteger privateKey,
         BigInteger modulus, byte[] message)
     {
         return CertificateUtils.decryptRsa(message,
