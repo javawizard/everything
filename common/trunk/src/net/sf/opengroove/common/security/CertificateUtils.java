@@ -19,8 +19,11 @@ import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.security.PrivateKey;
 import java.security.PublicKey;
+import java.security.SecureRandom;
 import java.security.SignatureException;
 import java.security.cert.X509Certificate;
+import java.security.spec.RSAPrivateKeySpec;
+import java.security.spec.RSAPublicKeySpec;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
@@ -564,5 +567,61 @@ public class CertificateUtils
         }
         stream.close();
         return digest.digest();
+    }
+    
+    public byte[] encryptRsa(byte[] bytes, BigInteger key,
+        BigInteger modulus)
+    {
+        try
+        {
+            /*
+             * We'll assume we're encrypting with the private key. It doesn't
+             * really matter, since encryption with a public key is just the
+             * same.
+             */
+            RSAPrivateKeySpec keySpec = new RSAPrivateKeySpec(
+                modulus, key);
+            Cipher cipher = Cipher
+                .getInstance("RSA/None/OAEPWithSHA512AndMGF1Padding");
+            cipher.init(cipher.ENCRYPT_MODE,
+                KeyFactory.getInstance("RSA")
+                    .generatePrivate(keySpec),
+                new SecureRandom());
+            byte[] result = cipher.doFinal(bytes);
+            return result;
+        }
+        catch (Exception e)
+        {
+            if (e instanceof RuntimeException)
+                throw (RuntimeException) e;
+            throw new RuntimeException(
+                "Cryptographic exception", e);
+        }
+        
+    }
+    
+    public byte[] decryptRsa(byte[] bytes, BigInteger key,
+        BigInteger modulus)
+    {
+        try
+        {
+            RSAPublicKeySpec keySpec = new RSAPublicKeySpec(
+                modulus, key);
+            Cipher cipher = Cipher
+                .getInstance("RSA/None/OAEPWithSHA512AndMGF1Padding");
+            cipher.init(cipher.DECRYPT_MODE,
+                KeyFactory.getInstance("RSA")
+                    .generatePublic(keySpec),
+                new SecureRandom());
+            byte[] result = cipher.doFinal(bytes);
+            return result;
+        }
+        catch (Exception e)
+        {
+            if (e instanceof RuntimeException)
+                throw (RuntimeException) e;
+            throw new RuntimeException(
+                "Cryptographic exception", e);
+        }
     }
 }
