@@ -1,5 +1,6 @@
 package net.sf.opengroove.client.messaging;
 
+import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
@@ -9,6 +10,7 @@ import java.lang.reflect.Field;
 import java.math.BigInteger;
 import java.net.URLEncoder;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.TimeUnit;
@@ -17,6 +19,8 @@ import javax.crypto.Cipher;
 import javax.crypto.CipherOutputStream;
 import javax.crypto.spec.IvParameterSpec;
 import javax.crypto.spec.SecretKeySpec;
+
+import base64.Base64Coder;
 
 import net.sf.opengroove.client.TimerField;
 import net.sf.opengroove.client.com.CommandCommunicator;
@@ -357,17 +361,13 @@ public class MessageManager implements MessageDeliverer
                                     .write(contact
                                         .getUserid()
                                         .getBytes());
-                                BigInteger keyInteger = new BigInteger(
-                                    aesKey);
-                                BigInteger encryptedKeyInteger = RSA
+                                byte[] encryptedKeyBytes = RSA
                                     .encrypt(
                                         contact
                                             .getRsaEncPub(),
                                         contact
                                             .getRsaEncMod(),
-                                        keyInteger);
-                                byte[] encryptedKeyBytes = encryptedKeyInteger
-                                    .toByteArray();
+                                        aesKey);
                                 out
                                     .writeInt(encryptedKeyBytes.length);
                                 out
@@ -380,16 +380,10 @@ public class MessageManager implements MessageDeliverer
                             byte[] hash = CertificateUtils
                                 .hash(new FileInputStream(
                                     messageEncoded));
-                            BigInteger hashInt = new BigInteger(
+                            byte[] signature = RSA.encrypt(
+                                localUser.getRsaSigPrv(),
+                                localUser.getRsaSigMod(),
                                 hash);
-                            BigInteger signatureInt = RSA
-                                .encrypt(localUser
-                                    .getRsaSigPrv(),
-                                    localUser
-                                        .getRsaSigMod(),
-                                    hashInt);
-                            byte[] signature = signatureInt
-                                .toByteArray();
                             out.writeInt(signature.length);
                             out.write(signature);
                             /*
@@ -1084,15 +1078,159 @@ public class MessageManager implements MessageDeliverer
                                  * We don't have this contact's keys yet. Since
                                  * there currently isn't a queue-based approach
                                  * for recurring user tasks like there is for
-                                 * message management, we'll just skip over the
-                                 * message and wait for the contact status
-                                 * thread to download the keys.
+                                 * message management (so it's not
+                                 * straightforward to instruct the user context
+                                 * to download the user's keys), we'll just skip
+                                 * over the message and wait for the contact
+                                 * status thread to download the keys.
                                  */
                                 continue;
                             }
                             /*
-                             * 
+                             * We have the sender's keys if we get here. Now
+                             * we'll parse the message to get the encrypted
+                             * security key that corresponds to our private
+                             * encryption key.
                              */
+                            if (messageEncodedFile.length() > 0)
+                                messageEncodedFile.delete();
+                            if (messageEncodedFile.length() > 0)
+                                throw new RuntimeException(
+                                    "couldn't delete existing encoded form.");
+                            if (!messageEncryptedFile
+                                .exists())
+                            {
+                                System.err
+                                    .println("input encrpted message "
+                                        + message.getId()
+                                        + " doesn't exist, the message will be deleted.");
+                                message
+                                    .setStage(InboundMessage.STAGE_READ);
+                                localUser
+                                    .getInboundMessages()
+                                    .remove(message);
+                                continue;
+                            }
+                            FileInputStream fileIn = new FileInputStream(
+                                messageEncryptedFile);
+                            DataInputStream in = new DataInputStream(
+                                fileIn);
+                            int recipientCount = in
+                                .readInt();
+                            byte[] messageKey = null;
+                            for (int i = 0; i < recipientCount; i++)
+                            {
+                                int recipientUseridSize = in
+                                    .readInt();
+                                byte[] recipientUseridBytes = new byte[recipientUseridSize];
+                                in
+                                    .readFully(recipientUseridBytes);
+                                String recipientUserid = new String(
+                                    recipientUseridBytes);
+                                int encryptedKeySize = in
+                                    .readInt();
+                                byte[] encryptedKeyBytes = new byte[encryptedKeySize];
+                                in
+                                    .readFully(encryptedKeyBytes);
+                                if (recipientUserid
+                                    .equalsIgnoreCase(userid))
+                                {
+                                    /*
+                                     * The key is encrypted with our encryption
+                                     * key, so we'll use our private key to
+                                     * decrypt it
+                                     */
+                                    messageKey = RSA
+                                        .decrypt(
+                                            localUser
+                                                .getRsaEncPrv(),
+                                            localUser
+                                                .getRasEncMod(),
+                                            encryptedKeyBytes);
+                                }
+                                
+                            }
+                            if (messageKey == null)
+                            {
+                                System.err
+                                    .println("Message "
+                                        + message.getId()
+                                        + " does not contain a valid public-key "
+                                        + "encryption, and will be deleted.");
+                                message
+                                    .setStage(InboundMessage.STAGE_READ);
+                                localUser
+                                    .getInboundMessages()
+                                    .remove(message);
+                            }
+                            /*
+                             * We have the message key at this point, and we've
+                             * skipped over all of the other keys. Now we'll
+                             * read in the message's signature.
+                             */
+                            byte[] signature = new byte[in
+                                .readInt()];
+                            in.readFully(signature);
+                            byte[] receivedHash = RSA
+                                .decrypt(senderContact
+                                    .getRsaSigPub(),
+                                    senderContact
+                                        .getRsaSigMod(),
+                                    signature);
+                            /*
+                             * After decryption, receivedHash should hold the
+                             * same value as the hash we'll compute on the
+                             * message data. Now we'll decrypt the message.
+                             */
+                            FileOutputStream fileOut = new FileOutputStream(
+                                messageEncodedFile);
+                            Cipher cipher = Cipher
+                                .getInstance("AES/CBC/PKCS7Padding");
+                            cipher.init(
+                                Cipher.DECRYPT_MODE,
+                                new SecretKeySpec(
+                                    messageKey, "AES"),
+                                new IvParameterSpec(
+                                    new byte[8]));
+                            CipherOutputStream out = new CipherOutputStream(
+                                fileOut, cipher);
+                            StringUtils.copy(in, out);
+                            out.flush();
+                            out.close();
+                            /*
+                             * We've decrypted the message. Now we'll verify
+                             * it's signature, and if the signature is
+                             * incorrect, we'll remove the message and print an
+                             * error.
+                             */
+                            byte[] hash = CertificateUtils
+                                .hash(new FileInputStream(
+                                    messageEncodedFile));
+                            if (!Arrays.equals(hash,
+                                receivedHash))
+                            {
+                                System.err
+                                    .println("message "
+                                        + message.getId()
+                                        + " has an invalid signature");
+                                message
+                                    .setStage(InboundMessage.STAGE_READ);
+                                localUser
+                                    .getInboundMessages()
+                                    .remove(message);
+                                messageEncryptedFile
+                                    .delete();
+                                messageEncodedFile.delete();
+                                continue;
+                            }
+                            /*
+                             * The message matches the signature. We'll send it
+                             * on to the decoder.
+                             */
+                            message
+                                .setStage(InboundMessage.STAGE_DECRYPTED);
+                            messageEncryptedFile.delete();
+                            notifyInboundDecoder();
                         }
                         catch (Exception exception)
                         {
