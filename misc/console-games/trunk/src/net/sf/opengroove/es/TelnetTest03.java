@@ -5,15 +5,14 @@ import java.net.ServerSocket;
 import java.net.Socket;
 
 import net.sf.opengroove.es.utils.InteractiveConsole;
-import net.sf.opengroove.es.utils.InteractiveConsole.Direction;
 
-public class TelnetTest01
+public class TelnetTest03
 {
     
     /**
      * @param args
      */
-    public static void main(String[] args) throws Throwable
+    public static void main(String[] args)
     {
         ServerSocket ss = new ServerSocket(36574);
         while (true)
@@ -29,6 +28,7 @@ public class TelnetTest01
             ss.close();
             System.exit(0);
         }
+
     }
     
 }

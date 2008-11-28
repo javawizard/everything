@@ -13,6 +13,15 @@ public class InteractiveConsole
 {
     private OutputStream out;
     
+    public static final int BLACK = 0;
+    public static final int RED = 1;
+    public static final int GREEN = 2;
+    public static final int YELLOW = 3;
+    public static final int BLUE = 4;
+    public static final int MAGENTA = 5;
+    public static final int CYAN = 6;
+    public static final int WHITE = 7;
+    
     public static enum Direction
     {
         UP("A"), DOWN("B"), FORWARD("C"), BACK("D");
@@ -104,6 +113,24 @@ public class InteractiveConsole
     public void write(String string) throws IOException
     {
         out.write(string.getBytes());
+    }
+    
+    public void setColor(int color) throws IOException
+    {
+        setSpecial(30 + color);
+    }
+    
+    public void setBackground(int color) throws IOException
+    {
+        setSpecial(40 + color);
+    }
+    
+    public void setBold(boolean bold) throws IOException
+    {
+        if (bold)
+            setSpecial(1);
+        else
+            setSpecial(22);
     }
     
 }
