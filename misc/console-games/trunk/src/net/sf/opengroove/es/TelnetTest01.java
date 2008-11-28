@@ -3,8 +3,9 @@ import java.io.OutputStream;
 import java.net.ServerSocket;
 import java.net.Socket;
 
-import alex.InteractiveConsole;
-import alex.InteractiveConsole.Direction;
+import net.sf.opengroove.es.utils.InteractiveConsole;
+import net.sf.opengroove.es.utils.InteractiveConsole.Direction;
+
 
 public class TelnetTest01
 {
