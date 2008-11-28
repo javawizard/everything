@@ -68,7 +68,8 @@ import net.sf.opengroove.common.utils.StringUtils;
  * @author Alexander Boyd
  * 
  */
-public class MessageManager implements MessageDeliverer
+public class MessageManager implements MessageDeliverer,
+    MessageReceiver
 {
     private boolean isRunning = true;
     private LocalUser localUser;
@@ -165,6 +166,8 @@ public class MessageManager implements MessageDeliverer
                             /*
                              * Now we write the message properties.
                              */
+                            dout.writeInt(message
+                                .getProperties().size());
                             for (MessageProperty property : message
                                     .getProperties().isolate())
                             {
@@ -1121,17 +1124,89 @@ public class MessageManager implements MessageDeliverer
                     {
                         try
                         {
-                            File messageEncodedFile = new File(storage
+                            File messageEncoded = new File(
+                                storage
                                     .getInboundMessageEncodedStore(),
-                                    URLEncoder.encode(message.getId()));
-                            File messagePlaintextFile = new File(storage
+                                URLEncoder.encode(message
+                                    .getId()));
+                            File messagePlaintext = new File(
+                                storage
                                     .getInboundMessagePlaintextStore(),
-                                    URLEncoder.encode(message.getId()));
-                            if(!messageEncodedFile.exists())
+                                URLEncoder.encode(message
+                                    .getId()));
+                            if (messagePlaintext.exists())
+                                if (!messagePlaintext
+                                    .delete())
+                                    throw new RuntimeException(
+                                        "couldn't delete message plaintext form");
+                            if (!messageEncoded.exists())
                             {
-                                System.err.println("message doesn't have an encoded form, sending back to decrypter...");
-                                
+                                System.err
+                                    .println("message "
+                                        + message.getId()
+                                        + " doesn't have an encoded form, sending back to the decrypter");
+                                message
+                                    .setStage(InboundMessage.STAGE_LOCALIZED);
                             }
+                            /*
+                             * The message exists and it's decoded form doesn't.
+                             * Now we'll begin the actual decoding.
+                             * 
+                             * First up is the target path.
+                             */
+                            FileInputStream fileIn = new FileInputStream(
+                                messageEncoded);
+                            DataInputStream in = new DataInputStream(
+                                fileIn);
+                            FileOutputStream out = new FileOutputStream(
+                                messagePlaintext);
+                            byte[] targetPathBytes = new byte[in
+                                .readInt()];
+                            in.readFully(targetPathBytes);
+                            message.setTarget(new String(
+                                targetPathBytes));
+                            /*
+                             * Next we'll read in the message's parameters.
+                             */
+                            message.getProperties().clear();
+                            int messagePropertyCount = in
+                                .readInt();
+                            for (int i = 0; i < messagePropertyCount; i++)
+                            {
+                                byte[] nameBytes = new byte[in
+                                    .readInt()];
+                                in.readFully(nameBytes);
+                                byte[] valueBytes = new byte[in
+                                    .readInt()];
+                                in.readFully(valueBytes);
+                                MessageProperty property = message
+                                    .createProperty();
+                                property
+                                    .setName(new String(
+                                        nameBytes));
+                                property
+                                    .setValue(new String(
+                                        valueBytes));
+                                message.getProperties()
+                                    .add(property);
+                            }
+                            /*
+                             * The rest of the data is the actual contents of
+                             * the message, so we'll just perform a straight
+                             * copy.
+                             */
+                            StringUtils.copy(in, out);
+                            out.flush();
+                            out.close();
+                            in.close();
+                            /*
+                             * The message has nwo been decoded. We'll forward
+                             * it on to the dispatcher.
+                             */
+                            message
+                                .setStage(InboundMessage.STAGE_DECODED);
+                            messageEncoded.delete();
+                            notifyInboundDispatcher();
                         }
                         catch (Exception exception)
                         {
@@ -1173,7 +1248,83 @@ public class MessageManager implements MessageDeliverer
                     {
                         try
                         {
-                            
+                            /*
+                             * The dispatcher thread is a relatively simple
+                             * thread: it's job is to send the message to the
+                             * message hierarchy. Unlike the other stages,
+                             * however, this one marks the message as dispatched
+                             * before it even dispatches it. The reason for this
+                             * is that only messages that are in the dispatched
+                             * stage will be returned from methods on the
+                             * hierarchy that list messages, and it doesn't
+                             * really matter if we don't dispatch the message if
+                             * an error occurs, since the messsage hierarchy
+                             * implementation should list all messages upon
+                             * program startup to check for messages it needs to
+                             * process anyway.
+                             */
+                            message
+                                .setStage(InboundMessage.STAGE_DISPATCHED);
+                            hierarchyElement
+                                .injectMessage(message);
+                        }
+                        catch (Exception exception)
+                        {
+                            exception.printStackTrace();
+                        }
+                        
+                    }
+                }
+                catch (Exception e)
+                {
+                }
+            }
+        }
+    };
+    @StageThread
+    private Thread inboundRemoverThread = new Thread()
+    {
+        public void run()
+        {
+            while (true)
+            {
+                try
+                {
+                    Object object = inboundDispatcherQueue
+                        .poll(
+                            (long) (delay + (delayVariance * Math
+                                .random())),
+                            TimeUnit.MILLISECONDS);
+                    if (object == quitObject)
+                        return;
+                    /*
+                     * The object is the runObject or the timeout expired, so
+                     * we'll do the actual processing.
+                     */
+                    /*
+                     * Do actual processing here
+                     */
+                    InboundMessage[] messages = localUser
+                        .listInboundMessagesForStage(InboundMessage.STAGE_READ);
+                    for (InboundMessage message : messages)
+                    {
+                        try
+                        {
+                            File messagePlaintextFile = new File(
+                                storage
+                                    .getInboundMessagePlaintextStore(),
+                                URLEncoder.encode(message
+                                    .getId()));
+                            if (!messagePlaintextFile
+                                .delete())
+                            {
+                                System.err
+                                    .println("couldn't delete plaintext file for message "
+                                        + message.getId());
+                                continue;
+                            }
+                            localUser.getInboundMessages()
+                                .remove(message);
                         }
                         catch (Exception exception)
                         {
@@ -1289,6 +1440,7 @@ public class MessageManager implements MessageDeliverer
         localUser = Storage.getLocalUser(userid);
         storage = Storage.get(userid);
         hierarchyElement.setMessageDeliverer(this);
+        hierarchyElement.setReceiver(this);
     }
     
     public OutboundMessage createMessage()
@@ -1438,6 +1590,22 @@ public class MessageManager implements MessageDeliverer
         {
             queue.offer(runObject);
         }
+    }
+    
+    public InboundMessage[] listChildMessages(
+        String floatingPath)
+    {
+        if (!floatingPath.endsWith("/"))
+            floatingPath += "/";
+        floatingPath += "*";
+        return localUser
+            .getInboundMessagesByFloatingTarget(floatingPath);
+    }
+    
+    public InboundMessage[] listMessages(String fixedPath)
+    {
+        return localUser
+            .getInboundMessagesByFixedTarget(fixedPath);
     }
     
 }

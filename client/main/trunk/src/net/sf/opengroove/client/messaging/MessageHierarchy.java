@@ -47,6 +47,13 @@ public abstract class MessageHierarchy
      * this hierarchy element has a parent.
      */
     private MessageDeliverer deliverer;
+    private MessageReceiver receiver;
+    
+    public void setReceiver(MessageReceiver receiver)
+    {
+        this.receiver = receiver;
+    }
+    
     /**
      * The name of this hierarchy element. This is the string that appears in a
      * hierarchy path to denote this hierarchy element. This must not be changed
@@ -209,7 +216,7 @@ public abstract class MessageHierarchy
      */
     public void setMessageDeliverer(MessageDeliverer sender)
     {
-        
+        this.deliverer = sender;
     }
     
     /**
@@ -347,6 +354,51 @@ public abstract class MessageHierarchy
             parent
                 .sendUpward(message, currentPath, addPath);
         }
+    }
+    
+    private InboundMessage[] sendMessageRequestUpward(
+        ArrayList<String> currentPath, boolean addPath,
+        boolean floating)
+    {
+        if (parent == null)
+        {
+            /*
+             * We're at the toplevel, so we need to send this to the deliverer
+             * if there is one.
+             */
+            if (receiver == null)
+                throw new IllegalStateException(
+                    "No deliverer and no parent");
+            if (floating)
+                return receiver
+                    .listChildMessages(buildPath(currentPath));
+            else
+                return receiver
+                    .listMessages(buildPath(currentPath));
+        }
+        else
+        {
+            /*
+             * if addPath is true, then we'll prepend this element's path, then
+             * send the message to this element's parent.
+             */
+            if (addPath)
+                currentPath.add(0, name);
+            return parent.sendMessageRequestUpward(
+                currentPath, addPath, floating);
+        }
+    }
+    
+    public InboundMessage[] listMessages()
+    {
+        return sendMessageRequestUpward(
+            new ArrayList<String>(), true, false);
+    }
+    
+    public InboundMessage[] listChildMessages()
+    {
+        return sendMessageRequestUpward(
+            new ArrayList<String>(), true, true);
     }
     
     private static String buildPath(

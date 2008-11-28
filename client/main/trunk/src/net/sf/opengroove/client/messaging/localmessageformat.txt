@@ -1,0 +1,33 @@
+Unlike most other information in OpenGroove, local messages are stored as files in a folder, with a specific format, instead of as proxystorage objects. The message header and body are stored as one file, named content, which is located in a folder that has the name of the url-encoded message id. Each attachment is stored under that folder
+
+
+
+
+Ideas for sequence of order:
+
+header
+ sent date
+ recipients
+ in reply to [empty if not in reply]
+ properties
+body
+ content type
+ subject
+ message
+attachments
+ attachment count
+ [for each attachment]
+  filename
+  type - file, folder, voice
+  hascontents [always true for transferred messages]
+  hassaved [always false for transferred messages]
+  properties
+  content length
+ [for each attachment]
+  content [empty if hascontents is empty] 
+
+ 
+ 
+ 
+ 
+  

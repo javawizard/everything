@@ -245,7 +245,17 @@ public interface LocalUser extends ProxyObject
     
     @Property
     public SettingStore getSettingStore();
+    
     public void setSettingStore(SettingStore store);
+    
     @Constructor
     public SettingStore createSettingStore();
+    
+    @Search(listProperty = "inboundMessages", searchProperty = "target", exact = false, anywhere = false)
+    public InboundMessage[] getInboundMessagesByFloatingTarget(
+        String floatingPath);
+    
+    @Search(listProperty = "inboundMessages", searchProperty = "target", exact = true, anywhere = false)
+    public InboundMessage[] getInboundMessagesByFixedTarget(
+        String fixedPath);
 }

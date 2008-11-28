@@ -1,5 +1,6 @@
 package net.sf.opengroove.client.storage;
 
+import net.sf.opengroove.common.proxystorage.Constructor;
 import net.sf.opengroove.common.proxystorage.ListType;
 import net.sf.opengroove.common.proxystorage.Property;
 import net.sf.opengroove.common.proxystorage.ProxyBean;
@@ -77,6 +78,9 @@ public interface InboundMessage
     @Property
     @ListType(MessageProperty.class)
     public StoredList<MessageProperty> getProperties();
+    
+    @Constructor
+    public MessageProperty createProperty();
     
     @Search(listProperty = "properties", searchProperty = "name")
     public MessageProperty getProperty(String name);
