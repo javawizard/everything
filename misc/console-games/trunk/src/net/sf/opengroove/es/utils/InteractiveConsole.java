@@ -54,8 +54,6 @@ public class InteractiveConsole
         throws IOException
     {
         byte[] bytes = (CSI_PREFIX + sequence).getBytes();
-        System.out.println("writing sequence with "
-            + bytes.length + " bytes");
         out.write(bytes);
     }
     

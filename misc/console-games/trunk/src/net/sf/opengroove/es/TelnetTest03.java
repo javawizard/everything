@@ -19,7 +19,7 @@ public class TelnetTest03
     public static void main(String[] args)
         throws IOException, InterruptedException
     {
-        ServerSocket ss = new ServerSocket(36574);
+        ServerSocket ss = new ServerSocket(45678);
         while (true)
         {
             final Socket socket = ss.accept();
@@ -28,18 +28,19 @@ public class TelnetTest03
             InteractiveConsole console = new InteractiveConsole(
                 out);
             console.setup();
-            console.setColor(console.GREEN);
-            for (int c = 0; c < 60; c++)
+            console.setBackground(console.GREEN);
+            for (int c = 0; c < 80; c++)
             {
                 spaceString += " ";
             }
-            for (int r = 0; r < 25; r++)
+            for (int r = 0; r < 26; r++)
             {
                 console.setPos(r, 1);
                 console.write(spaceString);
             }
+            console.setPos(1, 1);
             console.write("Hello.");
-            Thread.sleep(2000);
+            InputStream in = socket.getInputStream();
             socket.close();
             ss.close();
             System.exit(0);
