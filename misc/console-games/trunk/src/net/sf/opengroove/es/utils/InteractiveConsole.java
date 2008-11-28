@@ -101,4 +101,9 @@ public class InteractiveConsole
         sendEscapeSequence("K");
     }
     
+    public void write(String string) throws IOException
+    {
+        out.write(string.getBytes());
+    }
+    
 }
