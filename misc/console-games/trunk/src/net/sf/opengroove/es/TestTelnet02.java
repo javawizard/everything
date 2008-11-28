@@ -3,8 +3,6 @@ import java.io.OutputStream;
 import java.net.ServerSocket;
 import java.net.Socket;
 
-import alex.InteractiveConsole;
-
 public class TestTelnet02
 {
     
