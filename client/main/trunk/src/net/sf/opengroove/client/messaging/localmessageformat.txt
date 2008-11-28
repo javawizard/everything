@@ -1,4 +1,43 @@
-Unlike most other information in OpenGroove, local messages are stored as files in a folder, with a specific format, instead of as proxystorage objects. The message header and body are stored as one file, named content, which is located in a folder that has the name of the url-encoded message id. Each attachment is stored under that folder
+Unlike most other information in OpenGroove, user messages are stored as a file, instead of as a proxy storage object. The format of the file that is stored locally is exactly identical to the format that the message is sent as. All messages (both inbound and outbound) are stored in a folder specific to the user.
+
+The contents of the message file is as follows. Each field has a number of bytes next to it, which indicates how many bytes that field takes up. If something is marked as a string, then 4 bytes are written with it's length, followed by the string itself. The same thing happens for a byte[]. 
+
+header
+ header size - 4 bytes, specifies size of header not including this field
+ sent date - 8 bytes
+ sender - string
+ read - 1 byte
+ recipient count - 4 bytes
+ [for each recipient]
+  recipient userid - string
+ in reply to - string
+ property count - 4 bytes
+ [for each property]
+  property name - string
+  property value - string
+body
+ content type - string
+ subject - string
+ message - string
+attachments
+ attachment count - 4 bytes
+ [for each attachment]
+  filename - string
+  type - string (one of file, folder, or voice)
+  has saved - 1 byte
+  property count - 4 bytes
+  [for each property]
+   property name - string
+   property value - string
+  content length - 4 bytes
+ [for each attachment]
+  content - byte[], not prefixed with length
+  
+  
+This makes it easy to discard attachments for a message if too much space is being used, but without losing any other data. All that has to be done is the file truncated right before the section that contains the attachment bytes. The OpenGroove client will show messages with attachments but no attachment data as having it's attachment data cleared. Typically, outbound messages will have their attachment data cleared in the local store when saving, although the user can change this via a setting.
+
+When an outbound message is being composed, it's information is stored in a temporary folder (typically created under the system's temporary folder location, not in a folder in the opengroove appdata folder). The header and body aren't generated until when the message is actually sent, but the attachments are copied from their locations on disk (upon adding them), into the temporary folder. When a voice attachment is recorded, it is similarly copied to the temporary folder. When a folder is added, it's contents are bundled into a .zip file, and this is put into the temporary folder. When the user clicks "send" on the message, an outbound message is created...
+
 
 
 
@@ -7,6 +46,8 @@ Ideas for sequence of order:
 
 header
  sent date
+ sender
+ read [always false for transferred messages]
  recipients
  in reply to [empty if not in reply]
  properties
@@ -19,12 +60,12 @@ attachments
  [for each attachment]
   filename
   type - file, folder, voice
-  hascontents [always true for transferred messages]
+  hascontent [always true for transferred messages]
   hassaved [always false for transferred messages]
   properties
   content length
  [for each attachment]
-  content [empty if hascontents is empty] 
+  content [empty if hascontent is false] 
 
  
  
