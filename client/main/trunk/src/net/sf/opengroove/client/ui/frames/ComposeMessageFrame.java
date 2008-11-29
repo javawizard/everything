@@ -126,7 +126,13 @@ public class ComposeMessageFrame extends javax.swing.JFrame
                     BoxLayout messageTopPanelLayout = new BoxLayout(
                         messageTopPanel,
                         javax.swing.BoxLayout.X_AXIS);
-                    rootPanel.add(messageTopPanel, "1, 2");
+                    rootPanel
+                        .add(
+                            new JScrollPane(
+                                messageTopPanel,
+                                JScrollPane.VERTICAL_SCROLLBAR_NEVER,
+                                JScrollPane.HORIZONTAL_SCROLLBAR_ALWAYS),
+                            "1, 2");
                     messageTopPanel
                         .setLayout(messageTopPanelLayout);
                 }
@@ -137,10 +143,12 @@ public class ComposeMessageFrame extends javax.swing.JFrame
                     rootPanel.add(new JScrollPane(
                         messageArea), "0, 3, 1, 3");
                     for (Action action : messageArea
-                        .getEditorKit().getActions())
+                        .getActions())
                     {
-                        messageTopPanel.add(new JButton(
-                            action));
+                        JButton actionButton = new JButton(
+                            action);
+                        actionButton.setFocusable(false);
+                        messageTopPanel.add(actionButton);
                     }
                     messageTopPanel.add(Box
                         .createHorizontalGlue());
