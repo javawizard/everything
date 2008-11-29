@@ -258,4 +258,11 @@ public interface LocalUser extends ProxyObject
     @Search(listProperty = "inboundMessages", searchProperty = "target", exact = true, anywhere = false)
     public InboundMessage[] getInboundMessagesByFixedTarget(
         String fixedPath);
+    
+    @Property
+    @ListType(UserMessage.class)
+    public StoredList<UserMessage> getUserMessages();
+    
+    @Constructor
+    public UserMessage createUserMessage();
 }

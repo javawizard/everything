@@ -105,6 +105,8 @@ public class Storage
             outboundMessageStore, "encoded");
         outboundMessageEncryptedStore = iItem(
             outboundMessageStore, "encrypted");
+        messageAttachmentStore = iItem(tbase,
+            "messageattachments");
     }
     
     private static final Hashtable<String, Storage> singletons = new Hashtable<String, Storage>();
@@ -163,6 +165,18 @@ public class Storage
     private File outboundMessageEncodedStore;
     
     private File outboundMessageEncryptedStore;
+    /**
+     * The message attachment store. For every user message on this computer,
+     * there is a folder under here, who's name is the message's id, but
+     * url-encoded, which has one file under it for each attachment present on
+     * the message.
+     */
+    private File messageAttachmentStore;
+    
+    public File getMessageAttachmentStore()
+    {
+        return messageAttachmentStore;
+    }
     
     public File getHelpStore()
     {
