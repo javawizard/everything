@@ -1,6 +1,7 @@
 package net.sf.opengroove.es;
 
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.ServerSocket;
 import java.net.Socket;
@@ -41,6 +42,11 @@ public class TelnetTest03
             console.setPos(1, 1);
             console.write("Hello.");
             InputStream in = socket.getInputStream();
+            int read;
+            while ((read = in.read()) != -1)
+            {
+                System.out.println("" + read);
+            }
             socket.close();
             ss.close();
             System.exit(0);

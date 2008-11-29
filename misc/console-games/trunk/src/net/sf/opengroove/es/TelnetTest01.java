@@ -15,7 +15,7 @@ public class TelnetTest01
      */
     public static void main(String[] args) throws Throwable
     {
-        ServerSocket ss = new ServerSocket(36574);
+        ServerSocket ss = new ServerSocket(45678);
         while (true)
         {
             final Socket socket = ss.accept();
