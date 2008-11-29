@@ -5,17 +5,21 @@ import com.jidesoft.swing.JideButton;
 import info.clearthought.layout.TableLayout;
 import java.awt.BorderLayout;
 import java.awt.FlowLayout;
+
+import javax.swing.Action;
+import javax.swing.Box;
 import javax.swing.JScrollPane;
 import javax.swing.BoxLayout;
 import javax.swing.JButton;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
-import javax.swing.JTextArea;
+import javax.swing.JEditorPane;
 import javax.swing.JTextField;
 
 import javax.swing.WindowConstants;
 import javax.swing.SwingUtilities;
 import javax.swing.border.EmptyBorder;
+import javax.swing.text.html.HTMLEditorKit;
 
 /**
  * This code was edited or generated using CloudGarden's Jigloo SWT/Swing GUI
@@ -35,6 +39,7 @@ public class ComposeMessageFrame extends javax.swing.JFrame
     private JPanel messageTopPanel;
     private JLabel jLabel4;
     private JLabel jLabel5;
+    private JScrollPane jScrollPane1;
     private JPanel attachmentsPanel;
     private JButton cancelButton;
     private JButton saveButton;
@@ -47,7 +52,7 @@ public class ComposeMessageFrame extends javax.swing.JFrame
     private JPanel jPanel2;
     private JPanel recipientsPanel;
     private JPanel jPanel1;
-    private JTextArea messageArea;
+    private JEditorPane messageArea;
     private JTextField subjectField;
     private JLabel jLabel1;
     
@@ -82,7 +87,16 @@ public class ComposeMessageFrame extends javax.swing.JFrame
                 rootPanel = new JPanel();
                 rootPanel.setBorder(new EmptyBorder(5, 5,
                     5, 5));
-                TableLayout rootPanelLayout = new TableLayout(new double[][] {{TableLayout.PREFERRED, TableLayout.FILL}, {TableLayout.PREFERRED, TableLayout.PREFERRED, TableLayout.PREFERRED, TableLayout.FILL, TableLayout.PREFERRED, 0.33, TableLayout.PREFERRED}});
+                TableLayout rootPanelLayout = new TableLayout(
+                    new double[][] {
+                        { TableLayout.PREFERRED,
+                            TableLayout.FILL },
+                        { TableLayout.PREFERRED,
+                            TableLayout.PREFERRED,
+                            TableLayout.PREFERRED,
+                            TableLayout.FILL,
+                            TableLayout.PREFERRED, 0.33,
+                            TableLayout.PREFERRED } });
                 rootPanelLayout.setHGap(5);
                 rootPanelLayout.setVGap(5);
                 getContentPane().add(rootPanel,
@@ -117,9 +131,19 @@ public class ComposeMessageFrame extends javax.swing.JFrame
                         .setLayout(messageTopPanelLayout);
                 }
                 {
-                    messageArea = new JTextArea();
+                    messageArea = new JEditorPane();
+                    messageArea
+                        .setEditorKit(new HTMLEditorKit());
                     rootPanel.add(new JScrollPane(
                         messageArea), "0, 3, 1, 3");
+                    for (Action action : messageArea
+                        .getEditorKit().getActions())
+                    {
+                        messageTopPanel.add(new JButton(
+                            action));
+                    }
+                    messageTopPanel.add(Box
+                        .createHorizontalGlue());
                 }
                 {
                     jPanel1 = new JPanel();
@@ -163,37 +187,56 @@ public class ComposeMessageFrame extends javax.swing.JFrame
                     {
                         jLabel6 = new JLabel();
                         jPanel2.add(jLabel6);
-                        jLabel6.setMaximumSize(new java.awt.Dimension(100000, 100000));
+                        jLabel6
+                            .setMaximumSize(new java.awt.Dimension(
+                                100000, 100000));
                     }
                     {
                         addFileButton = new JideButton();
                         addFileButton
                             .setButtonStyle(JideButton.HYPERLINK_STYLE);
-                        addFileButton.setAlwaysShowHyperlink(true);
+                        addFileButton
+                            .setAlwaysShowHyperlink(true);
                         jPanel2.add(addFileButton);
                         addFileButton.setText("Add file");
-                        addFileButton.setForeground(new java.awt.Color(0,0,255));
-                        addFileButton.setFont(new java.awt.Font("Dialog",0,12));
+                        addFileButton
+                            .setForeground(new java.awt.Color(
+                                0, 0, 255));
+                        addFileButton
+                            .setFont(new java.awt.Font(
+                                "Dialog", 0, 12));
                     }
                     {
                         addFolderButton = new JideButton();
                         jPanel2.add(addFolderButton);
-                        addFolderButton.setText("Add folder");
-                        addFolderButton.setForeground(new java.awt.Color(0,0,255));
-                        addFolderButton.setFont(new java.awt.Font("Dialog",0,12));
-                        addFolderButton.setAlwaysShowHyperlink(true);
+                        addFolderButton
+                            .setText("Add folder");
+                        addFolderButton
+                            .setForeground(new java.awt.Color(
+                                0, 0, 255));
+                        addFolderButton
+                            .setFont(new java.awt.Font(
+                                "Dialog", 0, 12));
+                        addFolderButton
+                            .setAlwaysShowHyperlink(true);
                         addFolderButton.setButtonStyle(3);
                     }
                 }
                 {
                     buttonPanel = new JPanel();
-                    BoxLayout buttonPanelLayout = new BoxLayout(buttonPanel, javax.swing.BoxLayout.X_AXIS);
-                    rootPanel.add(buttonPanel, "0, 6, 1, 6");
-                    buttonPanel.setLayout(buttonPanelLayout);
+                    BoxLayout buttonPanelLayout = new BoxLayout(
+                        buttonPanel,
+                        javax.swing.BoxLayout.X_AXIS);
+                    rootPanel
+                        .add(buttonPanel, "0, 6, 1, 6");
+                    buttonPanel
+                        .setLayout(buttonPanelLayout);
                     {
                         jLabel7 = new JLabel();
                         buttonPanel.add(jLabel7);
-                        jLabel7.setMaximumSize(new java.awt.Dimension(100000, 100000));
+                        jLabel7
+                            .setMaximumSize(new java.awt.Dimension(
+                                100000, 100000));
                     }
                     {
                         sendButton = new JButton();
@@ -212,11 +255,22 @@ public class ComposeMessageFrame extends javax.swing.JFrame
                     }
                 }
                 {
-                    attachmentsPanel = new JPanel();
-                    BoxLayout attachmentsPanelLayout = new BoxLayout(attachmentsPanel, javax.swing.BoxLayout.Y_AXIS);
-                    rootPanel.add(attachmentsPanel, "0, 5, 1, 5");
-                    attachmentsPanel.setLayout(attachmentsPanelLayout);
-                    attachmentsPanel.setBackground(new java.awt.Color(255,255,255));
+                    jScrollPane1 = new JScrollPane();
+                    rootPanel.add(jScrollPane1,
+                        "0, 5, 1, 5");
+                    {
+                        attachmentsPanel = new JPanel();
+                        jScrollPane1
+                            .setViewportView(attachmentsPanel);
+                        BoxLayout attachmentsPanelLayout = new BoxLayout(
+                            attachmentsPanel,
+                            javax.swing.BoxLayout.Y_AXIS);
+                        attachmentsPanel
+                            .setLayout(attachmentsPanelLayout);
+                        attachmentsPanel
+                            .setBackground(new java.awt.Color(
+                                255, 255, 255));
+                    }
                 }
             }
             pack();
