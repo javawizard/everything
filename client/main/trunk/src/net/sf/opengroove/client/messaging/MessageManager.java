@@ -124,6 +124,7 @@ public class MessageManager implements MessageDeliverer,
                     {
                         try
                         {
+                            ;
                             OutboundMessage message = message2;
                             File messagePlaintextFile = new File(storage
                                     .getOutboundMessagePlaintextStore(),

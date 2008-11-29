@@ -178,6 +178,44 @@ public class Storage
         return messageAttachmentStore;
     }
     
+    /**
+     * Gets the folder that stores message attachments for the specified message
+     * id. The folder will be created if it doesn't exist.
+     * 
+     * @param messageId
+     * @return
+     */
+    public File getMessageAttachmentFolder(String messageId)
+    {
+        File folder = new File(getMessageAttachmentStore(),
+            URLEncoder.encode(messageId));
+        if (!folder.exists())
+            folder.mkdirs();
+        if (!folder.isDirectory())
+            throw new RuntimeException(
+                "folder already exists as a file, "
+                    + messageId);
+        return folder;
+    }
+    
+    /**
+     * Returns a file where the specified attachment can be stored for the
+     * specified message. If the folder for storing the file does not exist, it
+     * is created. The file itself, however, is not created if it does not
+     * exist.
+     * 
+     * @param messageId
+     * @param attachmentName
+     * @return
+     */
+    public File getMessageAttachmentFile(String messageId,
+        String attachmentName)
+    {
+        return new File(
+            getMessageAttachmentFolder(messageId),
+            URLEncoder.encode(attachmentName));
+    }
+    
     public File getHelpStore()
     {
         return helpStore;
