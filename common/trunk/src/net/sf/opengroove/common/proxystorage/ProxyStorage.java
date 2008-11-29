@@ -40,8 +40,8 @@ import net.sf.opengroove.common.utils.StringUtils;
  * The ProxyStorage class is a class used for storing simple java beans to disk,
  * in such a way that updating one instance of a particular persistant bean
  * causes all other instances within the JVM to immediately reflect the new
- * state. ProxyStorage is intended to be a replacement for Java Persistence API,
- * when JPA is just too heavyweight.
+ * state. ProxyStorage is intended to be a (very simplified) replacement for
+ * Java Persistence API, when JPA is just too heavyweight.
  * 
  * Each ProxyStorage instance has a root object. The root object is the single
  * object to be persisted. It should have various fields that other objects can
@@ -50,11 +50,23 @@ import net.sf.opengroove.common.utils.StringUtils;
  * When an object is created, it is entered into the proxy storage system with
  * no parent. It can then be assigned to fields of other persistent objects as
  * necessary. Objects that are in the database but which do not have the storage
- * root as an ancestor are removed upon calling the purge method of
- * ProxyStorage. The purge method generally should only be called right after
+ * root as an ancestor are removed upon calling the vacuum method of
+ * ProxyStorage. The vacuum method generally should only be called right after
  * the proxy storage is created but before it goes into use, as it will remove
  * any objects that are not currently in the tree of objects, which could
  * include a newly-created object that hasn't been assigned to the tree yet.
+ * 
+ * Although a file object is passed to the proxy storage instance, the
+ * underlying storage is an embedded relational database. In the future, methods
+ * that take a java.sql.Connection instead of a file will be added.
+ * 
+ * ProxyStorage requires the H2 embedded database be included on the classpath.
+ * You can perform a google search for "h2 database" to find it. All you have to
+ * do is download H2 database and make sure h2.jar is on your classpath.
+ * 
+ * ProxyStorage's performance isn't anywhere near as good as JPA's, so it
+ * generally should only be used in programs such as applications, where only
+ * one user at a time will be using it.
  * 
  * @author Alexander Boyd
  * 
@@ -1439,14 +1451,14 @@ public class ProxyStorage<E>
                         + " where "
                         + searchQuery
                         + ") order by index asc";
-//                    System.out
-//                        .println("performing compound search with sql: "
-//                            + searchSql);
+                    // System.out
+                    // .println("performing compound search with sql: "
+                    // + searchSql);
                     PreparedStatement st = connection
                         .prepareStatement(searchSql);
                     st.setLong(1, listId);
-//                    System.out.println("parameter 1 = "
-//                        + listId);
+                    // System.out.println("parameter 1 = "
+                    // + listId);
                     for (int i = 0; i < searchProperties.length; i++)
                     {
                         Object searchValue = args[i];
@@ -1460,9 +1472,9 @@ public class ProxyStorage<E>
                                     : "");
                         }
                         st.setObject(i + 2, searchValue);
-//                        System.out
-//                            .println("parameter " + (i + 2)
-//                                + " = " + searchValue);
+                        // System.out
+                        // .println("parameter " + (i + 2)
+                        // + " = " + searchValue);
                     }
                     ResultSet rs = st.executeQuery();
                     ArrayList<Long> resultIds = new ArrayList<Long>();
