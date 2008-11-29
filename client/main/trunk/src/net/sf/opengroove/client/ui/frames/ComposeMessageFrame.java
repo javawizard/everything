@@ -19,6 +19,8 @@ import javax.swing.JTextField;
 import javax.swing.WindowConstants;
 import javax.swing.SwingUtilities;
 import javax.swing.border.EmptyBorder;
+import javax.swing.text.StyledEditorKit;
+import javax.swing.text.StyledEditorKit.BoldAction;
 import javax.swing.text.html.HTMLEditorKit;
 
 /**
@@ -138,18 +140,10 @@ public class ComposeMessageFrame extends javax.swing.JFrame
                 }
                 {
                     messageArea = new JEditorPane();
-                    messageArea
-                        .setEditorKit(new HTMLEditorKit());
+                    HTMLEditorKit messageKit = new HTMLEditorKit();
+                    messageArea.setEditorKit(messageKit);
                     rootPanel.add(new JScrollPane(
                         messageArea), "0, 3, 1, 3");
-                    for (Action action : messageArea
-                        .getActions())
-                    {
-                        JButton actionButton = new JButton(
-                            action);
-                        actionButton.setFocusable(false);
-                        messageTopPanel.add(actionButton);
-                    }
                     messageTopPanel.add(Box
                         .createHorizontalGlue());
                 }
