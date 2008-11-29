@@ -4,6 +4,7 @@ import com.jidesoft.swing.JideButton;
 
 import info.clearthought.layout.TableLayout;
 import java.awt.BorderLayout;
+import java.awt.Color;
 import java.awt.FlowLayout;
 
 import javax.swing.Action;
@@ -57,6 +58,7 @@ public class ComposeMessageFrame extends javax.swing.JFrame
     private JEditorPane messageArea;
     private JTextField subjectField;
     private JLabel jLabel1;
+    private JideButton addRecipientButton;
     
     /**
      * Auto-generated main method to display this JFrame
@@ -87,8 +89,8 @@ public class ComposeMessageFrame extends javax.swing.JFrame
             setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
             {
                 rootPanel = new JPanel();
-                rootPanel.setBorder(new EmptyBorder(5, 5,
-                    5, 5));
+                rootPanel.setBorder(new EmptyBorder(10, 10,
+                    10, 10));
                 TableLayout rootPanelLayout = new TableLayout(
                     new double[][] {
                         { TableLayout.PREFERRED,
@@ -128,13 +130,9 @@ public class ComposeMessageFrame extends javax.swing.JFrame
                     BoxLayout messageTopPanelLayout = new BoxLayout(
                         messageTopPanel,
                         javax.swing.BoxLayout.X_AXIS);
-                    rootPanel
-                        .add(
-                            new JScrollPane(
-                                messageTopPanel,
-                                JScrollPane.VERTICAL_SCROLLBAR_NEVER,
-                                JScrollPane.HORIZONTAL_SCROLLBAR_ALWAYS),
-                            "1, 2");
+                    rootPanel.add(
+
+                    messageTopPanel, "1, 2");
                     messageTopPanel
                         .setLayout(messageTopPanelLayout);
                 }
@@ -155,15 +153,30 @@ public class ComposeMessageFrame extends javax.swing.JFrame
                     {
                         recipientsPanel = new JPanel();
                         FlowLayout recipientsPanelLayout = new FlowLayout();
-                        
                         recipientsPanelLayout
                             .setAlignment(FlowLayout.LEFT);
-                        recipientsPanelLayout.setHgap(10);
+                        recipientsPanelLayout.setHgap(5);
                         recipientsPanelLayout.setVgap(1);
                         jPanel1.add(recipientsPanel,
                             BorderLayout.CENTER);
                         recipientsPanel
                             .setLayout(recipientsPanelLayout);
+                    }
+                    {
+                        addRecipientButton = new JideButton(
+                            "Add recipient");
+                        addRecipientButton
+                            .setButtonStyle(3);
+                        addRecipientButton
+                            .setAlwaysShowHyperlink(true);
+                        addRecipientButton
+                            .setForeground(new Color(0, 0,
+                                255));
+                        addRecipientButton
+                            .setFont(new java.awt.Font(
+                                "Dialog", 0, 12));
+                        jPanel1.add(addRecipientButton,
+                            BorderLayout.EAST);
                     }
                 }
                 {
