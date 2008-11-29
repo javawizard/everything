@@ -21,6 +21,7 @@ public class Test052
         JButton b1 = new JButton("Button 1 (flashing)");
         JButton b2 = new JButton("Button 2 (not flashing)");
         JPanel b1p = new JPanel(new BorderLayout());
+        b1p.setPreferredSize(new Dimension(0, 0));
         JPanel b2p = new JPanel(new BorderLayout());
         b1p.add(b1);
         b2p.add(b2);
@@ -31,19 +32,23 @@ public class Test052
         while (true)
         {
             Thread.sleep(1000);
-            System.out.println("hiding");
-            b1p.setPreferredSize(new Dimension(0, 0));
-            frame.invalidate();
-            frame.validate();
-            frame.repaint();
-            b1p.invalidate();
-            Thread.sleep(1000);
             System.out.println("showing");
             b1p.setPreferredSize(null);
+            b1p.invalidate();
+            b1p.validate();
+            b1p.repaint();
             frame.invalidate();
             frame.validate();
             frame.repaint();
+            Thread.sleep(1000);
+            System.out.println("hiding");
+            b1p.setPreferredSize(new Dimension(0, 0));
             b1p.invalidate();
+            b1p.validate();
+            b1p.repaint();
+            frame.invalidate();
+            frame.validate();
+            frame.repaint();
         }
     }
     
