@@ -25,14 +25,20 @@ import javax.swing.text.StyledEditorKit.BoldAction;
 import javax.swing.text.html.HTMLEditorKit;
 
 /**
- * This code was edited or generated using CloudGarden's Jigloo SWT/Swing GUI
- * Builder, which is free for non-commercial use. If Jigloo is being used
- * commercially (ie, by a corporation, company or business for any purpose
- * whatever) then you should purchase a license for each developer using Jigloo.
- * Please visit www.cloudgarden.com for details. Use of Jigloo implies
- * acceptance of these licensing terms. A COMMERCIAL LICENSE HAS NOT BEEN
- * PURCHASED FOR THIS MACHINE, SO JIGLOO OR THIS CODE CANNOT BE USED LEGALLY FOR
- * ANY CORPORATE OR COMMERCIAL PURPOSE.
+ * This frame shows a window that allows a user to compose a message. It handles
+ * loading and saving it's contents from and to a UserMessage object and it's
+ * attachment folders. In fact, it has to have a UserMessage object passed in
+ * when it's created, and it will use the attachment folder corresponding to
+ * that message when adding attachments.
+ * 
+ * The only button who's action is handled by this frame is the "save as draft"
+ * button, which simply discards this frame.
+ * 
+ * The layout of this frame was created using Jigloo. See the license on other
+ * files created with Jigloo for more information.
+ * 
+ * @author Alexander Boyd
+ * 
  */
 public class ComposeMessageFrame extends javax.swing.JFrame
 {
