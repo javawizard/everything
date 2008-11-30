@@ -130,7 +130,7 @@ public class MessageHistoryFrame extends javax.swing.JFrame
                                 .setText("Search: ");
                         }
                         {
-                            searchField = new JTextField(12);
+                            searchField = new JTextField(15);
                             searchField
                                 .setMaximumSize(searchField
                                     .getPreferredSize());
