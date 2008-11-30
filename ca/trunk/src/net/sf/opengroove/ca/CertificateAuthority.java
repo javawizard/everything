@@ -1,27 +1,12 @@
 package net.sf.opengroove.ca;
 
 import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
-import java.math.BigInteger;
-import java.security.KeyPair;
-import java.security.KeyPairGenerator;
-import java.security.KeyStore;
 import java.security.PrivateKey;
-import java.security.cert.Certificate;
 import java.security.cert.X509Certificate;
-import java.security.interfaces.RSAPrivateKey;
-import java.security.interfaces.RSAPublicKey;
-import java.util.Date;
-import java.util.concurrent.TimeUnit;
-
-import javax.security.auth.x500.X500Principal;
 
 import net.sf.opengroove.common.security.CertPair;
 import net.sf.opengroove.common.security.CertificateUtils;
 import net.sf.opengroove.common.utils.StringUtils;
-
-import org.bouncycastle.x509.X509V3CertificateGenerator;
 
 /**
  * A class for signing certificates with the OpenGroove CA Certificate. For
