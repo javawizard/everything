@@ -24,6 +24,9 @@ import javax.swing.text.StyledEditorKit;
 import javax.swing.text.StyledEditorKit.BoldAction;
 import javax.swing.text.html.HTMLEditorKit;
 
+import net.sf.opengroove.client.storage.Storage;
+import net.sf.opengroove.client.storage.UserMessage;
+
 /**
  * This frame shows a window that allows a user to compose a message. It handles
  * loading and saving it's contents from and to a UserMessage object and it's
@@ -75,14 +78,22 @@ public class ComposeMessageFrame extends javax.swing.JFrame
         {
             public void run()
             {
-                ComposeMessageFrame inst = new ComposeMessageFrame();
+                ComposeMessageFrame inst = new ComposeMessageFrame(
+                    null, null);
                 inst.setLocationRelativeTo(null);
                 inst.setVisible(true);
             }
         });
     }
     
-    public ComposeMessageFrame()
+    /**
+     * Creates a new ComposeMessageFrame. If the specified storage or user
+     * message is null, then no initialization is performed. In general, passing
+     * null arguments should only be used for debugging the layout of the frame.
+     * 
+     * 
+     */
+    public ComposeMessageFrame(Storage storage, UserMessage message)
     {
         super();
         initGUI();
