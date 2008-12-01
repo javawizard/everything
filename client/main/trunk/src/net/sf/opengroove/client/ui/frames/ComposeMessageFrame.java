@@ -28,6 +28,18 @@ import net.sf.opengroove.client.storage.Storage;
 import net.sf.opengroove.client.storage.UserMessage;
 
 /**
+ * This code was edited or generated using CloudGarden's Jigloo
+ * SWT/Swing GUI Builder, which is free for non-commercial
+ * use. If Jigloo is being used commercially (ie, by a corporation,
+ * company or business for any purpose whatever) then you
+ * should purchase a license for each developer using Jigloo.
+ * Please visit www.cloudgarden.com for details.
+ * Use of Jigloo implies acceptance of these licensing terms.
+ * A COMMERCIAL LICENSE HAS NOT BEEN PURCHASED FOR
+ * THIS MACHINE, SO JIGLOO OR THIS CODE CANNOT BE USED
+ * LEGALLY FOR ANY CORPORATE OR COMMERCIAL PURPOSE.
+ */
+/**
  * This frame shows a window that allows a user to compose a message. It handles
  * loading and saving it's contents from and to a UserMessage object and it's
  * attachment folders. In fact, it has to have a UserMessage object passed in
@@ -51,6 +63,8 @@ public class ComposeMessageFrame extends javax.swing.JFrame
     private JPanel messageTopPanel;
     private JLabel jLabel4;
     private JLabel jLabel5;
+    private JPanel jPanel3;
+    private JLabel jLabel8;
     private JScrollPane jScrollPane1;
     private JPanel attachmentsPanel;
     private JButton cancelButton;
@@ -66,6 +80,10 @@ public class ComposeMessageFrame extends javax.swing.JFrame
     private JPanel jPanel1;
     private JEditorPane messageArea;
     private JTextField subjectField;
+    private JLabel attachmentAreaHintLabel;
+    private JPanel attachmentUpperPanel;
+    private JPanel attachmentScrollingPanel;
+    private JLabel inReplyToLabel;
     private JLabel jLabel1;
     private JideButton addRecipientButton;
     
@@ -93,7 +111,8 @@ public class ComposeMessageFrame extends javax.swing.JFrame
      * 
      * 
      */
-    public ComposeMessageFrame(Storage storage, UserMessage message)
+    public ComposeMessageFrame(Storage storage,
+        UserMessage message)
     {
         super();
         initGUI();
@@ -113,6 +132,7 @@ public class ComposeMessageFrame extends javax.swing.JFrame
                         { TableLayout.PREFERRED,
                             TableLayout.FILL },
                         { TableLayout.PREFERRED,
+                            TableLayout.PREFERRED,
                             TableLayout.PREFERRED,
                             TableLayout.PREFERRED,
                             TableLayout.FILL,
@@ -139,7 +159,7 @@ public class ComposeMessageFrame extends javax.swing.JFrame
                 }
                 {
                     jLabel3 = new JLabel();
-                    rootPanel.add(jLabel3, "0, 2");
+                    rootPanel.add(jLabel3, "0, 3");
                     jLabel3.setText("Message: ");
                 }
                 {
@@ -147,9 +167,7 @@ public class ComposeMessageFrame extends javax.swing.JFrame
                     BoxLayout messageTopPanelLayout = new BoxLayout(
                         messageTopPanel,
                         javax.swing.BoxLayout.X_AXIS);
-                    rootPanel.add(
-
-                    messageTopPanel, "1, 2");
+                    rootPanel.add(messageTopPanel, "1, 3");
                     messageTopPanel
                         .setLayout(messageTopPanelLayout);
                 }
@@ -158,7 +176,7 @@ public class ComposeMessageFrame extends javax.swing.JFrame
                     HTMLEditorKit messageKit = new HTMLEditorKit();
                     messageArea.setEditorKit(messageKit);
                     rootPanel.add(new JScrollPane(
-                        messageArea), "0, 3, 1, 3");
+                        messageArea), "0, 4, 1, 4");
                     messageTopPanel.add(Box
                         .createHorizontalGlue());
                 }
@@ -198,7 +216,7 @@ public class ComposeMessageFrame extends javax.swing.JFrame
                 }
                 {
                     jLabel4 = new JLabel();
-                    rootPanel.add(jLabel4, "0, 4");
+                    rootPanel.add(jLabel4, "0, 5");
                     jLabel4.setText("Attachments: ");
                 }
                 {
@@ -206,7 +224,7 @@ public class ComposeMessageFrame extends javax.swing.JFrame
                     BoxLayout jPanel2Layout = new BoxLayout(
                         jPanel2,
                         javax.swing.BoxLayout.X_AXIS);
-                    rootPanel.add(jPanel2, "1, 4");
+                    rootPanel.add(jPanel2, "1, 5");
                     jPanel2.setLayout(jPanel2Layout);
                     {
                         jLabel5 = new JLabel();
@@ -260,7 +278,7 @@ public class ComposeMessageFrame extends javax.swing.JFrame
                         buttonPanel,
                         javax.swing.BoxLayout.X_AXIS);
                     rootPanel
-                        .add(buttonPanel, "0, 6, 1, 6");
+                        .add(buttonPanel, "0, 7, 1, 7");
                     buttonPanel
                         .setLayout(buttonPanelLayout);
                     {
@@ -289,19 +307,63 @@ public class ComposeMessageFrame extends javax.swing.JFrame
                 {
                     jScrollPane1 = new JScrollPane();
                     rootPanel.add(jScrollPane1,
-                        "0, 5, 1, 5");
+                        "0, 6, 1, 6");
                     {
-                        attachmentsPanel = new JPanel();
+                        attachmentScrollingPanel = new JPanel();
+                        BorderLayout jPanel4Layout = new BorderLayout();
+                        attachmentScrollingPanel
+                            .setLayout(jPanel4Layout);
                         jScrollPane1
-                            .setViewportView(attachmentsPanel);
-                        BoxLayout attachmentsPanelLayout = new BoxLayout(
-                            attachmentsPanel,
-                            javax.swing.BoxLayout.Y_AXIS);
-                        attachmentsPanel
-                            .setLayout(attachmentsPanelLayout);
-                        attachmentsPanel
+                            .setViewportView(attachmentScrollingPanel);
+                        attachmentScrollingPanel
                             .setBackground(new java.awt.Color(
                                 255, 255, 255));
+                        {
+                            attachmentUpperPanel = new JPanel();
+                            BorderLayout jPanel5Layout = new BorderLayout();
+                            attachmentUpperPanel
+                                .setLayout(jPanel5Layout);
+                            attachmentScrollingPanel.add(
+                                attachmentUpperPanel,
+                                BorderLayout.NORTH);
+                            {
+                                attachmentsPanel = new JPanel();
+                                attachmentUpperPanel
+                                    .add(attachmentsPanel);
+                                BoxLayout attachmentsPanelLayout = new BoxLayout(
+                                    attachmentsPanel,
+                                    javax.swing.BoxLayout.Y_AXIS);
+                                attachmentsPanel
+                                    .setLayout(attachmentsPanelLayout);
+                            }
+                            {
+                                attachmentAreaHintLabel = new JLabel();
+                                attachmentUpperPanel
+                                    .add(
+                                        attachmentAreaHintLabel,
+                                        BorderLayout.SOUTH);
+                                attachmentAreaHintLabel
+                                    .setText("Drag files or folders here, or use the above links.");
+                            }
+                        }
+                    }
+                }
+                {
+                    jLabel8 = new JLabel();
+                    rootPanel.add(jLabel8, "0, 2");
+                    jLabel8.setText("In reply to: ");
+                }
+                {
+                    jPanel3 = new JPanel();
+                    BorderLayout jPanel3Layout = new BorderLayout();
+                    rootPanel.add(jPanel3, "1, 2");
+                    jPanel3.setLayout(jPanel3Layout);
+                    {
+                        inReplyToLabel = new JLabel();
+                        jPanel3.add(inReplyToLabel,
+                            BorderLayout.CENTER);
+                        inReplyToLabel
+                            .setText("Not in reply");
                     }
                 }
             }

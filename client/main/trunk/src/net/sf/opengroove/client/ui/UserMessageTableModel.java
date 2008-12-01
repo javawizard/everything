@@ -3,7 +3,12 @@ package net.sf.opengroove.client.ui;
 import javax.swing.table.AbstractTableModel;
 
 import net.sf.opengroove.client.storage.LocalUser;
+import net.sf.opengroove.client.storage.Storage;
 import net.sf.opengroove.client.storage.UserMessage;
+import net.sf.opengroove.client.storage.UserMessageAttachment;
+import net.sf.opengroove.client.storage.UserMessageRecipient;
+import net.sf.opengroove.common.utils.StringUtils;
+import net.sf.opengroove.common.utils.StringUtils.ToString;
 
 public class UserMessageTableModel extends
     AbstractTableModel
@@ -17,11 +22,14 @@ public class UserMessageTableModel extends
     private static final int COL_SUBJECT = 6;
     private static final int COL_IN_REPLY_TO = 7;
     
+    private Storage storage;
+    
     private LocalUser user;
     
-    public UserMessageTableModel(LocalUser user)
+    public UserMessageTableModel(Storage storage)
     {
-        this.user = user;
+        this.storage = storage;
+        this.user = storage.getLocalUser();
     }
     
     public Class<?> getColumnClass(int i)
@@ -79,7 +87,7 @@ public class UserMessageTableModel extends
         return user.getUserMessages().size();
     }
     
-    public Object getValueAt(int rowIndex, int columnIndex)
+    public Object getValueAt(int rowIndex, int column)
     {
         UserMessage message = user.getUserMessages().get(
             rowIndex);
@@ -93,6 +101,50 @@ public class UserMessageTableModel extends
             fireTableDataChanged();
             return null;
         }
+        switch (column)
+        {
+            case COL_TYPE:
+                return (message.isOutbound() ? (message
+                    .isDraft() ? "Draft" : "Sent")
+                    : (message.isRead() ? "Read" : "Unread"));
+            case COL_FROM:
+                return message.getSender();
+            case COL_TO:
+                return StringUtils.delimited(message
+                    .getRecipients().isolate().toArray(
+                        new UserMessageRecipient[0]),
+                    new ToString<UserMessageRecipient>()
+                    {
+                        
+                        public String toString(
+                            UserMessageRecipient object)
+                        {
+                            return object.getUserid();
+                        }
+                    }, ", ");
+            case COL_SUBJECT:
+                return message.getSubject();
+            case COL_IN_REPLY_TO:
+                return message.getReplySubject();
+            case COL_ATTACHMENTS:
+                return message.getAttachments().size();
+            case COL_SIZE:
+                return computeAttachmentSize(message);
+        }
+        return null;
+    }
+    
+    private int computeAttachmentSize(UserMessage message)
+    {
+        UserMessageAttachment[] attachments = message
+            .getAttachments().isolate().toArray(
+                new UserMessageAttachment[0]);
+        int size = 0;
+        for (UserMessageAttachment attachment : attachments)
+        {
+            size += attachment.getSize();
+        }
+        return size;
     }
     
 }
