@@ -263,6 +263,11 @@ public class MessageHistoryFrame extends javax.swing.JFrame
                             clearSearchButton
                                 .setForeground(new java.awt.Color(
                                     0, 0, 255));
+                            clearSearchButton.addActionListener(new ActionListener() {
+                                public void actionPerformed(ActionEvent evt) {
+                                    clearSearchButtonActionPerformed(evt);
+                                }
+                            });
                         }
                     }
                     {
@@ -336,4 +341,9 @@ public class MessageHistoryFrame extends javax.swing.JFrame
         // TODO add your code for searchButton.actionPerformed
     }
     
+    private void clearSearchButtonActionPerformed(ActionEvent evt) {
+        System.out.println("clearSearchButton.actionPerformed, event="+evt);
+        //TODO add your code for clearSearchButton.actionPerformed
+    }
+
 }
