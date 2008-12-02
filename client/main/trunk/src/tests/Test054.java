@@ -1,6 +1,7 @@
 package tests;
 
 import javax.swing.JList;
+import javax.swing.UIManager;
 
 import net.sf.opengroove.client.ui.TestFrame;
 
