@@ -60,21 +60,27 @@ public class Test053
                 {
                     List<File> fileList = (List<File>) transfer
                         .getTransferData(DataFlavor.javaFileListFlavor);
-                    JOptionPane.showMessageDialog(frame,
-                        "<html>You dragged these files to here: <br/><br/>"
-                            + StringUtils.delimited(
-                                fileList
-                                    .toArray(new File[0]),
-                                new ToString<File>()
-                                {
-                                    
-                                    public String toString(
-                                        File object)
-                                    {
-                                        return object
-                                            .getAbsolutePath();
-                                    }
-                                }, "<br/>"));
+                    JOptionPane
+                        .showMessageDialog(
+                            frame,
+                            "<html>The transferable class is: "
+                                + transfer.getClass()
+                                    .getName()
+                                + "<br/>You dragged these files to here: <br/><br/>"
+                                + StringUtils
+                                    .delimited(
+                                        fileList
+                                            .toArray(new File[0]),
+                                        new ToString<File>()
+                                        {
+                                            
+                                            public String toString(
+                                                File object)
+                                            {
+                                                return object
+                                                    .getAbsolutePath();
+                                            }
+                                        }, "<br/>"));
                 }
                 catch (Exception e)
                 {
