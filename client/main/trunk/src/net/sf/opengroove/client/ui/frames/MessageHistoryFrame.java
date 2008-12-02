@@ -17,6 +17,7 @@ import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.JTextField;
+import javax.swing.RowFilter;
 
 import javax.swing.WindowConstants;
 import javax.swing.SwingUtilities;
@@ -60,8 +61,9 @@ public class MessageHistoryFrame extends javax.swing.JFrame
     private Storage storage;
     private LocalUser user;
     private UserMessageTableModel tableModel;
-    private TableRowSorter sorter;
+    private TableRowSorter<UserMessageTableModel> sorter;
     private String currentSearchString = "";
+    private boolean currentExtendedSearch = false;
     
     /**
      * Auto-generated main method to display this JFrame
@@ -268,10 +270,31 @@ public class MessageHistoryFrame extends javax.swing.JFrame
                         contentPanel.add(tableScrollPane,
                             "0, 1");
                         {
-                            if(storage != null)
+                            if (storage != null)
                             {
-                                tableModel = new UserMessageTableModel(storage);
+                                tableModel = new UserMessageTableModel(
+                                    storage);
                                 table.setModel(tableModel);
+                                sorter = new TableRowSorter<UserMessageTableModel>(
+                                    tableModel);
+                                RowFilter<UserMessageTableModel, Integer> rowFilter = new RowFilter<UserMessageTableModel, Integer>()
+                                {
+                                    
+                                    public boolean include(
+                                        javax.swing.RowFilter.Entry<? extends UserMessageTableModel, ? extends Integer> entry)
+                                    {
+                                        return entry
+                                            .getModel()
+                                            .matches(
+                                                entry
+                                                    .getIdentifier(),
+                                                currentSearchString,
+                                                currentExtendedSearch);
+                                    }
+                                };
+                                sorter
+                                    .setRowFilter(rowFilter);
+                                table.setRowSorter(sorter);
                             }
                             table = new JTable();
                             tableScrollPane
