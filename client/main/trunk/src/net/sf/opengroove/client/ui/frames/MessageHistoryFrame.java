@@ -23,7 +23,11 @@ import javax.swing.SwingUtilities;
 import javax.swing.border.EmptyBorder;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableModel;
+import javax.swing.table.TableRowSorter;
 
+import net.sf.opengroove.client.storage.LocalUser;
+import net.sf.opengroove.client.storage.Storage;
+import net.sf.opengroove.client.ui.UserMessageTableModel;
 import net.sf.opengroove.common.ui.ComponentUtils;
 
 /**
@@ -53,6 +57,12 @@ public class MessageHistoryFrame extends javax.swing.JFrame
     private JPanel contentPanel;
     private JButton okButton;
     
+    private Storage storage;
+    private LocalUser user;
+    private UserMessageTableModel tableModel;
+    private TableRowSorter sorter;
+    private String currentSearchString = "";
+    
     /**
      * Auto-generated main method to display this JFrame
      */
@@ -62,16 +72,20 @@ public class MessageHistoryFrame extends javax.swing.JFrame
         {
             public void run()
             {
-                MessageHistoryFrame inst = new MessageHistoryFrame();
+                MessageHistoryFrame inst = new MessageHistoryFrame(
+                    null);
                 inst.setLocationRelativeTo(null);
                 inst.setVisible(true);
             }
         });
     }
     
-    public MessageHistoryFrame()
+    public MessageHistoryFrame(Storage storage)
     {
         super();
+        this.storage = storage;
+        if (storage != null)
+            this.user = storage.getLocalUser();
         initGUI();
     }
     
@@ -254,16 +268,14 @@ public class MessageHistoryFrame extends javax.swing.JFrame
                         contentPanel.add(tableScrollPane,
                             "0, 1");
                         {
-                            TableModel tableModel = new DefaultTableModel(
-                                new String[][] {
-                                    { "One", "Two" },
-                                    { "Three", "Four" } },
-                                new String[] { "Column 1",
-                                    "Column 2" });
+                            if(storage != null)
+                            {
+                                tableModel = new UserMessageTableModel(storage);
+                                table.setModel(tableModel);
+                            }
                             table = new JTable();
                             tableScrollPane
                                 .setViewportView(table);
-                            table.setModel(tableModel);
                         }
                     }
                 }

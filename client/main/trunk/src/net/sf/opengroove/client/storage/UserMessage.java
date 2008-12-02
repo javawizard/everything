@@ -19,6 +19,7 @@ public interface UserMessage
     // date - long
     // read - boolean
     // recipients - stored list
+    // sender - string
     // replyId - string
     // replySubject - string
     // subject - string
@@ -127,6 +128,11 @@ public interface UserMessage
     public String getMessage();
     
     public void setMessage(String message);
+    
+    @Property
+    public String getSender();
+    
+    public void setSender(String sender);
     
     @Property
     @ListType(UserMessageAttachment.class)
