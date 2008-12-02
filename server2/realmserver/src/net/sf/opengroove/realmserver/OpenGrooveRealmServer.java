@@ -1946,10 +1946,10 @@ public class OpenGrooveRealmServer
         Context context = createServerContext(server, "web");
         context.addFilter(new FilterHolder(
             new LoginFilter()), "/*", Context.ALL);
-        context.addServlet(new ServletHolder(
-            new RendererServlet(readFile(new File(
-                "webconfig/layout.properties")))),
-            "/layout/*");
+//        context.addServlet(new ServletHolder(
+//            new RendererServlet(readFile(new File(
+//                "webconfig/layout.properties")))),
+//            "/layout/*");
         context.addServlet(new ServletHolder(
             new AnonLinkImpl()), "/bypass/anonlink");
         context.addServlet(new ServletHolder(
