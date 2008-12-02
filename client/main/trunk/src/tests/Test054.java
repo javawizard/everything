@@ -12,6 +12,7 @@ public class Test054
      */
     public static void main(String[] args)
     {
+         UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
         JList list = new JList(new String[] { "Item 1",
             "Item 2", "Item 3" });
         TestFrame f = new TestFrame();
