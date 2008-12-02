@@ -1,5 +1,7 @@
 package tests;
 
+import java.awt.Color;
+import java.awt.Font;
 import java.awt.datatransfer.DataFlavor;
 import java.awt.datatransfer.Transferable;
 import java.awt.datatransfer.UnsupportedFlavorException;
@@ -11,6 +13,7 @@ import java.util.List;
 
 import javax.swing.JComponent;
 import javax.swing.JLabel;
+import javax.swing.JList;
 import javax.swing.JOptionPane;
 import javax.swing.TransferHandler;
 import javax.swing.TransferHandler.TransferSupport;
@@ -36,12 +39,20 @@ public class Test053
     public static void main(String[] args) throws Exception
     {
         final TestFrame frame = new TestFrame();
-        JLabel to = new JLabel("Drag files here.");
-        JLabel from = new JLabel("Drag this as a file.");
-        frame.add(to);
+        JList from = new JList(
+            new Object[] { "Drag files here, or drag this as a file." });
+        from.setDragEnabled(true);
+        from.setBackground(new Color(0, 0, 0, 0));
         frame.add(from);
         frame.show();
-        TransferHandler toHandler = new TransferHandler()
+        final File testfile = File.createTempFile("prefix",
+            "suffix.txt");
+        FileOutputStream fos = new FileOutputStream(
+            testfile);
+        fos.write("This is some test text".getBytes());
+        fos.flush();
+        fos.close();
+        TransferHandler fromHandler = new TransferHandler()
         {
             
             public boolean canImport(TransferSupport support)
@@ -84,18 +95,6 @@ public class Test053
                 }
                 return true;
             }
-        };
-        to.setTransferHandler(toHandler);
-        final File testfile = File.createTempFile("prefix",
-            "suffix.txt");
-        FileOutputStream fos = new FileOutputStream(
-            testfile);
-        fos.write("This is some test text".getBytes());
-        fos.flush();
-        fos.close();
-        TransferHandler fromHandler = new TransferHandler()
-        {
-            
             protected Transferable createTransferable(
                 JComponent c)
             {
