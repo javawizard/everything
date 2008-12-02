@@ -237,7 +237,7 @@ public class AdminInterface implements EntryPoint
     
     protected void loadUI()
     {
-        Window.setTitle("OGRSAdmin");
+        Window.setTitle("OGRealmServerAdmin Loading");
         removeAll(rootContainer);
         tabs = new TabPanel();
         tabs.setAnimationEnabled(false);
@@ -249,6 +249,7 @@ public class AdminInterface implements EntryPoint
         tabs.selectTab(0);
         rootContainer.add(tabs);
         tabs.setWidth("100%");
+        Window.setTitle("OGRealmServerAdmin");
     }
     
     private void loadPKITab()
