@@ -147,4 +147,29 @@ public class UserMessageTableModel extends
         return size;
     }
     
+    /**
+     * Returns true if the specified row matches the specified search, false
+     * otherwise.
+     * 
+     * @param row
+     *            The index of the row to search
+     * @param criteria
+     *            The criteria to search for
+     * @param extended
+     *            True if this is an extended search, false if it is not. See
+     *            the tooltip for searchMessageCheckbox in MessageHistoryFrame
+     *            for more info (when that checkbox is checked, then searches
+     *            are performed with this variable equal to true).
+     * @return True if the specified row matches the specified search, false
+     *         otherwise.
+     */
+    public boolean matches(int row, String criteria,
+        boolean extended)
+    {
+        if (criteria == null || "".equals(criteria.trim()))
+            return true;
+        // TODO: actually implement this method
+        return false;
+    }
+    
 }
