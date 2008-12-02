@@ -4,10 +4,12 @@ import java.awt.datatransfer.DataFlavor;
 import java.awt.datatransfer.Transferable;
 import java.awt.datatransfer.UnsupportedFlavorException;
 import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.List;
 
+import javax.swing.JComponent;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.TransferHandler;
@@ -31,7 +33,7 @@ public class Test053
     /**
      * @param args
      */
-    public static void main(String[] args)
+    public static void main(String[] args) throws Exception
     {
         final TestFrame frame = new TestFrame();
         JLabel to = new JLabel("Drag files here.");
@@ -84,5 +86,56 @@ public class Test053
             }
         };
         to.setTransferHandler(toHandler);
+        final File testfile = File.createTempFile("prefix",
+            "suffix.txt");
+        FileOutputStream fos = new FileOutputStream(
+            testfile);
+        fos.write("This is some test text".getBytes());
+        fos.flush();
+        fos.close();
+        TransferHandler fromHandler = new TransferHandler()
+        {
+            
+            protected Transferable createTransferable(
+                JComponent c)
+            {
+                return new Transferable()
+                {
+                    
+                    public Object getTransferData(
+                        DataFlavor flavor)
+                        throws UnsupportedFlavorException,
+                        IOException
+                    {
+                        return Arrays
+                            .asList(new File[] { testfile });
+                    }
+                    
+                    public DataFlavor[] getTransferDataFlavors()
+                    {
+                        return new DataFlavor[] { DataFlavor.javaFileListFlavor };
+                    }
+                    
+                    public boolean isDataFlavorSupported(
+                        DataFlavor flavor)
+                    {
+                        return flavor
+                            .equals(DataFlavor.javaFileListFlavor);
+                    }
+                };
+            }
+            
+            protected void exportDone(JComponent source,
+                Transferable data, int action)
+            {
+                System.out.println("export done");
+            }
+            
+            public int getSourceActions(JComponent c)
+            {
+                return TransferHandler.COPY;
+            }
+        };
+        from.setTransferHandler(fromHandler);
     }
 }
