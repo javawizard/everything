@@ -1,12 +1,17 @@
 package net.sf.opengroove.client.ui.frames;
 
+import com.jidesoft.swing.JideButton;
+
 import info.clearthought.layout.TableLayout;
 
 import java.awt.BorderLayout;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 
 import javax.swing.Box;
 import javax.swing.BoxLayout;
 import javax.swing.JButton;
+import javax.swing.JCheckBox;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
@@ -18,6 +23,8 @@ import javax.swing.SwingUtilities;
 import javax.swing.border.EmptyBorder;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableModel;
+
+import net.sf.opengroove.common.ui.ComponentUtils;
 
 /**
  * This code was edited or generated using CloudGarden's Jigloo SWT/Swing GUI
@@ -37,6 +44,9 @@ public class MessageHistoryFrame extends javax.swing.JFrame
     private JTextField searchField;
     private JLabel searchHeaderLabel;
     private JScrollPane tableScrollPane;
+    private JideButton searchButton;
+    private JideButton clearSearchButton;
+    private JCheckBox searchMessageCheckbox;
     private JTable table;
     private JLabel toolbarSpacerLabel;
     private JButton openButton;
@@ -86,14 +96,30 @@ public class MessageHistoryFrame extends javax.swing.JFrame
                     lowerPanel.setLayout(lowerPanelLayout);
                     {
                         okButton = new JButton();
+                        okButton
+                            .setToolTipText(ComponentUtils
+                                .htmlTipWrap("Closes the message history window. This does the same thing as if you had just closed the window itself."));
                         lowerPanel.add(okButton,
                             BorderLayout.EAST);
                         okButton.setText("OK");
+                        okButton
+                            .addActionListener(new ActionListener()
+                            {
+                                public void actionPerformed(
+                                    ActionEvent evt)
+                                {
+                                    okButtonActionPerformed(evt);
+                                }
+                            });
                     }
                 }
                 {
                     contentPanel = new JPanel();
-                    TableLayout contentPanelLayout = new TableLayout(new double[][] {{TableLayout.FILL}, {TableLayout.PREFERRED, TableLayout.FILL, 5.0}});
+                    TableLayout contentPanelLayout = new TableLayout(
+                        new double[][] {
+                            { TableLayout.FILL },
+                            { TableLayout.PREFERRED,
+                                TableLayout.FILL, 5.0 } });
                     contentPanelLayout.setHGap(5);
                     contentPanelLayout.setVGap(5);
                     rootPanel.add(contentPanel,
@@ -111,8 +137,25 @@ public class MessageHistoryFrame extends javax.swing.JFrame
                             "0, 0");
                         {
                             openButton = new JButton();
+                            openButton
+                                .setToolTipText(ComponentUtils
+                                    .htmlTipWrap("Opens the currently-selected messages. You can "
+                                        + "drag your mouse over a bunch of mesages to select "
+                                        + "multiple messages at a time, or you can hold down "
+                                        + "the control key on your keyboard and click on "
+                                        + "messages to select multiple messages. The messages "
+                                        + "that are selected will be opened in new windows."));
                             toolbarPanel.add(openButton);
                             openButton.setText("Open");
+                            openButton
+                                .addActionListener(new ActionListener()
+                                {
+                                    public void actionPerformed(
+                                        ActionEvent evt)
+                                    {
+                                        openButtonActionPerformed(evt);
+                                    }
+                                });
                         }
                         {
                             toolbarSpacerLabel = new JLabel();
@@ -126,27 +169,100 @@ public class MessageHistoryFrame extends javax.swing.JFrame
                             searchHeaderLabel = new JLabel();
                             toolbarPanel
                                 .add(searchHeaderLabel);
-                            searchHeaderLabel
-                                .setText("Search: ");
+                        }
+                        {
+                            searchMessageCheckbox = new JCheckBox();
+                            searchMessageCheckbox
+                                .setToolTipText(ComponentUtils
+                                    .htmlTipWrap("If this is checked, the contents of the message "
+                                        + "(including the names of it's attachments, and "
+                                        + "it's reply subject) will be searched. If this "
+                                        + "is not checked, only the message's sender, "
+                                        + "recipients, and subject will be searched. This "
+                                        + "can slow the search down by a considerable "
+                                        + "amount, so you should generally only check this "
+                                        + "when you need it."));
+                            toolbarPanel
+                                .add(searchMessageCheckbox);
+                            searchMessageCheckbox
+                                .setText("Search message contents");
                         }
                         {
                             searchField = new JTextField(15);
+                            searchField
+                                .setToolTipText(ComponentUtils
+                                    .htmlTipWrap("Type some text to search for here, then click Search."));
                             searchField
                                 .setMaximumSize(searchField
                                     .getPreferredSize());
                             toolbarPanel.add(searchField);
                         }
+                        {
+                            searchButton = new JideButton();
+                            toolbarPanel.add(searchButton);
+                            searchButton.setText("Search");
+                            searchButton
+                                .setToolTipText(ComponentUtils
+                                    .htmlTipWrap("Performs the actual search. A dialog "
+                                        + "will be opened while the search is in progress to"
+                                        + " show you how far it has come."));
+                            searchButton.setButtonStyle(3);
+                            searchButton
+                                .setForeground(new java.awt.Color(
+                                    0, 0, 255));
+                            searchButton
+                                .setFont(new java.awt.Font(
+                                    "Dialog", 0, 12));
+                            searchButton
+                                .setAlwaysShowHyperlink(true);
+                            searchButton
+                                .addActionListener(new ActionListener()
+                                {
+                                    public void actionPerformed(
+                                        ActionEvent evt)
+                                    {
+                                        searchButtonActionPerformed(evt);
+                                    }
+                                });
+                        }
+                        {
+                            clearSearchButton = new JideButton();
+                            toolbarPanel
+                                .add(clearSearchButton);
+                            clearSearchButton.setText("X");
+                            clearSearchButton
+                                .setToolTipText(ComponentUtils
+                                    .htmlTipWrap("Clears the current search, so that all messages "
+                                        + "will be shown again. You can also clear the current "
+                                        + "search by clearing the search text box and "
+                                        + "clicking \"Search\". If a search is not in progress, "
+                                        + "then this button does nothing."));
+                            clearSearchButton
+                                .setButtonStyle(3);
+                            clearSearchButton
+                                .setAlwaysShowHyperlink(true);
+                            clearSearchButton
+                                .setFont(new java.awt.Font(
+                                    "Dialog", 0, 12));
+                            clearSearchButton
+                                .setForeground(new java.awt.Color(
+                                    0, 0, 255));
+                        }
                     }
                     {
                         tableScrollPane = new JScrollPane();
-                        contentPanel.add(tableScrollPane, "0, 1");
+                        contentPanel.add(tableScrollPane,
+                            "0, 1");
                         {
-                            TableModel tableModel = 
-                                new DefaultTableModel(
-                                    new String[][] { { "One", "Two" }, { "Three", "Four" } },
-                                    new String[] { "Column 1", "Column 2" });
+                            TableModel tableModel = new DefaultTableModel(
+                                new String[][] {
+                                    { "One", "Two" },
+                                    { "Three", "Four" } },
+                                new String[] { "Column 1",
+                                    "Column 2" });
                             table = new JTable();
-                            tableScrollPane.setViewportView(table);
+                            tableScrollPane
+                                .setViewportView(table);
                             table.setModel(tableModel);
                         }
                     }
@@ -159,6 +275,30 @@ public class MessageHistoryFrame extends javax.swing.JFrame
         {
             e.printStackTrace();
         }
+    }
+    
+    private void okButtonActionPerformed(ActionEvent evt)
+    {
+        System.out
+            .println("okButton.actionPerformed, event="
+                + evt);
+        // TODO add your code for okButton.actionPerformed
+    }
+    
+    private void openButtonActionPerformed(ActionEvent evt)
+    {
+        System.out
+            .println("openButton.actionPerformed, event="
+                + evt);
+        // TODO add your code for openButton.actionPerformed
+    }
+    
+    private void searchButtonActionPerformed(ActionEvent evt)
+    {
+        System.out
+            .println("searchButton.actionPerformed, event="
+                + evt);
+        // TODO add your code for searchButton.actionPerformed
     }
     
 }
