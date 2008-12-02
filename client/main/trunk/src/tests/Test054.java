@@ -11,7 +11,7 @@ public class Test054
     /**
      * @param args
      */
-    public static void main(String[] args)
+    public static void main(String[] args)throws Throwable
     {
          UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
         JList list = new JList(new String[] { "Item 1",
