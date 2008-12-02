@@ -135,7 +135,19 @@ public class ComposeMessageFrame extends javax.swing.JFrame
                 rootPanel = new JPanel();
                 rootPanel.setBorder(new EmptyBorder(10, 10,
                     10, 10));
-                TableLayout rootPanelLayout = new TableLayout(new double[][] {{TableLayout.PREFERRED, TableLayout.FILL}, {TableLayout.PREFERRED, TableLayout.PREFERRED, TableLayout.PREFERRED, TableLayout.PREFERRED, TableLayout.PREFERRED, TableLayout.PREFERRED, TableLayout.FILL, TableLayout.PREFERRED, 0.33, TableLayout.PREFERRED}});
+                TableLayout rootPanelLayout = new TableLayout(
+                    new double[][] {
+                        { TableLayout.PREFERRED,
+                            TableLayout.FILL },
+                        { TableLayout.PREFERRED,
+                            TableLayout.PREFERRED,
+                            TableLayout.PREFERRED,
+                            TableLayout.PREFERRED,
+                            TableLayout.PREFERRED,
+                            TableLayout.PREFERRED,
+                            TableLayout.FILL,
+                            TableLayout.PREFERRED, 0.33,
+                            TableLayout.PREFERRED } });
                 rootPanelLayout.setHGap(5);
                 rootPanelLayout.setVGap(5);
                 getContentPane().add(rootPanel,
@@ -275,7 +287,8 @@ public class ComposeMessageFrame extends javax.swing.JFrame
                     BoxLayout buttonPanelLayout = new BoxLayout(
                         buttonPanel,
                         javax.swing.BoxLayout.X_AXIS);
-                    rootPanel.add(buttonPanel, "0, 9, 1, 9");
+                    rootPanel
+                        .add(buttonPanel, "0, 9, 1, 9");
                     buttonPanel
                         .setLayout(buttonPanelLayout);
                     {
@@ -294,11 +307,15 @@ public class ComposeMessageFrame extends javax.swing.JFrame
                         saveButton = new JButton();
                         buttonPanel.add(saveButton);
                         saveButton.setText("Save as draft");
-                        saveButton.addActionListener(new ActionListener() {
-                            public void actionPerformed(ActionEvent evt) {
-                                saveButtonActionPerformed(evt);
-                            }
-                        });
+                        saveButton
+                            .addActionListener(new ActionListener()
+                            {
+                                public void actionPerformed(
+                                    ActionEvent evt)
+                                {
+                                    saveButtonActionPerformed(evt);
+                                }
+                            });
                     }
                     {
                         cancelButton = new JButton();
@@ -308,7 +325,8 @@ public class ComposeMessageFrame extends javax.swing.JFrame
                 }
                 {
                     jScrollPane1 = new JScrollPane();
-                    rootPanel.add(jScrollPane1, "0, 8, 1, 8");
+                    rootPanel.add(jScrollPane1,
+                        "0, 8, 1, 8");
                     {
                         attachmentScrollingPanel = new JPanel();
                         BorderLayout jPanel4Layout = new BorderLayout();
@@ -327,7 +345,8 @@ public class ComposeMessageFrame extends javax.swing.JFrame
                             attachmentScrollingPanel.add(
                                 attachmentUpperPanel,
                                 BorderLayout.NORTH);
-                            attachmentUpperPanel.setOpaque(false);
+                            attachmentUpperPanel
+                                .setOpaque(false);
                             {
                                 attachmentsPanel = new JPanel();
                                 attachmentUpperPanel
@@ -337,27 +356,48 @@ public class ComposeMessageFrame extends javax.swing.JFrame
                                     javax.swing.BoxLayout.Y_AXIS);
                                 attachmentsPanel
                                     .setLayout(attachmentsPanelLayout);
-                                attachmentsPanel.setOpaque(false);
+                                attachmentsPanel
+                                    .setOpaque(false);
                             }
                             {
                                 attachmentHelpPanel = new JPanel();
                                 BorderLayout attachmentHelpPanelLayout = new BorderLayout();
-                                attachmentUpperPanel.add(attachmentHelpPanel, BorderLayout.SOUTH);
-                                attachmentHelpPanel.setLayout(attachmentHelpPanelLayout);
-                                attachmentHelpPanel.setOpaque(false);
+                                attachmentUpperPanel.add(
+                                    attachmentHelpPanel,
+                                    BorderLayout.SOUTH);
+                                attachmentHelpPanel
+                                    .setLayout(attachmentHelpPanelLayout);
+                                attachmentHelpPanel
+                                    .setOpaque(false);
                                 {
                                     attachmentAreaHintLabel = new JLabel();
-                                    attachmentHelpPanel.add(attachmentAreaHintLabel, BorderLayout.NORTH);
-                                    attachmentAreaHintLabel.setText("To add attachments, drag files or folders here, or use the above links.");
-                                    attachmentAreaHintLabel.setFont(new java.awt.Font("Dialog",0,12));
-                                    attachmentAreaHintLabel.setForeground(new java.awt.Color(150,150,150));
+                                    attachmentHelpPanel
+                                        .add(
+                                            attachmentAreaHintLabel,
+                                            BorderLayout.NORTH);
+                                    attachmentAreaHintLabel
+                                        .setText("To add attachments, drag files or folders here, or use the above links.");
+                                    attachmentAreaHintLabel
+                                        .setFont(new java.awt.Font(
+                                            "Dialog", 0, 12));
+                                    attachmentAreaHintLabel
+                                        .setForeground(new java.awt.Color(
+                                            150, 150, 150));
                                 }
                                 {
                                     attachmentAreaReadLabel = new JLabel();
-                                    attachmentHelpPanel.add(attachmentAreaReadLabel, BorderLayout.SOUTH);
-                                    attachmentAreaReadLabel.setText("To save attachments, drag them from here, or use the links next to the attachment.");
-                                    attachmentAreaReadLabel.setForeground(new java.awt.Color(150,150,150));
-                                    attachmentAreaReadLabel.setFont(new java.awt.Font("Dialog",0,12));
+                                    attachmentHelpPanel
+                                        .add(
+                                            attachmentAreaReadLabel,
+                                            BorderLayout.SOUTH);
+                                    attachmentAreaReadLabel
+                                        .setText("To save attachments, drag them from here, or use the links next to the attachment.");
+                                    attachmentAreaReadLabel
+                                        .setForeground(new java.awt.Color(
+                                            150, 150, 150));
+                                    attachmentAreaReadLabel
+                                        .setFont(new java.awt.Font(
+                                            "Dialog", 0, 12));
                                 }
                             }
                         }
@@ -392,7 +432,8 @@ public class ComposeMessageFrame extends javax.swing.JFrame
                 }
                 {
                     jSeparator1 = new JSeparator();
-                    rootPanel.add(jSeparator1, "0, 4, 1, 4");
+                    rootPanel
+                        .add(jSeparator1, "0, 4, 1, 4");
                 }
             }
             pack();
@@ -404,9 +445,12 @@ public class ComposeMessageFrame extends javax.swing.JFrame
         }
     }
     
-    private void saveButtonActionPerformed(ActionEvent evt) {
-        System.out.println("saveButton.actionPerformed, event="+evt);
-        //TODO add your code for saveButton.actionPerformed
+    private void saveButtonActionPerformed(ActionEvent evt)
+    {
+        System.out
+            .println("saveButton.actionPerformed, event="
+                + evt);
+        // TODO add your code for saveButton.actionPerformed
     }
-
+    
 }
