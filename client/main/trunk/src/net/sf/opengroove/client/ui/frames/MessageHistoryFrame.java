@@ -7,6 +7,8 @@ import info.clearthought.layout.TableLayout;
 import java.awt.BorderLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
 
 import javax.swing.Box;
 import javax.swing.BoxLayout;
@@ -89,6 +91,19 @@ public class MessageHistoryFrame extends javax.swing.JFrame
         if (storage != null)
             this.user = storage.getLocalUser();
         initGUI();
+        addWindowListener(new WindowAdapter()
+        {
+            
+            public void windowClosed(WindowEvent e)
+            {
+                searchField.setText("");
+                searchMessageCheckbox.setSelected(false);
+                currentExtendedSearch = false;
+                currentSearchString = "";
+                if (MessageHistoryFrame.this.storage != null)
+                    sorter.sort();
+            }
+        });
     }
     
     private void initGUI()
@@ -263,11 +278,15 @@ public class MessageHistoryFrame extends javax.swing.JFrame
                             clearSearchButton
                                 .setForeground(new java.awt.Color(
                                     0, 0, 255));
-                            clearSearchButton.addActionListener(new ActionListener() {
-                                public void actionPerformed(ActionEvent evt) {
-                                    clearSearchButtonActionPerformed(evt);
-                                }
-                            });
+                            clearSearchButton
+                                .addActionListener(new ActionListener()
+                                {
+                                    public void actionPerformed(
+                                        ActionEvent evt)
+                                    {
+                                        clearSearchButtonActionPerformed(evt);
+                                    }
+                                });
                         }
                     }
                     {
@@ -275,6 +294,7 @@ public class MessageHistoryFrame extends javax.swing.JFrame
                         contentPanel.add(tableScrollPane,
                             "0, 1");
                         {
+                            table = new JTable();
                             if (storage != null)
                             {
                                 tableModel = new UserMessageTableModel(
@@ -300,8 +320,8 @@ public class MessageHistoryFrame extends javax.swing.JFrame
                                 sorter
                                     .setRowFilter(rowFilter);
                                 table.setRowSorter(sorter);
+                                sorter.sort();
                             }
-                            table = new JTable();
                             tableScrollPane
                                 .setViewportView(table);
                         }
@@ -319,10 +339,7 @@ public class MessageHistoryFrame extends javax.swing.JFrame
     
     private void okButtonActionPerformed(ActionEvent evt)
     {
-        System.out
-            .println("okButton.actionPerformed, event="
-                + evt);
-        // TODO add your code for okButton.actionPerformed
+        dispose();
     }
     
     private void openButtonActionPerformed(ActionEvent evt)
@@ -335,15 +352,17 @@ public class MessageHistoryFrame extends javax.swing.JFrame
     
     private void searchButtonActionPerformed(ActionEvent evt)
     {
-        System.out
-            .println("searchButton.actionPerformed, event="
-                + evt);
-        // TODO add your code for searchButton.actionPerformed
+        currentSearchString = searchField.getText();
+        currentExtendedSearch = searchMessageCheckbox
+            .isSelected();
+        sorter.sort();
     }
     
-    private void clearSearchButtonActionPerformed(ActionEvent evt) {
-        System.out.println("clearSearchButton.actionPerformed, event="+evt);
-        //TODO add your code for clearSearchButton.actionPerformed
+    private void clearSearchButtonActionPerformed(
+        ActionEvent evt)
+    {
+        searchField.setText("");
+        searchButtonActionPerformed(evt);
     }
-
+    
 }
