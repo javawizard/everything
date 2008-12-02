@@ -658,15 +658,6 @@ public class AdminInterface implements EntryPoint
     
     private void loadExperimentalTab()
     {
-        VerticalPanel tab = new VerticalPanel();
-        tab.setSpacing(5);
-        GCanvas canvas = new GCanvas(200, 150, "#ffffff");
-        canvas.fillRect("#000000", 0, 0, 200, 150);
-        canvas.fillRect("#ffffff", 1, 1, 198, 148);
-        canvas.fillRect("#ff0000", 40, 50, 80, 60);
-        canvas.fillRect("#ffff00", 60, 60, 70, 60);
-        tab.add(canvas);
-        tabs.add(tab, "Experimental");
     }
     
     public static void removeAll(HasWidgets container)
