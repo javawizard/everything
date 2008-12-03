@@ -96,7 +96,7 @@ public class ComposeMessageFrame extends javax.swing.JFrame
     private UserMessageAttachmentsModel attachmentsModel;
     private static final HashMap<UserMessage, ComposeMessageFrame> composeFrames = new HashMap<UserMessage, ComposeMessageFrame>();
     
-    public void showComposeMessageFrame(Storage storage,
+    public synchronized static void showComposeMessageFrame(Storage storage,
         UserMessage message)
     {
         if (storage != null && message != null
@@ -165,6 +165,7 @@ public class ComposeMessageFrame extends javax.swing.JFrame
             composeFrames.put(
                 ComposeMessageFrame.this.message,
                 ComposeMessageFrame.this);
+            
         }
     }
     
