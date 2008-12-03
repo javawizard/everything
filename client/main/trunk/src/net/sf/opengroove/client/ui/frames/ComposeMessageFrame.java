@@ -20,6 +20,7 @@ import javax.swing.JSeparator;
 import javax.swing.BoxLayout;
 import javax.swing.DefaultComboBoxModel;
 import javax.swing.JButton;
+import javax.swing.JCheckBox;
 import javax.swing.JLabel;
 import javax.swing.JList;
 import javax.swing.JPanel;
@@ -38,6 +39,18 @@ import net.sf.opengroove.client.storage.Storage;
 import net.sf.opengroove.client.storage.UserMessage;
 import net.sf.opengroove.client.ui.UserMessageAttachmentsModel;
 
+/**
+ * This code was edited or generated using CloudGarden's Jigloo
+ * SWT/Swing GUI Builder, which is free for non-commercial
+ * use. If Jigloo is being used commercially (ie, by a corporation,
+ * company or business for any purpose whatever) then you
+ * should purchase a license for each developer using Jigloo.
+ * Please visit www.cloudgarden.com for details.
+ * Use of Jigloo implies acceptance of these licensing terms.
+ * A COMMERCIAL LICENSE HAS NOT BEEN PURCHASED FOR
+ * THIS MACHINE, SO JIGLOO OR THIS CODE CANNOT BE USED
+ * LEGALLY FOR ANY CORPORATE OR COMMERCIAL PURPOSE.
+ */
 /**
  * This frame shows a window that allows a user to compose a message. It handles
  * loading and saving it's contents from and to a UserMessage object and it's
@@ -78,6 +91,11 @@ public class ComposeMessageFrame extends javax.swing.JFrame
     private JEditorPane messageArea;
     private JTextField subjectField;
     private JLabel fromLabel;
+    private JCheckBox includeHistoryCheckbox;
+    private JButton closeButton;
+    private JButton forwardButton;
+    private JButton replyToAllButton;
+    private JButton replyButton;
     private JideButton removeAttachmentButton;
     private JideButton openAttachmentButton;
     private JideButton saveAllButton;
@@ -96,8 +114,8 @@ public class ComposeMessageFrame extends javax.swing.JFrame
     private UserMessageAttachmentsModel attachmentsModel;
     private static final HashMap<UserMessage, ComposeMessageFrame> composeFrames = new HashMap<UserMessage, ComposeMessageFrame>();
     
-    public synchronized static void showComposeMessageFrame(Storage storage,
-        UserMessage message)
+    public synchronized static void showComposeMessageFrame(
+        Storage storage, UserMessage message)
     {
         if (storage != null && message != null
             && composeFrames.get(message) != null)
@@ -134,6 +152,7 @@ public class ComposeMessageFrame extends javax.swing.JFrame
     
     private Storage storage;
     private UserMessage message;
+    private boolean isEditable;
     
     /**
      * Creates a new ComposeMessageFrame. If the specified storage or user
@@ -165,7 +184,25 @@ public class ComposeMessageFrame extends javax.swing.JFrame
             composeFrames.put(
                 ComposeMessageFrame.this.message,
                 ComposeMessageFrame.this);
-            
+            isEditable = isOutbound && isDraft;
+            if (isEditable)
+            {
+                buttonPanel.remove(includeHistoryCheckbox);
+                buttonPanel.remove(replyButton);
+                buttonPanel.remove(replyToAllButton);
+                buttonPanel.remove(forwardButton);
+                buttonPanel.remove(closeButton);
+            }
+            else
+            {
+                attachmentsToolbar.remove(addFileButton);
+                attachmentsToolbar.remove(addFolderButton);
+                attachmentsToolbar
+                    .remove(removeAttachmentButton);
+                attachmentHelpPanel
+                    .remove(attachmentAreaHintLabel);
+                
+            }
         }
     }
     
@@ -461,6 +498,15 @@ public class ComposeMessageFrame extends javax.swing.JFrame
                         sendButton = new JButton();
                         buttonPanel.add(sendButton);
                         sendButton.setText("Send");
+                        sendButton
+                            .addActionListener(new ActionListener()
+                            {
+                                public void actionPerformed(
+                                    ActionEvent evt)
+                                {
+                                    sendButtonActionPerformed(evt);
+                                }
+                            });
                     }
                     {
                         saveButton = new JButton();
@@ -480,6 +526,43 @@ public class ComposeMessageFrame extends javax.swing.JFrame
                         cancelButton = new JButton();
                         buttonPanel.add(cancelButton);
                         cancelButton.setText("Cancel");
+                        cancelButton
+                            .addActionListener(new ActionListener()
+                            {
+                                public void actionPerformed(
+                                    ActionEvent evt)
+                                {
+                                    cancelButtonActionPerformed(evt);
+                                }
+                            });
+                    }
+                    {
+                        includeHistoryCheckbox = new JCheckBox();
+                        buttonPanel
+                            .add(includeHistoryCheckbox);
+                        includeHistoryCheckbox
+                            .setText("Include history in reply");
+                    }
+                    {
+                        replyButton = new JButton();
+                        buttonPanel.add(replyButton);
+                        replyButton.setText("Reply");
+                    }
+                    {
+                        replyToAllButton = new JButton();
+                        buttonPanel.add(replyToAllButton);
+                        replyToAllButton
+                            .setText("Reply to all");
+                    }
+                    {
+                        forwardButton = new JButton();
+                        buttonPanel.add(forwardButton);
+                        forwardButton.setText("Forward");
+                    }
+                    {
+                        closeButton = new JButton();
+                        buttonPanel.add(closeButton);
+                        closeButton.setText("Close");
                     }
                 }
                 {
@@ -665,6 +748,22 @@ public class ComposeMessageFrame extends javax.swing.JFrame
             .println("openAttachmentButton.actionPerformed, event="
                 + evt);
         // TODO add your code for openAttachmentButton.actionPerformed
+    }
+    
+    private void sendButtonActionPerformed(ActionEvent evt)
+    {
+        System.out
+            .println("sendButton.actionPerformed, event="
+                + evt);
+        // TODO add your code for sendButton.actionPerformed
+    }
+    
+    private void cancelButtonActionPerformed(ActionEvent evt)
+    {
+        System.out
+            .println("cancelButton.actionPerformed, event="
+                + evt);
+        // TODO add your code for cancelButton.actionPerformed
     }
     
 }
