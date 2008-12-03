@@ -490,6 +490,12 @@ public class ComposeMessageFrame extends javax.swing.JFrame
                     buttonPanel
                         .setLayout(buttonPanelLayout);
                     {
+                        includeHistoryCheckbox = new JCheckBox();
+                        buttonPanel.add(includeHistoryCheckbox);
+                        includeHistoryCheckbox
+                        .setText("Include history in reply");
+                    }
+                    {
                         jLabel7 = new JLabel();
                         buttonPanel.add(jLabel7);
                         jLabel7
@@ -537,13 +543,6 @@ public class ComposeMessageFrame extends javax.swing.JFrame
                                     cancelButtonActionPerformed(evt);
                                 }
                             });
-                    }
-                    {
-                        includeHistoryCheckbox = new JCheckBox();
-                        buttonPanel
-                            .add(includeHistoryCheckbox);
-                        includeHistoryCheckbox
-                            .setText("Include history in reply");
                     }
                     {
                         replyButton = new JButton();
