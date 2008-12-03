@@ -201,7 +201,9 @@ public class ComposeMessageFrame extends javax.swing.JFrame
                     .remove(removeAttachmentButton);
                 attachmentHelpPanel
                     .remove(attachmentAreaHintLabel);
-                
+                buttonPanel.remove(sendButton);
+                buttonPanel.remove(saveButton);
+                buttonPanel.remove(cancelButton);
             }
         }
     }
