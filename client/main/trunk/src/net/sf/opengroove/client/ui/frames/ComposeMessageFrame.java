@@ -901,6 +901,20 @@ public class ComposeMessageFrame extends javax.swing.JFrame
          * All of the attachments-to-be exist at this point. We'll begin copying
          * them over.
          */
+        final AddingAttachmentDialog dialog = new AddingAttachmentDialog(
+            this);
+        new Thread()
+        {
+            public void run()
+            {
+                dialog.show();
+            }
+        }.start();
+        int[] importSizes = new int[files.length];
+        for (File file : files)
+        {
+            
+        }
     }
     
 }
