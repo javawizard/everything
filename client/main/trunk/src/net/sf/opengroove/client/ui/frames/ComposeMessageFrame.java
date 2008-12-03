@@ -548,22 +548,42 @@ public class ComposeMessageFrame extends javax.swing.JFrame
                         replyButton = new JButton();
                         buttonPanel.add(replyButton);
                         replyButton.setText("Reply");
+                        replyButton.addActionListener(new ActionListener() {
+                            public void actionPerformed(ActionEvent evt) {
+                                replyButtonActionPerformed(evt);
+                            }
+                        });
                     }
                     {
                         replyToAllButton = new JButton();
                         buttonPanel.add(replyToAllButton);
                         replyToAllButton
                             .setText("Reply to all");
+                        replyToAllButton.addActionListener(new ActionListener() {
+                            public void actionPerformed(ActionEvent evt) {
+                                replyToAllButtonActionPerformed(evt);
+                            }
+                        });
                     }
                     {
                         forwardButton = new JButton();
                         buttonPanel.add(forwardButton);
                         forwardButton.setText("Forward");
+                        forwardButton.addActionListener(new ActionListener() {
+                            public void actionPerformed(ActionEvent evt) {
+                                forwardButtonActionPerformed(evt);
+                            }
+                        });
                     }
                     {
                         closeButton = new JButton();
                         buttonPanel.add(closeButton);
                         closeButton.setText("Close");
+                        closeButton.addActionListener(new ActionListener() {
+                            public void actionPerformed(ActionEvent evt) {
+                                closeButtonActionPerformed(evt);
+                            }
+                        });
                     }
                 }
                 {
@@ -767,4 +787,24 @@ public class ComposeMessageFrame extends javax.swing.JFrame
         // TODO add your code for cancelButton.actionPerformed
     }
     
+    private void replyButtonActionPerformed(ActionEvent evt) {
+        System.out.println("replyButton.actionPerformed, event="+evt);
+        //TODO add your code for replyButton.actionPerformed
+    }
+    
+    private void replyToAllButtonActionPerformed(ActionEvent evt) {
+        System.out.println("replyToAllButton.actionPerformed, event="+evt);
+        //TODO add your code for replyToAllButton.actionPerformed
+    }
+    
+    private void forwardButtonActionPerformed(ActionEvent evt) {
+        System.out.println("forwardButton.actionPerformed, event="+evt);
+        //TODO add your code for forwardButton.actionPerformed
+    }
+    
+    private void closeButtonActionPerformed(ActionEvent evt) {
+        System.out.println("closeButton.actionPerformed, event="+evt);
+        //TODO add your code for closeButton.actionPerformed
+    }
+
 }
