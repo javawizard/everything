@@ -69,7 +69,6 @@ public class ComposeMessageFrame extends javax.swing.JFrame
     private JLabel jLabel3;
     private JPanel messageTopPanel;
     private JLabel jLabel4;
-    private JLabel jLabel5;
     private JPanel jPanel3;
     private JLabel jLabel8;
     private JScrollPane jScrollPane1;
@@ -81,12 +80,16 @@ public class ComposeMessageFrame extends javax.swing.JFrame
     private JLabel jLabel6;
     private JideButton addFolderButton;
     private JideButton addFileButton;
-    private JPanel jPanel2;
+    private JPanel attachmentsToolbar;
     private JPanel recipientsPanel;
     private JPanel jPanel1;
     private JEditorPane messageArea;
     private JTextField subjectField;
     private JLabel fromLabel;
+    private JideButton removeAttachmentButton;
+    private JideButton openAttachmentButton;
+    private JideButton saveAllButton;
+    private JideButton saveAttachmentButton;
     private JList attachmentsList;
     private JLabel attachmentAreaReadLabel;
     private JPanel attachmentHelpPanel;
@@ -239,23 +242,15 @@ public class ComposeMessageFrame extends javax.swing.JFrame
                     jLabel4.setText("Attachments: ");
                 }
                 {
-                    jPanel2 = new JPanel();
+                    attachmentsToolbar = new JPanel();
                     BoxLayout jPanel2Layout = new BoxLayout(
-                        jPanel2,
+                        attachmentsToolbar,
                         javax.swing.BoxLayout.X_AXIS);
-                    rootPanel.add(jPanel2, "1, 7");
-                    jPanel2.setLayout(jPanel2Layout);
-                    {
-                        jLabel5 = new JLabel();
-                        jPanel2.add(jLabel5);
-                        jLabel5
-                            .setText("You can attach up to 2GB.");
-                        jLabel5.setFont(new java.awt.Font(
-                            "Dialog", 0, 12));
-                    }
+                    rootPanel.add(attachmentsToolbar, "1, 7");
+                    attachmentsToolbar.setLayout(jPanel2Layout);
                     {
                         jLabel6 = new JLabel();
-                        jPanel2.add(jLabel6);
+                        attachmentsToolbar.add(jLabel6);
                         jLabel6
                             .setMaximumSize(new java.awt.Dimension(
                                 100000, 100000));
@@ -266,7 +261,7 @@ public class ComposeMessageFrame extends javax.swing.JFrame
                             .setButtonStyle(JideButton.HYPERLINK_STYLE);
                         addFileButton
                             .setAlwaysShowHyperlink(true);
-                        jPanel2.add(addFileButton);
+                        attachmentsToolbar.add(addFileButton);
                         addFileButton.setText("Add file");
                         addFileButton
                             .setForeground(new java.awt.Color(
@@ -277,7 +272,7 @@ public class ComposeMessageFrame extends javax.swing.JFrame
                     }
                     {
                         addFolderButton = new JideButton();
-                        jPanel2.add(addFolderButton);
+                        attachmentsToolbar.add(addFolderButton);
                         addFolderButton
                             .setText("Add folder");
                         addFolderButton
@@ -289,6 +284,48 @@ public class ComposeMessageFrame extends javax.swing.JFrame
                         addFolderButton
                             .setAlwaysShowHyperlink(true);
                         addFolderButton.setButtonStyle(3);
+                    }
+                    {
+                        removeAttachmentButton = new JideButton();
+                        attachmentsToolbar.add(removeAttachmentButton);
+                        removeAttachmentButton.setText("Remove");
+                        removeAttachmentButton.setFont(new java.awt.Font("Dialog",0,12));
+                        removeAttachmentButton.setForeground(new java.awt.Color(0,0,255));
+                        removeAttachmentButton.setAlwaysShowHyperlink(true);
+                        removeAttachmentButton.setButtonStyle(3);
+                    }
+                    {
+                        saveAttachmentButton = new JideButton();
+                        attachmentsToolbar.add(saveAttachmentButton);
+                        saveAttachmentButton
+                            .setText("Save");
+                        saveAttachmentButton
+                            .setFont(new java.awt.Font(
+                                "Dialog", 0, 12));
+                        saveAttachmentButton
+                            .setForeground(new java.awt.Color(
+                                0, 0, 255));
+                        saveAttachmentButton
+                            .setAlwaysShowHyperlink(true);
+                        saveAttachmentButton.setButtonStyle(3);
+                    }
+                    {
+                        saveAllButton = new JideButton();
+                        attachmentsToolbar.add(saveAllButton);
+                        saveAllButton.setText("Save all");
+                        saveAllButton.setButtonStyle(3);
+                        saveAllButton.setFont(new java.awt.Font("Dialog",0,12));
+                        saveAllButton.setForeground(new java.awt.Color(0,0,255));
+                        saveAllButton.setAlwaysShowHyperlink(true);
+                    }
+                    {
+                        openAttachmentButton = new JideButton();
+                        attachmentsToolbar.add(openAttachmentButton);
+                        openAttachmentButton.setText("Open");
+                        openAttachmentButton.setAlwaysShowHyperlink(true);
+                        openAttachmentButton.setButtonStyle(3);
+                        openAttachmentButton.setFont(new java.awt.Font("Dialog",0,12));
+                        openAttachmentButton.setForeground(new java.awt.Color(0,0,255));
                     }
                 }
                 {
@@ -403,6 +440,8 @@ public class ComposeMessageFrame extends javax.swing.JFrame
                                 {
                                     attachmentsModel = new UserMessageAttachmentsModel(
                                         storage, message);
+                                    attachmentsList
+                                        .setModel(attachmentsModel);
                                 }
                                 attachmentUpperPanel.add(
                                     attachmentsList,
