@@ -958,6 +958,18 @@ public class ComposeMessageFrame extends javax.swing.JFrame
                         throw new RuntimeException(
                             "attachment existing file couldn't be deleted.");
                 }
+                /*
+                 * The attachment file doesn't exist at this point, and the
+                 * source file does. We'll begin copying it over.
+                 */
+                dialog.getProgress().setString(name);
+                dialog.getProgress().setIndeterminate(true);
+                if (file.isFile())
+                    importFile(file, attachmentFile);
+                else if (file.isDirectory())
+                    importFolder(file, attachmentFile);
+                else
+                    throw new RuntimeException();
             }
         }
         catch (Exception e)
@@ -983,6 +995,18 @@ public class ComposeMessageFrame extends javax.swing.JFrame
         {
             dialog.hide();
         }
+    }
+    
+    private void importFolder(File file, File attachmentFile)
+    {
+        // TODO Auto-generated method stub
+        
+    }
+    
+    private void importFile(File file, File attachmentFile)
+    {
+        // TODO Auto-generated method stub
+        
     }
     
 }
