@@ -11,10 +11,13 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
+import java.io.File;
 import java.util.HashMap;
 
 import javax.swing.Action;
 import javax.swing.Box;
+import javax.swing.JFileChooser;
+import javax.swing.JOptionPane;
 import javax.swing.JScrollPane;
 import javax.swing.JSeparator;
 import javax.swing.BoxLayout;
@@ -114,6 +117,11 @@ public class ComposeMessageFrame extends javax.swing.JFrame
     private UserMessageAttachmentsModel attachmentsModel;
     private static final HashMap<UserMessage, ComposeMessageFrame> composeFrames = new HashMap<UserMessage, ComposeMessageFrame>();
     
+    private static JFileChooser addFileChooser = new JFileChooser();
+    private static JFileChooser addFolderChooser = new JFileChooser();
+    private static JFileChooser saveChooser = new JFileChooser();
+    private static JFileChooser saveAllChooser = new JFileChooser();
+    
     public synchronized static void showComposeMessageFrame(
         Storage storage, UserMessage message)
     {
@@ -205,6 +213,23 @@ public class ComposeMessageFrame extends javax.swing.JFrame
                 buttonPanel.remove(saveButton);
                 buttonPanel.remove(cancelButton);
             }
+            addFileChooser.setMultiSelectionEnabled(true);
+            addFolderChooser.setMultiSelectionEnabled(true);
+            saveChooser.setMultiSelectionEnabled(false);
+            saveAllChooser.setMultiSelectionEnabled(false);
+            addFileChooser
+                .setFileSelectionMode(JFileChooser.FILES_ONLY);
+            addFolderChooser
+                .setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
+            saveChooser
+                .setFileSelectionMode(JFileChooser.FILES_ONLY);
+            saveAllChooser
+                .setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
+            /*
+             * TODO: we should perform some sort of initial check here to see if
+             * there are any attachment storage files without backing attachment
+             * proxystorage objects, and delete them.
+             */
         }
     }
     
@@ -491,9 +516,10 @@ public class ComposeMessageFrame extends javax.swing.JFrame
                         .setLayout(buttonPanelLayout);
                     {
                         includeHistoryCheckbox = new JCheckBox();
-                        buttonPanel.add(includeHistoryCheckbox);
+                        buttonPanel
+                            .add(includeHistoryCheckbox);
                         includeHistoryCheckbox
-                        .setText("Include history in reply");
+                            .setText("Include history in reply");
                     }
                     {
                         jLabel7 = new JLabel();
@@ -548,42 +574,58 @@ public class ComposeMessageFrame extends javax.swing.JFrame
                         replyButton = new JButton();
                         buttonPanel.add(replyButton);
                         replyButton.setText("Reply");
-                        replyButton.addActionListener(new ActionListener() {
-                            public void actionPerformed(ActionEvent evt) {
-                                replyButtonActionPerformed(evt);
-                            }
-                        });
+                        replyButton
+                            .addActionListener(new ActionListener()
+                            {
+                                public void actionPerformed(
+                                    ActionEvent evt)
+                                {
+                                    replyButtonActionPerformed(evt);
+                                }
+                            });
                     }
                     {
                         replyToAllButton = new JButton();
                         buttonPanel.add(replyToAllButton);
                         replyToAllButton
                             .setText("Reply to all");
-                        replyToAllButton.addActionListener(new ActionListener() {
-                            public void actionPerformed(ActionEvent evt) {
-                                replyToAllButtonActionPerformed(evt);
-                            }
-                        });
+                        replyToAllButton
+                            .addActionListener(new ActionListener()
+                            {
+                                public void actionPerformed(
+                                    ActionEvent evt)
+                                {
+                                    replyToAllButtonActionPerformed(evt);
+                                }
+                            });
                     }
                     {
                         forwardButton = new JButton();
                         buttonPanel.add(forwardButton);
                         forwardButton.setText("Forward");
-                        forwardButton.addActionListener(new ActionListener() {
-                            public void actionPerformed(ActionEvent evt) {
-                                forwardButtonActionPerformed(evt);
-                            }
-                        });
+                        forwardButton
+                            .addActionListener(new ActionListener()
+                            {
+                                public void actionPerformed(
+                                    ActionEvent evt)
+                                {
+                                    forwardButtonActionPerformed(evt);
+                                }
+                            });
                     }
                     {
                         closeButton = new JButton();
                         buttonPanel.add(closeButton);
                         closeButton.setText("Close");
-                        closeButton.addActionListener(new ActionListener() {
-                            public void actionPerformed(ActionEvent evt) {
-                                closeButtonActionPerformed(evt);
-                            }
-                        });
+                        closeButton
+                            .addActionListener(new ActionListener()
+                            {
+                                public void actionPerformed(
+                                    ActionEvent evt)
+                                {
+                                    closeButtonActionPerformed(evt);
+                                }
+                            });
                     }
                 }
                 {
@@ -787,24 +829,78 @@ public class ComposeMessageFrame extends javax.swing.JFrame
         // TODO add your code for cancelButton.actionPerformed
     }
     
-    private void replyButtonActionPerformed(ActionEvent evt) {
-        System.out.println("replyButton.actionPerformed, event="+evt);
-        //TODO add your code for replyButton.actionPerformed
+    private void replyButtonActionPerformed(ActionEvent evt)
+    {
+        System.out
+            .println("replyButton.actionPerformed, event="
+                + evt);
+        // TODO add your code for replyButton.actionPerformed
     }
     
-    private void replyToAllButtonActionPerformed(ActionEvent evt) {
-        System.out.println("replyToAllButton.actionPerformed, event="+evt);
-        //TODO add your code for replyToAllButton.actionPerformed
+    private void replyToAllButtonActionPerformed(
+        ActionEvent evt)
+    {
+        System.out
+            .println("replyToAllButton.actionPerformed, event="
+                + evt);
+        // TODO add your code for replyToAllButton.actionPerformed
     }
     
-    private void forwardButtonActionPerformed(ActionEvent evt) {
-        System.out.println("forwardButton.actionPerformed, event="+evt);
-        //TODO add your code for forwardButton.actionPerformed
+    private void forwardButtonActionPerformed(
+        ActionEvent evt)
+    {
+        System.out
+            .println("forwardButton.actionPerformed, event="
+                + evt);
+        // TODO add your code for forwardButton.actionPerformed
     }
     
-    private void closeButtonActionPerformed(ActionEvent evt) {
-        System.out.println("closeButton.actionPerformed, event="+evt);
-        //TODO add your code for closeButton.actionPerformed
+    private void closeButtonActionPerformed(ActionEvent evt)
+    {
+        System.out
+            .println("closeButton.actionPerformed, event="
+                + evt);
+        // TODO add your code for closeButton.actionPerformed
     }
-
+    
+    /**
+     * Called when the user has chosen some attachments to import. This is
+     * called when the user chooses a file or folder via the "add file" or "add
+     * folder" link, or when the user drags files or folders into the attachment
+     * pane. This method validates that the specified files or folders really do
+     * exist, and then it adds them first as message attachment files
+     * 
+     * @param attachments
+     */
+    private void importAttachments(File[] files)
+    {
+        if (!isEditable)
+        {
+            /*
+             * This typically shouldn't happen if we've done our calculations
+             * right, but we'll prepare for the worst
+             */
+            JOptionPane
+                .showMessageDialog(
+                    this,
+                    "You can't add attachments to this message, since it's not an outbound message.");
+            return;
+        }
+        for (File file : files)
+        {
+            if (!file.exists())
+            {
+                JOptionPane
+                    .showMessageDialog(
+                        this,
+                        "You tried to add an attachment, but the file or folder you specified doesn't exist.");
+                return;
+            }
+        }
+        /*
+         * All of the attachments-to-be exist at this point. We'll begin copying
+         * them over.
+         */
+    }
+    
 }
