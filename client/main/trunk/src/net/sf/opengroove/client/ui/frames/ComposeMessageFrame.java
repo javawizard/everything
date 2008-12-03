@@ -41,6 +41,8 @@ import javax.swing.text.html.HTMLEditorKit;
 import net.sf.opengroove.client.storage.Storage;
 import net.sf.opengroove.client.storage.UserMessage;
 import net.sf.opengroove.client.ui.UserMessageAttachmentsModel;
+import net.sf.opengroove.common.ui.ComponentUtils;
+import net.sf.opengroove.common.utils.DataUtils;
 
 /**
  * This code was edited or generated using CloudGarden's Jigloo
@@ -868,7 +870,10 @@ public class ComposeMessageFrame extends javax.swing.JFrame
      * called when the user chooses a file or folder via the "add file" or "add
      * folder" link, or when the user drags files or folders into the attachment
      * pane. This method validates that the specified files or folders really do
-     * exist, and then it adds them first as message attachment files
+     * exist, and then it adds them first as message attachment files and then
+     * as message attachment objects.<br/><br/>
+     * 
+     * This method blocks until the attachments have been imported.
      * 
      * @param attachments
      */
@@ -910,10 +915,73 @@ public class ComposeMessageFrame extends javax.swing.JFrame
                 dialog.show();
             }
         }.start();
-        int[] importSizes = new int[files.length];
-        for (File file : files)
+        dialog.getProgress().setIndeterminate(true);
+        try
         {
-            
+            for (File file : files)
+            {
+                String name = file.getName();
+                name = name.toLowerCase();
+                if (message.getAttachmentByName(name) != null)
+                {
+                    dialog.hide();
+                    new Thread()
+                    {
+                        public void run()
+                        {
+                            JOptionPane
+                                .showMessageDialog(
+                                    ComposeMessageFrame.this,
+                                    ComponentUtils
+                                        .htmlTipWrap("An attachment already exists with that name."));
+                        }
+                    }.start();
+                }
+                File attachmentFile = storage
+                    .getMessageAttachmentFile(message
+                        .getId(), name);
+                if (attachmentFile.exists())
+                {
+                    /*
+                     * This puts us in a problematic position. If we get here,
+                     * then either an attachment file exists from an attachment
+                     * that didn't get added as a proxystoage object, in which
+                     * case we can delete it and replace it with this one, or
+                     * there is a corresponding attachment, and the filesystem
+                     * naming conventions are causing us problems. However,
+                     * since we've converted the name to lower case before
+                     * adding the attachment, then we can be reasonably certain
+                     * that it's not the filesystem's problem, so we'll just
+                     * delete the file and replace it.
+                     */
+                    if (!attachmentFile.delete())
+                        throw new RuntimeException(
+                            "attachment existing file couldn't be deleted.");
+                }
+            }
+        }
+        catch (Exception e)
+        {
+            e.printStackTrace();
+            dialog.hide();
+            new Thread()
+            {
+                public void run()
+                {
+                    JOptionPane
+                        .showMessageDialog(
+                            ComposeMessageFrame.this,
+                            ComponentUtils
+                                .htmlTipWrap("The attachment(s) could not be added, because "
+                                    + "of an internal error. Contact us "
+                                    + "(support@opengroove.org) for assistance, "
+                                    + "or try again."));
+                }
+            }.start();
+        }
+        finally
+        {
+            dialog.hide();
         }
     }
     
