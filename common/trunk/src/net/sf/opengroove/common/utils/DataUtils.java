@@ -1,5 +1,7 @@
 package net.sf.opengroove.common.utils;
 
+import java.io.File;
+
 import base64.Base64Coder;
 
 /**
@@ -32,5 +34,25 @@ public class DataUtils
     public static byte[] decode(String data)
     {
         return Base64Coder.decode(data);
+    }
+    
+    public static long recursiveSizeScan(File file)
+    {
+        if (!file.exists())
+            return 0;
+        if (file.isFile())
+            return file.length();
+        if (file.isDirectory())
+        {
+            int totalSize = 0;
+            for (File f : file.listFiles())
+            {
+                totalSize += recursiveSizeScan(f);
+            }
+            return totalSize;
+        }
+        throw new RuntimeException(
+            "unercognized file type for file "
+                + file.getAbsolutePath());
     }
 }
