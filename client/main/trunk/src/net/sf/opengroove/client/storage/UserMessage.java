@@ -27,13 +27,19 @@ public interface UserMessage
     // message - string
     // attachments - stored list
     /**
-     * The message's id. This is the id according to the message hierarchy, so
-     * nothing will be present here until the message has been sent.
+     * The message's id. This is generated when the message is created. This has
+     * nothing to do with the id of the stored message that this message
+     * was/will be/is packaged in.
      */
     @Property
     public String getId();
     
     public void setId(String id);
+    
+    @Property
+    public String getStoredMessageId();
+    
+    public void setStoredMessageId(String id);
     
     /**
      * True if this is an outbound message, false if this is an inbound message.
