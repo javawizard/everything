@@ -16,6 +16,7 @@ import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.HashMap;
+import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
 
 import javax.swing.Action;
@@ -1009,13 +1010,34 @@ public class ComposeMessageFrame extends javax.swing.JFrame
             file);
         ZipOutputStream out = new ZipOutputStream(fileOut);
         recursiveZipWrite(file, out, "");
+        out.flush();
+        out.close();
     }
     
     private void recursiveZipWrite(File file,
         ZipOutputStream out, String currentParentPath)
+        throws IOException
     {
-        // TODO Auto-generated method stub
-        
+        if (file.isFile())
+        {
+            ZipEntry entry = new ZipEntry(currentParentPath
+                + file.getName());
+            entry.setTime(file.lastModified());
+            out.putNextEntry(entry);
+            FileInputStream in = new FileInputStream(file);
+            StringUtils.copy(in, out);
+            in.close();
+            out.closeEntry();
+        }
+        else if (file.isDirectory())
+        {
+            for (File subfile : file.listFiles())
+            {
+                recursiveZipWrite(subfile, out,
+                    currentParentPath + file.getName()
+                        + "/");
+            }
+        }
     }
     
     private void importFile(File file, File attachmentFile)
