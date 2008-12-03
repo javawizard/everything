@@ -6,8 +6,12 @@ import info.clearthought.layout.TableLayout;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.FlowLayout;
+import java.awt.Frame;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
+import java.util.HashMap;
 
 import javax.swing.Action;
 import javax.swing.Box;
@@ -34,18 +38,6 @@ import net.sf.opengroove.client.storage.Storage;
 import net.sf.opengroove.client.storage.UserMessage;
 import net.sf.opengroove.client.ui.UserMessageAttachmentsModel;
 
-/**
- * This code was edited or generated using CloudGarden's Jigloo
- * SWT/Swing GUI Builder, which is free for non-commercial
- * use. If Jigloo is being used commercially (ie, by a corporation,
- * company or business for any purpose whatever) then you
- * should purchase a license for each developer using Jigloo.
- * Please visit www.cloudgarden.com for details.
- * Use of Jigloo implies acceptance of these licensing terms.
- * A COMMERCIAL LICENSE HAS NOT BEEN PURCHASED FOR
- * THIS MACHINE, SO JIGLOO OR THIS CODE CANNOT BE USED
- * LEGALLY FOR ANY CORPORATE OR COMMERCIAL PURPOSE.
- */
 /**
  * This frame shows a window that allows a user to compose a message. It handles
  * loading and saving it's contents from and to a UserMessage object and it's
@@ -102,6 +94,26 @@ public class ComposeMessageFrame extends javax.swing.JFrame
     private JLabel jLabel1;
     private JideButton addRecipientButton;
     private UserMessageAttachmentsModel attachmentsModel;
+    private static final HashMap<UserMessage, ComposeMessageFrame> composeFrames = new HashMap<UserMessage, ComposeMessageFrame>();
+    
+    public void showComposeMessageFrame(Storage storage,
+        UserMessage message)
+    {
+        if (storage != null && message != null
+            && composeFrames.get(message) != null)
+        {
+            composeFrames.get(message).show();
+            composeFrames.get(message).toFront();
+            composeFrames.get(message).show();
+        }
+        else
+        {
+            ComposeMessageFrame frame = new ComposeMessageFrame(
+                storage, message);
+            frame.setLocationRelativeTo(null);
+            frame.show();
+        }
+    }
     
     /**
      * Auto-generated main method to display this JFrame
@@ -141,6 +153,18 @@ public class ComposeMessageFrame extends javax.swing.JFrame
         {
             boolean isOutbound = message.isOutbound();
             boolean isDraft = message.isDraft();
+            addWindowListener(new WindowAdapter()
+            {
+                
+                public void windowClosed(WindowEvent e)
+                {
+                    composeFrames
+                        .remove(ComposeMessageFrame.this.message);
+                }
+            });
+            composeFrames.put(
+                ComposeMessageFrame.this.message,
+                ComposeMessageFrame.this);
         }
     }
     
@@ -278,11 +302,15 @@ public class ComposeMessageFrame extends javax.swing.JFrame
                         addFileButton
                             .setFont(new java.awt.Font(
                                 "Dialog", 0, 12));
-                        addFileButton.addActionListener(new ActionListener() {
-                            public void actionPerformed(ActionEvent evt) {
-                                addFileButtonActionPerformed(evt);
-                            }
-                        });
+                        addFileButton
+                            .addActionListener(new ActionListener()
+                            {
+                                public void actionPerformed(
+                                    ActionEvent evt)
+                                {
+                                    addFileButtonActionPerformed(evt);
+                                }
+                            });
                     }
                     {
                         addFolderButton = new JideButton();
@@ -299,11 +327,15 @@ public class ComposeMessageFrame extends javax.swing.JFrame
                         addFolderButton
                             .setAlwaysShowHyperlink(true);
                         addFolderButton.setButtonStyle(3);
-                        addFolderButton.addActionListener(new ActionListener() {
-                            public void actionPerformed(ActionEvent evt) {
-                                addFolderButtonActionPerformed(evt);
-                            }
-                        });
+                        addFolderButton
+                            .addActionListener(new ActionListener()
+                            {
+                                public void actionPerformed(
+                                    ActionEvent evt)
+                                {
+                                    addFolderButtonActionPerformed(evt);
+                                }
+                            });
                     }
                     {
                         removeAttachmentButton = new JideButton();
@@ -321,11 +353,15 @@ public class ComposeMessageFrame extends javax.swing.JFrame
                             .setAlwaysShowHyperlink(true);
                         removeAttachmentButton
                             .setButtonStyle(3);
-                        removeAttachmentButton.addActionListener(new ActionListener() {
-                            public void actionPerformed(ActionEvent evt) {
-                                removeAttachmentButtonActionPerformed(evt);
-                            }
-                        });
+                        removeAttachmentButton
+                            .addActionListener(new ActionListener()
+                            {
+                                public void actionPerformed(
+                                    ActionEvent evt)
+                                {
+                                    removeAttachmentButtonActionPerformed(evt);
+                                }
+                            });
                     }
                     {
                         saveAttachmentButton = new JideButton();
@@ -343,11 +379,15 @@ public class ComposeMessageFrame extends javax.swing.JFrame
                             .setAlwaysShowHyperlink(true);
                         saveAttachmentButton
                             .setButtonStyle(3);
-                        saveAttachmentButton.addActionListener(new ActionListener() {
-                            public void actionPerformed(ActionEvent evt) {
-                                saveAttachmentButtonActionPerformed(evt);
-                            }
-                        });
+                        saveAttachmentButton
+                            .addActionListener(new ActionListener()
+                            {
+                                public void actionPerformed(
+                                    ActionEvent evt)
+                                {
+                                    saveAttachmentButtonActionPerformed(evt);
+                                }
+                            });
                     }
                     {
                         saveAllButton = new JideButton();
@@ -363,11 +403,15 @@ public class ComposeMessageFrame extends javax.swing.JFrame
                                 0, 0, 255));
                         saveAllButton
                             .setAlwaysShowHyperlink(true);
-                        saveAllButton.addActionListener(new ActionListener() {
-                            public void actionPerformed(ActionEvent evt) {
-                                saveAllButtonActionPerformed(evt);
-                            }
-                        });
+                        saveAllButton
+                            .addActionListener(new ActionListener()
+                            {
+                                public void actionPerformed(
+                                    ActionEvent evt)
+                                {
+                                    saveAllButtonActionPerformed(evt);
+                                }
+                            });
                     }
                     {
                         openAttachmentButton = new JideButton();
@@ -385,11 +429,15 @@ public class ComposeMessageFrame extends javax.swing.JFrame
                         openAttachmentButton
                             .setForeground(new java.awt.Color(
                                 0, 0, 255));
-                        openAttachmentButton.addActionListener(new ActionListener() {
-                            public void actionPerformed(ActionEvent evt) {
-                                openAttachmentButtonActionPerformed(evt);
-                            }
-                        });
+                        openAttachmentButton
+                            .addActionListener(new ActionListener()
+                            {
+                                public void actionPerformed(
+                                    ActionEvent evt)
+                                {
+                                    openAttachmentButtonActionPerformed(evt);
+                                }
+                            });
                     }
                 }
                 {
@@ -564,34 +612,58 @@ public class ComposeMessageFrame extends javax.swing.JFrame
         // TODO add your code for saveButton.actionPerformed
     }
     
-    private void addFileButtonActionPerformed(ActionEvent evt) {
-        System.out.println("addFileButton.actionPerformed, event="+evt);
-        //TODO add your code for addFileButton.actionPerformed
+    private void addFileButtonActionPerformed(
+        ActionEvent evt)
+    {
+        System.out
+            .println("addFileButton.actionPerformed, event="
+                + evt);
+        // TODO add your code for addFileButton.actionPerformed
     }
     
-    private void addFolderButtonActionPerformed(ActionEvent evt) {
-        System.out.println("addFolderButton.actionPerformed, event="+evt);
-        //TODO add your code for addFolderButton.actionPerformed
+    private void addFolderButtonActionPerformed(
+        ActionEvent evt)
+    {
+        System.out
+            .println("addFolderButton.actionPerformed, event="
+                + evt);
+        // TODO add your code for addFolderButton.actionPerformed
     }
     
-    private void removeAttachmentButtonActionPerformed(ActionEvent evt) {
-        System.out.println("removeAttachmentButton.actionPerformed, event="+evt);
-        //TODO add your code for removeAttachmentButton.actionPerformed
+    private void removeAttachmentButtonActionPerformed(
+        ActionEvent evt)
+    {
+        System.out
+            .println("removeAttachmentButton.actionPerformed, event="
+                + evt);
+        // TODO add your code for removeAttachmentButton.actionPerformed
     }
     
-    private void saveAttachmentButtonActionPerformed(ActionEvent evt) {
-        System.out.println("saveAttachmentButton.actionPerformed, event="+evt);
-        //TODO add your code for saveAttachmentButton.actionPerformed
+    private void saveAttachmentButtonActionPerformed(
+        ActionEvent evt)
+    {
+        System.out
+            .println("saveAttachmentButton.actionPerformed, event="
+                + evt);
+        // TODO add your code for saveAttachmentButton.actionPerformed
     }
     
-    private void saveAllButtonActionPerformed(ActionEvent evt) {
-        System.out.println("saveAllButton.actionPerformed, event="+evt);
-        //TODO add your code for saveAllButton.actionPerformed
+    private void saveAllButtonActionPerformed(
+        ActionEvent evt)
+    {
+        System.out
+            .println("saveAllButton.actionPerformed, event="
+                + evt);
+        // TODO add your code for saveAllButton.actionPerformed
     }
     
-    private void openAttachmentButtonActionPerformed(ActionEvent evt) {
-        System.out.println("openAttachmentButton.actionPerformed, event="+evt);
-        //TODO add your code for openAttachmentButton.actionPerformed
+    private void openAttachmentButtonActionPerformed(
+        ActionEvent evt)
+    {
+        System.out
+            .println("openAttachmentButton.actionPerformed, event="
+                + evt);
+        // TODO add your code for openAttachmentButton.actionPerformed
     }
-
+    
 }
