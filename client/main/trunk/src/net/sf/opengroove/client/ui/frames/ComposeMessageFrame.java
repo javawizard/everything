@@ -14,11 +14,14 @@ import javax.swing.Box;
 import javax.swing.JScrollPane;
 import javax.swing.JSeparator;
 import javax.swing.BoxLayout;
+import javax.swing.DefaultComboBoxModel;
 import javax.swing.JButton;
 import javax.swing.JLabel;
+import javax.swing.JList;
 import javax.swing.JPanel;
 import javax.swing.JEditorPane;
 import javax.swing.JTextField;
+import javax.swing.ListModel;
 
 import javax.swing.WindowConstants;
 import javax.swing.SwingUtilities;
@@ -29,6 +32,7 @@ import javax.swing.text.html.HTMLEditorKit;
 
 import net.sf.opengroove.client.storage.Storage;
 import net.sf.opengroove.client.storage.UserMessage;
+import net.sf.opengroove.client.ui.UserMessageAttachmentsModel;
 
 /**
  * This code was edited or generated using CloudGarden's Jigloo
@@ -69,7 +73,6 @@ public class ComposeMessageFrame extends javax.swing.JFrame
     private JPanel jPanel3;
     private JLabel jLabel8;
     private JScrollPane jScrollPane1;
-    private JPanel attachmentsPanel;
     private JButton cancelButton;
     private JButton saveButton;
     private JLabel jLabel7;
@@ -84,6 +87,7 @@ public class ComposeMessageFrame extends javax.swing.JFrame
     private JEditorPane messageArea;
     private JTextField subjectField;
     private JLabel fromLabel;
+    private JList attachmentsList;
     private JLabel attachmentAreaReadLabel;
     private JPanel attachmentHelpPanel;
     private JSeparator jSeparator1;
@@ -94,6 +98,7 @@ public class ComposeMessageFrame extends javax.swing.JFrame
     private JLabel inReplyToLabel;
     private JLabel jLabel1;
     private JideButton addRecipientButton;
+    private UserMessageAttachmentsModel attachmentsModel;
     
     /**
      * Auto-generated main method to display this JFrame
@@ -112,6 +117,9 @@ public class ComposeMessageFrame extends javax.swing.JFrame
         });
     }
     
+    private Storage storage;
+    private UserMessage message;
+    
     /**
      * Creates a new ComposeMessageFrame. If the specified storage or user
      * message is null, then no initialization is performed. In general, passing
@@ -122,7 +130,8 @@ public class ComposeMessageFrame extends javax.swing.JFrame
     public ComposeMessageFrame(Storage storage,
         UserMessage message)
     {
-        super();
+        this.storage = storage;
+        this.message = message;
         initGUI();
     }
     
@@ -348,18 +357,6 @@ public class ComposeMessageFrame extends javax.swing.JFrame
                             attachmentUpperPanel
                                 .setOpaque(false);
                             {
-                                attachmentsPanel = new JPanel();
-                                attachmentUpperPanel
-                                    .add(attachmentsPanel);
-                                BoxLayout attachmentsPanelLayout = new BoxLayout(
-                                    attachmentsPanel,
-                                    javax.swing.BoxLayout.Y_AXIS);
-                                attachmentsPanel
-                                    .setLayout(attachmentsPanelLayout);
-                                attachmentsPanel
-                                    .setOpaque(false);
-                            }
-                            {
                                 attachmentHelpPanel = new JPanel();
                                 BorderLayout attachmentHelpPanelLayout = new BorderLayout();
                                 attachmentUpperPanel.add(
@@ -399,6 +396,17 @@ public class ComposeMessageFrame extends javax.swing.JFrame
                                         .setFont(new java.awt.Font(
                                             "Dialog", 0, 12));
                                 }
+                            }
+                            {
+                                attachmentsList = new JList();
+                                if (storage != null)
+                                {
+                                    attachmentsModel = new UserMessageAttachmentsModel(
+                                        storage, message);
+                                }
+                                attachmentUpperPanel.add(
+                                    attachmentsList,
+                                    BorderLayout.NORTH);
                             }
                         }
                     }
