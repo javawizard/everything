@@ -134,8 +134,14 @@ public class ComposeMessageFrame extends javax.swing.JFrame
         UserMessage message)
     {
         this.storage = storage;
-        this.message = message;
+        if (storage != null)
+            this.message = message;
         initGUI();
+        if (storage != null)
+        {
+            boolean isOutbound = message.isOutbound();
+            boolean isDraft = message.isDraft();
+        }
     }
     
     private void initGUI()
@@ -246,8 +252,10 @@ public class ComposeMessageFrame extends javax.swing.JFrame
                     BoxLayout jPanel2Layout = new BoxLayout(
                         attachmentsToolbar,
                         javax.swing.BoxLayout.X_AXIS);
-                    rootPanel.add(attachmentsToolbar, "1, 7");
-                    attachmentsToolbar.setLayout(jPanel2Layout);
+                    rootPanel.add(attachmentsToolbar,
+                        "1, 7");
+                    attachmentsToolbar
+                        .setLayout(jPanel2Layout);
                     {
                         jLabel6 = new JLabel();
                         attachmentsToolbar.add(jLabel6);
@@ -261,7 +269,8 @@ public class ComposeMessageFrame extends javax.swing.JFrame
                             .setButtonStyle(JideButton.HYPERLINK_STYLE);
                         addFileButton
                             .setAlwaysShowHyperlink(true);
-                        attachmentsToolbar.add(addFileButton);
+                        attachmentsToolbar
+                            .add(addFileButton);
                         addFileButton.setText("Add file");
                         addFileButton
                             .setForeground(new java.awt.Color(
@@ -272,7 +281,8 @@ public class ComposeMessageFrame extends javax.swing.JFrame
                     }
                     {
                         addFolderButton = new JideButton();
-                        attachmentsToolbar.add(addFolderButton);
+                        attachmentsToolbar
+                            .add(addFolderButton);
                         addFolderButton
                             .setText("Add folder");
                         addFolderButton
@@ -287,16 +297,25 @@ public class ComposeMessageFrame extends javax.swing.JFrame
                     }
                     {
                         removeAttachmentButton = new JideButton();
-                        attachmentsToolbar.add(removeAttachmentButton);
-                        removeAttachmentButton.setText("Remove");
-                        removeAttachmentButton.setFont(new java.awt.Font("Dialog",0,12));
-                        removeAttachmentButton.setForeground(new java.awt.Color(0,0,255));
-                        removeAttachmentButton.setAlwaysShowHyperlink(true);
-                        removeAttachmentButton.setButtonStyle(3);
+                        attachmentsToolbar
+                            .add(removeAttachmentButton);
+                        removeAttachmentButton
+                            .setText("Remove");
+                        removeAttachmentButton
+                            .setFont(new java.awt.Font(
+                                "Dialog", 0, 12));
+                        removeAttachmentButton
+                            .setForeground(new java.awt.Color(
+                                0, 0, 255));
+                        removeAttachmentButton
+                            .setAlwaysShowHyperlink(true);
+                        removeAttachmentButton
+                            .setButtonStyle(3);
                     }
                     {
                         saveAttachmentButton = new JideButton();
-                        attachmentsToolbar.add(saveAttachmentButton);
+                        attachmentsToolbar
+                            .add(saveAttachmentButton);
                         saveAttachmentButton
                             .setText("Save");
                         saveAttachmentButton
@@ -307,25 +326,40 @@ public class ComposeMessageFrame extends javax.swing.JFrame
                                 0, 0, 255));
                         saveAttachmentButton
                             .setAlwaysShowHyperlink(true);
-                        saveAttachmentButton.setButtonStyle(3);
+                        saveAttachmentButton
+                            .setButtonStyle(3);
                     }
                     {
                         saveAllButton = new JideButton();
-                        attachmentsToolbar.add(saveAllButton);
+                        attachmentsToolbar
+                            .add(saveAllButton);
                         saveAllButton.setText("Save all");
                         saveAllButton.setButtonStyle(3);
-                        saveAllButton.setFont(new java.awt.Font("Dialog",0,12));
-                        saveAllButton.setForeground(new java.awt.Color(0,0,255));
-                        saveAllButton.setAlwaysShowHyperlink(true);
+                        saveAllButton
+                            .setFont(new java.awt.Font(
+                                "Dialog", 0, 12));
+                        saveAllButton
+                            .setForeground(new java.awt.Color(
+                                0, 0, 255));
+                        saveAllButton
+                            .setAlwaysShowHyperlink(true);
                     }
                     {
                         openAttachmentButton = new JideButton();
-                        attachmentsToolbar.add(openAttachmentButton);
-                        openAttachmentButton.setText("Open");
-                        openAttachmentButton.setAlwaysShowHyperlink(true);
-                        openAttachmentButton.setButtonStyle(3);
-                        openAttachmentButton.setFont(new java.awt.Font("Dialog",0,12));
-                        openAttachmentButton.setForeground(new java.awt.Color(0,0,255));
+                        attachmentsToolbar
+                            .add(openAttachmentButton);
+                        openAttachmentButton
+                            .setText("Open");
+                        openAttachmentButton
+                            .setAlwaysShowHyperlink(true);
+                        openAttachmentButton
+                            .setButtonStyle(3);
+                        openAttachmentButton
+                            .setFont(new java.awt.Font(
+                                "Dialog", 0, 12));
+                        openAttachmentButton
+                            .setForeground(new java.awt.Color(
+                                0, 0, 255));
                     }
                 }
                 {

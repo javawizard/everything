@@ -18,34 +18,35 @@ public class UserMessageAttachmentsModel extends
         this.storage = storage;
         this.message = message;
     }
-
+    
     public Object getElementAt(int index)
     {
-        // TODO Auto-generated method stub
-        return null;
+        return message
+            .getAttachmentsByEmbeddedStatus(false)[index]
+            .getName();
     }
     
     public int getSize()
     {
-        // TODO Auto-generated method stub
-        return 0;
+        return message
+            .getAttachmentsByEmbeddedStatus(false).length;
     }
-
+    
     public Storage getStorage()
     {
         return storage;
     }
-
+    
     public UserMessage getMessage()
     {
         return message;
     }
-
+    
     public void setStorage(Storage storage)
     {
         this.storage = storage;
     }
-
+    
     public void setMessage(UserMessage message)
     {
         this.message = message;

@@ -36,6 +36,13 @@ public interface UserMessage
     
     public void setId(String id);
     
+    /**
+     * The message's stored id. This is set to the stored message id of the
+     * stored message used to send this message, when the message is about to be
+     * sent, and similarly when receiving the message.
+     * 
+     * @return
+     */
     @Property
     public String getStoredMessageId();
     
@@ -54,7 +61,9 @@ public interface UserMessage
     /**
      * For outbound messages, true if this message is a draft, false if it is
      * not. A draft outbound message is one that has not actually been sent yet,
-     * typically because the user wishes to keep editing it.
+     * typically because the user wishes to keep editing it. UserMessage objects
+     * created because the user is about to compose a message will always be
+     * marked as a draft until they are sent.
      * 
      * @return
      */
@@ -153,4 +162,8 @@ public interface UserMessage
     @Search(listProperty = "attachments", searchProperty = "name")
     public UserMessageAttachment getAttachmentByName(
         String name);
+    
+    @Search(listProperty = "attachments", searchProperty = "embedded")
+    public UserMessageAttachment[] getAttachmentsByEmbeddedStatus(
+        boolean status);
 }
