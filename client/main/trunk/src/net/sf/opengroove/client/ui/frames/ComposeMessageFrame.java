@@ -1002,11 +1002,19 @@ public class ComposeMessageFrame extends javax.swing.JFrame
         }
     }
     
-    private void importFolder(File file, File attachmentFile)throws IOException
+    private void importFolder(File file, File attachmentFile)
+        throws IOException
     {
         FileOutputStream fileOut = new FileOutputStream(
             file);
         ZipOutputStream out = new ZipOutputStream(fileOut);
+        recursiveZipWrite(file, out, "");
+    }
+    
+    private void recursiveZipWrite(File file,
+        ZipOutputStream out, String currentParentPath)
+    {
+        // TODO Auto-generated method stub
         
     }
     
