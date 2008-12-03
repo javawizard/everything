@@ -16,6 +16,7 @@ import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.HashMap;
+import java.util.zip.ZipOutputStream;
 
 import javax.swing.Action;
 import javax.swing.Box;
@@ -1001,8 +1002,12 @@ public class ComposeMessageFrame extends javax.swing.JFrame
         }
     }
     
-    private void importFolder(File file, File attachmentFile)
+    private void importFolder(File file, File attachmentFile)throws IOException
     {
+        FileOutputStream fileOut = new FileOutputStream(
+            file);
+        ZipOutputStream out = new ZipOutputStream(fileOut);
+        
     }
     
     private void importFile(File file, File attachmentFile)
