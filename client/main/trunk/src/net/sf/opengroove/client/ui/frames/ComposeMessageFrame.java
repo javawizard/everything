@@ -12,6 +12,9 @@ import java.awt.event.ActionListener;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.IOException;
 import java.util.HashMap;
 
 import javax.swing.Action;
@@ -43,6 +46,7 @@ import net.sf.opengroove.client.storage.UserMessage;
 import net.sf.opengroove.client.ui.UserMessageAttachmentsModel;
 import net.sf.opengroove.common.ui.ComponentUtils;
 import net.sf.opengroove.common.utils.DataUtils;
+import net.sf.opengroove.common.utils.StringUtils;
 
 /**
  * This code was edited or generated using CloudGarden's Jigloo
@@ -999,14 +1003,21 @@ public class ComposeMessageFrame extends javax.swing.JFrame
     
     private void importFolder(File file, File attachmentFile)
     {
-        // TODO Auto-generated method stub
-        
     }
     
     private void importFile(File file, File attachmentFile)
+        throws IOException
     {
-        // TODO Auto-generated method stub
-        
+        /*
+         * All we need to do is copy the attachment over.
+         */
+        FileInputStream in = new FileInputStream(
+            attachmentFile);
+        FileOutputStream out = new FileOutputStream(file);
+        StringUtils.copy(in, out);
+        out.flush();
+        out.close();
+        in.close();
     }
     
 }
