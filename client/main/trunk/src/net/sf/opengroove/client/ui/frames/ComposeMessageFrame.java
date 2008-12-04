@@ -45,6 +45,7 @@ import javax.swing.text.StyledEditorKit;
 import javax.swing.text.StyledEditorKit.BoldAction;
 import javax.swing.text.html.HTMLEditorKit;
 
+import net.sf.opengroove.client.UserContext;
 import net.sf.opengroove.client.storage.Storage;
 import net.sf.opengroove.client.storage.UserMessage;
 import net.sf.opengroove.client.storage.UserMessageAttachment;
@@ -122,7 +123,7 @@ public class ComposeMessageFrame extends javax.swing.JFrame
     private JLabel attachmentAreaReadLabel;
     private JPanel attachmentHelpPanel;
     private JSeparator jSeparator1;
-    private JLabel jLabel9;
+    private JLabel fromContents;
     private JLabel attachmentAreaHintLabel;
     private JPanel attachmentUpperPanel;
     private JPanel attachmentScrollingPanel;
@@ -214,6 +215,12 @@ public class ComposeMessageFrame extends javax.swing.JFrame
                         ComposeMessageFrame.this.message
                             .setSubject(subjectField
                                 .getText());
+                        UserContext context = ComposeMessageFrame.this.storage
+                            .getLocalUser().getContext();
+                        if (context != null)
+                            context
+                                .getMessageHistoryFrame()
+                                .reload();
                     }
                     composeFrames
                         .remove(ComposeMessageFrame.this.message);
@@ -223,6 +230,7 @@ public class ComposeMessageFrame extends javax.swing.JFrame
                 ComposeMessageFrame.this.message,
                 ComposeMessageFrame.this);
             isEditable = isOutbound && isDraft;
+            subjectField.setText(null);
             if (isEditable)
             {
                 buttonPanel.remove(includeHistoryCheckbox);
@@ -826,8 +834,8 @@ public class ComposeMessageFrame extends javax.swing.JFrame
                     fromLabel.setText("From: ");
                 }
                 {
-                    jLabel9 = new JLabel();
-                    rootPanel.add(jLabel9, "1, 0");
+                    fromContents = new JLabel();
+                    rootPanel.add(fromContents, "1, 0");
                 }
                 {
                     jSeparator1 = new JSeparator();

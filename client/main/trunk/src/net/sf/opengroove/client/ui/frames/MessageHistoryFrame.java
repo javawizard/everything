@@ -93,7 +93,6 @@ public class MessageHistoryFrame extends javax.swing.JFrame
         this.storage = storage;
         if (storage != null)
             this.user = storage.getLocalUser();
-        setLocationRelativeTo(null);
         initGUI();
         addWindowListener(new WindowAdapter()
         {
@@ -108,6 +107,7 @@ public class MessageHistoryFrame extends javax.swing.JFrame
                     sorter.sort();
             }
         });
+        setLocationRelativeTo(null);
     }
     
     private void initGUI()
@@ -304,7 +304,6 @@ public class MessageHistoryFrame extends javax.swing.JFrame
                                 tableModel = new UserMessageTableModel(
                                     storage);
                                 table.setModel(tableModel);
-                                table.getColumnModel().getColumn(UserMessageTableModel.)
                                 sorter = new TableRowSorter<UserMessageTableModel>(
                                     tableModel);
                                 RowFilter<UserMessageTableModel, Integer> rowFilter = new RowFilter<UserMessageTableModel, Integer>()
