@@ -62,6 +62,7 @@ import net.sf.opengroove.client.storage.ContactComputer;
 import net.sf.opengroove.client.storage.ContactStatus;
 import net.sf.opengroove.client.storage.LocalUser;
 import net.sf.opengroove.client.storage.Storage;
+import net.sf.opengroove.client.storage.UserMessage;
 import net.sf.opengroove.client.ui.frames.SearchForUsersFrame;
 import net.sf.opengroove.client.workspace.WorkspaceManager;
 import net.sf.opengroove.common.concurrent.Conditional;
@@ -1793,5 +1794,33 @@ public class UserContext
     public Object getSetting(SettingSpec spec)
     {
         return getSettingsManager().getSettingValue(spec);
+    }
+    
+    /**
+     * Opens a window for composing a message. The message's subject and message
+     * fields are initialized to the specified values. inReplyTo must not be
+     * null, but can be the empty string if this message is not in reply.
+     * 
+     * @param subject
+     * @param contents
+     *            The initial body of the message, in HTML format.
+     * @param inReplyTo
+     */
+    public void composeMessage(String subject,
+        String contents, String inReplyTo)
+    {
+        /*
+         * First, we need to create the user message object.
+         */
+        UserMessage message = Storage.getLocalUser(userid)
+            .createUserMessage();
+        message.setContentType("text/html");
+        message.setDate(System.currentTimeMillis());
+        /*
+         * The date will be set again when we send the message, but we need to
+         * set the date right now so that, while the message is a draft, it will
+         * still be sorted correctly.
+         */
+        
     }
 }

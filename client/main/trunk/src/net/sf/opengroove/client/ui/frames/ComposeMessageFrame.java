@@ -45,6 +45,7 @@ import javax.swing.text.html.HTMLEditorKit;
 
 import net.sf.opengroove.client.storage.Storage;
 import net.sf.opengroove.client.storage.UserMessage;
+import net.sf.opengroove.client.storage.UserMessageAttachment;
 import net.sf.opengroove.client.ui.UserMessageAttachmentsModel;
 import net.sf.opengroove.common.ui.ComponentUtils;
 import net.sf.opengroove.common.utils.DataUtils;
@@ -857,18 +858,17 @@ public class ComposeMessageFrame extends javax.swing.JFrame
     private void forwardButtonActionPerformed(
         ActionEvent evt)
     {
-        System.out
-            .println("forwardButton.actionPerformed, event="
-                + evt);
-        // TODO add your code for forwardButton.actionPerformed
+        /*
+         * This will create a new message, initializing it's contents to
+         */
     }
     
     private void closeButtonActionPerformed(ActionEvent evt)
     {
-        System.out
-            .println("closeButton.actionPerformed, event="
-                + evt);
-        // TODO add your code for closeButton.actionPerformed
+        /*
+         * All we need to do is dispose the window.
+         */
+        dispose();
     }
     
     /**
@@ -879,7 +879,11 @@ public class ComposeMessageFrame extends javax.swing.JFrame
      * exist, and then it adds them first as message attachment files and then
      * as message attachment objects.<br/><br/>
      * 
-     * This method blocks until the attachments have been imported.
+     * This method blocks until the attachments have been imported.<br/><br/>
+     * 
+     * Right now, this method doesn't check to make sure that the message is
+     * less than 2GB in size. It needs to do this in the future, to avoid the
+     * user adding too many attachments and messing up the message.
      * 
      * @param attachments
      */
@@ -976,7 +980,27 @@ public class ComposeMessageFrame extends javax.swing.JFrame
                     importFolder(file, attachmentFile);
                 else
                     throw new RuntimeException();
+                /*
+                 * We've imported the attachment file or folder, so now we have
+                 * a single file that we can add. Now we'll create a user
+                 * message attachment, and add it to the message.
+                 */
+                UserMessageAttachment attachment = message
+                    .createAttachment();
+                attachment.setEmbedded(false);
+                attachment.setFolder(file.isDirectory());
+                attachment.setInternal(false);
+                attachment.setInternalType("");
+                attachment.setName(name.toLowerCase());
+                attachment.setSize((int) attachmentFile
+                    .length());
+                
+                message.getAttachments().add(attachment);
+                attachmentsModel.reload();
             }
+            /*
+             * We're done! We'll let the finally block hide the dialog for us.
+             */
         }
         catch (Exception e)
         {
@@ -1014,6 +1038,15 @@ public class ComposeMessageFrame extends javax.swing.JFrame
         out.close();
     }
     
+    /**
+     * Adds the file or folder to the zip file specified, including all of it's
+     * subfolders (as "recurisve" in the method name should imply).
+     * 
+     * @param file
+     * @param out
+     * @param currentParentPath
+     * @throws IOException
+     */
     private void recursiveZipWrite(File file,
         ZipOutputStream out, String currentParentPath)
         throws IOException

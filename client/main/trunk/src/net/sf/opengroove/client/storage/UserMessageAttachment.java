@@ -24,6 +24,11 @@ public interface UserMessageAttachment
     
     public void setEmbedded(boolean embedded);
     
+    @Property
+    public boolean isFolder();
+    
+    public void setFolder(boolean folder);
+    
     /**
      * For embedded attachments, true if the attachment is internal or not. An
      * internal attachment is one used for some opengroove-specific purpose;

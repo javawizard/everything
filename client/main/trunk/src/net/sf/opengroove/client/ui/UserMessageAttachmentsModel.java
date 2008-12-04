@@ -52,4 +52,9 @@ public class UserMessageAttachmentsModel extends
         this.message = message;
     }
     
+    public void reload()
+    {
+        fireContentsChanged(null,0, getSize());
+    }
+    
 }
