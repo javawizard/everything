@@ -230,7 +230,6 @@ public class ComposeMessageFrame extends javax.swing.JFrame
                 ComposeMessageFrame.this.message,
                 ComposeMessageFrame.this);
             isEditable = isOutbound && isDraft;
-            subjectField.setText(null);
             if (isEditable)
             {
                 buttonPanel.remove(includeHistoryCheckbox);
@@ -255,8 +254,9 @@ public class ComposeMessageFrame extends javax.swing.JFrame
                 buttonPanel.remove(saveButton);
                 buttonPanel.remove(cancelButton);
             }
-            fromLabel.setText(message.getSender());
-            
+            fromContents.setText(message.getSender());
+            subjectField.setText(message.getSubject());
+            messageArea.setText(message.getMessage());
             addFileChooser.setMultiSelectionEnabled(true);
             addFolderChooser.setMultiSelectionEnabled(true);
             saveChooser.setMultiSelectionEnabled(false);

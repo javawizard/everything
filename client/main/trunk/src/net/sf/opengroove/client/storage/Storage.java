@@ -1,5 +1,6 @@
 package net.sf.opengroove.client.storage;
 
+import java.awt.FlowLayout;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
@@ -19,6 +20,9 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.Hashtable;
 import java.util.concurrent.atomic.AtomicInteger;
+
+import javax.swing.JFrame;
+import javax.swing.JLabel;
 
 import net.sf.opengroove.client.workspace.WorkspaceWrapper;
 import net.sf.opengroove.common.proxystorage.ProxyStorage;
@@ -42,6 +46,12 @@ public class Storage
     private static DataStore dataStore;
     
     private static ProxyStorage<DataStore> proxyStorage;
+    /**
+     * Generally only used for debugging. If this is true, a new frame will be
+     * opened that will refresh itself once per second with the current proxy
+     * storage opcount.
+     */
+    private static final boolean showDebugProxyOpFrame = false;
     
     /**
      * Initializes the Storage class. This should only be called once per JVM
@@ -65,6 +75,40 @@ public class Storage
             logFolder.mkdirs();
         proxyStorage = new ProxyStorage<DataStore>(
             DataStore.class, new File(base, "proxystorage"));
+        if (showDebugProxyOpFrame)
+        {
+            JFrame frame = new JFrame(
+                "ProxyStorage opcounts");
+            frame.setSize(300, 150);
+            final JLabel opcountLabel = new JLabel(""
+                + proxyStorage.getOpcount());
+            frame.getContentPane().setLayout(
+                new FlowLayout());
+            frame.getContentPane().add(opcountLabel);
+            new Thread()
+            {
+                public void run()
+                {
+                    while (true)
+                    {
+                        try
+                        {
+                            Thread.sleep(1000);
+                            opcountLabel
+                                .setText(""
+                                    + proxyStorage
+                                        .getOpcount());
+                        }
+                        catch (Exception exception)
+                        {
+                            exception.printStackTrace();
+                        }
+                    }
+                }
+            }.start();
+            frame.setLocationRelativeTo(null);
+            frame.show();
+        }
         dataStore = proxyStorage.getRoot();
     }
     
