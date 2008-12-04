@@ -3540,6 +3540,15 @@ public class OpenGroove
             BoxLayout.X_AXIS));
         JLinkButton messageHistoryButton = new JLinkButton(
             Icons.MESSAGE_CONFIG_16.getIcon());
+        messageHistoryButton
+            .addActionListener(new ActionListener()
+            {
+
+                public void actionPerformed(ActionEvent e)
+                {
+                    context.getMessageHistoryFrame().show();
+                }
+            });
         JLinkButton settingsLinkButton = new JLinkButton(
             Icons.SETTINGS_16.getIcon());
         messageHistoryButton.setFocusable(false);

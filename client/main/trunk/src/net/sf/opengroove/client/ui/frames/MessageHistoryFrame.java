@@ -20,6 +20,7 @@ import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.JTextField;
+import javax.swing.ListSelectionModel;
 import javax.swing.RowFilter;
 
 import javax.swing.WindowConstants;
@@ -31,6 +32,7 @@ import javax.swing.table.TableRowSorter;
 
 import net.sf.opengroove.client.storage.LocalUser;
 import net.sf.opengroove.client.storage.Storage;
+import net.sf.opengroove.client.storage.UserMessage;
 import net.sf.opengroove.client.ui.UserMessageTableModel;
 import net.sf.opengroove.common.ui.ComponentUtils;
 
@@ -91,6 +93,7 @@ public class MessageHistoryFrame extends javax.swing.JFrame
         this.storage = storage;
         if (storage != null)
             this.user = storage.getLocalUser();
+        setLocationRelativeTo(null);
         initGUI();
         addWindowListener(new WindowAdapter()
         {
@@ -323,6 +326,12 @@ public class MessageHistoryFrame extends javax.swing.JFrame
                                 table.setRowSorter(sorter);
                                 sorter.sort();
                             }
+                            table
+                                .setRowSelectionAllowed(true);
+                            table
+                                .setColumnSelectionAllowed(false);
+                            table
+                                .setSelectionMode(ListSelectionModel.MULTIPLE_INTERVAL_SELECTION);
                             tableScrollPane
                                 .setViewportView(table);
                         }
@@ -352,10 +361,23 @@ public class MessageHistoryFrame extends javax.swing.JFrame
                     this,
                     "<html>You're about to open "
                         + selectedRowIndexes.length
-                        + " messages. Opening this many messages<br/>could slow down your computer quite a bit. "
+                        + " messages. Opening this many messages<br/>"
+                        + "could slow down your computer quite a bit. "
                         + "Are you<br/>sure you still want to open these messages?",
                     null, JOptionPane.YES_NO_OPTION) == JOptionPane.YES_OPTION))
             return;
+        if (selectedRowIndexes.length == 0)
+            return;
+        for (int index : selectedRowIndexes)
+        {
+            UserMessage message = storage.getLocalUser()
+                .getUserMessages().get(
+                    table.convertRowIndexToModel(index));
+            if (message != null)
+                ComposeMessageFrame
+                    .showComposeMessageFrame(storage,
+                        message);
+        }
     }
     
     private void searchButtonActionPerformed(ActionEvent evt)
