@@ -32,7 +32,7 @@ public class UserMessageRecipientsModel extends
     
     public void reload()
     {
-        fireContentsChanged(null, 0, getSize());
+        fireContentsChanged(this, 0, getSize());
     }
     
 }

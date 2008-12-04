@@ -1183,6 +1183,15 @@ public class ComposeMessageFrame extends javax.swing.JFrame
                     this,
                     "Select a recipient to delete first. You can select a recipient by clicking on their userid, to the left.");
         }
+        /*
+         * A recipient is selected, and the message is editable. We'll remove
+         * the recipient now.
+         */
+        message.getRecipients().remove(
+            message
+                .getRecipientById((String) recipientsList
+                    .getSelectedValue()));
+        recipientsModel.reload();
     }
     
     private void addRecipientButtonActionPerformed(
@@ -1190,6 +1199,7 @@ public class ComposeMessageFrame extends javax.swing.JFrame
     {
         if (!isEditable)
             return;
+        
     }
     
 }

@@ -166,4 +166,7 @@ public interface UserMessage
     @Search(listProperty = "attachments", searchProperty = "embedded")
     public UserMessageAttachment[] getAttachmentsByEmbeddedStatus(
         boolean status);
+    
+    @Search(listProperty = "recipients", searchProperty = "userid")
+    public Object getRecipientById(String selectedValue);
 }
