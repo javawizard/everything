@@ -1116,6 +1116,8 @@ public class ProxyStorage<E>
         public Object invoke(Object proxy, Method method,
             Object[] args) throws Throwable
         {
+            if (args == null)
+                args = new Object[0];
             synchronized (lock)
             {
                 if (method
@@ -1281,10 +1283,23 @@ public class ProxyStorage<E>
                                     .getName());
                     Class listType = listTypeAnnotation
                         .value();
-                    Method searchGetterMethod = listType
-                        .getMethod("get"
-                            + capitalizedSearchProperty,
-                            new Class[0]);
+                    Method searchGetterMethod;
+                    try
+                    {
+                        searchGetterMethod = listType
+                            .getMethod(
+                                "get"
+                                    + capitalizedSearchProperty,
+                                new Class[0]);
+                    }
+                    catch (NoSuchMethodException ex)
+                    {
+                        searchGetterMethod = listType
+                            .getMethod(
+                                "is"
+                                    + capitalizedSearchProperty,
+                                new Class[0]);
+                    }
                     /*
                      * At this point, we have method objects representing the
                      * stored list and the search property. Now we do the actual
@@ -1426,11 +1441,23 @@ public class ProxyStorage<E>
                             .substring(0, 1).toUpperCase()
                             + searchProperties[i]
                                 .substring(1);
-                        Method searchGetterMethod = listType
-                            .getMethod(
-                                "get"
-                                    + capitalizedSearchProperty,
-                                new Class[0]);
+                        Method searchGetterMethod;
+                        try
+                        {
+                            searchGetterMethod = listType
+                                .getMethod(
+                                    "get"
+                                        + capitalizedSearchProperty,
+                                    new Class[0]);
+                        }
+                        catch (NoSuchMethodException ex)
+                        {
+                            searchGetterMethod = listType
+                                .getMethod(
+                                    "is"
+                                        + capitalizedSearchProperty,
+                                    new Class[0]);
+                        }
                         searchQueryMethods[i] = searchGetterMethod;
                         searchQueryStrings[i] = searchProperties[i]
                             + " "
