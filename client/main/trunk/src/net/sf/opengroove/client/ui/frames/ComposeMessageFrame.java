@@ -151,7 +151,7 @@ public class ComposeMessageFrame extends javax.swing.JFrame
         {
             ComposeMessageFrame frame = new ComposeMessageFrame(
                 storage, message);
-            frame.setLocationRelativeTo(null);
+            frame.setLocationByPlatform(true);
             frame.show();
         }
     }
