@@ -171,6 +171,7 @@ public class ComposeMessageFrame extends javax.swing.JFrame
     private Storage storage;
     private UserMessage message;
     private boolean isEditable;
+    private UserMessageRecipientsModel recipientsModel;
     
     /**
      * Creates a new ComposeMessageFrame. If the specified storage or user
@@ -349,17 +350,17 @@ public class ComposeMessageFrame extends javax.swing.JFrame
                         addRecipientButton.setVerticalAlignment(SwingConstants.TOP);
                     }
                     {
-                        ListModel recipientsListModel = new DefaultComboBoxModel(
-                            new String[] { "Item One",
-                                "Item Two" });
                         recipientsList = new JList();
+                        if(storage != null)
+                        {
+                            recipientsModel = new UserMessageRecipientsModel(storage,message);
+                            recipientsList.setModel(recipientsModel);
+                        }
                         recipientsList
                             .setBackground(new Color(0, 0,
                                 0, 0));
                         jPanel1.add(recipientsList,
                             BorderLayout.CENTER);
-                        recipientsList
-                            .setModel(recipientsListModel);
                         recipientsList
                             .setLayoutOrientation(JList.HORIZONTAL_WRAP);
                         recipientsList.setOpaque(false);
