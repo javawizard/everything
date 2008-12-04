@@ -110,6 +110,24 @@ public class ProxyStorage<E>
     protected static final Map<Class, ParameterFilter> parameterFilterSingletons = new HashMap<Class, ParameterFilter>();
     
     protected static final Map<Class, ResultFilter> resultFilterSingletons = new HashMap<Class, ResultFilter>();
+    
+    long opcount = 0;
+    
+    /**
+     * Gets this ProxyStorage's Opcount, or the number of operations that have
+     * been executed. Right now, an operation is defined to be one SQL statement
+     * being executed.
+     * 
+     * @return
+     */
+    public long getOpcount()
+    {
+        synchronized (lock)
+        {
+            return opcount;
+        }
+    }
+    
     /**
      * Maps longs to objects (object ids to the objects themselves), but lrumap
      * doesn't support generics which is why the mapping isn't shown as generics
@@ -222,6 +240,7 @@ public class ProxyStorage<E>
                 new TableColumn("value", Types.BIGINT, 0) });
         PreparedStatement st = connection
             .prepareStatement("select name from proxystorage_statics where name = 'sequencer'");
+        opcount++;
         ResultSet rs = st.executeQuery();
         if (!rs.next())
         {
@@ -243,6 +262,7 @@ public class ProxyStorage<E>
         PreparedStatement statement = connection
             .prepareStatement("create table " + name
                 + " ()");
+        opcount++;
         statement.execute();
         statement.close();
     }
@@ -259,6 +279,7 @@ public class ProxyStorage<E>
     {
         PreparedStatement st = connection
             .prepareStatement(sql);
+        opcount++;
         try
         {
             st.execute();
@@ -298,6 +319,7 @@ public class ProxyStorage<E>
                     .prepareStatement("alter table "
                         + tableName + " drop column "
                         + column.getName());
+                opcount++;
                 st.execute();
                 st.close();
             }
@@ -317,6 +339,7 @@ public class ProxyStorage<E>
                         + " "
                         + getStringDataType(column
                             .getType(), column.getSize()));
+                opcount++;
                 st.execute();
                 st.close();
             }
@@ -500,6 +523,7 @@ public class ProxyStorage<E>
                                             .longValue();
                                 }
                             }, ",") + ")");
+                opcount++;
                 lst.execute();
                 lst.close();
             }
@@ -934,6 +958,7 @@ public class ProxyStorage<E>
                     st.setNull(index, col.getType());
                 }
             }
+            opcount++;
             st.execute();
             st.close();
             return (T) getById(newId, c);
@@ -1013,6 +1038,7 @@ public class ProxyStorage<E>
                 + " where proxystorage_id = ?";
             PreparedStatement st = connection
                 .prepareStatement(statement);
+            opcount++;
             st.setLong(1, id);
             ResultSet rs = st.executeQuery();
             rs.next();
@@ -1052,6 +1078,7 @@ public class ProxyStorage<E>
             PreparedStatement rst = connection
                 .prepareStatement("select value from proxystorage_statics where name = ?");
             rst.setString(1, "root");
+            opcount++;
             ResultSet rs = rst.executeQuery();
             boolean hasNext = rs.next();
             long existingId = 0;
@@ -1075,6 +1102,7 @@ public class ProxyStorage<E>
                 .getProxyStorageId();
             PreparedStatement st = connection
                 .prepareStatement("insert into proxystorage_statics values (?,?)");
+            opcount++;
             st.setString(1, "root");
             st.setLong(2, newId);
             st.execute();
@@ -1233,6 +1261,7 @@ public class ProxyStorage<E>
                             + " from "
                             + getTargetTableName(targetClass)
                             + " where proxystorage_id = ?");
+                    opcount++;
                     lst.setLong(1, targetId);
                     ResultSet lrs = lst.executeQuery();
                     if (!lrs.next())
@@ -1327,6 +1356,7 @@ public class ProxyStorage<E>
                                 : "");
                     }
                     st.setObject(2, searchValue);
+                    opcount++;
                     ResultSet rs = st.executeQuery();
                     ArrayList<Long> resultIds = new ArrayList<Long>();
                     while (rs.next())
@@ -1387,6 +1417,7 @@ public class ProxyStorage<E>
                             + getTargetTableName(targetClass)
                             + " where proxystorage_id = ?");
                     lst.setLong(1, targetId);
+                    opcount++;
                     ResultSet lrs = lst.executeQuery();
                     if (!lrs.next())
                         throw new RuntimeException(
@@ -1483,6 +1514,7 @@ public class ProxyStorage<E>
                     // + searchSql);
                     PreparedStatement st = connection
                         .prepareStatement(searchSql);
+                    opcount++;
                     st.setLong(1, listId);
                     // System.out.println("parameter 1 = "
                     // + listId);
@@ -1600,6 +1632,7 @@ public class ProxyStorage<E>
                                 + " from "
                                 + getTargetTableName(targetClass)
                                 + " where proxystorage_id = ?");
+                        opcount++;
                         st.setLong(1, targetId);
                         ResultSet rs = st.executeQuery();
                         boolean isPresent = rs.next();
@@ -1706,6 +1739,7 @@ public class ProxyStorage<E>
                                         + " set "
                                         + propertyName
                                         + " = ? where proxystorage_id = ?");
+                                opcount++;
                                 ist.setLong(1,
                                     (Long) result);
                                 ist.setLong(2, targetId);
@@ -1747,6 +1781,7 @@ public class ProxyStorage<E>
                                         + " set "
                                         + propertyName
                                         + " = ? where proxystorage_id = ?");
+                                opcount++;
                                 ust.setLong(1, newId);
                                 ust.setLong(2, targetId);
                                 ust.executeUpdate();
@@ -1795,6 +1830,7 @@ public class ProxyStorage<E>
                             }
                         }
                         st.setObject(1, inputObject);
+                        opcount++;
                         st.execute();
                         st.close();
                         HashMap<String, ArrayList<PropertyChangeListener>> beanMap = beanListeners
@@ -1859,11 +1895,13 @@ public class ProxyStorage<E>
             PreparedStatement ist = connection
                 .prepareStatement("update proxystorage_statics set value = value + 1 where name = ?");
             ist.setString(1, "sequencer");
+            opcount++;
             ist.execute();
             ist.close();
             PreparedStatement rst = connection
                 .prepareStatement("select value from proxystorage_statics where name = ?");
             rst.setString(1, "sequencer");
+            opcount++;
             ResultSet rs = rst.executeQuery();
             rs.next();
             long newId = rs.getLong(1);
