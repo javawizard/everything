@@ -194,6 +194,20 @@ public class ComposeMessageFrame extends javax.swing.JFrame
                 
                 public void windowClosed(WindowEvent e)
                 {
+                    if (isEditable)
+                    {
+                        /*
+                         * This means that the message is stil a draft that
+                         * hasn't been sent yet. We'll want to save the message
+                         * contents and the subject.
+                         */
+                        ComposeMessageFrame.this.message
+                            .setMessage(messageArea
+                                .getText());
+                        ComposeMessageFrame.this.message
+                            .setSubject(subjectField
+                                .getText());
+                    }
                     composeFrames
                         .remove(ComposeMessageFrame.this.message);
                 }
@@ -212,6 +226,8 @@ public class ComposeMessageFrame extends javax.swing.JFrame
             }
             else
             {
+                subjectField.setEditable(false);
+                messageArea.setEditable(false);
                 attachmentsToolbar.remove(addFileButton);
                 attachmentsToolbar.remove(addFolderButton);
                 attachmentsToolbar
@@ -222,6 +238,8 @@ public class ComposeMessageFrame extends javax.swing.JFrame
                 buttonPanel.remove(saveButton);
                 buttonPanel.remove(cancelButton);
             }
+            fromLabel.setText(message.getSender());
+            
             addFileChooser.setMultiSelectionEnabled(true);
             addFolderChooser.setMultiSelectionEnabled(true);
             saveChooser.setMultiSelectionEnabled(false);
@@ -762,10 +780,10 @@ public class ComposeMessageFrame extends javax.swing.JFrame
     
     private void saveButtonActionPerformed(ActionEvent evt)
     {
-        System.out
-            .println("saveButton.actionPerformed, event="
-                + evt);
-        // TODO add your code for saveButton.actionPerformed
+        /*
+         * All we need to do is dispose the frame.
+         */
+        dispose();
     }
     
     private void addFileButtonActionPerformed(
