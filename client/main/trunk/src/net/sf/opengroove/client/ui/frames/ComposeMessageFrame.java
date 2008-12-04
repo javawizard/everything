@@ -925,6 +925,12 @@ public class ComposeMessageFrame extends javax.swing.JFrame
     
     private void cancelButtonActionPerformed(ActionEvent evt)
     {
+        if (JOptionPane
+            .showConfirmDialog(
+                this,
+                "Are you sure you want to discard this message?",
+                null, JOptionPane.YES_NO_OPTION) != JOptionPane.YES_OPTION)
+            return;
         String messageId = message.getId();
         storage.getLocalUser().getUserMessages().remove(
             message);
