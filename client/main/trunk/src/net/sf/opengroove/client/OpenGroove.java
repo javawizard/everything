@@ -140,6 +140,7 @@ import net.sf.opengroove.client.ui.StandardWizardPage;
 import net.sf.opengroove.client.ui.StatusDialog;
 import net.sf.opengroove.client.ui.WebsiteButton;
 import net.sf.opengroove.client.ui.frames.LoginFrame;
+import net.sf.opengroove.client.ui.frames.MessageHistoryFrame;
 import net.sf.opengroove.client.ui.frames.UserNotificationFrame;
 import net.sf.opengroove.client.ui.transitions.included.SlideInNotificationFrameTransition;
 import net.sf.opengroove.client.workspace.WorkspaceManager;
@@ -1131,6 +1132,9 @@ public class OpenGroove
                     userid, commandCom, context
                         .getRootMessageHierarchy());
                 context.setMessageManager(messageManager);
+                context
+                    .setMessageHistoryFrame(new MessageHistoryFrame(
+                        Storage.get(context.getUserid())));
                 commandCom
                     .addUserNotificationListener(context
                         .getUserNotificationListener());
