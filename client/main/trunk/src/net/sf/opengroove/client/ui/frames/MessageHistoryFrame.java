@@ -15,6 +15,7 @@ import javax.swing.BoxLayout;
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
 import javax.swing.JLabel;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
@@ -344,10 +345,17 @@ public class MessageHistoryFrame extends javax.swing.JFrame
     
     private void openButtonActionPerformed(ActionEvent evt)
     {
-        System.out
-            .println("openButton.actionPerformed, event="
-                + evt);
-        // TODO add your code for openButton.actionPerformed
+        int[] selectedRowIndexes = table.getSelectedRows();
+        if (selectedRowIndexes.length > 5
+            && !(JOptionPane
+                .showConfirmDialog(
+                    this,
+                    "<html>You're about to open "
+                        + selectedRowIndexes.length
+                        + " messages. Opening this many messages<br/>could slow down your computer quite a bit. "
+                        + "Are you<br/>sure you still want to open these messages?",
+                    null, JOptionPane.YES_NO_OPTION) == JOptionPane.YES_OPTION))
+            return;
     }
     
     private void searchButtonActionPerformed(ActionEvent evt)

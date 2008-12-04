@@ -48,6 +48,7 @@ import javax.swing.text.html.HTMLEditorKit;
 import net.sf.opengroove.client.storage.Storage;
 import net.sf.opengroove.client.storage.UserMessage;
 import net.sf.opengroove.client.storage.UserMessageAttachment;
+import net.sf.opengroove.client.storage.UserMessageRecipient;
 import net.sf.opengroove.client.ui.UserMessageAttachmentsModel;
 import net.sf.opengroove.client.ui.UserMessageRecipientsModel;
 import net.sf.opengroove.common.ui.ComponentUtils;
@@ -1199,7 +1200,24 @@ public class ComposeMessageFrame extends javax.swing.JFrame
     {
         if (!isEditable)
             return;
-        
+        String newUserid = ContactChooser.chooseContact(
+            this, storage, "Choose a contact to add.");
+        if (newUserid == null)
+            /*
+             * They clicked "cancel" or closed the dialog
+             */
+            return;
+        if (message.getRecipientById(newUserid) != null)
+        {
+            JOptionPane.showMessageDialog(this,
+                "That user is already a recipient");
+            return;
+        }
+        UserMessageRecipient newRecipient = message
+            .createRecipient();
+        newRecipient.setUserid(newUserid);
+        message.getRecipients().add(newRecipient);
+        recipientsModel.reload();
     }
     
 }
