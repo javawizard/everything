@@ -1080,220 +1080,12 @@ public class OpenGroove
                  * loading plugins, re-generating the taskbar popup menu, etc.
                  */
                 final UserContext context = new UserContext();
-                context
-                    .setConnectionConditional(new Conditional()
-                    {
-                        
-                        @Override
-                        public boolean query()
-                        {
-                            CommandCommunicator c2 = context
-                                .getCom();
-                            if (c2 == null)
-                                return false;
-                            Communicator c3 = c2
-                                .getCommunicator();
-                            if (c3 == null)
-                                return false;
-                            return c3.isActive();
-                        }
-                    });
+                loadContextConnectionConditional(context);
                 context.setUserid(userid);
                 context.setPassword(password);
-                context
-                    .setNonexistantContactNotification(new NotificationAdapter(
-                        notificationFrame,
-                        new JLabel(
-                            "One or more of your contacts do not exist"),
-                        false, false)
-                    {
-                        
-                        @Override
-                        public void clicked()
-                        {
-                            context
-                                .showNonexistantContactInfoDialog();
-                        }
-                    });
-                context
-                    .setStatusListener(new StatusListener()
-                    {
-                        
-                        @Override
-                        public void authenticationFailed(
-                            Communicator c, Packet packet)
-                        {
-                            System.out
-                                .println("Persistant authentication failed");
-                            /*
-                             * TODO: the user should be notified that they have
-                             * an incorrect local passwod, and that they need to
-                             * change it. This would occur if they change their
-                             * password on a computer, since OpenGroove doesn't
-                             * propegate password changes to other computers for
-                             * security reasons. All other computers would get
-                             * this method called, at which point they could
-                             * show to the user that an incorrect local password
-                             * is present, and that they need to enter their
-                             * correct local password (IE the password that they
-                             * changed theirs to on the server).
-                             */
-                        }
-                        
-                        @Override
-                        public void authenticationSuccessful(
-                            Communicator c)
-                        {
-                            System.out
-                                .println("persistant auth successful");
-                        }
-                        
-                        @Override
-                        public void communicatorShutdown(
-                            Communicator c)
-                        {
-                            System.err
-                                .println("Communicator shutdown prematurely, "
-                                    + "OpenGroove needs to be restarted to work correctly");
-                        }
-                        
-                        @Override
-                        public void connectionEstablished(
-                            Communicator c,
-                            ServerContext server)
-                        {
-                            System.out
-                                .println("persistant connection established");
-                        }
-                        
-                        @Override
-                        public void connectionLost(
-                            Communicator c)
-                        {
-                            System.out
-                                .println("persistant connection lost");
-                            context.updateLocalStatusIcon();
-                            new Thread()
-                            {
-                                public void run()
-                                {
-                                    context
-                                        .updateContactStatus();
-                                }
-                            }.start();
-                        }
-                        
-                        @Override
-                        public void connectionReady(
-                            Communicator c)
-                        {
-                            System.out
-                                .println("persistant connection ready");
-                            context.updateLocalStatusIcon();
-                            new Thread()
-                            {
-                                public void run()
-                                {
-                                    System.out
-                                        .println("server conection established, waiting 2 seconds to update");
-                                    try
-                                    {
-                                        Thread.sleep(2000);
-                                    }
-                                    catch (InterruptedException e)
-                                    {
-                                        // TODO Auto-generated catch block
-                                        e.printStackTrace();
-                                    }
-                                    System.out
-                                        .println("now running update stuff");
-                                    try
-                                    {
-                                        context
-                                            .uploadCurrentStatus();
-                                    }
-                                    catch (Exception e)
-                                    {
-                                        e.printStackTrace();
-                                    }
-                                    try
-                                    {
-                                        context
-                                            .updateContactStatus();
-                                    }
-                                    catch (Exception e)
-                                    {
-                                        e.printStackTrace();
-                                    }
-                                    try
-                                    {
-                                        context
-                                            .updateSubscriptions();
-                                    }
-                                    catch (Exception e)
-                                    {
-                                        e.printStackTrace();
-                                    }
-                                }
-                            }.start();
-                        }
-                    });
-                context
-                    .setUserNotificationListener(new UserNotificationListener()
-                    {
-                        
-                        @Override
-                        public void receive(
-                            long dateIssued,
-                            long dateExpires,
-                            Priority priority,
-                            String subject, String message)
-                        {
-                            /*
-                             * TODO: the notification should dismiss itself if
-                             * the current date passes the date that the
-                             * notification expires
-                             */
-                            UserNotificationFrame uframe = new UserNotificationFrame(
-                                context
-                                    .formatDateTime(dateIssued),
-                                context
-                                    .formatDateTime(dateExpires),
-                                priority, subject, message);
-                            uframe
-                                .setTitle("Server Notification - OpenGroove");
-                            uframe
-                                .setIconImage(getWindowIcon());
-                            uframe
-                                .setLocationRelativeTo(null);
-                            if (priority == Priority.CRITICAL)
-                            {
-                                uframe.show();
-                            }
-                            else
-                            {
-                                JLabel component = new JLabel(
-                                    "Server Notification: "
-                                        + subject);
-                                component
-                                    .setCursor(Cursor
-                                        .getPredefinedCursor(Cursor.HAND_CURSOR));
-                                if (priority == Priority.ALERT)
-                                    component
-                                        .setIcon(new ImageIcon(
-                                            Icons.WORKSPACE_WARNING_16
-                                                .getImage()));
-                                FrameShowingNotification tn = new FrameShowingNotification(
-                                    notificationFrame,
-                                    component, uframe,
-                                    true, false);
-                                notificationFrame
-                                    .addNotification(
-                                        context.getUserid(),
-                                        tn, true);
-                            }
-                        }
-                    });
+                loadContextNonexistantContactNotification(context);
+                loadContextStatusListener(context);
+                loadContextUserNotificationListener(context);
                 JFrame launchbar = new JFrame(context
                     .createLaunchbarTitle());
                 launchbar.setLocationRelativeTo(null);
@@ -1343,86 +1135,7 @@ public class OpenGroove
                     .addUserNotificationListener(context
                         .getUserNotificationListener());
                 context.setCom(commandCom);
-                /*
-                 * TODO: set this as an object on the user context instead of
-                 * just adding it, in case we replace the communicator while the
-                 * user is logged in (an unlikely but possible event if
-                 * OpenGroove goes the way I'm thinking it will go). I'm
-                 * thinking this could happen if they change their password.
-                 * Then again, perhaps I could just include methods on
-                 * CommandCommunicator for doing this.
-                 */
-                context.getCom().addSubscriptionListener(
-                    new SubscriptionListener()
-                    {
-                        
-                        @Override
-                        public void event(
-                            final Subscription subscription)
-                        {
-                            new Thread()
-                            {
-                                public void run()
-                                {
-                                    System.out
-                                        .println("received subscription");
-                                    boolean isRelatedSubscription = subscription
-                                        .getType()
-                                        .equalsIgnoreCase(
-                                            "userstatus")
-                                        || (subscription
-                                            .getType()
-                                            .equalsIgnoreCase(
-                                                "computersetting") && (subscription
-                                            .getOnSetting()
-                                            .equalsIgnoreCase(
-                                                "public-active") || subscription
-                                            .getOnSetting()
-                                            .equalsIgnoreCase(
-                                                "public-idle")));
-                                    /*
-                                     * We're not checking for public-lag since
-                                     * it will change so infrequently.
-                                     */
-                                    if (isRelatedSubscription)
-                                    {
-                                        /*
-                                         * This subscription is for one of the
-                                         * events that we're interested in that
-                                         * relates to contact management. We
-                                         * need to tell the context to update
-                                         * it's contact status.
-                                         * 
-                                         * TODO: in the future, we should just
-                                         * update the status of the contact that
-                                         * had the subscription event.
-                                         */
-                                        System.out
-                                            .println("subscription is related");
-                                        synchronized (context.contactStatusLock)
-                                        {
-                                            Contact contact = context
-                                                .getStorage()
-                                                .getLocalUser()
-                                                .getContact(
-                                                    subscription
-                                                        .getOnUser());
-                                            if (contact != null)
-                                                context
-                                                    .updateOneContactStatus(contact);
-                                            else
-                                            {
-                                                System.out
-                                                    .println("subscription received for nonexistant contact with userid "
-                                                        + subscription
-                                                            .getOnUser());
-                                            }
-                                        }
-                                    }
-                                }
-                            }.start();
-                        }
-                    });
+                loadContextSubscriptionListener(context);
                 // loadFeatures();
                 // loadCurrentUserLookAndFeel();
                 setupOutboundUserMessaging(context, userid);
@@ -1462,6 +1175,297 @@ public class OpenGroove
                 .requestFocusInWindow();
             refreshTrayMenu();
         }
+    }
+    
+    private static void loadContextSubscriptionListener(
+        final UserContext context)
+    {
+        /*
+         * TODO: set this as an object on the user context instead of just
+         * adding it, in case we replace the communicator while the user is
+         * logged in (an unlikely but possible event if OpenGroove goes the way
+         * I'm thinking it will go). I'm thinking this could happen if they
+         * change their password. Then again, perhaps I could just include
+         * methods on CommandCommunicator for doing this.
+         */
+        context.getCom().addSubscriptionListener(
+            new SubscriptionListener()
+            {
+                
+                @Override
+                public void event(
+                    final Subscription subscription)
+                {
+                    new Thread()
+                    {
+                        public void run()
+                        {
+                            System.out
+                                .println("received subscription");
+                            boolean isRelatedSubscription = subscription
+                                .getType()
+                                .equalsIgnoreCase(
+                                    "userstatus")
+                                || (subscription.getType()
+                                    .equalsIgnoreCase(
+                                        "computersetting") && (subscription
+                                    .getOnSetting()
+                                    .equalsIgnoreCase(
+                                        "public-active") || subscription
+                                    .getOnSetting()
+                                    .equalsIgnoreCase(
+                                        "public-idle")));
+                            /*
+                             * We're not checking for public-lag since it will
+                             * change so infrequently.
+                             */
+                            if (isRelatedSubscription)
+                            {
+                                /*
+                                 * This subscription is for one of the events
+                                 * that we're interested in that relates to
+                                 * contact management. We need to tell the
+                                 * context to update it's contact status.
+                                 * 
+                                 * TODO: in the future, we should just update
+                                 * the status of the contact that had the
+                                 * subscription event.
+                                 */
+                                System.out
+                                    .println("subscription is related");
+                                synchronized (context.contactStatusLock)
+                                {
+                                    Contact contact = context
+                                        .getStorage()
+                                        .getLocalUser()
+                                        .getContact(
+                                            subscription
+                                                .getOnUser());
+                                    if (contact != null)
+                                        context
+                                            .updateOneContactStatus(contact);
+                                    else
+                                    {
+                                        System.out
+                                            .println("subscription received for nonexistant contact with userid "
+                                                + subscription
+                                                    .getOnUser());
+                                    }
+                                }
+                            }
+                        }
+                    }.start();
+                }
+            });
+    }
+    
+    private static void loadContextNonexistantContactNotification(
+        UserContext context)
+    {
+        context
+            .setNonexistantContactNotification(new NotificationAdapter(
+                notificationFrame,
+                new JLabel(
+                    "One or more of your contacts do not exist"),
+                false, false)
+            {
+                
+                @Override
+                public void clicked()
+                {
+                    context
+                        .showNonexistantContactInfoDialog();
+                }
+            });
+    }
+    
+    private static void loadContextUserNotificationListener(
+        final UserContext context)
+    {
+        context
+            .setUserNotificationListener(new UserNotificationListener()
+            {
+                
+                @Override
+                public void receive(long dateIssued,
+                    long dateExpires, Priority priority,
+                    String subject, String message)
+                {
+                    /*
+                     * TODO: the notification should dismiss itself if the
+                     * current date passes the date that the notification
+                     * expires
+                     */
+                    UserNotificationFrame uframe = new UserNotificationFrame(
+                        context.formatDateTime(dateIssued),
+                        context.formatDateTime(dateExpires),
+                        priority, subject, message);
+                    uframe
+                        .setTitle("Server Notification - OpenGroove");
+                    uframe.setIconImage(getWindowIcon());
+                    uframe.setLocationRelativeTo(null);
+                    if (priority == Priority.CRITICAL)
+                    {
+                        uframe.show();
+                    }
+                    else
+                    {
+                        JLabel component = new JLabel(
+                            "Server Notification: "
+                                + subject);
+                        component
+                            .setCursor(Cursor
+                                .getPredefinedCursor(Cursor.HAND_CURSOR));
+                        if (priority == Priority.ALERT)
+                            component
+                                .setIcon(new ImageIcon(
+                                    Icons.WORKSPACE_WARNING_16
+                                        .getImage()));
+                        FrameShowingNotification tn = new FrameShowingNotification(
+                            notificationFrame, component,
+                            uframe, true, false);
+                        notificationFrame.addNotification(
+                            context.getUserid(), tn, true);
+                    }
+                }
+            });
+    }
+    
+    private static void loadContextStatusListener(
+        final UserContext context)
+    {
+        context.setStatusListener(new StatusListener()
+        {
+            
+            @Override
+            public void authenticationFailed(
+                Communicator c, Packet packet)
+            {
+                System.out
+                    .println("Persistant authentication failed");
+                /*
+                 * TODO: the user should be notified that they have an incorrect
+                 * local passwod, and that they need to change it. This would
+                 * occur if they change their password on a computer, since
+                 * OpenGroove doesn't propegate password changes to other
+                 * computers for security reasons. All other computers would get
+                 * this method called, at which point they could show to the
+                 * user that an incorrect local password is present, and that
+                 * they need to enter their correct local password (IE the
+                 * password that they changed theirs to on the server).
+                 */
+            }
+            
+            @Override
+            public void authenticationSuccessful(
+                Communicator c)
+            {
+                System.out
+                    .println("persistant auth successful");
+            }
+            
+            @Override
+            public void communicatorShutdown(Communicator c)
+            {
+                System.err
+                    .println("Communicator shutdown prematurely, "
+                        + "OpenGroove needs to be restarted to work correctly");
+            }
+            
+            @Override
+            public void connectionEstablished(
+                Communicator c, ServerContext server)
+            {
+                System.out
+                    .println("persistant connection established");
+            }
+            
+            @Override
+            public void connectionLost(Communicator c)
+            {
+                System.out
+                    .println("persistant connection lost");
+                context.updateLocalStatusIcon();
+                new Thread()
+                {
+                    public void run()
+                    {
+                        context.updateContactStatus();
+                    }
+                }.start();
+            }
+            
+            @Override
+            public void connectionReady(Communicator c)
+            {
+                System.out
+                    .println("persistant connection ready");
+                context.updateLocalStatusIcon();
+                new Thread()
+                {
+                    public void run()
+                    {
+                        System.out
+                            .println("server conection established, waiting 2 seconds to update");
+                        try
+                        {
+                            Thread.sleep(2000);
+                        }
+                        catch (InterruptedException e)
+                        {
+                            // TODO Auto-generated catch block
+                            e.printStackTrace();
+                        }
+                        System.out
+                            .println("now running update stuff");
+                        try
+                        {
+                            context.uploadCurrentStatus();
+                        }
+                        catch (Exception e)
+                        {
+                            e.printStackTrace();
+                        }
+                        try
+                        {
+                            context.updateContactStatus();
+                        }
+                        catch (Exception e)
+                        {
+                            e.printStackTrace();
+                        }
+                        try
+                        {
+                            context.updateSubscriptions();
+                        }
+                        catch (Exception e)
+                        {
+                            e.printStackTrace();
+                        }
+                    }
+                }.start();
+            }
+        });
+    }
+    
+    private static void loadContextConnectionConditional(
+        final UserContext context)
+    {
+        context.setConnectionConditional(new Conditional()
+        {
+            
+            @Override
+            public boolean query()
+            {
+                CommandCommunicator c2 = context.getCom();
+                if (c2 == null)
+                    return false;
+                Communicator c3 = c2.getCommunicator();
+                if (c3 == null)
+                    return false;
+                return c3.isActive();
+            }
+        });
     }
     
     private static void loadBuiltInSettings(
@@ -3206,7 +3210,8 @@ public class OpenGroove
                         SYSTEM_UPDATE_SITE);
                     Properties p = new Properties();
                     p.load(updateUrl.openStream());
-                    System.out.println("version properties loaded:");
+                    System.out
+                        .println("version properties loaded:");
                     p.list(System.out);
                     String localVersion;
                     try
