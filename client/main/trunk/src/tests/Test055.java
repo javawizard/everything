@@ -29,7 +29,7 @@ public class Test055 extends AbstractListModel
         frame.show();
         Thread.sleep(2000);
         listModel.hasAdded = true;
-        listModel.fireIntervalAdded(listModel,1,1);
+        listModel.fireContentsChanged(listModel,0,0);
         frame.getContentPane().invalidate();
         frame.getContentPane().validate();
         frame.getContentPane().repaint();
