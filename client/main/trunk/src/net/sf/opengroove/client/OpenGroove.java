@@ -1589,6 +1589,7 @@ public class OpenGroove
                                     "", new String[] {});
                         }
                     });
+                userMenu.add(sendMessageItem);
                 trayPopup.add(userMenu);
             }
             trayPopup.addSeparator();
