@@ -15,6 +15,12 @@ import javax.swing.JSeparator;
 import javax.swing.SwingUtilities;
 import javax.swing.WindowConstants;
 
+import com.jidesoft.swing.JideButton;
+
+import net.sf.opengroove.client.storage.Contact;
+import net.sf.opengroove.client.storage.ContactStatus;
+import net.sf.opengroove.client.storage.Storage;
+
 /**
  * This code was edited or generated using CloudGarden's Jigloo SWT/Swing GUI
  * Builder, which is free for non-commercial use. If Jigloo is being used
@@ -65,7 +71,8 @@ public class ContactChooser extends javax.swing.JDialog
         try
         {
             {
-                this.setDefaultCloseOperation(WindowConstants.DO_NOTHING_ON_CLOSE);
+                this
+                    .setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
             }
             {
                 rootPanel = new JPanel();
@@ -100,11 +107,15 @@ public class ContactChooser extends javax.swing.JDialog
                             lowerRightPanel
                                 .add(cancelButton);
                             cancelButton.setText("Cancel");
-                            cancelButton.addActionListener(new ActionListener() {
-                                public void actionPerformed(ActionEvent evt) {
-                                    cancelButtonActionPerformed(evt);
-                                }
-                            });
+                            cancelButton
+                                .addActionListener(new ActionListener()
+                                {
+                                    public void actionPerformed(
+                                        ActionEvent evt)
+                                    {
+                                        cancelButtonActionPerformed(evt);
+                                    }
+                                });
                         }
                     }
                 }
@@ -123,13 +134,21 @@ public class ContactChooser extends javax.swing.JDialog
                     {
                         jPanel1 = new JPanel();
                         BorderLayout jPanel1Layout = new BorderLayout();
-                        jScrollPane1.setViewportView(jPanel1);
+                        jScrollPane1
+                            .setViewportView(jPanel1);
                         jPanel1.setLayout(jPanel1Layout);
                         {
                             contactsPanel = new JPanel();
-                            BoxLayout contactsPanelLayout = new BoxLayout(contactsPanel, javax.swing.BoxLayout.Y_AXIS);
-                            jPanel1.add(contactsPanel, BorderLayout.NORTH);
-                            contactsPanel.setLayout(contactsPanelLayout);
+                            BoxLayout contactsPanelLayout = new BoxLayout(
+                                contactsPanel,
+                                javax.swing.BoxLayout.Y_AXIS);
+                            jPanel1.add(contactsPanel,
+                                BorderLayout.NORTH);
+                            contactsPanel
+                                .setLayout(contactsPanelLayout);
+                            contactsPanel
+                                .setPreferredSize(new java.awt.Dimension(
+                                    258, 0));
                         }
                     }
                 }
@@ -142,9 +161,55 @@ public class ContactChooser extends javax.swing.JDialog
         }
     }
     
-    private void cancelButtonActionPerformed(ActionEvent evt) {
-        System.out.println("cancelButton.actionPerformed, event="+evt);
-        //TODO add your code for cancelButton.actionPerformed
+    private void cancelButtonActionPerformed(ActionEvent evt)
+    {
+        dispose();
     }
-
+    
+    private String chosenContact = null;
+    
+    public static String chooseContact(JFrame owner,
+        Storage storage, String header)
+    {
+        final ContactChooser chooser = new ContactChooser(
+            owner);
+        chooser.mainLabel.setText(header);
+        for (final Contact contact : storage.getLocalUser()
+            .getContacts().isolate())
+        {
+            ContactStatus status = contact.getStatus();
+            if (status == null)
+                continue;
+            if (!status.isKnown())
+                continue;
+            if (status.isNonexistant())
+                continue;
+            /*
+             * If we get here, then the contact exists. We'll go ahead and add a
+             * link for the contact.
+             */
+            JideButton button = new JideButton(contact
+                .getDisplayName());
+            button.setButtonStyle(3);// hyperlink button
+            chooser.contactsPanel.add(button);
+            button.addActionListener(new ActionListener()
+            {
+                
+                public void actionPerformed(ActionEvent e)
+                {
+                    chooser.chosenContact = contact
+                        .getUserid();
+                    chooser.hide();
+                }
+            });
+        }
+        if (chooser.contactsPanel.getComponentCount() == 0)
+        {
+            chooser.contactsPanel.add(new JLabel(
+                "No contacts"));
+        }
+        chooser.show();
+        return chooser.chosenContact;
+    }
+    
 }
