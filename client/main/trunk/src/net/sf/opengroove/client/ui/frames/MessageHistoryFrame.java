@@ -304,6 +304,7 @@ public class MessageHistoryFrame extends javax.swing.JFrame
                                 tableModel = new UserMessageTableModel(
                                     storage);
                                 table.setModel(tableModel);
+                                table.getColumnModel().getColumn(UserMessageTableModel.)
                                 sorter = new TableRowSorter<UserMessageTableModel>(
                                     tableModel);
                                 RowFilter<UserMessageTableModel, Integer> rowFilter = new RowFilter<UserMessageTableModel, Integer>()

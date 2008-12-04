@@ -1,5 +1,7 @@
 package net.sf.opengroove.client.ui;
 
+import java.util.Date;
+
 import javax.swing.table.AbstractTableModel;
 
 import net.sf.opengroove.client.storage.LocalUser;
@@ -13,14 +15,14 @@ import net.sf.opengroove.common.utils.StringUtils.ToString;
 public class UserMessageTableModel extends
     AbstractTableModel
 {
-    private static final int COL_TYPE = 0;
-    private static final int COL_ATTACHMENTS = 1;
-    private static final int COL_SIZE = 2;
-    private static final int COL_DATE = 3;
-    private static final int COL_FROM = 4;
-    private static final int COL_TO = 5;
-    private static final int COL_SUBJECT = 6;
-    private static final int COL_IN_REPLY_TO = 7;
+    public static final int COL_TYPE = 0;
+    public static final int COL_ATTACHMENTS = 1;
+    public static final int COL_SIZE = 2;
+    public static final int COL_DATE = 3;
+    public static final int COL_FROM = 4;
+    public static final int COL_TO = 5;
+    public static final int COL_SUBJECT = 6;
+    public static final int COL_IN_REPLY_TO = 7;
     
     private Storage storage;
     
@@ -45,6 +47,8 @@ public class UserMessageTableModel extends
             case COL_ATTACHMENTS:
             case COL_SIZE:
                 return Integer.class;
+            case COL_DATE:
+                return Date.class;
         }
         return null;
     }
@@ -67,6 +71,8 @@ public class UserMessageTableModel extends
                 return "Attachments";
             case COL_SIZE:
                 return "Attachment Size (bytes)";
+            case COL_DATE:
+                return "Date";
         }
         return null;
     }
@@ -79,7 +85,7 @@ public class UserMessageTableModel extends
     
     public int getColumnCount()
     {
-        return 7;
+        return 8;
     }
     
     public int getRowCount()
@@ -107,6 +113,8 @@ public class UserMessageTableModel extends
                 return (message.isOutbound() ? (message
                     .isDraft() ? "Draft" : "Sent")
                     : (message.isRead() ? "Read" : "Unread"));
+            case COL_DATE:
+                return new Date(message.getDate());
             case COL_FROM:
                 return message.getSender();
             case COL_TO:
