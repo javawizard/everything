@@ -64,6 +64,7 @@ import net.sf.opengroove.client.storage.LocalUser;
 import net.sf.opengroove.client.storage.Storage;
 import net.sf.opengroove.client.storage.UserMessage;
 import net.sf.opengroove.client.storage.UserMessageRecipient;
+import net.sf.opengroove.client.ui.frames.ComposeMessageFrame;
 import net.sf.opengroove.client.ui.frames.MessageHistoryFrame;
 import net.sf.opengroove.client.ui.frames.SearchForUsersFrame;
 import net.sf.opengroove.client.workspace.WorkspaceManager;
@@ -1854,15 +1855,18 @@ public class UserContext
             recipientObject.setUserid(recipient);
             message.getRecipients().add(recipientObject);
         }
-        Storage.getLocalUser(userid).getUserMessages().add(message);
+        Storage.getLocalUser(userid).getUserMessages().add(
+            message);
         messageHistoryFrame.reload();
+        ComposeMessageFrame.showComposeMessageFrame(Storage
+            .get(userid), message);
     }
-
+    
     public MessageHistoryFrame getMessageHistoryFrame()
     {
         return messageHistoryFrame;
     }
-
+    
     public void setMessageHistoryFrame(
         MessageHistoryFrame messageHistoryFrame)
     {
