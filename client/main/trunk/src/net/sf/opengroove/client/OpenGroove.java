@@ -1260,7 +1260,7 @@ public class OpenGroove
     }
     
     private static void loadContextNonexistantContactNotification(
-        UserContext context)
+        final UserContext context)
     {
         context
             .setNonexistantContactNotification(new NotificationAdapter(
