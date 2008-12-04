@@ -198,7 +198,7 @@ public class UserContext
      * also trigger an immediate upload of user presence information.
      */
     private ConditionalTimer myStatusCheckTimer = new ConditionalTimer(
-        1000, Conditional.True)
+        2000, Conditional.True)
     {
         
         @Override

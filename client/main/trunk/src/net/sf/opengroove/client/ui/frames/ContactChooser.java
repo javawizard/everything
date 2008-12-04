@@ -146,9 +146,6 @@ public class ContactChooser extends javax.swing.JDialog
                                 BorderLayout.NORTH);
                             contactsPanel
                                 .setLayout(contactsPanelLayout);
-                            contactsPanel
-                                .setPreferredSize(new java.awt.Dimension(
-                                    258, 0));
                         }
                     }
                 }

@@ -15,6 +15,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
@@ -281,7 +282,7 @@ public class ComposeMessageFrame extends javax.swing.JFrame
     {
         try
         {
-            setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
+            setDefaultCloseOperation(WindowConstants.DO_NOTHING_ON_CLOSE);
             {
                 rootPanel = new JPanel();
                 rootPanel.setBorder(new EmptyBorder(10, 10,
@@ -924,10 +925,30 @@ public class ComposeMessageFrame extends javax.swing.JFrame
     
     private void cancelButtonActionPerformed(ActionEvent evt)
     {
-        System.out
-            .println("cancelButton.actionPerformed, event="
-                + evt);
-        // TODO add your code for cancelButton.actionPerformed
+        String messageId = message.getId();
+        storage.getLocalUser().getUserMessages().remove(
+            message);
+        File[] attachmentFiles = storage
+            .getMessageAttachmentFolder(messageId)
+            .listFiles();
+        if (attachmentFiles != null)
+        {
+            for (File file : attachmentFiles)
+            {
+                file.delete();
+            }
+        }
+        isEditable = false;
+        dispose();
+        try
+        {
+            storage.getLocalUser().getContext()
+                .getMessageHistoryFrame().reload();
+        }
+        catch (Exception exception)
+        {
+            exception.printStackTrace();
+        }
     }
     
     private void replyButtonActionPerformed(ActionEvent evt)
@@ -950,9 +971,14 @@ public class ComposeMessageFrame extends javax.swing.JFrame
     private void forwardButtonActionPerformed(
         ActionEvent evt)
     {
-        /*
-         * This will create a new message, initializing it's contents to
-         */
+        UserContext context = storage.getLocalUser()
+            .getContext();
+        context.composeMessage("Fw: "
+            + subjectField.getText(),
+            "<hr/>Forwarded message from "
+                + fromContents.getText() + " on "
+                + new Date(message.getDate())
+                + ":<br/><br/>", "", "", new String[] {});
     }
     
     private void closeButtonActionPerformed(ActionEvent evt)
