@@ -1575,6 +1575,20 @@ public class OpenGroove
                         }
                     });
                 userMenu.add(launchbarItem);
+                MenuItem sendMessageItem = new MenuItem(
+                    "Create message");
+                sendMessageItem
+                    .addActionListener(new ActionListener()
+                    {
+                        
+                        public void actionPerformed(
+                            ActionEvent e)
+                        {
+                            user.getContext()
+                                .composeMessage("", "", "",
+                                    "", new String[] {});
+                        }
+                    });
                 trayPopup.add(userMenu);
             }
             trayPopup.addSeparator();
@@ -3543,7 +3557,7 @@ public class OpenGroove
         messageHistoryButton
             .addActionListener(new ActionListener()
             {
-
+                
                 public void actionPerformed(ActionEvent e)
                 {
                     context.getMessageHistoryFrame().show();
