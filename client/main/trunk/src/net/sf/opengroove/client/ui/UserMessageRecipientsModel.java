@@ -1,4 +1,4 @@
-package net.sf.opengroove.client.ui.frames;
+package net.sf.opengroove.client.ui;
 
 import javax.swing.AbstractListModel;
 

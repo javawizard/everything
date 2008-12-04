@@ -48,6 +48,7 @@ import net.sf.opengroove.client.storage.Storage;
 import net.sf.opengroove.client.storage.UserMessage;
 import net.sf.opengroove.client.storage.UserMessageAttachment;
 import net.sf.opengroove.client.ui.UserMessageAttachmentsModel;
+import net.sf.opengroove.client.ui.UserMessageRecipientsModel;
 import net.sf.opengroove.common.ui.ComponentUtils;
 import net.sf.opengroove.common.utils.DataUtils;
 import net.sf.opengroove.common.utils.StringUtils;
