@@ -77,6 +77,7 @@ public class StoredList<T> extends AbstractList<T>
                     .prepareStatement("select value from proxystorage_collections where id = ? and index = ?");
                 st.setLong(1, id);
                 st.setInt(2, index);
+                storage.opcount++;
                 ResultSet rs = st.executeQuery();
                 if (!rs.next())
                 {
@@ -160,6 +161,7 @@ public class StoredList<T> extends AbstractList<T>
                         + "where id = ? and index >= ?");
                 ust.setLong(1, id);
                 ust.setInt(2, index);
+                storage.opcount++;
                 ust.execute();
                 ust.close();
                 /*
@@ -173,6 +175,7 @@ public class StoredList<T> extends AbstractList<T>
                 st.setLong(1, id);
                 st.setInt(2, index);
                 st.setLong(3, object.getProxyStorageId());
+                storage.opcount++;
                 st.execute();
                 st.close();
                 /*
@@ -235,6 +238,7 @@ public class StoredList<T> extends AbstractList<T>
                         + "where id = ? and index = ?");
                 rst.setLong(1, id);
                 rst.setInt(2, index);
+                storage.opcount++;
                 rst.execute();
                 rst.close();
                 /*
@@ -248,6 +252,7 @@ public class StoredList<T> extends AbstractList<T>
                         + "where id = ? and index > ?");
                 dst.setLong(1, id);
                 dst.setInt(2, index);
+                storage.opcount++;
                 dst.execute();
                 dst.close();
                 return previous;
@@ -280,6 +285,7 @@ public class StoredList<T> extends AbstractList<T>
                     .prepareStatement("select count(*) from proxystorage_collections where id = ? and index = ?");
                 cst.setLong(1, id);
                 cst.setInt(2, index);
+                storage.opcount++;
                 ResultSet crs = cst.executeQuery();
                 int existingCount = 0;
                 if (crs.next())
@@ -298,6 +304,7 @@ public class StoredList<T> extends AbstractList<T>
                 st.setLong(1, insertId);
                 st.setLong(2, id);
                 st.setInt(3, index);
+                storage.opcount++;
                 st.execute();
                 st.close();
                 return previous;
@@ -323,6 +330,7 @@ public class StoredList<T> extends AbstractList<T>
                 PreparedStatement st = storage.connection
                     .prepareStatement("select count(*) from proxystorage_collections where id = ?");
                 st.setLong(1, id);
+                storage.opcount++;
                 ResultSet rs = st.executeQuery();
                 boolean hasNext = rs.next();
                 int count = 0;
