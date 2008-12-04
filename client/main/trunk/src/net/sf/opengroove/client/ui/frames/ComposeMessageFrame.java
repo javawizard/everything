@@ -113,6 +113,8 @@ public class ComposeMessageFrame extends javax.swing.JFrame
     private JideButton openAttachmentButton;
     private JideButton saveAllButton;
     private JideButton saveAttachmentButton;
+    private JideButton removeRecipientButton;
+    private JPanel jPanel2;
     private JList recipientsList;
     private JList attachmentsList;
     private JLabel attachmentAreaReadLabel;
@@ -334,21 +336,40 @@ public class ComposeMessageFrame extends javax.swing.JFrame
                     jPanel1.setLayout(jPanel1Layout);
                     rootPanel.add(jPanel1, "1, 1");
                     {
-                        addRecipientButton = new JideButton(
-                            "Add recipient");
-                        addRecipientButton
+                        jPanel2 = new JPanel();
+                        BoxLayout jPanel2Layout1 = new BoxLayout(jPanel2, javax.swing.BoxLayout.X_AXIS);
+                        jPanel2.setLayout(jPanel2Layout1);
+                        jPanel1.add(jPanel2, BorderLayout.EAST);
+                        {
+                            addRecipientButton = new JideButton(
+                                "Add recipient");
+                            jPanel2.add(addRecipientButton);
+                            addRecipientButton
                             .setButtonStyle(3);
-                        addRecipientButton
+                            addRecipientButton
                             .setAlwaysShowHyperlink(true);
-                        addRecipientButton
+                            addRecipientButton
                             .setForeground(new Color(0, 0,
                                 255));
-                        addRecipientButton
+                            addRecipientButton
                             .setFont(new java.awt.Font(
                                 "Dialog", 0, 12));
-                        jPanel1.add(addRecipientButton,
-                            BorderLayout.EAST);
-                        addRecipientButton.setVerticalAlignment(SwingConstants.TOP);
+                            addRecipientButton.setVerticalAlignment(SwingConstants.TOP);
+                        }
+                        {
+                            removeRecipientButton = new JideButton();
+                            jPanel2.add(removeRecipientButton);
+                            removeRecipientButton.setText("Remove");
+                            removeRecipientButton.setFont(new java.awt.Font("Dialog",0,12));
+                            removeRecipientButton.setForeground(new java.awt.Color(0,0,255));
+                            removeRecipientButton.setButtonStyle(3);
+                            removeRecipientButton.setAlwaysShowHyperlink(true);
+                            removeRecipientButton.addActionListener(new ActionListener() {
+                                public void actionPerformed(ActionEvent evt) {
+                                    removeRecipientButtonActionPerformed(evt);
+                                }
+                            });
+                        }
                     }
                     {
                         recipientsList = new JList();
@@ -1115,4 +1136,9 @@ public class ComposeMessageFrame extends javax.swing.JFrame
         in.close();
     }
     
+    private void removeRecipientButtonActionPerformed(ActionEvent evt) {
+        System.out.println("removeRecipientButton.actionPerformed, event="+evt);
+        //TODO add your code for removeRecipientButton.actionPerformed
+    }
+
 }
