@@ -63,6 +63,8 @@ import net.sf.opengroove.client.storage.ContactStatus;
 import net.sf.opengroove.client.storage.LocalUser;
 import net.sf.opengroove.client.storage.Storage;
 import net.sf.opengroove.client.storage.UserMessage;
+import net.sf.opengroove.client.storage.UserMessageRecipient;
+import net.sf.opengroove.client.ui.frames.MessageHistoryFrame;
 import net.sf.opengroove.client.ui.frames.SearchForUsersFrame;
 import net.sf.opengroove.client.workspace.WorkspaceManager;
 import net.sf.opengroove.common.concurrent.Conditional;
@@ -1796,6 +1798,8 @@ public class UserContext
         return getSettingsManager().getSettingValue(spec);
     }
     
+    private MessageHistoryFrame messageHistoryFrame;
+    
     /**
      * Opens a window for composing a message. The message's subject and message
      * fields are initialized to the specified values. inReplyTo must not be
@@ -1805,9 +1809,21 @@ public class UserContext
      * @param contents
      *            The initial body of the message, in HTML format.
      * @param inReplyTo
+     *            The id (user message id, not stored message id) of the message
+     *            that this one is in reply to, or the empty string if this one
+     *            is not in reply
+     * @param replySubject
+     *            The subject of the message denoted by inReplyTo. Similar to
+     *            inReplyTo, this cannot be null, but can be the empty string if
+     *            this message is not in reply.
+     * @param recipients
+     *            The userids of this message's initial recipients, or null or
+     *            an array with length 0 if the message is to have no initial
+     *            recipients
      */
     public void composeMessage(String subject,
-        String contents, String inReplyTo)
+        String contents, String inReplyTo,
+        String replySubject, String[] recipients)
     {
         /*
          * First, we need to create the user message object.
@@ -1821,6 +1837,35 @@ public class UserContext
          * set the date right now so that, while the message is a draft, it will
          * still be sorted correctly.
          */
-        
+        message.setDraft(true);
+        message.setId(userid + "-"
+            + Storage.createIdentifier());
+        message.setMessage(contents);
+        message.setOutbound(true);
+        message.setRead(true);
+        message.setReplyId(inReplyTo);
+        message.setReplySubject(replySubject);
+        message.setSender(userid);
+        message.setSubject(subject);
+        for (String recipient : recipients)
+        {
+            UserMessageRecipient recipientObject = message
+                .createRecipient();
+            recipientObject.setUserid(recipient);
+            message.getRecipients().add(recipientObject);
+        }
+        Storage.getLocalUser(userid).getUserMessages().add(message);
+        messageHistoryFrame.reload();
+    }
+
+    public MessageHistoryFrame getMessageHistoryFrame()
+    {
+        return messageHistoryFrame;
+    }
+
+    public void setMessageHistoryFrame(
+        MessageHistoryFrame messageHistoryFrame)
+    {
+        this.messageHistoryFrame = messageHistoryFrame;
     }
 }

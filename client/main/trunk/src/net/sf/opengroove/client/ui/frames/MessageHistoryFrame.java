@@ -365,4 +365,9 @@ public class MessageHistoryFrame extends javax.swing.JFrame
         searchButtonActionPerformed(evt);
     }
     
+    public void reload()
+    {
+        tableModel.fireTableDataChanged();
+    }
+    
 }
