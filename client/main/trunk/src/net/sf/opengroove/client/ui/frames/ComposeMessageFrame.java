@@ -35,6 +35,7 @@ import javax.swing.JPanel;
 import javax.swing.JEditorPane;
 import javax.swing.JTextField;
 import javax.swing.ListModel;
+import javax.swing.ListSelectionModel;
 import javax.swing.SwingConstants;
 
 import javax.swing.WindowConstants;
@@ -233,6 +234,8 @@ public class ComposeMessageFrame extends javax.swing.JFrame
             {
                 subjectField.setEditable(false);
                 messageArea.setEditable(false);
+                addRecipientButton.setEnabled(false);
+                removeRecipientButton.setEnabled(false);
                 attachmentsToolbar.remove(addFileButton);
                 attachmentsToolbar.remove(addFolderButton);
                 attachmentsToolbar
@@ -296,7 +299,8 @@ public class ComposeMessageFrame extends javax.swing.JFrame
                     jLabel1 = new JLabel();
                     rootPanel.add(jLabel1, "0, 1");
                     jLabel1.setText("To: ");
-                    jLabel1.setVerticalAlignment(SwingConstants.TOP);
+                    jLabel1
+                        .setVerticalAlignment(SwingConstants.TOP);
                 }
                 {
                     jLabel2 = new JLabel();
@@ -337,46 +341,75 @@ public class ComposeMessageFrame extends javax.swing.JFrame
                     rootPanel.add(jPanel1, "1, 1");
                     {
                         jPanel2 = new JPanel();
-                        BoxLayout jPanel2Layout1 = new BoxLayout(jPanel2, javax.swing.BoxLayout.X_AXIS);
+                        BoxLayout jPanel2Layout1 = new BoxLayout(
+                            jPanel2,
+                            javax.swing.BoxLayout.X_AXIS);
                         jPanel2.setLayout(jPanel2Layout1);
-                        jPanel1.add(jPanel2, BorderLayout.EAST);
+                        jPanel1.add(jPanel2,
+                            BorderLayout.EAST);
                         {
                             addRecipientButton = new JideButton(
                                 "Add recipient");
                             jPanel2.add(addRecipientButton);
                             addRecipientButton
-                            .setButtonStyle(3);
+                                .setButtonStyle(3);
                             addRecipientButton
-                            .setAlwaysShowHyperlink(true);
+                                .setAlwaysShowHyperlink(true);
                             addRecipientButton
-                            .setForeground(new Color(0, 0,
-                                255));
+                                .setForeground(new Color(0,
+                                    0, 255));
                             addRecipientButton
-                            .setFont(new java.awt.Font(
-                                "Dialog", 0, 12));
-                            addRecipientButton.setVerticalAlignment(SwingConstants.TOP);
+                                .setFont(new java.awt.Font(
+                                    "Dialog", 0, 12));
+                            addRecipientButton
+                                .setVerticalAlignment(SwingConstants.TOP);
+                            addRecipientButton
+                                .addActionListener(new ActionListener()
+                                {
+                                    public void actionPerformed(
+                                        ActionEvent evt)
+                                    {
+                                        addRecipientButtonActionPerformed(evt);
+                                    }
+                                });
                         }
                         {
                             removeRecipientButton = new JideButton();
-                            jPanel2.add(removeRecipientButton);
-                            removeRecipientButton.setText("Remove");
-                            removeRecipientButton.setFont(new java.awt.Font("Dialog",0,12));
-                            removeRecipientButton.setForeground(new java.awt.Color(0,0,255));
-                            removeRecipientButton.setButtonStyle(3);
-                            removeRecipientButton.setAlwaysShowHyperlink(true);
-                            removeRecipientButton.addActionListener(new ActionListener() {
-                                public void actionPerformed(ActionEvent evt) {
-                                    removeRecipientButtonActionPerformed(evt);
-                                }
-                            });
+                            jPanel2
+                                .add(removeRecipientButton);
+                            removeRecipientButton
+                                .setText("Remove");
+                            removeRecipientButton
+                                .setFont(new java.awt.Font(
+                                    "Dialog", 0, 12));
+                            removeRecipientButton
+                                .setForeground(new java.awt.Color(
+                                    0, 0, 255));
+                            removeRecipientButton
+                                .setButtonStyle(3);
+                            removeRecipientButton
+                                .setAlwaysShowHyperlink(true);
+                            removeRecipientButton
+                                .addActionListener(new ActionListener()
+                                {
+                                    public void actionPerformed(
+                                        ActionEvent evt)
+                                    {
+                                        removeRecipientButtonActionPerformed(evt);
+                                    }
+                                });
                         }
                     }
                     {
                         recipientsList = new JList();
-                        if(storage != null)
+                        recipientsList
+                            .setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+                        if (storage != null)
                         {
-                            recipientsModel = new UserMessageRecipientsModel(storage,message);
-                            recipientsList.setModel(recipientsModel);
+                            recipientsModel = new UserMessageRecipientsModel(
+                                storage, message);
+                            recipientsList
+                                .setModel(recipientsModel);
                         }
                         recipientsList
                             .setBackground(new Color(0, 0,
@@ -752,6 +785,8 @@ public class ComposeMessageFrame extends javax.swing.JFrame
                             }
                             {
                                 attachmentsList = new JList();
+                                attachmentsList
+                                    .setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
                                 if (storage != null)
                                 {
                                     attachmentsModel = new UserMessageAttachmentsModel(
@@ -1136,9 +1171,25 @@ public class ComposeMessageFrame extends javax.swing.JFrame
         in.close();
     }
     
-    private void removeRecipientButtonActionPerformed(ActionEvent evt) {
-        System.out.println("removeRecipientButton.actionPerformed, event="+evt);
-        //TODO add your code for removeRecipientButton.actionPerformed
+    private void removeRecipientButtonActionPerformed(
+        ActionEvent evt)
+    {
+        if (!isEditable)
+            return;
+        if (recipientsList.getSelectedIndex() == -1)
+        {
+            JOptionPane
+                .showMessageDialog(
+                    this,
+                    "Select a recipient to delete first. You can select a recipient by clicking on their userid, to the left.");
+        }
     }
-
+    
+    private void addRecipientButtonActionPerformed(
+        ActionEvent evt)
+    {
+        if (!isEditable)
+            return;
+    }
+    
 }
