@@ -35,6 +35,7 @@ import javax.swing.JPanel;
 import javax.swing.JEditorPane;
 import javax.swing.JTextField;
 import javax.swing.ListModel;
+import javax.swing.SwingConstants;
 
 import javax.swing.WindowConstants;
 import javax.swing.SwingUtilities;
@@ -98,7 +99,6 @@ public class ComposeMessageFrame extends javax.swing.JFrame
     private JideButton addFolderButton;
     private JideButton addFileButton;
     private JPanel attachmentsToolbar;
-    private JPanel recipientsPanel;
     private JPanel jPanel1;
     private JEditorPane messageArea;
     private JTextField subjectField;
@@ -112,6 +112,7 @@ public class ComposeMessageFrame extends javax.swing.JFrame
     private JideButton openAttachmentButton;
     private JideButton saveAllButton;
     private JideButton saveAttachmentButton;
+    private JList recipientsList;
     private JList attachmentsList;
     private JLabel attachmentAreaReadLabel;
     private JPanel attachmentHelpPanel;
@@ -291,6 +292,7 @@ public class ComposeMessageFrame extends javax.swing.JFrame
                     jLabel1 = new JLabel();
                     rootPanel.add(jLabel1, "0, 1");
                     jLabel1.setText("To: ");
+                    jLabel1.setVerticalAlignment(SwingConstants.TOP);
                 }
                 {
                     jLabel2 = new JLabel();
@@ -330,18 +332,6 @@ public class ComposeMessageFrame extends javax.swing.JFrame
                     jPanel1.setLayout(jPanel1Layout);
                     rootPanel.add(jPanel1, "1, 1");
                     {
-                        recipientsPanel = new JPanel();
-                        FlowLayout recipientsPanelLayout = new FlowLayout();
-                        recipientsPanelLayout
-                            .setAlignment(FlowLayout.LEFT);
-                        recipientsPanelLayout.setHgap(5);
-                        recipientsPanelLayout.setVgap(1);
-                        jPanel1.add(recipientsPanel,
-                            BorderLayout.CENTER);
-                        recipientsPanel
-                            .setLayout(recipientsPanelLayout);
-                    }
-                    {
                         addRecipientButton = new JideButton(
                             "Add recipient");
                         addRecipientButton
@@ -356,6 +346,23 @@ public class ComposeMessageFrame extends javax.swing.JFrame
                                 "Dialog", 0, 12));
                         jPanel1.add(addRecipientButton,
                             BorderLayout.EAST);
+                        addRecipientButton.setVerticalAlignment(SwingConstants.TOP);
+                    }
+                    {
+                        ListModel recipientsListModel = new DefaultComboBoxModel(
+                            new String[] { "Item One",
+                                "Item Two" });
+                        recipientsList = new JList();
+                        recipientsList
+                            .setBackground(new Color(0, 0,
+                                0, 0));
+                        jPanel1.add(recipientsList,
+                            BorderLayout.CENTER);
+                        recipientsList
+                            .setModel(recipientsListModel);
+                        recipientsList
+                            .setLayoutOrientation(JList.HORIZONTAL_WRAP);
+                        recipientsList.setOpaque(false);
                     }
                 }
                 {
