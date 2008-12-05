@@ -8,6 +8,8 @@ import java.awt.Color;
 import java.awt.Component;
 import java.awt.FlowLayout;
 import java.awt.Frame;
+import java.awt.datatransfer.DataFlavor;
+import java.awt.datatransfer.Transferable;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.WindowAdapter;
@@ -16,8 +18,10 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.List;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
 
@@ -40,9 +44,11 @@ import javax.swing.ListCellRenderer;
 import javax.swing.ListModel;
 import javax.swing.ListSelectionModel;
 import javax.swing.SwingConstants;
+import javax.swing.TransferHandler;
 
 import javax.swing.WindowConstants;
 import javax.swing.SwingUtilities;
+import javax.swing.TransferHandler.TransferSupport;
 import javax.swing.border.EmptyBorder;
 import javax.swing.text.StyledEditorKit;
 import javax.swing.text.StyledEditorKit.BoldAction;
@@ -59,6 +65,7 @@ import net.sf.opengroove.client.ui.UserMessageRecipientsModel;
 import net.sf.opengroove.common.ui.ComponentUtils;
 import net.sf.opengroove.common.utils.DataUtils;
 import net.sf.opengroove.common.utils.StringUtils;
+import net.sf.opengroove.common.utils.StringUtils.ToString;
 
 /**
  * This code was edited or generated using CloudGarden's Jigloo
@@ -90,6 +97,42 @@ import net.sf.opengroove.common.utils.StringUtils;
  */
 public class ComposeMessageFrame extends javax.swing.JFrame
 {
+    public class AddAttachmentTransferHandler extends
+        TransferHandler
+    {
+        public boolean canImport(TransferSupport support)
+        {
+            if (Arrays.asList(support.getDataFlavors())
+                .contains(DataFlavor.javaFileListFlavor))
+                return true;
+            return false;
+        }
+        
+        public boolean importData(TransferSupport support)
+        {
+            Transferable transfer = support
+                .getTransferable();
+            try
+            {
+                final List<File> fileList = (List<File>) transfer
+                    .getTransferData(DataFlavor.javaFileListFlavor);
+                new Thread()
+                {
+                    public void run()
+                    {
+                        importAttachments(fileList
+                            .toArray(new File[0]));
+                    }
+                }.start();
+            }
+            catch (Exception e)
+            {
+                throw new RuntimeException(e);
+            }
+            return true;
+        }
+    }
+    
     public class AttachmentsListCellRenderer extends JLabel
         implements ListCellRenderer
     {
@@ -814,13 +857,15 @@ public class ComposeMessageFrame extends javax.swing.JFrame
                                             attachmentAreaHintLabel,
                                             BorderLayout.NORTH);
                                     attachmentAreaHintLabel
-                                        .setText("To add attachments, drag files or folders here, or use the above links.");
+                                        .setText("To add attachments, drag files or folders onto this hint, or use the above links.");
                                     attachmentAreaHintLabel
                                         .setFont(new java.awt.Font(
                                             "Dialog", 0, 12));
                                     attachmentAreaHintLabel
                                         .setForeground(new java.awt.Color(
                                             150, 150, 150));
+                                    attachmentAreaHintLabel
+                                        .setTransferHandler(new AddAttachmentTransferHandler());
                                 }
                                 {
                                     attachmentAreaReadLabel = new JLabel();
@@ -829,7 +874,7 @@ public class ComposeMessageFrame extends javax.swing.JFrame
                                             attachmentAreaReadLabel,
                                             BorderLayout.SOUTH);
                                     attachmentAreaReadLabel
-                                        .setText("To save attachments, drag them from here, or use the links next to the attachment.");
+                                        .setText("To save attachments, drag them from the attachment list, or use the links next to the attachment.");
                                     attachmentAreaReadLabel
                                         .setForeground(new java.awt.Color(
                                             150, 150, 150));
@@ -956,12 +1001,18 @@ public class ComposeMessageFrame extends javax.swing.JFrame
                     "You must select an attachment to remove first.");
             return;
         }
+        if (JOptionPane
+            .showConfirmDialog(
+                this,
+                "Are you sure you want to remove this attachment?",
+                null, JOptionPane.YES_NO_OPTION) != JOptionPane.YES_OPTION)
+            return;
         UserMessageAttachment attachment = message
             .getAttachmentByName(attachmentName);
         message.getAttachments().remove(attachment);
         storage.getMessageAttachmentFile(message.getId(),
             attachmentName).delete();
-        
+        attachmentsModel.reload();
     }
     
     private void saveAttachmentButtonActionPerformed(
