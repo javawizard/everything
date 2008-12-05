@@ -1474,6 +1474,9 @@ public class OpenGroove
         });
     }
     
+    public static final SettingSpec SPEC_MESSAGE_REPLY_PREFIX = new SettingSpec(
+        "msg", "compose", "", "replyprefix");
+    
     private static void loadBuiltInSettings(
         SettingsManager settingsManager, LocalUser user)
     {
@@ -1483,6 +1486,8 @@ public class OpenGroove
         settingsManager.addTab("msg",
             Icons.MESSAGE_CONFIG_48.getIcon(), "Messaging",
             "");
+        settingsManager.addSubnav("msg", "compose",
+            "Composing", "");
         settingsManager.addSubnav("g", "lb", "Launchbar",
             "");
         settingsManager.addSetting("g", "lb", "",
@@ -1578,7 +1583,7 @@ public class OpenGroove
                     });
                 userMenu.add(launchbarItem);
                 MenuItem sendMessageItem = new MenuItem(
-                    "Create message");
+                    "Send Message");
                 sendMessageItem
                     .addActionListener(new ActionListener()
                     {
@@ -1593,6 +1598,12 @@ public class OpenGroove
                     });
                 userMenu.add(sendMessageItem);
                 trayPopup.add(userMenu);
+                trayPopup.add(new AMenuItem("Message History"){
+
+                    public void run(ActionEvent e)
+                    {
+                        user.getContext().getMessageHistoryFrame().show();
+                    }});
             }
             trayPopup.addSeparator();
         }
