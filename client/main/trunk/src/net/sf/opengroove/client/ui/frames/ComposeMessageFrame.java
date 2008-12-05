@@ -285,6 +285,23 @@ public class ComposeMessageFrame extends javax.swing.JFrame
             boolean isDraft = message.isDraft();
             addWindowListener(new WindowAdapter()
             {
+                public void windowClosing(WindowEvent e)
+                {
+                    int choice = JOptionPane
+                        .showOptionDialog(
+                            ComposeMessageFrame.this,
+                            "Would you like to save your message, or discard it?",
+                            null,
+                            JOptionPane.YES_NO_OPTION,
+                            JOptionPane.PLAIN_MESSAGE,
+                            null, new String[] { "Save",
+                                "Discard", "Cancel" },
+                            "Save");
+                    if(choice == 0)
+                        ComposeMessageFrame.this.dispose();
+                    else if(choice == 1)
+                        discardMessage();
+                }
                 
                 public void windowClosed(WindowEvent e)
                 {
@@ -1058,6 +1075,11 @@ public class ComposeMessageFrame extends javax.swing.JFrame
                 "Are you sure you want to discard this message?",
                 null, JOptionPane.YES_NO_OPTION) != JOptionPane.YES_OPTION)
             return;
+        discardMessage();
+    }
+    
+    private void discardMessage()
+    {
         String messageId = message.getId();
         storage.getLocalUser().getUserMessages().remove(
             message);

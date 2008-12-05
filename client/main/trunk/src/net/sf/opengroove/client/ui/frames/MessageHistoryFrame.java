@@ -7,6 +7,8 @@ import info.clearthought.layout.TableLayout;
 import java.awt.BorderLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 
@@ -299,6 +301,20 @@ public class MessageHistoryFrame extends javax.swing.JFrame
                             "0, 1");
                         {
                             table = new JTable();
+                            table
+                                .addMouseListener(new MouseAdapter()
+                                {
+                                    
+                                    public void mouseClicked(
+                                        MouseEvent e)
+                                    {
+                                        if (e
+                                            .getClickCount() == 2)
+                                        {
+                                            openButtonActionPerformed(null);
+                                        }
+                                    }
+                                });
                             if (storage != null)
                             {
                                 tableModel = new UserMessageTableModel(

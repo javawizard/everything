@@ -1598,7 +1598,7 @@ public class OpenGroove
                     });
                 userMenu.add(sendMessageItem);
                 trayPopup.add(userMenu);
-                trayPopup.add(new AMenuItem(
+                userMenu.add(new AMenuItem(
                     "Message History")
                 {
                     
@@ -1767,7 +1767,7 @@ public class OpenGroove
                     loginFrame
                         .getRememberPasswordCheckbox()
                         .setSelected(false);
-                    loginFrame.hide();
+                    loginFrame.dispose();
                 }
             });
         ActionListener loginActionListener = new ActionListener()
@@ -1796,7 +1796,7 @@ public class OpenGroove
                 @Override
                 public void actionPerformed(ActionEvent e)
                 {
-                    loginFrame.hide();
+                    loginFrame.dispose();
                     showNewAccountWizard(false);
                 }
             });
@@ -2217,7 +2217,7 @@ public class OpenGroove
                                             e2
                                                 .printStackTrace();
                                             statusDialog
-                                                .hide();
+                                                .dispose();
                                             JOptionPane
                                                 .showMessageDialog(
                                                     newAccountFrame,
@@ -2247,14 +2247,14 @@ public class OpenGroove
                                             e2
                                                 .printStackTrace();
                                             statusDialog
-                                                .hide();
+                                                .dispose();
                                             JOptionPane
                                                 .showMessageDialog(
                                                     newAccountFrame,
                                                     "Your realm server reported that your userid or password was incorrect.");
                                             return;
                                         }
-                                        statusDialog.hide();
+                                        statusDialog.dispose();
                                         newAccountWizardPane
                                             .setCurrentPage(LABEL_ENTER_KEYS);
                                     }
@@ -2280,7 +2280,6 @@ public class OpenGroove
                                         .setNextPage(newAccountWizardPane
                                             .getPageByTitle(LABEL_ENTER_KEYS));
                                     statusDialog.dispose();
-                                    statusDialog.hide();
                                 }
                             }
                         }.start();
