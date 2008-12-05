@@ -260,6 +260,8 @@ public class ComposeMessageFrame extends javax.swing.JFrame
             composeFrames.put(
                 ComposeMessageFrame.this.message,
                 ComposeMessageFrame.this);
+            attachmentsList.setEnabled(true);
+            attachmentsList.setSelectionMode(ListSelectionModel.MULTIPLE_INTERVAL_SELECTION);
             isEditable = isOutbound && isDraft;
             if (isEditable)
             {
