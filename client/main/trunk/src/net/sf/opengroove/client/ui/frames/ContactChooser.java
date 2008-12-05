@@ -205,6 +205,7 @@ public class ContactChooser extends javax.swing.JDialog
             chooser.contactsPanel.add(new JLabel(
                 "No contacts"));
         }
+        chooser.setLocationRelativeTo(owner);
         chooser.show();
         return chooser.chosenContact;
     }

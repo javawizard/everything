@@ -49,6 +49,7 @@ public class AddingAttachmentDialog extends
     {
         super(frame);
         initGUI();
+        setLocationRelativeTo(frame);
     }
     
     private void initGUI()
