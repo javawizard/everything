@@ -98,6 +98,18 @@ public class ComposeMessageFrame extends javax.swing.JFrame
             JList list, Object value, int index,
             boolean isSelected, boolean cellHasFocus)
         {
+            if(list.getSelectedValue().equals(value))
+            {
+                setBackground(list.getSelectionBackground());
+                setForeground(list.getSelectionForeground());
+                setOpaque(true);
+            }
+            else
+            {
+                setBackground(list.getBackground());
+                setForeground(list.getForeground());
+                setOpaque(list.isOpaque());
+            }
             String attachmentName = (String) value;
             UserMessageAttachment attachment = message
                 .getAttachmentByName(attachmentName);
@@ -261,7 +273,8 @@ public class ComposeMessageFrame extends javax.swing.JFrame
                 ComposeMessageFrame.this.message,
                 ComposeMessageFrame.this);
             attachmentsList.setEnabled(true);
-            attachmentsList.setSelectionMode(ListSelectionModel.MULTIPLE_INTERVAL_SELECTION);
+            attachmentsList
+                .setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
             isEditable = isOutbound && isDraft;
             if (isEditable)
             {
@@ -1278,9 +1291,9 @@ public class ComposeMessageFrame extends javax.swing.JFrame
         /*
          * All we need to do is copy the attachment over.
          */
-        FileInputStream in = new FileInputStream(
-            file);
-        FileOutputStream out = new FileOutputStream(attachmentFile);
+        FileInputStream in = new FileInputStream(file);
+        FileOutputStream out = new FileOutputStream(
+            attachmentFile);
         StringUtils.copy(in, out);
         out.flush();
         out.close();
