@@ -864,19 +864,37 @@ public class ComposeMessageFrame extends javax.swing.JFrame
     private void addFileButtonActionPerformed(
         ActionEvent evt)
     {
-        System.out
-            .println("addFileButton.actionPerformed, event="
-                + evt);
-        // TODO add your code for addFileButton.actionPerformed
+        new Thread()
+        {
+            public void run()
+            {
+                addFileChooser
+                    .setAcceptAllFileFilterUsed(true);
+                if (addFileChooser
+                    .showOpenDialog(ComposeMessageFrame.this) != JFileChooser.APPROVE_OPTION)
+                    return;
+                File[] files = addFileChooser
+                    .getSelectedFiles();
+                importAttachments(files);
+            }
+        }.start();
     }
     
     private void addFolderButtonActionPerformed(
         ActionEvent evt)
     {
-        System.out
-            .println("addFolderButton.actionPerformed, event="
-                + evt);
-        // TODO add your code for addFolderButton.actionPerformed
+        new Thread()
+        {
+            public void run()
+            {
+                if (addFolderChooser
+                    .showOpenDialog(ComposeMessageFrame.this) != JFileChooser.APPROVE_OPTION)
+                    return;
+                File[] folders = addFolderChooser
+                    .getSelectedFiles();
+                importAttachments(folders);
+            }
+        }.start();
     }
     
     private void removeAttachmentButtonActionPerformed(
@@ -985,6 +1003,12 @@ public class ComposeMessageFrame extends javax.swing.JFrame
                 + fromContents.getText() + " on "
                 + new Date(message.getDate())
                 + ":<br/><br/>", "", "", new String[] {});
+        /*
+         * We really shouldn't do this, since the message contents are
+         * surrounded by <html> tags, so we're relying on the JEditorPane to
+         * detect the elements outside of the <html> element and merge them into
+         * the <body> element.
+         */
     }
     
     private void closeButtonActionPerformed(ActionEvent evt)
@@ -1035,6 +1059,21 @@ public class ComposeMessageFrame extends javax.swing.JFrame
                         "You tried to add an attachment, but the file or folder you specified doesn't exist.");
                 return;
             }
+            if (message.getAttachmentByName(file.getName().toLowerCase()) != null)
+            {
+                new Thread()
+                {
+                    public void run()
+                    {
+                        JOptionPane
+                            .showMessageDialog(
+                                ComposeMessageFrame.this,
+                                ComponentUtils
+                                    .htmlTipWrap("An attachment already exists with that name."));
+                    }
+                }.start();
+                return;
+            }
         }
         /*
          * All of the attachments-to-be exist at this point. We'll begin copying
@@ -1058,7 +1097,7 @@ public class ComposeMessageFrame extends javax.swing.JFrame
                 name = name.toLowerCase();
                 if (message.getAttachmentByName(name) != null)
                 {
-                    dialog.hide();
+                    dialog.dispose();
                     new Thread()
                     {
                         public void run()
@@ -1070,6 +1109,7 @@ public class ComposeMessageFrame extends javax.swing.JFrame
                                         .htmlTipWrap("An attachment already exists with that name."));
                         }
                     }.start();
+                    return;
                 }
                 File attachmentFile = storage
                     .getMessageAttachmentFile(message
@@ -1129,7 +1169,7 @@ public class ComposeMessageFrame extends javax.swing.JFrame
         catch (Exception e)
         {
             e.printStackTrace();
-            dialog.hide();
+            dialog.dispose();
             new Thread()
             {
                 public void run()
@@ -1147,7 +1187,7 @@ public class ComposeMessageFrame extends javax.swing.JFrame
         }
         finally
         {
-            dialog.hide();
+            dialog.dispose();
         }
     }
     
@@ -1155,7 +1195,7 @@ public class ComposeMessageFrame extends javax.swing.JFrame
         throws IOException
     {
         FileOutputStream fileOut = new FileOutputStream(
-            file);
+            attachmentFile);
         ZipOutputStream out = new ZipOutputStream(fileOut);
         recursiveZipWrite(file, out, "");
         out.flush();
