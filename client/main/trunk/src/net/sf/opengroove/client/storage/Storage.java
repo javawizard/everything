@@ -18,6 +18,7 @@ import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Hashtable;
 import java.util.concurrent.atomic.AtomicInteger;
 
@@ -27,6 +28,7 @@ import javax.swing.JLabel;
 import net.sf.opengroove.client.workspace.WorkspaceWrapper;
 import net.sf.opengroove.common.proxystorage.ProxyStorage;
 import net.sf.opengroove.common.security.Hash;
+import net.sf.opengroove.common.utils.DataUtils;
 import net.sf.opengroove.common.utils.Userids;
 
 import base64.Base64Coder;
@@ -151,6 +153,45 @@ public class Storage
             outboundMessageStore, "encrypted");
         messageAttachmentStore = iItem(tbase,
             "messageattachments");
+        ArrayList<UserMessage> messagesList = getLocalUser()
+            .getUserMessages().isolate();
+        HashSet<File> messageFileSet = new HashSet<File>();
+        for (UserMessage message : messagesList)
+        {
+            messageFileSet
+                .add(getMessageAttachmentFolder(message
+                    .getId()));
+        }
+        File[] messageAttachmentFolders = messageAttachmentStore
+            .listFiles();
+        for (File f : messageAttachmentFolders)
+        {
+            if (!messageFileSet.contains(f))
+            {
+                DataUtils.recursiveDelete(f);
+            }
+        }
+        for (UserMessage message : messagesList)
+        {
+            File[] attachmentFiles = getMessageAttachmentFolder(
+                message.getId()).listFiles();
+            HashSet<File> attachmentFileSet = new HashSet<File>();
+            for (UserMessageAttachment attachment : message
+                .getAttachments().isolate())
+            {
+                attachmentFileSet
+                    .add(getMessageAttachmentFile(message
+                        .getId(), attachment.getName()));
+            }
+            if (attachmentFiles != null)
+            {
+                for (File f : attachmentFiles)
+                {
+                    if (!attachmentFileSet.contains(f))
+                        f.delete();
+                }
+            }
+        }
     }
     
     private static final Hashtable<String, Storage> singletons = new Hashtable<String, Storage>();

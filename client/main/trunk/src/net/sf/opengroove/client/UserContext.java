@@ -950,6 +950,19 @@ public class UserContext
                                 + computersString;
                         }
                     };
+                    contactButton
+                        .addActionListener(new ActionListener()
+                        {
+                            
+                            public void actionPerformed(
+                                ActionEvent e)
+                            {
+                                composeMessage("", "", "",
+                                    "",
+                                    new String[] { contact
+                                        .getUserid() });
+                            }
+                        });
                     setContactButtonText(contactButton,
                         contact);
                     contactButton

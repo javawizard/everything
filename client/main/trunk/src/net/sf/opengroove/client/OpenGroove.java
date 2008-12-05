@@ -1598,12 +1598,17 @@ public class OpenGroove
                     });
                 userMenu.add(sendMessageItem);
                 trayPopup.add(userMenu);
-                trayPopup.add(new AMenuItem("Message History"){
-
+                trayPopup.add(new AMenuItem(
+                    "Message History")
+                {
+                    
                     public void run(ActionEvent e)
                     {
-                        user.getContext().getMessageHistoryFrame().show();
-                    }});
+                        user.getContext()
+                            .getMessageHistoryFrame()
+                            .show();
+                    }
+                });
             }
             trayPopup.addSeparator();
         }
@@ -3581,8 +3586,9 @@ public class OpenGroove
             Icons.SETTINGS_16.getIcon());
         messageHistoryButton.setFocusable(false);
         settingsLinkButton.setFocusable(false);
-        messageHistoryButton.setToolTipText(ComponentUtils
-            .htmlTipWrap("View message history"));
+        messageHistoryButton
+            .setToolTipText(ComponentUtils
+                .htmlTipWrap("View message history and drafts"));
         settingsLinkButton.setToolTipText(ComponentUtils
             .htmlTipWrap("Edit OpenGroove's Settings"));
         messageHistoryButton.setMargin(new Insets(0, 0, 0,

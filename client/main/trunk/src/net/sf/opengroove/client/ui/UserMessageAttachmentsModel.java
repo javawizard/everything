@@ -21,9 +21,16 @@ public class UserMessageAttachmentsModel extends
     
     public Object getElementAt(int index)
     {
-        return message
-            .getAttachmentsByEmbeddedStatus(false)[index]
-            .getName();
+        try
+        {
+            return message
+                .getAttachmentsByEmbeddedStatus(false)[index]
+                .getName();
+        }
+        catch (ArrayIndexOutOfBoundsException e)
+        {
+            return null;
+        }
     }
     
     public int getSize()
@@ -54,7 +61,7 @@ public class UserMessageAttachmentsModel extends
     
     public void reload()
     {
-        fireContentsChanged(this,0, getSize());
+        fireContentsChanged(this, 0, getSize());
     }
     
 }
