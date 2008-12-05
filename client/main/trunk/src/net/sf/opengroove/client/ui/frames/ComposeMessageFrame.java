@@ -48,6 +48,7 @@ import javax.swing.text.StyledEditorKit;
 import javax.swing.text.StyledEditorKit.BoldAction;
 import javax.swing.text.html.HTMLEditorKit;
 
+import net.sf.opengroove.client.OpenGroove;
 import net.sf.opengroove.client.UserContext;
 import net.sf.opengroove.client.storage.Storage;
 import net.sf.opengroove.client.storage.UserMessage;
@@ -97,10 +98,23 @@ public class ComposeMessageFrame extends javax.swing.JFrame
             JList list, Object value, int index,
             boolean isSelected, boolean cellHasFocus)
         {
-            String messageId = (String) value;
+            String attachmentName = (String) value;
+            UserMessageAttachment attachment = message
+                .getAttachmentByName(attachmentName);
+            if (attachment == null)
+            {
+                setIcon(null);
+                setText("NONEXISTANT: " + attachmentName);
+            }
+            else
+            {
+                setText(attachmentName);
+                setIcon(attachment.isFolder() ? OpenGroove.Icons.FOLDER_16
+                    .getIcon()
+                    : OpenGroove.Icons.FILE_16.getIcon());
+            }
             return this;
         }
-        
     }
     
     private JPanel rootPanel;
@@ -1263,8 +1277,8 @@ public class ComposeMessageFrame extends javax.swing.JFrame
          * All we need to do is copy the attachment over.
          */
         FileInputStream in = new FileInputStream(
-            attachmentFile);
-        FileOutputStream out = new FileOutputStream(file);
+            file);
+        FileOutputStream out = new FileOutputStream(attachmentFile);
         StringUtils.copy(in, out);
         out.flush();
         out.close();
