@@ -98,6 +98,7 @@ public class ComposeMessageFrame extends javax.swing.JFrame
             boolean isSelected, boolean cellHasFocus)
         {
             String messageId = (String) value;
+            return this;
         }
         
     }

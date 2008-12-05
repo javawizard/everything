@@ -273,7 +273,9 @@ public class OpenGroove
             "settings48.png", 48), SETTINGS_16(
             "settings16.png", 16), MESSAGE_CONFIG_16(
             "messageconfig16.png", 16), MESSAGE_CONFIG_48(
-            "messageconfig48.png", 48);
+            "messageconfig48.png", 48), FILE_16(
+            "gfile2-16.png", 16), FOLDER_16(
+            "gfolder16.png", 16);
         private int size;
         
         private File scaledFile;
