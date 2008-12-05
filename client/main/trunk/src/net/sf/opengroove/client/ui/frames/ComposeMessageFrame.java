@@ -98,7 +98,7 @@ public class ComposeMessageFrame extends javax.swing.JFrame
             JList list, Object value, int index,
             boolean isSelected, boolean cellHasFocus)
         {
-            if(list.getSelectedValue().equals(value))
+            if (value.equals(list.getSelectedValue()))
             {
                 setBackground(list.getSelectionBackground());
                 setForeground(list.getSelectionForeground());
@@ -947,10 +947,20 @@ public class ComposeMessageFrame extends javax.swing.JFrame
     private void removeAttachmentButtonActionPerformed(
         ActionEvent evt)
     {
-        System.out
-            .println("removeAttachmentButton.actionPerformed, event="
-                + evt);
-        // TODO add your code for removeAttachmentButton.actionPerformed
+        String attachmentName = (String) attachmentsList
+            .getSelectedValue();
+        if (attachmentName == null)
+        {
+            JOptionPane
+                .showMessageDialog(this,
+                    "You must select an attachment to remove first.");
+            return;
+        }
+        UserMessageAttachment attachment = message
+            .getAttachmentByName(attachmentName);
+        message.getAttachments().remove(attachment);
+        storage.getMessageAttachmentFile(message.getId(),
+            attachmentName).delete();
     }
     
     private void saveAttachmentButtonActionPerformed(
