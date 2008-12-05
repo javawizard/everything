@@ -57,8 +57,8 @@ public class Storage
      * Initializes the Storage class. This should only be called once per JVM
      * instance. This method may take a long time to return, since it creates a
      * ProxyStorage instance to use as the backing data store, and ProxyStorage
-     * vacuums itself when first constructed (vacuuming uses a mark-and-sweep
-     * algorithm, which is inherently slow for a large data set).
+     * vacuums itself when first constructed (proxystorage vacuuming uses a
+     * mark-and-sweep algorithm, which is inherently slow for a large data set).
      * 
      * @param file
      *            The file that the storage class should use to store all of
