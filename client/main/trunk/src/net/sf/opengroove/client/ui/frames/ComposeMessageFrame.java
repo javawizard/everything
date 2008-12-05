@@ -704,7 +704,7 @@ public class ComposeMessageFrame extends javax.swing.JFrame
                     {
                         cancelButton = new JButton();
                         buttonPanel.add(cancelButton);
-                        cancelButton.setText("Cancel");
+                        cancelButton.setText("Discard");
                         cancelButton
                             .addActionListener(new ActionListener()
                             {
@@ -961,6 +961,7 @@ public class ComposeMessageFrame extends javax.swing.JFrame
         message.getAttachments().remove(attachment);
         storage.getMessageAttachmentFile(message.getId(),
             attachmentName).delete();
+        
     }
     
     private void saveAttachmentButtonActionPerformed(
