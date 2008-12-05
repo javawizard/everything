@@ -5,6 +5,7 @@ import com.jidesoft.swing.JideButton;
 import info.clearthought.layout.TableLayout;
 import java.awt.BorderLayout;
 import java.awt.Color;
+import java.awt.Component;
 import java.awt.FlowLayout;
 import java.awt.Frame;
 import java.awt.event.ActionEvent;
@@ -35,6 +36,7 @@ import javax.swing.JList;
 import javax.swing.JPanel;
 import javax.swing.JEditorPane;
 import javax.swing.JTextField;
+import javax.swing.ListCellRenderer;
 import javax.swing.ListModel;
 import javax.swing.ListSelectionModel;
 import javax.swing.SwingConstants;
@@ -87,6 +89,19 @@ import net.sf.opengroove.common.utils.StringUtils;
  */
 public class ComposeMessageFrame extends javax.swing.JFrame
 {
+    public class AttachmentsListCellRenderer extends JLabel
+        implements ListCellRenderer
+    {
+        
+        public Component getListCellRendererComponent(
+            JList list, Object value, int index,
+            boolean isSelected, boolean cellHasFocus)
+        {
+            String messageId = (String) value;
+        }
+        
+    }
+    
     private JPanel rootPanel;
     private JLabel jLabel2;
     private JLabel jLabel3;
@@ -803,6 +818,8 @@ public class ComposeMessageFrame extends javax.swing.JFrame
                                         storage, message);
                                     attachmentsList
                                         .setModel(attachmentsModel);
+                                    attachmentsList
+                                        .setCellRenderer(new AttachmentsListCellRenderer());
                                 }
                                 attachmentUpperPanel.add(
                                     attachmentsList,
@@ -1059,7 +1076,8 @@ public class ComposeMessageFrame extends javax.swing.JFrame
                         "You tried to add an attachment, but the file or folder you specified doesn't exist.");
                 return;
             }
-            if (message.getAttachmentByName(file.getName().toLowerCase()) != null)
+            if (message.getAttachmentByName(file.getName()
+                .toLowerCase()) != null)
             {
                 new Thread()
                 {
