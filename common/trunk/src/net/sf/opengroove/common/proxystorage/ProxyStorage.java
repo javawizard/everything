@@ -110,6 +110,14 @@ public class ProxyStorage<E>
     protected static final Map<Class, ParameterFilter> parameterFilterSingletons = new HashMap<Class, ParameterFilter>();
     
     protected static final Map<Class, ResultFilter> resultFilterSingletons = new HashMap<Class, ResultFilter>();
+    /*
+     * <BeanPropertyKey,Object>
+     */
+    Map propertyCache;
+    /*
+     * <BeanPropertyKey,Object?
+     */
+    Map stringCache;
     
     long opcount = 0;
     
@@ -132,7 +140,7 @@ public class ProxyStorage<E>
      * Maps longs to objects (object ids to the objects themselves), but lrumap
      * doesn't support generics which is why the mapping isn't shown as generics
      */
-    protected static Map objectCache;
+    protected Map objectCache;
     /**
      * A map that maps proxy object ids to maps that map the object's property
      * names to lists of listeners registered on those propertiews
@@ -158,17 +166,22 @@ public class ProxyStorage<E>
     
     public ProxyStorage(Class<E> rootClass, File location)
     {
-        this(rootClass, location, 800);
+        this(rootClass, location, 800, 2000, 400);
     }
     
     public ProxyStorage(Class<E> rootClass, File location,
-        int cacheSize)
+        int objectCacheSize, int propertyCacheSize,
+        int stringCacheSize)
 
     {
         System.out.println("loading proxystorage on file "
             + location);
         objectCache = Collections
-            .synchronizedMap(new LRUMap(cacheSize));
+            .synchronizedMap(new LRUMap(objectCacheSize));
+        propertyCache = Collections
+            .synchronizedMap(new LRUMap(propertyCacheSize));
+        stringCache = Collections
+            .synchronizedMap(new LRUMap(stringCacheSize));
         listenerExecutor.allowCoreThreadTimeOut(true);
         this.rootClass = rootClass;
         try
@@ -1626,28 +1639,48 @@ public class ProxyStorage<E>
                          */
                         String propertyName = propertyNameFromAccessor(method
                             .getName());
-                        PreparedStatement st = connection
-                            .prepareStatement("select "
-                                + propertyName
-                                + " from "
-                                + getTargetTableName(targetClass)
-                                + " where proxystorage_id = ?");
-                        opcount++;
-                        st.setLong(1, targetId);
-                        ResultSet rs = st.executeQuery();
-                        boolean isPresent = rs.next();
-                        if (!isPresent)
+                        BeanPropertyKey cacheKey = new BeanPropertyKey();
+                        cacheKey.id = targetId;
+                        cacheKey.property = propertyName;
+                        Map cacheMap;
+                        if (method.getReturnType().equals(
+                            String.class))
+                            cacheMap = stringCache;
+                        else
+                            cacheMap = propertyCache;
+                        Object cachedObject = cacheMap
+                            .get(cacheKey);
+                        Object result;
+                        if (cachedObject != null)
+                            result = cachedObject;
+                        else
                         {
+                            PreparedStatement st = connection
+                                .prepareStatement("select "
+                                    + propertyName
+                                    + " from "
+                                    + getTargetTableName(targetClass)
+                                    + " where proxystorage_id = ?");
+                            opcount++;
+                            st.setLong(1, targetId);
+                            ResultSet rs = st
+                                .executeQuery();
+                            boolean isPresent = rs.next();
+                            if (!isPresent)
+                            {
+                                rs.close();
+                                st.close();
+                                throw new IllegalStateException(
+                                    "The object that was queried has been deleted "
+                                        + "from the database.");
+                            }
+                            result = rs
+                                .getObject(propertyName);
+                            if(result != null)
+                                cacheMap.put(cacheKey,result);
                             rs.close();
                             st.close();
-                            throw new IllegalStateException(
-                                "The object that was queried has been deleted "
-                                    + "from the database.");
                         }
-                        Object result = rs
-                            .getObject(propertyName);
-                        rs.close();
-                        st.close();
                         if (method.getReturnType() == Integer.TYPE
                             || method.getReturnType() == Integer.class
                             || method.getReturnType() == Long.TYPE
@@ -1833,6 +1866,21 @@ public class ProxyStorage<E>
                         opcount++;
                         st.execute();
                         st.close();
+                        BeanPropertyKey key = new BeanPropertyKey();
+                        key.id = targetId;
+                        key.property = propertyName;
+                        if(inputObject == null)
+                        {
+                            stringCache.remove(key);
+                            propertyCache.remove(key);
+                        }
+                        else
+                        {
+                            if(inputObject instanceof String)
+                                stringCache.put(key,inputObject);
+                            else
+                                propertyCache.put(key,inputObject);
+                        }
                         HashMap<String, ArrayList<PropertyChangeListener>> beanMap = beanListeners
                             .get(targetId);
                         if (beanMap != null)
