@@ -212,10 +212,9 @@ public class MessageHistoryFrame extends javax.swing.JFrame
                             searchMessageCheckbox
                                 .setToolTipText(ComponentUtils
                                     .htmlTipWrap("If this is checked, the contents of the message "
-                                        + "(including the names of it's attachments, and "
-                                        + "it's reply subject) will be searched. If this "
-                                        + "is not checked, only the message's sender, "
-                                        + "recipients, and subject will be searched. This "
+                                        + "will be searched. If this "
+                                        + "is not checked, only the message's sender and "
+                                        + "subject will be searched. This "
                                         + "can slow the search down by a considerable "
                                         + "amount, so you should generally only check this "
                                         + "when you need it."));

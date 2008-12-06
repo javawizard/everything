@@ -176,8 +176,21 @@ public class UserMessageTableModel extends
     {
         if (criteria == null || "".equals(criteria.trim()))
             return true;
-        // TODO: actually implement this method
+        criteria = criteria.toLowerCase();
+        UserMessage message = user.getUserMessages().get(
+            row);
+        if (message == null)
+            return true;
+        String messageSubject = message.getSubject();
+        if (messageSubject.toLowerCase().contains(criteria))
+            return true;
+        if (extended)
+        {
+            String messageContents = message.getMessage();
+            if (messageContents.toLowerCase().contains(
+                criteria))
+                return true;
+        }
         return false;
     }
-    
 }
