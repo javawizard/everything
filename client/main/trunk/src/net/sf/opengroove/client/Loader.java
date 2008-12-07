@@ -17,11 +17,16 @@ import javax.swing.JLabel;
  * This class is used to actually start OpenGroove on a user's box. developers
  * should use the class {@link OpenGroove} to start, instead of this one, to
  * avoid installing updates from the server. This class installs any updates to
- * OpenGroove itself that are downloaded, and then calls OpenGroove.main().
+ * OpenGroove itself that are downloaded, and then calls OpenGroove.main().<br/><br/>
+ * 
+ * This class is deprecated because it is in the process of being replaced by
+ * Java ANT/SVN Automatic Updater, an auto-updater package from Interdirected.
  * 
  * @author Alexander Boyd
+ * @deprecated
  * 
  */
+@Deprecated
 public class Loader
 {
     
