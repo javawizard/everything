@@ -186,6 +186,11 @@ public class UserMessageTableModel extends
             return true;
         if (extended)
         {
+            /*
+             * In the future we should search the attachment names and recipient
+             * names, and probably the "reply to" subject, but for now we're not
+             * going to, since it would slow the search down by quite a bit.
+             */
             String messageContents = message.getMessage();
             if (messageContents.toLowerCase().contains(
                 criteria))

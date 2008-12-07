@@ -290,7 +290,7 @@ public class ComposeMessageFrame extends javax.swing.JFrame
                     int choice = JOptionPane
                         .showOptionDialog(
                             ComposeMessageFrame.this,
-                            "Would you like to save your message, or discard it?",
+                            "Would you like to save this message, or discard it?",
                             null,
                             JOptionPane.YES_NO_OPTION,
                             JOptionPane.PLAIN_MESSAGE,
