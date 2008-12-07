@@ -1946,10 +1946,10 @@ public class OpenGrooveRealmServer
         Context context = createServerContext(server, "web");
         context.addFilter(new FilterHolder(
             new LoginFilter()), "/*", Context.ALL);
-//        context.addServlet(new ServletHolder(
-//            new RendererServlet(readFile(new File(
-//                "webconfig/layout.properties")))),
-//            "/layout/*");
+        // context.addServlet(new ServletHolder(
+        // new RendererServlet(readFile(new File(
+        // "webconfig/layout.properties")))),
+        // "/layout/*");
         context.addServlet(new ServletHolder(
             new AnonLinkImpl()), "/bypass/anonlink");
         context.addServlet(new ServletHolder(
@@ -2050,8 +2050,16 @@ public class OpenGrooveRealmServer
         serverSocket = (SSLServerSocket) sslFactory
             .createServerSocket(Integer
                 .parseInt(getConfig("serverport")));
-        serverSocket
-            .setEnabledCipherSuites(new String[] { "TLS_RSA_WITH_AES_256_CBC_SHA" });
+        // serverSocket
+        // .setEnabledCipherSuites(new String[] { "TLS_RSA_WITH_AES_256_CBC_SHA"
+        // });
+        /*
+         * FIXME: the above is *very* insecure (although the jvm only has a few
+         * cipher suites enabled by default, so it's not the worst thing in the
+         * world), but it was causing problems with only a few machines being
+         * able to connect. In the future, more cipher suites should be added,
+         * and the above statement re-enabled.
+         */
         loadCommands();
         tasks.prestartAllCoreThreads();
         internalTasks.prestartAllCoreThreads();
