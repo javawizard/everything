@@ -14,10 +14,12 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
+import java.io.DataOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.HashMap;
@@ -56,9 +58,11 @@ import javax.swing.text.html.HTMLEditorKit;
 
 import net.sf.opengroove.client.OpenGroove;
 import net.sf.opengroove.client.UserContext;
+import net.sf.opengroove.client.com.model.StoredMessageRecipient;
 import net.sf.opengroove.client.messaging.MessageHierarchy;
 import net.sf.opengroove.client.storage.LocalUser;
 import net.sf.opengroove.client.storage.OutboundMessage;
+import net.sf.opengroove.client.storage.OutboundMessageRecipient;
 import net.sf.opengroove.client.storage.Storage;
 import net.sf.opengroove.client.storage.UserMessage;
 import net.sf.opengroove.client.storage.UserMessageAttachment;
@@ -1094,8 +1098,86 @@ public class ComposeMessageFrame extends javax.swing.JFrame
         UserContext context = localUser.getContext();
         MessageHierarchy hierarchy = context
             .getUserMessageHierarchy();
-        OutboundMessage message = hierarchy.createMessage();
-        message.
+        OutboundMessage outboundMessage = hierarchy
+            .createMessage();
+        for (UserMessageRecipient recipient : message
+            .getRecipients().isolate())
+        {
+            OutboundMessageRecipient outboundRecipient = outboundMessage
+                .createRecipient();
+            outboundRecipient.setUserid(recipient
+                .getUserid());
+            outboundRecipient.setComputer("");
+            outboundMessage.getRecipients().add(
+                outboundRecipient);
+        }
+        File outfile = hierarchy
+            .getOutboundMessageFile(outboundMessage.getId());
+        try
+        {
+            FileOutputStream fileOut = new FileOutputStream(
+                outfile);
+            DataOutputStream out = new DataOutputStream(
+                fileOut);
+            /*
+             * First, we'll write an int that specifies an encoding number. This
+             * won't be used right now, but could later be used to recignize
+             * messages with additional fields, by incrementing this number each
+             * time the message encoding protocol changes.
+             */
+            out.writeInt(1);
+            /*
+             * Next, we'll write the message's internal id.
+             */
+            out.writeUTF(message.getId());
+            /*
+             * Next comes the date.
+             */
+            out.writeLong(message.getDate());
+            /*
+             * Next we'll write the content type. Currently, this will only
+             * contain the value text/html, but in the future, other message
+             * renderings (such as plain text) could be used.
+             */
+            out.writeUTF(message.getContentType());
+            /*
+             * Next, we'll write the reply id and the reply subject. An empty
+             * reply id indicates that this message is not in reply.
+             */
+            out.writeUTF(message.getReplyId());
+            out.writeUTF(message.getReplySubject());
+            /*
+             * Next, we'll write the sender of the message. This will typically
+             * be our own userid.
+             */
+            out.writeUTF(message.getSender());
+            /*
+             * Next, we'll write the message's recipient list.
+             */
+            ArrayList<UserMessageRecipient> recipientList = message
+                .getRecipients().isolate();
+            out.writeInt(recipientList.size());
+            for(UserMessageRecipient recipient : recipientList)
+            {
+                
+            }
+        }
+        catch (Exception e)
+        {
+            e.printStackTrace();
+            outfile.delete();
+            outfile.deleteOnExit();
+            dialog.dispose();
+            JOptionPane
+                .showMessageDialog(
+                    this,
+                    "Sending the message failed, for an unknown reason. "
+                        + "Contact us at support@opengroove.org for assistance.");
+        }
+        finally
+        {
+            dialog.dispose();
+        }
     }
     
     private void cancelButtonActionPerformed(ActionEvent evt)
