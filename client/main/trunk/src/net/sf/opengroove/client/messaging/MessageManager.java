@@ -1280,7 +1280,7 @@ public class MessageManager implements MessageDeliverer,
         }
     };
     @StageThread
-    private Thread inboundDecoderThread = new Thread()
+    private Thread inboundDecoderThread = new Thread("mm-inbound-decoder")
     {
         public void run()
         {
@@ -1390,6 +1390,8 @@ public class MessageManager implements MessageDeliverer,
                             message
                                 .setStage(InboundMessage.STAGE_DECODED);
                             messageEncoded.delete();
+                            System.out
+                                .println("notifying inbound dispatcher upon available message");
                             notifyInboundDispatcher();
                         }
                         catch (Exception exception)
@@ -1407,7 +1409,7 @@ public class MessageManager implements MessageDeliverer,
         }
     };
     @StageThread
-    private Thread inboundDispatcherThread = new Thread()
+    private Thread inboundDispatcherThread = new Thread("mm-inbound-dispatcher")
     {
         public void run()
         {
@@ -1422,6 +1424,8 @@ public class MessageManager implements MessageDeliverer,
                             TimeUnit.MILLISECONDS);
                     if (object == quitObject)
                         return;
+                    System.out
+                        .println("run object detected in dispatcher thread");
                     /*
                      * The object is the runObject or the timeout expired, so
                      * we'll do the actual processing.
@@ -1429,6 +1433,8 @@ public class MessageManager implements MessageDeliverer,
                     /*
                      * Do actual processing here
                      */
+                    System.out
+                        .println("running dispatch thread");
                     InboundMessage[] messages = localUser
                         .listInboundMessagesForStage(InboundMessage.STAGE_DECODED);
                     for (InboundMessage message : messages)
@@ -1450,6 +1456,8 @@ public class MessageManager implements MessageDeliverer,
                              * program startup to check for messages it needs to
                              * process anyway.
                              */
+                            System.out
+                                .println("dispatching message");
                             message
                                 .setStage(InboundMessage.STAGE_DISPATCHED);
                             hierarchyElement
@@ -1626,7 +1634,9 @@ public class MessageManager implements MessageDeliverer,
     
     public void notifyInboundDispatcher()
     {
-        inboundDispatcherQueue.offer(runObject);
+        System.out
+            .println("notification of inbound dispatcher: "
+                + inboundDispatcherQueue.offer(runObject));
     }
     
     // methods

@@ -1117,7 +1117,6 @@ public class OpenGroove
                 context
                     .setPluginMessageHierarchy(new NullHierarchy(
                         "plugins"));
-                setupInboundUserMessaging(context, userid);
                 context.getRootMessageHierarchy().add(
                     context.getInternalMessageHierarchy());
                 context.getRootMessageHierarchy().add(
@@ -1145,6 +1144,7 @@ public class OpenGroove
                         .getUserNotificationListener());
                 context.setCom(commandCom);
                 loadContextSubscriptionListener(context);
+                setupInboundUserMessaging(context, userid);
                 // loadFeatures();
                 // loadCurrentUserLookAndFeel();
                 setupOutboundUserMessaging(context, userid);
@@ -1533,7 +1533,7 @@ public class OpenGroove
      * @param userid
      */
     private static void setupInboundUserMessaging(
-        UserContext context, String userid)
+        final UserContext context, String userid)
     {
         /*
          * TODO: actually implement this method. Some sort of "preferences"
@@ -1557,13 +1557,17 @@ public class OpenGroove
             });
         context.getInternalMessageHierarchy().add(
             context.getUserMessageHierarchy());
-        context.getCom().addMessageAvailableListener(new MessageAvailableListener(){
-
-            public void messageAvailable(String messageId)
+        context.getCom().addMessageAvailableListener(
+            new MessageAvailableListener()
             {
-                // TODO Auto-generated method stub
                 
-            }});
+                public void messageAvailable(
+                    String messageId)
+                {
+                    context.getMessageManager()
+                        .notifyInboundImporter();
+                }
+            });
     }
     
     /**
