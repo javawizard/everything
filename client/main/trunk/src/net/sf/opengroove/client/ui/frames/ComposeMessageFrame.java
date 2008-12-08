@@ -1173,6 +1173,15 @@ public class ComposeMessageFrame extends javax.swing.JFrame
             out.writeInt(messageBytes.length);
             out.write(messageBytes);
             /*
+             * Now we'll write the int 0. This serves as another way (in
+             * addition to the type byte, written as the first byte of the
+             * message) to extend messages in the future. The receiving side
+             * will read this number and will discard that many bytes after.
+             * Future versions could include actual data there, and this number
+             * would be the length of that data.
+             */
+            out.writeInt(0);
+            /*
              * Next come the message's attachments. We'll write the number of
              * attachments present, and then we'll write each attachment's info
              * followed by it's contents.
@@ -1200,7 +1209,41 @@ public class ComposeMessageFrame extends javax.swing.JFrame
                 out.writeBoolean(attachment.isEmbedded());
                 out.writeBoolean(attachment.isInternal());
                 out.writeBoolean(attachment.isFolder());
+                /*
+                 * Now we'll write internalType. UserMessageAttachment defines
+                 * (by way of a Default annotation) that internalType will not
+                 * be null, so we don't have to worry about that when writing.
+                 */
+                out.writeUTF(attachment.getInternalType());
+                /*
+                 * Next comes the actual contents of the attachment, preceded by
+                 * it's length.
+                 */
+                File attachmentFile = storage
+                    .getMessageAttachmentFile(message
+                        .getId(), attachment.getName());
+                out.writeInt((int) attachmentFile.length());
+                FileInputStream attIn = new FileInputStream(
+                    attachmentFile);
+                StringUtils.copy(attIn, out);
+                attIn.close();
+                /*
+                 * That's it for the attachments.
+                 */
             }
+            /*
+             * The message has now been written to the message file. We'll close
+             * the file and then send the message.
+             */
+            out.flush();
+            out.close();
+            hierarchy.sendMessage(outboundMessage);
+            /*
+             * The message has now been sent. We'll dispose the dialog and then
+             * dispose this frame.
+             */
+            dialog.dispose();
+            dispose();
         }
         catch (Exception e)
         {

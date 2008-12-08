@@ -82,6 +82,9 @@ public interface OutboundMessage
     @Search(listProperty = "properties", searchProperty = "name")
     public MessageProperty getProperty(String name);
     
+    @Constructor
+    public MessageProperty createProperty();
+    
     @CustomProperty(CustomDelegate.class)
     public String getFileId();
 }
