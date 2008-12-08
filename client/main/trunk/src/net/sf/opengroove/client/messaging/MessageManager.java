@@ -227,6 +227,7 @@ public class MessageManager implements MessageDeliverer,
                 }
                 catch (Exception e)
                 {
+                    e.printStackTrace();
                 }
             }
         }
@@ -434,6 +435,7 @@ public class MessageManager implements MessageDeliverer,
                 }
                 catch (Exception e)
                 {
+                    e.printStackTrace();
                 }
             }
         }
@@ -606,6 +608,7 @@ public class MessageManager implements MessageDeliverer,
                 }
                 catch (Exception e)
                 {
+                    e.printStackTrace();
                 }
             }
         }
@@ -673,6 +676,7 @@ public class MessageManager implements MessageDeliverer,
                 }
                 catch (Exception e)
                 {
+                    e.printStackTrace();
                 }
             }
         }
@@ -705,15 +709,22 @@ public class MessageManager implements MessageDeliverer,
                     boolean wereMessagesImported = false;
                     String[] messageIds = communicator
                         .listInboundMessages();
+                    System.out.println("listed "
+                        + messageIds.length
+                        + " inbound message(s)");
                     for (String messageId : messageIds)
                     {
                         InboundMessage inboundMessage = localUser
                             .getInboundMessageById(messageId);
                         if (inboundMessage != null)
+                        {
                             /*
                              * The message is already present locally.
                              */
+                            System.out
+                                .println("server message already present locally");
                             continue;
+                        }
                         /*
                          * The message is not present locally. We'll create it
                          * and add it to the user's list of inbound messages.
@@ -732,6 +743,8 @@ public class MessageManager implements MessageDeliverer,
                                 .getComputer());
                         inboundMessage
                             .setStage(InboundMessage.STAGE_IMPORTED);
+                        System.out
+                            .println("created inbound message");
                         /*
                          * The inbound message's target isn't known at this
                          * point (it only becomes known after decoding the
@@ -742,6 +755,8 @@ public class MessageManager implements MessageDeliverer,
                          */
                         localUser.getInboundMessages().add(
                             inboundMessage);
+                        System.out
+                            .println("added inbound message to local user store");
                     }
                     if (wereMessagesImported)
                     {
@@ -749,11 +764,14 @@ public class MessageManager implements MessageDeliverer,
                          * Messages were imported. We should therefore notify
                          * the message downloader.
                          */
+                        System.out
+                            .println("messages were imported; notifying the downloader");
                         notifyInboundDownloader();
                     }
                 }
                 catch (Exception e)
                 {
+                    e.printStackTrace();
                 }
             }
         }
@@ -866,6 +884,7 @@ public class MessageManager implements MessageDeliverer,
                 }
                 catch (Exception e)
                 {
+                    e.printStackTrace();
                 }
             }
         }
@@ -969,6 +988,7 @@ public class MessageManager implements MessageDeliverer,
                 }
                 catch (Exception e)
                 {
+                    e.printStackTrace();
                 }
             }
         }
@@ -1254,6 +1274,7 @@ public class MessageManager implements MessageDeliverer,
                 }
                 catch (Exception e)
                 {
+                    e.printStackTrace();
                 }
             }
         }
@@ -1380,6 +1401,7 @@ public class MessageManager implements MessageDeliverer,
                 }
                 catch (Exception e)
                 {
+                    e.printStackTrace();
                 }
             }
         }
@@ -1442,6 +1464,7 @@ public class MessageManager implements MessageDeliverer,
                 }
                 catch (Exception e)
                 {
+                    e.printStackTrace();
                 }
             }
         }
@@ -1500,6 +1523,7 @@ public class MessageManager implements MessageDeliverer,
                 }
                 catch (Exception e)
                 {
+                    e.printStackTrace();
                 }
             }
         }

@@ -106,6 +106,7 @@ import net.sf.opengroove.client.com.CommandCommunicator;
 import net.sf.opengroove.client.com.Communicator;
 import net.sf.opengroove.client.com.FailedResponseException;
 import net.sf.opengroove.client.com.FieldFile;
+import net.sf.opengroove.client.com.MessageAvailableListener;
 import net.sf.opengroove.client.com.Packet;
 import net.sf.opengroove.client.com.ServerContext;
 import net.sf.opengroove.client.com.ServerSecurityKey;
@@ -1548,10 +1549,21 @@ public class OpenGroove
                 public void handleMessage(
                     InboundMessage message)
                 {
+                    System.out
+                        .println("received message from "
+                            + message.getSender() + "/"
+                            + message.getSendingComputer());
                 }
             });
         context.getInternalMessageHierarchy().add(
             context.getUserMessageHierarchy());
+        context.getCom().addMessageAvailableListener(new MessageAvailableListener(){
+
+            public void messageAvailable(String messageId)
+            {
+                // TODO Auto-generated method stub
+                
+            }});
     }
     
     /**

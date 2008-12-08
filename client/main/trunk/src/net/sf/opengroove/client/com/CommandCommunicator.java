@@ -930,7 +930,7 @@ public class CommandCommunicator
             message.setMessageId(messageId);
             message.setSender(tokens[0]);
             message.setComputer(tokens[1]);
-            message.setSent(tokens[3]
+            message.setSent(tokens[2]
                 .equalsIgnoreCase("true"));
             return message;
         }

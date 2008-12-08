@@ -1095,6 +1095,14 @@ public class ComposeMessageFrame extends javax.swing.JFrame
         if (!isEditable)
             return;
         saveMessage();
+        if (message.getRecipients().size() < 1)
+        {
+            JOptionPane
+                .showMessageDialog(
+                    this,
+                    "This message doesn't have any recipients. A message cannot be sent if it doesn't have any recipients.");
+            return;
+        }
         StatusDialog dialog = new StatusDialog(this,
             "OpenGroove is bundling your message together "
                 + "for sending, please wait...");
@@ -1243,6 +1251,10 @@ public class ComposeMessageFrame extends javax.swing.JFrame
             out.flush();
             out.close();
             hierarchy.sendMessage(outboundMessage);
+            storage.getLocalUser().getUserMessages()
+                .remove(message);
+            storage.getLocalUser().getContext()
+                .getMessageHistoryFrame().reload();
             /*
              * The message has now been sent. We'll dispose the dialog and then
              * dispose this frame.
