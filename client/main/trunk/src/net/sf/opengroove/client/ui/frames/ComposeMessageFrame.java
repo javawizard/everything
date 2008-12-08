@@ -56,10 +56,14 @@ import javax.swing.text.html.HTMLEditorKit;
 
 import net.sf.opengroove.client.OpenGroove;
 import net.sf.opengroove.client.UserContext;
+import net.sf.opengroove.client.messaging.MessageHierarchy;
+import net.sf.opengroove.client.storage.LocalUser;
+import net.sf.opengroove.client.storage.OutboundMessage;
 import net.sf.opengroove.client.storage.Storage;
 import net.sf.opengroove.client.storage.UserMessage;
 import net.sf.opengroove.client.storage.UserMessageAttachment;
 import net.sf.opengroove.client.storage.UserMessageRecipient;
+import net.sf.opengroove.client.ui.StatusDialog;
 import net.sf.opengroove.client.ui.UserMessageAttachmentsModel;
 import net.sf.opengroove.client.ui.UserMessageRecipientsModel;
 import net.sf.opengroove.common.ui.ComponentUtils;
@@ -297,9 +301,9 @@ public class ComposeMessageFrame extends javax.swing.JFrame
                             null, new String[] { "Save",
                                 "Discard", "Cancel" },
                             "Save");
-                    if(choice == 0)
+                    if (choice == 0)
                         ComposeMessageFrame.this.dispose();
-                    else if(choice == 1)
+                    else if (choice == 1)
                         discardMessage();
                 }
                 
@@ -1061,10 +1065,37 @@ public class ComposeMessageFrame extends javax.swing.JFrame
     
     private void sendButtonActionPerformed(ActionEvent evt)
     {
-        System.out
-            .println("sendButton.actionPerformed, event="
-                + evt);
-        // TODO add your code for sendButton.actionPerformed
+        /*
+         * We'll first pop up a dialog that indicates that we are bundling the
+         * message together to send it, so that the user doesn't sit wondering
+         * what OpenGroove is doing. We'll then create the outbound message, and
+         * begin writing it's fields to the file that represents it. We'll use
+         * writeStringUTF() to encode strings. After that's done, we'll send the
+         * message, and then mark it as not a draft anymore.
+         */
+        new Thread()
+        {
+            public void run()
+            {
+                sendMessage();
+            }
+        }.start();
+    }
+    
+    protected void sendMessage()
+    {
+        if (!isEditable)
+            return;
+        StatusDialog dialog = new StatusDialog(this,
+            "OpenGroove is bundling your message together "
+                + "for sending, please wait...");
+        dialog.showImmediate();
+        LocalUser localUser = storage.getLocalUser();
+        UserContext context = localUser.getContext();
+        MessageHierarchy hierarchy = context
+            .getUserMessageHierarchy();
+        OutboundMessage message = hierarchy.createMessage();
+        message.
     }
     
     private void cancelButtonActionPerformed(ActionEvent evt)

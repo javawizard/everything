@@ -2,6 +2,7 @@ package net.sf.opengroove.client.storage;
 
 import java.net.URLEncoder;
 
+import net.sf.opengroove.common.proxystorage.Constructor;
 import net.sf.opengroove.common.proxystorage.CustomProperty;
 import net.sf.opengroove.common.proxystorage.Delegate;
 import net.sf.opengroove.common.proxystorage.ListType;
@@ -70,6 +71,9 @@ public interface OutboundMessage
     @Property
     @ListType(OutboundMessageRecipient.class)
     public StoredList<OutboundMessageRecipient> getRecipients();
+    
+    @Constructor
+    public OutboundMessageRecipient createRecipient();
     
     @Property
     @ListType(MessageProperty.class)

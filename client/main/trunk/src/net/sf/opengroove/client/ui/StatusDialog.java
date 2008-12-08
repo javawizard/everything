@@ -110,6 +110,9 @@ public class StatusDialog extends JDialog
                 e.printStackTrace();
                 break;
             }
+            invalidate();
+            validate();
+            repaint();
     }
     
     public void setText(String text)
