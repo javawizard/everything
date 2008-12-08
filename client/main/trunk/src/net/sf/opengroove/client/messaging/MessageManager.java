@@ -492,7 +492,8 @@ public class MessageManager implements MessageDeliverer,
                                 StoredMessage messageInfo = communicator
                                     .getMessageInfo(message
                                         .getId());
-                                if (messageInfo.isSent())
+                                if (messageInfo != null
+                                    && messageInfo.isSent())
                                 {
                                     /*
                                      * The message has already been sent. This
@@ -503,6 +504,9 @@ public class MessageManager implements MessageDeliverer,
                                         .println("message already exists");
                                     continue;
                                 }
+                                if (messageInfo == null)
+                                    throw new FailedResponseException(
+                                        "NOSUCHMESSAGE");
                             }
                             catch (FailedResponseException e)
                             {
@@ -1200,7 +1204,7 @@ public class MessageManager implements MessageDeliverer,
                                 new SecretKeySpec(
                                     messageKey, "AES"),
                                 new IvParameterSpec(
-                                    new byte[8]));
+                                    new byte[16]));
                             CipherOutputStream out = new CipherOutputStream(
                                 fileOut, cipher);
                             StringUtils.copy(in, out);
@@ -1539,10 +1543,19 @@ public class MessageManager implements MessageDeliverer,
     }
     
     protected StoredMessageRecipient[] translateToServerRecipients(
-        ArrayList<OutboundMessageRecipient> isolate)
+        ArrayList<OutboundMessageRecipient> outboundRecipients)
     {
-        // TODO Auto-generated method stub
-        return null;
+        StoredMessageRecipient[] recipients = new StoredMessageRecipient[outboundRecipients
+            .size()];
+        for (int i = 0; i < recipients.length; i++)
+        {
+            recipients[i] = new StoredMessageRecipient();
+            recipients[i].setUserid(outboundRecipients.get(
+                i).getUserid());
+            recipients[i].setComputer(outboundRecipients
+                .get(i).getComputer());
+        }
+        return recipients;
     }
     
     public void notifyOutboundEncrypter()
@@ -1644,7 +1657,8 @@ public class MessageManager implements MessageDeliverer,
          * initial pass.
          */
         Thread[] threads = getStageThreads();
-        System.out.println("starting " + threads.length + " stage threads");
+        System.out.println("starting " + threads.length
+            + " stage threads");
         for (Thread thread : threads)
         {
             thread.start();
