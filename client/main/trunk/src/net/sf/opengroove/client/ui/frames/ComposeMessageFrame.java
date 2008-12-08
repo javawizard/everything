@@ -313,26 +313,7 @@ public class ComposeMessageFrame extends javax.swing.JFrame
                 
                 public void windowClosed(WindowEvent e)
                 {
-                    if (isEditable)
-                    {
-                        /*
-                         * This means that the message is stil a draft that
-                         * hasn't been sent yet. We'll want to save the message
-                         * contents and the subject.
-                         */
-                        ComposeMessageFrame.this.message
-                            .setMessage(messageArea
-                                .getText());
-                        ComposeMessageFrame.this.message
-                            .setSubject(subjectField
-                                .getText());
-                        UserContext context = ComposeMessageFrame.this.storage
-                            .getLocalUser().getContext();
-                        if (context != null)
-                            context
-                                .getMessageHistoryFrame()
-                                .reload();
-                    }
+                    saveMessage();
                     composeFrames
                         .remove(ComposeMessageFrame.this.message);
                 }
@@ -388,6 +369,29 @@ public class ComposeMessageFrame extends javax.swing.JFrame
              * there are any attachment storage files without backing attachment
              * proxystorage objects, and delete them.
              */
+        }
+    }
+    
+    /**
+     * Saves the subject field and the message field to storage, and reloads the
+     * message history table.
+     */
+    protected void saveMessage()
+    {
+        if (isEditable)
+        {
+            /*
+             * This means that the message is stil a draft that hasn't been sent
+             * yet. We'll want to save the message contents and the subject.
+             */
+            ComposeMessageFrame.this.message
+                .setMessage(messageArea.getText());
+            ComposeMessageFrame.this.message
+                .setSubject(subjectField.getText());
+            UserContext context = ComposeMessageFrame.this.storage
+                .getLocalUser().getContext();
+            if (context != null)
+                context.getMessageHistoryFrame().reload();
         }
     }
     
@@ -1090,6 +1094,7 @@ public class ComposeMessageFrame extends javax.swing.JFrame
     {
         if (!isEditable)
             return;
+        saveMessage();
         StatusDialog dialog = new StatusDialog(this,
             "OpenGroove is bundling your message together "
                 + "for sending, please wait...");

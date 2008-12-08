@@ -115,6 +115,7 @@ import net.sf.opengroove.client.com.UserNotificationListener;
 import net.sf.opengroove.client.com.FieldFile.Fields;
 import net.sf.opengroove.client.com.model.Subscription;
 import net.sf.opengroove.client.features.FeatureManager;
+import net.sf.opengroove.client.messaging.MessageHierarchy;
 import net.sf.opengroove.client.messaging.MessageManager;
 import net.sf.opengroove.client.messaging.NullHierarchy;
 import net.sf.opengroove.client.notification.FrameShowingNotification;
@@ -128,6 +129,7 @@ import net.sf.opengroove.client.settings.SettingStore;
 import net.sf.opengroove.client.settings.SettingsManager;
 import net.sf.opengroove.client.settings.types.CheckboxParameters;
 import net.sf.opengroove.client.storage.Contact;
+import net.sf.opengroove.client.storage.InboundMessage;
 import net.sf.opengroove.client.storage.LocalUser;
 import net.sf.opengroove.client.storage.Storage;
 import net.sf.opengroove.client.text.TextManager;
@@ -1148,6 +1150,7 @@ public class OpenGroove
                 loadLaunchBar(userid, context);
                 context.refreshContactsPane();
                 context.startTimers();
+                messageManager.start();
                 // WorkspaceManager workspaceManager = new
                 // WorkspaceManager(context);
                 // context.setWorkspaceManager(workspaceManager);
@@ -1448,6 +1451,15 @@ public class OpenGroove
                         {
                             e.printStackTrace();
                         }
+                        try
+                        {
+                            context.getMessageManager()
+                                .notifyAllThreads();
+                        }
+                        catch (Exception exception)
+                        {
+                            exception.printStackTrace();
+                        }
                     }
                 }.start();
             }
@@ -1528,6 +1540,18 @@ public class OpenGroove
          * specify how long to retain message attachments and how long to retain
          * messages themselves.
          */
+        context
+            .setUserMessageHierarchy(new MessageHierarchy(
+                "umsg")
+            {
+                
+                public void handleMessage(
+                    InboundMessage message)
+                {
+                }
+            });
+        context.getInternalMessageHierarchy().add(
+            context.getUserMessageHierarchy());
     }
     
     /**
@@ -2254,7 +2278,8 @@ public class OpenGroove
                                                     "Your realm server reported that your userid or password was incorrect.");
                                             return;
                                         }
-                                        statusDialog.dispose();
+                                        statusDialog
+                                            .dispose();
                                         newAccountWizardPane
                                             .setCurrentPage(LABEL_ENTER_KEYS);
                                     }

@@ -1547,6 +1547,8 @@ public class MessageManager implements MessageDeliverer,
     {
         StoredMessageRecipient[] recipients = new StoredMessageRecipient[outboundRecipients
             .size()];
+        System.out.println("translating "
+            + recipients.length + " recipients");
         for (int i = 0; i < recipients.length; i++)
         {
             recipients[i] = new StoredMessageRecipient();
