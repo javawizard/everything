@@ -1182,7 +1182,24 @@ public class ComposeMessageFrame extends javax.swing.JFrame
             out.writeInt(attachmentList.size());
             for (UserMessageAttachment attachment : attachmentList)
             {
-                
+                /*
+                 * First, we'll write this attachment's name.
+                 */
+                out.writeUTF(attachment.getName());
+                /*
+                 * Then, we'll write it's size. When it comes time to write the
+                 * attachment's actual data, we'll write the size again, but
+                 * that time taken from the file, in case there's a mixup where
+                 * the stored size doesn't reflect the attachment data size.
+                 */
+                out.writeInt(attachment.getSize());
+                /*
+                 * Now we'll write isEmbedded, isInternal, and isFolder, in that
+                 * order.
+                 */
+                out.writeBoolean(attachment.isEmbedded());
+                out.writeBoolean(attachment.isInternal());
+                out.writeBoolean(attachment.isFolder());
             }
         }
         catch (Exception e)
