@@ -1157,7 +1157,30 @@ public class ComposeMessageFrame extends javax.swing.JFrame
             ArrayList<UserMessageRecipient> recipientList = message
                 .getRecipients().isolate();
             out.writeInt(recipientList.size());
-            for(UserMessageRecipient recipient : recipientList)
+            for (UserMessageRecipient recipient : recipientList)
+            {
+                out.writeUTF(recipient.getUserid());
+            }
+            /*
+             * Now we'll write the actual message body. Since the body could
+             * theoretically be larger than 32768 bytes (the maximum string size
+             * allowed by writeUTF()), we'll first write the length of the byte
+             * representation of the string as an int, and then the string's
+             * bytes.
+             */
+            byte[] messageBytes = message.getMessage()
+                .getBytes();
+            out.writeInt(messageBytes.length);
+            out.write(messageBytes);
+            /*
+             * Next come the message's attachments. We'll write the number of
+             * attachments present, and then we'll write each attachment's info
+             * followed by it's contents.
+             */
+            ArrayList<UserMessageAttachment> attachmentList = message
+                .getAttachments().isolate();
+            out.writeInt(attachmentList.size());
+            for (UserMessageAttachment attachment : attachmentList)
             {
                 
             }
