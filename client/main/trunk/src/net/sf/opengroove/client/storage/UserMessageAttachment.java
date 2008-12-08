@@ -1,5 +1,6 @@
 package net.sf.opengroove.client.storage;
 
+import net.sf.opengroove.common.proxystorage.Default;
 import net.sf.opengroove.common.proxystorage.Property;
 import net.sf.opengroove.common.proxystorage.ProxyBean;
 
@@ -56,6 +57,7 @@ public interface UserMessageAttachment
      * @return
      */
     @Property
+    @Default(stringValue="")
     public String getInternalType();
     
     public void setInternalType(String type);
