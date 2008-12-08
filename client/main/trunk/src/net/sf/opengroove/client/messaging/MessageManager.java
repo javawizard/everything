@@ -122,20 +122,24 @@ public class MessageManager implements MessageDeliverer,
                      */
                     OutboundMessage[] messages = localUser
                         .listOutboundMessagesForStage(OutboundMessage.STAGE_INITIALIZED);
+                    System.out
+                        .println("scanning for initialized outbound messages");
                     for (OutboundMessage message2 : messages)
                     {
                         try
                         {
-                            ;
                             OutboundMessage message = message2;
+                            System.out
+                                .println("processing stage 1 outbound message "
+                                    + message.getId());
                             File messagePlaintextFile = new File(
                                 storage
                                     .getOutboundMessagePlaintextStore(),
-                                message.getId());
+                                message.getFileId());
                             File messageEncodedFile = new File(
                                 storage
                                     .getOutboundMessageEncodedStore(),
-                                message.getId());
+                                message.getFileId());
                             if (!messagePlaintextFile
                                 .exists())
                             {
@@ -146,6 +150,7 @@ public class MessageManager implements MessageDeliverer,
                                 localUser
                                     .getOutboundMessages()
                                     .remove(message);
+                                continue;
                             }
                             if (messageEncodedFile.exists())
                                 /*
@@ -402,7 +407,7 @@ public class MessageManager implements MessageDeliverer,
                                 new SecretKeySpec(aesKey,
                                     "AES"),
                                 new IvParameterSpec(
-                                    new byte[8]));
+                                    new byte[16]));
                             CipherOutputStream cout = new CipherOutputStream(
                                 out, cipher);
                             StringUtils.copy(in, cout);
@@ -1639,6 +1644,7 @@ public class MessageManager implements MessageDeliverer,
          * initial pass.
          */
         Thread[] threads = getStageThreads();
+        System.out.println("starting " + threads.length + " stage threads");
         for (Thread thread : threads)
         {
             thread.start();
