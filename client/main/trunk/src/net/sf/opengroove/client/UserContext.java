@@ -79,7 +79,8 @@ import net.sf.opengroove.common.ui.ComponentUtils;
  * A user context object is created for each user that logs in, and is passed
  * down through the hierarchy of objects created so that they can get a
  * reference to which user the objects are for. User objects also allow various
- * listeners, which can listen for events such as that the user is logging out.<br/><br/>
+ * listeners, which can listen for events such as that the user is logging out.<br/>
+ * <br/>
  * 
  * This class consists mostly of fields that used to be static fields on the
  * OpenGroove class, and that were used for management of the current user.
@@ -131,9 +132,8 @@ public class UserContext
         @Override
         public boolean query()
         {
-            return com != null
-                && com.getCommunicator() != null
-                && com.getCommunicator().isActive();
+            return com != null && com.getCommunicator() != null
+                    && com.getCommunicator().isActive();
         }
     };
     /**
@@ -192,13 +192,13 @@ public class UserContext
      */
     private boolean markedIdleIcon = false;
     @TimerField
-    /**
+    /*
      * checks to see if the computer is idle, and updates the idle-related
      * fields. If the computer has just stopped being idle, then this timer will
      * also trigger an immediate upload of user presence information.
      */
-    private ConditionalTimer myStatusCheckTimer = new ConditionalTimer(
-        2000, Conditional.True)
+    private ConditionalTimer myStatusCheckTimer = new ConditionalTimer(2000,
+            Conditional.True)
     {
         
         @Override
@@ -208,15 +208,13 @@ public class UserContext
             Point location = info.getLocation();
             boolean oldWasLastIdle = wasLastIdle;
             wasLastIdle = true;
-            if (location.x != lastMouseX
-                || location.y != lastMouseY)
+            if (location.x != lastMouseX || location.y != lastMouseY)
             {
                 lastIdle = getServerTime();
                 wasLastIdle = false;
                 markedIdleIcon = false;
-            }
-            else if (!markedIdleIcon
-                && (lastIdle + IDLE_THRESHOLD) < getServerTime())
+            } else if (!markedIdleIcon
+                    && (lastIdle + IDLE_THRESHOLD) < getServerTime())
             {
                 markedIdleIcon = true;
                 updateLocalStatusIcon();
@@ -232,11 +230,11 @@ public class UserContext
         }
     };
     @TimerField
-    /**
+    /*
      * Uploads the current idle and active status.
      */
     private ConditionalTimer myStatusUploadTimer = new ConditionalTimer(
-        1000 * 30, connectionConditional)
+            1000 * 30, connectionConditional)
     {
         /*
          * TODO: change the upload time to be more like 3 minutes, or even
@@ -252,18 +250,20 @@ public class UserContext
     /**
      * A timer that downloads the status updates for all of the contacts (IE the
      * status updates uploaded by those contacts' {@link #myStatusTimer}s), and
-     * updates the icons in the launchbar's contact's pane. <br/><br/>
+     * updates the icons in the launchbar's contact's pane. <br/>
+     * <br/>
      * 
      * This timer, unlike most of the other timers, uses
      * {@link Conditional#True} instead of {@link #connectionConditional}, so
      * that it will run even if there is no connection to the server, so as to
-     * set all of the user's statuses to offline.<br/><br/>
+     * set all of the user's statuses to offline.<br/>
+     * <br/>
      * 
      * This timer runs every 3 minutes.
      */
     @TimerField
     private ConditionalTimer contactStatusTimer = new ConditionalTimer(
-        1000 * 60 * 3, Conditional.True)
+            1000 * 60 * 3, Conditional.True)
     {
         
         @Override
@@ -277,16 +277,15 @@ public class UserContext
      * contact's current status, such as offline or idle.
      */
     @TimerField
-    private ConditionalTimer contactIconTimer = new ConditionalTimer(
-        1000 * 9, Conditional.True)
+    private ConditionalTimer contactIconTimer = new ConditionalTimer(1000 * 9,
+            Conditional.True)
     {
         
         @Override
         public void execute()
         {
-            Contact[] contacts = getStorage()
-                .getLocalUser().getContacts().toArray(
-                    new Contact[0]);
+            Contact[] contacts = getStorage().getLocalUser().getContacts()
+                    .toArray(new Contact[0]);
             for (Contact contact : contacts)
             {
                 updateContactIcon(contact.getUserid());
@@ -302,7 +301,7 @@ public class UserContext
      */
     @TimerField
     private ConditionalTimer timeSyncTimer = new ConditionalTimer(
-        1000 * 60 * 3, connectionConditional)
+            1000 * 60 * 3, connectionConditional)
     {
         
         public void execute()
@@ -316,7 +315,7 @@ public class UserContext
      */
     @TimerField
     private ConditionalTimer subscriptionTimer = new ConditionalTimer(
-        1000 * 60 * 5, connectionConditional)
+            1000 * 60 * 5, connectionConditional)
     {
         public void execute()
         {
@@ -394,7 +393,8 @@ public class UserContext
     
     /**
      * Starts all of this context's timers. Specifically, starts all timers in
-     * any field on this user context that are annotated with {@link TimerField}.
+     * any field on this user context that are annotated with {@link TimerField}
+     * .
      */
     public void startTimers()
     {
@@ -430,32 +430,26 @@ public class UserContext
                 return;
             try
             {
-                Contact[] contacts = getStorage()
-                    .getLocalUser().getContacts().toArray(
-                        new Contact[0]);
-                Subscription[] subscriptions = com
-                    .listSubscriptions();
+                Contact[] contacts = getStorage().getLocalUser().getContacts()
+                        .toArray(new Contact[0]);
+                Subscription[] subscriptions = com.listSubscriptions();
                 for (Contact contact : contacts)
                 {
                     /*
                      * First, add a subscription to the contact's current status
                      */
-                    putSubscription(subscriptions,
-                        new Subscription("userstatus",
-                            contact.getUserid(), "", "",
-                            false));
+                    putSubscription(subscriptions, new Subscription(
+                            "userstatus", contact.getUserid(), "", "", false));
                     /*
                      * The userstatus subscription will take care of the status
                      * of all of the user's computers. Now we need to subscribe
                      * to public-idle and public-active.
                      */
-                    putSubscription(subscriptions,
-                        new Subscription("computersetting",
-                            contact.getUserid(), "",
+                    putSubscription(subscriptions, new Subscription(
+                            "computersetting", contact.getUserid(), "",
                             "public-idle", false));
-                    putSubscription(subscriptions,
-                        new Subscription("computersetting",
-                            contact.getUserid(), "",
+                    putSubscription(subscriptions, new Subscription(
+                            "computersetting", contact.getUserid(), "",
                             "public-active", false));
                     /*
                      * Leaving the target computer empty is intentional; if the
@@ -484,7 +478,7 @@ public class UserContext
      *            member of <code>existing</code>
      */
     protected void putSubscription(Subscription[] existing,
-        Subscription subscription)
+            Subscription subscription)
     {
         if (!com.getCommunicator().isActive())
             /*
@@ -494,10 +488,8 @@ public class UserContext
             return;
         for (Subscription test : existing)
         {
-            if (test.absolute(Userids.toRealm(getUserid()))
-                .equals(
-                    subscription.absolute(Userids
-                        .toRealm(getUserid()))))
+            if (test.absolute(Userids.toRealm(getUserid())).equals(
+                    subscription.absolute(Userids.toRealm(getUserid()))))
                 /*
                  * The subscription already exists, so we don't need to put it
                  * on the server
@@ -547,27 +539,21 @@ public class UserContext
         for (Field field : fields)
         {
             if (field.isAnnotationPresent(TimerField.class)
-                && field.getType().equals(
-                    ConditionalTimer.class))
+                    && field.getType().equals(ConditionalTimer.class))
             {
                 try
                 {
                     if (field.get(this) != null)
-                        timers.add((ConditionalTimer) field
-                            .get(this));
+                        timers.add((ConditionalTimer) field.get(this));
                 }
                 catch (IllegalAccessException e)
                 {
                     // should never be thrown
                     e.printStackTrace();
                 }
-            }
-            else if (field
-                .isAnnotationPresent(TimerField.class))
+            } else if (field.isAnnotationPresent(TimerField.class))
             {
-                System.err
-                    .println("Field "
-                        + field.getName()
+                System.err.println("Field " + field.getName()
                         + "declared in UserContext as a timer field but is "
                         + "not an instance of ConditionalTimer");
             }
@@ -650,8 +636,7 @@ public class UserContext
         this.plugins = plugins;
     }
     
-    public void setWorkspacesSubMenu(
-        PopupMenu workspacesSubMenu)
+    public void setWorkspacesSubMenu(PopupMenu workspacesSubMenu)
     {
         this.workspacesSubMenu = workspacesSubMenu;
     }
@@ -676,8 +661,7 @@ public class UserContext
         this.password = password;
     }
     
-    public void setLaunchbarTabbedPane(
-        JTabbedPane launchbarTabbedPane)
+    public void setLaunchbarTabbedPane(JTabbedPane launchbarTabbedPane)
     {
         this.launchbarTabbedPane = launchbarTabbedPane;
     }
@@ -708,8 +692,7 @@ public class UserContext
         return workspaceManager;
     }
     
-    public void setWorkspaceManager(
-        WorkspaceManager workspaceManager)
+    public void setWorkspaceManager(WorkspaceManager workspaceManager)
     {
         this.workspaceManager = workspaceManager;
     }
@@ -719,8 +702,7 @@ public class UserContext
         return statusListener;
     }
     
-    public void setStatusListener(
-        StatusListener statusListener)
+    public void setStatusListener(StatusListener statusListener)
     {
         this.statusListener = statusListener;
     }
@@ -731,7 +713,7 @@ public class UserContext
     }
     
     public void setUserNotificationListener(
-        UserNotificationListener userNotificationListener)
+            UserNotificationListener userNotificationListener)
     {
         this.userNotificationListener = userNotificationListener;
     }
@@ -740,17 +722,17 @@ public class UserContext
      * The date format used to format dates
      */
     private static SimpleDateFormat DATE_FORMAT = new SimpleDateFormat(
-        "yyyy.MM.dd");
+            "yyyy.MM.dd");
     /**
      * The date format used to format times
      */
     private static SimpleDateFormat TIME_FORMAT = new SimpleDateFormat(
-        "hh:mmaa");
+            "hh:mmaa");
     /**
      * The date format used to format date/time combinations
      */
     private static SimpleDateFormat DATE_TIME_FORMAT = new SimpleDateFormat(
-        "yyyy.MM.dd hh:mmaa");
+            "yyyy.MM.dd hh:mmaa");
     
     public String formatDate(long date)
     {
@@ -777,14 +759,12 @@ public class UserContext
         return contactTimer;
     }
     
-    public void setConnectionConditional(
-        Conditional connectionConditional)
+    public void setConnectionConditional(Conditional connectionConditional)
     {
         this.connectionConditional = connectionConditional;
     }
     
-    public void setContactTimer(
-        ConditionalTimer contactTimer)
+    public void setContactTimer(ConditionalTimer contactTimer)
     {
         this.contactTimer = contactTimer;
     }
@@ -794,46 +774,37 @@ public class UserContext
     public UserContext()
     {
         userStatusMenu = new JPopupMenu();
-        JLabel onlineLabel = new JLabel("Online",
-            new ImageIcon(OpenGroove.Icons.USER_ONLINE_16
-                .getImage()), JLabel.LEFT);
-        JLabel offlineLabel = new JLabel("Offline",
-            new ImageIcon(OpenGroove.Icons.USER_OFFLINE_16
-                .getImage()), JLabel.LEFT);
-        JLabel idleLabel = new JLabel("Idle",
-            new ImageIcon(OpenGroove.Icons.USER_IDLE_16
-                .getImage()), JLabel.LEFT);
-        JLabel unknownLabel = new JLabel("Unknown",
-            new ImageIcon(OpenGroove.Icons.USER_UNKNOWN_16
-                .getImage()), JLabel.LEFT);
-        JLabel nonexistantLabel = new JLabel("Nonexistant",
-            new ImageIcon(
-                OpenGroove.Icons.USER_NONEXISTANT_16
-                    .getImage()), JLabel.LEFT);
-        onlineLabel
-            .setToolTipText(ComponentUtils
+        JLabel onlineLabel = new JLabel("Online", new ImageIcon(
+                OpenGroove.Icons.USER_ONLINE_16.getImage()), JLabel.LEFT);
+        JLabel offlineLabel = new JLabel("Offline", new ImageIcon(
+                OpenGroove.Icons.USER_OFFLINE_16.getImage()), JLabel.LEFT);
+        JLabel idleLabel = new JLabel("Idle", new ImageIcon(
+                OpenGroove.Icons.USER_IDLE_16.getImage()), JLabel.LEFT);
+        JLabel unknownLabel = new JLabel("Unknown", new ImageIcon(
+                OpenGroove.Icons.USER_UNKNOWN_16.getImage()), JLabel.LEFT);
+        JLabel nonexistantLabel = new JLabel("Nonexistant", new ImageIcon(
+                OpenGroove.Icons.USER_NONEXISTANT_16.getImage()), JLabel.LEFT);
+        onlineLabel.setToolTipText(ComponentUtils
                 .htmlTipWrap("This means that the user is connected to the"
-                    + " internet and is using their computer."));
-        offlineLabel
-            .setToolTipText(ComponentUtils
+                        + " internet and is using their computer."));
+        offlineLabel.setToolTipText(ComponentUtils
                 .htmlTipWrap("This means that the user is not connected "
-                    + "to the internet, or their computer is off."));
+                        + "to the internet, or their computer is off."));
         idleLabel
-            .setToolTipText(ComponentUtils
-                .htmlTipWrap("This means that the user is connected "
-                    + "to the internet, but they are not using their computer right now."));
+                .setToolTipText(ComponentUtils
+                        .htmlTipWrap("This means that the user is connected "
+                                + "to the internet, but they are not using their computer right now."));
         unknownLabel
-            .setToolTipText(ComponentUtils
-                .htmlTipWrap("This means that OpenGroove doesn't know what the "
-                    + "user's current status is. This typically happens when you "
-                    + "have added the contact but haven't connected to the"
-                    + " internet since then."));
-        nonexistantLabel
-            .setToolTipText(ComponentUtils
+                .setToolTipText(ComponentUtils
+                        .htmlTipWrap("This means that OpenGroove doesn't know what the "
+                                + "user's current status is. This typically happens when you "
+                                + "have added the contact but haven't connected to the"
+                                + " internet since then."));
+        nonexistantLabel.setToolTipText(ComponentUtils
                 .htmlTipWrap("This means that OpenGroove has determined that "
-                    + "the user does not exist. The user may have "
-                    + "been deleted, or you might have entered the user's "
-                    + "userid incorrectly when adding them as a contact."));
+                        + "the user does not exist. The user may have "
+                        + "been deleted, or you might have entered the user's "
+                        + "userid incorrectly when adding them as a contact."));
         userStatusMenu.add(new JLabel(" Key:"));
         userStatusMenu.add(onlineLabel);
         userStatusMenu.add(offlineLabel);
@@ -853,9 +824,8 @@ public class UserContext
     {
         synchronized (refreshContactsLock)
         {
-            Contact[] contactList = getStorage()
-                .getLocalUser().getContacts().toArray(
-                    new Contact[0]);
+            Contact[] contactList = getStorage().getLocalUser().getContacts()
+                    .toArray(new Contact[0]);
             contactsPanel.removeAll();
             JProgressBar bar = new JProgressBar();
             bar.setIndeterminate(true);
@@ -876,36 +846,31 @@ public class UserContext
             for (final Contact contact : contactList)
             {
                 if (contact.isUserContact()
-                    || showKnownUsersAsContacts
-                        .isSelected())
+                        || showKnownUsersAsContacts.isSelected())
                 {
                     contactsAdded++;
                     if (contact.getStatus().isNonexistant())
                         hasNonexistantContacts = true;
-                    JPanel contactPanel = new JPanel(
-                        new BorderLayout());
+                    JPanel contactPanel = new JPanel(new BorderLayout());
                     contactPanel.setOpaque(false);
                     contactPanel.setAlignmentX(0);
                     final JideButton contactButton = new JideButton()
                     {
                         @Override
-                        public String getToolTipText(
-                            MouseEvent e)
+                        public String getToolTipText(MouseEvent e)
                         {
                             String computersString = "";
                             int computersAdded = 0;
                             for (ContactComputer computer : contact
-                                .getComputers().isolate())
+                                    .getComputers().isolate())
                             {
                                 String statusUri;
                                 try
                                 {
                                     statusUri = getStatusIcon(
-                                        computer
-                                            .getStatus())
-                                        .getScaledFile()
-                                        .toURI().toURL()
-                                        .toString();
+                                            computer.getStatus())
+                                            .getScaledFile().toURI().toURL()
+                                            .toString();
                                 }
                                 catch (MalformedURLException e1)
                                 {
@@ -914,119 +879,99 @@ public class UserContext
                                 }
                                 computersAdded++;
                                 computersString += " &nbsp; <img width=\"16\" height=\"16\" src=\""
-                                    + statusUri
-                                    + "\"/> "
-                                    + computer.getName()
-                                    + "<br/>";
+                                        + statusUri
+                                        + "\"/> "
+                                        + computer.getName() + "<br/>";
                             }
                             if (computersAdded == 0)
                             {
                                 computersString = " &nbsp; <font color=\"#707070\">(No computers)</font>";
                             }
                             return "<html><b>"
-                                + contact.getDisplayName()
-                                + "</b><br/><br/>"
-                                + "<table border=\"0\" cellspacing=\"0\" cellpadding=\"0\">"
-                                + "<tr><td>Userid: &nbsp; &nbsp; </td><td>"
-                                + contact.getUserid()
-                                + "</td></tr>"
-                                + "<tr><td>Real name: &nbsp; &nbsp; </td><td>"
-                                + (contact.getRealName()
-                                    .equals("") ? "<font color=\"#707070\">(Not specified)</font>"
-                                    : contact.getRealName())
-                                + "</td></tr>"
-                                + "<tr><td>Local name: &nbsp; &nbsp; </td><td>"
-                                + (contact.getLocalName()
-                                    .equals("") ? "<font color=\"#707070\">(Not specified)</font>"
-                                    : contact
-                                        .getLocalName())
-                                + "</td></tr></table><br/>"
-                                + (contact.isHasKeys() ? "You have downloaded this contact's keys."
-                                    : "You have not downloaded this contact's keys.")
-                                + "<br/>"
-                                + (contact.isUserVerified() ? "You have verified this contact."
-                                    : "You have not verified this contact.")
-                                + "<br/><br/>Computers:<br/>"
-                                + computersString;
+                                    + contact.getDisplayName()
+                                    + "</b><br/><br/>"
+                                    + "<table border=\"0\" cellspacing=\"0\" cellpadding=\"0\">"
+                                    + "<tr><td>Userid: &nbsp; &nbsp; </td><td>"
+                                    + contact.getUserid()
+                                    + "</td></tr>"
+                                    + "<tr><td>Real name: &nbsp; &nbsp; </td><td>"
+                                    + (contact.getRealName().equals("") ? "<font color=\"#707070\">(Not specified)</font>"
+                                            : contact.getRealName())
+                                    + "</td></tr>"
+                                    + "<tr><td>Local name: &nbsp; &nbsp; </td><td>"
+                                    + (contact.getLocalName().equals("") ? "<font color=\"#707070\">(Not specified)</font>"
+                                            : contact.getLocalName())
+                                    + "</td></tr></table><br/>"
+                                    + (contact.isHasKeys() ? "You have downloaded this contact's keys."
+                                            : "You have not downloaded this contact's keys.")
+                                    + "<br/>"
+                                    + (contact.isUserVerified() ? "You have verified this contact."
+                                            : "You have not verified this contact.")
+                                    + "<br/><br/>Computers:<br/>"
+                                    + computersString;
                         }
                     };
-                    contactButton
-                        .addActionListener(new ActionListener()
+                    contactButton.addActionListener(new ActionListener()
+                    {
+                        
+                        public void actionPerformed(ActionEvent e)
                         {
-                            
-                            public void actionPerformed(
-                                ActionEvent e)
+                            composeMessage("", "", "", "", new String[]
                             {
-                                composeMessage("", "", "",
-                                    "",
-                                    new String[] { contact
-                                        .getUserid() });
-                            }
-                        });
-                    setContactButtonText(contactButton,
-                        contact);
-                    contactButton
-                        .setToolTipText("Loading...");
-                    contactButton
-                        .setHorizontalAlignment(SwingConstants.LEFT);
+                                contact.getUserid()
+                            });
+                        }
+                    });
+                    setContactButtonText(contactButton, contact);
+                    contactButton.setToolTipText("Loading...");
+                    contactButton.setHorizontalAlignment(SwingConstants.LEFT);
                     contactButton.setOpaque(false);
-                    contactButton
-                        .setButtonStyle(JideButton.HYPERLINK_STYLE);
-                    contactButton
-                        .setForeground(Color.BLACK);
+                    contactButton.setButtonStyle(JideButton.HYPERLINK_STYLE);
+                    contactButton.setForeground(Color.BLACK);
                     final JPopupMenu contactRenamePopup = new JPopupMenu();
-                    final JTextField contactRenameField = new JTextField(
-                        15);
-                    contactRenamePopup
-                        .add(contactRenameField);
-                    contactRenameField
-                        .addActionListener(new ActionListener()
+                    final JTextField contactRenameField = new JTextField(15);
+                    contactRenamePopup.add(contactRenameField);
+                    contactRenameField.addActionListener(new ActionListener()
+                    {
+                        
+                        @Override
+                        public void actionPerformed(ActionEvent e)
                         {
-                            
-                            @Override
-                            public void actionPerformed(
-                                ActionEvent e)
-                            {
-                                contactRenamePopup
-                                    .setVisible(false);
-                            }
-                        });
+                            contactRenamePopup.setVisible(false);
+                        }
+                    });
                     contactRenamePopup
-                        .addPopupMenuListener(new PopupMenuListener()
-                        {
-                            
-                            @Override
-                            public void popupMenuCanceled(
-                                PopupMenuEvent e)
+                            .addPopupMenuListener(new PopupMenuListener()
                             {
-                            }
-                            
-                            @Override
-                            public void popupMenuWillBecomeInvisible(
-                                PopupMenuEvent e)
-                            {
-                                String newName = contactRenameField
-                                    .getText();
-                                if (newName.trim().equals(
-                                    ""))
-                                    newName = "";
-                                contact
-                                    .setLocalName(newName);
-                                setContactButtonText(
-                                    contactButton, contact);
-                            }
-                            
-                            @Override
-                            public void popupMenuWillBecomeVisible(
-                                PopupMenuEvent e)
-                            {
-                            }
-                        });
+                                
+                                @Override
+                                public void popupMenuCanceled(PopupMenuEvent e)
+                                {
+                                }
+                                
+                                @Override
+                                public void popupMenuWillBecomeInvisible(
+                                        PopupMenuEvent e)
+                                {
+                                    String newName = contactRenameField
+                                            .getText();
+                                    if (newName.trim().equals(""))
+                                        newName = "";
+                                    contact.setLocalName(newName);
+                                    setContactButtonText(contactButton, contact);
+                                }
+                                
+                                @Override
+                                public void popupMenuWillBecomeVisible(
+                                        PopupMenuEvent e)
+                                {
+                                }
+                            });
                     contactRenameField
-                        .setToolTipText(ComponentUtils
-                            .htmlTipWrap("You can set a name you want for this contact "
-                                + "here. If you leave it blank, the contact's "
-                                + "name will be the contact's userid."));
+                            .setToolTipText(ComponentUtils
+                                    .htmlTipWrap("You can set a name you want for this contact "
+                                            + "here. If you leave it blank, the contact's "
+                                            + "name will be the contact's userid."));
                     if (contact.isUserContact())
                     {
                         JPopupMenu menu = new JPopupMenu();
@@ -1034,95 +979,73 @@ public class UserContext
                         {
                             
                             @Override
-                            public void actionPerformed(
-                                ActionEvent e)
+                            public void actionPerformed(ActionEvent e)
                             {
                                 contactButton
-                                    .scrollRectToVisible(new Rectangle(
-                                        0, 0, 0, 0));
-                                contactRenameField
-                                    .setText(contact
+                                        .scrollRectToVisible(new Rectangle(0,
+                                                0, 0, 0));
+                                contactRenameField.setText(contact
                                         .getLocalName());
-                                contactRenamePopup.show(
-                                    contactButton, 0, 0);
-                                contactRenameField
-                                    .requestFocusInWindow();
+                                contactRenamePopup.show(contactButton, 0, 0);
+                                contactRenameField.requestFocusInWindow();
                             }
                         });
                         menu.add(new IMenuItem("Delete")
                         {
                             
                             @Override
-                            public void actionPerformed(
-                                ActionEvent e)
+                            public void actionPerformed(ActionEvent e)
                             {
-                                if (JOptionPane
-                                    .showConfirmDialog(
+                                if (JOptionPane.showConfirmDialog(
                                         getLaunchbar(),
                                         "Are you sure you want to delete the contact "
-                                            + contact
-                                                .getDisplayName()
-                                            + "?",
-                                        null,
+                                                + contact.getDisplayName()
+                                                + "?", null,
                                         JOptionPane.YES_NO_OPTION) == JOptionPane.YES_OPTION)
                                 {
-                                    contact
-                                        .setUserContact(false);
+                                    contact.setUserContact(false);
                                     refreshContactsPaneAsynchronously();
                                 }
                             }
                             
                         });
-                        ComponentUtils.addPopup(
-                            contactButton, menu);
+                        ComponentUtils.addPopup(contactButton, menu);
                     }
-                    contactButton
-                        .addActionListener(new ActionListener()
+                    contactButton.addActionListener(new ActionListener()
+                    {
+                        
+                        @Override
+                        public void actionPerformed(ActionEvent e)
                         {
-                            
-                            @Override
-                            public void actionPerformed(
-                                ActionEvent e)
-                            {
-                                System.out
-                                    .println("contact clicked");
-                            }
-                        });
-                    Font contactFont = contactButton
-                        .getFont();
+                            System.out.println("contact clicked");
+                        }
+                    });
+                    Font contactFont = contactButton.getFont();
                     if (contactFont == null)
                         contactFont = Font.decode(null);
                     if (contact.isUserContact())
-                        contactFont = contactFont
-                            .deriveFont(Font.BOLD);
+                        contactFont = contactFont.deriveFont(Font.BOLD);
                     else
-                        contactFont = contactFont
-                            .deriveFont(Font.PLAIN);
+                        contactFont = contactFont.deriveFont(Font.PLAIN);
                     contactButton.setFont(contactFont);
-                    contactPanel.add(contactButton,
-                        BorderLayout.CENTER);
+                    contactPanel.add(contactButton, BorderLayout.CENTER);
                     OpenGroove.Icons statusIcon = getStatusIcon(contact
-                        .getStatus());
+                            .getStatus());
                     final JideButton statusButton = new JideButton(
-                        new ImageIcon(statusIcon.getImage()));
-                    contactStatusLabelMap.put(contact
-                        .getUserid(), statusButton);
-                    statusButton
-                        .setButtonStyle(statusButton.HYPERLINK_STYLE);
-                    statusButton
-                        .addActionListener(new ActionListener()
+                            new ImageIcon(statusIcon.getImage()));
+                    contactStatusLabelMap
+                            .put(contact.getUserid(), statusButton);
+                    statusButton.setButtonStyle(statusButton.HYPERLINK_STYLE);
+                    statusButton.addActionListener(new ActionListener()
+                    {
+                        
+                        @Override
+                        public void actionPerformed(ActionEvent e)
                         {
-                            
-                            @Override
-                            public void actionPerformed(
-                                ActionEvent e)
-                            {
-                                userStatusMenu.show(
-                                    statusButton, 0, 0);
-                            }
-                        });
-                    contactPanel.add(statusButton,
-                        BorderLayout.WEST);
+                            userStatusMenu.show(statusButton, 0, 0);
+                        }
+                    });
+                    contactPanel.add(statusButton, BorderLayout.WEST);
                     contactsPanel.add(contactPanel);
                     // contactsPanel.invalidate();
                     // contactsPanel.validate();
@@ -1134,25 +1057,19 @@ public class UserContext
             }
             if (hasNonexistantContacts)
             {
-                if (!OpenGroove.notificationFrame
-                    .containsNotification(userid,
+                if (!OpenGroove.notificationFrame.containsNotification(userid,
                         nonexistantContactNotification))
-                    OpenGroove.notificationFrame
-                        .addNotification(userid,
-                            nonexistantContactNotification,
-                            true);
-            }
-            else
+                    OpenGroove.notificationFrame.addNotification(userid,
+                            nonexistantContactNotification, true);
+            } else
             {
-                if (OpenGroove.notificationFrame
-                    .containsNotification(userid,
+                if (OpenGroove.notificationFrame.containsNotification(userid,
                         nonexistantContactNotification))
                     OpenGroove.notificationFrame
-                        .removeNotification(nonexistantContactNotification);
+                            .removeNotification(nonexistantContactNotification);
             }
             if (contactsAdded == 0)
-                contactsPanel
-                    .add(new JLabel(
+                contactsPanel.add(new JLabel(
                         "<html><font color=\"#707070\">(No contacts)</font>"));
             contactsPanel.remove(bar);
             contactsPanel.invalidate();
@@ -1171,8 +1088,8 @@ public class UserContext
         return userStatusMenu;
     }
     
-    protected void setContactButtonText(
-        JideButton contactButton, Contact contact)
+    protected void setContactButtonText(JideButton contactButton,
+            Contact contact)
     {
         contactButton.setText(contact.getDisplayName());
     }
@@ -1200,7 +1117,8 @@ public class UserContext
      * by the one that took a lot of time. all of the newly-started threads are
      * {@link Thread#join() joined} before this method returns, so that when it
      * returns, all contacts in the contacts list at the time the method was
-     * started will have their status icons updated.<br/><br/>
+     * started will have their status icons updated.<br/>
+     * <br/>
      * 
      * UPDATE: this no longer runs in separate threads, due to issues that were
      * occuring. Instead, it runs the cotact updates one after another.
@@ -1209,9 +1127,8 @@ public class UserContext
     {
         synchronized (contactStatusLock)
         {
-            Contact[] contacts = getStorage()
-                .getLocalUser().getContacts().toArray(
-                    new Contact[0]);
+            Contact[] contacts = getStorage().getLocalUser().getContacts()
+                    .toArray(new Contact[0]);
             ArrayList<Thread> threads = new ArrayList<Thread>();
             for (final Contact contact : contacts)
             {
@@ -1227,12 +1144,13 @@ public class UserContext
      * online, whether or not it is idle, etc. This information is then stored
      * into the contact, and the contact is stored into this context's storage
      * object. The icon in the contacts pane is then updated to reflect the
-     * information.<br/><br/>
+     * information.<br/>
+     * <br/>
      * 
      * This <b>must not</b> be called by any method besides
-     * {@link #updateContactStatus()}, unless the caller explicitly
-     * synchronizes on {@link #contactStatusLock} first. This is to avoid two
-     * threads trying to update the same contact at the same time.
+     * {@link #updateContactStatus()}, unless the caller explicitly synchronizes
+     * on {@link #contactStatusLock} first. This is to avoid two threads trying
+     * to update the same contact at the same time.
      * 
      * @param contact
      */
@@ -1258,15 +1176,14 @@ public class UserContext
                 {
                     try
                     {
-                        serverUserExists = com
-                            .userExists(contact.getUserid());
+                        serverUserExists = com.userExists(contact.getUserid());
                         break;
                     }
                     catch (TimeoutException e)
                     {
                         new Exception(
-                            "Timeout while getting user status, trying again...",
-                            e).printStackTrace();
+                                "Timeout while getting user status, trying again...",
+                                e).printStackTrace();
                         if (i == 2)
                             throw e;
                     }
@@ -1277,23 +1194,21 @@ public class UserContext
                      * contact doesn't exist
                      */
                     status.setNonexistant(true);
-                }
-                else
+                } else
                 {
                     /*
                      * contact does exist, so check the rest of the information
                      */
                     status.setNonexistant(false);
-                    String[] contactComputers = com
-                        .listComputers(contact.getUserid());
+                    String[] contactComputers = com.listComputers(contact
+                            .getUserid());
                     for (String computerName : contactComputers)
                     {
                         ContactComputer computer = null;
-                        for (ContactComputer test : contact
-                            .getComputers().isolate())
+                        for (ContactComputer test : contact.getComputers()
+                                .isolate())
                         {
-                            if (test.getName().equals(
-                                computerName))
+                            if (test.getName().equals(computerName))
                             {
                                 if (computer != null)
                                     /*
@@ -1302,61 +1217,43 @@ public class UserContext
                                      * the same computer. We'll delete this one
                                      * and keep the first one.
                                      */
-                                    contact.getComputers()
-                                        .remove(test);
+                                    contact.getComputers().remove(test);
                                 else
                                     computer = test;
                             }
                         }
                         if (computer == null)
                         {
-                            computer = contact
-                                .createComputer();
-                            computer
-                                .setLag(Long.MAX_VALUE - 100);
+                            computer = contact.createComputer();
+                            computer.setLag(Long.MAX_VALUE - 100);
                             computer.setName(computerName);
-                            computer.getStatus()
-                                .setIdleTime(-1);
+                            computer.getStatus().setIdleTime(-1);
                             // TODO: set the computer type
-                            contact.getComputers().add(
-                                computer);
+                            contact.getComputers().add(computer);
                         }
-                        String lagString = com
-                            .getComputerSetting(contact
-                                .getUserid(), computerName,
-                                "public-lag");
+                        String lagString = com.getComputerSetting(contact
+                                .getUserid(), computerName, "public-lag");
                         if (lagString != null)
-                            computer.setLag(Long
-                                .parseLong(lagString));
+                            computer.setLag(Long.parseLong(lagString));
                         // TODO: implement active stuff, which is true if one of
                         // the OpenGroove windows is the focused window
-                        computer.getStatus().setActive(
-                            false);
-                        String idleTimeString = com
-                            .getComputerSetting(contact
-                                .getUserid(), computerName,
-                                "public-idle");
+                        computer.getStatus().setActive(false);
+                        String idleTimeString = com.getComputerSetting(contact
+                                .getUserid(), computerName, "public-idle");
                         if (idleTimeString != null)
-                            computer
-                                .getStatus()
-                                .setIdleTime(
-                                    Long
-                                        .parseLong(idleTimeString));
+                            computer.getStatus().setIdleTime(
+                                    Long.parseLong(idleTimeString));
                         computer.getStatus().setKnown(true);
-                        computer.getStatus()
-                            .setNonexistant(false);
+                        computer.getStatus().setNonexistant(false);
                         computer.getStatus().setOnline(
-                            com.getUserStatus(
-                                contact.getUserid(),
-                                computerName).isOnline());
+                                com.getUserStatus(contact.getUserid(),
+                                        computerName).isOnline());
                     }// end of computer foreach
                     for (ContactComputer computer : new ArrayList<ContactComputer>(
-                        contact.getComputers()))
+                            contact.getComputers()))
                     {
-                        if (!StringUtils
-                            .isMemberOfIgnoreCase(computer
-                                .getName(),
-                                contactComputers))
+                        if (!StringUtils.isMemberOfIgnoreCase(computer
+                                .getName(), contactComputers))
                             /*
                              * We have here a computer which is present locally
                              * but not on the server. This means that the owner
@@ -1367,8 +1264,7 @@ public class UserContext
                              * don't havew to worry that we'll clobber any local
                              * computers when we're offline.
                              */
-                            contact.getComputers().remove(
-                                computer);
+                            contact.getComputers().remove(computer);
                     }// end of contact computer deleting loop
                     /*
                      * Now we'll iterate over the computers again. This time,
@@ -1378,22 +1274,20 @@ public class UserContext
                     long idleTime = -1;
                     boolean isActive = false;
                     boolean isOnline = false;
-                    for (ContactComputer computer : contact
-                        .getComputers().isolate())
+                    for (ContactComputer computer : contact.getComputers()
+                            .isolate())
                     {
                         if (computer.getStatus().isActive())
                             isActive = true;
                         if (computer.getStatus().isOnline())
                             isOnline = true;
-                        idleTime = Math.max(idleTime,
-                            computer.getStatus()
+                        idleTime = Math.max(idleTime, computer.getStatus()
                                 .getIdleTime());
                     }
                     if (idleTime == -1)
                         idleTime = getServerTime();
                     contact.getStatus().setActive(isActive);
-                    contact.getStatus().setIdleTime(
-                        idleTime);
+                    contact.getStatus().setIdleTime(idleTime);
                     contact.getStatus().setOnline(isOnline);
                     /*
                      * TODO: download the user's public keys from the server if
@@ -1401,53 +1295,33 @@ public class UserContext
                      */
                     try
                     {
-                        boolean alreadyHasKeys = contact
-                            .isHasKeys();
+                        boolean alreadyHasKeys = contact.isHasKeys();
                         if (!alreadyHasKeys)
                         {
-                            String contactUserid = contact
-                                .getUserid();
+                            String contactUserid = contact.getUserid();
                             /*
                              * We don't have this contact's keys, so we'll
                              * attempt to download them now.
                              */
-                            String encPub = com
-                                .getUserSetting(
-                                    contactUserid,
-                                    UserSettings.KEY_ENC_PUB
-                                        .toString());
-                            String encMod = com
-                                .getUserSetting(
-                                    contactUserid,
-                                    UserSettings.KEY_ENC_MOD
-                                        .toString());
-                            String sigPub = com
-                                .getUserSetting(
-                                    contactUserid,
-                                    UserSettings.KEY_SIG_PUB
-                                        .toString());
-                            String sigMod = com
-                                .getUserSetting(
-                                    contactUserid,
-                                    UserSettings.KEY_SIG_MOD
-                                        .toString());
-                            if (encPub != null
-                                && encMod != null
-                                && sigPub != null
-                                && sigMod != null)
+                            String encPub = com.getUserSetting(contactUserid,
+                                    UserSettings.KEY_ENC_PUB.toString());
+                            String encMod = com.getUserSetting(contactUserid,
+                                    UserSettings.KEY_ENC_MOD.toString());
+                            String sigPub = com.getUserSetting(contactUserid,
+                                    UserSettings.KEY_SIG_PUB.toString());
+                            String sigMod = com.getUserSetting(contactUserid,
+                                    UserSettings.KEY_SIG_MOD.toString());
+                            if (encPub != null && encMod != null
+                                    && sigPub != null && sigMod != null)
                             {
                                 contact
-                                    .setRsaEncPub(new BigInteger(
-                                        encPub, 16));
+                                        .setRsaEncPub(new BigInteger(encPub, 16));
                                 contact
-                                    .setRsaEncMod(new BigInteger(
-                                        encMod, 16));
+                                        .setRsaEncMod(new BigInteger(encMod, 16));
                                 contact
-                                    .setRsaSigPub(new BigInteger(
-                                        sigPub, 16));
+                                        .setRsaSigPub(new BigInteger(sigPub, 16));
                                 contact
-                                    .setRsaSigMod(new BigInteger(
-                                        sigMod, 16));
+                                        .setRsaSigMod(new BigInteger(sigMod, 16));
                                 contact.setHasKeys(true);
                                 /*
                                  * Since there may be pending inbound or
@@ -1455,8 +1329,7 @@ public class UserContext
                                  * we'll notify all stages of the message
                                  * listener.
                                  */
-                                getMessageManager()
-                                    .notifyAllThreads();
+                                getMessageManager().notifyAllThreads();
                             }
                         }
                     }
@@ -1477,8 +1350,7 @@ public class UserContext
                  */
                 exception.printStackTrace();
             }
-        }
-        else
+        } else
         {
             /*
              * There's no connection to the server, so we'll mark the contact as
@@ -1488,7 +1360,7 @@ public class UserContext
              */
             contact.getStatus().setOnline(false);
             for (ContactComputer computer : new ArrayList<ContactComputer>(
-                contact.getComputers()))
+                    contact.getComputers()))
             {
                 computer.getStatus().setOnline(false);
             }
@@ -1507,12 +1379,11 @@ public class UserContext
     {
         synchronized (contactIconLock)
         {
-            JideButton button = contactStatusLabelMap
-                .get(contactUserid);
+            JideButton button = contactStatusLabelMap.get(contactUserid);
             if (button != null)
                 button.setIcon(new ImageIcon(getStatusIcon(
-                    getStorage().getContact(contactUserid)
-                        .getStatus()).getImage()));
+                        getStorage().getContact(contactUserid).getStatus())
+                        .getImage()));
         }
     }
     
@@ -1523,8 +1394,7 @@ public class UserContext
      * @param contact
      * @return
      */
-    public OpenGroove.Icons getStatusIcon(
-        ContactStatus status)
+    public OpenGroove.Icons getStatusIcon(ContactStatus status)
     {
         OpenGroove.Icons statusIcon;
         if (!status.isKnown())
@@ -1545,8 +1415,7 @@ public class UserContext
         return showKnownUsersAsContacts;
     }
     
-    public void setShowKnownUsersAsContacts(
-        JCheckBox showKnownUsersAsContacts)
+    public void setShowKnownUsersAsContacts(JCheckBox showKnownUsersAsContacts)
     {
         this.showKnownUsersAsContacts = showKnownUsersAsContacts;
     }
@@ -1566,14 +1435,12 @@ public class UserContext
         return getStorage().getLocalUser().getServerTime();
     }
     
-    public void setContactStatusTimer(
-        ConditionalTimer contactStatusTimer)
+    public void setContactStatusTimer(ConditionalTimer contactStatusTimer)
     {
         this.contactStatusTimer = contactStatusTimer;
     }
     
-    public void setSearchForUsersFrame(
-        SearchForUsersFrame searchForUsersFrame)
+    public void setSearchForUsersFrame(SearchForUsersFrame searchForUsersFrame)
     {
         this.searchForUsersFrame = searchForUsersFrame;
     }
@@ -1583,8 +1450,7 @@ public class UserContext
         return timeSyncTimer;
     }
     
-    public void setTimeSyncTimer(
-        ConditionalTimer timeSyncTimer)
+    public void setTimeSyncTimer(ConditionalTimer timeSyncTimer)
     {
         this.timeSyncTimer = timeSyncTimer;
     }
@@ -1594,8 +1460,7 @@ public class UserContext
         return subscriptionTimer;
     }
     
-    public void setSubscriptionTimer(
-        ConditionalTimer subscriptionTimer)
+    public void setSubscriptionTimer(ConditionalTimer subscriptionTimer)
     {
         this.subscriptionTimer = subscriptionTimer;
     }
@@ -1605,9 +1470,8 @@ public class UserContext
         try
         {
             if (com.getCommunicator().isActive())
-                com.setComputerSetting(getLocalUser()
-                    .getComputer(), "public-idle", ""
-                    + lastIdle);
+                com.setComputerSetting(getLocalUser().getComputer(),
+                        "public-idle", "" + lastIdle);
         }
         catch (IOException e)
         {
@@ -1621,15 +1485,15 @@ public class UserContext
     }
     
     public void setNonexistantContactNotification(
-        TaskbarNotification nonexistantContactNotification)
+            TaskbarNotification nonexistantContactNotification)
     {
         this.nonexistantContactNotification = nonexistantContactNotification;
     }
     
     public void showNonexistantContactInfoDialog()
     {
-        ArrayList<Contact> contacts = getStorage()
-            .getLocalUser().getContacts().isolate();
+        ArrayList<Contact> contacts = getStorage().getLocalUser().getContacts()
+                .isolate();
         ArrayList<Contact> nonexistantContacts = new ArrayList<Contact>();
         for (Contact contact : contacts)
         {
@@ -1648,27 +1512,22 @@ public class UserContext
             return;
         }
         launchbar.show();
-        JOptionPane
-            .showMessageDialog(
-                launchbar,
+        JOptionPane.showMessageDialog(launchbar,
                 "<html>The following contacts do not exist:<br/><br/>"
-                    + StringUtils.delimited(
-                        nonexistantContacts
-                            .toArray(new Contact[0]),
-                        new ToString<Contact>()
-                        {
-                            
-                            @Override
-                            public String toString(
-                                Contact object)
-                            {
-                                return object
-                                    .getDisplayName();
-                            }
-                        }, "<br/>")
-                    + "<br/><br/>You should consider deleting "
-                    + (nonexistantContacts.size() == 1 ? "this contact"
-                        : "these contacts") + ".");
+                        + StringUtils.delimited(nonexistantContacts
+                                .toArray(new Contact[0]),
+                                new ToString<Contact>()
+                                {
+                                    
+                                    @Override
+                                    public String toString(Contact object)
+                                    {
+                                        return object.getDisplayName();
+                                    }
+                                }, "<br/>")
+                        + "<br/><br/>You should consider deleting "
+                        + (nonexistantContacts.size() == 1 ? "this contact"
+                                : "these contacts") + ".");
     }
     
     public String getDisplayName()
@@ -1686,22 +1545,19 @@ public class UserContext
         return localUsernameButton;
     }
     
-    public void setLocalStatusButton(
-        JideButton localStatusButton)
+    public void setLocalStatusButton(JideButton localStatusButton)
     {
         this.localStatusButton = localStatusButton;
     }
     
-    public void setLocalUsernameButton(
-        JideButton localUsernameButton)
+    public void setLocalUsernameButton(JideButton localUsernameButton)
     {
         this.localUsernameButton = localUsernameButton;
     }
     
     public String createLaunchbarTitle()
     {
-        return getLocalUser().getDisplayName()
-            + " - Launchbar - OpenGroove";
+        return getLocalUser().getDisplayName() + " - Launchbar - OpenGroove";
     }
     
     public void updateLocalStatusIcon()
@@ -1711,10 +1567,8 @@ public class UserContext
             /*
              * Offline
              */
-            localStatusButton
-                .setIcon(new ImageIcon(
-                    OpenGroove.Icons.USER_OFFLINE_16
-                        .getImage()));
+            localStatusButton.setIcon(new ImageIcon(
+                    OpenGroove.Icons.USER_OFFLINE_16.getImage()));
             return;
         }
         if ((lastIdle + IDLE_THRESHOLD) < getServerTime())
@@ -1723,14 +1577,14 @@ public class UserContext
              * Idle
              */
             localStatusButton.setIcon(new ImageIcon(
-                OpenGroove.Icons.USER_IDLE_16.getImage()));
+                    OpenGroove.Icons.USER_IDLE_16.getImage()));
             return;
         }
         /*
          * Online
          */
-        localStatusButton.setIcon(new ImageIcon(
-            OpenGroove.Icons.USER_ONLINE_16.getImage()));
+        localStatusButton.setIcon(new ImageIcon(OpenGroove.Icons.USER_ONLINE_16
+                .getImage()));
         return;
     }
     
@@ -1754,26 +1608,24 @@ public class UserContext
         return pluginMessageHierarchy;
     }
     
-    public void setMessageManager(
-        MessageManager messageManager)
+    public void setMessageManager(MessageManager messageManager)
     {
         this.messageManager = messageManager;
     }
     
-    public void setRootMessageHierarchy(
-        MessageHierarchy rootMessageHierarchy)
+    public void setRootMessageHierarchy(MessageHierarchy rootMessageHierarchy)
     {
         this.rootMessageHierarchy = rootMessageHierarchy;
     }
     
     public void setInternalMessageHierarchy(
-        MessageHierarchy internalMessageHierarchy)
+            MessageHierarchy internalMessageHierarchy)
     {
         this.internalMessageHierarchy = internalMessageHierarchy;
     }
     
     public void setPluginMessageHierarchy(
-        MessageHierarchy pluginMessageHierarchy)
+            MessageHierarchy pluginMessageHierarchy)
     {
         this.pluginMessageHierarchy = pluginMessageHierarchy;
     }
@@ -1783,8 +1635,7 @@ public class UserContext
         return userMessageHierarchy;
     }
     
-    public void setUserMessageHierarchy(
-        MessageHierarchy userMessageHierarchy)
+    public void setUserMessageHierarchy(MessageHierarchy userMessageHierarchy)
     {
         this.userMessageHierarchy = userMessageHierarchy;
     }
@@ -1794,17 +1645,16 @@ public class UserContext
         return settingsManager;
     }
     
-    public void setSettingsManager(
-        SettingsManager settingsManager)
+    public void setSettingsManager(SettingsManager settingsManager)
     {
         this.settingsManager = settingsManager;
     }
     
-    public Object getSetting(String tab, String subnav,
-        String group, String setting)
+    public Object getSetting(String tab, String subnav, String group,
+            String setting)
     {
         return getSettingsManager().getSettingValue(
-            new SettingSpec(tab, subnav, group, setting));
+                new SettingSpec(tab, subnav, group, setting));
     }
     
     public Object getSetting(SettingSpec spec)
@@ -1835,15 +1685,13 @@ public class UserContext
      *            an array with length 0 if the message is to have no initial
      *            recipients
      */
-    public void composeMessage(String subject,
-        String contents, String inReplyTo,
-        String replySubject, String[] recipients)
+    public void composeMessage(String subject, String contents,
+            String inReplyTo, String replySubject, String[] recipients)
     {
         /*
          * First, we need to create the user message object.
          */
-        UserMessage message = Storage.getLocalUser(userid)
-            .createUserMessage();
+        UserMessage message = Storage.getLocalUser(userid).createUserMessage();
         message.setContentType("text/html");
         message.setDate(System.currentTimeMillis());
         /*
@@ -1852,8 +1700,15 @@ public class UserContext
          * still be sorted correctly.
          */
         message.setDraft(true);
-        message.setId(userid + "-"
-            + Storage.createIdentifier());
+        /*
+         * We'll generate a unique id for the message now. The id will be
+         * suffixed with the letter "o". This letter will be removed when we're
+         * actually going to send the message. It serves to make the outbound
+         * version of the message have a different id than the inbound version
+         * of the message, so that if a user sends a message to themselves, a
+         * conflict won't arise.
+         */
+        message.setId(userid + "-" + Storage.createIdentifier() + "o");
         message.setMessage(contents);
         message.setOutbound(true);
         message.setRead(true);
@@ -1863,16 +1718,14 @@ public class UserContext
         message.setSubject(subject);
         for (String recipient : recipients)
         {
-            UserMessageRecipient recipientObject = message
-                .createRecipient();
+            UserMessageRecipient recipientObject = message.createRecipient();
             recipientObject.setUserid(recipient);
             message.getRecipients().add(recipientObject);
         }
-        Storage.getLocalUser(userid).getUserMessages().add(
-            message);
+        Storage.getLocalUser(userid).getUserMessages().add(message);
         messageHistoryFrame.reload();
-        ComposeMessageFrame.showComposeMessageFrame(Storage
-            .get(userid), message);
+        ComposeMessageFrame.showComposeMessageFrame(Storage.get(userid),
+                message);
     }
     
     public MessageHistoryFrame getMessageHistoryFrame()
@@ -1880,8 +1733,7 @@ public class UserContext
         return messageHistoryFrame;
     }
     
-    public void setMessageHistoryFrame(
-        MessageHistoryFrame messageHistoryFrame)
+    public void setMessageHistoryFrame(MessageHistoryFrame messageHistoryFrame)
     {
         this.messageHistoryFrame = messageHistoryFrame;
     }
