@@ -545,14 +545,17 @@ public class OpenGroove
                 }
             }.start();
             sfile.mkdirs();
+            splashScreenProgress.setString("Loading storage...");
             System.out.println("loading storage");
             Storage.initStorage(sfile);
+            splashScreenProgress.setString("Loading initial images...");
             System.out.println("loading initial images");
             trayimage = scaleImage(blockTransparify(ImageIO.read(new File(
                     "trayicon.png")), new Color(255, 0, 0)), 16, 16);
             trayofflineimage = scaleImage(blockTransparify(ImageIO
                     .read(new File("trayoffline.png")), new Color(255, 0, 0)),
                     16, 16);
+            splashScreenProgress.setString("Loading default windows...");
             initNewAccountWizard();
             initLoginFrame();
             // the setProperty call below is used to avoid problems with the
@@ -711,6 +714,7 @@ public class OpenGroove
                     }
                 }
             }.start();
+            splashScreenProgress.setString("Loading icons...");
             File[] trayfiles = new File(".").listFiles(new FileFilter()
             {
                 
@@ -841,6 +845,7 @@ public class OpenGroove
                 e.printStackTrace();
                 System.exit(0);
             }
+            splashScreenProgress.setString("Loading tray icon...");
             trayicon.addMouseMotionListener(new MouseMotionAdapter()
             {
                 
@@ -897,6 +902,7 @@ public class OpenGroove
                     
                 }
             });
+            splashScreenWindow.dispose();
             /*
              * We've set everything up at this point. Now we check to see if
              * there aren't any users, in which case we show the new account
