@@ -452,7 +452,7 @@ public class OpenGroove
     public static void main(String[] args) throws Throwable
     {
         System.out.println("vm starting");
-        // UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
+         UIManager.setLookAndFeel(UIManager.getCrossPlatformLookAndFeelClassName());
         gcThread.setDaemon(true);
         gcThread.start();
         Security.addProvider(new BouncyCastleProvider());
@@ -1549,6 +1549,18 @@ public class OpenGroove
             }
             trayPopup.addSeparator();
         }
+        trayPopup.add(new AMenuItem("Show Notifications"){
+
+            @Override
+            public void run(ActionEvent e)
+            {
+                if (notificationFrame.ignoreMouseOver
+                        && notificationFrame.currentVisibilityLevel > 0)
+                    return;
+                if (notificationFrame.listAllNotifications().length == 0)
+                    return;
+                notificationFrame.requestDisplay();
+            }});
         trayPopup.add(new AMenuItem("New Account")
         {
             
