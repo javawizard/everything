@@ -1716,8 +1716,17 @@ public class UserContext
         message.setReplySubject(replySubject);
         message.setSender(userid);
         message.setSubject(subject);
+        LocalUser user = Storage.getLocalUser(userid);
         for (String recipient : recipients)
         {
+            Contact contact = user.getContact(recipient);
+            ContactStatus status = contact.getStatus();
+            if (status == null)
+                continue;
+            if (!status.isKnown())
+                continue;
+            if (status.isNonexistant())
+                continue;
             UserMessageRecipient recipientObject = message.createRecipient();
             recipientObject.setUserid(recipient);
             message.getRecipients().add(recipientObject);
