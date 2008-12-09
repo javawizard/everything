@@ -265,4 +265,7 @@ public interface LocalUser extends ProxyObject
     
     @Constructor
     public UserMessage createUserMessage();
+    
+    @Search(listProperty = "userMessages", searchProperty = "id")
+    public UserMessage getUserMessageById(String decode);
 }
