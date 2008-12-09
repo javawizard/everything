@@ -1482,58 +1482,58 @@ public class MessageManager implements MessageDeliverer,
     {
         public void run()
         {
-            while (true)
-            {
-                try
-                {
-                    Object object = inboundDispatcherQueue
-                        .poll(
-                            (long) (delay + (delayVariance * Math
-                                .random())),
-                            TimeUnit.MILLISECONDS);
-                    if (object == quitObject)
-                        return;
-                    /*
-                     * The object is the runObject or the timeout expired, so
-                     * we'll do the actual processing.
-                     */
-                    /*
-                     * Do actual processing here
-                     */
-                    InboundMessage[] messages = localUser
-                        .listInboundMessagesForStage(InboundMessage.STAGE_READ);
-                    for (InboundMessage message : messages)
-                    {
-                        try
-                        {
-                            File messagePlaintextFile = new File(
-                                storage
-                                    .getInboundMessagePlaintextStore(),
-                                URLEncoder.encode(message
-                                    .getId()));
-                            if (!messagePlaintextFile
-                                .delete())
-                            {
-                                System.err
-                                    .println("couldn't delete plaintext file for message "
-                                        + message.getId());
-                                continue;
-                            }
-                            localUser.getInboundMessages()
-                                .remove(message);
-                        }
-                        catch (Exception exception)
-                        {
-                            exception.printStackTrace();
-                        }
-                        
-                    }
-                }
-                catch (Exception e)
-                {
-                    e.printStackTrace();
-                }
-            }
+//            while (true)
+//            {
+//                try
+//                {
+//                    Object object = inboundRemoverQueue
+//                        .poll(
+//                            (long) (delay + (delayVariance * Math
+//                                .random())),
+//                            TimeUnit.MILLISECONDS);
+//                    if (object == quitObject)
+//                        return;
+//                    /*
+//                     * The object is the runObject or the timeout expired, so
+//                     * we'll do the actual processing.
+//                     */
+//                    /*
+//                     * Do actual processing here
+//                     */
+//                    InboundMessage[] messages = localUser
+//                        .listInboundMessagesForStage(InboundMessage.STAGE_READ);
+//                    for (InboundMessage message : messages)
+//                    {
+//                        try
+//                        {
+//                            File messagePlaintextFile = new File(
+//                                storage
+//                                    .getInboundMessagePlaintextStore(),
+//                                URLEncoder.encode(message
+//                                    .getId()));
+//                            if (!messagePlaintextFile
+//                                .delete())
+//                            {
+//                                System.err
+//                                    .println("couldn't delete plaintext file for message "
+//                                        + message.getId());
+//                                continue;
+//                            }
+//                            localUser.getInboundMessages()
+//                                .remove(message);
+//                        }
+//                        catch (Exception exception)
+//                        {
+//                            exception.printStackTrace();
+//                        }
+//                        
+//                    }
+//                }
+//                catch (Exception e)
+//                {
+//                    e.printStackTrace();
+//                }
+//            }
         }
     };
     // stage notifier queues
