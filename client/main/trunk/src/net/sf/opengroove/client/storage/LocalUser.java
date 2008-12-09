@@ -268,4 +268,8 @@ public interface LocalUser extends ProxyObject
     
     @Search(listProperty = "userMessages", searchProperty = "id")
     public UserMessage getUserMessageById(String decode);
+    
+    @Search(listProperty = "outboundMessages", searchProperty = "id")
+    public OutboundMessage getOutboundMessageById(
+        String decode);
 }
