@@ -1516,14 +1516,7 @@ public class MessageManager implements MessageDeliverer,
                                     .getInboundMessagePlaintextStore(),
                                 URLEncoder.encode(message
                                     .getId()));
-                            if (!messagePlaintextFile
-                                .delete())
-                            {
-                                System.err
-                                    .println("couldn't delete plaintext file for message "
-                                        + message.getId());
-                                continue;
-                            }
+                            messagePlaintextFile.delete();
                             localUser.getInboundMessages()
                                 .remove(message);
                         }
@@ -1536,11 +1529,15 @@ public class MessageManager implements MessageDeliverer,
                     /*
                      * We've deleted all of the messages in the "read" stage.
                      * Next, we'll delete files for messages that don't exist at
-                     * all. We'll combine the files for all six stage folders
-                     * together, since we're just checking to make sure that the
-                     * message exists here, not that the stage is correct.
+                     * all. We'll combine the files for all three stage folders
+                     * for each state (outbound vs inbound) together, since
+                     * we're just checking to make sure that the message exists
+                     * here, not that the stage is correct.
+                     * 
+                     * We'll check inbound messages first, and then outbound
+                     * messages.
                      */
-                    File[] existenceCheckFiles = DataUtils
+                    File[] existenceCheckInboundFiles = DataUtils
                         .concat(
                             File.class,
                             storage
@@ -1551,7 +1548,18 @@ public class MessageManager implements MessageDeliverer,
                                 .listFiles(),
                             storage
                                 .getInboundMessagePlaintextStore()
-                                .listFiles(),
+                                .listFiles());
+                    for (File file : existenceCheckInboundFiles)
+                    {
+                        Object message = localUser
+                            .getInboundMessageById(URLDecoder
+                                .decode(file.getName()));
+                        if (message == null)
+                            file.delete();
+                    }
+                    File[] existenceCheckOutboundFiles = DataUtils
+                        .concat(
+                            File.class,
                             storage
                                 .getOutboundMessageEncryptedStore()
                                 .listFiles(),
@@ -1561,10 +1569,10 @@ public class MessageManager implements MessageDeliverer,
                             storage
                                 .getOutboundMessagePlaintextStore()
                                 .listFiles());
-                    for (File file : existenceCheckFiles)
+                    for (File file : existenceCheckOutboundFiles)
                     {
-                        UserMessage message = localUser
-                            .getUserMessageById(URLDecoder
+                        Object message = localUser
+                            .getOutboundMessageById(URLDecoder
                                 .decode(file.getName()));
                         if (message == null)
                             file.delete();
@@ -1592,12 +1600,98 @@ public class MessageManager implements MessageDeliverer,
                         .getOutboundMessagePlaintextStore()
                         .listFiles())
                     {
-                        UserMessage message = localUser
-                            .getUserMessageById(URLDecoder
+                        OutboundMessage message = localUser
+                            .getOutboundMessageById(URLDecoder
                                 .decode(file.getName()));
                         if (message == null)
                             continue;
+                        if (message.getStage() > OutboundMessage.STAGE_INITIALIZED)
+                            file.delete();
                     }
+                    /*
+                     * Next up is the encoded message form, with STAGE_ENCODED
+                     * being the last stage to use this form.
+                     */
+                    for (File file : storage
+                        .getOutboundMessageEncodedStore()
+                        .listFiles())
+                    {
+                        OutboundMessage message = localUser
+                            .getOutboundMessageById(URLDecoder
+                                .decode(file.getName()));
+                        if (message == null)
+                            continue;
+                        if (message.getStage() > OutboundMessage.STAGE_ENCODED)
+                            file.delete();
+                    }
+                    /*
+                     * Last, but not least, we have the encrypted message form.
+                     * The last stage to use this form is STAGE_ENCRYPTED.
+                     */
+                    for (File file : storage
+                        .getOutboundMessageEncryptedStore()
+                        .listFiles())
+                    {
+                        OutboundMessage message = localUser
+                            .getOutboundMessageById(URLDecoder
+                                .decode(file.getName()));
+                        if (message == null)
+                            continue;
+                        if (message.getStage() > OutboundMessage.STAGE_ENCRYPTED)
+                            file.delete();
+                    }
+                    /*
+                     * Before we continue, we'll check for outbound messages in
+                     * the SENT stage, and delete them.
+                     */
+                    for (OutboundMessage message : localUser
+                        .listOutboundMessagesForStage(OutboundMessage.STAGE_SENT))
+                    {
+                        localUser.getOutboundMessages()
+                            .remove(message);
+                    }
+                    /*
+                     * Now we'll begin checking the inbound message stores.
+                     * 
+                     * First up is the encrypted store. The last stage to use
+                     * this is STAGE_LOCALIZED.
+                     */
+                    for (File file : storage
+                        .getInboundMessageEncryptedStore()
+                        .listFiles())
+                    {
+                        InboundMessage message = localUser
+                            .getInboundMessageById(URLDecoder
+                                .decode(file.getName()));
+                        if (message == null)
+                            continue;
+                        if (message.getStage() > InboundMessage.STAGE_LOCALIZED)
+                            file.delete();
+                    }
+                    /*
+                     * Last, we have the encoded store. The last stage to use
+                     * this is STAGE_DECRYPTED.
+                     * 
+                     * We won't bother doing anything with the plaintext store,
+                     * since the files in there are needed until the message has
+                     * been marked as sent, at which point is will be deleted
+                     * anyway and it's corresponding file deleted as well.
+                     */
+                    for (File file : storage
+                        .getInboundMessageEncodedStore()
+                        .listFiles())
+                    {
+                        InboundMessage message = localUser
+                            .getInboundMessageById(URLDecoder
+                                .decode(file.getName()));
+                        if (message == null)
+                            continue;
+                        if (message.getStage() > InboundMessage.STAGE_DECRYPTED)
+                            file.delete();
+                    }
+                    /*
+                     * That's it for our work!
+                     */
                 }
                 catch (Exception e)
                 {
