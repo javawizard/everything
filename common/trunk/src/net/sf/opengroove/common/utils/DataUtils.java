@@ -1,6 +1,7 @@
 package net.sf.opengroove.common.utils;
 
 import java.io.File;
+import java.lang.reflect.Array;
 
 import base64.Base64Coder;
 
@@ -56,7 +57,8 @@ public class DataUtils
                 + file.getAbsolutePath());
     }
     
-    public static void recursiveDelete(File transmissionFolder)
+    public static void recursiveDelete(
+        File transmissionFolder)
     {
         if (transmissionFolder.isDirectory())
         {
@@ -67,5 +69,40 @@ public class DataUtils
         }
         transmissionFolder.delete();
     }
-
+    
+    /**
+     * Concatenates multiple arrays together, storing the result in a
+     * newly-allocated array.
+     * 
+     * @param <T>
+     *            The element type of the array to return
+     * @param <E>
+     *            The element type of the arrays that will be passed in
+     * @param in
+     *            The arrays to concatenate
+     * @return A new array that holds the values of the arrays passed in,
+     *         concatenated.
+     */
+    
+    public static <T, E extends T> T[] concat(
+        Class<T> newType, E[]... in)
+    {
+        int length = 0;
+        for (E[] array : in)
+        {
+            length += array.length;
+        }
+        T[] result = (T[]) Array.newInstance(newType,
+            length);
+        int index = 0;
+        for (E[] array : in)
+        {
+            for (E element : array)
+            {
+                result[index++] = element;
+            }
+        }
+        return result;
+    }
+    
 }
