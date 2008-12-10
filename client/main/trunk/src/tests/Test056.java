@@ -28,7 +28,9 @@ public class Test056
         frame.show();
         editorPane.setContentType("text/html");
         editorPane
-            .setText("<html><head></head><body> test <b>text</b></body></html>");
+            .setText("<html><head></head><body> test <b>text</b>" +
+            		"<script type=\"text/javascript\">" +
+            		"</script></body></html>");
     }
     
 }
