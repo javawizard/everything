@@ -1226,6 +1226,14 @@ public class ProxyStorage<E>
                     && method.getReturnType() == Class.class)
                     return targetClass;
                 if (method.getName().equalsIgnoreCase(
+                    "finalize"))
+                {
+                    System.out
+                        .println("proxystorage object "
+                            + targetId + " finalized.");
+                    return null;
+                }
+                if (method.getName().equalsIgnoreCase(
                     "isProxyStoragePresent")
                     && method.getReturnType() == Boolean.TYPE)
                     return isTargetIdPresent(targetId,
@@ -1676,8 +1684,9 @@ public class ProxyStorage<E>
                             }
                             result = rs
                                 .getObject(propertyName);
-                            if(result != null)
-                                cacheMap.put(cacheKey,result);
+                            if (result != null)
+                                cacheMap.put(cacheKey,
+                                    result);
                             rs.close();
                             st.close();
                         }
@@ -1869,17 +1878,19 @@ public class ProxyStorage<E>
                         BeanPropertyKey key = new BeanPropertyKey();
                         key.id = targetId;
                         key.property = propertyName;
-                        if(inputObject == null)
+                        if (inputObject == null)
                         {
                             stringCache.remove(key);
                             propertyCache.remove(key);
                         }
                         else
                         {
-                            if(inputObject instanceof String)
-                                stringCache.put(key,inputObject);
+                            if (inputObject instanceof String)
+                                stringCache.put(key,
+                                    inputObject);
                             else
-                                propertyCache.put(key,inputObject);
+                                propertyCache.put(key,
+                                    inputObject);
                         }
                         HashMap<String, ArrayList<PropertyChangeListener>> beanMap = beanListeners
                             .get(targetId);
