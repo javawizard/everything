@@ -30,6 +30,9 @@ public class Test056
         editorPane.setEditable(false);
         editorPane
             .setText("<html><head>" +
+            		"<script type='text/javascript'>" +
+            		"" +
+            		"</script>" +
             		"</head><body> test <b>text</b>" +
             		"<script type='text/javascript'>" +
             		"document.write('hi');" +
