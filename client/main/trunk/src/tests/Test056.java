@@ -27,9 +27,12 @@ public class Test056
         frame.getContentPane().add(editorPane);
         frame.show();
         editorPane.setContentType("text/html");
+        editorPane.setEditable(false);
         editorPane
-            .setText("<html><head></head><body> test <b>text</b>" +
-            		"<script type=\"text/javascript\">" +
+            .setText("<html><head>" +
+            		"</head><body> test <b>text</b>" +
+            		"<script type='text/javascript'>" +
+            		"document.write('hi');" +
             		"</script></body></html>");
     }
     
