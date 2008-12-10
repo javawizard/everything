@@ -21,7 +21,7 @@ public class Test056
         JFrame frame = new JFrame("test");
         frame.setSize(400, 300);
         frame.setLocationRelativeTo(null);
-        JEditorPane editorPane = new JEditorPane();
+        Web
         frame.getContentPane()
             .setLayout(new BorderLayout());
         frame.getContentPane().add(editorPane);
