@@ -31,12 +31,10 @@ public class Test056
         editorPane
             .setText("<html><head>" +
             		"<script type='text/javascript'>" +
-            		"" +
+            		"window.alert('hi');" +
             		"</script>" +
             		"</head><body> test <b>text</b>" +
-            		"<script type='text/javascript'>" +
-            		"document.write('hi');" +
-            		"</script></body></html>");
+            		"</body></html>");
     }
     
 }
