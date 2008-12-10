@@ -32,7 +32,7 @@ public class Test056
             .setText("<html><head>" +
             		"" +
             		"</head><body>" +
-            		"<script type='text/javascript'>" +
+            		"<script language='JavaScript'>" +
             		"document.write('hi');"+
             		"</script>" +
             		"</body></html>");
