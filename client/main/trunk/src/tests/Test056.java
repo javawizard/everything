@@ -31,7 +31,7 @@ public class Test056
         editorPane
             .setText("<html><head>" +
             		"<script type='text/javascript'>" +
-            		"window.alert('hi');" +
+            		"document.write('hi');" +
             		"</script>" +
             		"</head><body> test <b>text</b>" +
             		"</body></html>");
