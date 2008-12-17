@@ -68,7 +68,7 @@ import net.sf.opengroove.common.utils.Userids;
  * OpenGroove itself.
  * 
  * while OpenGroove is running, updates for plugins will be checked once every
- * day, or when the user comes online and it has been an hour or more before
+ * day, or when the user comes online and it has been a day or more before
  * last checking for plugins. in the future, the user will be allowed to change
  * this setting. anyway, the user can also manually initiate a check for
  * updates. when updates are detected, the user is presented with the list of
