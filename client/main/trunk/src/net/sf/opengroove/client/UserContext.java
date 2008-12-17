@@ -54,7 +54,7 @@ import net.sf.opengroove.client.messaging.MessageHierarchy;
 import net.sf.opengroove.client.messaging.MessageManager;
 import net.sf.opengroove.client.notification.NotificationAdapter;
 import net.sf.opengroove.client.notification.TaskbarNotification;
-import net.sf.opengroove.client.plugins.PluginManager;
+import net.sf.opengroove.client.oldplugins.PluginManager;
 import net.sf.opengroove.client.settings.SettingSpec;
 import net.sf.opengroove.client.settings.SettingsManager;
 import net.sf.opengroove.client.storage.Contact;

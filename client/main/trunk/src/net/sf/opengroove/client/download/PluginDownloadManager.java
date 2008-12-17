@@ -34,7 +34,7 @@ import javax.swing.text.html.FormSubmitEvent;
 import javax.swing.text.html.HTMLEditorKit;
 
 import net.sf.opengroove.client.OpenGroove;
-import net.sf.opengroove.client.plugins.PluginManager;
+import net.sf.opengroove.client.oldplugins.PluginManager;
 
 public class PluginDownloadManager
 {

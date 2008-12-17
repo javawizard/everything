@@ -18,8 +18,8 @@ import net.sf.opengroove.client.com.OldCommunicator;
 import net.sf.opengroove.client.com.MessageSink;
 import net.sf.opengroove.client.com.OldStatusListener;
 import net.sf.opengroove.client.notification.NotificationAdapter;
-import net.sf.opengroove.client.plugins.Plugin;
-import net.sf.opengroove.client.plugins.PluginManager;
+import net.sf.opengroove.client.oldplugins.Plugin;
+import net.sf.opengroove.client.oldplugins.PluginManager;
 import net.sf.opengroove.client.storage.Storage;
 import net.sf.opengroove.client.ui.ReceiveWorkspaceInviteFrame;
 

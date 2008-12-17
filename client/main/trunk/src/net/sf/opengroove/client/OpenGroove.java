@@ -123,7 +123,7 @@ import net.sf.opengroove.client.notification.FrameShowingNotification;
 import net.sf.opengroove.client.notification.GroupLabelResolver;
 import net.sf.opengroove.client.notification.NotificationAdapter;
 import net.sf.opengroove.client.notification.TaskbarNotificationFrame;
-import net.sf.opengroove.client.plugins.PluginManager;
+import net.sf.opengroove.client.oldplugins.PluginManager;
 import net.sf.opengroove.client.settings.SettingListener;
 import net.sf.opengroove.client.settings.SettingSpec;
 import net.sf.opengroove.client.settings.SettingStore;

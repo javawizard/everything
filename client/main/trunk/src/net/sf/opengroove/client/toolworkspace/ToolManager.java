@@ -6,8 +6,8 @@ import java.util.List;
 
 import javax.swing.JOptionPane;
 
-import net.sf.opengroove.client.plugins.Plugin;
-import net.sf.opengroove.client.plugins.PluginManager;
+import net.sf.opengroove.client.oldplugins.Plugin;
+import net.sf.opengroove.client.oldplugins.PluginManager;
 import net.sf.opengroove.client.workspace.SetList;
 
 public class ToolManager

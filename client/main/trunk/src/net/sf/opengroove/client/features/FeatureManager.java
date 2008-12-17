@@ -6,8 +6,8 @@ import java.util.HashMap;
 
 import net.sf.opengroove.client.OpenGroove;
 import net.sf.opengroove.client.com.MessageSink;
-import net.sf.opengroove.client.plugins.Plugin;
-import net.sf.opengroove.client.plugins.PluginManager;
+import net.sf.opengroove.client.oldplugins.Plugin;
+import net.sf.opengroove.client.oldplugins.PluginManager;
 import net.sf.opengroove.client.storage.Storage;
 
 public class FeatureManager
