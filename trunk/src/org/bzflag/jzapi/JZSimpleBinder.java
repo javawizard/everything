@@ -48,6 +48,34 @@ public class JZSimpleBinder
     
     public static abstract class Binder
     {
+        /**
+         * True if this binder supports input. This means that the binder can
+         * bind parameter types.
+         */
+        private boolean supportsInput;
+        /**
+         * True if this binder supports output. This means that the binder can
+         * bind return types.
+         */
+        private boolean supportsOutput;
+        
+        public Binder(boolean supportsInput,
+            boolean supportsOutput)
+        {
+            this.supportsInput = supportsInput;
+            this.supportsOutput = supportsOutput;
+        }
+        
+        public boolean supportsInput(String type)
+        {
+            return supportsInput;
+        }
+        
+        public boolean supportsOutput(String type)
+        {
+            return supportsOutput;
+        }
+        
         public abstract boolean canHandleType(String type);
         
         public abstract String javaParamSpec(String type,
@@ -117,7 +145,7 @@ public class JZSimpleBinder
     
     private static Binder[] boundTypes = new Binder[] {
     // int (and unsigned int) binder
-        new Binder()
+        new Binder(true, true)
         {
             
             public boolean canHandleType(String type)
@@ -183,9 +211,9 @@ public class JZSimpleBinder
         },
         /*
          * float and double binder. Both are bound to the java float type, since
-         * it hols the precision of the c++ double type as well.
+         * it holds the precision of the c++ double type as well.
          */
-        new Binder()
+        new Binder(true, true)
         {
             
             public boolean canHandleType(String type)
@@ -253,7 +281,7 @@ public class JZSimpleBinder
              * String binder (binds const char*, and bz_ApiString in return
              * types)
              */
-        new Binder()
+        new Binder(true, true)
         {
             
             public boolean canHandleType(String type)
@@ -338,11 +366,16 @@ public class JZSimpleBinder
             {
                 return "jstring";
             }
+            
+            public boolean supportsInput(String type)
+            {
+                return type.endsWith("*");
+            }
         },
         /*
          * Void binder, won't bind parameters (in particular, won't bind void* )
          */
-        new Binder()
+        new Binder(false, true)
         {
             
             public boolean canHandleType(String type)
@@ -409,7 +442,7 @@ public class JZSimpleBinder
         /*
          * Boolean binder
          */
-        new Binder()
+        new Binder(true, true)
         {
             
             public boolean canHandleType(String type)
@@ -476,7 +509,7 @@ public class JZSimpleBinder
         /*
          * Enum binder
          */
-        new Binder()
+        new Binder(true, true)
         {
             private int indexFromType(String type)
             {
@@ -576,9 +609,9 @@ public class JZSimpleBinder
             }
         },
         /*
-         * float array (by value only; won't handle float*)
+         * float array (fixed size only; won't handle float*)
          */
-        new Binder()
+        new Binder(true, true)
         {
             private int elementCount(String type)
             {
@@ -668,7 +701,7 @@ public class JZSimpleBinder
         /*
          * bz_APIStringList* binder (return types only)
          */
-        new Binder()
+        new Binder(false, true)
         {
             
             public boolean canHandleType(String type)
