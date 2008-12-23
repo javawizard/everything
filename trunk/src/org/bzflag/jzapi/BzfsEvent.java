@@ -10,20 +10,8 @@ import org.bzflag.jzapi.BzfsAPI.EventType;
  * @author Alexander Boyd
  * 
  */
-public class BzfsEvent
-{
-    private long pointer;
-    
-    private long getPointer()
-    {
-        return pointer;
-    }
-    
-    private void setPointer(long pointer)
-    {
-        this.pointer = pointer;
-    }
-    
+public class BzfsEvent extends Pointed
+{    
     public native EventType getEventType();
     
     public native double getEventTime();

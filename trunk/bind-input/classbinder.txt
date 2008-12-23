@@ -1,4 +1,3 @@
-  
   int version;
   int playerID;
   bz_ApiString callsign;
