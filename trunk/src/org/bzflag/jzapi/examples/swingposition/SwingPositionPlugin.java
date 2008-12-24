@@ -14,6 +14,8 @@ public class SwingPositionPlugin
 {
     private static JFrame frame;
     
+    private static SwingPositionComponent component;
+    
     public static void load(String args)
     {
         
