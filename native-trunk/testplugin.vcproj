@@ -209,6 +209,14 @@
 				</FileConfiguration>
 			</File>
 			<File
+				RelativePath=".\simplebind.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\simpleclassbind.cpp"
+				>
+			</File>
+			<File
 				RelativePath=".\testplugin.cpp"
 				>
 			</File>
@@ -222,6 +230,10 @@
 			Filter="h;hpp;hxx;hm;inl;inc;xsd"
 			UniqueIdentifier="{93995380-89BD-4b04-88EB-625FBE52EBFB}"
 			>
+			<File
+				RelativePath=".\bind.h"
+				>
+			</File>
 			<File
 				RelativePath=".\jni.h"
 				>
