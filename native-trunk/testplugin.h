@@ -17,3 +17,4 @@ jstring JNU_NewStringNative(const char *str);
 jobject getJavaEnumConstant(JNIEnv *env, jint enumId, jint constantIndex);
 jint getJavaEnumInt(JNIEnv *env, jobject enumObject);
 void throwRuntimeException(JNIEnv *env, const char *message);
+jobjectArray stringListToStringArray(JNIEnv *env, bz_APIStringList* stringList);
