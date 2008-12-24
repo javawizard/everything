@@ -655,8 +655,7 @@ public class JZSimpleBinder
             
             public String nativeReturnSpec(String type)
             {
-                return "float returnArray["
-                    + elementCount(type) + "] = ";
+                return "float* returnArray = ";
             }
             
             public String nativeReturnStatement(String type)

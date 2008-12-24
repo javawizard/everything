@@ -52,7 +52,7 @@ public class JZSimpleClassBinder
     {
         File inputFile =
             new File(
-                "bind-input/classbinder-baseplayer.txt");
+                "bind-input/classbinder-playerupdatestate.txt");
         String inputFileContents = readFile(inputFile);
         String[] inputTokenized =
             inputFileContents.split("\n", 3);
@@ -189,17 +189,27 @@ public class JZSimpleClassBinder
                     + "*> (getPointer(env, self));");
                 String pre =
                     binder.toNativePrefix(type, name);
-                if (!pre.equals(""))
-                    outputNativeMethods.println(pre);
-                outputNativeMethods
-                    .println("\tnativeSelf->" + name
-                        + " = "
-                        + binder.nativeCallSpec(type, name)
-                        + ";");
-                String post =
-                    binder.toNativeSuffix(type, name);
-                if (!post.equals(""))
-                    outputNativeMethods.println(post);
+                if (isArrayType)
+                {
+                    outputNativeMethods.println("\t"
+                        + binder.arrayAssignment(type,
+                            name, "nativeSelf->" + name));
+                }
+                else
+                {
+                    if (!pre.equals(""))
+                        outputNativeMethods.println(pre);
+                    outputNativeMethods
+                        .println("\tnativeSelf->"
+                            + name
+                            + " = "
+                            + binder.nativeCallSpec(type,
+                                name) + ";");
+                    String post =
+                        binder.toNativeSuffix(type, name);
+                    if (!post.equals(""))
+                        outputNativeMethods.println(post);
+                }
                 outputNativeMethods.println("}");
                 outputNativeMethods.println();
             }
