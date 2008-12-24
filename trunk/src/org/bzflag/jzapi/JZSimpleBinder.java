@@ -141,6 +141,12 @@ public class JZSimpleBinder
             String name);
         
         public abstract String sigComponent(String type);
+        
+        public String arrayAssignment(String type,
+            String name, String assignmentTarget)
+        {
+            return "";
+        }
     }
     
     private static Binder[] boundTypes = new Binder[] {
@@ -697,16 +703,27 @@ public class JZSimpleBinder
             {
                 return "delete " + name + "_fb;";
             }
+            
+            public String arrayAssignment(String type,
+                String name, String assignmentTarget)
+            {
+                int size = elementCount(type);
+                return "env->GetFloatArrayRegion(" + name
+                    + ", 0, " + size + ", "
+                    + assignmentTarget + ");";
+            }
+            
         },
         /*
-         * bz_APIStringList* binder (return types only)
+         * bz_APIStringList and bz_APIStringList* binder (return types only)
          */
         new Binder(false, true)
         {
             
             public boolean canHandleType(String type)
             {
-                return type.equals("bz_APIStringList*");
+                return type.equals("bz_APIStringList*")
+                    || type.equals("bz_APIStringList");
             }
             
             public String javaParamSpec(String type,
@@ -734,14 +751,19 @@ public class JZSimpleBinder
             
             public String nativeReturnSpec(String type)
             {
-                return "bz_APIStringList* returnList = ";
+                return "bz_APIStringList*"
+                    + " returnList = "
+                    + (type.endsWith("*") ? "" : "&");
             }
             
             public String nativeReturnStatement(String type)
             {
-                return "jobjectArray returnArray = stringListToStringArray(env,returnList);\n"
-                    + "bz_deleteStringList(returnList);\n"
-                    + "return returnArray;";
+                if (type.endsWith("*"))
+                    return "jobjectArray returnArray = stringListToStringArray(env, returnList);\n"
+                        + "bz_deleteStringList(returnList);\n"
+                        + "return returnArray;";
+                else
+                    return "return stringListToStringArray(env, returnList);";
             }
             
             public String nativeReturnType(String type)
