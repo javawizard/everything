@@ -52,7 +52,7 @@ public class JZSimpleClassBinder
     {
         File inputFile =
             new File(
-                "bind-input/classbinder-playerupdatestate.txt");
+                "bind-input/classbinder-baseplayer.txt");
         String inputFileContents = readFile(inputFile);
         String[] inputTokenized =
             inputFileContents.split("\n", 3);
