@@ -1,3 +1,5 @@
+org/bzflag/jzapi/BasePlayerRecord
+bz_BasePlayerRecord
   int version;
   int playerID;
   bz_ApiString callsign;

@@ -26,15 +26,15 @@ import org.bzflag.jzapi.JZSimpleBinder.Binder;
 public class JZSimpleClassBinder
 {
     
-    private static final String targetClassName =
-        "org/bzflag/jzapi/BasePlayerRecord";
-    private static final String targetNativeClass =
-        "bz_BasePlayerRecord";
+    private static String targetClassName;
+    private static String targetNativeClass;
     private static StringWriter dataOutputRegisterNatives =
         new StringWriter();
     private static StringWriter dataOutputJavaMethods =
         new StringWriter();
     private static StringWriter dataOutputNativeMethods =
+        new StringWriter();
+    private static StringWriter dataOutputNativeHeaders =
         new StringWriter();
     private static PrintWriter outputRegisterNatives =
         new PrintWriter(dataOutputRegisterNatives);
@@ -42,21 +42,29 @@ public class JZSimpleClassBinder
         new PrintWriter(dataOutputJavaMethods);
     private static PrintWriter outputNativeMethods =
         new PrintWriter(dataOutputNativeMethods);
+    private static PrintWriter outputNativeHeaders =
+        new PrintWriter(dataOutputNativeHeaders);
     
     /**
      * @param args
      */
     public static void main(String[] args)
     {
+        File inputFile =
+            new File(
+                "bind-input/classbinder-baseplayer.txt");
+        String inputFileContents = readFile(inputFile);
+        String[] inputTokenized =
+            inputFileContents.split("\n", 3);
+        targetClassName = inputTokenized[0].trim();
+        targetNativeClass = inputTokenized[1].trim();
+        String remainingInput = inputTokenized[2];
+        String[] remainingTokens =
+            remainingInput.split("\n");
         String nativePrefix =
             targetClassName.substring(targetClassName
                 .lastIndexOf("/") + 1);
-        File inputFile =
-            new File("bind-input/classbinder.txt");
-        String inputFileContents = readFile(inputFile);
-        String[] inputTokenized =
-            inputFileContents.split("\n");
-        for (String token : inputTokenized)
+        for (String token : remainingTokens)
         {
             token = token.trim();
             if (token.endsWith(";"))
@@ -115,6 +123,11 @@ public class JZSimpleClassBinder
                         + binder.sigComponent(type)
                         + "\", cb_" + nativePrefix + "_get"
                         + nameCap + ");");
+                outputNativeHeaders.println(""
+                    + binder.nativeReturnType(type)
+                    + " JNICALL cb_" + nativePrefix
+                    + "_get" + nameCap
+                    + "(JNIEnv *env, jobject self);");
                 outputNativeMethods.println(""
                     + binder.nativeReturnType(type)
                     + " JNICALL cb_" + nativePrefix
@@ -156,6 +169,12 @@ public class JZSimpleClassBinder
                         + binder.sigComponent(type) + ")V"
                         + "\", cb_" + nativePrefix + "_set"
                         + nameCap + ");");
+                outputNativeHeaders.println("void"
+                    + " JNICALL cb_" + nativePrefix
+                    + "_set" + nameCap
+                    + "(JNIEnv *env, jobject self, "
+                    + binder.nativeParamSpec(type, name)
+                    + ");");
                 outputNativeMethods.println("void"
                     + " JNICALL cb_" + nativePrefix
                     + "_set" + nameCap
@@ -193,6 +212,8 @@ public class JZSimpleClassBinder
         }
         System.out.println("output java code: \n\n"
             + dataOutputJavaMethods + "\n\n");
+        System.out.println("output native headers: \n\n"
+            + dataOutputNativeHeaders + "\n\n");
         System.out.println("output native code: \n\n"
             + dataOutputNativeMethods + "\n\n");
         System.out.println("output native bindings: \n\n"

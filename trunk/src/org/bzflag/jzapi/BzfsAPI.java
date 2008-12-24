@@ -13,6 +13,7 @@ import java.util.concurrent.atomic.AtomicLong;
  */
 public class BzfsAPI
 {
+    
     static final long MAX_UID_VALUE = 0x6FFFFFFFl;
     
     public static final int SERVER_PLAYER = -2;
@@ -483,8 +484,10 @@ public class BzfsAPI
      * @return
      */
     public static native int getPlayerId(int playerIndex);
+    
     /**
-     * Gets the player id of the player using the specified callsign. 
+     * Gets the player id of the player using the specified callsign.
+     * 
      * @param callsign
      * @return
      */
