@@ -19,7 +19,10 @@ public class BzfsAPI
     public static final int SERVER_PLAYER = -2;
     
     public static final int ALL_PLAYERS = -1;
-    
+    /**
+     * I have no idea why this is here. It should be removed after making sure
+     * that nothing (in particular, native methods) uses it.
+     */
     static boolean nothing;
     
     protected static interface AlternateOrdinal
@@ -494,4 +497,9 @@ public class BzfsAPI
     public static native int getPlayerIdByCallsign(
         String callsign);
     
+    public static native BasePlayerRecord getPlayerRecord(
+        int player);
+    
+    public static native void freePlayerRecord(
+        BasePlayerRecord record);
 }

@@ -2,6 +2,29 @@ package org.bzflag.jzapi;
 
 import org.bzflag.jzapi.BzfsAPI.TeamType;
 
+/**
+ * Provides detailed information about a player. Instances of this class can be
+ * obtained by using {@link BzfsAPI#getPlayerRecord(int)}. Any instance of this
+ * class obtained from that method must be freed by a call to
+ * {@link BzfsAPI#freePlayerRecord(BasePlayerRecord)}. If it is not, memory
+ * leaks will occur. In the future, a finalizer will be added that automatically
+ * frees a record. Records obtained from other methods (for example, those
+ * obtained from BzfsEvents) need not (and must not) be freed.<br/><br/>
+ * 
+ * Calling methods on an instance of this class after freeing it can, and
+ * usually will, cause problems. These can range from simply corrupting memory
+ * to crashing bzfs. Don't do it. Similarly, freeing a record that does not need
+ * to be freed can result in crashing bzfs or other problems.<br/><br/>
+ * 
+ * Instances of this class obtained from {@link BzfsAPI#getPlayerRecord(int)}
+ * can be used in any thread and at any time (up until the record is freed, of
+ * course). Instances obtained from events cannot be used outside of the thread
+ * that called the event handler, and cannot be used after completion of the
+ * event handler's process method.
+ * 
+ * @author Alexander Boyd
+ * 
+ */
 public class BasePlayerRecord extends Pointed
 {
     

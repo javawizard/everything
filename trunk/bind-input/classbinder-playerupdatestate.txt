@@ -1,0 +1,11 @@
+org/bzflag/jzapi/PlayerUpdateState
+bz_PlayerUpdateState
+  bz_ePlayerStatus  status;       
+  bool          falling;        
+  bool          crossingWall;   
+  bool          inPhantomZone;  
+  float         pos[3];         
+  float         velocity[3];    
+  float         rotation;       
+  float         angVel;         
+  int           phydrv;         
