@@ -226,6 +226,10 @@
 				RelativePath=".\jni.h"
 				>
 			</File>
+			<File
+				RelativePath=".\testplugin.h"
+				>
+			</File>
 		</Filter>
 		<Filter
 			Name="Resource Files"

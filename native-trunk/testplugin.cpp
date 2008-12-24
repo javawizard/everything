@@ -1,19 +1,7 @@
 // testplugin.cpp : Defines the entry point for the DLL application.
 //
 
-#include "bzfsAPI.h"
-#include "plugin_utils.h"
-#include "jni.h"
-#include <stdlib.h>
-#include <map>
-#include <iostream>
-#include <string>
-#include <algorithm>
-#include <vector>
-#include <stdio.h>
-#include <tchar.h>
-#include <windows.h>
-#include <winbase.h>
+#include "testplugin.h"
 
 using namespace std;
 
