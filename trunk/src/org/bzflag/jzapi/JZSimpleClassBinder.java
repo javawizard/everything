@@ -16,25 +16,26 @@ import java.io.StringWriter;
 public class JZSimpleClassBinder
 {
     
+    private static final String targetClassName =
+        "org/bzflag/jzapi/internal/SimpleBind";
+    private static StringWriter dataOutputRegisterNatives =
+        new StringWriter();
+    private static StringWriter dataOutputJavaMethods =
+        new StringWriter();
+    private static StringWriter dataOutputNativeMethods =
+        new StringWriter();
+    private static PrintWriter outputRegisterNatives =
+        new PrintWriter(dataOutputRegisterNatives);
+    private static PrintWriter outputJavaMethods =
+        new PrintWriter(dataOutputJavaMethods);
+    private static PrintWriter outputNativeMethods =
+        new PrintWriter(dataOutputNativeMethods);
+    
     /**
      * @param args
      */
     public static void main(String[] args)
     {
-        private static final String targetClassName =
-            "org/bzflag/jzapi/internal/SimpleBind";
-        private static StringWriter dataOutputRegisterNatives =
-            new StringWriter();
-        private static StringWriter dataOutputJavaMethods =
-            new StringWriter();
-        private static StringWriter dataOutputNativeMethods =
-            new StringWriter();
-        private static PrintWriter outputRegisterNatives =
-            new PrintWriter(dataOutputRegisterNatives);
-        private static PrintWriter outputJavaMethods =
-            new PrintWriter(dataOutputJavaMethods);
-        private static PrintWriter outputNativeMethods =
-            new PrintWriter(dataOutputNativeMethods);
     }
     
 }

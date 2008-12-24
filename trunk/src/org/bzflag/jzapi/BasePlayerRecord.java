@@ -1,6 +1,5 @@
 package org.bzflag.jzapi;
 
-public class BasePlayerRecord
+public class BasePlayerRecord extends Pointed
 {
-    private long pointer;
 }
