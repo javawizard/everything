@@ -113,4 +113,8 @@ public class BasePlayerRecord extends Pointed
     public native int getTeamKills();
     
     public native void setTeamKills(int name);
+    
+    public native PlayerUpdateState getCurrentState();
+    
+    public native PlayerUpdateState getLastKnownState();
 }
