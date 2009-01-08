@@ -7,10 +7,14 @@
                    
      Alexander Boyd                                                              
      ====================================================================== -->
-<project name="OpenGroove">
+<project name="OpenGroove" default="deploy">
 	<description>
 
 	</description>
+	<target name="deploy">
+		<echo level="info" message="Building OpenGroove classes from source..." />
+		<javac classpath="${basedir}/lib/*" sourcepath="${basedir}/src" destdir="${basedir}/classes" />
+	</target>
 
 	<!-- ================================= 
           target: default              
@@ -39,25 +43,25 @@
 
 	<target name="upload" depends="jar" description="creates a jar file, then uploads it to the server. the update versionindex will be incremented by one.">
 		<get dest="tmpupd.properties" src="http://sysup.ogis.opengroove.org" />
-		<echo message="running iversion..."/>
+		<echo message="running iversion..." />
 		<java classpath="classes" fork="true" failonerror="true" dir="." classname="com.trivergia.intouch3.uploader.IVersion">
 		</java>
-		<echo message="uploading jar..."/>
-		<exec executable="rsync" failonerror="true" >
+		<echo message="uploading jar..." />
+		<exec executable="rsync" failonerror="true">
 			<arg value="-v" />
 			<arg value="-e" />
 			<arg value="ssh -i /c/id_rsa" />
 			<arg value="opengrooveupdates.jar" />
 			<arg value="root@trivergia.com:/apache/tomcat/webapps/ROOT/opengrooveupdates.jar" />
 		</exec>
-		<echo message="uploading descriptor..."/>
+		<echo message="uploading descriptor..." />
 		<exec executable="rsync" failonerror="true">
-			<arg value="-v"/>
+			<arg value="-v" />
 			<arg value="-e" />
 			<arg value="ssh -i /c/id_rsa" />
 			<arg value="opengrooveupdates.properties" />
 			<arg value="root@trivergia.com:/apache/tomcat/webapps/ROOT/opengrooveupdates.properties" />
 		</exec>
-		<echo message="done."/>
+		<echo message="done." />
 	</target>
 </project>
