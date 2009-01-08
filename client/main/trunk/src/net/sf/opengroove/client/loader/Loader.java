@@ -82,6 +82,7 @@ public class Loader
                  * updates succeed at least once after that.
                  */
                 updatesAvailableFile.delete();
+                writeFile(" ", new File(updatesFolder, "updated"));
             }
             else
             {
