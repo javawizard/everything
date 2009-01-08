@@ -1,4 +1,4 @@
-package net.sf.opengroove.client;
+package net.sf.opengroove.client.loader;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -12,6 +12,8 @@ import java.util.zip.ZipInputStream;
 
 import javax.swing.JFrame;
 import javax.swing.JLabel;
+
+import net.sf.opengroove.client.OpenGroove;
 
 /**
  * This class is used to actually start OpenGroove on a user's box. developers
