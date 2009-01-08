@@ -11,7 +11,7 @@
   <customProcName>true</customProcName>
   <stayAlive>false</stayAlive>
   <classPath>
-    <mainClass>net.sf.opengroove.client.Loader</mainClass>
+    <mainClass>net.sf.opengroove.client.loader.Loader</mainClass>
     <cp>classes</cp>
     <cp>lib/*</cp>
   </classPath>

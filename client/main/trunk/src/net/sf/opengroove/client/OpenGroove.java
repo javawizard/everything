@@ -181,7 +181,7 @@ public class OpenGroove
     {
         Statics.run();
     }
-    static boolean updatesEnabled = false;
+    public static boolean updatesEnabled = false;
     /**
      * This file object is a folder that contains opengroove's data.
      */
@@ -197,7 +197,8 @@ public class OpenGroove
      * are userids and the values are user contexts that correspond to that
      * user.
      */
-    public static final Hashtable<String, UserContext> userContextMap = new Hashtable<String, UserContext>();
+    public static final Hashtable<String, UserContext> userContextMap =
+        new Hashtable<String, UserContext>();
     
     private static LoginFrame loginFrame;
     
@@ -255,21 +256,20 @@ public class OpenGroove
     
     public static enum Icons
     {
-        UP_FOLDER_16("upfolder16.png", 16), GENERIC_ADD_16("add.png", 16), GENERIC_REMOVE_16(
-                "remove.png", 16), CONFIGURE_WORKSPACE_16(
-                "configure-workspace.png", 16), DELETE_WORKSPACE_16(
-                "delete-workspace.png", 16), INVITE_TO_WORKSPACE_16(
-                "invite-to-workspace.png", 16), POP_OUT_16("pop-out.png", 16), WORKSPACE_INFO_16(
-                "workspace-info.png", 16), WORKSPACE_WARNING_16(
-                "workspace-warning.png", 16), BACK_BUTTON_32("back-button.png",
-                32), FOLDER_DOCS_16("folder-docs.png", 16), EDIT_16(
-                "edit16.gif", 16), NOTES_16("notes16.gif", 16), USER_ONLINE_16(
-                "user-green.png", 16), USER_IDLE_16("user-yellow.png", 16), USER_NONEXISTANT_16(
-                "user-red.png", 16), USER_UNKNOWN_16("user-purple.png", 16), USER_OFFLINE_16(
-                "user-gray.png", 16), SETTINGS_48("settings48.png", 48), SETTINGS_16(
-                "settings16.png", 16), MESSAGE_CONFIG_16("messageconfig16.png",
-                16), MESSAGE_CONFIG_48("messageconfig48.png", 48), FILE_16(
-                "gfile2-16.png", 16), FOLDER_16("gfolder16.png", 16);
+        UP_FOLDER_16("upfolder16.png", 16), GENERIC_ADD_16("add.png", 16),
+        GENERIC_REMOVE_16("remove.png", 16), CONFIGURE_WORKSPACE_16(
+            "configure-workspace.png", 16), DELETE_WORKSPACE_16("delete-workspace.png", 16),
+        INVITE_TO_WORKSPACE_16("invite-to-workspace.png", 16),
+        POP_OUT_16("pop-out.png", 16), WORKSPACE_INFO_16("workspace-info.png", 16),
+        WORKSPACE_WARNING_16("workspace-warning.png", 16), BACK_BUTTON_32("back-button.png",
+            32), FOLDER_DOCS_16("folder-docs.png", 16), EDIT_16("edit16.gif", 16), NOTES_16(
+            "notes16.gif", 16), USER_ONLINE_16("user-green.png", 16), USER_IDLE_16(
+            "user-yellow.png", 16), USER_NONEXISTANT_16("user-red.png", 16),
+        USER_UNKNOWN_16("user-purple.png", 16), USER_OFFLINE_16("user-gray.png", 16),
+        SETTINGS_48("settings48.png", 48), SETTINGS_16("settings16.png", 16),
+        MESSAGE_CONFIG_16("messageconfig16.png", 16), MESSAGE_CONFIG_48(
+            "messageconfig48.png", 48), FILE_16("gfile2-16.png", 16), FOLDER_16(
+            "gfolder16.png", 16);
         private int size;
         
         private File scaledFile;
@@ -337,11 +337,9 @@ public class OpenGroove
     private static final String RESTART_CLASSPATH = "bin;*;lib/*";
     
     // FIXME: needs to be localized to the user's operating system and java vm
-    private static final String[] restartExecutableString = new String[]
-    {
-            "javaw.exe", "-cp", RESTART_CLASSPATH,
-            "net.sf.opengroove.client.Loader", "wfl"
-    };
+    private static final String[] restartExecutableString =
+        new String[] { "javaw.exe", "-cp", RESTART_CLASSPATH,
+            "net.sf.opengroove.client.Loader", "wfl" };
     
     /**
      * restarts OpenGroove. This method takes a few seconds to run before
@@ -375,9 +373,8 @@ public class OpenGroove
         {
             e.printStackTrace();
             JOptionPane
-                    .showMessageDialog(
-                            parent,
-                            "OpenGroove could not be restarted. You will need to manually restart OpenGroove.");
+                .showMessageDialog(parent,
+                    "OpenGroove could not be restarted. You will need to manually restart OpenGroove.");
             
         }
         
@@ -452,7 +449,7 @@ public class OpenGroove
     public static void main(String[] args) throws Throwable
     {
         System.out.println("vm starting");
-         UIManager.setLookAndFeel(UIManager.getCrossPlatformLookAndFeelClassName());
+        UIManager.setLookAndFeel(UIManager.getCrossPlatformLookAndFeelClassName());
         gcThread.setDaemon(true);
         gcThread.start();
         Security.addProvider(new BouncyCastleProvider());
@@ -477,13 +474,13 @@ public class OpenGroove
                 }
                 catch (Exception e)
                 {
-                    frame3.setTitle("exception," + e.getClass() + " : "
-                            + e.getMessage());
+                    frame3.setTitle("exception," + e.getClass() + " : " + e.getMessage());
                     e.printStackTrace();
                     Thread.sleep(3000);
                 }
             }
-        } else
+        }
+        else
         {
             try
             {
@@ -498,8 +495,8 @@ public class OpenGroove
                 frame.setLocationRelativeTo(null);
                 frame.show();
                 JOptionPane
-                        .showMessageDialog(frame,
-                                "OpenGroove is already running. You cannot start OpenGroove multiple times.");
+                    .showMessageDialog(frame,
+                        "OpenGroove is already running. You cannot start OpenGroove multiple times.");
                 System.exit(0);
             }
         }
@@ -508,15 +505,14 @@ public class OpenGroove
         splashScreenWindow.getContentPane().setLayout(new BorderLayout());
         Icon splashScreenIcon = new ImageIcon("icons/splashscreen.png");
         splashScreenWindow.getContentPane().add(new JLabel(splashScreenIcon),
-                BorderLayout.CENTER);
+            BorderLayout.CENTER);
         JProgressBar splashScreenProgress = new JProgressBar();
         splashScreenProgress.setStringPainted(true);
         splashScreenProgress.setIndeterminate(true);
         splashScreenProgress.setString("Initializing...");
         splashScreenWindow.pack();
         splashScreenWindow.setLocationRelativeTo(null);
-        splashScreenWindow.getContentPane().add(splashScreenProgress,
-                BorderLayout.SOUTH);
+        splashScreenWindow.getContentPane().add(splashScreenProgress, BorderLayout.SOUTH);
         /*
          * It's important to pack and setlocationrelativeto BEFORE adding the
          * progress bar, to get the positioning correct with respect to the
@@ -550,11 +546,12 @@ public class OpenGroove
             Storage.initStorage(sfile);
             splashScreenProgress.setString("Loading initial images...");
             System.out.println("loading initial images");
-            trayimage = scaleImage(blockTransparify(ImageIO.read(new File(
-                    "trayicon.png")), new Color(255, 0, 0)), 16, 16);
-            trayofflineimage = scaleImage(blockTransparify(ImageIO
-                    .read(new File("trayoffline.png")), new Color(255, 0, 0)),
-                    16, 16);
+            trayimage =
+                scaleImage(blockTransparify(ImageIO.read(new File("trayicon.png")),
+                    new Color(255, 0, 0)), 16, 16);
+            trayofflineimage =
+                scaleImage(blockTransparify(ImageIO.read(new File("trayoffline.png")),
+                    new Color(255, 0, 0)), 16, 16);
             splashScreenProgress.setString("Loading default windows...");
             initNewAccountWizard();
             initLoginFrame();
@@ -566,8 +563,8 @@ public class OpenGroove
             System.out.println("storage path is " + sfile.getCanonicalPath());
             // helpviewer = new HelpViewer(helpFolder);
             initLoginFrame();
-            notificationFrame = new TaskbarNotificationFrame(
-                    new SlideInNotificationFrameTransition());
+            notificationFrame =
+                new TaskbarNotificationFrame(new SlideInNotificationFrameTransition());
             notificationFrame.setGroupLabelResolver(new GroupLabelResolver()
             {
                 
@@ -600,8 +597,7 @@ public class OpenGroove
                         try
                         {
                             Thread.sleep(3000);
-                            isNotificationAlertShowing = notificationFrame
-                                    .containsAlerts();
+                            isNotificationAlertShowing = notificationFrame.containsAlerts();
                         }
                         catch (Exception ex1)
                         {
@@ -630,20 +626,19 @@ public class OpenGroove
                                     {
                                         nimages = notificationTrayImages;
                                         ndelays = notificationTrayDelays;
-                                    } else
+                                    }
+                                    else
                                     {
                                         nimages = notificationTrayOfflineImages;
                                         ndelays = notificationTrayOfflineDelays;
                                     }
                                     if (currentNotificationIndex >= nimages.length
-                                            || currentNotificationIndex >= ndelays.length)
+                                        || currentNotificationIndex >= ndelays.length)
                                         currentNotificationIndex = 0;
-                                    trayicon
-                                            .setImage(nimages[currentNotificationIndex]);
+                                    trayicon.setImage(nimages[currentNotificationIndex]);
                                     try
                                     {
-                                        Thread
-                                                .sleep(ndelays[currentNotificationIndex]);
+                                        Thread.sleep(ndelays[currentNotificationIndex]);
                                     }
                                     catch (Exception ex1)
                                     {
@@ -659,13 +654,15 @@ public class OpenGroove
                                     }
                                     if (++currentNotificationIndex >= notificationTrayImages.length)
                                         currentNotificationIndex = 0;
-                                } else
+                                }
+                                else
                                 {
                                     currentNotificationIndex = 0;
                                     if (anyServerConnections())
                                     {
                                         trayicon.setImage(trayimage);
-                                    } else
+                                    }
+                                    else
                                     {
                                         trayicon.setImage(trayofflineimage);
                                     }
@@ -721,7 +718,7 @@ public class OpenGroove
                 public boolean accept(File pathname)
                 {
                     return pathname.getName().startsWith("traynotify")
-                            && pathname.getName().endsWith(".png");
+                        && pathname.getName().endsWith(".png");
                 }
             });
             Arrays.sort(trayfiles);
@@ -731,9 +728,9 @@ public class OpenGroove
             {
                 File file = trayfiles[i];
                 notificationTrayImages[i] = ImageIO.read(file);
-                notificationTrayImages[i] = scaleImage(blockTransparify(
-                        notificationTrayImages[i], new Color(255, 0, 0)), 16,
-                        16);
+                notificationTrayImages[i] =
+                    scaleImage(blockTransparify(notificationTrayImages[i], new Color(255, 0,
+                        0)), 16, 16);
                 String filename = file.getName();
                 System.out.println(filename);
                 int hIndex = filename.lastIndexOf("-");
@@ -752,7 +749,7 @@ public class OpenGroove
                 public boolean accept(File pathname)
                 {
                     return pathname.getName().startsWith("trayofflinenotify")
-                            && pathname.getName().endsWith(".png");
+                        && pathname.getName().endsWith(".png");
                 }
             });
             Arrays.sort(trayofflinefiles);
@@ -762,9 +759,9 @@ public class OpenGroove
             {
                 File file = trayofflinefiles[i];
                 notificationTrayOfflineImages[i] = ImageIO.read(file);
-                notificationTrayOfflineImages[i] = scaleImage(
-                        blockTransparify(notificationTrayOfflineImages[i],
-                                new Color(255, 0, 0)), 16, 16);
+                notificationTrayOfflineImages[i] =
+                    scaleImage(blockTransparify(notificationTrayOfflineImages[i], new Color(
+                        255, 0, 0)), 16, 16);
                 String filename = file.getName();
                 System.out.println(filename);
                 int hIndex = filename.lastIndexOf("-");
@@ -775,8 +772,7 @@ public class OpenGroove
                 System.out.println(dIndex);
                 String delayString = afterH.substring(0, dIndex);
                 System.out.println(delayString);
-                notificationTrayOfflineDelays[i] = Integer
-                        .parseInt(delayString);
+                notificationTrayOfflineDelays[i] = Integer.parseInt(delayString);
             }
             trayPopup = new PopupMenu();
             trayicon = new TrayIcon(trayimage, "OpenGroove", trayPopup);
@@ -794,15 +790,16 @@ public class OpenGroove
              */
             ToolTipManager.sharedInstance().setDismissDelay(86400);
             ToolTipManager.sharedInstance().setReshowDelay(
-                    ToolTipManager.sharedInstance().getReshowDelay());
+                ToolTipManager.sharedInstance().getReshowDelay());
             ToolTipManager.sharedInstance().setInitialDelay(
-                    ToolTipManager.sharedInstance().getInitialDelay());
+                ToolTipManager.sharedInstance().getInitialDelay());
             try
             {
                 for (Icons icon : Icons.values())
                 {
-                    BufferedImage image = scaleImage(loadImage(icon
-                            .getIconPath()), icon.getSize(), icon.getSize());
+                    BufferedImage image =
+                        scaleImage(loadImage(icon.getIconPath()), icon.getSize(), icon
+                            .getSize());
                     icon.setImage(image);
                     boolean createdTemp = false;
                     int attempt = 0;
@@ -810,8 +807,7 @@ public class OpenGroove
                     {
                         try
                         {
-                            File tfile = File
-                                    .createTempFile("og-icon-", ".png");
+                            File tfile = File.createTempFile("og-icon-", ".png");
                             tfile.deleteOnExit();
                             ImageIO.write(image, "PNG", tfile);
                             icon.setScaledFile(tfile);
@@ -825,7 +821,7 @@ public class OpenGroove
                     }
                     if (!createdTemp)
                         throw new RuntimeException(
-                                "temp not created, see previous stack trace");
+                            "temp not created, see previous stack trace");
                 }
             }
             catch (Exception e)
@@ -837,10 +833,8 @@ public class OpenGroove
                 catch (InterruptedException e1)
                 {
                     // TODO Dec 7, 2007 Auto-generated catch block
-                    throw new RuntimeException(
-                            "TODO auto generated on Dec 7, 2007 : "
-                                    + e.getClass().getName() + " - "
-                                    + e.getMessage(), e1);
+                    throw new RuntimeException("TODO auto generated on Dec 7, 2007 : "
+                        + e.getClass().getName() + " - " + e.getMessage(), e1);
                 }
                 e.printStackTrace();
                 System.exit(0);
@@ -855,7 +849,7 @@ public class OpenGroove
                     try
                     {
                         if (notificationFrame.ignoreMouseOver
-                                && notificationFrame.currentVisibilityLevel > 0)
+                            && notificationFrame.currentVisibilityLevel > 0)
                             return;
                         if (notificationFrame.listAllNotifications().length == 0)
                             return;
@@ -911,7 +905,8 @@ public class OpenGroove
             if (Storage.getUsers().length == 0)
             {
                 showNewAccountWizard(true);
-            } else
+            }
+            else
             {
                 /*
                  * If we get here then there is at least one user. Now we need
@@ -919,10 +914,10 @@ public class OpenGroove
                  * they be automatically logged in.
                  */
                 // TODO: actually do what the above comment says.
-                notificationFrame.addNotification("OpenGroove",
-                        new NotificationAdapter(notificationFrame, new JLabel(
-                                "OpenGroove has successfully started up."),
-                                false, true), true);
+                notificationFrame.addNotification("OpenGroove", new NotificationAdapter(
+                    notificationFrame,
+                    new JLabel("OpenGroove has successfully started up."), false, true),
+                    true);
             }
             /*
              * We should get rid of the splash screen so that the user isn't
@@ -950,11 +945,11 @@ public class OpenGroove
      *            The color to convert to transparent
      * @return A new image with transparency applied
      */
-    private static BufferedImage blockTransparify(BufferedImage oldImage,
-            Color color)
+    private static BufferedImage blockTransparify(BufferedImage oldImage, Color color)
     {
-        BufferedImage image = new BufferedImage(oldImage.getWidth(null),
-                oldImage.getHeight(null), BufferedImage.TYPE_INT_ARGB);
+        BufferedImage image =
+            new BufferedImage(oldImage.getWidth(null), oldImage.getHeight(null),
+                BufferedImage.TYPE_INT_ARGB);
         int tr = color.getRed();
         int tg = color.getGreen();
         int tb = color.getBlue();
@@ -972,12 +967,12 @@ public class OpenGroove
                 int r = at.getRed();
                 int g = at.getGreen();
                 int b = at.getBlue();
-                if (r > rMin && r < rMax && g > gMin && g < gMax && b > bMin
-                        && b < bMax)
+                if (r > rMin && r < rMax && g > gMin && g < gMax && b > bMin && b < bMax)
                 {
                     Color sub = new Color(r, g, b, 0);
                     image.setRGB(x, y, sub.getRGB());
-                } else
+                }
+                else
                 {
                     image.setRGB(x, y, at.getRGB());
                 }
@@ -1021,18 +1016,18 @@ public class OpenGroove
                 if (user.isLoggedIn())
                 {
                     JOptionPane
-                            .showMessageDialog(
-                                    loginFrame,
-                                    "<html>You're already logged in. This is probably a bug if <br/>"
-                                            + "you're seeing this, so be sure to contact us about it. <br/>"
-                                            + "Use the help &rarr; contact us option in the launchbar menu.");
+                        .showMessageDialog(
+                            loginFrame,
+                            "<html>You're already logged in. This is probably a bug if <br/>"
+                                + "you're seeing this, so be sure to contact us about it. <br/>"
+                                + "Use the help &rarr; contact us option in the launchbar menu.");
                     return;
                 }
                 String encPassword = Hash.hash(password);
                 if (!encPassword.equals(user.getEncPassword()))
                 {
                     JOptionPane.showMessageDialog(loginFrame,
-                            "Incorrect username and/or password.");
+                        "Incorrect username and/or password.");
                     loginFrame.getPasswordField().setText("");
                     return;
                 }
@@ -1059,33 +1054,29 @@ public class OpenGroove
                     settingStore = user.createSettingStore();
                     user.setSettingStore(settingStore);
                 }
-                SettingsManager settingsManager = new SettingsManager(
-                        launchbar, "Settings", settingStore);
+                SettingsManager settingsManager =
+                    new SettingsManager(launchbar, "Settings", settingStore);
                 context.setSettingsManager(settingsManager);
                 loadBuiltInSettings(settingsManager, user);
                 context.setRootMessageHierarchy(new NullHierarchy(""));
-                context.setInternalMessageHierarchy(new NullHierarchy(
-                        "internal"));
+                context.setInternalMessageHierarchy(new NullHierarchy("internal"));
                 context.setPluginMessageHierarchy(new NullHierarchy("plugins"));
-                context.getRootMessageHierarchy().add(
-                        context.getInternalMessageHierarchy());
-                context.getRootMessageHierarchy().add(
-                        context.getPluginMessageHierarchy());
+                context.getRootMessageHierarchy().add(context.getInternalMessageHierarchy());
+                context.getRootMessageHierarchy().add(context.getPluginMessageHierarchy());
                 // context.getRootMessageHierarchy().add(
                 // context.getUserMessageHierarchy());
-                Communicator com = new Communicator(launchbar, Userids
-                        .toRealm(userid), true, false, "normal", Userids
-                        .toUsername(userid), user.getComputer(), password, user
-                        .getTrustedCertificates(), context.getStatusListener(),
-                        null);
+                Communicator com =
+                    new Communicator(launchbar, Userids.toRealm(userid), true, false,
+                        "normal", Userids.toUsername(userid), user.getComputer(), password,
+                        user.getTrustedCertificates(), context.getStatusListener(), null);
                 CommandCommunicator commandCom = new CommandCommunicator(com);
-                MessageManager messageManager = new MessageManager(userid,
-                        commandCom, context.getRootMessageHierarchy());
+                MessageManager messageManager =
+                    new MessageManager(userid, commandCom, context.getRootMessageHierarchy());
                 context.setMessageManager(messageManager);
-                context.setMessageHistoryFrame(new MessageHistoryFrame(Storage
-                        .get(context.getUserid())));
-                commandCom.addUserNotificationListener(context
-                        .getUserNotificationListener());
+                context.setMessageHistoryFrame(new MessageHistoryFrame(Storage.get(context
+                    .getUserid())));
+                commandCom
+                    .addUserNotificationListener(context.getUserNotificationListener());
                 context.setCom(commandCom);
                 loadContextSubscriptionListener(context);
                 setupInboundUserMessaging(context, userid);
@@ -1104,13 +1095,13 @@ public class OpenGroove
                 // reloadLaunchbarWorkspaces(context);
                 loginFrame.dispose();
                 userContextMap.put(userid, context);
-                JLabel successLoggedInLabel = new JLabel(
-                        "You have successfully logged into OpenGroove.");
+                JLabel successLoggedInLabel =
+                    new JLabel("You have successfully logged into OpenGroove.");
                 successLoggedInLabel.setCursor(Cursor
-                        .getPredefinedCursor(Cursor.HAND_CURSOR));
+                    .getPredefinedCursor(Cursor.HAND_CURSOR));
                 notificationFrame.addNotification(context.getUserid(),
-                        new NotificationAdapter(notificationFrame,
-                                successLoggedInLabel, false, true), true);
+                    new NotificationAdapter(notificationFrame, successLoggedInLabel, false,
+                        true), true);
                 context.getLaunchbar().show();
                 bringToFront(context.getLaunchbar());
             }
@@ -1126,8 +1117,7 @@ public class OpenGroove
         }
     }
     
-    private static void loadContextSubscriptionListener(
-            final UserContext context)
+    private static void loadContextSubscriptionListener(final UserContext context)
     {
         /*
          * TODO: set this as an object on the user context instead of just
@@ -1148,14 +1138,12 @@ public class OpenGroove
                     public void run()
                     {
                         System.out.println("received subscription");
-                        boolean isRelatedSubscription = subscription.getType()
-                                .equalsIgnoreCase("userstatus")
+                        boolean isRelatedSubscription =
+                            subscription.getType().equalsIgnoreCase("userstatus")
                                 || (subscription.getType().equalsIgnoreCase(
-                                        "computersetting") && (subscription
-                                        .getOnSetting().equalsIgnoreCase(
-                                                "public-active") || subscription
-                                        .getOnSetting().equalsIgnoreCase(
-                                                "public-idle")));
+                                    "computersetting") && (subscription.getOnSetting()
+                                    .equalsIgnoreCase("public-active") || subscription
+                                    .getOnSetting().equalsIgnoreCase("public-idle")));
                         /*
                          * We're not checking for public-lag since it will
                          * change so infrequently.
@@ -1175,16 +1163,16 @@ public class OpenGroove
                             System.out.println("subscription is related");
                             synchronized (context.contactStatusLock)
                             {
-                                Contact contact = context.getStorage()
-                                        .getLocalUser().getContact(
-                                                subscription.getOnUser());
+                                Contact contact =
+                                    context.getStorage().getLocalUser().getContact(
+                                        subscription.getOnUser());
                                 if (contact != null)
                                     context.updateOneContactStatus(contact);
                                 else
                                 {
                                     System.out
-                                            .println("subscription received for nonexistant contact with userid "
-                                                    + subscription.getOnUser());
+                                        .println("subscription received for nonexistant contact with userid "
+                                            + subscription.getOnUser());
                                 }
                             }
                         }
@@ -1194,13 +1182,10 @@ public class OpenGroove
         });
     }
     
-    private static void loadContextNonexistantContactNotification(
-            final UserContext context)
+    private static void loadContextNonexistantContactNotification(final UserContext context)
     {
-        context.setNonexistantContactNotification(new NotificationAdapter(
-                notificationFrame, new JLabel(
-                        "One or more of your contacts do not exist"), false,
-                false)
+        context.setNonexistantContactNotification(new NotificationAdapter(notificationFrame,
+            new JLabel("One or more of your contacts do not exist"), false, false)
         {
             
             @Override
@@ -1211,43 +1196,40 @@ public class OpenGroove
         });
     }
     
-    private static void loadContextUserNotificationListener(
-            final UserContext context)
+    private static void loadContextUserNotificationListener(final UserContext context)
     {
         context.setUserNotificationListener(new UserNotificationListener()
         {
             
             @Override
-            public void receive(long dateIssued, long dateExpires,
-                    Priority priority, String subject, String message)
+            public void receive(long dateIssued, long dateExpires, Priority priority,
+                String subject, String message)
             {
                 /*
                  * TODO: the notification should dismiss itself if the current
                  * date passes the date that the notification expires
                  */
-                UserNotificationFrame uframe = new UserNotificationFrame(
-                        context.formatDateTime(dateIssued), context
-                                .formatDateTime(dateExpires), priority,
-                        subject, message);
+                UserNotificationFrame uframe =
+                    new UserNotificationFrame(context.formatDateTime(dateIssued), context
+                        .formatDateTime(dateExpires), priority, subject, message);
                 uframe.setTitle("Server Notification - OpenGroove");
                 uframe.setIconImage(getWindowIcon());
                 uframe.setLocationRelativeTo(null);
                 if (priority == Priority.CRITICAL)
                 {
                     uframe.show();
-                } else
+                }
+                else
                 {
-                    JLabel component = new JLabel("Server Notification: "
-                            + subject);
-                    component.setCursor(Cursor
-                            .getPredefinedCursor(Cursor.HAND_CURSOR));
+                    JLabel component = new JLabel("Server Notification: " + subject);
+                    component.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
                     if (priority == Priority.ALERT)
-                        component.setIcon(new ImageIcon(
-                                Icons.WORKSPACE_WARNING_16.getImage()));
-                    FrameShowingNotification tn = new FrameShowingNotification(
-                            notificationFrame, component, uframe, true, false);
-                    notificationFrame.addNotification(context.getUserid(), tn,
-                            true);
+                        component.setIcon(new ImageIcon(Icons.WORKSPACE_WARNING_16
+                            .getImage()));
+                    FrameShowingNotification tn =
+                        new FrameShowingNotification(notificationFrame, component, uframe,
+                            true, false);
+                    notificationFrame.addNotification(context.getUserid(), tn, true);
                 }
             }
         });
@@ -1285,12 +1267,11 @@ public class OpenGroove
             public void communicatorShutdown(Communicator c)
             {
                 System.err.println("Communicator shutdown prematurely, "
-                        + "OpenGroove needs to be restarted to work correctly");
+                    + "OpenGroove needs to be restarted to work correctly");
             }
             
             @Override
-            public void connectionEstablished(Communicator c,
-                    ServerContext server)
+            public void connectionEstablished(Communicator c, ServerContext server)
             {
                 System.out.println("persistant connection established");
             }
@@ -1319,7 +1300,7 @@ public class OpenGroove
                     public void run()
                     {
                         System.out
-                                .println("server conection established, waiting 2 seconds to update");
+                            .println("server conection established, waiting 2 seconds to update");
                         try
                         {
                             Thread.sleep(2000);
@@ -1368,8 +1349,7 @@ public class OpenGroove
         });
     }
     
-    private static void loadContextConnectionConditional(
-            final UserContext context)
+    private static void loadContextConnectionConditional(final UserContext context)
     {
         context.setConnectionConditional(new Conditional()
         {
@@ -1388,22 +1368,20 @@ public class OpenGroove
         });
     }
     
-    public static final SettingSpec SPEC_MESSAGE_REPLY_PREFIX = new SettingSpec(
-            "msg", "compose", "", "replyprefix");
+    public static final SettingSpec SPEC_MESSAGE_REPLY_PREFIX =
+        new SettingSpec("msg", "compose", "", "replyprefix");
     
-    private static void loadBuiltInSettings(SettingsManager settingsManager,
-            LocalUser user)
+    private static void loadBuiltInSettings(SettingsManager settingsManager, LocalUser user)
     {
         settingsManager.addTab("g", Icons.SETTINGS_48.getIcon(), "General", "");
         
-        settingsManager.addTab("msg", Icons.MESSAGE_CONFIG_48.getIcon(),
-                "Messaging", "");
+        settingsManager.addTab("msg", Icons.MESSAGE_CONFIG_48.getIcon(), "Messaging", "");
         settingsManager.addSubnav("msg", "compose", "Composing", "");
         settingsManager.addSubnav("g", "lb", "Launchbar", "");
-        settingsManager.addSetting("g", "lb", "", "alwaysontop",
-                "Always on top", "If this is checked, the launchbar will "
-                        + "show up on top of all other windows.", "checkbox",
-                new CheckboxParameters(false));
+        settingsManager.addSetting("g", "lb", "", "alwaysontop", "Always on top",
+            "If this is checked, the launchbar will "
+                + "show up on top of all other windows.", "checkbox",
+            new CheckboxParameters(false));
     }
     
     /**
@@ -1412,8 +1390,7 @@ public class OpenGroove
      * @param context
      * @param userid
      */
-    private static void setupOutboundUserMessaging(UserContext context,
-            String userid)
+    private static void setupOutboundUserMessaging(UserContext context, String userid)
     {
         /*
          * TODO do we actually need to do anything here?
@@ -1428,8 +1405,7 @@ public class OpenGroove
      * @param context
      * @param userid
      */
-    private static void setupInboundUserMessaging(final UserContext context,
-            String userid)
+    private static void setupInboundUserMessaging(final UserContext context, String userid)
     {
         /*
          * TODO: actually implement this method. Some sort of "preferences"
@@ -1442,22 +1418,19 @@ public class OpenGroove
             
             public void handleMessage(InboundMessage message)
             {
-                System.out.println("received message from "
-                        + message.getSender() + "/"
-                        + message.getSendingComputer());
+                System.out.println("received message from " + message.getSender() + "/"
+                    + message.getSendingComputer());
             }
         });
-        context.getInternalMessageHierarchy().add(
-                context.getUserMessageHierarchy());
-        context.getCom().addMessageAvailableListener(
-                new MessageAvailableListener()
-                {
-                    
-                    public void messageAvailable(String messageId)
-                    {
-                        context.getMessageManager().notifyInboundImporter();
-                    }
-                });
+        context.getInternalMessageHierarchy().add(context.getUserMessageHierarchy());
+        context.getCom().addMessageAvailableListener(new MessageAvailableListener()
+        {
+            
+            public void messageAvailable(String messageId)
+            {
+                context.getMessageManager().notifyInboundImporter();
+            }
+        });
     }
     
     /**
@@ -1510,9 +1483,7 @@ public class OpenGroove
                     
                     public void actionPerformed(ActionEvent e)
                     {
-                        user.getContext().composeMessage("", "", "", "",
-                                new String[]
-                                {});
+                        user.getContext().composeMessage("", "", "", "", new String[] {});
                     }
                 });
                 userMenu.add(sendMessageItem);
@@ -1549,26 +1520,27 @@ public class OpenGroove
             }
             trayPopup.addSeparator();
         }
-        trayPopup.add(new AMenuItem("Show Notifications"){
-
+        trayPopup.add(new AMenuItem("Show Notifications")
+        {
+            
             @Override
             public void run(ActionEvent e)
             {
                 if (notificationFrame.ignoreMouseOver
-                        && notificationFrame.currentVisibilityLevel > 0)
+                    && notificationFrame.currentVisibilityLevel > 0)
                     return;
                 if (notificationFrame.listAllNotifications().length == 0)
                     return;
                 notificationFrame.requestDisplay();
-            }});
+            }
+        });
         trayPopup.add(new AMenuItem("New Account")
         {
             
             @Override
             public void run(ActionEvent e)
             {
-                showNewAccountWizard(onlineUsers.length == 0
-                        && offlineUsers.length == 0);
+                showNewAccountWizard(onlineUsers.length == 0 && offlineUsers.length == 0);
             }
         });
         trayPopup.addSeparator();
@@ -1608,8 +1580,7 @@ public class OpenGroove
      * Shows the login window for the specified user. If the login window is
      * already showing, it is changed to this user. If this user is already
      * logged in, this method does nothing. If this user does not exist, or the
-     * userid is null, the new account wizard is shown instead.<br/>
-     * <br/>
+     * userid is null, the new account wizard is shown instead.<br/> <br/>
      * 
      * If the new user wizard is currently showing, it is brought to the front,
      * and this method returns.
@@ -1618,8 +1589,7 @@ public class OpenGroove
      */
     public static void showLoginWindow(String userid)
     {
-        if ((!loginFrame.isShowing())
-                && (!loginFrame.getUserid().equals(userid)))
+        if ((!loginFrame.isShowing()) && (!loginFrame.getUserid().equals(userid)))
             /*
              * If the login frame is showing and we're switching it to a
              * different user, or if it's not showing at all, then we clear the
@@ -1737,8 +1707,8 @@ public class OpenGroove
     /**
      * Shows the new account wizard. If the wizard is already showing, it will
      * be brought to the front. If not, the current wizard page will be reset to
-     * it's first page. If <code>welcome</code> is true, the wizard will have an
-     * added initial screen that gives the user more information about
+     * it's first page. If <code>welcome</code> is true, the wizard will have
+     * an added initial screen that gives the user more information about
      * OpenGroove. If not, this initial screen won't be displayed, and the first
      * screen will instead be the one that allows users to choose between
      * creating a new account, importing one they have already created, or
@@ -1802,8 +1772,7 @@ public class OpenGroove
             private JLabel titleLabel;
             
             @Override
-            protected void updateBannerPanel(JComponent bannerPanel,
-                    AbstractDialogPage page)
+            protected void updateBannerPanel(JComponent bannerPanel, AbstractDialogPage page)
             {
                 titleLabel.setText(page.getTitle());
             }
@@ -1836,345 +1805,338 @@ public class OpenGroove
         final String LABEL_DONE = "Successfully added account";
         if (welcome)
         {
-            StandardWizardPage welcomePage = new StandardWizardPage(
-                    LABEL_WELCOME, false, true, true, false)
+            StandardWizardPage welcomePage =
+                new StandardWizardPage(LABEL_WELCOME, false, true, true, false)
+                {
+                    
+                    @Override
+                    protected void init()
+                    {
+                        addText(getWelcomeWizardMessage(), Font.decode(null));
+                    }
+                    
+                };
+            pages.append(welcomePage);
+        }
+        StandardWizardPage newOrExistPage =
+            new StandardWizardPage(LABEL_NEW_OR_EXIST, welcome, true, true, false)
+            {
+                private JRadioButton newButton;
+                private JRadioButton existingButton;
+                
+                public JComponent createWizardContent()
+                {
+                    JPanel panel = new JPanel();
+                    newButton =
+                        new JRadioButton("<html><b>Create a new OpenGroove account</b><br/>"
+                            + "Choose this if this is your first time using OpenGroove");
+                    existingButton =
+                        new JRadioButton(
+                            "<html><b>Use an OpenGroove account that you have already created</b><br/>"
+                                + "Choose this if you already have an OpenGroove "
+                                + "account and would like to use it on this computer");
+                    newButton.setFont(Font.decode(null));
+                    existingButton.setFont(Font.decode(null));
+                    ButtonGroup newOrExistGroup = new ButtonGroup();
+                    newOrExistGroup.add(newButton);
+                    newOrExistGroup.add(existingButton);
+                    panel.setLayout(new BorderLayout());
+                    JPanel inner = new JPanel();
+                    inner.setLayout(new BoxLayout(inner, BoxLayout.Y_AXIS));
+                    panel.add(inner, BorderLayout.NORTH);
+                    newButton.setVerticalTextPosition(newButton.TOP);
+                    existingButton.setVerticalTextPosition(existingButton.TOP);
+                    newButton.setFocusable(false);
+                    existingButton.setFocusable(false);
+                    inner.add(newButton);
+                    inner.add(new JLabel(" "));
+                    inner.add(new JLabel(" "));
+                    inner.add(existingButton);
+                    ActionListener listener = new ActionListener()
+                    {
+                        
+                        @Override
+                        public void actionPerformed(ActionEvent e)
+                        {
+                            if (newButton.isSelected())
+                            {
+                                newAccountWizardPane.setNextPage(newAccountWizardPane
+                                    .getPageByTitle(LABEL_NEW_AUTH));
+                            }
+                            else if (existingButton.isSelected())
+                            {
+                                newAccountWizardPane.setNextPage(newAccountWizardPane
+                                    .getPageByTitle(LABEL_EXIST_AUTH));
+                            }
+                        }
+                    };
+                    newButton.addActionListener(listener);
+                    existingButton.addActionListener(listener);
+                    addPageListener(new PageListener()
+                    {
+                        
+                        @Override
+                        public void pageEventFired(PageEvent e)
+                        {
+                            if (e.getID() != PageEvent.PAGE_CLOSING)
+                                return;
+                            boolean isOneSelected =
+                                newButton.isSelected() || existingButton.isSelected();
+                            if (!(((JButton) e.getSource()).getName()
+                                .equals(ButtonNames.NEXT)))
+                                isOneSelected = true;
+                            if (!isOneSelected)
+                            {
+                                JOptionPane.showMessageDialog(newAccountWizardPane,
+                                    "You must select an option before continuing.");
+                            }
+                            setAllowClosing(isOneSelected);
+                        }
+                    });
+                    return panel;
+                }
+                
+                @Override
+                protected void init()
+                {
+                }
+            };
+        pages.append(newOrExistPage);
+        StandardWizardPage existAuthPage =
+            new StandardWizardPage(LABEL_EXIST_AUTH, true, true, true, false)
             {
                 
                 @Override
                 protected void init()
                 {
-                    addText(getWelcomeWizardMessage(), Font.decode(null));
-                }
-                
-            };
-            pages.append(welcomePage);
-        }
-        StandardWizardPage newOrExistPage = new StandardWizardPage(
-                LABEL_NEW_OR_EXIST, welcome, true, true, false)
-        {
-            private JRadioButton newButton;
-            private JRadioButton existingButton;
-            
-            public JComponent createWizardContent()
-            {
-                JPanel panel = new JPanel();
-                newButton = new JRadioButton(
-                        "<html><b>Create a new OpenGroove account</b><br/>"
-                                + "Choose this if this is your first time using OpenGroove");
-                existingButton = new JRadioButton(
-                        "<html><b>Use an OpenGroove account that you have already created</b><br/>"
-                                + "Choose this if you already have an OpenGroove "
-                                + "account and would like to use it on this computer");
-                newButton.setFont(Font.decode(null));
-                existingButton.setFont(Font.decode(null));
-                ButtonGroup newOrExistGroup = new ButtonGroup();
-                newOrExistGroup.add(newButton);
-                newOrExistGroup.add(existingButton);
-                panel.setLayout(new BorderLayout());
-                JPanel inner = new JPanel();
-                inner.setLayout(new BoxLayout(inner, BoxLayout.Y_AXIS));
-                panel.add(inner, BorderLayout.NORTH);
-                newButton.setVerticalTextPosition(newButton.TOP);
-                existingButton.setVerticalTextPosition(existingButton.TOP);
-                newButton.setFocusable(false);
-                existingButton.setFocusable(false);
-                inner.add(newButton);
-                inner.add(new JLabel(" "));
-                inner.add(new JLabel(" "));
-                inner.add(existingButton);
-                ActionListener listener = new ActionListener()
-                {
-                    
-                    @Override
-                    public void actionPerformed(ActionEvent e)
-                    {
-                        if (newButton.isSelected())
-                        {
-                            newAccountWizardPane
-                                    .setNextPage(newAccountWizardPane
-                                            .getPageByTitle(LABEL_NEW_AUTH));
-                        } else if (existingButton.isSelected())
-                        {
-                            newAccountWizardPane
-                                    .setNextPage(newAccountWizardPane
-                                            .getPageByTitle(LABEL_EXIST_AUTH));
-                        }
-                    }
-                };
-                newButton.addActionListener(listener);
-                existingButton.addActionListener(listener);
-                addPageListener(new PageListener()
-                {
-                    
-                    @Override
-                    public void pageEventFired(PageEvent e)
-                    {
-                        if (e.getID() != PageEvent.PAGE_CLOSING)
-                            return;
-                        boolean isOneSelected = newButton.isSelected()
-                                || existingButton.isSelected();
-                        if (!(((JButton) e.getSource()).getName()
-                                .equals(ButtonNames.NEXT)))
-                            isOneSelected = true;
-                        if (!isOneSelected)
-                        {
-                            JOptionPane
-                                    .showMessageDialog(newAccountWizardPane,
-                                            "You must select an option before continuing.");
-                        }
-                        setAllowClosing(isOneSelected);
-                    }
-                });
-                return panel;
-            }
-            
-            @Override
-            protected void init()
-            {
-            }
-        };
-        pages.append(newOrExistPage);
-        StandardWizardPage existAuthPage = new StandardWizardPage(
-                LABEL_EXIST_AUTH, true, true, true, false)
-        {
-            
-            @Override
-            protected void init()
-            {
-                addText("Enter your existing userid and password below, then click "
+                    addText("Enter your existing userid and password below, then click "
                         + "next. Make sure you are connected to the internet before "
                         + "you proceed.");
-                addText(" ");
-                final JTextField useridField = new JTextField(30);
-                final JPasswordField passwordField = new JPasswordField(30);
-                JPanel useridPanel = new JPanel();
-                JPanel passwordPanel = new JPanel();
-                useridPanel.setLayout(new BorderLayout());
-                passwordPanel.setLayout(new BorderLayout());
-                JPanel useridInnerPanel = new JPanel();
-                JPanel passwordInnerPanel = new JPanel();
-                useridPanel.setLayout(new BorderLayout());
-                passwordPanel.setLayout(new BorderLayout());
-                useridPanel.add(useridInnerPanel, BorderLayout.WEST);
-                passwordPanel.add(passwordInnerPanel, BorderLayout.WEST);
-                JLabel useridLabel = new JLabel("    Userid:");
-                useridLabel.setPreferredSize(new Dimension(100, useridLabel
+                    addText(" ");
+                    final JTextField useridField = new JTextField(30);
+                    final JPasswordField passwordField = new JPasswordField(30);
+                    JPanel useridPanel = new JPanel();
+                    JPanel passwordPanel = new JPanel();
+                    useridPanel.setLayout(new BorderLayout());
+                    passwordPanel.setLayout(new BorderLayout());
+                    JPanel useridInnerPanel = new JPanel();
+                    JPanel passwordInnerPanel = new JPanel();
+                    useridPanel.setLayout(new BorderLayout());
+                    passwordPanel.setLayout(new BorderLayout());
+                    useridPanel.add(useridInnerPanel, BorderLayout.WEST);
+                    passwordPanel.add(passwordInnerPanel, BorderLayout.WEST);
+                    JLabel useridLabel = new JLabel("    Userid:");
+                    useridLabel.setPreferredSize(new Dimension(100, useridLabel
                         .getPreferredSize().height));
-                JLabel passwordLabel = new JLabel("    Password:");
-                passwordLabel.setPreferredSize(new Dimension(100, passwordLabel
+                    JLabel passwordLabel = new JLabel("    Password:");
+                    passwordLabel.setPreferredSize(new Dimension(100, passwordLabel
                         .getPreferredSize().height));
-                useridInnerPanel.add(useridLabel, BorderLayout.WEST);
-                passwordInnerPanel.add(passwordLabel, BorderLayout.WEST);
-                useridInnerPanel.add(useridField, BorderLayout.EAST);
-                passwordInnerPanel.add(passwordField, BorderLayout.EAST);
-                addComponent(useridPanel);
-                addComponent(passwordPanel);
-                addPageListener(new PageListener()
-                {
-                    
-                    @Override
-                    public void pageEventFired(PageEvent e)
+                    useridInnerPanel.add(useridLabel, BorderLayout.WEST);
+                    passwordInnerPanel.add(passwordLabel, BorderLayout.WEST);
+                    useridInnerPanel.add(useridField, BorderLayout.EAST);
+                    passwordInnerPanel.add(passwordField, BorderLayout.EAST);
+                    addComponent(useridPanel);
+                    addComponent(passwordPanel);
+                    addPageListener(new PageListener()
                     {
-                        if (e.getID() != PageEvent.PAGE_CLOSING)
-                            return;
-                        if (!(e.getSource() instanceof JButton))
+                        
+                        @Override
+                        public void pageEventFired(PageEvent e)
                         {
-                            /*
-                             * If we get here then the page close is a result of
-                             * someone calling setCurrenPage on the wizard, so
-                             * we want to honor that request
-                             */
-                            setAllowClosing(true);
-                            return;
-                        }
-                        if (!((JButton) e.getSource()).getName().equals(
-                                ButtonNames.NEXT))
-                        {
-                            setAllowClosing(true);
-                            return;
-                        }
-                        /*
-                         * If we're here, the user is trying to leave the page
-                         * by way of the next button. We'll show a status dialog
-                         * over the frame as we contact the user's realm server
-                         * to validate their username and password. If all of
-                         * this fails, we show a JOptionPane message dialog
-                         * alerting that user that they're realm server is
-                         * offline (or they provided a userid with an incorrect
-                         * realm server), or the username or password was
-                         * incorrect.
-                         */
-                        setAllowClosing(false);
-                        // The above is to deny closing by default. Most of the
-                        // cases that this method can terminate result in
-                        // closing denied, so we'll explicitly set when we want
-                        // to allow it instead of explicitly setting when we
-                        // want to deny it.
-                        final String userid = useridField.getText()
-                                .toLowerCase();
-                        final String password = passwordField.getText();
-                        if (Storage.getLocalUser(userid) != null)
-                        {
-                            JOptionPane
-                                    .showMessageDialog(newAccountFrame,
-                                            "You've already added that userid to this computer.");
-                            return;
-                        }
-                        if (userid.equals("") || password.equals(""))
-                        {
-                            JOptionPane.showMessageDialog(newAccountFrame,
-                                    "You didn't enter a userid and password.");
-                            return;
-                        }
-                        if (!userid.contains(":"))
-                        {
-                            JOptionPane
-                                    .showMessageDialog(
-                                            newAccountFrame,
-                                            "Userids are of the format realm:username . The "
-                                                    + "userid you specified did not contain a : character.");
-                            return;
-                        }
-                        if (userid.indexOf(":") != userid.lastIndexOf(":"))
-                        {
-                            JOptionPane
-                                    .showMessageDialog(
-                                            newAccountFrame,
-                                            "Userids are of the format realm:username . The "
-                                                    + "userid you specified containes more than one : character.");
-                            return;
-                        }
-                        /*
-                         * At this point, the userid and password are valid
-                         * input. We need to construct a one-time
-                         * CommandCommunicator to the realm server and
-                         * authenticate, to make sure that they entered a
-                         * correct userid and password.
-                         */
-                        final StatusDialog statusDialog = new StatusDialog(
-                                newAccountFrame,
-                                "Please wait while we validate your username and password...");
-                        statusDialog.showImmediate();
-                        new Thread()
-                        {
-                            public void run()
+                            if (e.getID() != PageEvent.PAGE_CLOSING)
+                                return;
+                            if (!(e.getSource() instanceof JButton))
                             {
-                                try
+                                /*
+                                 * If we get here then the page close is a
+                                 * result of someone calling setCurrenPage on
+                                 * the wizard, so we want to honor that request
+                                 */
+                                setAllowClosing(true);
+                                return;
+                            }
+                            if (!((JButton) e.getSource()).getName()
+                                .equals(ButtonNames.NEXT))
+                            {
+                                setAllowClosing(true);
+                                return;
+                            }
+                            /*
+                             * If we're here, the user is trying to leave the
+                             * page by way of the next button. We'll show a
+                             * status dialog over the frame as we contact the
+                             * user's realm server to validate their username
+                             * and password. If all of this fails, we show a
+                             * JOptionPane message dialog alerting that user
+                             * that they're realm server is offline (or they
+                             * provided a userid with an incorrect realm
+                             * server), or the username or password was
+                             * incorrect.
+                             */
+                            setAllowClosing(false);
+                            // The above is to deny closing by default. Most of
+                            // the
+                            // cases that this method can terminate result in
+                            // closing denied, so we'll explicitly set when we
+                            // want
+                            // to allow it instead of explicitly setting when we
+                            // want to deny it.
+                            final String userid = useridField.getText().toLowerCase();
+                            final String password = passwordField.getText();
+                            if (Storage.getLocalUser(userid) != null)
+                            {
+                                JOptionPane.showMessageDialog(newAccountFrame,
+                                    "You've already added that userid to this computer.");
+                                return;
+                            }
+                            if (userid.equals("") || password.equals(""))
+                            {
+                                JOptionPane.showMessageDialog(newAccountFrame,
+                                    "You didn't enter a userid and password.");
+                                return;
+                            }
+                            if (!userid.contains(":"))
+                            {
+                                JOptionPane
+                                    .showMessageDialog(
+                                        newAccountFrame,
+                                        "Userids are of the format realm:username . The "
+                                            + "userid you specified did not contain a : character.");
+                                return;
+                            }
+                            if (userid.indexOf(":") != userid.lastIndexOf(":"))
+                            {
+                                JOptionPane
+                                    .showMessageDialog(
+                                        newAccountFrame,
+                                        "Userids are of the format realm:username . The "
+                                            + "userid you specified containes more than one : character.");
+                                return;
+                            }
+                            /*
+                             * At this point, the userid and password are valid
+                             * input. We need to construct a one-time
+                             * CommandCommunicator to the realm server and
+                             * authenticate, to make sure that they entered a
+                             * correct userid and password.
+                             */
+                            final StatusDialog statusDialog =
+                                new StatusDialog(newAccountFrame,
+                                    "Please wait while we validate your username and password...");
+                            statusDialog.showImmediate();
+                            new Thread()
+                            {
+                                public void run()
                                 {
-                                    vars.userid = userid;
-                                    vars.password = password;
-                                    System.out.println();
-                                    CommandCommunicator lcom = null;
                                     try
                                     {
+                                        vars.userid = userid;
+                                        vars.password = password;
+                                        System.out.println();
+                                        CommandCommunicator lcom = null;
                                         try
                                         {
-                                            lcom = new CommandCommunicator(
-                                                    new Communicator(
-                                                            newAccountFrame,
-                                                            Userids
-                                                                    .toRealm(userid),
-                                                            false,
-                                                            true,
-                                                            "normal",
-                                                            Userids
-                                                                    .toUsername(userid),
-                                                            "", password,
-                                                            vars.trustedCerts,
+                                            try
+                                            {
+                                                lcom =
+                                                    new CommandCommunicator(
+                                                        new Communicator(newAccountFrame,
+                                                            Userids.toRealm(userid), false,
+                                                            true, "normal", Userids
+                                                                .toUsername(userid), "",
+                                                            password, vars.trustedCerts,
                                                             null, null));
-                                        }
-                                        catch (Exception e2)
-                                        {
-                                            /*
-                                             * Clear the security key in case
-                                             * that was the cause of the
-                                             * problem, might want to set it to
-                                             * just clear it if the communicator
-                                             * handshake failed in the future
-                                             */
-                                            vars.serverKey = null;
-                                            e2.printStackTrace();
-                                            statusDialog.dispose();
-                                            JOptionPane
+                                            }
+                                            catch (Exception e2)
+                                            {
+                                                /*
+                                                 * Clear the security key in
+                                                 * case that was the cause of
+                                                 * the problem, might want to
+                                                 * set it to just clear it if
+                                                 * the communicator handshake
+                                                 * failed in the future
+                                                 */
+                                                vars.serverKey = null;
+                                                e2.printStackTrace();
+                                                statusDialog.dispose();
+                                                JOptionPane
                                                     .showMessageDialog(
-                                                            newAccountFrame,
-                                                            "A connection to the server could not be established. Make "
-                                                                    + "sure you're connected to the internet and that you entered "
-                                                                    + "a correct userid.\n"
-                                                                    + "If you entered the security keys for this server, you may have entered them incorrectly.");
-                                            return;
-                                        }
-                                        try
-                                        {
-                                            String res = lcom.authenticate(
-                                                    "normal",
-                                                    Userids.toUsername(userid),
-                                                    "", password);
-                                            if (!res.equalsIgnoreCase("OK"))
-                                                throw new RuntimeException(
+                                                        newAccountFrame,
+                                                        "A connection to the server could not be established. Make "
+                                                            + "sure you're connected to the internet and that you entered "
+                                                            + "a correct userid.\n"
+                                                            + "If you entered the security keys for this server, you may have entered them incorrectly.");
+                                                return;
+                                            }
+                                            try
+                                            {
+                                                String res =
+                                                    lcom.authenticate("normal", Userids
+                                                        .toUsername(userid), "", password);
+                                                if (!res.equalsIgnoreCase("OK"))
+                                                    throw new RuntimeException(
                                                         "Expected status OK, but received "
-                                                                + res);
-                                        }
-                                        catch (Exception e2)
-                                        {
-                                            e2.printStackTrace();
+                                                            + res);
+                                            }
+                                            catch (Exception e2)
+                                            {
+                                                e2.printStackTrace();
+                                                statusDialog.dispose();
+                                                JOptionPane
+                                                    .showMessageDialog(newAccountFrame,
+                                                        "Your realm server reported that your userid or password was incorrect.");
+                                                return;
+                                            }
                                             statusDialog.dispose();
-                                            JOptionPane
-                                                    .showMessageDialog(
-                                                            newAccountFrame,
-                                                            "Your realm server reported that your userid or password was incorrect.");
-                                            return;
-                                        }
-                                        statusDialog.dispose();
-                                        newAccountWizardPane
+                                            newAccountWizardPane
                                                 .setCurrentPage(LABEL_ENTER_KEYS);
+                                        }
+                                        finally
+                                        {
+                                            if (lcom != null)
+                                                try
+                                                {
+                                                    lcom.getCommunicator().shutdown();
+                                                }
+                                                catch (Exception exception)
+                                                {
+                                                    exception.printStackTrace();
+                                                }
+                                        }
                                     }
                                     finally
                                     {
-                                        if (lcom != null)
-                                            try
-                                            {
-                                                lcom.getCommunicator()
-                                                        .shutdown();
-                                            }
-                                            catch (Exception exception)
-                                            {
-                                                exception.printStackTrace();
-                                            }
+                                        newAccountWizardPane
+                                            .setNextPage(newAccountWizardPane
+                                                .getPageByTitle(LABEL_ENTER_KEYS));
+                                        statusDialog.dispose();
                                     }
                                 }
-                                finally
-                                {
-                                    newAccountWizardPane
-                                            .setNextPage(newAccountWizardPane
-                                                    .getPageByTitle(LABEL_ENTER_KEYS));
-                                    statusDialog.dispose();
-                                }
-                            }
-                        }.start();
-                    }
-                });
-            }
-        };
+                            }.start();
+                        }
+                    });
+                }
+            };
         pages.append(existAuthPage);
-        StandardWizardPage newAuthPage = new StandardWizardPage(LABEL_NEW_AUTH,
-                true, true, false, false)
-        {
-            
-            @Override
-            protected void init()
+        StandardWizardPage newAuthPage =
+            new StandardWizardPage(LABEL_NEW_AUTH, true, true, false, false)
             {
-                addText("Right now, you can't create a new user account. We're "
+                
+                @Override
+                protected void init()
+                {
+                    addText("Right now, you can't create a new user account. We're "
                         + "still working on this functionality. If you'd like "
                         + "a user account, contact the owner of a realm server, and have "
                         + "them create an account for you. Then, choose \"Use an "
                         + "OpenGroove account that you have already created\" "
                         + "on the previous step.");
-                addText("For more information, or to get an OpenGroove account at "
+                    addText("For more information, or to get an OpenGroove account at "
                         + "the opengroove.org realm, contact us at support@opengroove.org");
-            }
-            
-        };
+                }
+                
+            };
         pages.append(newAuthPage);
         /*
          * This page checks to see if the user has security keys present on
@@ -2190,283 +2152,268 @@ public class OpenGroove
          * that keygen is done and they can proceed. The keys are stored on the
          * account on the server.
          */
-        StandardWizardPage securityKeysPage = new StandardWizardPage(
-                LABEL_ENTER_KEYS, false, true, false, false)
-        {
-            private JProgressBar progress;
-            
-            private JButton button;
-            
-            private MultilineLabel label;
-            
-            private Thread startKeyGenThread = new Thread()
+        StandardWizardPage securityKeysPage =
+            new StandardWizardPage(LABEL_ENTER_KEYS, false, true, false, false)
             {
-                public void run()
+                private JProgressBar progress;
+                
+                private JButton button;
+                
+                private MultilineLabel label;
+                
+                private Thread startKeyGenThread = new Thread()
                 {
-                    progress
+                    public void run()
+                    {
+                        progress
                             .setString("Generating encryption key (step 1 of 3), this may take a few minutes...");
-                    progress.setIndeterminate(true);
-                    System.out.println("enc");
-                    RSA enc = new RSA(SECURITY_KEY_SIZE);
-                    progress
+                        progress.setIndeterminate(true);
+                        System.out.println("enc");
+                        RSA enc = new RSA(SECURITY_KEY_SIZE);
+                        progress
                             .setString("Generating signature key (step 2 of 3), this may take a few minutes...");
-                    System.out.println("sig");
-                    RSA sig = new RSA(SECURITY_KEY_SIZE);
-                    progress
+                        System.out.println("sig");
+                        RSA sig = new RSA(SECURITY_KEY_SIZE);
+                        progress
                             .setString("Uploading public keys (step 3 of 3), this may take a few minutes...");
-                    System.out.println("upload");
-                    CommandCommunicator com = null;
-                    try
-                    {
-                        vars.encPub = enc.getPublicKey();
-                        vars.encPrv = enc.getPrivateKey();
-                        vars.encMod = enc.getModulus();
-                        vars.sigPub = sig.getPublicKey();
-                        vars.sigPrv = sig.getPrivateKey();
-                        vars.sigMod = sig.getModulus();
-                        String encPubString = vars.encPub.toString(16);
-                        String encModString = vars.encMod.toString(16);
-                        String sigPubString = vars.sigPub.toString(16);
-                        String sigModString = vars.sigMod.toString(16);
-                        com = new CommandCommunicator(new Communicator(
-                                newAccountFrame, Userids.toRealm(vars.userid),
-                                false, true, "normal", "", "", "",
-                                vars.trustedCerts, null, null));
-                        com.authenticate("normal", Userids
-                                .toUsername(vars.userid), "", vars.password);
-                        com.setUserSetting("" + UserSettings.KEY_ENC_PUB,
-                                encPubString);
-                        com.setUserSetting("" + UserSettings.KEY_ENC_MOD,
-                                encModString);
-                        com.setUserSetting("" + UserSettings.KEY_SIG_PUB,
-                                sigPubString);
-                        com.setUserSetting("" + UserSettings.KEY_SIG_MOD,
-                                sigModString);
-                    }
-                    catch (Exception e)
-                    {
-                        e.printStackTrace();
+                        System.out.println("upload");
+                        CommandCommunicator com = null;
+                        try
+                        {
+                            vars.encPub = enc.getPublicKey();
+                            vars.encPrv = enc.getPrivateKey();
+                            vars.encMod = enc.getModulus();
+                            vars.sigPub = sig.getPublicKey();
+                            vars.sigPrv = sig.getPrivateKey();
+                            vars.sigMod = sig.getModulus();
+                            String encPubString = vars.encPub.toString(16);
+                            String encModString = vars.encMod.toString(16);
+                            String sigPubString = vars.sigPub.toString(16);
+                            String sigModString = vars.sigMod.toString(16);
+                            com =
+                                new CommandCommunicator(new Communicator(newAccountFrame,
+                                    Userids.toRealm(vars.userid), false, true, "normal", "",
+                                    "", "", vars.trustedCerts, null, null));
+                            com.authenticate("normal", Userids.toUsername(vars.userid), "",
+                                vars.password);
+                            com.setUserSetting("" + UserSettings.KEY_ENC_PUB, encPubString);
+                            com.setUserSetting("" + UserSettings.KEY_ENC_MOD, encModString);
+                            com.setUserSetting("" + UserSettings.KEY_SIG_PUB, sigPubString);
+                            com.setUserSetting("" + UserSettings.KEY_SIG_MOD, sigModString);
+                        }
+                        catch (Exception e)
+                        {
+                            e.printStackTrace();
+                            progress.setString("");
+                            progress.setIndeterminate(false);
+                            label
+                                .setText("An error occured. This is probably because you were disconnected "
+                                    + "from the internet while running this wizard. Close the wizard, "
+                                    + "and then open it again. If you had chosen to create a new account, "
+                                    + "choose to use an existing account when you open the wizard again, "
+                                    + "and enter the userid and password you used while creating the account. "
+                                    + "If the error keeps occuring, send an email to support@opengroove.org"
+                                    + " and we will help you to resolve the problem.");
+                            label.setVisible(true);
+                            return;
+                        }
+                        finally
+                        {
+                            try
+                            {
+                                if (com != null)
+                                    com.getCommunicator().shutdown();
+                            }
+                            catch (Exception exception)
+                            {
+                                exception.printStackTrace();
+                            }
+                        }
                         progress.setString("");
                         progress.setIndeterminate(false);
                         label
-                                .setText("An error occured. This is probably because you were disconnected "
-                                        + "from the internet while running this wizard. Close the wizard, "
-                                        + "and then open it again. If you had chosen to create a new account, "
-                                        + "choose to use an existing account when you open the wizard again, "
-                                        + "and enter the userid and password you used while creating the account. "
-                                        + "If the error keeps occuring, send an email to support@opengroove.org"
-                                        + " and we will help you to resolve the problem.");
+                            .setText("Your security keys have been successfully generated. Click "
+                                + "next to continue.");
                         label.setVisible(true);
-                        return;
+                        newAccountWizardPane.setNextPage(newAccountWizardPane
+                            .getPageByTitle(LABEL_COMPUTER));
+                        setNextAllowed(true);
                     }
-                    finally
+                };
+                
+                private Thread browseForKeyThread = new Thread()
+                {
+                    public void run()
                     {
+                        JFileChooser fc = new JFileChooser();
+                        fc.setFileFilter(new FileNameExtensionFilter(
+                            "OpenGroove Account Key Files", "ogva"));
+                        int fcResult = fc.showOpenDialog(newAccountFrame);
+                        if (fcResult != JFileChooser.APPROVE_OPTION)
+                            return;
+                        button.setVisible(false);
+                        label.setVisible(false);
+                        progress.setIndeterminate(true);
+                        progress.setString("Reading file...");
+                        FieldFile file;
+                        BigInteger encPub;
+                        BigInteger encPrv;
+                        BigInteger encMod;
+                        BigInteger sigPub;
+                        BigInteger sigPrv;
+                        BigInteger sigMod;
                         try
                         {
-                            if (com != null)
-                                com.getCommunicator().shutdown();
+                            file = new FieldFile(fc.getSelectedFile());
+                            if (!file.checkExists(Fields.encMod, Fields.encPrv,
+                                Fields.encPub, Fields.sigMod, Fields.sigPrv, Fields.sigPub))
+                                throw new Exception();
+                            encPub = new BigInteger(file.getField(Fields.encPub), 16);
+                            encPrv = new BigInteger(file.getField(Fields.encPrv), 16);
+                            encMod = new BigInteger(file.getField(Fields.encMod), 16);
+                            sigPub = new BigInteger(file.getField(Fields.sigPub), 16);
+                            sigPrv = new BigInteger(file.getField(Fields.sigPrv), 16);
+                            sigMod = new BigInteger(file.getField(Fields.sigMod), 16);
                         }
-                        catch (Exception exception)
+                        catch (Exception e)
                         {
-                            exception.printStackTrace();
-                        }
-                    }
-                    progress.setString("");
-                    progress.setIndeterminate(false);
-                    label
-                            .setText("Your security keys have been successfully generated. Click "
-                                    + "next to continue.");
-                    label.setVisible(true);
-                    newAccountWizardPane.setNextPage(newAccountWizardPane
-                            .getPageByTitle(LABEL_COMPUTER));
-                    setNextAllowed(true);
-                }
-            };
-            
-            private Thread browseForKeyThread = new Thread()
-            {
-                public void run()
-                {
-                    JFileChooser fc = new JFileChooser();
-                    fc.setFileFilter(new FileNameExtensionFilter(
-                            "OpenGroove Account Key Files", "ogva"));
-                    int fcResult = fc.showOpenDialog(newAccountFrame);
-                    if (fcResult != JFileChooser.APPROVE_OPTION)
-                        return;
-                    button.setVisible(false);
-                    label.setVisible(false);
-                    progress.setIndeterminate(true);
-                    progress.setString("Reading file...");
-                    FieldFile file;
-                    BigInteger encPub;
-                    BigInteger encPrv;
-                    BigInteger encMod;
-                    BigInteger sigPub;
-                    BigInteger sigPrv;
-                    BigInteger sigMod;
-                    try
-                    {
-                        file = new FieldFile(fc.getSelectedFile());
-                        if (!file.checkExists(Fields.encMod, Fields.encPrv,
-                                Fields.encPub, Fields.sigMod, Fields.sigPrv,
-                                Fields.sigPub))
-                            throw new Exception();
-                        encPub = new BigInteger(file.getField(Fields.encPub),
-                                16);
-                        encPrv = new BigInteger(file.getField(Fields.encPrv),
-                                16);
-                        encMod = new BigInteger(file.getField(Fields.encMod),
-                                16);
-                        sigPub = new BigInteger(file.getField(Fields.sigPub),
-                                16);
-                        sigPrv = new BigInteger(file.getField(Fields.sigPrv),
-                                16);
-                        sigMod = new BigInteger(file.getField(Fields.sigMod),
-                                16);
-                    }
-                    catch (Exception e)
-                    {
-                        e.printStackTrace();
-                        JOptionPane.showMessageDialog(newAccountFrame,
+                            e.printStackTrace();
+                            JOptionPane.showMessageDialog(newAccountFrame,
                                 "The file you selected is not valid, "
-                                        + "could not be opened, "
-                                        + "or is corrupt.");
-                        label.setVisible(true);
-                        progress.setIndeterminate(false);
-                        progress.setString("");
-                        button.setVisible(true);
-                        return;
-                    }
-                    /*
-                     * TODO: start the progress bar going, load the keys in to
-                     * BigIntegers, encrypt a random number with the public key
-                     * and verify decryption with the private key, for the enc
-                     * key, and do the reverse for the sig key, then check to
-                     * see if the public keys match the public keys on the
-                     * server (and show a warning that the keys are for the
-                     * wrong account if they don't), and if all of this works
-                     * out, stick the private keys (and the public keys too)
-                     * onto the wizard vars and continue on to the account info
-                     * page.
-                     */
-                    progress.setString("Validating encryption key...");
-                    boolean isEncValid = RSA.verifySet(encPub, encMod, encPrv);
-                    if (!isEncValid)
-                    {
-                        label.setVisible(true);
-                        progress.setIndeterminate(false);
-                        progress.setString("");
-                        JOptionPane.showMessageDialog(newAccountFrame,
-                                "The account file you provided contains "
-                                        + "a mismatched encryption keypair.");
-                        button.setVisible(true);
-                        return;
-                    }
-                    progress.setString("Validating signature key...");
-                    boolean isSigValid = RSA.verifySet(sigPub, sigMod, sigPrv);
-                    if (!isSigValid)
-                    {
-                        label.setVisible(true);
-                        progress.setIndeterminate(false);
-                        progress.setString("");
-                        JOptionPane.showMessageDialog(newAccountFrame,
-                                "The acount file you provided contains "
-                                        + "a mismatched signature keypair.");
-                        button.setVisible(true);
-                        return;
-                    }
-                    /*
-                     * The file itself, and the key contained therein, are
-                     * valid, so we need to validate the public keys against the
-                     * ones on the server and then stick them into the new
-                     * account wizard vars.
-                     */
-                    CommandCommunicator com = null;
-                    try
-                    {
-                        com = new CommandCommunicator(new Communicator(
-                                newAccountFrame, Userids.toRealm(vars.userid),
-                                false, true, "normal", "", "", "",
-                                vars.trustedCerts, null, null));
-                        com.authenticate("normal", Userids
-                                .toUsername(vars.userid), "", vars.password);
-                        BigInteger existingEncPub = new BigInteger(com
-                                .getUserSetting("", ""
-                                        + UserSettings.KEY_ENC_PUB), 16);
-                        BigInteger existingEncMod = new BigInteger(com
-                                .getUserSetting("", ""
-                                        + UserSettings.KEY_ENC_MOD), 16);
-                        BigInteger existingSigPub = new BigInteger(com
-                                .getUserSetting("", ""
-                                        + UserSettings.KEY_SIG_PUB), 16);
-                        BigInteger existingSigMod = new BigInteger(com
-                                .getUserSetting("", ""
-                                        + UserSettings.KEY_SIG_MOD), 16);
-                        if (!(existingEncPub.equals(encPub)
-                                && existingEncMod.equals(encMod)
-                                && existingSigPub.equals(sigPub) && existingSigMod
-                                .equals(sigMod)))
+                                    + "could not be opened, " + "or is corrupt.");
+                            label.setVisible(true);
+                            progress.setIndeterminate(false);
+                            progress.setString("");
+                            button.setVisible(true);
+                            return;
+                        }
+                        /*
+                         * TODO: start the progress bar going, load the keys in
+                         * to BigIntegers, encrypt a random number with the
+                         * public key and verify decryption with the private
+                         * key, for the enc key, and do the reverse for the sig
+                         * key, then check to see if the public keys match the
+                         * public keys on the server (and show a warning that
+                         * the keys are for the wrong account if they don't),
+                         * and if all of this works out, stick the private keys
+                         * (and the public keys too) onto the wizard vars and
+                         * continue on to the account info page.
+                         */
+                        progress.setString("Validating encryption key...");
+                        boolean isEncValid = RSA.verifySet(encPub, encMod, encPrv);
+                        if (!isEncValid)
                         {
                             label.setVisible(true);
                             progress.setIndeterminate(false);
                             progress.setString("");
-                            JOptionPane
-                                    .showMessageDialog(
-                                            newAccountFrame,
-                                            "The account file you provided is for "
-                                                    + "a different account, not yours.");
+                            JOptionPane.showMessageDialog(newAccountFrame,
+                                "The account file you provided contains "
+                                    + "a mismatched encryption keypair.");
                             button.setVisible(true);
                             return;
                         }
-                    }
-                    catch (Exception e)
-                    {
-                        e.printStackTrace();
-                        label.setVisible(true);
-                        progress.setIndeterminate(false);
-                        progress.setString("");
-                        JOptionPane
-                                .showMessageDialog(newAccountFrame,
-                                        "An error occured while connecting to your server.");
-                        button.setVisible(true);
-                        return;
-                    }
-                    finally
-                    {
-                        if (com != null)
-                            com.getCommunicator().shutdown();
-                    }
-                    vars.encPub = encPub;
-                    vars.encMod = encMod;
-                    vars.encPrv = encPrv;
-                    vars.sigPub = sigPub;
-                    vars.sigMod = sigMod;
-                    vars.sigPrv = sigPrv;
-                    label.setText("Your account security key file has been "
+                        progress.setString("Validating signature key...");
+                        boolean isSigValid = RSA.verifySet(sigPub, sigMod, sigPrv);
+                        if (!isSigValid)
+                        {
+                            label.setVisible(true);
+                            progress.setIndeterminate(false);
+                            progress.setString("");
+                            JOptionPane.showMessageDialog(newAccountFrame,
+                                "The acount file you provided contains "
+                                    + "a mismatched signature keypair.");
+                            button.setVisible(true);
+                            return;
+                        }
+                        /*
+                         * The file itself, and the key contained therein, are
+                         * valid, so we need to validate the public keys against
+                         * the ones on the server and then stick them into the
+                         * new account wizard vars.
+                         */
+                        CommandCommunicator com = null;
+                        try
+                        {
+                            com =
+                                new CommandCommunicator(new Communicator(newAccountFrame,
+                                    Userids.toRealm(vars.userid), false, true, "normal", "",
+                                    "", "", vars.trustedCerts, null, null));
+                            com.authenticate("normal", Userids.toUsername(vars.userid), "",
+                                vars.password);
+                            BigInteger existingEncPub =
+                                new BigInteger(com.getUserSetting("", ""
+                                    + UserSettings.KEY_ENC_PUB), 16);
+                            BigInteger existingEncMod =
+                                new BigInteger(com.getUserSetting("", ""
+                                    + UserSettings.KEY_ENC_MOD), 16);
+                            BigInteger existingSigPub =
+                                new BigInteger(com.getUserSetting("", ""
+                                    + UserSettings.KEY_SIG_PUB), 16);
+                            BigInteger existingSigMod =
+                                new BigInteger(com.getUserSetting("", ""
+                                    + UserSettings.KEY_SIG_MOD), 16);
+                            if (!(existingEncPub.equals(encPub)
+                                && existingEncMod.equals(encMod)
+                                && existingSigPub.equals(sigPub) && existingSigMod
+                                .equals(sigMod)))
+                            {
+                                label.setVisible(true);
+                                progress.setIndeterminate(false);
+                                progress.setString("");
+                                JOptionPane.showMessageDialog(newAccountFrame,
+                                    "The account file you provided is for "
+                                        + "a different account, not yours.");
+                                button.setVisible(true);
+                                return;
+                            }
+                        }
+                        catch (Exception e)
+                        {
+                            e.printStackTrace();
+                            label.setVisible(true);
+                            progress.setIndeterminate(false);
+                            progress.setString("");
+                            JOptionPane.showMessageDialog(newAccountFrame,
+                                "An error occured while connecting to your server.");
+                            button.setVisible(true);
+                            return;
+                        }
+                        finally
+                        {
+                            if (com != null)
+                                com.getCommunicator().shutdown();
+                        }
+                        vars.encPub = encPub;
+                        vars.encMod = encMod;
+                        vars.encPrv = encPrv;
+                        vars.sigPub = sigPub;
+                        vars.sigMod = sigMod;
+                        vars.sigPrv = sigPrv;
+                        label.setText("Your account security key file has been "
                             + "successfully verified and imported. "
                             + "Click next to continue.");
-                    label.setVisible(true);
-                    progress.setString("");
-                    progress.setIndeterminate(false);
-                    setNextAllowed(true);
-                    newAccountWizardPane.setNextPage(newAccountWizardPane
+                        label.setVisible(true);
+                        progress.setString("");
+                        progress.setIndeterminate(false);
+                        setNextAllowed(true);
+                        newAccountWizardPane.setNextPage(newAccountWizardPane
                             .getPageByTitle(LABEL_COMPUTER));
-                }
-            };
-            
-            @Override
-            protected void init()
-            {
-                System.out.println("about to check account");
-                progress = new JProgressBar();
-                progress.setIndeterminate(true);
-                progress.setStringPainted(true);
-                progress.setString("Checking your account, please wait...");
-                button = new JButton();
-                label = new MultilineLabel();
-                label.setVisible(false);
-                button.setVisible(false);
-                addText("OpenGroove uses security keys to encrypt your correspondence "
+                    }
+                };
+                
+                @Override
+                protected void init()
+                {
+                    System.out.println("about to check account");
+                    progress = new JProgressBar();
+                    progress.setIndeterminate(true);
+                    progress.setStringPainted(true);
+                    progress.setString("Checking your account, please wait...");
+                    button = new JButton();
+                    label = new MultilineLabel();
+                    label.setVisible(false);
+                    button.setVisible(false);
+                    addText("OpenGroove uses security keys to encrypt your correspondence "
                         + "with other people. This prevents others from reading your "
                         + "correspondence, or from corresponding with someone else while "
                         + "pretending to be you. If your account already has security keys "
@@ -2477,176 +2424,158 @@ public class OpenGroove
                         + " creating a new account, or if you never got to this step when"
                         + " creating your account before), then OpenGroove will generate "
                         + "security keys for you.");
-                addComponent(progress);
-                addComponent(label);
-                addComponent(button);
-                addPageListener(new PageListener()
-                {
-                    
-                    @Override
-                    public void pageEventFired(PageEvent e)
+                    addComponent(progress);
+                    addComponent(label);
+                    addComponent(button);
+                    addPageListener(new PageListener()
                     {
-                        if (e.getID() == PageEvent.PAGE_OPENED)
+                        
+                        @Override
+                        public void pageEventFired(PageEvent e)
                         {
-                            new Thread()
+                            if (e.getID() == PageEvent.PAGE_OPENED)
                             {
-                                public void run()
+                                new Thread()
                                 {
-                                    /*
-                                     * The page has just been shown. We need to
-                                     * check the server to see if the user
-                                     * already has security keys.
-                                     */
-                                    CommandCommunicator com = null;
-                                    try
+                                    public void run()
                                     {
-                                        System.out
-                                                .println("checking for security keys");
-                                        com = new CommandCommunicator(
-                                                new Communicator(
-                                                        newAccountFrame,
-                                                        Userids
-                                                                .toRealm(vars.userid),
-                                                        false, true, "normal",
-                                                        "", "", "",
-                                                        vars.trustedCerts,
-                                                        null, null));
-                                        System.out.println("security key auth");
-                                        com.authenticate("normal", Userids
-                                                .toUsername(vars.userid), "",
-                                                vars.password);
-                                        System.out
-                                                .println("downloading remote keys");
-                                        String existingEncPub = com
-                                                .getUserSetting(
-                                                        "",
-                                                        ""
-                                                                + UserSettings.KEY_ENC_PUB);
-                                        String existingEncMod = com
-                                                .getUserSetting(
-                                                        "",
-                                                        ""
-                                                                + UserSettings.KEY_ENC_MOD);
-                                        String existingSigPub = com
-                                                .getUserSetting(
-                                                        "",
-                                                        ""
-                                                                + UserSettings.KEY_SIG_PUB);
-                                        String existingSigMod = com
-                                                .getUserSetting(
-                                                        "",
-                                                        ""
-                                                                + UserSettings.KEY_SIG_MOD);
-                                        System.out
+                                        /*
+                                         * The page has just been shown. We need
+                                         * to check the server to see if the
+                                         * user already has security keys.
+                                         */
+                                        CommandCommunicator com = null;
+                                        try
+                                        {
+                                            System.out.println("checking for security keys");
+                                            com =
+                                                new CommandCommunicator(new Communicator(
+                                                    newAccountFrame, Userids
+                                                        .toRealm(vars.userid), false, true,
+                                                    "normal", "", "", "", vars.trustedCerts,
+                                                    null, null));
+                                            System.out.println("security key auth");
+                                            com.authenticate("normal", Userids
+                                                .toUsername(vars.userid), "", vars.password);
+                                            System.out.println("downloading remote keys");
+                                            String existingEncPub =
+                                                com.getUserSetting("", ""
+                                                    + UserSettings.KEY_ENC_PUB);
+                                            String existingEncMod =
+                                                com.getUserSetting("", ""
+                                                    + UserSettings.KEY_ENC_MOD);
+                                            String existingSigPub =
+                                                com.getUserSetting("", ""
+                                                    + UserSettings.KEY_SIG_PUB);
+                                            String existingSigMod =
+                                                com.getUserSetting("", ""
+                                                    + UserSettings.KEY_SIG_MOD);
+                                            System.out
                                                 .println("performing checks for new keys");
-                                        boolean needsNewKeys = existingEncPub == null
-                                                || existingEncMod == null
-                                                || existingSigPub == null
-                                                || existingSigMod == null
-                                                || com.listComputers("").length == 0;
-                                        if (needsNewKeys)
-                                        {
-                                            label
+                                            boolean needsNewKeys =
+                                                existingEncPub == null
+                                                    || existingEncMod == null
+                                                    || existingSigPub == null
+                                                    || existingSigMod == null
+                                                    || com.listComputers("").length == 0;
+                                            if (needsNewKeys)
+                                            {
+                                                label
                                                     .setText("You do not have any security keys on your account. "
-                                                            + "OpenGroove is ready to generate security keys for you. "
-                                                            + "When you're ready, click start.");
-                                            button.setText("Start");
-                                            button
+                                                        + "OpenGroove is ready to generate security keys for you. "
+                                                        + "When you're ready, click start.");
+                                                button.setText("Start");
+                                                button
                                                     .addActionListener(new ActionListener()
                                                     {
                                                         
                                                         @Override
                                                         public void actionPerformed(
-                                                                ActionEvent e)
+                                                            ActionEvent e)
                                                         {
-                                                            button
-                                                                    .setVisible(false);
-                                                            label
-                                                                    .setVisible(false);
-                                                            startKeyGenThread
-                                                                    .start();
+                                                            button.setVisible(false);
+                                                            label.setVisible(false);
+                                                            startKeyGenThread.start();
                                                         }
                                                     });
-                                        } else
-                                        {
-                                            label
+                                            }
+                                            else
+                                            {
+                                                label
                                                     .setText("Your account already has security keys. You'll need to provide "
-                                                            + "OpenGroove with a file that contains your account's "
-                                                            + "private keys. This should have the file extension .ogva, "
-                                                            + "and can be created by choosing "
-                                                            + Conventions
-                                                                    .formatMenuPath(
-                                                                            "File",
-                                                                            "Export Account")
-                                                            + " in the launchbar on a computer on which you are "
-                                                            + "already using this account. If you aren't using "
-                                                            + "this account on any computers, send us an email at "
-                                                            + "support@opengroove.org, and we will help you restore"
-                                                            + " your account.");
-                                            button.setText("Browse");
-                                            button
+                                                        + "OpenGroove with a file that contains your account's "
+                                                        + "private keys. This should have the file extension .ogva, "
+                                                        + "and can be created by choosing "
+                                                        + Conventions.formatMenuPath("File",
+                                                            "Export Account")
+                                                        + " in the launchbar on a computer on which you are "
+                                                        + "already using this account. If you aren't using "
+                                                        + "this account on any computers, send us an email at "
+                                                        + "support@opengroove.org, and we will help you restore"
+                                                        + " your account.");
+                                                button.setText("Browse");
+                                                button
                                                     .addActionListener(new ActionListener()
                                                     {
                                                         
                                                         @Override
                                                         public void actionPerformed(
-                                                                ActionEvent e)
+                                                            ActionEvent e)
                                                         {
-                                                            browseForKeyThread
-                                                                    .start();
+                                                            browseForKeyThread.start();
                                                         }
                                                     });
+                                            }
+                                            label.setVisible(true);
+                                            button.setVisible(true);
+                                            progress.setIndeterminate(false);
+                                            progress.setString("");
                                         }
-                                        label.setVisible(true);
-                                        button.setVisible(true);
-                                        progress.setIndeterminate(false);
-                                        progress.setString("");
+                                        catch (Exception exception)
+                                        {
+                                            exception.printStackTrace();
+                                            fail();
+                                        }
+                                        finally
+                                        {
+                                            if (com != null)
+                                                com.getCommunicator().shutdown();
+                                        }
                                     }
-                                    catch (Exception exception)
-                                    {
-                                        exception.printStackTrace();
-                                        fail();
-                                    }
-                                    finally
-                                    {
-                                        if (com != null)
-                                            com.getCommunicator().shutdown();
-                                    }
-                                }
-                            }.start();
+                                }.start();
+                            }
                         }
-                    }
-                });
-            }
-            
-            protected void fail()
-            {
-                /*
-                 * TODO: probably split this out so that it handles issues with
-                 * connecting to the user's server by allowing them to re-try
-                 * the keygen stuff or something.
-                 */
-                progress.setIndeterminate(false);
-                progress.setMinimum(0);
-                progress.setMaximum(1);
-                progress.setValue(0);
-                progress
+                    });
+                }
+                
+                protected void fail()
+                {
+                    /*
+                     * TODO: probably split this out so that it handles issues
+                     * with connecting to the user's server by allowing them to
+                     * re-try the keygen stuff or something.
+                     */
+                    progress.setIndeterminate(false);
+                    progress.setMinimum(0);
+                    progress.setMaximum(1);
+                    progress.setValue(0);
+                    progress
                         .setString("An error has occured. Cancel the wizard, then open it again.");
-                JOptionPane
+                    JOptionPane
                         .showMessageDialog(
-                                newAccountFrame,
-                                "A problem occured during security key processing. You'll need\n"
-                                        + " to close the new account wizard and then open it again. If you chose to\n"
-                                        + "create a new account instead of using an existing one, then the new account\n"
-                                        + "has already been created for you, and you should choose to use an existing\n"
-                                        + "account when you open this wizard again.");
-                setBackAllowed(false);
-                setNextAllowed(false);
-                setLastStep(false);
-                setCancelAllowed(true);
-                setAllowClosing(true);
-            }
-        };
+                            newAccountFrame,
+                            "A problem occured during security key processing. You'll need\n"
+                                + " to close the new account wizard and then open it again. If you chose to\n"
+                                + "create a new account instead of using an existing one, then the new account\n"
+                                + "has already been created for you, and you should choose to use an existing\n"
+                                + "account when you open this wizard again.");
+                    setBackAllowed(false);
+                    setNextAllowed(false);
+                    setLastStep(false);
+                    setCancelAllowed(true);
+                    setAllowClosing(true);
+                }
+            };
         pages.append(securityKeysPage);
         // I'll worry about the user's general info later. For now, their userid
         // is shown where their real name (if they specify it in their contact
@@ -2665,198 +2594,186 @@ public class OpenGroove
         // }
         // };
         // pages.append(generalInfoPage);
-        StandardWizardPage computerNamePage = new StandardWizardPage(
-                LABEL_COMPUTER, false, true, true, false)
-        {
-            private JTextField field;
-            
-            @Override
-            protected void init()
+        StandardWizardPage computerNamePage =
+            new StandardWizardPage(LABEL_COMPUTER, false, true, true, false)
             {
-                field = new JTextField(30);
-                addText("Select the name that you want for this computer. "
+                private JTextField field;
+                
+                @Override
+                protected void init()
+                {
+                    field = new JTextField(30);
+                    addText("Select the name that you want for this computer. "
                         + "This should contain only letters, numbers, and "
                         + "hyphens, and will be converted to lowercase. "
                         + "You cannot change this later.");
-                String physicalComputerName = System.getenv("COMPUTERNAME");
-                String username = System.getProperty("user.name");
-                String suggestedComputerName;
-                if (physicalComputerName == null && username == null)
-                    suggestedComputerName = "computer";
-                else if (physicalComputerName == null)// &&username != null
-                    suggestedComputerName = username;
-                else
-                    // if(physicalComputerName != null && username != null)
-                    suggestedComputerName = physicalComputerName + "-"
-                            + username;
-                suggestedComputerName = suggestedComputerName.replaceAll(
-                        "[^a-zA-Z0-9]", "-");
-                suggestedComputerName = suggestedComputerName.toLowerCase();
-                field.setText(suggestedComputerName);
-                JPanel panel = new JPanel();
-                panel.setLayout(new BorderLayout());
-                JPanel inner = new JPanel();
-                inner.setLayout(new BorderLayout());
-                panel.add(inner, BorderLayout.CENTER);
-                inner.add(field, BorderLayout.WEST);
-                panel.add(new JLabel("            "), BorderLayout.WEST);
-                addComponent(new JLabel(""));
-                addComponent(panel);
-                addPageListener(new PageListener()
-                {
-                    
-                    @Override
-                    public void pageEventFired(PageEvent e)
+                    String physicalComputerName = System.getenv("COMPUTERNAME");
+                    String username = System.getProperty("user.name");
+                    String suggestedComputerName;
+                    if (physicalComputerName == null && username == null)
+                        suggestedComputerName = "computer";
+                    else if (physicalComputerName == null)// &&username !=
+                                                            // null
+                        suggestedComputerName = username;
+                    else
+                        // if(physicalComputerName != null && username != null)
+                        suggestedComputerName = physicalComputerName + "-" + username;
+                    suggestedComputerName =
+                        suggestedComputerName.replaceAll("[^a-zA-Z0-9]", "-");
+                    suggestedComputerName = suggestedComputerName.toLowerCase();
+                    field.setText(suggestedComputerName);
+                    JPanel panel = new JPanel();
+                    panel.setLayout(new BorderLayout());
+                    JPanel inner = new JPanel();
+                    inner.setLayout(new BorderLayout());
+                    panel.add(inner, BorderLayout.CENTER);
+                    inner.add(field, BorderLayout.WEST);
+                    panel.add(new JLabel("            "), BorderLayout.WEST);
+                    addComponent(new JLabel(""));
+                    addComponent(panel);
+                    addPageListener(new PageListener()
                     {
-                        if (!(e.getSource() instanceof JButton))
+                        
+                        @Override
+                        public void pageEventFired(PageEvent e)
                         {
-                            setAllowClosing(true);
-                            return;
-                        }
-                        if (e.getID() == PageEvent.PAGE_CLOSING)
-                        {
-                            setAllowClosing(false);
-                            setNextAllowed(false);
-                            new Thread()
+                            if (!(e.getSource() instanceof JButton))
                             {
-                                public void run()
+                                setAllowClosing(true);
+                                return;
+                            }
+                            if (e.getID() == PageEvent.PAGE_CLOSING)
+                            {
+                                setAllowClosing(false);
+                                setNextAllowed(false);
+                                new Thread()
                                 {
-                                    /*
-                                     * We'll try to create the computer on the
-                                     * server. If this fails, we don't allow
-                                     * closing, and we show a message telling
-                                     * the user that it failed, and the reason
-                                     * (IE an internet error, a computer with
-                                     * that name already exists, etc.). If it
-                                     * succeeds, then we create a local user,
-                                     * inject all of the info we've collected
-                                     * thus far, and forward on to the next
-                                     * page, which is a page telling the user
-                                     * that they've successfully created an
-                                     * OpenGroove account, and they can click
-                                     * finish to open the login screen for their
-                                     * account.
-                                     */
-                                    String computerName = field.getText();
-                                    if (!computerName.replaceAll(
-                                            "[^a-zA-Z0-9]", "-")
+                                    public void run()
+                                    {
+                                        /*
+                                         * We'll try to create the computer on
+                                         * the server. If this fails, we don't
+                                         * allow closing, and we show a message
+                                         * telling the user that it failed, and
+                                         * the reason (IE an internet error, a
+                                         * computer with that name already
+                                         * exists, etc.). If it succeeds, then
+                                         * we create a local user, inject all of
+                                         * the info we've collected thus far,
+                                         * and forward on to the next page,
+                                         * which is a page telling the user that
+                                         * they've successfully created an
+                                         * OpenGroove account, and they can
+                                         * click finish to open the login screen
+                                         * for their account.
+                                         */
+                                        String computerName = field.getText();
+                                        if (!computerName.replaceAll("[^a-zA-Z0-9]", "-")
                                             .equalsIgnoreCase(computerName))
-                                    {
-                                        JOptionPane
-                                                .showMessageDialog(
-                                                        newAccountFrame,
-                                                        "The computer name you specified contains invalid characters.");
-                                        return;
-                                    }
-                                    computerName = computerName.toLowerCase();
-                                    field.setText(computerName);
-                                    CommandCommunicator com = null;
-                                    try
-                                    {
-                                        com = new CommandCommunicator(
-                                                new Communicator(
-                                                        newAccountFrame,
-                                                        Userids
-                                                                .toRealm(vars.userid),
-                                                        false, true, "normal",
-                                                        "", "", "",
-                                                        vars.trustedCerts,
-                                                        null, null));
-                                        com.authenticate("normal", Userids
-                                                .toUsername(vars.userid), "",
-                                                vars.password);
+                                        {
+                                            JOptionPane
+                                                .showMessageDialog(newAccountFrame,
+                                                    "The computer name you specified contains invalid characters.");
+                                            return;
+                                        }
+                                        computerName = computerName.toLowerCase();
+                                        field.setText(computerName);
+                                        CommandCommunicator com = null;
                                         try
                                         {
-                                            com.createComputer(computerName,
-                                                    "pc");
+                                            com =
+                                                new CommandCommunicator(new Communicator(
+                                                    newAccountFrame, Userids
+                                                        .toRealm(vars.userid), false, true,
+                                                    "normal", "", "", "", vars.trustedCerts,
+                                                    null, null));
+                                            com.authenticate("normal", Userids
+                                                .toUsername(vars.userid), "", vars.password);
+                                            try
+                                            {
+                                                com.createComputer(computerName, "pc");
+                                            }
+                                            catch (Exception e2)
+                                            {
+                                                if (!(e2 instanceof FailedResponseException))
+                                                    throw e2;
+                                                JOptionPane.showMessageDialog(
+                                                    newAccountFrame,
+                                                    "That computer name is already in use.");
+                                                return;
+                                            }
                                         }
                                         catch (Exception e2)
                                         {
-                                            if (!(e2 instanceof FailedResponseException))
-                                                throw e2;
+                                            e2.printStackTrace();
                                             JOptionPane
-                                                    .showMessageDialog(
-                                                            newAccountFrame,
-                                                            "That computer name is already in use.");
+                                                .showMessageDialog(newAccountFrame,
+                                                    "An error occured while connecting to your server.");
                                             return;
                                         }
-                                    }
-                                    catch (Exception e2)
-                                    {
-                                        e2.printStackTrace();
-                                        JOptionPane
-                                                .showMessageDialog(
-                                                        newAccountFrame,
-                                                        "An error occured while connecting to your server.");
-                                        return;
-                                    }
-                                    finally
-                                    {
-                                        if (com != null)
-                                            try
-                                            {
-                                                com.getCommunicator()
-                                                        .shutdown();
-                                            }
-                                            catch (Exception exception)
-                                            {
-                                                exception.printStackTrace();
-                                            }
-                                    }
-                                    /*
-                                     * Ok, we've successfully created the
-                                     * computer. Now we store everything in a
-                                     * LocalUser object, and add it to the
-                                     * storage.
-                                     */
-                                    LocalUser user = Storage.getStore()
-                                            .createUser();
-                                    user.setAutoSignOn(false);
-                                    user.setComputer(computerName);
-                                    user.setEmailAddress("");
-                                    user.setEncPassword(Hash
-                                            .hash(vars.password));
-                                    user.setLag(0);
-                                    user.setLocalVisible(false);
-                                    user.setPasswordHint(null);
-                                    user.setRasEncMod(vars.encMod);
-                                    user.setRsaEncPrv(vars.encPrv);
-                                    user.setRsaEncPub(vars.encPub);
-                                    user.setRsaSigMod(vars.sigMod);
-                                    user.setRsaSigPrv(vars.sigPrv);
-                                    user.setRsaSigPub(vars.sigPub);
-                                    user.setSearchVisible(false);
-                                    user.setStoredPassword(null);
-                                    user.setUserid(vars.userid);
-                                    user.getTrustedCertificates().addAll(
+                                        finally
+                                        {
+                                            if (com != null)
+                                                try
+                                                {
+                                                    com.getCommunicator().shutdown();
+                                                }
+                                                catch (Exception exception)
+                                                {
+                                                    exception.printStackTrace();
+                                                }
+                                        }
+                                        /*
+                                         * Ok, we've successfully created the
+                                         * computer. Now we store everything in
+                                         * a LocalUser object, and add it to the
+                                         * storage.
+                                         */
+                                        LocalUser user = Storage.getStore().createUser();
+                                        user.setAutoSignOn(false);
+                                        user.setComputer(computerName);
+                                        user.setEmailAddress("");
+                                        user.setEncPassword(Hash.hash(vars.password));
+                                        user.setLag(0);
+                                        user.setLocalVisible(false);
+                                        user.setPasswordHint(null);
+                                        user.setRasEncMod(vars.encMod);
+                                        user.setRsaEncPrv(vars.encPrv);
+                                        user.setRsaEncPub(vars.encPub);
+                                        user.setRsaSigMod(vars.sigMod);
+                                        user.setRsaSigPrv(vars.sigPrv);
+                                        user.setRsaSigPub(vars.sigPub);
+                                        user.setSearchVisible(false);
+                                        user.setStoredPassword(null);
+                                        user.setUserid(vars.userid);
+                                        user.getTrustedCertificates().addAll(
                                             vars.trustedCerts);
-                                    Storage.addUser(user);
-                                    refreshTrayMenu();
-                                    newAccountWizardPane
-                                            .setCurrentPage(LABEL_DONE);
-                                    vars.finishedWizard = true;
-                                }
-                            }.start();
+                                        Storage.addUser(user);
+                                        refreshTrayMenu();
+                                        newAccountWizardPane.setCurrentPage(LABEL_DONE);
+                                        vars.finishedWizard = true;
+                                    }
+                                }.start();
+                            }
                         }
-                    }
-                });
-            }
-        };
+                    });
+                }
+            };
         pages.append(computerNamePage);
-        StandardWizardPage finishedPage = new StandardWizardPage(LABEL_DONE,
-                false, false, true, true)
-        {
-            
-            @Override
-            protected void init()
+        StandardWizardPage finishedPage =
+            new StandardWizardPage(LABEL_DONE, false, false, true, true)
             {
-                addText("You have successfully added your OpenGroove account. "
+                
+                @Override
+                protected void init()
+                {
+                    addText("You have successfully added your OpenGroove account. "
                         + "When you click finish, you will be prompted for your "
                         + "password. When you start OpenGroove next time, you can "
                         + "log in by right-clicking the tray icon, clicking on "
                         + "your userid, and clicking \"log in\".");
-            }
-        };
+                }
+            };
         pages.append(finishedPage);
         // end pages
         newAccountWizardPane.setPageList(pages);
@@ -2893,17 +2810,16 @@ public class OpenGroove
     protected static String getWelcomeWizardMessage()
     {
         return "" + "This appears to be your first time using OpenGroove "
-                + "on this computer. Before you can use OpenGroove, you "
-                + "need to create an account. Click Next to continue.";
+            + "on this computer. Before you can use OpenGroove, you "
+            + "need to create an account. Click Next to continue.";
     }
     
     protected static boolean anyServerConnections()
     {
         for (UserContext context : userContextMap.values())
         {
-            if (context.getCom() != null
-                    && context.getCom().getCommunicator() != null
-                    && context.getCom().getCommunicator().isActive())
+            if (context.getCom() != null && context.getCom().getCommunicator() != null
+                && context.getCom().getCommunicator().isActive())
             {
                 return true;
             }
@@ -2921,7 +2837,8 @@ public class OpenGroove
         FeatureManager.loadFeatures();
     }
     
-    private static HashMap<String, Class<LookAndFeel>> lookAndFeelClasses = new HashMap<String, Class<LookAndFeel>>();
+    private static HashMap<String, Class<LookAndFeel>> lookAndFeelClasses =
+        new HashMap<String, Class<LookAndFeel>>();
     
     private static JFrame aboutWindow;
     
@@ -2949,7 +2866,7 @@ public class OpenGroove
         try
         {
             panel.add(new WebsiteButton("www.opengroove.org", new URI(
-                    "http://www.opengroove.org")));
+                "http://www.opengroove.org")));
         }
         catch (URISyntaxException e)
         {
@@ -2973,8 +2890,8 @@ public class OpenGroove
     }
     
     private static final Object updateCheckLock = new Object();
-    private static final SettingSpec SETTING_SPEC_LAUNCHBAR_ALWAYS_ON_TOP = new SettingSpec(
-            "g", "lb", "", "alwaysontop");
+    private static final SettingSpec SETTING_SPEC_LAUNCHBAR_ALWAYS_ON_TOP =
+        new SettingSpec("g", "lb", "", "alwaysontop");
     
     /**
      * checks for updates to OpenGroove, and downloads them if available. In the
@@ -3008,26 +2925,23 @@ public class OpenGroove
                         localVersion = "0";
                     }
                     int localVersionNumber = Integer.parseInt(localVersion);
-                    int remoteVersionNumber = Integer.parseInt(p
-                            .getProperty("versionindex"));
-                    boolean isAlreadyUpdated = new File(
-                            "appdata/systemupdates/version").exists()
+                    int remoteVersionNumber =
+                        Integer.parseInt(p.getProperty("versionindex"));
+                    boolean isAlreadyUpdated =
+                        new File("appdata/systemupdates/version").exists()
                             && Integer.parseInt(Storage.readFile(new File(
-                                    "appdata/systemupdates/version"))) == remoteVersionNumber;
-                    if (remoteVersionNumber > localVersionNumber
-                            && !isAlreadyUpdated)// we need
+                                "appdata/systemupdates/version"))) == remoteVersionNumber;
+                    if (remoteVersionNumber > localVersionNumber && !isAlreadyUpdated)// we
+                                                                                        // need
                     // to
                     // update
                     {
                         URL updateJarUrl = new URL(p.getProperty("url"));
                         UpdateNotification notification = new UpdateNotification();
                         JProgressBar bar = notification.getProgressBar();
-                        notificationFrame.addNotification("OpenGroove",
-                                notification, true);
-                        File updateFile = new File(
-                                "appdata/systemupdates/updates.jar");
-                        File versionFile = new File(
-                                "appdata/systemupdates/version");
+                        notificationFrame.addNotification("OpenGroove", notification, true);
+                        File updateFile = new File("appdata/systemupdates/updates.jar");
+                        File versionFile = new File("appdata/systemupdates/version");
                         if (!updateFile.getParentFile().exists())
                             updateFile.getParentFile().mkdirs();
                         if (!versionFile.getParentFile().exists())
@@ -3037,8 +2951,8 @@ public class OpenGroove
                         FileOutputStream fos = new FileOutputStream(updateFile);
                         byte[] buffer = new byte[1024];
                         int amount;
-                        HttpURLConnection updateJarConn = (HttpURLConnection) updateJarUrl
-                                .openConnection();
+                        HttpURLConnection updateJarConn =
+                            (HttpURLConnection) updateJarUrl.openConnection();
                         updateJarConn.connect();
                         int max = updateJarConn.getContentLength();
                         if (max != -1)
@@ -3055,25 +2969,25 @@ public class OpenGroove
                         }
                         fos.flush();
                         fos.close();
-                        Storage
-                                .writeFile("" + remoteVersionNumber,
-                                        versionFile);
+                        Storage.writeFile("" + remoteVersionNumber, versionFile);
                         notificationFrame.removeNotification(notification);
-                        final NotificationAdapter readyNotification = new NotificationAdapter(
+                        final NotificationAdapter readyNotification =
+                            new NotificationAdapter(
                                 notificationFrame,
                                 new JLabel(
-                                        "OpenGroove has been updated. Restart\nfor updates to take effect."),
+                                    "OpenGroove has been updated. Restart\nfor updates to take effect."),
                                 true, false)
-                        {
-                            public void clicked()
                             {
-                                notificationFrame.removeNotification(this);
-                            }
-                        };
-                        notificationFrame.addNotification("OpenGroove",
-                                readyNotification, true);
+                                public void clicked()
+                                {
+                                    notificationFrame.removeNotification(this);
+                                }
+                            };
+                        notificationFrame.addNotification("OpenGroove", readyNotification,
+                            true);
                         return true;
-                    } else
+                    }
+                    else
                     {
                         return false;
                     }
@@ -3097,8 +3011,7 @@ public class OpenGroove
         synchronized (workspacePanel)
         {
             System.out.println("repainting workspace panel");
-            WorkspaceWrapper[] workspaces = context.getWorkspaceManager()
-                    .getAll();
+            WorkspaceWrapper[] workspaces = context.getWorkspaceManager().getAll();
             workspacePanel.removeAll();
             PopupMenu workspacesSubMenu = context.getWorkspacesSubMenu();
             workspacesSubMenu.removeAll();
@@ -3108,19 +3021,18 @@ public class OpenGroove
                 JLinkButton mainButton = new JLinkButton(w.getName());
                 String participantList = delimited(w.getParticipants(), "<br/>");
                 mainButton.setToolTipText("<html><b>Type</b>: "
-                        + w.getPluginMetadata().getProperty("name")
-                        + "<br/><b>Creator</b>: "
-                        + WorkspaceManager.getWorkspaceCreator(w.getId())
-                        + "<br/><b>Participants</b>:<br/>" + participantList);
+                    + w.getPluginMetadata().getProperty("name") + "<br/><b>Creator</b>: "
+                    + WorkspaceManager.getWorkspaceCreator(w.getId())
+                    + "<br/><b>Participants</b>:<br/>" + participantList);
                 mainButton.setFocusable(false);
                 System.out.println("***got to 6");
-                JLinkButton configureButton = new JLinkButton(new ImageIcon(
-                        Icons.CONFIGURE_WORKSPACE_16.getImage()));
+                JLinkButton configureButton =
+                    new JLinkButton(new ImageIcon(Icons.CONFIGURE_WORKSPACE_16.getImage()));
                 System.out.println("***got to 7");
-                JLinkButton deleteButton = new JLinkButton(new ImageIcon(
-                        Icons.DELETE_WORKSPACE_16.getImage()));
-                JLinkButton inviteToButton = new JLinkButton(new ImageIcon(
-                        Icons.INVITE_TO_WORKSPACE_16.getImage()));
+                JLinkButton deleteButton =
+                    new JLinkButton(new ImageIcon(Icons.DELETE_WORKSPACE_16.getImage()));
+                JLinkButton inviteToButton =
+                    new JLinkButton(new ImageIcon(Icons.INVITE_TO_WORKSPACE_16.getImage()));
                 System.out.println("***got to 8");
                 deleteButton.setFocusable(false);
                 configureButton.setFocusable(false);
@@ -3136,10 +3048,8 @@ public class OpenGroove
                 configureButton.setOpaque(false);
                 deleteButton.setOpaque(false);
                 p.setOpaque(false);
-                configureButton
-                        .setToolTipText("Configure this workspace and edit settings");
-                inviteToButton
-                        .setToolTipText("Invite someone to this workspace");
+                configureButton.setToolTipText("Configure this workspace and edit settings");
+                inviteToButton.setToolTipText("Invite someone to this workspace");
                 deleteButton.setToolTipText("Delete this workspace");
                 configureButton.addActionListener(new ActionListener()
                 {
@@ -3157,15 +3067,14 @@ public class OpenGroove
                 });
                 MenuItem item = new MenuItem(w.getName());
                 workspacesSubMenu.add(item);
-                item
-                        .addActionListener(mainButton.getActionListeners()[mainButton
-                                .getActionListeners().length - 1]);
+                item.addActionListener(mainButton.getActionListeners()[mainButton
+                    .getActionListeners().length - 1]);
                 if (w.getWorkspace().isNeedsAttention())
-                    p.add(pad(new JLabel(new ImageIcon(
-                            Icons.WORKSPACE_WARNING_16.getImage())), 1, 1));
+                    p.add(pad(new JLabel(
+                        new ImageIcon(Icons.WORKSPACE_WARNING_16.getImage())), 1, 1));
                 if (w.getWorkspace().isHasNewInformation())
-                    p.add(pad(new JLabel(new ImageIcon(Icons.WORKSPACE_INFO_16
-                            .getImage())), 1, 1));
+                    p.add(pad(new JLabel(new ImageIcon(Icons.WORKSPACE_INFO_16.getImage())),
+                        1, 1));
                 p.setAlignmentX(0);
                 p.setAlignmentY(0);
                 workspacePanel.add(p);
@@ -3180,10 +3089,8 @@ public class OpenGroove
             catch (InterruptedException e)
             {
                 // TODO Dec 7, 2007 Auto-generated catch block
-                throw new RuntimeException(
-                        "TODO auto generated on Dec 7, 2007 : "
-                                + e.getClass().getName() + " - "
-                                + e.getMessage(), e);
+                throw new RuntimeException("TODO auto generated on Dec 7, 2007 : "
+                    + e.getClass().getName() + " - " + e.getMessage(), e);
             }
             workspacePanel.invalidate();
             workspacePanel.validate();
@@ -3203,8 +3110,7 @@ public class OpenGroove
      * @param w
      * @return
      */
-    public static boolean showConfigWindow(UserContext context,
-            WorkspaceWrapper w)
+    public static boolean showConfigWindow(UserContext context, WorkspaceWrapper w)
     {
         return showConfigWindow(context, w, context.getLaunchbar());
     }
@@ -3226,7 +3132,7 @@ public class OpenGroove
             buildNumberString = "";
         }
         return "" + Version.MAJOR + "." + Version.MINOR + "." + Version.UPDATE
-                + buildNumberString;
+            + buildNumberString;
     }
     
     /**
@@ -3271,8 +3177,8 @@ public class OpenGroove
          */
         rightPanel.setOpaque(false);
         rightPanel.setLayout(new BoxLayout(rightPanel, BoxLayout.X_AXIS));
-        JLinkButton messageHistoryButton = new JLinkButton(
-                Icons.MESSAGE_CONFIG_16.getIcon());
+        JLinkButton messageHistoryButton =
+            new JLinkButton(Icons.MESSAGE_CONFIG_16.getIcon());
         messageHistoryButton.addActionListener(new ActionListener()
         {
             
@@ -3281,14 +3187,13 @@ public class OpenGroove
                 context.getMessageHistoryFrame().show();
             }
         });
-        JLinkButton settingsLinkButton = new JLinkButton(Icons.SETTINGS_16
-                .getIcon());
+        JLinkButton settingsLinkButton = new JLinkButton(Icons.SETTINGS_16.getIcon());
         messageHistoryButton.setFocusable(false);
         settingsLinkButton.setFocusable(false);
         messageHistoryButton.setToolTipText(ComponentUtils
-                .htmlTipWrap("View message history and drafts"));
+            .htmlTipWrap("View message history and drafts"));
         settingsLinkButton.setToolTipText(ComponentUtils
-                .htmlTipWrap("Edit OpenGroove's Settings"));
+            .htmlTipWrap("Edit OpenGroove's Settings"));
         messageHistoryButton.setMargin(new Insets(0, 0, 0, 0));
         settingsLinkButton.setMargin(new Insets(0, 0, 0, 0));
         settingsLinkButton.addActionListener(new ActionListener()
@@ -3307,41 +3212,32 @@ public class OpenGroove
         lowerPanel.setBorder(new EmptyBorder(6, 3, 6, 20));
         context.setLocalStatusButton(new JideButton());
         context.getLocalStatusButton().setOpaque(false);
-        context.getLocalStatusButton().setButtonStyle(
-                JideButton.HYPERLINK_STYLE);
+        context.getLocalStatusButton().setButtonStyle(JideButton.HYPERLINK_STYLE);
         context.getLocalStatusButton().setIcon(
-                new ImageIcon(OpenGroove.Icons.USER_OFFLINE_16.getImage()));
+            new ImageIcon(OpenGroove.Icons.USER_OFFLINE_16.getImage()));
         context.getLocalStatusButton().addActionListener(new ActionListener()
         {
             
             @Override
             public void actionPerformed(ActionEvent e)
             {
-                context.getUserStatusMenu().show(
-                        context.getLocalStatusButton(), 0, 0);
+                context.getUserStatusMenu().show(context.getLocalStatusButton(), 0, 0);
             }
         });
-        context
-                .getLocalStatusButton()
-                .setToolTipText(
-                        ComponentUtils
-                                .htmlTipWrap("This icon represents your current status. "
-                                        + "Click for more info. Note that you cannot have "
-                                        + "the status <i>nonexistant</i> or "
-                                        + "<i>unknown</i> (only contacts can have those statuses)."));
+        context.getLocalStatusButton().setToolTipText(
+            ComponentUtils.htmlTipWrap("This icon represents your current status. "
+                + "Click for more info. Note that you cannot have "
+                + "the status <i>nonexistant</i> or "
+                + "<i>unknown</i> (only contacts can have those statuses)."));
         lowerPanel.add(context.getLocalStatusButton(), BorderLayout.WEST);
         context.setLocalUsernameButton(new JideButton());
         context.getLocalUsernameButton().setOpaque(false);
-        context.getLocalUsernameButton().setButtonStyle(
-                JideButton.HYPERLINK_STYLE);
+        context.getLocalUsernameButton().setButtonStyle(JideButton.HYPERLINK_STYLE);
         context.getLocalUsernameButton().setText(
-                Storage.getLocalUser(userid).getDisplayName());
-        context
-                .getLocalUsernameButton()
-                .setToolTipText(
-                        ComponentUtils
-                                .htmlTipWrap("Click here to change your name. Changing "
-                                        + "your name does not affect your userid."));
+            Storage.getLocalUser(userid).getDisplayName());
+        context.getLocalUsernameButton().setToolTipText(
+            ComponentUtils.htmlTipWrap("Click here to change your name. Changing "
+                + "your name does not affect your userid."));
         final JPopupMenu contactRenamePopup = new JPopupMenu();
         final JTextField contactRenameField = new JTextField(15);
         context.getLocalUsernameButton().addActionListener(new ActionListener()
@@ -3387,35 +3283,27 @@ public class OpenGroove
             {
             }
         });
-        context.getLocalUser().addChangeListener("realName",
-                new PropertyChangeListener()
-                {
-                    
-                    @Override
-                    public void propertyChange(PropertyChangeEvent evt)
-                    {
-                        context.getLocalUsernameButton().setText(
-                                context.getDisplayName());
-                        context.getLaunchbar().setTitle(
-                                context.createLaunchbarTitle());
-                        notificationFrame.reloadNotifications();
-                        refreshTrayMenu();
-                    }
-                });
-        contactRenameField.setToolTipText(ComponentUtils
-                .htmlTipWrap("Type a new name for yourself here. If you leave "
-                        + "this blank, then your userid will be used. "
-                        + "Everyone can see this."));
-        lowerPanel.add(context.getLocalUsernameButton(), BorderLayout.CENTER);
-        JMenuBar bar = loadLaunchbarMenus(userid, context, launchbar,
-                rightPanel, lowerPanel);
-        SVGPanel workspacesGradientPanel = new SVGPanel(new File[]
+        context.getLocalUser().addChangeListener("realName", new PropertyChangeListener()
         {
-            new File("icons/backdrops/workspacestab.svg")
-        }, new SVGConstraints[]
-        {
-            new SVGConstraints(true, 0, 0)
+            
+            @Override
+            public void propertyChange(PropertyChangeEvent evt)
+            {
+                context.getLocalUsernameButton().setText(context.getDisplayName());
+                context.getLaunchbar().setTitle(context.createLaunchbarTitle());
+                notificationFrame.reloadNotifications();
+                refreshTrayMenu();
+            }
         });
+        contactRenameField.setToolTipText(ComponentUtils
+            .htmlTipWrap("Type a new name for yourself here. If you leave "
+                + "this blank, then your userid will be used. " + "Everyone can see this."));
+        lowerPanel.add(context.getLocalUsernameButton(), BorderLayout.CENTER);
+        JMenuBar bar =
+            loadLaunchbarMenus(userid, context, launchbar, rightPanel, lowerPanel);
+        SVGPanel workspacesGradientPanel =
+            new SVGPanel(new File[] { new File("icons/backdrops/workspacestab.svg") },
+                new SVGConstraints[] { new SVGConstraints(true, 0, 0) });
         workspacesGradientPanel.setLayout(new BorderLayout());
         workspacesGradientPanel.setOpaque(true);
         launchbar.getContentPane().setLayout(new BorderLayout());
@@ -3427,18 +3315,13 @@ public class OpenGroove
         launchbarTabbedPane.setFocusable(false);
         content.add(launchbarTabbedPane);
         launchbar.getContentPane().add(content);
-        launchbarTabbedPane.add("Workspaces", new JScrollPane(
-                workspacesGradientPanel));
+        launchbarTabbedPane.add("Workspaces", new JScrollPane(workspacesGradientPanel));
         JPanel contactsPanel = new JPanel();
         context.setContactsPanel(contactsPanel);
         contactsPanel.setLayout(new BoxLayout(contactsPanel, BoxLayout.Y_AXIS));
-        SVGPanel contactsTab = new SVGPanel(new File[]
-        {
-            new File("icons/backdrops/contactstab.svg")
-        }, new SVGConstraints[]
-        {
-            new SVGConstraints(true, 0, 0)
-        });
+        SVGPanel contactsTab =
+            new SVGPanel(new File[] { new File("icons/backdrops/contactstab.svg") },
+                new SVGConstraints[] { new SVGConstraints(true, 0, 0) });
         contactsTab.setLayout(new BorderLayout());
         JPanel contactsNorth = new JPanel();
         contactsNorth.setOpaque(false);
@@ -3474,23 +3357,19 @@ public class OpenGroove
                 }.start();
             }
         });
-        showKnownUsers
-                .setToolTipText("<html>"
-                        + ComponentUtils
-                                .lineWrap(
-                                        "If you check this, then users that you've interacted with "
-                                                + "will be shown, in addition to your contacts. If "
-                                                + "it's not checked, only your contacts will be shown.",
-                                        "<br/>", 60));
+        showKnownUsers.setToolTipText("<html>"
+            + ComponentUtils.lineWrap(
+                "If you check this, then users that you've interacted with "
+                    + "will be shown, in addition to your contacts. If "
+                    + "it's not checked, only your contacts will be shown.", "<br/>", 60));
         context.setShowKnownUsersAsContacts(showKnownUsers);
         contactsNorth.add(pad(showKnownUsers, 2, 2));
         contactsNorth.add(pad(contactsPanel, 2, 6));
         contactsPanel.setOpaque(false);
         contactsTab.add(contactsNorth, BorderLayout.NORTH);
         contactsNorth.setOpaque(false);
-        System.out.println("p3preferred:" + contactsTab.getPreferredSize()
-                + ",p4preferred:" + contactsNorth.getPreferredSize() + ",c:"
-                + contactsPanel.getPreferredSize());
+        System.out.println("p3preferred:" + contactsTab.getPreferredSize() + ",p4preferred:"
+            + contactsNorth.getPreferredSize() + ",c:" + contactsPanel.getPreferredSize());
         launchbarTabbedPane.add("Contacts", new JScrollPane(contactsTab));
         JPanel p = new JPanel();
         p.setLayout(new BoxLayout(p, BoxLayout.Y_AXIS));
@@ -3502,10 +3381,9 @@ public class OpenGroove
         context.setWorkspacePanel(workspacePanel);
         workspacePanel.setOpaque(false);
         // workspacePanel.setBorder(BorderFactory.createLineBorder(Color.BLACK));
-        workspacePanel
-                .setLayout(new BoxLayout(workspacePanel, BoxLayout.Y_AXIS));
-        JLinkButton createWorkspaceButton = new JLinkButton(
-                tm("launchbar.workspaces.create.workspace.link"));
+        workspacePanel.setLayout(new BoxLayout(workspacePanel, BoxLayout.Y_AXIS));
+        JLinkButton createWorkspaceButton =
+            new JLinkButton(tm("launchbar.workspaces.create.workspace.link"));
         createWorkspaceButton.setFocusable(false);
         createWorkspaceButton.addActionListener(new ActionListener()
         {
@@ -3522,19 +3400,18 @@ public class OpenGroove
         p.add(pad(workspacePanel, 2, 6));
         launchbar.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
         if (context.getStorage().getConfigProperty("launchbarx") != null
-                && context.getStorage().getConfigProperty("launchbary") != null)
+            && context.getStorage().getConfigProperty("launchbary") != null)
         {
-            launchbar.setLocation(Integer.parseInt(context.getStorage()
-                    .getConfigProperty("launchbarx")), Integer.parseInt(context
-                    .getStorage().getConfigProperty("launchbary")));
+            launchbar.setLocation(Integer.parseInt(context.getStorage().getConfigProperty(
+                "launchbarx")), Integer.parseInt(context.getStorage().getConfigProperty(
+                "launchbary")));
         }
         if (context.getStorage().getConfigProperty("launchbarwidth") != null
-                && context.getStorage().getConfigProperty("launchbarheight") != null)
+            && context.getStorage().getConfigProperty("launchbarheight") != null)
         {
-            launchbar.setSize(Integer.parseInt(context.getStorage()
-                    .getConfigProperty("launchbarwidth")), Integer
-                    .parseInt(context.getStorage().getConfigProperty(
-                            "launchbarheight")));
+            launchbar.setSize(Integer.parseInt(context.getStorage().getConfigProperty(
+                "launchbarwidth")), Integer.parseInt(context.getStorage().getConfigProperty(
+                "launchbarheight")));
         }
         launchbar.addComponentListener(new ComponentListener()
         {
@@ -3547,18 +3424,16 @@ public class OpenGroove
             
             public void componentMoved(ComponentEvent e)
             {
-                context.getStorage().setConfigProperty("launchbarx",
-                        "" + launchbar.getX());
-                context.getStorage().setConfigProperty("launchbary",
-                        "" + launchbar.getY());
+                context.getStorage().setConfigProperty("launchbarx", "" + launchbar.getX());
+                context.getStorage().setConfigProperty("launchbary", "" + launchbar.getY());
             }
             
             public void componentResized(ComponentEvent e)
             {
                 context.getStorage().setConfigProperty("launchbarwidth",
-                        "" + launchbar.getWidth());
+                    "" + launchbar.getWidth());
                 context.getStorage().setConfigProperty("launchbarheight",
-                        "" + launchbar.getHeight());
+                    "" + launchbar.getHeight());
             }
             
             public void componentShown(ComponentEvent e)
@@ -3571,51 +3446,35 @@ public class OpenGroove
     
     protected static void runAddContactWizard(final UserContext context)
     {
-        String choice = ItemChooser
-                .showItemChooser(
-                        context.getLaunchbar(),
-                        "How would you like to add a contact?",
-                        new String[]
-                        {
-                                "search", "userid"
-                        },
-                        new String[]
-                        {
-                                "<html><b>Search for other users</b><br/>"
-                                        + ComponentUtils
-                                                .lineWrap(
-                                                        "You can search for users on your server or on "
-                                                                + "other servers, "
-                                                                + "or find users connected to the same network "
-                                                                + "that you are. You can only find a user this "
-                                                                + "way if the user has chosen to be publicly visible.",
-                                                        "<br/>", 60),
-                                "<html><b>Enter the user's userid</b><br/>"
-                                        + ComponentUtils
-                                                .lineWrap(
-                                                        "If you know the user's userid, you "
-                                                                + "can enter it instead of searching. OpenGroove "
-                                                                + "won't check to see if the user really does "
-                                                                + "exist until you connect to the internet. If the "
-                                                                + "user that you want to add is not publicly "
-                                                                + "visible, then this is the only way to add that user.",
-                                                        "<br/>", 60)
-                        }, true);
+        String choice =
+            ItemChooser.showItemChooser(context.getLaunchbar(),
+                "How would you like to add a contact?", new String[] { "search", "userid" },
+                new String[] {
+                    "<html><b>Search for other users</b><br/>"
+                        + ComponentUtils.lineWrap(
+                            "You can search for users on your server or on "
+                                + "other servers, "
+                                + "or find users connected to the same network "
+                                + "that you are. You can only find a user this "
+                                + "way if the user has chosen to be publicly visible.",
+                            "<br/>", 60),
+                    "<html><b>Enter the user's userid</b><br/>"
+                        + ComponentUtils.lineWrap("If you know the user's userid, you "
+                            + "can enter it instead of searching. OpenGroove "
+                            + "won't check to see if the user really does "
+                            + "exist until you connect to the internet. If the "
+                            + "user that you want to add is not publicly "
+                            + "visible, then this is the only way to add that user.",
+                            "<br/>", 60) }, true);
         if (choice == null)
             return;
         if (choice.equals("search"))
         {
-            JOptionPane
-                    .showMessageDialog(
-                            context.getLaunchbar(),
-                            "<html>"
-                                    + ComponentUtils
-                                            .lineWrap(
-                                                    "We don't currently support searching for "
-                                                            + "users. Make sure that you've chosen to receive updates "
-                                                            + "for OpenGroove, and try again after the next update "
-                                                            + "is downloaded to see if we've added support yet.",
-                                                    "<br/>", 80));
+            JOptionPane.showMessageDialog(context.getLaunchbar(), "<html>"
+                + ComponentUtils.lineWrap("We don't currently support searching for "
+                    + "users. Make sure that you've chosen to receive updates "
+                    + "for OpenGroove, and try again after the next update "
+                    + "is downloaded to see if we've added support yet.", "<br/>", 80));
             return;
         }
         assert (choice.equals("userid"));
@@ -3623,7 +3482,8 @@ public class OpenGroove
         String contactId = null;
         while (!isValidContact)
         {
-            contactId = JOptionPane.showInputDialog(context.getLaunchbar(),
+            contactId =
+                JOptionPane.showInputDialog(context.getLaunchbar(),
                     "Enter the contact's userid.");
             if (contactId == null)
                 return;
@@ -3631,17 +3491,16 @@ public class OpenGroove
             if (!Userids.isUserid(contactId))
             {
                 JOptionPane.showMessageDialog(context.getLaunchbar(),
-                        "The userid entered is not a valid userid.");
+                    "The userid entered is not a valid userid.");
                 isValidContact = false;
                 continue;
             }
             assert contactId != null;
             if (context.getStorage().getLocalUser().getContact(contactId) != null
-                    && context.getStorage().getLocalUser()
-                            .getContact(contactId).isUserContact())
+                && context.getStorage().getLocalUser().getContact(contactId).isUserContact())
             {
                 JOptionPane.showMessageDialog(context.getLaunchbar(),
-                        "The contact specified already exists.");
+                    "The contact specified already exists.");
                 isValidContact = false;
                 continue;
             }
@@ -3654,10 +3513,10 @@ public class OpenGroove
             {
                 Contact contact = context.getStorage().getContact(contactId);
                 contact.setUserContact(true);
-            } else
+            }
+            else
             {
-                Contact contact = context.getStorage().getLocalUser()
-                        .createContact();
+                Contact contact = context.getStorage().getLocalUser().createContact();
                 contact.setHasKeys(false);
                 contact.setLocalName("");
                 contact.setRealName("");
@@ -3687,98 +3546,83 @@ public class OpenGroove
     /**
      * Loads the menu bar on the launchbar.
      */
-    private static JMenuBar loadLaunchbarMenus(String userid,
-            final UserContext context, final JFrame launchbar,
-            JPanel rightPanel, JPanel lowerPanel)
+    private static JMenuBar loadLaunchbarMenus(String userid, final UserContext context,
+        final JFrame launchbar, JPanel rightPanel, JPanel lowerPanel)
     {
         JMenuBar bar = new JMenuBar();
-        final JMenu convergiaMenu = new IMenu("OpenGroove", new IMenuItem[]
-        {
-                new IMenuItem("Check for updates")
+        final JMenu convergiaMenu =
+            new IMenu("OpenGroove", new IMenuItem[] { new IMenuItem("Check for updates")
+            {
+                
+                public void actionPerformed(ActionEvent e)
                 {
-                    
-                    public void actionPerformed(ActionEvent e)
+                    new Thread()
                     {
-                        new Thread()
+                        public void run()
                         {
-                            public void run()
-                            {
-                                if (!checkForUpdates())
-                                    JOptionPane
-                                            .showMessageDialog(launchbar,
-                                                    "No updates were found. OpenGroove is up to date.");
-                            }
-                        }.start();
-                    }
-                }, new IMenuItem("Settings")
-                {
-                    
-                    public void actionPerformed(ActionEvent e)
-                    {
-                        showOptionsWindow(context);
-                    }
+                            if (!checkForUpdates())
+                                JOptionPane.showMessageDialog(launchbar,
+                                    "No updates were found. OpenGroove is up to date.");
+                        }
+                    }.start();
                 }
-        });
-        final JMenu pluginsMenu = new IMenu("Plugins", new IMenuItem[]
-        {
-            new IMenuItem("Manage plugins")
+            }, new IMenuItem("Settings")
+            {
+                
+                public void actionPerformed(ActionEvent e)
+                {
+                    showOptionsWindow(context);
+                }
+            } });
+        final JMenu pluginsMenu =
+            new IMenu("Plugins", new IMenuItem[] { new IMenuItem("Manage plugins")
             {
                 
                 public void actionPerformed(ActionEvent e)
                 {
                     PluginManager.showManageInstalledPluginsDialog();
                 }
-            }
-        });
+            } });
         launchbar.setAlwaysOnTop((Boolean) context
-                .getSetting(SETTING_SPEC_LAUNCHBAR_ALWAYS_ON_TOP));
+            .getSetting(SETTING_SPEC_LAUNCHBAR_ALWAYS_ON_TOP));
         context.getSettingsManager().addSettingListener(
-                SETTING_SPEC_LAUNCHBAR_ALWAYS_ON_TOP, new SettingListener()
+            SETTING_SPEC_LAUNCHBAR_ALWAYS_ON_TOP, new SettingListener()
+            {
+                
+                public void settingChanged(SettingSpec spec, Object newValue)
                 {
-                    
-                    public void settingChanged(SettingSpec spec, Object newValue)
-                    {
-                        launchbar.setAlwaysOnTop((Boolean) newValue);
-                    }
-                });
-        JMenu helpMenu = new IMenu("Help", new IMenuItem[]
-        {
-                new IMenuItem("Help")
-                {
-                    
-                    public void actionPerformed(ActionEvent e)
-                    {
-                        context.getHelpViewer().show();
-                    }
-                }, new IMenuItem("Contact us")
-                {
-                    
-                    public void actionPerformed(ActionEvent e)
-                    {
-                        JOptionPane
-                                .showMessageDialog(launchbar,
-                                        "Questions? Comments? Send an email to support@opengroove.org");
-                    }
-                }, new IMenuItem("About")
-                {
-                    
-                    public void actionPerformed(ActionEvent e)
-                    {
-                        showAboutWindow();
-                    }
+                    launchbar.setAlwaysOnTop((Boolean) newValue);
                 }
-        });
-        JComponent[] menus = new JComponent[]
+            });
+        JMenu helpMenu = new IMenu("Help", new IMenuItem[] { new IMenuItem("Help")
         {
-                convergiaMenu, pluginsMenu, helpMenu
-        };
+            
+            public void actionPerformed(ActionEvent e)
+            {
+                context.getHelpViewer().show();
+            }
+        }, new IMenuItem("Contact us")
+        {
+            
+            public void actionPerformed(ActionEvent e)
+            {
+                JOptionPane.showMessageDialog(launchbar,
+                    "Questions? Comments? Send an email to support@opengroove.org");
+            }
+        }, new IMenuItem("About")
+        {
+            
+            public void actionPerformed(ActionEvent e)
+            {
+                showAboutWindow();
+            }
+        } });
+        JComponent[] menus = new JComponent[] { convergiaMenu, pluginsMenu, helpMenu };
         double[] colSpecs = new double[menus.length + 1];
         Arrays.fill(colSpecs, 0, menus.length, TableLayout.PREFERRED);
         colSpecs[menus.length] = TableLayout.FILL;
-        bar.setLayout(new TableLayout(colSpecs, new double[]
-        {
-                TableLayout.PREFERRED, 6, TableLayout.PREFERRED, 3
-        }));
+        bar.setLayout(new TableLayout(colSpecs, new double[] { TableLayout.PREFERRED, 6,
+            TableLayout.PREFERRED, 3 }));
         for (int i = 0; i < menus.length; i++)
         {
             // menus[i].setOpaque(false);
@@ -3828,19 +3672,15 @@ public class OpenGroove
      * 
      * @param dialog
      */
-    private static void showStatusInfo(UserContext context,
-            ConfigureOpenGrooveDialog dialog)
+    private static void showStatusInfo(UserContext context, ConfigureOpenGrooveDialog dialog)
     {
         CommandCommunicator ocom = context.getCom();
         Socket socket = ocom.getCommunicator().getSocket();
         dialog.getMConnectedServerLabel().setText(
-                socket == null ? "N/A" : ocom.getCommunicator()
-                        .getConnectedHost());
+            socket == null ? "N/A" : ocom.getCommunicator().getConnectedHost());
         dialog.getMConnectedPortLabel().setText(
-                socket == null ? "N/A" : ""
-                        + ocom.getCommunicator().getConnectedPort());
-        dialog.getMConnectivityStatus().setText(
-                socket == null ? "offline" : "online");
+            socket == null ? "N/A" : "" + ocom.getCommunicator().getConnectedPort());
+        dialog.getMConnectivityStatus().setText(socket == null ? "offline" : "online");
         dialog.getMConnectionSecurityStatus().setText("secure");
         /*
          * All connections are secured with the change to the new realm server
@@ -3876,18 +3716,17 @@ public class OpenGroove
      */
     public static BufferedImage scaleImage(Image image, int width, int height)
     {
-        BufferedImage b = new BufferedImage(width, height,
-                BufferedImage.TYPE_INT_ARGB);
+        BufferedImage b = new BufferedImage(width, height, BufferedImage.TYPE_INT_ARGB);
         Graphics2D g = b.createGraphics();
         g.setRenderingHint(RenderingHints.KEY_ANTIALIASING,
-                RenderingHints.VALUE_ANTIALIAS_ON);
+            RenderingHints.VALUE_ANTIALIAS_ON);
         /*
          * Now we do the actual scaling. The buffered image construction is
          * really only for other methods that use one; the actual scaling is
          * done by the Image class itself.
          */
-        g.drawImage(image.getScaledInstance(width, height,
-                Image.SCALE_AREA_AVERAGING), 0, 0, width, height, null);
+        g.drawImage(image.getScaledInstance(width, height, Image.SCALE_AREA_AVERAGING), 0,
+            0, width, height, null);
         return b;
     }
     
@@ -3909,13 +3748,13 @@ public class OpenGroove
         {
             // TODO Dec 7, 2007 Auto-generated catch block
             throw new RuntimeException("TODO auto generated on Dec 7, 2007 : "
-                    + e.getClass().getName() + " - " + e.getMessage(), e);
+                + e.getClass().getName() + " - " + e.getMessage(), e);
         }
         catch (IOException e)
         {
             // TODO Dec 7, 2007 Auto-generated catch block
             throw new RuntimeException("TODO auto generated on Dec 7, 2007 : "
-                    + e.getClass().getName() + " - " + e.getMessage(), e);
+                + e.getClass().getName() + " - " + e.getMessage(), e);
         }
     }
     
@@ -3980,17 +3819,15 @@ public class OpenGroove
      */
     public static synchronized String generateId(UserContext context)
     {
-        return context.getUserid().replace(":", "..") + "-"
-                + System.currentTimeMillis() + "-"
-                + nextGenId.getAndIncrement();
+        return context.getUserid().replace(":", "..") + "-" + System.currentTimeMillis()
+            + "-" + nextGenId.getAndIncrement();
     }
     
     /**
      * This is now obsolete (it will be replaced by the concept of
      * LanguageContexts) and will be removed once I'm sure it's not used by
      * anything else. However, I may end up deciding to keep it and have it
-     * delegate to the current language context for OpenGroove.<br/>
-     * <br/>
+     * delegate to the current language context for OpenGroove.<br/> <br/>
      * 
      * shorthand for TextManager.text(key);
      * 
@@ -4029,7 +3866,7 @@ public class OpenGroove
      * @return
      */
     public static boolean showConfigWindow(UserContext context,
-            final WorkspaceWrapper workspace, JFrame frame)
+        final WorkspaceWrapper workspace, JFrame frame)
     {
         /*
          * TODO: actually implement this method. It was implemented, but it was
@@ -4084,8 +3921,7 @@ public class OpenGroove
      * @param allowedMembersModel
      * @param allowedUsers
      */
-    private static void addAllToModel(DefaultListModel allowedMembersModel,
-            List allowedUsers)
+    private static void addAllToModel(DefaultListModel allowedMembersModel, List allowedUsers)
     {
         for (Object o : allowedUsers)
         {
@@ -4125,46 +3961,19 @@ public class OpenGroove
      * 
      * @param username
      */
-    public static void showUserInformationDialog(UserContext context,
-            String username)
+    public static void showUserInformationDialog(UserContext context, String username)
     {
         showUserInformationDialog(username, context.getLaunchbar());
     }
     
-    private static final String[][] userInfoLabels = new String[][]
-    {
-            new String[]
-            {
-                    "version_major", "Major version number"
-            }, new String[]
-            {
-                    "version_minor", "Minor version number"
-            }, new String[]
-            {
-                    "version_update", "Update version number"
-            }, new String[]
-            {
-                    "version_string", "Version"
-            }, new String[]
-            {
-                    "version_build", "Build number"
-            }, new String[]
-            {
-                    "", ""
-            }, new String[]
-            {
-                    "", ""
-            }, new String[]
-            {
-                    "", ""
-            }, new String[]
-            {
-                    "", ""
-            }, new String[]
-            {
-                    "", ""
-            }
-    };
+    private static final String[][] userInfoLabels =
+        new String[][] { new String[] { "version_major", "Major version number" },
+            new String[] { "version_minor", "Minor version number" },
+            new String[] { "version_update", "Update version number" },
+            new String[] { "version_string", "Version" },
+            new String[] { "version_build", "Build number" }, new String[] { "", "" },
+            new String[] { "", "" }, new String[] { "", "" }, new String[] { "", "" },
+            new String[] { "", "" } };
     
     /**
      * see showUserInformationDialog(username).
@@ -4219,7 +4028,8 @@ public class OpenGroove
         ENABLED, DISABLED, UNKNOWN
     }
     
-    private static WindowTransparencyMode useWindowTransparency = WindowTransparencyMode.UNKNOWN;
+    private static WindowTransparencyMode useWindowTransparency =
+        WindowTransparencyMode.UNKNOWN;
     
     /**
      * returns true if window transparency is to be used, false otherwise.
@@ -4313,7 +4123,8 @@ public class OpenGroove
         if (c instanceof JMenu)
         {
             children = ((JMenu) c).getMenuComponents();
-        } else if (c instanceof Container)
+        }
+        else if (c instanceof Container)
         {
             children = ((Container) c).getComponents();
         }
@@ -4326,7 +4137,8 @@ public class OpenGroove
         }
     }
     
-    public static final String PUBLIC_ADDON_LIST_URL = "http://trivergia.com:8080/ptl.properties";
+    public static final String PUBLIC_ADDON_LIST_URL =
+        "http://trivergia.com:8080/ptl.properties";
     
     private static long lastUsedTime = 0;
     
@@ -4371,8 +4183,7 @@ public class OpenGroove
             File tempWrite = File.createTempFile("opengroovetemp", ".jar");
             System.out.println("tempwrite:" + tempWrite);
             tempWrite.deleteOnExit();
-            JarOutputStream output = new JarOutputStream(new FileOutputStream(
-                    tempWrite));
+            JarOutputStream output = new JarOutputStream(new FileOutputStream(tempWrite));
             output.putNextEntry(new ZipEntry("META-INF/MANIFEST.MF"));
             mf.write(output);
             System.out.println("manifest:");
@@ -4382,7 +4193,7 @@ public class OpenGroove
             for (JarEntry entry : Collections.list(source.entries()))
             {
                 if (entry.getName().equals("META-INF/MANIFEST.MF")
-                        || entry.getName().equals("META-INF/MANIFEST.MF"))
+                    || entry.getName().equals("META-INF/MANIFEST.MF"))
                 {
                     System.out.println("entry is a manifest");
                     continue;
@@ -4395,8 +4206,7 @@ public class OpenGroove
             output.close();
             System.out.println("source is " + source.getName());
             System.out.println("target is " + target.getPath());
-            if (source.getName() != null
-                    && source.getName().equals(target.getPath()))
+            if (source.getName() != null && source.getName().equals(target.getPath()))
             {
                 System.out.println("names are the same");
                 source.close();
@@ -4407,12 +4217,11 @@ public class OpenGroove
                 tempDiscard = File.createTempFile("convergiatemp", ".jar");
                 System.out.println(tempDiscard.delete());
                 tempDiscard.deleteOnExit();
-                System.out.println("renaming target " + target
-                        + " to tempdiscard " + tempDiscard);
+                System.out.println("renaming target " + target + " to tempdiscard "
+                    + tempDiscard);
                 longRename(target, tempDiscard);
             }
-            System.out.println("renaming tempwrite " + tempWrite
-                    + " to target " + target);
+            System.out.println("renaming tempwrite " + tempWrite + " to target " + target);
             longRename(tempWrite, target);
             tempDiscard.delete();
         }
