@@ -1,16 +1,22 @@
 package net.sf.opengroove.client.loader;
 
+import java.awt.BorderLayout;
 import java.io.File;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.util.prefs.Preferences;
 
 import javax.imageio.ImageIO;
+import javax.swing.BoxLayout;
 import javax.swing.JButton;
+import javax.swing.JDialog;
 import javax.swing.JFrame;
+import javax.swing.JLabel;
 import javax.swing.JOptionPane;
+import javax.swing.JPanel;
 import javax.swing.JProgressBar;
 import javax.swing.JTextArea;
+import javax.swing.border.EmptyBorder;
 
 import org.tmatesoft.svn.core.SVNNodeKind;
 import org.tmatesoft.svn.core.wc.SVNEventAction;
@@ -26,26 +32,34 @@ public class UpdateGUI implements CustomGUI
     
     public void buildComplete()
     {
-        // TODO Auto-generated method stub
-        
+        textArea.append("Build complete.");
+        progress.setString("Build complete.");
+        try
+        {
+            Thread.sleep(500);
+        }
+        catch (InterruptedException e)
+        {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
+        frame.dispose();
+        return;
     }
     
     public void buildStarted()
     {
-        // TODO Auto-generated method stub
-        
+        progress.setString("Running build script...");
+        textArea.append("Running build script...");
     }
     
     public void buildStatus(String arg0)
     {
-        // TODO Auto-generated method stub
-        
+        textArea.append(arg0 + "\n");
     }
     
     public void checkingForUpdates()
     {
-        // TODO Auto-generated method stub
-        
     }
     
     public boolean error(Throwable arg0, boolean arg1)
@@ -71,6 +85,7 @@ public class UpdateGUI implements CustomGUI
             e.printStackTrace();
         }
         frame.dispose();
+        return true;
     }
     
     public void init(Preferences prefs)
@@ -95,20 +110,46 @@ public class UpdateGUI implements CustomGUI
     
     public void needsUpdate()
     {
-        // TODO Auto-generated method stub
-        
+        frame.show();
+        progress.setString("");
+        textArea.setText("Updates are available.");
     }
     
     public boolean shouldTryUpdate()
     {
-        // TODO Auto-generated method stub
-        return false;
+        throw new RuntimeException(
+            "OpenGroove auto updater should only be used in tag mode.");
     }
+    
+    private boolean shouldUpdate = false;
     
     public boolean shouldUpdate(ChangelogEntry[] arg0)
     {
-        // TODO Auto-generated method stub
-        return false;
+        JDialog dialog = new JDialog(frame, "", true);
+        JPanel inner = new JPanel();
+        inner.setLayout(new BorderLayout());
+        inner.setBorder(new EmptyBorder(10, 10, 10, 10));
+        dialog.getContentPane().add(inner);
+        JPanel lower = new JPanel();
+        lower.setLayout(new BorderLayout());
+        inner.add(lower, BorderLayout.SOUTH);
+        JPanel lowerRight = new JPanel();
+        lowerRight.setLayout(new BoxLayout(lowerRight, BoxLayout.X_AXIS));
+        lower.add(lowerRight, BorderLayout.EAST);
+        JButton ok = new JButton("Install updates");
+        JButton cancel = new JButton("Don't install updates");
+        dialog.setSize(400, 500);
+        lowerRight.add(ok);
+        lowerRight.add(cancel);
+        JPanel middle = new JPanel();
+        middle.setBorder(new EmptyBorder(0, 0, 10, 0));
+        inner.add(middle);
+        middle.add(new JLabel("<html>Updates are available.<br/>"
+            + "Would you like to install them?"), BorderLayout.NORTH);
+        /*
+         * Build changelog inside dialog and show dialog, prompting user whether
+         * to update, then return status from this method
+         */
     }
     
     public void upToDate(boolean arg0)
