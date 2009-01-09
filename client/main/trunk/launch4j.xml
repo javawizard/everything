@@ -1,6 +1,7 @@
 <launch4jConfig>
   <dontWrapJar>true</dontWrapJar>
   <headerType>gui</headerType>
+  <jar></jar>
   <outfile>opengroove.exe</outfile>
   <errTitle>OpenGroove</errTitle>
   <cmdLine></cmdLine>
@@ -10,6 +11,8 @@
   <supportUrl>http://www.opengroove.org/opengroove-error</supportUrl>
   <customProcName>true</customProcName>
   <stayAlive>false</stayAlive>
+  <manifest></manifest>
+  <icon></icon>
   <classPath>
     <mainClass>net.sf.opengroove.client.loader.Loader</mainClass>
     <cp>classes</cp>
@@ -19,10 +22,9 @@
     <path></path>
     <minVersion>1.6.0</minVersion>
     <maxVersion></maxVersion>
-    <jdkPreference>preferJre</jdkPreference>
+    <jdkPreference>preferJdk</jdkPreference>
     <initialHeapSize>8</initialHeapSize>
     <maxHeapSize>128</maxHeapSize>
-    <opt>-splash:icons/splashscreen.png</opt>
   </jre>
   <versionInfo>
     <fileVersion>0.2.7.1049</fileVersion>
