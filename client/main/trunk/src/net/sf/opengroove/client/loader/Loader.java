@@ -66,6 +66,7 @@ public class Loader
                  * state where clients can't update. We should also reset to the
                  * first level available if the default level doesn't exist.
                  */
+                writeFile(" ", new File(updatesFolder, "updateinprogress"));
                 AutomatedUpdate.main(new String[] { "-tagmode", "-changelog",
                     "-repositoryurl", REPOSITORY, "-moduleurl", modulePath,
                     "-applicationdirectory", ".", "-launchant", "-customgui",
@@ -81,6 +82,7 @@ public class Loader
                  * fail after they begin, then OpenGroove would not start until
                  * updates succeed at least once after that.
                  */
+                new File(updatesFolder, "updateinprogress").delete();
                 updatesAvailableFile.delete();
                 writeFile(" ", new File(updatesFolder, "updated"));
             }
