@@ -8,91 +8,66 @@
      Alexander Boyd                                                              
      ====================================================================== -->
 <project name="OpenGroove" default="deploy">
-    <description>
+	<description>
 
-    </description>
-    <target name="deploy">
-        <property name="ecj.javac.jar"
-                  location="${basedir}/lib/ecj-3.4.1.jar" />
+	</description>
+	<target name="deploy">
+		<echo level="info" message="Building OpenGroove classes from source..." />
+		<mkdir dir="${basedir}/classes" />
+		<javac compiler="org.eclipse.jdt.core.JDTCompilerAdapter" srcdir="${basedir}/src" destdir="${basedir}/classes">
+			<classpath>
+				<fileset dir="${basedir}/lib" />
+				<fileset dir="${basedir}/classes" />
+			</classpath>
+		</javac>
+	</target>
 
-        <echo level="info"
-              message="Building OpenGroove classes from source..." />
-        <mkdir dir="${basedir}/classes" />
-        <java classpath="${basedir}/lib/ecj-3.4.1.jar"
-              classname="org.eclipse.jdt.internal.compiler.batch.Main">
-            <arg value="-classpath"/>
-            <arg value="${basedir}/lib/*"/>
-            <arg value="-sourcepath"/>
-            <arg value="${basedir}/src"/>
-            <arg value="-d"/>
-            <arg value="${basedir}/classes"/>
-            <arg value="*.java"/>
-        </java>
-    </target>
-
-    <!-- ================================= 
+	<!-- ================================= 
           target: default              
          ================================= -->
-    <target name="javadoc">
-        <javadoc access="private"
-                 destdir="javadocs"
-                 additionalparam="-J-Dfile.encoding=UTF-8 -subpackages net.sf.opengroove"
-                 author="true"
-                 source="1.6"
-                 sourcepath="src"
-                 splitindex="true"
-                 use="true"
-                 version="true"
-                 doctitle="OpenGroove Client Documentation"
-                 footer="&lt;a href='http://www.opengroove.org'&gt;OpenGroove&lt;/a&gt;">
-            <link href="http://java.sun.com/javase/6/docs/api/" />
-        </javadoc>
-    </target>
-    <target name="jar"
-            description="creates a jar file, excluding the folder appdata and the jar file opengrooveupdates.jar, and saves it to opengrooveupdates.jar">
+	<target name="javadoc">
+		<javadoc access="private" destdir="javadocs" additionalparam="-J-Dfile.encoding=UTF-8 -subpackages net.sf.opengroove" author="true" source="1.6" sourcepath="src" splitindex="true" use="true" version="true" doctitle="OpenGroove Client Documentation" footer="&lt;a href='http://www.opengroove.org'&gt;OpenGroove&lt;/a&gt;">
+			<link href="http://java.sun.com/javase/6/docs/api/" />
+		</javadoc>
+	</target>
+	<target name="jar" description="creates a jar file, excluding the folder appdata and the jar file opengrooveupdates.jar, and saves it to opengrooveupdates.jar">
 
-        <jar destfile="opengrooveupdates.jar">
+		<jar destfile="opengrooveupdates.jar">
 
-            <fileset dir=".">
-                <include name="**/*" />
-                <exclude name="**/*.svn" />
-                <exclude name="convergiaupdates.jar" />
-                <exclude name="opengrooveupdates.jar" />
-                <exclude name="appdata/**/*" />
-                <exclude name="plugins/**/*" />
-                <exclude name="devplugins/**/*" />
-                <exclude name="javadocs/**/*" />
-            </fileset>
-        </jar>
-    </target>
+			<fileset dir=".">
+				<include name="**/*" />
+				<exclude name="**/*.svn" />
+				<exclude name="convergiaupdates.jar" />
+				<exclude name="opengrooveupdates.jar" />
+				<exclude name="appdata/**/*" />
+				<exclude name="plugins/**/*" />
+				<exclude name="devplugins/**/*" />
+				<exclude name="javadocs/**/*" />
+			</fileset>
+		</jar>
+	</target>
 
-    <target name="upload"
-            depends="jar"
-            description="creates a jar file, then uploads it to the server. the update versionindex will be incremented by one.">
-        <get dest="tmpupd.properties" src="http://sysup.ogis.opengroove.org" />
-        <echo message="running iversion..." />
-        <java classpath="classes"
-              fork="true"
-              failonerror="true"
-              dir="."
-              classname="com.trivergia.intouch3.uploader.IVersion">
-        </java>
-        <echo message="uploading jar..." />
-        <exec executable="rsync" failonerror="true">
-            <arg value="-v" />
-            <arg value="-e" />
-            <arg value="ssh -i /c/id_rsa" />
-            <arg value="opengrooveupdates.jar" />
-            <arg value="root@trivergia.com:/apache/tomcat/webapps/ROOT/opengrooveupdates.jar" />
-        </exec>
-        <echo message="uploading descriptor..." />
-        <exec executable="rsync" failonerror="true">
-            <arg value="-v" />
-            <arg value="-e" />
-            <arg value="ssh -i /c/id_rsa" />
-            <arg value="opengrooveupdates.properties" />
-            <arg value="root@trivergia.com:/apache/tomcat/webapps/ROOT/opengrooveupdates.properties" />
-        </exec>
-        <echo message="done." />
-    </target>
+	<target name="upload" depends="jar" description="creates a jar file, then uploads it to the server. the update versionindex will be incremented by one.">
+		<get dest="tmpupd.properties" src="http://sysup.ogis.opengroove.org" />
+		<echo message="running iversion..." />
+		<java classpath="classes" fork="true" failonerror="true" dir="." classname="com.trivergia.intouch3.uploader.IVersion">
+		</java>
+		<echo message="uploading jar..." />
+		<exec executable="rsync" failonerror="true">
+			<arg value="-v" />
+			<arg value="-e" />
+			<arg value="ssh -i /c/id_rsa" />
+			<arg value="opengrooveupdates.jar" />
+			<arg value="root@trivergia.com:/apache/tomcat/webapps/ROOT/opengrooveupdates.jar" />
+		</exec>
+		<echo message="uploading descriptor..." />
+		<exec executable="rsync" failonerror="true">
+			<arg value="-v" />
+			<arg value="-e" />
+			<arg value="ssh -i /c/id_rsa" />
+			<arg value="opengrooveupdates.properties" />
+			<arg value="root@trivergia.com:/apache/tomcat/webapps/ROOT/opengrooveupdates.properties" />
+		</exec>
+		<echo message="done." />
+	</target>
 </project>
