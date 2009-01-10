@@ -19,7 +19,7 @@ public abstract class EngineWriter
      * marked as the date for the resulting delta that can be taken from this
      * writer.
      */
-    public void finish();
+    public abstract void finish();
     
     /**
      * Returns this writer's delta. This throws an IllegalStateException if
@@ -28,5 +28,5 @@ public abstract class EngineWriter
      * 
      * @return
      */
-    public Delta getDelta();
+    public abstract Delta getDelta();
 }

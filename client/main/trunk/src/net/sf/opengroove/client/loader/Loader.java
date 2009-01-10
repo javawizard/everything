@@ -68,8 +68,8 @@ public class Loader
                  */
                 writeFile(" ", new File(updatesFolder, "updateinprogress"));
                 AutomatedUpdate.main(new String[] { "-tagmode", "-changelog",
-                    "-repositoryurl", REPOSITORY, "-moduleurl", modulePath,
-                    "-applicationdirectory", ".", "-launchant", "-customgui",
+                    "-repositoryurl", REPOSITORY, "-moduleurl", modulePath, "-antlocation",
+                    "lib", "-applicationdirectory", ".", "-launchant", "-customgui",
                     "net.sf.opengroove.client.loader.UpdateGUI" });
                 /*
                  * Right now, OpenGroove is still run, even if updates fail.
