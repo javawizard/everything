@@ -25,7 +25,6 @@ import java.util.concurrent.atomic.AtomicInteger;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 
-import net.sf.opengroove.client.workspace.WorkspaceWrapper;
 import net.sf.opengroove.common.proxystorage.ProxyStorage;
 import net.sf.opengroove.common.security.Hash;
 import net.sf.opengroove.common.utils.DataUtils;
