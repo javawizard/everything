@@ -22,7 +22,7 @@
               classname="org.eclipse.jdt.internal.compiler.batch.Main">
             <arg value="-classpath"/>
             <arg value="${basedir}/lib/*"/>
-            <arg value="-srcdir"/>
+            <arg value="-sourcepath"/>
             <arg value="${basedir}/src"/>
             <arg value="-d"/>
             <arg value="${basedir}/classes"/>
