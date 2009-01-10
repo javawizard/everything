@@ -21,7 +21,8 @@
                destdir="${basedir}/classes"
                debug="on"
                debuglevel="lines,vars,source"
-               nowarn="true">
+               nowarn="true"
+               encoding="UTF8">
             <classpath>
                 <fileset dir="${basedir}/lib" />
             </classpath>
