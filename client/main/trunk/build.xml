@@ -26,6 +26,7 @@
             <arg value="${basedir}/src"/>
             <arg value="-d"/>
             <arg value="${basedir}/classes"/>
+            <arg value="*.java"/>
         </java>
     </target>
 
