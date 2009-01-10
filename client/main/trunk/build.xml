@@ -13,8 +13,11 @@
 	</description>
 	<target name="deploy">
 		<echo level="info" message="Building OpenGroove classes from source..." />
-		<mkdir dir="${basedir}/classes"/>
-		<javac classpath="${basedir}/lib/*" srcdir="${basedir}/src" destdir="${basedir}/classes" />
+		<mkdir dir="${basedir}/classes" />
+		<javac classpath="${basedir}/lib/*" srcdir="${basedir}/src" destdir="${basedir}/classes">
+			<classpath path="${basedir}/classes" />
+			<classpath path="${basedir}/lib/*" />
+		</javac>
 	</target>
 
 	<!-- ================================= 
