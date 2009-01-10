@@ -15,7 +15,7 @@
         <echo level="info"
               message="Building OpenGroove classes from source..." />
         <mkdir dir="${basedir}/classes" />
-        <javac compiler="org.eclipse.jdt.core.JDTCompilerAdapter"
+        <javac fork="true" compiler="org.eclipse.jdt.core.JDTCompilerAdapter"
                srcdir="${basedir}/src"
                destdir="${basedir}/classes">
             <compilerarg value="-Xboostrap=${basedir}/lib/eclipse-3.4.1.jar" />
