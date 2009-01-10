@@ -15,8 +15,8 @@
         <echo level="info"
               message="Building OpenGroove classes from source..." />
         <mkdir dir="${basedir}/classes" />
-        <property name="ant.build.javac.target" value="1.5"/>
-        <property name="ant.build.javac.source" value="1.5"/>
+        <property name="ant.build.javac.target" value="1.6"/>
+        <property name="ant.build.javac.source" value="1.6"/>
         <javac compiler="org.eclipse.jdt.core.JDTCompilerAdapter"
                srcdir="${basedir}/src"
                destdir="${basedir}/classes">
