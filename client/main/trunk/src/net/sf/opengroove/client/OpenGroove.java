@@ -41,7 +41,6 @@ import java.math.BigInteger;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.ServerSocket;
-import java.net.Socket;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
@@ -73,14 +72,12 @@ import javax.swing.Icon;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
-import javax.swing.JCheckBoxMenuItem;
 import javax.swing.JComponent;
 import javax.swing.JFileChooser;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JMenu;
 import javax.swing.JMenuBar;
-import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JPasswordField;
@@ -100,8 +97,6 @@ import javax.swing.event.PopupMenuEvent;
 import javax.swing.event.PopupMenuListener;
 import javax.swing.filechooser.FileNameExtensionFilter;
 
-import org.bouncycastle.jce.provider.BouncyCastleProvider;
-
 import net.sf.opengroove.client.com.CommandCommunicator;
 import net.sf.opengroove.client.com.Communicator;
 import net.sf.opengroove.client.com.FailedResponseException;
@@ -109,13 +104,11 @@ import net.sf.opengroove.client.com.FieldFile;
 import net.sf.opengroove.client.com.MessageAvailableListener;
 import net.sf.opengroove.client.com.Packet;
 import net.sf.opengroove.client.com.ServerContext;
-import net.sf.opengroove.client.com.ServerSecurityKey;
 import net.sf.opengroove.client.com.StatusListener;
 import net.sf.opengroove.client.com.SubscriptionListener;
 import net.sf.opengroove.client.com.UserNotificationListener;
 import net.sf.opengroove.client.com.FieldFile.Fields;
 import net.sf.opengroove.client.com.model.Subscription;
-import net.sf.opengroove.client.features.FeatureManager;
 import net.sf.opengroove.client.messaging.MessageHierarchy;
 import net.sf.opengroove.client.messaging.MessageManager;
 import net.sf.opengroove.client.messaging.NullHierarchy;
@@ -134,7 +127,6 @@ import net.sf.opengroove.client.storage.InboundMessage;
 import net.sf.opengroove.client.storage.LocalUser;
 import net.sf.opengroove.client.storage.Storage;
 import net.sf.opengroove.client.text.TextManager;
-import net.sf.opengroove.client.ui.ConfigureOpenGrooveDialog;
 import net.sf.opengroove.client.ui.FillContainer;
 import net.sf.opengroove.client.ui.ItemChooser;
 import net.sf.opengroove.client.ui.SVGConstraints;
@@ -146,13 +138,13 @@ import net.sf.opengroove.client.ui.frames.LoginFrame;
 import net.sf.opengroove.client.ui.frames.MessageHistoryFrame;
 import net.sf.opengroove.client.ui.frames.UserNotificationFrame;
 import net.sf.opengroove.client.ui.transitions.included.SlideInNotificationFrameTransition;
-import net.sf.opengroove.client.workspace.WorkspaceManager;
-import net.sf.opengroove.client.workspace.WorkspaceWrapper;
 import net.sf.opengroove.common.concurrent.Conditional;
 import net.sf.opengroove.common.security.Hash;
 import net.sf.opengroove.common.security.RSA;
 import net.sf.opengroove.common.ui.ComponentUtils;
 import net.sf.opengroove.common.utils.Userids;
+
+import org.bouncycastle.jce.provider.BouncyCastleProvider;
 
 import com.jidesoft.dialog.AbstractDialogPage;
 import com.jidesoft.dialog.ButtonNames;
@@ -2827,16 +2819,6 @@ public class OpenGroove
         return false;
     }
     
-    /**
-     * Loads all of the feature plugins and gets them up and running. The
-     * PluginManager is responsible for actually loading the feature classes,
-     * but the feature manager initializes them.
-     */
-    private static void loadFeatures()
-    {
-        FeatureManager.loadFeatures();
-    }
-    
     private static HashMap<String, Class<LookAndFeel>> lookAndFeelClasses =
         new HashMap<String, Class<LookAndFeel>>();
     
@@ -3000,119 +2982,6 @@ public class OpenGroove
             }
         }
         return false;
-    }
-    
-    /**
-     * reloads the panel in the launchbar that shows the user's workspaces.
-     */
-    public static void reloadLaunchbarWorkspaces(final UserContext context)
-    {
-        JPanel workspacePanel = context.getWorkspacePanel();
-        synchronized (workspacePanel)
-        {
-            System.out.println("repainting workspace panel");
-            WorkspaceWrapper[] workspaces = context.getWorkspaceManager().getAll();
-            workspacePanel.removeAll();
-            PopupMenu workspacesSubMenu = context.getWorkspacesSubMenu();
-            workspacesSubMenu.removeAll();
-            for (final WorkspaceWrapper w : workspaces)
-            {
-                System.out.println("**got to 5");
-                JLinkButton mainButton = new JLinkButton(w.getName());
-                String participantList = delimited(w.getParticipants(), "<br/>");
-                mainButton.setToolTipText("<html><b>Type</b>: "
-                    + w.getPluginMetadata().getProperty("name") + "<br/><b>Creator</b>: "
-                    + WorkspaceManager.getWorkspaceCreator(w.getId())
-                    + "<br/><b>Participants</b>:<br/>" + participantList);
-                mainButton.setFocusable(false);
-                System.out.println("***got to 6");
-                JLinkButton configureButton =
-                    new JLinkButton(new ImageIcon(Icons.CONFIGURE_WORKSPACE_16.getImage()));
-                System.out.println("***got to 7");
-                JLinkButton deleteButton =
-                    new JLinkButton(new ImageIcon(Icons.DELETE_WORKSPACE_16.getImage()));
-                JLinkButton inviteToButton =
-                    new JLinkButton(new ImageIcon(Icons.INVITE_TO_WORKSPACE_16.getImage()));
-                System.out.println("***got to 8");
-                deleteButton.setFocusable(false);
-                configureButton.setFocusable(false);
-                inviteToButton.setFocusable(false);
-                JPanel p = new JPanel();
-                p.setLayout(new BoxLayout(p, BoxLayout.X_AXIS));
-                p.add(pad(deleteButton, 1, 1));
-                p.add(pad(configureButton, 1, 1));
-                if (w.isMine())
-                    p.add(pad(inviteToButton, 1, 1));
-                p.add(pad(mainButton, 1, 1));
-                mainButton.setOpaque(false);
-                configureButton.setOpaque(false);
-                deleteButton.setOpaque(false);
-                p.setOpaque(false);
-                configureButton.setToolTipText("Configure this workspace and edit settings");
-                inviteToButton.setToolTipText("Invite someone to this workspace");
-                deleteButton.setToolTipText("Delete this workspace");
-                configureButton.addActionListener(new ActionListener()
-                {
-                    public void actionPerformed(ActionEvent e)
-                    {
-                        showConfigWindow(context, w);
-                    }
-                });
-                mainButton.addActionListener(new ActionListener()
-                {
-                    public void actionPerformed(ActionEvent e)
-                    {
-                        w.getWorkspace().userActivate();
-                    }
-                });
-                MenuItem item = new MenuItem(w.getName());
-                workspacesSubMenu.add(item);
-                item.addActionListener(mainButton.getActionListeners()[mainButton
-                    .getActionListeners().length - 1]);
-                if (w.getWorkspace().isNeedsAttention())
-                    p.add(pad(new JLabel(
-                        new ImageIcon(Icons.WORKSPACE_WARNING_16.getImage())), 1, 1));
-                if (w.getWorkspace().isHasNewInformation())
-                    p.add(pad(new JLabel(new ImageIcon(Icons.WORKSPACE_INFO_16.getImage())),
-                        1, 1));
-                p.setAlignmentX(0);
-                p.setAlignmentY(0);
-                workspacePanel.add(p);
-            }
-            workspacePanel.invalidate();
-            workspacePanel.validate();
-            workspacePanel.repaint();
-            try
-            {
-                Thread.sleep(50);
-            }
-            catch (InterruptedException e)
-            {
-                // TODO Dec 7, 2007 Auto-generated catch block
-                throw new RuntimeException("TODO auto generated on Dec 7, 2007 : "
-                    + e.getClass().getName() + " - " + e.getMessage(), e);
-            }
-            workspacePanel.invalidate();
-            workspacePanel.validate();
-            workspacePanel.repaint();
-            JFrame launchbar = context.getLaunchbar();
-            launchbar.invalidate();
-            launchbar.validate();
-            launchbar.repaint();
-        }
-        System.out.println("workspace panel repainted.");
-    }
-    
-    /**
-     * Shows the Options window (more appropriately dialog) to the user, so that
-     * they can configure how OpenGroove works.
-     * 
-     * @param w
-     * @return
-     */
-    public static boolean showConfigWindow(UserContext context, WorkspaceWrapper w)
-    {
-        return showConfigWindow(context, w, context.getLaunchbar());
     }
     
     /**
@@ -3827,29 +3696,6 @@ public class OpenGroove
     }
     
     private static Dialog currentDialog = null;
-    
-    /**
-     * shows the config window for a specified workspace. if there is currently
-     * a dialog showing (IE another config dialog, create workspace, import
-     * workspace, etc) then false is returned and the config dialog is not
-     * shown. if there is no current dialog, true is returned almost
-     * immediately, IE the dialog is shown in a separate thread so this thread
-     * does not block while the dialog is showing.
-     * 
-     * @param workspace
-     * @param frame
-     * @return
-     */
-    public static boolean showConfigWindow(UserContext context,
-        final WorkspaceWrapper workspace, JFrame frame)
-    {
-        /*
-         * TODO: actually implement this method. It was implemented, but it was
-         * going to have to be changed so much with the new realm server model
-         * that I decided just to scrap it.
-         */
-        return false;
-    }
     
     /**
      * converts the contents of this DefaultListModel to an ArrayList.
