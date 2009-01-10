@@ -17,8 +17,11 @@
         <mkdir dir="${basedir}/classes" />
         <property name="ant.build.javac.target" value="1.6" />
         <property name="ant.build.javac.source" value="1.6" />
-        <javac srcdir="${basedir}/src" destdir="${basedir}/classes">
-
+        <javac srcdir="${basedir}/src"
+               destdir="${basedir}/classes"
+               debug="on"
+               debuglevel="lines,vars,source"
+               nowarn="true">
             <classpath>
                 <fileset dir="${basedir}/lib" />
             </classpath>
