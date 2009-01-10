@@ -16,7 +16,7 @@
 		<mkdir dir="${basedir}/classes" />
 		<javac srcdir="${basedir}/src" destdir="${basedir}/classes">
 			<classpath>
-				<fileset dir="${basedir}/lib/*" />
+				<fileset dir="${basedir}/lib" />
 				<fileset dir="${basedir}/classes" />
 			</classpath>
 		</javac>
