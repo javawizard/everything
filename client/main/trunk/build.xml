@@ -18,7 +18,7 @@
         <javac fork="true" compiler="org.eclipse.jdt.core.JDTCompilerAdapter"
                srcdir="${basedir}/src"
                destdir="${basedir}/classes">
-            <compilerarg value="-Xboostrap=${basedir}/lib/eclipse-3.4.1.jar" />
+            <compilerarg value="-Xbootstrap=${basedir}/lib/eclipse-3.4.1.jar" />
             <classpath>
                 <fileset dir="${basedir}/lib" />
                 <fileset dir="${basedir}/classes" />
