@@ -150,6 +150,7 @@ public class UpdateGUI implements CustomGUI
          * Build changelog inside dialog and show dialog, prompting user whether
          * to update, then return status from this method
          */
+        return false;
     }
     
     public void upToDate(boolean arg0)
