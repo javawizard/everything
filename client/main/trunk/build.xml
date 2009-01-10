@@ -15,19 +15,11 @@
         <echo level="info"
               message="Building OpenGroove classes from source..." />
         <mkdir dir="${basedir}/classes" />
-        <java classname="org.eclipse.jdt.internal.compiler.batch.Main">
-            <arg value="-sourcepath"/>
-            <arg value="${basedir}/src"/>
-            <arg value="-d"/>
-            <arg value="${basedir}/classes"/>
-            <arg value="-1.6"/>
-            <arg value="-proceedOnError"/>
-            <arg value="-noExit"/>
-        </java>
+        <property name="ant.build.javac.target" value="1.6"/>
+        <property name="ant.build.javac.source" value="1.6"/>
         <javac compiler="org.eclipse.jdt.core.JDTCompilerAdapter"
                srcdir="${basedir}/src"
                destdir="${basedir}/classes">
-            <compilerarg value="-1.6" />
             <classpath>
                 <fileset dir="${basedir}/lib" />
                 <fileset dir="${basedir}/classes" />
