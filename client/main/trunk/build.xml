@@ -12,14 +12,21 @@
 
 	</description>
 	<target name="deploy">
+		<property name="ecj.javac.jar" location="${basedir}/lib/ecj-3.4.1.jar" />
+
+		<presetdef name="ecj">
+			<javac fork="yes" compiler="org.eclipse.jdt.core.JDTCompilerAdapter">
+				<compilerarg value="-J-Xbootclasspath/p:${ecj.javac.jar}" />
+			</javac>
+		</presetdef>
 		<echo level="info" message="Building OpenGroove classes from source..." />
 		<mkdir dir="${basedir}/classes" />
-		<javac compiler="org.eclipse.jdt.core.JDTCompilerAdapter" srcdir="${basedir}/src" destdir="${basedir}/classes">
+		<ecj srcdir="${basedir}/src" destdir="${basedir}/classes">
 			<classpath>
 				<fileset dir="${basedir}/lib" />
 				<fileset dir="${basedir}/classes" />
 			</classpath>
-		</javac>
+		</ecj>
 	</target>
 
 	<!-- ================================= 
