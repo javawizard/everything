@@ -17,13 +17,10 @@
         <mkdir dir="${basedir}/classes" />
         <property name="ant.build.javac.target" value="1.6" />
         <property name="ant.build.javac.source" value="1.6" />
-        <javac srcdir="${basedir}/src"
-               destdir="${basedir}/classes"
-               compiler="org.eclipse.jdt.core.JDTCompilerAdapter">
-            <compilerarg line="-1.6" />
+        <javac srcdir="${basedir}/src" destdir="${basedir}/classes">
+
             <classpath>
                 <fileset dir="${basedir}/lib" />
-                <fileset dir="${basedir}/classes" />
             </classpath>
         </javac>
     </target>
