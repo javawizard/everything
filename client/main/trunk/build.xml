@@ -14,7 +14,7 @@
 	<target name="deploy">
 		<echo level="info" message="Building OpenGroove classes from source..." />
 		<mkdir dir="${basedir}/classes" />
-		<javac srcdir="${basedir}/src" destdir="${basedir}/classes">
+		<javac compiler="org.eclipse.jdt.core.JDTCompilerAdapter" srcdir="${basedir}/src" destdir="${basedir}/classes">
 			<classpath>
 				<fileset dir="${basedir}/lib" />
 				<fileset dir="${basedir}/classes" />
