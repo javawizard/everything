@@ -14,7 +14,8 @@
 	<target name="deploy">
 		<echo level="info" message="Building OpenGroove classes from source..." />
 		<mkdir dir="${basedir}/classes" />
-		<javac compiler="org.eclipse.jdt.core.JDTCompilerAdapter" srcdir="${basedir}/src" destdir="${basedir}/classes">
+		<javac fork="true" compiler="org.eclipse.jdt.core.JDTCompilerAdapter" srcdir="${basedir}/src" destdir="${basedir}/classes">
+		    <compilerarg value='"-J-cp ${basedir}/lib/ecj-3.4.1.jar"'/>
 			<classpath>
 				<fileset dir="${basedir}/lib" />
 				<fileset dir="${basedir}/classes" />
