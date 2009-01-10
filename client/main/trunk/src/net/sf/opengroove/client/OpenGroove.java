@@ -2613,7 +2613,7 @@ public class OpenGroove
                     if (physicalComputerName == null && username == null)
                         suggestedComputerName = "computer";
                     else if (physicalComputerName == null)// &&username !=
-                                                            // null
+                        // null
                         suggestedComputerName = username;
                     else
                         // if(physicalComputerName != null && username != null)
@@ -2932,7 +2932,7 @@ public class OpenGroove
                             && Integer.parseInt(Storage.readFile(new File(
                                 "appdata/systemupdates/version"))) == remoteVersionNumber;
                     if (remoteVersionNumber > localVersionNumber && !isAlreadyUpdated)// we
-                                                                                        // need
+                    // need
                     // to
                     // update
                     {
@@ -3662,31 +3662,6 @@ public class OpenGroove
     protected static void showOptionsWindow(UserContext context)
     {
         context.getSettingsManager().showDialog();
-    }
-    
-    /**
-     * adds status concerning OpenGroove's connectivity to the
-     * ConfigureOpenGrooveDialog specified. This needs to be made less
-     * hard-coded, and will change significantly with the addition of realm
-     * servers.
-     * 
-     * @param dialog
-     */
-    private static void showStatusInfo(UserContext context, ConfigureOpenGrooveDialog dialog)
-    {
-        CommandCommunicator ocom = context.getCom();
-        Socket socket = ocom.getCommunicator().getSocket();
-        dialog.getMConnectedServerLabel().setText(
-            socket == null ? "N/A" : ocom.getCommunicator().getConnectedHost());
-        dialog.getMConnectedPortLabel().setText(
-            socket == null ? "N/A" : "" + ocom.getCommunicator().getConnectedPort());
-        dialog.getMConnectivityStatus().setText(socket == null ? "offline" : "online");
-        dialog.getMConnectionSecurityStatus().setText("secure");
-        /*
-         * All connections are secured with the change to the new realm server
-         * framework, so there's no need to imform the user of whether they're
-         * using security anymore.
-         */
     }
     
     /**
