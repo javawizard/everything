@@ -52,15 +52,15 @@
        gradientTransform="matrix(1,0,0,0.7272727,0,10.818178)" />
     <filter
        inkscape:collect="always"
-       id="filter4149"
-       x="-0.083337335"
-       width="1.1666747"
-       y="-0.17887038"
-       height="1.3577408">
+       id="filter4193"
+       x="-0.070617426"
+       width="1.1412349"
+       y="-0.15156911"
+       height="1.3031382">
       <feGaussianBlur
          inkscape:collect="always"
-         stdDeviation="3.0557023"
-         id="feGaussianBlur4151" />
+         stdDeviation="2.5893056"
+         id="feGaussianBlur4195" />
     </filter>
   </defs>
   <sodipodi:namedview
@@ -100,13 +100,13 @@
      inkscape:groupmode="layer"
      id="layer1">
     <rect
-       style="fill:#000000;fill-opacity:0.57978724999999998;fill-rule:evenodd;stroke:none;stroke-width:1;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1;filter:url(#filter4149)"
+       style="fill:#000000;fill-opacity:0.80851066;fill-rule:evenodd;stroke:none;stroke-width:1;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1;filter:url(#filter4193)"
        id="rect3155"
        width="88"
        height="41"
        x="-8"
        y="12"
-       transform="matrix(1.7727273,0,0,1,-21.818181,-1)" />
+       transform="matrix(1.7727273,0,0,1,-21.818181,0)" />
     <rect
        style="fill:url(#linearGradient3161);fill-opacity:1;fill-rule:evenodd;stroke:none;stroke-width:1;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
        id="rect2383"
