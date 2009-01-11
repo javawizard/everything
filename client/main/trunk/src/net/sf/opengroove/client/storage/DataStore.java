@@ -57,4 +57,13 @@ public interface DataStore
     
     public void setSettingStore(SettingStore store);
     
+    @Property
+    @ListType(UpdateLevel.class)
+    public StoredList<UpdateLevel> getUpdateLevels();
+    
+    @Property
+    public long getLastUpdateLevelSyncTime();
+    
+    public void setLastUpdateLevelSyncTime(long lastTime);
+    
 }
