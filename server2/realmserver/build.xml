@@ -27,7 +27,9 @@
                nowarn="true">
             <src path="${basedir}/src" />
             <src path="${basedir}/gwt-src" />
-            <classpath location="${basedir}/lib/*" />
+            <classpath>
+                <fileset dir="${basedir}/lib" />
+            </classpath>
         </javac>
     </target>
 
