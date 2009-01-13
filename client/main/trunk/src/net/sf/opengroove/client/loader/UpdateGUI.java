@@ -98,7 +98,36 @@ public class UpdateGUI implements CustomGUI
              * This really should be changed to load trayicon.png and replace
              * 255,0,0,0 with 0,0,0,255 (like OpenGroove.java does), but I don't
              * want to deal with that right now.
+             * 
+             * For now, the progress bar will have a min of 0 and a max of 1000.
+             * Then, we'll multiply any fraction input on update progress (if
+             * that ends up working) by 1000 to obtain the value to pass to the
+             * progress bar. I'm actually thinking that the progress bar should
+             * be indeterminate, so this may not even be relevant.
              */
+            progress = new JProgressBar(0, 1000);
+            progress.setString("Initializing");
+            progress.setStringPainted(true);
+            progress.setIndeterminate(true);
+            JPanel outerPanel = new JPanel();
+            outerPanel.setLayout(new BorderLayout());
+            outerPanel.setBorder(new EmptyBorder(10, 10, 10, 10));
+            /*
+             * TODO: is this next statement even necessary? If I remember
+             * correctly, the default layout for the content pane of a JFrame is
+             * BorderLayout (in which case this wouldn't need to be set), but
+             * I'm working offline right now, so I don't have access to the
+             * javadocs.
+             */
+            frame.getContentPane().setLayout(new BorderLayout());
+            frame.add(outerPanel);
+            JPanel northPanel = new JPanel();
+            northPanel.setLayout(new BorderLayout());
+            northPanel.setBorder(new EmptyBorder(0, 0, 10, 0));
+            outerPanel.add(northPanel, BorderLayout.NORTH);
+            textArea = new JTextArea();
+            northPanel.add(progress, BorderLayout.CENTER);
+            outerPanel.add(textArea, BorderLayout.CENTER);
         }
         catch (Exception exception)
         {
@@ -112,7 +141,7 @@ public class UpdateGUI implements CustomGUI
     {
         frame.show();
         progress.setString("");
-        textArea.setText("Updates are available.");
+        textArea.append("Updates are available.<br/>");
     }
     
     public boolean shouldTryUpdate()
@@ -120,7 +149,9 @@ public class UpdateGUI implements CustomGUI
         throw new RuntimeException(
             "OpenGroove auto updater should only be used in tag mode.");
     }
-    
+    /**
+     * A boolean that is set by the two buttons on the dialog created in {@link #shouldUpdate}
+     */
     private boolean shouldUpdate = false;
     
     public boolean shouldUpdate(ChangelogEntry[] arg0)
@@ -144,8 +175,6 @@ public class UpdateGUI implements CustomGUI
         JPanel middle = new JPanel();
         middle.setBorder(new EmptyBorder(0, 0, 10, 0));
         inner.add(middle);
-        middle.add(new JLabel("<html>Updates are available.<br/>"
-            + "Would you like to install them?"), BorderLayout.NORTH);
         /*
          * Build changelog inside dialog and show dialog, prompting user whether
          * to update, then return status from this method

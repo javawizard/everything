@@ -67,7 +67,7 @@ public class Loader
                  * first level available if the default level doesn't exist.
                  */
                 writeFile(" ", new File(updatesFolder, "updateinprogress"));
-                AutomatedUpdate.main(new String[] { "-tagmode", "-changelog",
+                AutomatedUpdate.main(new String[] { "-tagmode", "-nofork", "-changelog",
                     "-repositoryurl", REPOSITORY, "-moduleurl", modulePath, "-antlocation",
                     "lib", "-applicationdirectory", ".", "-launchant", "-customgui",
                     "net.sf.opengroove.client.loader.UpdateGUI" });
