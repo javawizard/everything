@@ -24,10 +24,10 @@
         <javac debug="on"
                debuglevel="lines,vars,source"
                destdir="${basedir}/classes"
-               nowarn="true"
-               classpath="${basedir}/lib/*">
-            <src path="src" />
-            <src path="gwt-src" />
+               nowarn="true">
+            <src path="${basedir}/src" />
+            <src path="${basedir}/gwt-src" />
+            <classpath location="${basedir}/lib/*" />
         </javac>
     </target>
 
