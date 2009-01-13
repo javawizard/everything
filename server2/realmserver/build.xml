@@ -39,9 +39,16 @@
     <target name="gwt">
         <java fork="true"
               maxmemory="256M"
-              classpath="${basedir};${basedir}/../lib/gwt-user.jar;${basedir}/../lib/gwt-dev-windows.jar;${basedir}/../lib/*"
               classname="com.google.gwt.dev.GWTCompiler"
               failonerror="true">
+            <classpath>
+                <fileset dir="${basedir}" />
+            </classpath>
+            <classpath location="${basedir}/../lib/gwt-user.jar" />
+            <classpath location="${basedir}/../lib/gwt-dev-windows.jar" />
+            <classpath>
+                <fileset dir="${basedir}/lib" />
+            </classpath>
             <arg value="-out" />
             <arg value="${basedir}/web/bypass/gwt" />
             <arg value="net.sf.opengroove.realmserver.gwt.AdminInterface" />
