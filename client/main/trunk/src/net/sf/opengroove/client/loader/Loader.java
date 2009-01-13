@@ -52,7 +52,7 @@ public class Loader
         {
             File appdata = new File("appdata");
             File updatesFolder = new File(appdata, "updates");
-            File updatesAvailableFile = new File(appdata, "updatesavailable");
+            File updatesAvailableFile = new File(updatesFolder, "updatesavailable");
             if (updatesAvailableFile.exists())
             {
                 System.out.println("updates are available");

@@ -1,6 +1,8 @@
 package net.sf.opengroove.client.loader;
 
 import java.awt.BorderLayout;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.io.File;
 import java.io.PrintWriter;
 import java.io.StringWriter;
@@ -10,16 +12,20 @@ import javax.imageio.ImageIO;
 import javax.swing.BoxLayout;
 import javax.swing.JButton;
 import javax.swing.JDialog;
+import javax.swing.JEditorPane;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JProgressBar;
+import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
 import javax.swing.border.EmptyBorder;
 
 import org.tmatesoft.svn.core.SVNNodeKind;
 import org.tmatesoft.svn.core.wc.SVNEventAction;
+
+import sun.security.krb5.internal.APOptions;
 
 import net.interdirected.autoupdate.ChangelogEntry;
 import net.interdirected.autoupdate.CustomGUI;
@@ -29,14 +35,18 @@ public class UpdateGUI implements CustomGUI
     private JFrame frame;
     private JProgressBar progress;
     private JTextArea textArea;
+    private JScrollPane scroll;
     
     public void buildComplete()
     {
-        textArea.append("Build complete.");
-        progress.setString("Build complete.");
+        append("Build complete.");
+        append("");
+        appendProgress("OpenGroove is now up to date.");
+        append("");
+        append("OpenGroove will start in 2 seconds.");
         try
         {
-            Thread.sleep(500);
+            Thread.sleep(2000);
         }
         catch (InterruptedException e)
         {
@@ -74,10 +84,10 @@ public class UpdateGUI implements CustomGUI
                 + "we highly recommend that you don't use it until you contact<br/>"
                 + "us. Send us an email at support@opengroove.org and we'll be<br/>"
                 + "happy to help.");
-        textArea.append("Starting OpenGroove in 10 seconds");
+        textArea.append("Starting OpenGroove in 20 seconds");
         try
         {
-            Thread.sleep(10 * 1000);
+            Thread.sleep(20 * 1000);
         }
         catch (InterruptedException e)
         {
@@ -91,6 +101,7 @@ public class UpdateGUI implements CustomGUI
     public void init(Preferences prefs)
     {
         frame = new JFrame("Updates - OpenGroove");
+        frame.setDefaultCloseOperation(frame.DO_NOTHING_ON_CLOSE);
         try
         {
             frame.setIconImage(ImageIO.read(new File("trayicon.gif")));
@@ -126,8 +137,10 @@ public class UpdateGUI implements CustomGUI
             northPanel.setBorder(new EmptyBorder(0, 0, 10, 0));
             outerPanel.add(northPanel, BorderLayout.NORTH);
             textArea = new JTextArea();
+            textArea.setEditable(false);
+            scroll = new JScrollPane(textArea);
             northPanel.add(progress, BorderLayout.CENTER);
-            outerPanel.add(textArea, BorderLayout.CENTER);
+            outerPanel.add(scroll, BorderLayout.CENTER);
         }
         catch (Exception exception)
         {
@@ -149,17 +162,23 @@ public class UpdateGUI implements CustomGUI
         throw new RuntimeException(
             "OpenGroove auto updater should only be used in tag mode.");
     }
+    
     /**
-     * A boolean that is set by the two buttons on the dialog created in {@link #shouldUpdate}
+     * A boolean that is set by the two buttons on the dialog created in
+     * {@link #shouldUpdate}
      */
     private boolean shouldUpdate = false;
     
-    public boolean shouldUpdate(ChangelogEntry[] arg0)
+    public boolean shouldUpdate(ChangelogEntry[] changelogEntries)
     {
-        JDialog dialog = new JDialog(frame, "", true);
+        append("Updates are available.");
+        append("");
+        if (new File("appdata/updates/noprompt").exists())
+            return true;
+        final JDialog dialog = new JDialog(frame, "", true);
         JPanel inner = new JPanel();
         inner.setLayout(new BorderLayout());
-        inner.setBorder(new EmptyBorder(10, 10, 10, 10));
+        inner.setBorder(new EmptyBorder(0, 0, 0, 0));
         dialog.getContentPane().add(inner);
         JPanel lower = new JPanel();
         lower.setLayout(new BorderLayout());
@@ -173,38 +192,112 @@ public class UpdateGUI implements CustomGUI
         lowerRight.add(ok);
         lowerRight.add(cancel);
         JPanel middle = new JPanel();
-        middle.setBorder(new EmptyBorder(0, 0, 10, 0));
+        middle.setBorder(new EmptyBorder(10, 10, 10, 10));
+        JEditorPane editor = new JEditorPane();
+        editor.setEditable(false);
+        editor.setContentType("text/html");
+        StringBuilder changelog = new StringBuilder();
+        changelog.append("<html><body>" + "<b><big>Updates are available for OpenGroove. "
+            + "Would you like to download and install them?"
+            + "</big></b><br/>Here's what will change when "
+            + "you install these updates:<br/><br/>");
+        for (ChangelogEntry entry : changelogEntries)
+        {
+            changelog.append("<b>Version " + entry.getTagName() + "-r" + entry.getRevision()
+                + "</b><br/>");
+            changelog.append(entry.getCommitMessage());
+            changelog.append("<br/><br/>");
+        }
+        editor.setText(changelog.toString());
+        middle.add(new JScrollPane(editor), BorderLayout.CENTER);
         inner.add(middle);
-        /*
-         * Build changelog inside dialog and show dialog, prompting user whether
-         * to update, then return status from this method
-         */
-        return false;
+        ok.addActionListener(new ActionListener()
+        {
+            
+            public void actionPerformed(ActionEvent e)
+            {
+                shouldUpdate = true;
+                dialog.dispose();
+            }
+        });
+        cancel.addActionListener(new ActionListener()
+        {
+            
+            public void actionPerformed(ActionEvent e)
+            {
+                shouldUpdate = false;
+                dialog.dispose();
+            }
+        });
+        dialog.show();
+        return shouldUpdate;
     }
     
-    public void upToDate(boolean arg0)
+    public void upToDate(boolean needsBuild)
     {
         /*
          * TODO: just thought of something. Why exactly does this method take an
          * argument? A build won't even be needed if everything's up to date.
          */
+        /*
+         * I just realized that this isn't even necessary, since the frame isn't
+         * shown unless updates are needed. I'll remove it sometime.
+         */
+        frame.hide();
     }
     
-    public void updateComplete(boolean arg0)
+    public void updateComplete(boolean needsBuild)
     {
+        if (!needsBuild)
+        {
+            System.err.println("OpenGroove was downloaded without build support"
+                + " enabled. Contact support@opengroove.org as soon "
+                + "as possible and report this error. OpenGroove "
+                + "might not function properly until you do.");
+            frame.dispose();
+            return;
+        }
+        append("");
+        appendProgress("Install complete, getting ready to build...");
+        append("Various messages related to the build file will be printed below.");
+        append("You can usually ignore these messages, unless an error occurs.");
+        append("");
     }
     
     public void updating()
     {
-        // TODO Auto-generated method stub
-        
+        appendProgress("Downloading and installing updates...");
+        append("As files are downloaded and installed, a message will be printed below.");
+        append("");
+    }
+    
+    public void appendProgress(String progressString)
+    {
+        progress.setString(progressString);
+        textArea.append(progressString);
+        textArea.append("\n");
+        textArea.setCaretPosition(textArea.getDocument().getLength());
+    }
+    
+    public void append(String progressString)
+    {
+        textArea.append(progressString);
+        textArea.append("\n");
+        textArea.setCaretPosition(textArea.getDocument().getLength());
     }
     
     public void updateStatus(SVNEventAction action, String path, SVNNodeKind type,
         double progress)
     {
-        // TODO Auto-generated method stub
-        
+        String actionName;
+        if (action.equals(SVNEventAction.UPDATE_ADD))
+            actionName = "Added ";
+        else if (action.equals(SVNEventAction.UPDATE_DELETE))
+            actionName = "Deleted ";
+        else if (action.equals(SVNEventAction.UPDATE_UPDATE))
+            actionName = "Updated ";
+        else
+            return;
+        append(actionName + path);
     }
-    
 }
