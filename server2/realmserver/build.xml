@@ -45,8 +45,6 @@
                 <pathelement location="${basedir}/gwt-src" />
                 <pathelement location="${basedir}/../lib/gwt-user.jar" />
                 <pathelement location="${basedir}/../lib/gwt-dev-windows.jar" />
-                <fileset dir="${basedir}/lib" />
-                <fileset dir="${basedir}" />
             </classpath>
             <arg value="-out" />
             <arg value="${basedir}/web/bypass/gwt" />
