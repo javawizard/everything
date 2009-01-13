@@ -7,10 +7,17 @@
                    
      Alexander Boyd                                                              
      ====================================================================== -->
-<project name="OpenGroove Realm Server">
+<project name="OpenGroove Realm Server" default="deploy">
     <description>
 
     </description>
+
+    <target name="deploy">
+        <antcall target="compile">
+        </antcall>
+        <antcall target="gwt">
+        </antcall>
+    </target>
 
     <target name="compile">
         <javac debug="on"
@@ -28,6 +35,9 @@
               classpath="${basedir};${basedir}/../lib/gwt-user.jar;${basedir}/../lib/gwt-dev-windows.jar;${basedir}/../lib/*"
               classname="com.google.gwt.dev.GWTCompiler"
               failonerror="true">
+            <arg value="-out" />
+            <arg value="${basedir}/web/bypass/gwt" />
+            <arg value="net.sf.opengroove.realmserver.gwt.AdminInterface" />
         </java>
     </target>
 
