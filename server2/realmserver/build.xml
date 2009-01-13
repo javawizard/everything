@@ -20,6 +20,7 @@
     </target>
 
     <target name="compile">
+        <mkdir dir="${basedir}/classes"/>
         <javac debug="on"
                debuglevel="lines,vars,source"
                destdir="${basedir}/classes"
