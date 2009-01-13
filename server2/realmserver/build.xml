@@ -8,17 +8,46 @@
      Alexander Boyd                                                              
      ====================================================================== -->
 <project name="OpenGroove Realm Server">
-	<description>
+    <description>
 
-	</description>
+    </description>
 
-	<!-- ================================= 
+    <target name="compile">
+        <javac debug="on"
+               debuglevel="lines,vars,source"
+               destdir="${basedir}/classes"
+               nowarn="true"
+               srcdir="${basedir}/src"
+               classpath="${basedir}/lib/*">
+        </javac>
+    </target>
+
+    <target name="gwt">
+        <java fork="true"
+              maxmemory="256M"
+              classpath="${basedir};${basedir}/../lib/gwt-user.jar;${basedir}/../lib/gwt-dev-windows.jar;${basedir}/../lib/*"
+              classname="com.google.gwt.dev.GWTCompiler"
+              failonerror="true">
+        </java>
+    </target>
+
+    <!-- ================================= 
           target: default              
          ================================= -->
-	<target name="javadoc">
-		<javadoc access="private" destdir="javadocs" additionalparam="-J-Dfile.encoding=UTF-8 -subpackages net.sf.opengroove" author="true" source="1.6" sourcepath="src" splitindex="true" use="true" version="true" doctitle="OpenGroove Realm Server Documentation" footer="&lt;a href='http://www.opengroove.org'&gt;OpenGroove&lt;/a&gt;">
-			<link href="http://java.sun.com/javase/6/docs/api/" />
-		</javadoc>
-	</target>
+    <target name="javadoc">
+        <javadoc access="private"
+                 destdir="javadocs"
+                 additionalparam="-J-Dfile.encoding=UTF-8 -subpackages net.sf.opengroove"
+                 author="true"
+                 source="1.6"
+                 sourcepath="src"
+                 splitindex="true"
+                 use="true"
+                 version="true"
+                 doctitle="OpenGroove Realm Server Documentation"
+                 footer="&lt;a href='http://www.opengroove.org'&gt;OpenGroove&lt;/a&gt;">
+            <link href="http://java.sun.com/javase/6/docs/api/" />
+        </javadoc>
+    </target>
 
 </project>
