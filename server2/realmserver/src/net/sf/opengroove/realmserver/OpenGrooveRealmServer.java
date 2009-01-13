@@ -17,13 +17,11 @@ import java.io.RandomAccessFile;
 import java.io.StringReader;
 import java.io.StringWriter;
 import java.math.BigInteger;
-import java.net.ServerSocket;
 import java.net.Socket;
 import java.net.URLEncoder;
 import java.security.KeyPair;
 import java.security.Principal;
 import java.security.PrivateKey;
-import java.security.Provider;
 import java.security.SecureRandom;
 import java.security.Security;
 import java.security.cert.X509Certificate;
@@ -33,7 +31,6 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Date;
@@ -65,6 +62,12 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import net.sf.opengroove.common.com.DatagramUtils;
+import net.sf.opengroove.common.security.CertificateUtils;
+import net.sf.opengroove.common.security.Hash;
+import net.sf.opengroove.common.security.RSA;
+import net.sf.opengroove.common.utils.StringUtils;
+import net.sf.opengroove.common.utils.Userids;
 import net.sf.opengroove.realmserver.data.model.Computer;
 import net.sf.opengroove.realmserver.data.model.ComputerSetting;
 import net.sf.opengroove.realmserver.data.model.Message;
@@ -74,16 +77,8 @@ import net.sf.opengroove.realmserver.data.model.User;
 import net.sf.opengroove.realmserver.data.model.UserSetting;
 import net.sf.opengroove.realmserver.gwt.core.rcp.NotificationException;
 import net.sf.opengroove.realmserver.web.LoginFilter;
-import net.sf.opengroove.realmserver.web.RendererServlet;
 import net.sf.opengroove.realmserver.web.rpc.AnonLinkImpl;
 import net.sf.opengroove.realmserver.web.rpc.AuthLinkImpl;
-import net.sf.opengroove.common.com.DatagramUtils;
-import net.sf.opengroove.common.security.CertificateUtils;
-import net.sf.opengroove.common.security.Crypto;
-import net.sf.opengroove.common.security.Hash;
-import net.sf.opengroove.common.security.RSA;
-import net.sf.opengroove.common.utils.StringUtils;
-import net.sf.opengroove.common.utils.Userids;
 
 import org.apache.jasper.servlet.JspServlet;
 import org.bouncycastle.jce.provider.BouncyCastleProvider;
@@ -92,8 +87,6 @@ import org.mortbay.jetty.servlet.Context;
 import org.mortbay.jetty.servlet.DefaultServlet;
 import org.mortbay.jetty.servlet.FilterHolder;
 import org.mortbay.jetty.servlet.ServletHolder;
-
-import DE.knp.MicroCrypt.Aes256;
 
 import com.ibatis.sqlmap.client.SqlMapClient;
 import com.ibatis.sqlmap.client.SqlMapClientBuilder;
@@ -107,8 +100,7 @@ public class OpenGrooveRealmServer
      * @author Alexander Boyd
      * 
      */
-    public static class MessageAvailableNotifier implements
-        Runnable
+    public static class MessageAvailableNotifier implements Runnable
     {
         private String messageId;
         
@@ -122,8 +114,7 @@ public class OpenGrooveRealmServer
         {
             try
             {
-                Message message = DataStore
-                    .getMessage(messageId);
+                Message message = DataStore.getMessage(messageId);
                 if (message == null)
                 {
                     /*
@@ -137,24 +128,18 @@ public class OpenGrooveRealmServer
                      */
                     return;
                 }
-                MessageRecipient[] recipients = DataStore
-                    .listMessageRecipients(messageId);
+                MessageRecipient[] recipients = DataStore.listMessageRecipients(messageId);
                 for (MessageRecipient recipient : recipients)
                 {
                     try
                     {
-                        String userid = recipient
-                            .getRecipient();
-                        String computer = recipient
-                            .getComputer();
-                        if (!Userids.toRealm(userid)
-                            .equalsIgnoreCase(
-                                serverRealmAddress))
+                        String userid = recipient.getRecipient();
+                        String computer = recipient.getComputer();
+                        if (!Userids.toRealm(userid).equalsIgnoreCase(serverRealmAddress))
                         {
                             continue;
                         }
-                        if (computer == null
-                            || computer.equals(""))
+                        if (computer == null || computer.equals(""))
                         {
                             continue;
                         }
@@ -162,18 +147,15 @@ public class OpenGrooveRealmServer
                          * The computer is not null and the user is of this
                          * realm. Now we'll see if this user is online.
                          */
-                        ConnectionHandler connection = getConnectionForComputer(
-                            Userids.toUsername(userid),
-                            computer);
+                        ConnectionHandler connection =
+                            getConnectionForComputer(Userids.toUsername(userid), computer);
                         if (connection != null)
                         {
                             /*
                              * The user is online, so we'll send them a
                              * messageavailable message.
                              */
-                            connection.sendEncryptedPacket(
-                                generateId(),
-                                "messageavailable",
+                            connection.sendEncryptedPacket(generateId(), "messageavailable",
                                 Status.OK, messageId);
                         }
                     }
@@ -198,8 +180,7 @@ public class OpenGrooveRealmServer
      * @author Alexander Boyd
      * 
      */
-    public static class InterRealmMessageSender implements
-        Runnable
+    public static class InterRealmMessageSender implements Runnable
     {
         private String messageId;
         
@@ -239,8 +220,7 @@ public class OpenGrooveRealmServer
      * @author Alexander Boyd
      * 
      */
-    public static class MessageDataRemover implements
-        Runnable
+    public static class MessageDataRemover implements Runnable
     {
         
         public void run()
@@ -249,13 +229,11 @@ public class OpenGrooveRealmServer
             {
                 try
                 {
-                    File messageFile = new File(
-                        messageDataFolder, Message
-                            .getFileId(messageId));
+                    File messageFile =
+                        new File(messageDataFolder, Message.getFileId(messageId));
                     if (!messageFile.exists())
                         continue;
-                    Message message = DataStore
-                        .getMessage(messageId);
+                    Message message = DataStore.getMessage(messageId);
                     if (message != null)
                         continue;
                     /*
@@ -274,8 +252,7 @@ public class OpenGrooveRealmServer
              * Now we need to iterate over all message files and add as
              * canidates those without a backing message.
              */
-            File[] messageFiles = messageDataFolder
-                .listFiles();
+            File[] messageFiles = messageDataFolder.listFiles();
             for (File messageFile : messageFiles)
             {
                 try
@@ -285,15 +262,11 @@ public class OpenGrooveRealmServer
                          * Probably some folder put in by subversion
                          */
                         continue;
-                    Message message = DataStore
-                        .getMessage(Message
-                            .getMessageId(messageFile
-                                .getName()));
+                    Message message =
+                        DataStore.getMessage(Message.getMessageId(messageFile.getName()));
                     if (message == null)
-                        messageDeletionCanidates
-                            .add(Message
-                                .getMessageId(messageFile
-                                    .getName()));
+                        messageDeletionCanidates.add(Message.getMessageId(messageFile
+                            .getName()));
                 }
                 catch (Exception exception)
                 {
@@ -309,20 +282,17 @@ public class OpenGrooveRealmServer
      * @author Alexander Boyd
      * 
      */
-    public static class ReadMessageRemover implements
-        Runnable
+    public static class ReadMessageRemover implements Runnable
     {
         
         public void run()
         {
             try
             {
-                Message[] readMessages = DataStore
-                    .listMessagesWithoutRecipients();
+                Message[] readMessages = DataStore.listMessagesWithoutRecipients();
                 for (Message message : readMessages)
                 {
-                    DataStore
-                        .deleteMessage(message.getId());
+                    DataStore.deleteMessage(message.getId());
                 }
             }
             catch (Exception exception)
@@ -331,12 +301,11 @@ public class OpenGrooveRealmServer
             }
             try
             {
-                MessageRecipient[] orphanRecipients = DataStore
-                    .listOrphanMessageRecipients();
+                MessageRecipient[] orphanRecipients =
+                    DataStore.listOrphanMessageRecipients();
                 for (MessageRecipient recipient : orphanRecipients)
                 {
-                    DataStore
-                        .deleteMessageRecipient(recipient);
+                    DataStore.deleteMessageRecipient(recipient);
                 }
             }
             catch (Exception e)
@@ -387,14 +356,12 @@ public class OpenGrooveRealmServer
      * @author Alexander Boyd
      * 
      */
-    public static class UserStatusNotifier implements
-        Runnable
+    public static class UserStatusNotifier implements Runnable
     {
         private String username;
         private String computer;
         
-        public UserStatusNotifier(String username,
-            String computer)
+        public UserStatusNotifier(String username, String computer)
         {
             this.username = username;
             this.computer = computer;
@@ -405,8 +372,8 @@ public class OpenGrooveRealmServer
         {
             try
             {
-                Subscription[] subscriptions = DataStore
-                    .listSubscriptionsByTargetUser(this.username);
+                Subscription[] subscriptions =
+                    DataStore.listSubscriptionsByTargetUser(this.username);
                 // TODO: change this to two calls of
                 // listSubscriptionsByTypedTargetUser, as this is more effecient
                 // because it doesn't list subscriptions to the user's
@@ -414,49 +381,34 @@ public class OpenGrooveRealmServer
                 // well
                 for (Subscription subscription : subscriptions)
                 {
-                    String sUser = subscription
-                        .getOnusername();
-                    String sComputer = subscription
-                        .getOncomputername();
-                    if ((subscription.getType()
-                        .equalsIgnoreCase("userstatus") && sUser
+                    String sUser = subscription.getOnusername();
+                    String sComputer = subscription.getOncomputername();
+                    if ((subscription.getType().equalsIgnoreCase("userstatus") && sUser
                         .equals(username))
-                        || (subscription.getType()
-                            .equalsIgnoreCase(
-                                "computerstatus")
-                            && computer.equals(sComputer) && sUser
-                            .equals(username)))
+                        || (subscription.getType().equalsIgnoreCase("computerstatus")
+                            && computer.equals(sComputer) && sUser.equals(username)))
                     {
                         // the subscription is for this user, so let's check to
                         // see if the subscription's creator is online
-                        Map<String, ConnectionHandler> userMap = connectionsByAuth
-                            .get(subscription.getUsername());
+                        Map<String, ConnectionHandler> userMap =
+                            connectionsByAuth.get(subscription.getUsername());
                         if (userMap != null)
                         {
-                            for (ConnectionHandler handler : userMap
-                                .values())
+                            for (ConnectionHandler handler : userMap.values())
                             {
                                 if (handler.isAlive())
                                 {
-                                    handler
-                                        .sendEncryptedPacket(
-                                            generateId(),
-                                            "subscriptionevent",
-                                            Status.OK,
-                                            subscription
-                                                .getType()
-                                                + "\n"
-                                                + subscription
-                                                    .getOnusername()
-                                                + "\n"
-                                                + subscription
-                                                    .getOncomputername()
-                                                + "\n"
-                                                + subscription
-                                                    .getOnsettingname()
-                                                + "\n"
-                                                + subscription
-                                                    .isDeletewithtarget());
+                                    handler.sendEncryptedPacket(generateId(),
+                                        "subscriptionevent", Status.OK, subscription
+                                            .getType()
+                                            + "\n"
+                                            + subscription.getOnusername()
+                                            + "\n"
+                                            + subscription.getOncomputername()
+                                            + "\n"
+                                            + subscription.getOnsettingname()
+                                            + "\n"
+                                            + subscription.isDeletewithtarget());
                                 }
                             }
                         }
@@ -487,15 +439,13 @@ public class OpenGrooveRealmServer
      * @author Alexander Boyd
      * 
      */
-    public static class UserSettingNotifier implements
-        Runnable
+    public static class UserSettingNotifier implements Runnable
     {
         private String username;
         private String computer;
         private String setting;
         
-        public UserSettingNotifier(String username,
-            String computer, String setting)
+        public UserSettingNotifier(String username, String computer, String setting)
         {
             this.username = username;
             this.computer = computer;
@@ -518,105 +468,80 @@ public class OpenGrooveRealmServer
                 // like a user should be able to subscribe to their own private
                 // properties, as well as private properties of any of their
                 // computers.
-                System.out
-                    .println("non-public subscription attempted. Returning.");
+                System.out.println("non-public subscription attempted. Returning.");
                 return;
             }
             try
             {
-                Subscription[] subscriptions = DataStore
-                    .listSubscriptionsByTargetUser(this.username);
+                Subscription[] subscriptions =
+                    DataStore.listSubscriptionsByTargetUser(this.username);
                 // TODO: change this to two calls of
                 // listSubscriptionsByTypedTargetUser, as this is more effecient
                 // because it doesn't list subscriptions to the user's status as
                 // well
                 for (Subscription subscription : subscriptions)
                 {
-                    String sUser = subscription
-                        .getOnusername();
-                    String sComputer = subscription
-                        .getOncomputername();
-                    String sSetting = subscription
-                        .getOnsettingname();
+                    String sUser = subscription.getOnusername();
+                    String sComputer = subscription.getOncomputername();
+                    String sSetting = subscription.getOnsettingname();
                     boolean isUserSetting = computer == null;
                     boolean isComputerSetting = !isUserSetting;
-                    boolean isSubscriberUserSetting = subscription
-                        .getType().equalsIgnoreCase(
-                            "usersetting");
-                    boolean isSubscriberComputerSetting = subscription
-                        .getType().equalsIgnoreCase(
-                            "computersetting");
+                    boolean isSubscriberUserSetting =
+                        subscription.getType().equalsIgnoreCase("usersetting");
+                    boolean isSubscriberComputerSetting =
+                        subscription.getType().equalsIgnoreCase("computersetting");
                     System.out.println("targeting "
-                        + (isUserSetting ? "usersetting"
-                            : "computersetting")
+                        + (isUserSetting ? "usersetting" : "computersetting")
                         + " subscriptions");
                     if (isSubscriberComputerSetting)
                     {
-                        System.out
-                            .println("computersetting subscription found");
+                        System.out.println("computersetting subscription found");
                     }
                     else if (isSubscriberUserSetting)
                     {
-                        System.out
-                            .println("usersetting subscription found");
+                        System.out.println("usersetting subscription found");
                     }
                     
                     // FIXME: clean up the rat's-nest boolean arithmetic that
                     // follows
-                    boolean acceptOnUser = (isUserSetting
-                        && isSubscriberUserSetting && subscription
-                        .getOnsettingname()
-                        .equalsIgnoreCase(setting));
-                    boolean isCorrectComputer = (subscription
-                        .getOncomputername()
-                        .equalsIgnoreCase(computer) || subscription
-                        .getOncomputername().trim().equals(
-                            ""));
-                    boolean acceptOnComputer = (isComputerSetting
-                        && isSubscriberComputerSetting
-                        && isCorrectComputer && subscription
-                        .getOnsettingname()
-                        .equalsIgnoreCase(setting));
+                    boolean acceptOnUser =
+                        (isUserSetting && isSubscriberUserSetting && subscription
+                            .getOnsettingname().equalsIgnoreCase(setting));
+                    boolean isCorrectComputer =
+                        (subscription.getOncomputername().equalsIgnoreCase(computer) || subscription
+                            .getOncomputername().trim().equals(""));
+                    boolean acceptOnComputer =
+                        (isComputerSetting && isSubscriberComputerSetting
+                            && isCorrectComputer && subscription.getOnsettingname()
+                            .equalsIgnoreCase(setting));
                     if (acceptOnUser)
-                        System.out
-                            .println("accepting on user");
+                        System.out.println("accepting on user");
                     else if (acceptOnComputer)
-                        System.out
-                            .println("accepting on computer");
+                        System.out.println("accepting on computer");
                     if (acceptOnUser || acceptOnComputer)
                     {
                         // the subscription is for this setting, so send a
                         // subscription event to the user
-                        Map<String, ConnectionHandler> userMap = connectionsByAuth
-                            .get(subscription.getUsername());
+                        Map<String, ConnectionHandler> userMap =
+                            connectionsByAuth.get(subscription.getUsername());
                         if (userMap != null)
                         {
-                            for (ConnectionHandler handler : userMap
-                                .values())
+                            for (ConnectionHandler handler : userMap.values())
                             {
                                 if (handler.isAlive())
                                 {
-                                    System.out
-                                        .println("notifying subscriber");
-                                    handler
-                                        .sendEncryptedPacket(
-                                            generateId(),
-                                            "subscriptionevent",
-                                            Status.OK,
-                                            subscription
-                                                .getType()
-                                                + "\n"
-                                                + subscription
-                                                    .getOnusername()
-                                                + "\n"
-                                                + subscription
-                                                    .getOncomputername()
-                                                + "\n"
-                                                + subscription
-                                                    .getOnsettingname()
-                                                + "\n"
-                                                + subscription
-                                                    .isDeletewithtarget());
+                                    System.out.println("notifying subscriber");
+                                    handler.sendEncryptedPacket(generateId(),
+                                        "subscriptionevent", Status.OK, subscription
+                                            .getType()
+                                            + "\n"
+                                            + subscription.getOnusername()
+                                            + "\n"
+                                            + subscription.getOncomputername()
+                                            + "\n"
+                                            + subscription.getOnsettingname()
+                                            + "\n"
+                                            + subscription.isDeletewithtarget());
                                 }
                             }
                         }
@@ -728,8 +653,7 @@ public class OpenGrooveRealmServer
         private boolean whenNoComputer;
         private String commandName;
         
-        public Command(String commandName,
-            int maxPacketSize, boolean whenUnauth,
+        public Command(String commandName, int maxPacketSize, boolean whenUnauth,
             boolean whenNoComputer)
         {
             this.mps = maxPacketSize;
@@ -759,12 +683,12 @@ public class OpenGrooveRealmServer
             return this.mps;
         }
         
-        public abstract void handle(String packetId,
-            InputStream data, ConnectionHandler connection)
-            throws Exception;
+        public abstract void handle(String packetId, InputStream data,
+            ConnectionHandler connection) throws Exception;
     }
     
-    private static Map<String, Map<String, ConnectionHandler>> connectionsByAuth = new Hashtable<String, Map<String, ConnectionHandler>>();
+    private static Map<String, Map<String, ConnectionHandler>> connectionsByAuth =
+        new Hashtable<String, Map<String, ConnectionHandler>>();
     /**
      * A map that holds packets waiting to be delivered to other realm servers.
      * Since not every known realm server will have a connection to it non-stop,
@@ -773,7 +697,8 @@ public class OpenGrooveRealmServer
      * name of the realm of the realm server, and the value is the queue that
      * holds the realm's pending items.
      */
-    private static Map<String, BlockingQueue<InterServerPacket>> interRealmCache = new HashMap<String, BlockingQueue<InterServerPacket>>();
+    private static Map<String, BlockingQueue<InterServerPacket>> interRealmCache =
+        new HashMap<String, BlockingQueue<InterServerPacket>>();
     /**
      * @deprecated Since switching to Jetty from NanoHTTPD (when I decided that
      *             I was going to need a full-fledged servlet container instead
@@ -781,8 +706,7 @@ public class OpenGrooveRealmServer
      *             web resources has changed.
      */
     @Deprecated()
-    protected static final File HTTPD_RES_FOLDER = new File(
-        "httpdres");
+    protected static final File HTTPD_RES_FOLDER = new File("httpdres");
     /**
      * The connection to the persistant database
      */
@@ -806,14 +730,12 @@ public class OpenGrooveRealmServer
     
     public static PrivateKey serverCertificatePrivateKey;
     
-    private static final File configFile = new File(
-        "config.properties");
+    private static final File configFile = new File("config.properties");
     /*
      * TODO: make this configurable when the server's administrator is setting
      * the server up
      */
-    private static File messageDataFolder = new File(
-        "messagedata");
+    private static File messageDataFolder = new File("messagedata");
     
     private static boolean setupStillRunning = true;
     
@@ -823,7 +745,8 @@ public class OpenGrooveRealmServer
     
     protected static boolean doneSettingUp = false;
     public static SSLServerSocket serverSocket;
-    private static ArrayList<ConnectionHandler> connections = new ArrayList<ConnectionHandler>();
+    private static ArrayList<ConnectionHandler> connections =
+        new ArrayList<ConnectionHandler>();
     public static BigInteger rsaEncryptionPublicKey;
     public static BigInteger rsaEncryptionModulus;
     public static BigInteger rsaEncryptionPrivateKey;
@@ -839,8 +762,7 @@ public class OpenGrooveRealmServer
     public static int getNumAuthConnections()
     {
         int i = 0;
-        for (ConnectionHandler c : new ArrayList<ConnectionHandler>(
-            connections))
+        for (ConnectionHandler c : new ArrayList<ConnectionHandler>(connections))
         {
             if (c.username != null)
                 i++;
@@ -851,30 +773,27 @@ public class OpenGrooveRealmServer
     public static int getNumComputerAuthConnections()
     {
         int i = 0;
-        for (ConnectionHandler c : new ArrayList<ConnectionHandler>(
-            connections))
+        for (ConnectionHandler c : new ArrayList<ConnectionHandler>(connections))
         {
-            if (c.username != null
-                && c.computerName != null)
+            if (c.username != null && c.computerName != null)
                 i++;
         }
         return i;
     }
     
-    public static final ScheduledThreadPoolExecutor internalTasks = new ScheduledThreadPoolExecutor(
-        15);
+    public static final ScheduledThreadPoolExecutor internalTasks =
+        new ScheduledThreadPoolExecutor(15);
     
-    public static final ThreadPoolExecutor tasks = new ThreadPoolExecutor(
-        20, 400, 20, TimeUnit.SECONDS,
-        new LinkedBlockingQueue<Runnable>(10000));
+    public static final ThreadPoolExecutor tasks =
+        new ThreadPoolExecutor(20, 400, 20, TimeUnit.SECONDS,
+            new LinkedBlockingQueue<Runnable>(10000));
     
     protected static final byte[] EMPTY = new byte[0];
     
     private static final int MAX_CONNECTIONS = 500;
     protected static final int MAX_MESSAGE_SIZE = 2 * 1000 * 1000 * 1000;
     
-    public static class TimedInputStream extends
-        FilterInputStream
+    public static class TimedInputStream extends FilterInputStream
     {
         private long lastTime;
         
@@ -894,8 +813,7 @@ public class OpenGrooveRealmServer
         }
         
         @Override
-        public int read(byte[] b, int off, int len)
-            throws IOException
+        public int read(byte[] b, int off, int len) throws IOException
         {
             int i = super.read(b, off, len);
             lastTime = System.currentTimeMillis();
@@ -923,12 +841,10 @@ public class OpenGrooveRealmServer
         
     }
     
-    public static class TimedOutputStream extends
-        FilterOutputStream
+    public static class TimedOutputStream extends FilterOutputStream
     {
         @Override
-        public void write(byte[] b, int off, int len)
-            throws IOException
+        public void write(byte[] b, int off, int len) throws IOException
         {
             // TODO Auto-generated method stub
             super.write(b, off, len);
@@ -995,8 +911,7 @@ public class OpenGrooveRealmServer
          */
         public String getUserid()
         {
-            return Userids.toUserid(serverRealmAddress,
-                username);
+            return Userids.toUserid(serverRealmAddress, username);
         }
         
         public long getLastInTime()
@@ -1009,15 +924,13 @@ public class OpenGrooveRealmServer
             return out.getLastTime();
         }
         
-        public ConnectionHandler(SSLSocket socket)
-            throws IOException
+        public ConnectionHandler(SSLSocket socket) throws IOException
         {
             this.socket = socket;
             internalInputStream = socket.getInputStream();
             in = new TimedInputStream(internalInputStream);
             internalOutputStream = socket.getOutputStream();
-            out = new TimedOutputStream(
-                internalOutputStream);
+            out = new TimedOutputStream(internalOutputStream);
         }
         
         /**
@@ -1026,21 +939,19 @@ public class OpenGrooveRealmServer
          * 
          * @throws IOException
          */
-        public boolean sendPacketTo(Packet packet)
-            throws IOException
+        public boolean sendPacketTo(Packet packet) throws IOException
         {
             return spooler.send(packet);
         }
         
-        public boolean sendEncryptedPacket(String id,
-            String command, Status status, String message)
+        public boolean sendEncryptedPacket(String id, String command, Status status,
+            String message)
         {
-            return sendEncryptedPacket(id, command, status,
-                message.getBytes());
+            return sendEncryptedPacket(id, command, status, message.getBytes());
         }
         
-        public boolean sendEncryptedPacket(String id,
-            String command, Status status, byte[] message)
+        public boolean sendEncryptedPacket(String id, String command, Status status,
+            byte[] message)
         {
             try
             {
@@ -1052,8 +963,7 @@ public class OpenGrooveRealmServer
                 baos.write(status.toString().getBytes());
                 baos.write(' ');
                 baos.write(message);
-                return sendEncryptedPacket(baos
-                    .toByteArray());
+                return sendEncryptedPacket(baos.toByteArray());
             }
             catch (Exception e)
             {
@@ -1067,11 +977,9 @@ public class OpenGrooveRealmServer
             try
             {
                 DatagramUtils.write(packet, baos);
-                Packet encPacket = new Packet(
-                    new ByteArrayInputStream(baos
-                        .toByteArray()));
-                encPacket.setDescription(new String(packet,
-                    0, Math.min(packet.length, 128)));
+                Packet encPacket = new Packet(new ByteArrayInputStream(baos.toByteArray()));
+                encPacket
+                    .setDescription(new String(packet, 0, Math.min(packet.length, 128)));
                 return sendPacketTo(encPacket);
             }
             catch (IOException e)
@@ -1098,16 +1006,14 @@ public class OpenGrooveRealmServer
                 {
                     int read = in.read();
                     s += (char) read;
-                    if ((read == '\r' || read == '\n')
-                        && i != 0)
+                    if ((read == '\r' || read == '\n') && i != 0)
                         break;
                     if (i == 29)
                         throw new ProtocolMismatchException(
                             "too much initialization data sent by the client");
                 }
                 s = s.trim();
-                if (!s.toLowerCase().startsWith(
-                    "OpenGroove".toLowerCase()))
+                if (!s.toLowerCase().startsWith("OpenGroove".toLowerCase()))
                 /*
                  * startsWith instead of equals to allow for additional data to
                  * be passed in the future. My idea is to add the ability in the
@@ -1124,9 +1030,7 @@ public class OpenGrooveRealmServer
                             + "should be \"OpenGroove\" with a newline after");
                 }
                 // Ok, correct header, now we send back our header
-                out
-                    .write("OpenGrooveServer\r\n"
-                        .getBytes());
+                out.write("OpenGrooveServer\r\n".getBytes());
                 out.flush();
                 // Now the client should send us the letter 'c' but NOT followed
                 // by a newline. This is used to sync up stream positions, since
@@ -1150,12 +1054,10 @@ public class OpenGrooveRealmServer
                 // thrown. (when the quit command is called, the command class
                 // closes the connection, so an exception will be thrown on the
                 // next read)
-                while ((!socket.isClosed())
-                    && (!socket.isInputShutdown())
+                while ((!socket.isClosed()) && (!socket.isInputShutdown())
                     && (!socket.isOutputShutdown()))
                 {
-                    byte[] packet = DatagramUtils.read(in,
-                        65535);
+                    byte[] packet = DatagramUtils.read(in, 65535);
                     processIncomingPacket(packet);
                 }
                 //
@@ -1168,9 +1070,8 @@ public class OpenGrooveRealmServer
             }
             catch (Exception e)
             {
-                System.err
-                    .println("Connection handler closing due to exception, "
-                        + "stack trace follows");
+                System.err.println("Connection handler closing due to exception, "
+                    + "stack trace follows");
                 e.printStackTrace();
             }
             finally
@@ -1178,22 +1079,17 @@ public class OpenGrooveRealmServer
                 connections.remove(this);
                 try
                 {
-                    if (username != null
-                        && computerName != null)
+                    if (username != null && computerName != null)
                     {
-                        Map userMap = connectionsByAuth
-                            .get(username);
+                        Map userMap = connectionsByAuth.get(username);
                         if (userMap != null)
                         {
                             userMap.remove(computerName);
                             if (userMap.size() == 0)
-                                connectionsByAuth
-                                    .remove(username);
+                                connectionsByAuth.remove(username);
                         }
-                        tasks
-                            .execute(new UserStatusNotifier(
-                                this.username,
-                                this.computerName));
+                        tasks.execute(new UserStatusNotifier(this.username,
+                            this.computerName));
                     }
                 }
                 catch (Exception e)
@@ -1212,67 +1108,50 @@ public class OpenGrooveRealmServer
             }
         }
         
-        public void processIncomingPacket(byte[] packet)
-            throws Exception
+        public void processIncomingPacket(byte[] packet) throws Exception
         {
-            System.out
-                .println("dealing with packet of length "
-                    + packet.length);
+            System.out.println("dealing with packet of length " + packet.length);
             String packetId = "UNKNOWN";
             String commandName = "UNKNOWN";
             String first128 = "UNKNOWN";
             try
             {
-                byte[] first128bytes = new byte[Math.min(
-                    128, packet.length)];
-                System.arraycopy(packet, 0, first128bytes,
-                    0, first128bytes.length);
+                byte[] first128bytes = new byte[Math.min(128, packet.length)];
+                System.arraycopy(packet, 0, first128bytes, 0, first128bytes.length);
                 first128 = new String(first128bytes);
-                String[] first128split = first128.split(
-                    "\\ ", 3);
+                String[] first128split = first128.split("\\ ", 3);
                 if (first128split.length < 3)
-                    throw new FailedResponseException(
-                        Status.FAIL,
+                    throw new FailedResponseException(Status.FAIL,
                         "no command input (packets should be of"
                             + " the form packetId commandName arguments)");
                 packetId = first128split[0];
                 commandName = first128split[1];
-                int startDataIndex = packetId.length()
-                    + commandName.length() + 2;
-                ByteArrayInputStream data = new ByteArrayInputStream(
-                    packet, startDataIndex, packet.length
+                int startDataIndex = packetId.length() + commandName.length() + 2;
+                ByteArrayInputStream data =
+                    new ByteArrayInputStream(packet, startDataIndex, packet.length
                         - (startDataIndex));
                 // In the future, the packet could be cached to the file system
                 // if
                 // it's larger than, say, 2048 bytes, to avoid memory errors.
                 // Since the resultant info is passed into the command via an
                 // input stream, this wouldn't be too hard to do.
-                Command command = commands.get(commandName
-                    .toLowerCase());
+                Command command = commands.get(commandName.toLowerCase());
                 if (command == null)
                     throw new FailedResponseException(
                         "The command specified is not a valid command");
-                if (username == null
-                    && !command.whenUnauth())
-                    throw new FailedResponseException(
-                        Status.AUTHUNAUTHORIZED,
+                if (username == null && !command.whenUnauth())
+                    throw new FailedResponseException(Status.AUTHUNAUTHORIZED,
                         "You must run the authenticate command before this one.");
-                if (computerName == null
-                    && !command.whenNoComputer())
-                    throw new FailedResponseException(
-                        Status.UNAUTHORIZED,
+                if (computerName == null && !command.whenNoComputer())
+                    throw new FailedResponseException(Status.UNAUTHORIZED,
                         "This command can only be run when authenticated as a computer.");
                 command.handle(packetId, data, this);
             }
             catch (FailedResponseException e)
             {
-                System.out
-                    .println("Failing response for user "
-                        + username + " with code "
-                        + e.getStatus() + " and message "
-                        + e.getMessage()
-                        + " in reply to command "
-                        + commandName);
+                System.out.println("Failing response for user " + username + " with code "
+                    + e.getStatus() + " and message " + e.getMessage()
+                    + " in reply to command " + commandName);
                 sendEncryptedPacket(
                     packetId,
                     commandName,
@@ -1306,8 +1185,7 @@ public class OpenGrooveRealmServer
         public PacketSpooler(OutputStream out, int queueSize)
         {
             this.out = out;
-            this.queue = new LinkedBlockingQueue<Packet>(
-                queueSize);
+            this.queue = new LinkedBlockingQueue<Packet>(queueSize);
         }
         
         public synchronized boolean send(Packet packet)
@@ -1343,8 +1221,7 @@ public class OpenGrooveRealmServer
             {
                 if (closed)
                 {
-                    System.out
-                        .println("Closed packet spooler with exception");
+                    System.out.println("Closed packet spooler with exception");
                 }
                 else
                 {
@@ -1389,8 +1266,7 @@ public class OpenGrooveRealmServer
         System.out.println("Initializing...");
         if (!messageDataFolder.exists())
             messageDataFolder.mkdirs();
-        ogcaCert = CertificateUtils.readCert(StringUtils
-            .readFile(new File("cacert.pem")));
+        ogcaCert = CertificateUtils.readCert(StringUtils.readFile(new File("cacert.pem")));
         /*
          * Configuration that needs to be gathered before we can get up and
          * running:
@@ -1431,8 +1307,7 @@ public class OpenGrooveRealmServer
             // minutes, so that
             // the user only has one guess at a captcha
             Server server = new Server(34567);
-            final Context context = createServerContext(
-                server, "webinit");
+            final Context context = createServerContext(server, "webinit");
             context.addFilter(new FilterHolder(new Filter()
             {
                 
@@ -1444,106 +1319,68 @@ public class OpenGrooveRealmServer
                 }
                 
                 @Override
-                public synchronized void doFilter(
-                    ServletRequest sRequest,
-                    ServletResponse sResponse,
-                    FilterChain chain) throws IOException,
+                public synchronized void doFilter(ServletRequest sRequest,
+                    ServletResponse sResponse, FilterChain chain) throws IOException,
                     ServletException
                 {
                     HttpServletRequest request = (HttpServletRequest) sRequest;
                     HttpServletResponse response = (HttpServletResponse) sResponse;
-                    if (request.getRequestURI().startsWith(
-                        "/bypass/"))
+                    if (request.getRequestURI().startsWith("/bypass/"))
                     {
                         chain.doFilter(request, response);
                         return;
                     }
                     else if (doneSettingUp)
                     {
-                        response
-                            .sendRedirect("/bypass/done.jsp");
+                        response.sendRedirect("/bypass/done.jsp");
                         return;
                     }
-                    else if (request.getRequestURI()
-                        .equals("/setup"))
+                    else if (request.getRequestURI().equals("/setup"))
                     {
                         // build url containing all of the parameters in case
                         // the user mis-entered something
                         String redoUrl = "/bypass/start.jsp?";
-                        for (String param : (Collection<String>) Collections
-                            .list(request
-                                .getParameterNames()))
+                        for (String param : (Collection<String>) Collections.list(request
+                            .getParameterNames()))
                         {
-                            for (String value : request
-                                .getParameterValues(param))
+                            for (String value : request.getParameterValues(param))
                             {
-                                redoUrl += ""
-                                    + URLEncoder
-                                        .encode(param)
-                                    + "="
-                                    + URLEncoder
-                                        .encode(value)
-                                    + "&";
+                                redoUrl +=
+                                    "" + URLEncoder.encode(param) + "="
+                                        + URLEncoder.encode(value) + "&";
                             }
                         }
                         redoUrl += "errormessage=";
                         // load parameters into variables
-                        String username = request
-                            .getParameter("username");
-                        String password = request
-                            .getParameter("password");
-                        String passwordagain = request
-                            .getParameter("passwordagain");
-                        String pdbclass = request
-                            .getParameter("pdbclass");
-                        config.setProperty("pdbclass",
-                            pdbclass);
-                        String pdburl = request
-                            .getParameter("pdburl");
-                        config
-                            .setProperty("pdburl", pdburl);
-                        String pdbprefix = request
-                            .getParameter("pdbprefix");
-                        config.setProperty("pdbprefix",
-                            pdbprefix);
-                        String pdbusername = request
-                            .getParameter("pdbusername");
-                        config.setProperty("pdbusername",
-                            pdbusername);
-                        String pdbpassword = request
-                            .getParameter("pdbpassword");
-                        config.setProperty("pdbpassword",
-                            pdbpassword);
-                        String ldbclass = request
-                            .getParameter("ldbclass");
-                        config.setProperty("ldbclass",
-                            ldbclass);
-                        String ldburl = request
-                            .getParameter("ldburl");
-                        config
-                            .setProperty("ldburl", ldburl);
-                        String ldbprefix = request
-                            .getParameter("ldbprefix");
-                        config.setProperty("ldbprefix",
-                            ldbprefix);
-                        String ldbusername = request
-                            .getParameter("ldbusername");
-                        config.setProperty("ldbusername",
-                            ldbusername);
-                        String ldbpassword = request
-                            .getParameter("ldbpassword");
-                        config.setProperty("ldbpassword",
-                            ldbpassword);
-                        String serverport = request
-                            .getParameter("serverport");
-                        String webport = request
-                            .getParameter("webport");
-                        context.setAttribute("serverport",
-                            webport);
-                        String serverhostname = request
-                            .getParameter("serverhostname");
-                        boolean forceEncryption = request
-                            .getParameter("forceencryption") != null;
+                        String username = request.getParameter("username");
+                        String password = request.getParameter("password");
+                        String passwordagain = request.getParameter("passwordagain");
+                        String pdbclass = request.getParameter("pdbclass");
+                        config.setProperty("pdbclass", pdbclass);
+                        String pdburl = request.getParameter("pdburl");
+                        config.setProperty("pdburl", pdburl);
+                        String pdbprefix = request.getParameter("pdbprefix");
+                        config.setProperty("pdbprefix", pdbprefix);
+                        String pdbusername = request.getParameter("pdbusername");
+                        config.setProperty("pdbusername", pdbusername);
+                        String pdbpassword = request.getParameter("pdbpassword");
+                        config.setProperty("pdbpassword", pdbpassword);
+                        String ldbclass = request.getParameter("ldbclass");
+                        config.setProperty("ldbclass", ldbclass);
+                        String ldburl = request.getParameter("ldburl");
+                        config.setProperty("ldburl", ldburl);
+                        String ldbprefix = request.getParameter("ldbprefix");
+                        config.setProperty("ldbprefix", ldbprefix);
+                        String ldbusername = request.getParameter("ldbusername");
+                        config.setProperty("ldbusername", ldbusername);
+                        String ldbpassword = request.getParameter("ldbpassword");
+                        config.setProperty("ldbpassword", ldbpassword);
+                        String serverport = request.getParameter("serverport");
+                        String webport = request.getParameter("webport");
+                        context.setAttribute("serverport", webport);
+                        String serverhostname = request.getParameter("serverhostname");
+                        boolean forceEncryption =
+                            request.getParameter("forceencryption") != null;
                         // template error message:
                         //
                         // setuperror(redoUrl, response, "");
@@ -1559,9 +1396,7 @@ public class OpenGrooveRealmServer
                         // make sure that password is at least 5 characters long
                         if (password.length() < 5)
                         {
-                            setuperror(
-                                redoUrl,
-                                response,
+                            setuperror(redoUrl, response,
                                 "The password you entered for your "
                                     + "web administration password "
                                     + "isn't long enough. The password needs to be "
@@ -1570,9 +1405,7 @@ public class OpenGrooveRealmServer
                         }
                         if (username.length() < 1)
                         {
-                            setuperror(
-                                redoUrl,
-                                response,
+                            setuperror(redoUrl, response,
                                 "The username you entered for your"
                                     + "web administration username "
                                     + "isn't long enough. The username needs to be"
@@ -1581,71 +1414,55 @@ public class OpenGrooveRealmServer
                         }
                         // create connections to the persistant and large
                         // databases, and test them out
-                        System.out
-                            .println("connecting to persistant database...");
+                        System.out.println("connecting to persistant database...");
                         pfix = pdbprefix;
                         lfix = ldbprefix;
                         try
                         {
                             Class.forName(pdbclass);
-                            pdb = DriverManager
-                                .getConnection(pdburl,
-                                    pdbusername,
-                                    pdbpassword);
+                            pdb =
+                                DriverManager
+                                    .getConnection(pdburl, pdbusername, pdbpassword);
                         }
                         catch (Exception e)
                         {
                             StringWriter sw = new StringWriter();
-                            e
-                                .printStackTrace(new PrintWriter(
-                                    sw));
+                            e.printStackTrace(new PrintWriter(sw));
                             setuperror(
                                 redoUrl,
                                 response,
                                 "An error occured when trying to initialize"
                                     + " the persistant database. Here's the stack trace:<br/><br/><pre>"
-                                    + sw.toString()
-                                    + "</pre>");
+                                    + sw.toString() + "</pre>");
                             return;
                         }
-                        System.out
-                            .println("connecting to large database...");
+                        System.out.println("connecting to large database...");
                         try
                         {
                             Class.forName(ldbclass);
-                            ldb = DriverManager
-                                .getConnection(ldburl,
-                                    ldbusername,
-                                    ldbpassword);
+                            ldb =
+                                DriverManager
+                                    .getConnection(ldburl, ldbusername, ldbpassword);
                         }
                         catch (Exception e)
                         {
                             StringWriter sw = new StringWriter();
-                            e
-                                .printStackTrace(new PrintWriter(
-                                    sw));
+                            e.printStackTrace(new PrintWriter(sw));
                             setuperror(
                                 redoUrl,
                                 response,
                                 "An error occured when trying to initialize"
                                     + " the persistant database. Here's the stack trace:<br/><br/><pre>"
-                                    + sw.toString()
-                                    + "</pre>");
+                                    + sw.toString() + "</pre>");
                             return;
                         }
-                        System.out
-                            .println("loading sql files for table creation...");
+                        System.out.println("loading sql files for table creation...");
                         // create the tables
-                        String psql = readFile(new File(
-                            "pinit.sql"));
-                        String lsql = readFile(new File(
-                            "linit.sql"));
-                        psql = psql.replace("$$prefix$$",
-                            pfix);
-                        lsql = lsql.replace("$$prefix$$",
-                            lfix);
-                        System.out
-                            .println("creating persistant tables...");
+                        String psql = readFile(new File("pinit.sql"));
+                        String lsql = readFile(new File("linit.sql"));
+                        psql = psql.replace("$$prefix$$", pfix);
+                        lsql = lsql.replace("$$prefix$$", lfix);
+                        System.out.println("creating persistant tables...");
                         try
                         {
                             runLongSql(psql, pdb);
@@ -1653,26 +1470,20 @@ public class OpenGrooveRealmServer
                         catch (SQLException e)
                         {
                             StringWriter sw = new StringWriter();
-                            e
-                                .printStackTrace(new PrintWriter(
-                                    sw));
-                            setuperror(
-                                redoUrl,
-                                response,
+                            e.printStackTrace(new PrintWriter(sw));
+                            setuperror(redoUrl, response,
                                 "An error occured when trying to initialize"
                                     + " the persistant database. Some data may have"
                                     + "already been inserted into the database. "
                                     + "Here's the stack trace:<br/><br/><pre>"
-                                    + sw.toString()
-                                    + "</pre>");
+                                    + sw.toString() + "</pre>");
                             return;
                         }
                         // TODO: what if it fails in the middle of creating
                         // tables? should we try to roll back and delete those
                         // tables? perhaps put the table creates all within one
                         // transaction?
-                        System.out
-                            .println("creating large tables...");
+                        System.out.println("creating large tables...");
                         try
                         {
                             runLongSql(lsql, ldb);
@@ -1680,58 +1491,43 @@ public class OpenGrooveRealmServer
                         catch (SQLException e)
                         {
                             StringWriter sw = new StringWriter();
-                            e
-                                .printStackTrace(new PrintWriter(
-                                    sw));
-                            setuperror(
-                                redoUrl,
-                                response,
+                            e.printStackTrace(new PrintWriter(sw));
+                            setuperror(redoUrl, response,
                                 "An error occured when trying to initialize"
                                     + " the large database. Some data may have"
                                     + "already been inserted into the database. "
                                     + "Here's the stack trace:<br/><br/><pre>"
-                                    + sw.toString()
-                                    + "</pre>");
+                                    + sw.toString() + "</pre>");
                             return;
                         }
                         // store the configuration settings in the tables
-                        System.out
-                            .println("setting configuration settings...");
+                        System.out.println("setting configuration settings...");
                         try
                         {
-                            setConfig("serverport",
-                                serverport);
+                            setConfig("serverport", serverport);
                             setConfig("webport", webport);
-                            setConfig("realm",
-                                serverhostname);
-                            setConfig("forceencryption",
-                                forceEncryption ? "true"
-                                    : "false");
-                            PreparedStatement st = pdb
-                                .prepareStatement("insert into "
-                                    + pfix
+                            setConfig("realm", serverhostname);
+                            setConfig("forceencryption", forceEncryption ? "true" : "false");
+                            PreparedStatement st =
+                                pdb.prepareStatement("insert into " + pfix
                                     + "webusers (username,role,password)"
                                     + " values (?,?,?)");
                             st.setString(1, username);
                             st.setString(2, "admin");
-                            st.setString(3, Hash
-                                .hash(password));
+                            st.setString(3, Hash.hash(password));
                             st.executeUpdate();
                             st.close();
                         }
                         catch (SQLException e)
                         {
                             StringWriter sw = new StringWriter();
-                            e
-                                .printStackTrace(new PrintWriter(
-                                    sw));
+                            e.printStackTrace(new PrintWriter(sw));
                             setuperror(
                                 redoUrl,
                                 response,
                                 "An error occured while setting up the server's initial"
                                     + "configuration. Here's the stack trace:<br/><br/><pre>"
-                                    + sw.toString()
-                                    + "</pre>");
+                                    + sw.toString() + "</pre>");
                             return;
                         }
                         // generate the RSA keys for the server
@@ -1740,25 +1536,15 @@ public class OpenGrooveRealmServer
                             System.out
                                 .println("generating rsa security keys for encryption...");
                             RSA rsaEnc = new RSA(3072);
-                            setConfig("rsa-enc-pub", rsaEnc
-                                .getPublicKey()
-                                .toString(16));
-                            setConfig("rsa-enc-prv", rsaEnc
-                                .getPrivateKey().toString(
-                                    16));
-                            setConfig("rsa-enc-mod", rsaEnc
-                                .getModulus().toString(16));
+                            setConfig("rsa-enc-pub", rsaEnc.getPublicKey().toString(16));
+                            setConfig("rsa-enc-prv", rsaEnc.getPrivateKey().toString(16));
+                            setConfig("rsa-enc-mod", rsaEnc.getModulus().toString(16));
                             System.out
                                 .println("generating rsa security keys for signing...");
                             RSA rsaSgn = new RSA(3072);
-                            setConfig("rsa-sgn-pub", rsaSgn
-                                .getPublicKey()
-                                .toString(16));
-                            setConfig("rsa-sgn-prv", rsaSgn
-                                .getPrivateKey().toString(
-                                    16));
-                            setConfig("rsa-sgn-mod", rsaSgn
-                                .getModulus().toString(16));
+                            setConfig("rsa-sgn-pub", rsaSgn.getPublicKey().toString(16));
+                            setConfig("rsa-sgn-prv", rsaSgn.getPrivateKey().toString(16));
+                            setConfig("rsa-sgn-mod", rsaSgn.getModulus().toString(16));
                             /*
                              * We've generated the standard keys. Now we need to
                              * generate an X.509 self-signed certificate and
@@ -1767,86 +1553,61 @@ public class OpenGrooveRealmServer
                              * which is the hostname for their server that they
                              * provided.
                              */
-                            KeyPair certpair = CertificateUtils
-                                .createKeyPair("RSA", 3072);
-                            X509Certificate gencert = CertificateUtils
-                                .createCert(
-                                    new X500Principal("CN="
-                                        + serverhostname),
-                                    new X500Principal("CN="
-                                        + serverhostname),
-                                    365 * 100, null,
-                                    certpair.getPublic(),
-                                    certpair.getPrivate());
-                            setConfig(
-                                "certificate-chain",
-                                CertificateUtils
-                                    .writeCertChain(new X509Certificate[] { gencert }));
-                            setConfig("certificate-self",
-                                CertificateUtils
-                                    .writeCert(gencert));
-                            setConfig(
-                                "certificate-private-key",
-                                CertificateUtils
-                                    .writePrivateKey(certpair
-                                        .getPrivate()));
+                            KeyPair certpair = CertificateUtils.createKeyPair("RSA", 3072);
+                            X509Certificate gencert =
+                                CertificateUtils.createCert(new X500Principal("CN="
+                                    + serverhostname), new X500Principal("CN="
+                                    + serverhostname), 365 * 100, null,
+                                    certpair.getPublic(), certpair.getPrivate());
+                            setConfig("certificate-chain", CertificateUtils
+                                .writeCertChain(new X509Certificate[] { gencert }));
+                            setConfig("certificate-self", CertificateUtils
+                                .writeCert(gencert));
+                            setConfig("certificate-private-key", CertificateUtils
+                                .writePrivateKey(certpair.getPrivate()));
                         }
                         catch (Exception e)
                         {
                             e.printStackTrace();
                             StringWriter sw = new StringWriter();
-                            e
-                                .printStackTrace(new PrintWriter(
-                                    sw));
+                            e.printStackTrace(new PrintWriter(sw));
                             setuperror(
                                 redoUrl,
                                 response,
                                 "An error occured while generating RSA security keys"
                                     + "for the server. Here's the stack trace:<br/><br/><pre>"
-                                    + sw.toString()
-                                    + "</pre>");
+                                    + sw.toString() + "</pre>");
                             return;
                         }
-                        config.store(new FileOutputStream(
-                            configFile), "");
+                        config.store(new FileOutputStream(configFile), "");
                         // We're done!
-                        System.out
-                            .println("Server configuration complete.");
+                        System.out.println("Server configuration complete.");
                         doneSettingUp = true;
                         response.sendRedirect("/");
                         return;
                     }
                     else
                     {
-                        response
-                            .sendRedirect("/bypass/start.jsp?pdbclass=org.h2.Driver&"
-                                + "pdburl="
-                                + URLEncoder
-                                    .encode("jdbc:h2:appdata/dbp/persistant")
-                                + "&"
-                                + "pdbprefix=opengroove_&pdbusername=sa"
-                                + "&ldbclass=org.h2.Driver&"
-                                + "ldburl="
-                                + URLEncoder
-                                    .encode("jdbc:h2:appdata/dbl/large")
-                                + "&"
-                                + "ldbprefix=opengroove_&ldbusername=sa"
-                                + "&serverport=63745&webport=34567");
+                        response.sendRedirect("/bypass/start.jsp?pdbclass=org.h2.Driver&"
+                            + "pdburl="
+                            + URLEncoder.encode("jdbc:h2:appdata/dbp/persistant") + "&"
+                            + "pdbprefix=opengroove_&pdbusername=sa"
+                            + "&ldbclass=org.h2.Driver&" + "ldburl="
+                            + URLEncoder.encode("jdbc:h2:appdata/dbl/large") + "&"
+                            + "ldbprefix=opengroove_&ldbusername=sa"
+                            + "&serverport=63745&webport=34567");
                         return;
                     }
                 }
                 
-                private void setuperror(String redoUrl,
-                    HttpServletResponse response,
+                private void setuperror(String redoUrl, HttpServletResponse response,
                     String string) throws IOException
                 {
-                    response.sendRedirect(redoUrl
-                        + URLEncoder.encode(string));
+                    response.sendRedirect(redoUrl + URLEncoder.encode(string));
                 }
                 
                 @Override
-                public void init(FilterConfig filterConfig)
-                    throws ServletException
+                public void init(FilterConfig filterConfig) throws ServletException
                 {
                     // TODO Auto-generated method stub
                     
@@ -1855,175 +1616,124 @@ public class OpenGrooveRealmServer
             finishContext(context);
             server.start();
             Thread.sleep(200);
-            System.out
-                .println(""
-                    + "This is the first time you've run OpenGroove Realm Server,\r\n"
-                    + "so you'll need to provide some information so that the\r\n"
-                    + "server can be configured. Open a browser and go to\r\n"
-                    + "http://localhost:34567 to get OpenGroove Realm Server\r\n"
-                    + "up and running.");
+            System.out.println(""
+                + "This is the first time you've run OpenGroove Realm Server,\r\n"
+                + "so you'll need to provide some information so that the\r\n"
+                + "server can be configured. Open a browser and go to\r\n"
+                + "http://localhost:34567 to get OpenGroove Realm Server\r\n"
+                + "up and running.");
             server.join();
             return;
         }
         // If we get here then OpenGroove has been set up, so get everything up
         // and running
-        System.out
-            .println("loading configuration files...");
+        System.out.println("loading configuration files...");
         config.load(new FileInputStream(configFile));
         String pdbclass = config.getProperty("pdbclass");
         String pdburl = config.getProperty("pdburl");
         String pdbprefix = config.getProperty("pdbprefix");
-        String pdbusername = config
-            .getProperty("pdbusername");
-        String pdbpassword = config
-            .getProperty("pdbpassword");
+        String pdbusername = config.getProperty("pdbusername");
+        String pdbpassword = config.getProperty("pdbpassword");
         String ldbclass = config.getProperty("ldbclass");
         String ldburl = config.getProperty("ldburl");
         String ldbprefix = config.getProperty("ldbprefix");
-        String ldbusername = config
-            .getProperty("ldbusername");
-        String ldbpassword = config
-            .getProperty("ldbpassword");
+        String ldbusername = config.getProperty("ldbusername");
+        String ldbpassword = config.getProperty("ldbpassword");
         pfix = pdbprefix;
         lfix = ldbprefix;
-        System.out
-            .println("loading database template files...");
+        System.out.println("loading database template files...");
         // copy persistantsqlmap.xml and largesqlmap.xml to the classes folder
         // with $$prefix$$ replaced as necessary
-        String psqlmaptext = readFile(new File(
-            "persistantsqlmap.xml"));
-        String lsqlmaptext = readFile(new File(
-            "largesqlmap.xml"));
-        psqlmaptext = psqlmaptext.replace("$$prefix$$",
-            pfix);
-        lsqlmaptext = lsqlmaptext.replace("$$prefix$$",
-            lfix);
-        writeFile(psqlmaptext, new File(
-            "classes/persistantsqlmap.xml"));
-        writeFile(lsqlmaptext, new File(
-            "classes/largesqlmap.xml"));
-        System.out
-            .println("connecting to persistant database...");
+        String psqlmaptext = readFile(new File("persistantsqlmap.xml"));
+        String lsqlmaptext = readFile(new File("largesqlmap.xml"));
+        psqlmaptext = psqlmaptext.replace("$$prefix$$", pfix);
+        lsqlmaptext = lsqlmaptext.replace("$$prefix$$", lfix);
+        writeFile(psqlmaptext, new File("classes/persistantsqlmap.xml"));
+        writeFile(lsqlmaptext, new File("classes/largesqlmap.xml"));
+        System.out.println("connecting to persistant database...");
         Class.forName(pdbclass);
         pfix = pdbprefix;
-        pdb = DriverManager.getConnection(pdburl,
-            pdbusername, pdbpassword);
-        String psqlconfigtext = readFile(new File(
-            "persistantsql.xml"));
-        psqlconfigtext = psqlconfigtext.replace(
-            "$$driver$$", pdbclass);
-        psqlconfigtext = psqlconfigtext.replace("$$url$$",
-            pdburl);
-        psqlconfigtext = psqlconfigtext.replace(
-            "$$username$$", pdbusername);
-        psqlconfigtext = psqlconfigtext.replace(
-            "$$password$$", pdbpassword);
-        pdbclient = SqlMapClientBuilder
-            .buildSqlMapClient(new StringReader(
-                psqlconfigtext));
-        System.out
-            .println("connecting to large database...");
+        pdb = DriverManager.getConnection(pdburl, pdbusername, pdbpassword);
+        String psqlconfigtext = readFile(new File("persistantsql.xml"));
+        psqlconfigtext = psqlconfigtext.replace("$$driver$$", pdbclass);
+        psqlconfigtext = psqlconfigtext.replace("$$url$$", pdburl);
+        psqlconfigtext = psqlconfigtext.replace("$$username$$", pdbusername);
+        psqlconfigtext = psqlconfigtext.replace("$$password$$", pdbpassword);
+        pdbclient = SqlMapClientBuilder.buildSqlMapClient(new StringReader(psqlconfigtext));
+        System.out.println("connecting to large database...");
         Class.forName(ldbclass);
         lfix = ldbprefix;
-        ldb = DriverManager.getConnection(ldburl,
-            ldbusername, ldbpassword);
-        String lsqlconfigtext = readFile(new File(
-            "largesql.xml"));
-        lsqlconfigtext = lsqlconfigtext.replace(
-            "$$driver$$", ldbclass);
-        lsqlconfigtext = lsqlconfigtext.replace("$$url$$",
-            ldburl);
-        lsqlconfigtext = lsqlconfigtext.replace(
-            "$$username$$", ldbusername);
-        lsqlconfigtext = lsqlconfigtext.replace(
-            "$$password$$", ldbpassword);
-        ldbclient = SqlMapClientBuilder
-            .buildSqlMapClient(new StringReader(
-                lsqlconfigtext));
+        ldb = DriverManager.getConnection(ldburl, ldbusername, ldbpassword);
+        String lsqlconfigtext = readFile(new File("largesql.xml"));
+        lsqlconfigtext = lsqlconfigtext.replace("$$driver$$", ldbclass);
+        lsqlconfigtext = lsqlconfigtext.replace("$$url$$", ldburl);
+        lsqlconfigtext = lsqlconfigtext.replace("$$username$$", ldbusername);
+        lsqlconfigtext = lsqlconfigtext.replace("$$password$$", ldbpassword);
+        ldbclient = SqlMapClientBuilder.buildSqlMapClient(new StringReader(lsqlconfigtext));
         System.out.println("loading web server...");
-        Server server = new Server(Integer
-            .parseInt(getConfig("webport")));
+        Server server = new Server(Integer.parseInt(getConfig("webport")));
         Context context = createServerContext(server, "web");
-        context.addFilter(new FilterHolder(
-            new LoginFilter()), "/*", Context.ALL);
+        context.addFilter(new FilterHolder(new LoginFilter()), "/*", Context.ALL);
         // context.addServlet(new ServletHolder(
         // new RendererServlet(readFile(new File(
         // "webconfig/layout.properties")))),
         // "/layout/*");
-        context.addServlet(new ServletHolder(
-            new AnonLinkImpl()), "/bypass/anonlink");
-        context.addServlet(new ServletHolder(
-            new AuthLinkImpl()), "/authlink");
-        context.addServlet(new ServletHolder(
-            new HttpServlet()
+        context.addServlet(new ServletHolder(new AnonLinkImpl()), "/bypass/anonlink");
+        context.addServlet(new ServletHolder(new AuthLinkImpl()), "/authlink");
+        context.addServlet(new ServletHolder(new HttpServlet()
+        {
+            
+            @Override
+            protected void service(HttpServletRequest req, HttpServletResponse resp)
+                throws ServletException, IOException
             {
-                
-                @Override
-                protected void service(
-                    HttpServletRequest req,
-                    HttpServletResponse resp)
-                    throws ServletException, IOException
-                {
-                    resp.setHeader("Content-type",
-                        "application/octet-stream");
-                    req.getRequestDispatcher(
-                        "/keydownload.jsp").forward(req,
-                        resp);
-                }
-            }), "/serverkey.ogvs");
+                resp.setHeader("Content-type", "application/octet-stream");
+                req.getRequestDispatcher("/keydownload.jsp").forward(req, resp);
+            }
+        }), "/serverkey.ogvs");
         finishContext(context);
         server.start();
         Thread.sleep(300);// so that stdout and stderr don't get mixed up
         System.out.println("loading periodic tasks...");
         loadPeriodicTasks();
-        System.out
-            .println("loading OpenGroove server on port "
-                + getConfig("serverport") + "...");
-        rsaEncryptionPublicKey = new BigInteger(
-            getConfig("rsa-enc-pub"), 16);
-        rsaEncryptionModulus = new BigInteger(
-            getConfig("rsa-enc-mod"), 16);
-        rsaEncryptionPrivateKey = new BigInteger(
-            getConfig("rsa-enc-prv"), 16);
-        rsaSignaturePublicKey = new BigInteger(
-            getConfig("rsa-sgn-pub"), 16);
-        rsaSignatureModulus = new BigInteger(
-            getConfig("rsa-sgn-mod"), 16);
-        rsaSignaturePrivateKey = new BigInteger(
-            getConfig("rsa-sgn-prv"), 16);
-        serverCertificateChain = CertificateUtils
-            .readCertChain(getConfig("certificate-chain"));
-        serverCertificatePrivateKey = CertificateUtils
-            .readPrivateKey(getConfig("certificate-private-key"));
+        System.out.println("loading OpenGroove server on port " + getConfig("serverport")
+            + "...");
+        rsaEncryptionPublicKey = new BigInteger(getConfig("rsa-enc-pub"), 16);
+        rsaEncryptionModulus = new BigInteger(getConfig("rsa-enc-mod"), 16);
+        rsaEncryptionPrivateKey = new BigInteger(getConfig("rsa-enc-prv"), 16);
+        rsaSignaturePublicKey = new BigInteger(getConfig("rsa-sgn-pub"), 16);
+        rsaSignatureModulus = new BigInteger(getConfig("rsa-sgn-mod"), 16);
+        rsaSignaturePrivateKey = new BigInteger(getConfig("rsa-sgn-prv"), 16);
+        serverCertificateChain =
+            CertificateUtils.readCertChain(getConfig("certificate-chain"));
+        serverCertificatePrivateKey =
+            CertificateUtils.readPrivateKey(getConfig("certificate-private-key"));
         serverRealmAddress = getConfig("realm");
         X509KeyManager keyManager = new X509KeyManager()
         {
             
             @Override
-            public String chooseClientAlias(
-                String[] keyType, Principal[] issuers,
+            public String chooseClientAlias(String[] keyType, Principal[] issuers,
                 Socket socket)
             {
                 return "key";
             }
             
             @Override
-            public String chooseServerAlias(String keyType,
-                Principal[] issuers, Socket socket)
+            public String chooseServerAlias(String keyType, Principal[] issuers,
+                Socket socket)
             {
                 return "key";
             }
             
             @Override
-            public X509Certificate[] getCertificateChain(
-                String alias)
+            public X509Certificate[] getCertificateChain(String alias)
             {
                 return serverCertificateChain;
             }
             
             @Override
-            public String[] getClientAliases(
-                String keyType, Principal[] issuers)
+            public String[] getClientAliases(String keyType, Principal[] issuers)
             {
                 return null;
             }
@@ -2035,20 +1745,17 @@ public class OpenGrooveRealmServer
             }
             
             @Override
-            public String[] getServerAliases(
-                String keyType, Principal[] issuers)
+            public String[] getServerAliases(String keyType, Principal[] issuers)
             {
                 return null;
             }
         };
-        SSLContext sslContext = SSLContext
-            .getInstance("TLS");
-        sslContext.init(new KeyManager[] { keyManager },
-            new TrustManager[] {}, new SecureRandom());
-        SSLServerSocketFactory sslFactory = sslContext
-            .getServerSocketFactory();
-        serverSocket = (SSLServerSocket) sslFactory
-            .createServerSocket(Integer
+        SSLContext sslContext = SSLContext.getInstance("TLS");
+        sslContext.init(new KeyManager[] { keyManager }, new TrustManager[] {},
+            new SecureRandom());
+        SSLServerSocketFactory sslFactory = sslContext.getServerSocketFactory();
+        serverSocket =
+            (SSLServerSocket) sslFactory.createServerSocket(Integer
                 .parseInt(getConfig("serverport")));
         // serverSocket
         // .setEnabledCipherSuites(new String[] { "TLS_RSA_WITH_AES_256_CBC_SHA"
@@ -2063,21 +1770,18 @@ public class OpenGrooveRealmServer
         loadCommands();
         tasks.prestartAllCoreThreads();
         internalTasks.prestartAllCoreThreads();
-        System.out
-            .println("OpenGroove Realm Server is up and running.");
+        System.out.println("OpenGroove Realm Server is up and running.");
         while (!serverSocket.isClosed())
         {
             try
             {
-                SSLSocket socket = (SSLSocket) serverSocket
-                    .accept();
+                SSLSocket socket = (SSLSocket) serverSocket.accept();
                 if (connections.size() > MAX_CONNECTIONS)
                 {
                     socket.close();
                     continue;
                 }
-                ConnectionHandler c = new ConnectionHandler(
-                    socket);
+                ConnectionHandler c = new ConnectionHandler(socket);
                 connections.add(c);
                 c.start();
             }
@@ -2087,8 +1791,7 @@ public class OpenGrooveRealmServer
                 Thread.sleep(20);
             }
         }
-        System.out
-            .println("OpenGroove Realm Server is shutting down...");
+        System.out.println("OpenGroove Realm Server is shutting down...");
         System.out.println("Shutting down task pool...");
         tasks.shutdown();
         for (int i = 0; i < 6; i++)
@@ -2097,43 +1800,32 @@ public class OpenGrooveRealmServer
             {
                 break;
             }
-            System.out.println("waited " + ((i + 1) * 5)
-                + " seconds, waiting "
-                + ((6 * 5) - ((i + 1) * 5))
-                + " more seconds");
+            System.out.println("waited " + ((i + 1) * 5) + " seconds, waiting "
+                + ((6 * 5) - ((i + 1) * 5)) + " more seconds");
             if (i == 5)
-                System.out
-                    .println("Forcing shutdown of task pool...");
+                System.out.println("Forcing shutdown of task pool...");
         }
         tasks.shutdownNow();
         System.out.println("Disconnecting all users...");
-        System.out
-            .println("Shutting down internal pool...");
+        System.out.println("Shutting down internal pool...");
         internalTasks.shutdown();
         for (int i = 0; i < 6; i++)
         {
-            if (internalTasks.awaitTermination(5,
-                TimeUnit.SECONDS))
+            if (internalTasks.awaitTermination(5, TimeUnit.SECONDS))
             {
                 break;
             }
-            System.out.println("waited " + ((i + 1) * 5)
-                + " seconds, waiting "
-                + ((6 * 5) - ((i + 1) * 5))
-                + " more seconds");
+            System.out.println("waited " + ((i + 1) * 5) + " seconds, waiting "
+                + ((6 * 5) - ((i + 1) * 5)) + " more seconds");
             if (i == 5)
-                System.out
-                    .println("Forcing shutdown of internal pool...");
+                System.out.println("Forcing shutdown of internal pool...");
         }
         internalTasks.shutdownNow();
-        System.out
-            .println("Closing connection to persistant database...");
+        System.out.println("Closing connection to persistant database...");
         pdb.close();
-        System.out
-            .println("Closing connection to large database...");
+        System.out.println("Closing connection to large database...");
         ldb.close();
-        System.out
-            .println("OpenGroove Realm Server has successfully shut down.");
+        System.out.println("OpenGroove Realm Server has successfully shut down.");
         Thread.sleep(1000);
         System.exit(0);
     }
@@ -2154,13 +1846,9 @@ public class OpenGrooveRealmServer
                     for (ConnectionHandler handler : new ArrayList<ConnectionHandler>(
                         connections))
                     {
-                        if (handler.socket.isClosed()
-                            || handler.socket
-                                .isInputShutdown()
-                            || handler.socket
-                                .isOutputShutdown()
-                            || (!handler.socket
-                                .isConnected()))
+                        if (handler.socket.isClosed() || handler.socket.isInputShutdown()
+                            || handler.socket.isOutputShutdown()
+                            || (!handler.socket.isConnected()))
                         {
                             try
                             {
@@ -2200,21 +1888,18 @@ public class OpenGrooveRealmServer
          * to run more often if messages are coming through frequently, and
          * schedule itself to run less often if message amount slows down.
          */
-        internalTasks.scheduleWithFixedDelay(
-            new MessageDataRemover(), 1, 15,
+        internalTasks.scheduleWithFixedDelay(new MessageDataRemover(), 1, 15,
             TimeUnit.MINUTES);
-        internalTasks.scheduleWithFixedDelay(
-            new ReadMessageRemover(), 1, 11,
+        internalTasks.scheduleWithFixedDelay(new ReadMessageRemover(), 1, 11,
             TimeUnit.MINUTES);
     }
     
-    private static ConnectionHandler getConnectionForComputer(
-        String username, String computer)
+    private static ConnectionHandler getConnectionForComputer(String username,
+        String computer)
     {
         username = username.toLowerCase();
         computer = computer.toLowerCase();
-        Map<String, ConnectionHandler> userMap = connectionsByAuth
-            .get(username);
+        Map<String, ConnectionHandler> userMap = connectionsByAuth.get(username);
         if (userMap == null)
         {
             System.out.println("no user map");
@@ -2239,25 +1924,20 @@ public class OpenGrooveRealmServer
         return handler;
     }
     
-    private static ConnectionHandler[] getConnectionsForUser(
-        String username)
+    private static ConnectionHandler[] getConnectionsForUser(String username)
     {
         username = username.toLowerCase();
-        Map<String, ConnectionHandler> userMap = connectionsByAuth
-            .get(username);
+        Map<String, ConnectionHandler> userMap = connectionsByAuth.get(username);
         if (userMap == null)
         {
             System.out.println("no user map");
             return new ConnectionHandler[0];
         }
-        ConnectionHandler[] consider = userMap.values()
-            .toArray(new ConnectionHandler[0]);
+        ConnectionHandler[] consider = userMap.values().toArray(new ConnectionHandler[0]);
         ArrayList<ConnectionHandler> results = new ArrayList<ConnectionHandler>();
         for (ConnectionHandler handler : consider)
         {
-            if (OpenGrooveRealmServer.connections
-                .contains(handler)
-                && handler.isAlive())
+            if (OpenGrooveRealmServer.connections.contains(handler) && handler.isAlive())
                 results.add(handler);
         }
         return results.toArray(new ConnectionHandler[0]);
@@ -2265,8 +1945,7 @@ public class OpenGrooveRealmServer
     
     public static String[] tokenizeByLines(String data)
     {
-        BufferedReader reader = new BufferedReader(
-            new StringReader(data));
+        BufferedReader reader = new BufferedReader(new StringReader(data));
         ArrayList<String> tokens = new ArrayList<String>();
         String s;
         try
@@ -2283,17 +1962,14 @@ public class OpenGrooveRealmServer
         return tokens.toArray(new String[0]);
     }
     
-    private static void verifyAtLeast(Object[] objects,
-        int minLength)
+    private static void verifyAtLeast(Object[] objects, int minLength)
     {
         if (objects.length < minLength)
-            throw new FailedResponseException(Status.FAIL,
-                "Input too short (expected " + minLength
-                    + ", found " + objects.length + ")");
+            throw new FailedResponseException(Status.FAIL, "Input too short (expected "
+                + minLength + ", found " + objects.length + ")");
     }
     
-    private static byte[] readToBytes(InputStream input)
-        throws IOException
+    private static byte[] readToBytes(InputStream input) throws IOException
     {
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
         copy(input, baos);
@@ -2306,18 +1982,14 @@ public class OpenGrooveRealmServer
         {
             
             @Override
-            public synchronized void handle(
-                String packetId, InputStream data,
-                ConnectionHandler connection)
-                throws IOException, SQLException
+            public synchronized void handle(String packetId, InputStream data,
+                ConnectionHandler connection) throws IOException, SQLException
             {
                 if (connection.username != null)
                 {
-                    throw new FailedResponseException(
-                        "You're already authenticated");
+                    throw new FailedResponseException("You're already authenticated");
                 }
-                String[] tokens = tokenizeByLines(new String(
-                    readToBytes(data)));
+                String[] tokens = tokenizeByLines(new String(readToBytes(data)));
                 verifyAtLeast(tokens, 4);
                 String connectionType = tokens[0];
                 String username = tokens[1];
@@ -2329,12 +2001,10 @@ public class OpenGrooveRealmServer
                 computerName = computerName.toLowerCase();
                 password = password.trim();
                 connectionType = connectionType.trim();
-                if (connectionType
-                    .equalsIgnoreCase("normal"))
+                if (connectionType.equalsIgnoreCase("normal"))
                 {
                     if ((!computerName.equals(""))
-                        && getConnectionForComputer(
-                            username, computerName) != null)
+                        && getConnectionForComputer(username, computerName) != null)
                     {
                         throw new FailedResponseException(
                             "You already have a connection to this server");
@@ -2355,10 +2025,8 @@ public class OpenGrooveRealmServer
                             connections))
                         {
                             if (ich.username != null
-                                && ich.username
-                                    .equalsIgnoreCase(username)
-                                && (ich.computerName == null || ich.computerName
-                                    .equals("")))
+                                && ich.username.equalsIgnoreCase(username)
+                                && (ich.computerName == null || ich.computerName.equals("")))
                             {
                                 throw new FailedResponseException(
                                     "You already have a connection to this server");
@@ -2367,14 +2035,11 @@ public class OpenGrooveRealmServer
                     }
                     // The user doesn't have a connection, so let's proceed with
                     // checking their password
-                    String passwordHash = Hash
-                        .hash(password);
-                    User confirmedAuthUser = DataStore
-                        .getUser(username, passwordHash);
+                    String passwordHash = Hash.hash(password);
+                    User confirmedAuthUser = DataStore.getUser(username, passwordHash);
                     if (confirmedAuthUser == null)
                     {
-                        throw new FailedResponseException(
-                            Status.BADAUTH,
+                        throw new FailedResponseException(Status.BADAUTH,
                             "Incorrect username and/or password");
                     }
                     // The user has successfully authenticated. Now we need to
@@ -2382,50 +2047,37 @@ public class OpenGrooveRealmServer
                     // they specified a computer.
                     if (!computerName.equals(""))
                     {
-                        Computer computer = DataStore
-                            .getComputer(username,
-                                computerName);
+                        Computer computer = DataStore.getComputer(username, computerName);
                         if (computer == null)
                         {
-                            throw new FailedResponseException(
-                                Status.BADCOMPUTER,
+                            throw new FailedResponseException(Status.BADCOMPUTER,
                                 "Nonexistant computer specified");
                         }
                     }
                     connection.username = username;
-                    connection.computerName = (computerName
-                        .equals("") ? null : computerName);
+                    connection.computerName =
+                        (computerName.equals("") ? null : computerName);
                     if (connection.computerName != null)
                     {
-                        Map<String, ConnectionHandler> userMap = connectionsByAuth
-                            .get(connection.username);
+                        Map<String, ConnectionHandler> userMap =
+                            connectionsByAuth.get(connection.username);
                         if (userMap == null)
                         {
                             userMap = new Hashtable<String, ConnectionHandler>();
-                            connectionsByAuth.put(
-                                connection.username,
-                                userMap);
+                            connectionsByAuth.put(connection.username, userMap);
                         }
-                        userMap.put(
-                            connection.computerName,
-                            connection);
-                        Computer computerObject = DataStore
-                            .getComputer(
-                                connection.username,
+                        userMap.put(connection.computerName, connection);
+                        Computer computerObject =
+                            DataStore.getComputer(connection.username,
                                 connection.computerName);
-                        computerObject.setLastonline(System
-                            .currentTimeMillis());
-                        DataStore
-                            .updateComputer(computerObject);
-                        tasks
-                            .execute(new UserStatusNotifier(
-                                connection.username,
-                                connection.computerName));
+                        computerObject.setLastonline(System.currentTimeMillis());
+                        DataStore.updateComputer(computerObject);
+                        tasks.execute(new UserStatusNotifier(connection.username,
+                            connection.computerName));
                         
                     }
-                    connection.sendEncryptedPacket(
-                        packetId, "authenticate",
-                        Status.OK, EMPTY);
+                    connection.sendEncryptedPacket(packetId, "authenticate", Status.OK,
+                        EMPTY);
                 }
             }
         };
@@ -2433,22 +2085,18 @@ public class OpenGrooveRealmServer
         {
             
             @Override
-            public void handle(String packetId,
-                InputStream data,
+            public void handle(String packetId, InputStream data,
                 ConnectionHandler connection)
             {
-                connection.sendEncryptedPacket(packetId,
-                    "ping", Status.OK, new byte[0]);
+                connection.sendEncryptedPacket(packetId, "ping", Status.OK, new byte[0]);
             }
         };
         new Command("quit", 8, true, true)
         {
             
             @Override
-            public void handle(String packetId,
-                InputStream data,
-                ConnectionHandler connection)
-                throws Exception
+            public void handle(String packetId, InputStream data,
+                ConnectionHandler connection) throws Exception
             {
                 try
                 {
@@ -2466,17 +2114,12 @@ public class OpenGrooveRealmServer
         {
             
             @Override
-            public void handle(String packetId,
-                InputStream data,
-                ConnectionHandler connection)
-                throws Exception
+            public void handle(String packetId, InputStream data,
+                ConnectionHandler connection) throws Exception
             {
-                long timeMillis = System
-                    .currentTimeMillis();
-                connection.sendEncryptedPacket(packetId,
-                    "gettime", Status.OK, ("" + timeMillis
-                        + " " + new Date(timeMillis))
-                        .getBytes());
+                long timeMillis = System.currentTimeMillis();
+                connection.sendEncryptedPacket(packetId, "gettime", Status.OK, (""
+                    + timeMillis + " " + new Date(timeMillis)).getBytes());
             }
             
         };
@@ -2486,32 +2129,22 @@ public class OpenGrooveRealmServer
         {
             
             @Override
-            public void handle(String packetId,
-                InputStream data,
-                ConnectionHandler connection)
-                throws Exception
+            public void handle(String packetId, InputStream data,
+                ConnectionHandler connection) throws Exception
             {
-                String[] tokens = tokenizeByLines(new String(
-                    readToBytes(data)));
+                String[] tokens = tokenizeByLines(new String(readToBytes(data)));
                 verifyAtLeast(tokens, 2);
-                if (DataStore
-                    .getComputersForUser(connection.username).length >= DataStore
-                    .getUserQuota(connection.username,
-                        "computers"))
-                    throw new FailedResponseException(
-                        Status.QUOTAEXCEEDED,
+                if (DataStore.getComputersForUser(connection.username).length >= DataStore
+                    .getUserQuota(connection.username, "computers"))
+                    throw new FailedResponseException(Status.QUOTAEXCEEDED,
                         "You have the maximum number of computers already, which is "
-                            + DataStore.getUserQuota(
-                                connection.username,
-                                "computers"));
+                            + DataStore.getUserQuota(connection.username, "computers"));
                 // Ok, the user is authenticated and is allowed to create a
                 // computer (IE they haven't exceeded their quota yet)
                 String computerName = tokens[0];
                 String computerType = tokens[1];
-                DataStore.addComputer(connection.username,
-                    computerName, computerType);
-                connection.sendEncryptedPacket(packetId,
-                    "createcomputer", Status.OK, EMPTY);
+                DataStore.addComputer(connection.username, computerName, computerType);
+                connection.sendEncryptedPacket(packetId, "createcomputer", Status.OK, EMPTY);
             }
             
         };
@@ -2519,45 +2152,34 @@ public class OpenGrooveRealmServer
         {
             
             @Override
-            public void handle(String packetId,
-                InputStream data,
-                ConnectionHandler connection)
-                throws Exception
+            public void handle(String packetId, InputStream data,
+                ConnectionHandler connection) throws Exception
             {
                 byte[] dataBytes = readToBytes(data);
-                String firstSubsection = new String(
-                    dataBytes, 0, Math.min(128,
-                        dataBytes.length));
-                String[] tokens = firstSubsection.split(
-                    " ", 5);
+                String firstSubsection =
+                    new String(dataBytes, 0, Math.min(128, dataBytes.length));
+                String[] tokens = firstSubsection.split(" ", 5);
                 verifyAtLeast(tokens, 4);
                 String messageId = tokens[0];
                 String recipientUser = tokens[1];
                 String recipientComputer = tokens[2];
                 recipientUser = relativeId(recipientUser);
                 checkUsername(recipientUser);
-                int dataIndex = messageId.length()
-                    + recipientUser.length()
-                    + recipientComputer.length() + 3;
-                byte[] messageContents = new byte[dataBytes.length
-                    - dataIndex];
-                System.arraycopy(dataBytes, dataIndex,
-                    messageContents, 0,
+                int dataIndex =
+                    messageId.length() + recipientUser.length() + recipientComputer.length()
+                        + 3;
+                byte[] messageContents = new byte[dataBytes.length - dataIndex];
+                System.arraycopy(dataBytes, dataIndex, messageContents, 0,
                     messageContents.length);
-                ConnectionHandler recipientConnection = getConnectionForComputer(
-                    recipientUser, recipientComputer);
+                ConnectionHandler recipientConnection =
+                    getConnectionForComputer(recipientUser, recipientComputer);
                 if (recipientConnection == null)
-                    throw new FailedResponseException(
-                        Status.NOSUCHUSER,
+                    throw new FailedResponseException(Status.NOSUCHUSER,
                         "The recipient does not exist or is offline");
-                recipientConnection.sendEncryptedPacket(
-                    generateId(), "receiveimessage",
-                    Status.OK, concat(("" + messageId + " "
-                        + connection.username + " "
-                        + connection.computerName + " ")
-                        .getBytes(), messageContents));
-                connection.sendEncryptedPacket(packetId,
-                    "sendimessage", Status.OK, EMPTY);
+                recipientConnection.sendEncryptedPacket(generateId(), "receiveimessage",
+                    Status.OK, concat(("" + messageId + " " + connection.username + " "
+                        + connection.computerName + " ").getBytes(), messageContents));
+                connection.sendEncryptedPacket(packetId, "sendimessage", Status.OK, EMPTY);
             }
             
         };
@@ -2565,22 +2187,16 @@ public class OpenGrooveRealmServer
         {
             
             @Override
-            public void handle(String packetId,
-                InputStream data,
-                ConnectionHandler connection)
-                throws Exception
+            public void handle(String packetId, InputStream data,
+                ConnectionHandler connection) throws Exception
             {
-                String newPassword = new String(
-                    readToBytes(data));
-                if (newPassword.contains("\r")
-                    || newPassword.contains("\n")
-                    || newPassword.startsWith(" ")
-                    || newPassword.endsWith(" "))
+                String newPassword = new String(readToBytes(data));
+                if (newPassword.contains("\r") || newPassword.contains("\n")
+                    || newPassword.startsWith(" ") || newPassword.endsWith(" "))
                     throw new FailedResponseException(
                         "Passwords can't start or end with a space, "
                             + "and can't contain newlines.");
-                User user = DataStore
-                    .getUser(connection.username);
+                User user = DataStore.getUser(connection.username);
                 user.setPassword(Hash.hash(newPassword));
                 DataStore.updateUser(user);
                 /*
@@ -2588,21 +2204,17 @@ public class OpenGrooveRealmServer
                  * connections off of the server. That way, all other computers
                  * will have to provide the new password.
                  */
-                connection.sendEncryptedPacket(packetId,
-                    "setpassword", Status.OK, EMPTY);
+                connection.sendEncryptedPacket(packetId, "setpassword", Status.OK, EMPTY);
             }
         };
         new Command("getuserstatus", 128, false, false)
         {
             
             @Override
-            public void handle(String packetId,
-                InputStream data,
-                ConnectionHandler connection)
-                throws Exception
+            public void handle(String packetId, InputStream data,
+                ConnectionHandler connection) throws Exception
             {
-                String dataString = new String(
-                    readToBytes(data));
+                String dataString = new String(readToBytes(data));
                 String[] tokens = tokenizeByLines(dataString);
                 if (tokens.length == 1)
                     tokens = new String[] { tokens[0], "" };
@@ -2613,79 +2225,56 @@ public class OpenGrooveRealmServer
                 checkUsername(username);
                 boolean isOnline = false;
                 String lastOnline = "";
-                boolean isComputer = !computerName
-                    .equals("");
+                boolean isComputer = !computerName.equals("");
                 if (isComputer)
                 {
-                    Computer computer = DataStore
-                        .getComputer(username, computerName);
+                    Computer computer = DataStore.getComputer(username, computerName);
                     if (computer == null)
-                        throw new FailedResponseException(
-                            Status.NOSUCHCOMPUTER,
+                        throw new FailedResponseException(Status.NOSUCHCOMPUTER,
                             "The computer specified doesn't exist");
-                    lastOnline += computer.getLastonline()
-                        + " "
-                        + new Date(computer.getLastonline());
-                    isOnline = getConnectionForComputer(
-                        username, computerName) != null;
+                    lastOnline +=
+                        computer.getLastonline() + " " + new Date(computer.getLastonline());
+                    isOnline = getConnectionForComputer(username, computerName) != null;
                 }
                 else
                 {
                     if (DataStore.getUser(username) == null)
-                        throw new FailedResponseException(
-                            Status.NOSUCHUSER,
+                        throw new FailedResponseException(Status.NOSUCHUSER,
                             "The user specified doesn't exist");
-                    System.out
-                        .println("getting information for user "
-                            + username);
-                    long lastOnlineValue = DataStore
-                        .getUserLastOnline(username);
-                    lastOnline += lastOnlineValue + " "
-                        + new Date(lastOnlineValue);
-                    Map userMap = connectionsByAuth
-                        .get(username);
-                    isOnline = userMap != null
-                        && userMap.size() > 0;
+                    System.out.println("getting information for user " + username);
+                    long lastOnlineValue = DataStore.getUserLastOnline(username);
+                    lastOnline += lastOnlineValue + " " + new Date(lastOnlineValue);
+                    Map userMap = connectionsByAuth.get(username);
+                    isOnline = userMap != null && userMap.size() > 0;
                 }
-                connection.sendEncryptedPacket(packetId,
-                    "getuserstatus", Status.OK, (""
-                        + isOnline + "\n" + lastOnline)
-                        .getBytes());
+                connection.sendEncryptedPacket(packetId, "getuserstatus", Status.OK, (""
+                    + isOnline + "\n" + lastOnline).getBytes());
             }
         };
         new Command("setvisibility", 10, false, true)
         {
             
             @Override
-            public void handle(String packetId,
-                InputStream data,
-                ConnectionHandler connection)
-                throws Exception
+            public void handle(String packetId, InputStream data,
+                ConnectionHandler connection) throws Exception
             {
                 String s = new String(readToBytes(data));
-                User user = DataStore
-                    .getUser(connection.username);
-                user.setPubliclylisted(s.trim()
-                    .equalsIgnoreCase("true"));
+                User user = DataStore.getUser(connection.username);
+                user.setPubliclylisted(s.trim().equalsIgnoreCase("true"));
                 DataStore.updateUser(user);
-                connection.sendEncryptedPacket(packetId,
-                    "setvisibility", Status.OK, EMPTY);
+                connection.sendEncryptedPacket(packetId, "setvisibility", Status.OK, EMPTY);
             }
         };
         new Command("getvisibility", 10, false, true)
         {
             
             @Override
-            public void handle(String packetId,
-                InputStream data,
-                ConnectionHandler connection)
-                throws Exception
+            public void handle(String packetId, InputStream data,
+                ConnectionHandler connection) throws Exception
             {
-                User user = DataStore
-                    .getUser(connection.username);
-                connection.sendEncryptedPacket(packetId,
-                    "getvisibility", Status.OK, ("" + user
-                        .isPubliclylisted()).getBytes());
+                User user = DataStore.getUser(connection.username);
+                connection.sendEncryptedPacket(packetId, "getvisibility", Status.OK,
+                    ("" + user.isPubliclylisted()).getBytes());
             }
             
         };
@@ -2693,10 +2282,8 @@ public class OpenGrooveRealmServer
         {
             
             @Override
-            public void handle(String packetId,
-                InputStream data,
-                ConnectionHandler connection)
-                throws Exception
+            public void handle(String packetId, InputStream data,
+                ConnectionHandler connection) throws Exception
             {
                 // FIXME: needs to be redone to match the new spec for this
                 // command present at the command spec on
@@ -2708,40 +2295,37 @@ public class OpenGrooveRealmServer
                 String limitString = tokens[2];
                 String searchOtherServersString = tokens[3];
                 String[] keysToSearch = new String[tokens.length - 4];
-                System.arraycopy(tokens, 4, keysToSearch,
-                    0, keysToSearch.length);
+                System.arraycopy(tokens, 4, keysToSearch, 0, keysToSearch.length);
                 for (String cKey : keysToSearch)
                 {
                     if (cKey.trim().equals(""))
                         continue;
                     if (!cKey.startsWith("public-"))
-                        throw new FailedResponseException(
-                            Status.FAIL,
+                        throw new FailedResponseException(Status.FAIL,
                             "The user settings specified must all start with public-");
                 }
                 // We've got the search criteria, now it's time to do the actual
                 // search
-                User[] users = DataStore.searchUsers("*"
-                    + searchString + "*", Integer
-                    .parseInt(offsetString), Integer
-                    .parseInt(limitString), keysToSearch);
-                int length = DataStore.searchUsersCount("*"
-                    + searchString + "*", Integer
-                    .parseInt(offsetString), Integer
-                    .parseInt(limitString), keysToSearch);
-                connection.sendEncryptedPacket(packetId,
-                    command(), Status.OK, ("" + length
-                        + "\n" + delimited(users,
-                        new ToString<User>()
-                        {
-                            
-                            @Override
-                            public String toString(
-                                User object)
-                            {
-                                return object.getUsername();
-                            }
-                        }, "\n")).getBytes());
+                User[] users =
+                    DataStore
+                        .searchUsers("*" + searchString + "*", Integer
+                            .parseInt(offsetString), Integer.parseInt(limitString),
+                            keysToSearch);
+                int length =
+                    DataStore
+                        .searchUsersCount("*" + searchString + "*", Integer
+                            .parseInt(offsetString), Integer.parseInt(limitString),
+                            keysToSearch);
+                connection.sendEncryptedPacket(packetId, command(), Status.OK, ("" + length
+                    + "\n" + delimited(users, new ToString<User>()
+                {
+                    
+                    @Override
+                    public String toString(User object)
+                    {
+                        return object.getUsername();
+                    }
+                }, "\n")).getBytes());
             }
             
         };
@@ -2749,10 +2333,8 @@ public class OpenGrooveRealmServer
         {
             
             @Override
-            public void handle(String packetId,
-                InputStream data,
-                ConnectionHandler connection)
-                throws Exception
+            public void handle(String packetId, InputStream data,
+                ConnectionHandler connection) throws Exception
             {
                 String[] tokens = tokenize(data);
                 verifyAtLeast(tokens, 2);
@@ -2760,25 +2342,20 @@ public class OpenGrooveRealmServer
                 String property = tokens[1];
                 username = relativeId(username);
                 checkUsername(username);
-                boolean isPublic = property
-                    .startsWith("public-");
+                boolean isPublic = property.startsWith("public-");
                 boolean isPrivate = !isPublic;
                 boolean isThisUser = username.equals("");
                 boolean isOtherUser = !isThisUser;
                 if (isThisUser)
                     username = connection.username;
                 if (isPrivate && isOtherUser)
-                    throw new FailedResponseException(
-                        Status.FAIL,
+                    throw new FailedResponseException(Status.FAIL,
                         "Only properties starting with public- "
                             + "can be read for other users.");
-                UserSetting setting = DataStore
-                    .getUserSetting(username, property);
-                String value = setting == null ? ""
-                    : setting.getValue();
-                connection.sendEncryptedPacket(packetId,
-                    "getusersetting", Status.OK, value
-                        .getBytes());
+                UserSetting setting = DataStore.getUserSetting(username, property);
+                String value = setting == null ? "" : setting.getValue();
+                connection.sendEncryptedPacket(packetId, "getusersetting", Status.OK, value
+                    .getBytes());
             }
             
         };
@@ -2786,10 +2363,8 @@ public class OpenGrooveRealmServer
         {
             
             @Override
-            public void handle(String packetId,
-                InputStream data,
-                ConnectionHandler connection)
-                throws Exception
+            public void handle(String packetId, InputStream data,
+                ConnectionHandler connection) throws Exception
             {
                 String[] tokens = tokenize(data);
                 verifyAtLeast(tokens, 1);
@@ -2798,24 +2373,19 @@ public class OpenGrooveRealmServer
                 checkUsername(username);
                 UserSetting[] settings;
                 if (username.equals(""))
-                    settings = DataStore
-                        .listUserSettings(connection.username);
+                    settings = DataStore.listUserSettings(connection.username);
                 else
-                    settings = DataStore
-                        .listPublicUserSettings(username);
-                connection.sendEncryptedPacket(packetId,
-                    "listusersettings", Status.OK,
-                    delimited(settings,
-                        new ToString<UserSetting>()
+                    settings = DataStore.listPublicUserSettings(username);
+                connection.sendEncryptedPacket(packetId, "listusersettings", Status.OK,
+                    delimited(settings, new ToString<UserSetting>()
+                    {
+                        
+                        @Override
+                        public String toString(UserSetting object)
                         {
-                            
-                            @Override
-                            public String toString(
-                                UserSetting object)
-                            {
-                                return object.getName();
-                            }
-                        }, "\n").getBytes());
+                            return object.getName();
+                        }
+                    }, "\n").getBytes());
             }
             
         };
@@ -2823,47 +2393,35 @@ public class OpenGrooveRealmServer
         {
             
             @Override
-            public void handle(String packetId,
-                InputStream data,
-                ConnectionHandler connection)
-                throws Exception
+            public void handle(String packetId, InputStream data,
+                ConnectionHandler connection) throws Exception
             {
                 String[] tokens = tokenize(data);
                 verifyAtLeast(tokens, 2);
                 String name = tokens[0];
                 String value = tokens[1];
                 boolean delete = value.equals("");
-                UserSetting existingSetting = DataStore
-                    .getUserSetting(connection.username,
-                        name);
-                int settingSize = DataStore
-                    .getUserSettingSize(connection.username);
+                UserSetting existingSetting =
+                    DataStore.getUserSetting(connection.username, name);
+                int settingSize = DataStore.getUserSettingSize(connection.username);
                 if (existingSetting != null)
-                    settingSize = settingSize
-                        - (existingSetting.getName()
-                            .length()
-                            + existingSetting.getValue()
-                                .length() + 10);
-                settingSize += 10 + name.length()
-                    + value.length();
+                    settingSize =
+                        settingSize
+                            - (existingSetting.getName().length()
+                                + existingSetting.getValue().length() + 10);
+                settingSize += 10 + name.length() + value.length();
                 if ((!delete)
-                    && settingSize > DataStore
-                        .getUserQuota(connection.username,
-                            "usersettingsize"))
+                    && settingSize > DataStore.getUserQuota(connection.username,
+                        "usersettingsize"))
                     throw new FailedResponseException(
                         Status.QUOTAEXCEEDED,
                         "You have "
-                            + DataStore.getUserQuota(
-                                connection.username,
-                                "usersettingsize")
+                            + DataStore.getUserQuota(connection.username, "usersettingsize")
                             + "allowed user setting bytes, but with this new property your size would be "
                             + settingSize);
-                DataStore.setUserSetting(
-                    connection.username, name, value);
-                tasks.execute(new UserSettingNotifier(
-                    connection.username, null, name));
-                connection.sendEncryptedPacket(packetId,
-                    "setusersetting", Status.OK, EMPTY);
+                DataStore.setUserSetting(connection.username, name, value);
+                tasks.execute(new UserSettingNotifier(connection.username, null, name));
+                connection.sendEncryptedPacket(packetId, "setusersetting", Status.OK, EMPTY);
             }
             
         };
@@ -2871,10 +2429,8 @@ public class OpenGrooveRealmServer
         {
             
             @Override
-            public void handle(String packetId,
-                InputStream data,
-                ConnectionHandler connection)
-                throws Exception
+            public void handle(String packetId, InputStream data,
+                ConnectionHandler connection) throws Exception
             {
                 String[] tokens = tokenize(data);
                 verifyAtLeast(tokens, 1);
@@ -2883,41 +2439,33 @@ public class OpenGrooveRealmServer
                     username = connection.username;
                 username = relativeId(username);
                 checkUsername(username);
-                Computer[] computers = DataStore
-                    .listComputersByUser(username);
+                Computer[] computers = DataStore.listComputersByUser(username);
                 if (computers.length == 0)
                 {
                     if (DataStore.getUser(username) == null)
-                        throw new FailedResponseException(
-                            Status.NOSUCHUSER,
+                        throw new FailedResponseException(Status.NOSUCHUSER,
                             "The user specified does not exist.");
-                    throw new FailedResponseException(
-                        Status.NORESULTS,
+                    throw new FailedResponseException(Status.NORESULTS,
                         "The user specified has not created any computers.");
                 }
-                connection.sendEncryptedPacket(packetId,
-                    command(), Status.OK, delimited(
-                        computers, new ToString<Computer>()
+                connection.sendEncryptedPacket(packetId, command(), Status.OK, delimited(
+                    computers, new ToString<Computer>()
+                    {
+                        
+                        @Override
+                        public String toString(Computer object)
                         {
-                            
-                            @Override
-                            public String toString(
-                                Computer object)
-                            {
-                                return object
-                                    .getComputername();
-                            }
-                        }, "\n").getBytes());
+                            return object.getComputername();
+                        }
+                    }, "\n").getBytes());
             }
         };
         new Command("getcomputersetting", 256, false, true)
         {
             
             @Override
-            public void handle(String packetId,
-                InputStream data,
-                ConnectionHandler connection)
-                throws Exception
+            public void handle(String packetId, InputStream data,
+                ConnectionHandler connection) throws Exception
             {
                 String[] tokens = tokenize(data);
                 verifyAtLeast(tokens, 3);
@@ -2927,43 +2475,34 @@ public class OpenGrooveRealmServer
                 checkUsername(username);
                 if (computerName.equals(""))
                     computerName = connection.computerName;
-                if (computerName == null
-                    || computerName.equals(""))
-                    throw new FailedResponseException(
-                        Status.FAIL,
+                if (computerName == null || computerName.equals(""))
+                    throw new FailedResponseException(Status.FAIL,
                         "No computer specified and not authenticated as a computer");
                 String name = tokens[2];
                 boolean allowPrivate = username.equals("");
                 if (allowPrivate)
                     username = connection.username;
                 boolean isPublic = !allowPrivate;
-                boolean isIntendedPublic = name
-                    .startsWith("public-");
+                boolean isIntendedPublic = name.startsWith("public-");
                 boolean isIntendedPrivate = !isIntendedPublic;
                 if (isPublic && isIntendedPrivate)
                 {
-                    throw new FailedResponseException(
-                        Status.FAIL,
+                    throw new FailedResponseException(Status.FAIL,
                         "only properties starting with public- "
                             + "can be read from other computers");
                 }
-                ComputerSetting setting = DataStore
-                    .getComputerSetting(username,
-                        computerName, name);
-                connection.sendEncryptedPacket(packetId,
-                    command(), Status.OK,
-                    (setting == null ? "" : setting
-                        .getValue()).getBytes());
+                ComputerSetting setting =
+                    DataStore.getComputerSetting(username, computerName, name);
+                connection.sendEncryptedPacket(packetId, command(), Status.OK,
+                    (setting == null ? "" : setting.getValue()).getBytes());
             }
         };
         new Command("help", 256, true, true)
         {
             
             @Override
-            public void handle(String packetId,
-                InputStream data,
-                ConnectionHandler connection)
-                throws Exception
+            public void handle(String packetId, InputStream data,
+                ConnectionHandler connection) throws Exception
             {
                 connection
                     .sendEncryptedPacket(
@@ -2977,14 +2516,12 @@ public class OpenGrooveRealmServer
                             + serverRealmAddress
                             + "\" .\r\n\r\n"
                             + "Here's a list of all of the commands that this server knows:\r\n\r\n"
-                            + delimited(commands.values()
-                                .toArray(new Command[0]),
+                            + delimited(commands.values().toArray(new Command[0]),
                                 new ToString<Command>()
                                 {
                                     
                                     @Override
-                                    public String toString(
-                                        Command object)
+                                    public String toString(Command object)
                                     {
                                         return object.commandName;
                                     }
@@ -2996,10 +2533,8 @@ public class OpenGrooveRealmServer
         {
             
             @Override
-            public void handle(String packetId,
-                InputStream data,
-                ConnectionHandler connection)
-                throws Exception
+            public void handle(String packetId, InputStream data,
+                ConnectionHandler connection) throws Exception
             {
                 String[] tokens = tokenize(data);
                 verifyAtLeast(tokens, 2);
@@ -3007,36 +2542,25 @@ public class OpenGrooveRealmServer
                 String computername = tokens[1];
                 username = relativeId(username);
                 checkUsername(username);
-                if (computername.equals("")
-                    && username.equals(""))
+                if (computername.equals("") && username.equals(""))
                     computername = connection.computerName;
                 if (username.equals(""))
                     username = connection.username;
-                Computer computer = DataStore.getComputer(
-                    username, computername);
+                Computer computer = DataStore.getComputer(username, computername);
                 if (computer == null)
-                    throw new FailedResponseException(
-                        Status.NOSUCHCOMPUTER,
+                    throw new FailedResponseException(Status.NOSUCHCOMPUTER,
                         "The computer specified does not exist");
-                connection
-                    .sendEncryptedPacket(
-                        packetId,
-                        command(),
-                        Status.OK,
-                        ("" + computer.getType() + "\n" + computer
-                            .getCapabilities()).getBytes());
+                connection.sendEncryptedPacket(packetId, command(), Status.OK, (""
+                    + computer.getType() + "\n" + computer.getCapabilities()).getBytes());
             }
             
         };
-        new Command("setcomputersetting", 2048, false,
-            false)
+        new Command("setcomputersetting", 2048, false, false)
         {
             
             @Override
-            public void handle(String packetId,
-                InputStream data,
-                ConnectionHandler connection)
-                throws Exception
+            public void handle(String packetId, InputStream data,
+                ConnectionHandler connection) throws Exception
             {
                 String[] tokens = tokenize(data);
                 verifyAtLeast(tokens, 3);
@@ -3046,53 +2570,38 @@ public class OpenGrooveRealmServer
                 String name = tokens[1];
                 String value = tokens[2];
                 boolean delete = value.equals("");
-                ComputerSetting existingSetting = DataStore
-                    .getComputerSetting(
-                        connection.username, computerName,
-                        name);
-                int settingSize = DataStore
-                    .getComputerSettingSize(
-                        connection.username, computerName);
+                ComputerSetting existingSetting =
+                    DataStore.getComputerSetting(connection.username, computerName, name);
+                int settingSize =
+                    DataStore.getComputerSettingSize(connection.username, computerName);
                 if (existingSetting != null)
-                    settingSize = settingSize
-                        - (existingSetting.getName()
-                            .length()
-                            + existingSetting.getValue()
-                                .length() + 10);
-                settingSize += 10 + name.length()
-                    + value.length();
+                    settingSize =
+                        settingSize
+                            - (existingSetting.getName().length()
+                                + existingSetting.getValue().length() + 10);
+                settingSize += 10 + name.length() + value.length();
                 if ((!delete)
-                    && settingSize > DataStore
-                        .getUserQuota(connection.username,
-                            "computersettingsize"))
+                    && settingSize > DataStore.getUserQuota(connection.username,
+                        "computersettingsize"))
                     throw new FailedResponseException(
                         Status.QUOTAEXCEEDED,
                         "You have "
-                            + DataStore.getUserQuota(
-                                connection.username,
+                            + DataStore.getUserQuota(connection.username,
                                 "computersettingsize")
                             + "allowed computer setting bytes, but with this new property your size would be "
                             + settingSize);
-                DataStore.setComputerSetting(
-                    connection.username, computerName,
-                    name, value);
-                tasks
-                    .execute(new UserSettingNotifier(
-                        connection.username, computerName,
-                        name));
-                connection.sendEncryptedPacket(packetId,
-                    command(), Status.OK, EMPTY);
+                DataStore.setComputerSetting(connection.username, computerName, name, value);
+                tasks.execute(new UserSettingNotifier(connection.username, computerName,
+                    name));
+                connection.sendEncryptedPacket(packetId, command(), Status.OK, EMPTY);
             }
         };
-        new Command("listcomputersettings", 128, false,
-            false)
+        new Command("listcomputersettings", 128, false, false)
         {
             
             @Override
-            public void handle(String packetId,
-                InputStream data,
-                ConnectionHandler connection)
-                throws Exception
+            public void handle(String packetId, InputStream data,
+                ConnectionHandler connection) throws Exception
             {
                 
                 String[] tokens = tokenize(data);
@@ -3105,46 +2614,34 @@ public class OpenGrooveRealmServer
                 if (computerName.equals(""))
                     computerName = connection.computerName;
                 if (username.equals(""))
-                    settings = DataStore
-                        .listComputerSettings(
-                            connection.username,
-                            computerName);
+                    settings =
+                        DataStore.listComputerSettings(connection.username, computerName);
                 else
-                    settings = DataStore
-                        .listPublicComputerSettings(
-                            username, computerName);
-                connection.sendEncryptedPacket(packetId,
-                    command(), Status.OK, delimited(
-                        settings,
-                        new ToString<ComputerSetting>()
+                    settings = DataStore.listPublicComputerSettings(username, computerName);
+                connection.sendEncryptedPacket(packetId, command(), Status.OK, delimited(
+                    settings, new ToString<ComputerSetting>()
+                    {
+                        
+                        @Override
+                        public String toString(ComputerSetting object)
                         {
-                            
-                            @Override
-                            public String toString(
-                                ComputerSetting object)
-                            {
-                                return object.getName();
-                            }
-                        }, "\n").getBytes());
+                            return object.getName();
+                        }
+                    }, "\n").getBytes());
             }
         };
         new Command("createsubscription", 256, false, false)
         {
             
             @Override
-            public void handle(String packetId,
-                InputStream data,
-                ConnectionHandler connection)
-                throws Exception
+            public void handle(String packetId, InputStream data,
+                ConnectionHandler connection) throws Exception
             {
                 String[] tokens = tokenize(data);
                 verifyAtLeast(tokens, 5);
-                if (DataStore
-                    .getSubscriptionCount(connection.username) >= DataStore
-                    .getUserQuota(connection.username,
-                        "subscriptions"))
-                    throw new FailedResponseException(
-                        Status.QUOTAEXCEEDED,
+                if (DataStore.getSubscriptionCount(connection.username) >= DataStore
+                    .getUserQuota(connection.username, "subscriptions"))
+                    throw new FailedResponseException(Status.QUOTAEXCEEDED,
                         "You have too many active subscriptions right now.");
                 String type = tokens[0];
                 String onuser = tokens[1];
@@ -3152,26 +2649,20 @@ public class OpenGrooveRealmServer
                 checkUsername(onuser);
                 String oncomputer = tokens[2];
                 String onsetting = tokens[3];
-                boolean deletewithtarget = tokens[4]
-                    .equalsIgnoreCase("true");
+                boolean deletewithtarget = tokens[4].equalsIgnoreCase("true");
                 Subscription subscription = new Subscription();
                 subscription.setType(type);
-                subscription
-                    .setUsername(connection.username);
+                subscription.setUsername(connection.username);
                 subscription.setOnusername(onuser);
                 subscription.setOncomputername(oncomputer);
                 subscription.setOnsettingname(onsetting);
-                subscription
-                    .setDeletewithtarget(deletewithtarget);
+                subscription.setDeletewithtarget(deletewithtarget);
                 subscription.setProperties("");
-                if (DataStore
-                    .getMatchingSubscriptionCount(subscription) != 0)
-                    throw new FailedResponseException(
-                        Status.ALREADYEXISTS,
+                if (DataStore.getMatchingSubscriptionCount(subscription) != 0)
+                    throw new FailedResponseException(Status.ALREADYEXISTS,
                         "You already have a subscription with the settings specified.");
                 DataStore.insertSubscription(subscription);
-                connection.sendEncryptedPacket(packetId,
-                    command(), Status.OK, EMPTY);
+                connection.sendEncryptedPacket(packetId, command(), Status.OK, EMPTY);
             }
         };
         /*
@@ -3186,33 +2677,23 @@ public class OpenGrooveRealmServer
         {
             
             @Override
-            public void handle(String packetId,
-                InputStream data,
-                ConnectionHandler connection)
-                throws Exception
+            public void handle(String packetId, InputStream data,
+                ConnectionHandler connection) throws Exception
             {
-                System.out
-                    .println("checking if user exists");
+                System.out.println("checking if user exists");
                 String username = tokenize(data)[0];
                 username = relativeId(username);
                 checkUsername(username);
-                System.out.println("resolved userid is "
-                    + username);
+                System.out.println("resolved userid is " + username);
                 if (DataStore.getUser(username) != null)
                 {
-                    connection.sendEncryptedPacket(
-                        packetId, command(), Status.OK,
-                        "true");
-                    System.out
-                        .println("responded with true");
+                    connection.sendEncryptedPacket(packetId, command(), Status.OK, "true");
+                    System.out.println("responded with true");
                 }
                 else
                 {
-                    connection.sendEncryptedPacket(
-                        packetId, command(), Status.OK,
-                        "false");
-                    System.out
-                        .println("responded with false");
+                    connection.sendEncryptedPacket(packetId, command(), Status.OK, "false");
+                    System.out.println("responded with false");
                 }
             }
         };
@@ -3220,51 +2701,34 @@ public class OpenGrooveRealmServer
         {
             
             @Override
-            public void handle(String packetId,
-                InputStream data,
-                ConnectionHandler connection)
-                throws Exception
+            public void handle(String packetId, InputStream data,
+                ConnectionHandler connection) throws Exception
             {
-                Subscription[] subscriptions = DataStore
-                    .listSubscriptionsByUser(connection.username);
+                Subscription[] subscriptions =
+                    DataStore.listSubscriptionsByUser(connection.username);
                 if (subscriptions.length == 0)
-                    throw new FailedResponseException(
-                        Status.NORESULTS, "");
-                connection.sendEncryptedPacket(packetId,
-                    command(), Status.OK, delimited(
-                        subscriptions,
-                        new ToString<Subscription>()
+                    throw new FailedResponseException(Status.NORESULTS, "");
+                connection.sendEncryptedPacket(packetId, command(), Status.OK, delimited(
+                    subscriptions, new ToString<Subscription>()
+                    {
+                        
+                        @Override
+                        public String toString(Subscription object)
                         {
-                            
-                            @Override
-                            public String toString(
-                                Subscription object)
-                            {
-                                return object.getType()
-                                    + " "
-                                    + object
-                                        .getOnusername()
-                                    + " "
-                                    + object
-                                        .getOncomputername()
-                                    + " "
-                                    + object
-                                        .getOnsettingname()
-                                    + " "
-                                    + object
-                                        .isDeletewithtarget();
-                            }
-                        }, "\n"));
+                            return object.getType() + " " + object.getOnusername() + " "
+                                + object.getOncomputername() + " "
+                                + object.getOnsettingname() + " "
+                                + object.isDeletewithtarget();
+                        }
+                    }, "\n"));
             }
         };
         new Command("deletesubscription", 128, false, false)
         {
             
             @Override
-            public void handle(String packetId,
-                InputStream data,
-                ConnectionHandler connection)
-                throws Exception
+            public void handle(String packetId, InputStream data,
+                ConnectionHandler connection) throws Exception
             {
                 String[] tokens = tokenize(data);
                 verifyAtLeast(tokens, 5);
@@ -3274,36 +2738,28 @@ public class OpenGrooveRealmServer
                 checkUsername(onuser);
                 String oncomputer = tokens[2];
                 String onsetting = tokens[3];
-                boolean deletewithtarget = tokens[4]
-                    .equalsIgnoreCase("true");
+                boolean deletewithtarget = tokens[4].equalsIgnoreCase("true");
                 Subscription subscription = new Subscription();
                 subscription.setType(type);
-                subscription
-                    .setUsername(connection.username);
+                subscription.setUsername(connection.username);
                 subscription.setOnusername(onuser);
                 subscription.setOncomputername(oncomputer);
                 subscription.setOnsettingname(onsetting);
-                subscription
-                    .setDeletewithtarget(deletewithtarget);
+                subscription.setDeletewithtarget(deletewithtarget);
                 subscription.setProperties("");
-                if (DataStore
-                    .getMatchingSubscriptionCount(subscription) == 0)
-                    throw new FailedResponseException(
-                        Status.NOSUCHSUBSCRIPTION,
+                if (DataStore.getMatchingSubscriptionCount(subscription) == 0)
+                    throw new FailedResponseException(Status.NOSUCHSUBSCRIPTION,
                         "The subscription specified does not exist");
                 DataStore.deleteSubscription(subscription);
-                connection.sendEncryptedPacket(packetId,
-                    command(), Status.OK, EMPTY);
+                connection.sendEncryptedPacket(packetId, command(), Status.OK, EMPTY);
             }
         };
         new Command("createmessage", 0, false, false)
         {
             
             @Override
-            public void handle(String packetId,
-                InputStream data,
-                ConnectionHandler connection)
-                throws Exception
+            public void handle(String packetId, InputStream data,
+                ConnectionHandler connection) throws Exception
             {
                 String[] tokens = tokenize(data);
                 /*
@@ -3312,18 +2768,14 @@ public class OpenGrooveRealmServer
                  */
                 verifyAtLeast(tokens, 2);
                 String messageId = tokens[0];
-                if (!messageId.startsWith(Userids
-                    .toUserid(serverRealmAddress,
-                        connection.username)
+                if (!messageId.startsWith(Userids.toUserid(serverRealmAddress,
+                    connection.username)
                     + "-"))
-                    throw new FailedResponseException(
-                        Status.INVALIDMESSAGEID,
+                    throw new FailedResponseException(Status.INVALIDMESSAGEID,
                         "The message id you specified does not start with the "
                             + "user's userid followed by a hyphen.");
-                if (!messageId
-                    .matches("[A-Za-z0-9\\-\\:]*"))
-                    throw new FailedResponseException(
-                        Status.INVALIDMESSAGEID,
+                if (!messageId.matches("[A-Za-z0-9\\-\\:]*"))
+                    throw new FailedResponseException(Status.INVALIDMESSAGEID,
                         "The message id you specified contains characters "
                             + "other than A-Z, a-z, 0-9, -, and :");
                 /*
@@ -3336,23 +2788,19 @@ public class OpenGrooveRealmServer
                  * don't care about that since duplicate message ids aren't
                  * supposed to be used.
                  */
-                Message message = DataStore
-                    .getMessage(messageId);
+                Message message = DataStore.getMessage(messageId);
                 if (message != null)
                 {
-                    throw new FailedResponseException(
-                        Status.ALREADYEXISTS,
+                    throw new FailedResponseException(Status.ALREADYEXISTS,
                         "The message id specified represents a "
                             + "message that already exists");
                 }
                 message = new Message();
                 message.setId(messageId);
                 message.setSender(connection.getUserid());
-                message
-                    .setComputer(connection.computerName);
+                message.setComputer(connection.computerName);
                 message.setSent(false);
-                if (!new File(messageDataFolder, message
-                    .getFileId()).createNewFile())
+                if (!new File(messageDataFolder, message.getFileId()).createNewFile())
                     throw new FailedResponseException(
                         Status.FAIL,
                         "Creating the message's storage file failed. This is probably "
@@ -3375,32 +2823,25 @@ public class OpenGrooveRealmServer
                  * either there is a message that is complete with recipients,
                  * or there is no message at all.
                  */
-                MessageRecipient[] existingRecipients = DataStore
-                    .listMessageRecipients(messageId);
+                MessageRecipient[] existingRecipients =
+                    DataStore.listMessageRecipients(messageId);
                 for (MessageRecipient recipient : existingRecipients)
                 {
-                    DataStore
-                        .deleteMessageRecipient(recipient);
+                    DataStore.deleteMessageRecipient(recipient);
                 }
                 for (int i = 1; i < tokens.length; i++)
                 {
-                    String[] recipientTokens = tokens[i]
-                        .split(" ", 2);
+                    String[] recipientTokens = tokens[i].split(" ", 2);
                     if (recipientTokens.length == 1)
-                        recipientTokens = new String[] {
-                            recipientTokens[0], "" };
+                        recipientTokens = new String[] { recipientTokens[0], "" };
                     String recipientUserid = resolveToUserid(recipientTokens[0]);
                     String recipientComputer = recipientTokens[1];
-                    recipientComputer = recipientComputer
-                        .trim();
-                    boolean hasRecipientComputer = !recipientComputer
-                        .equals("");
-                    boolean recipientIsLocal = Userids
-                        .toRealm(recipientUserid)
-                        .equalsIgnoreCase(
-                            serverRealmAddress);
-                    if (recipientIsLocal
-                        && !hasRecipientComputer)
+                    recipientComputer = recipientComputer.trim();
+                    boolean hasRecipientComputer = !recipientComputer.equals("");
+                    boolean recipientIsLocal =
+                        Userids.toRealm(recipientUserid)
+                            .equalsIgnoreCase(serverRealmAddress);
+                    if (recipientIsLocal && !hasRecipientComputer)
                     {
                         /*
                          * The recipient is local and the recipient computer is
@@ -3408,16 +2849,12 @@ public class OpenGrooveRealmServer
                          * of all of it's computers, and add each of them as a
                          * recipient.
                          */
-                        Computer[] expandedComputers = DataStore
-                            .listComputersByUser(relativeId(recipientUserid));
+                        Computer[] expandedComputers =
+                            DataStore.listComputersByUser(relativeId(recipientUserid));
                         for (Computer expandedComputer : expandedComputers)
                         {
-                            DataStore
-                                .addMessageRecipient(new MessageRecipient(
-                                    messageId,
-                                    recipientUserid,
-                                    expandedComputer
-                                        .getComputername()));
+                            DataStore.addMessageRecipient(new MessageRecipient(messageId,
+                                recipientUserid, expandedComputer.getComputername()));
                         }
                     }
                     else
@@ -3429,17 +2866,13 @@ public class OpenGrooveRealmServer
                          * this will be picked up when all other recipients have
                          * received and deleted the message.
                          */
-                        DataStore
-                            .addMessageRecipient(new MessageRecipient(
-                                messageId, recipientUserid,
-                                recipientComputer));
+                        DataStore.addMessageRecipient(new MessageRecipient(messageId,
+                            recipientUserid, recipientComputer));
                     }
                 }
                 DataStore.addMessage(message);
-                connection
-                    .sendEncryptedPacket(packetId,
-                        command(), Status.OK,
-                        "The message has been successfully created.");
+                connection.sendEncryptedPacket(packetId, command(), Status.OK,
+                    "The message has been successfully created.");
             }
             
         };
@@ -3447,10 +2880,8 @@ public class OpenGrooveRealmServer
         {
             
             @Override
-            public void handle(String packetId,
-                InputStream data,
-                ConnectionHandler connection)
-                throws Exception
+            public void handle(String packetId, InputStream data,
+                ConnectionHandler connection) throws Exception
             {
                 /*
                  * TODO: implement this command. The OpenGroove Client probably
@@ -3463,29 +2894,21 @@ public class OpenGrooveRealmServer
         {
             
             @Override
-            public void handle(String packetId,
-                InputStream data,
-                ConnectionHandler connection)
-                throws Exception
+            public void handle(String packetId, InputStream data,
+                ConnectionHandler connection) throws Exception
             {
                 String[] tokens = tokenize(data);
                 verifyAtLeast(tokens, 1);
                 String messageId = tokens[0];
-                Message message = DataStore
-                    .getMessage(messageId);
+                Message message = DataStore.getMessage(messageId);
                 if (message == null)
-                    throw new FailedResponseException(
-                        Status.NOSUCHMESSAGE, "");
-                verifyCanReadMessage(message,
-                    connection.username,
-                    connection.computerName);
-                File messageFile = new File(
-                    messageDataFolder, message.getFileId());
+                    throw new FailedResponseException(Status.NOSUCHMESSAGE, "");
+                verifyCanReadMessage(message, connection.username, connection.computerName);
+                File messageFile = new File(messageDataFolder, message.getFileId());
                 if (!messageFile.exists())
                     messageFile.createNewFile();
                 long size = messageFile.length();
-                connection.sendEncryptedPacket(packetId,
-                    command(), Status.OK, "" + size);
+                connection.sendEncryptedPacket(packetId, command(), Status.OK, "" + size);
             }
             
         };
@@ -3493,10 +2916,8 @@ public class OpenGrooveRealmServer
         {
             
             @Override
-            public void handle(String packetId,
-                InputStream data,
-                ConnectionHandler connection)
-                throws Exception
+            public void handle(String packetId, InputStream data,
+                ConnectionHandler connection) throws Exception
             {
                 String[] tokens = tokenize(data);
                 verifyAtLeast(tokens, 3);
@@ -3510,26 +2931,18 @@ public class OpenGrooveRealmServer
                 }
                 catch (NumberFormatException e)
                 {
-                    throw new FailedResponseException(
-                        Status.FAIL,
+                    throw new FailedResponseException(Status.FAIL,
                         "The offset or the length/amount was not a number.");
                 }
                 if (length > 64000)
-                    throw new FailedResponseException(
-                        Status.INDEXOUTOFBOUNDS,
-                        "The length is too long (it can't "
-                            + "be longer than 64000 bytes)");
-                Message message = DataStore
-                    .getMessage(messageId);
-                verifyCanReadMessage(message,
-                    connection.username,
-                    connection.computerName);
-                File messageFile = new File(
-                    messageDataFolder, message.getFileId());
+                    throw new FailedResponseException(Status.INDEXOUTOFBOUNDS,
+                        "The length is too long (it can't " + "be longer than 64000 bytes)");
+                Message message = DataStore.getMessage(messageId);
+                verifyCanReadMessage(message, connection.username, connection.computerName);
+                File messageFile = new File(messageDataFolder, message.getFileId());
                 if (!messageFile.exists())
                     messageFile.createNewFile();
-                RandomAccessFile in = new RandomAccessFile(
-                    messageFile, "r");
+                RandomAccessFile in = new RandomAccessFile(messageFile, "r");
                 in.seek(offset);
                 byte[] fileData = new byte[length];
                 try
@@ -3538,12 +2951,10 @@ public class OpenGrooveRealmServer
                 }
                 catch (EOFException e)
                 {
-                    throw new FailedResponseException(
-                        Status.INDEXOUTOFBOUNDS,
+                    throw new FailedResponseException(Status.INDEXOUTOFBOUNDS,
                         "You're trying to read past the end of the message");
                 }
-                connection.sendEncryptedPacket(packetId,
-                    command(), Status.OK, fileData);
+                connection.sendEncryptedPacket(packetId, command(), Status.OK, fileData);
             }
             
         };
@@ -3551,16 +2962,12 @@ public class OpenGrooveRealmServer
         {
             
             @Override
-            public void handle(String packetId,
-                InputStream data,
-                ConnectionHandler connection)
-                throws Exception
+            public void handle(String packetId, InputStream data,
+                ConnectionHandler connection) throws Exception
             {
                 byte[] dataBytes = readToBytes(data);
-                byte[] first128 = new byte[Math.min(
-                    dataBytes.length, 128)];
-                System.arraycopy(dataBytes, 0, first128, 0,
-                    first128.length);
+                byte[] first128 = new byte[Math.min(dataBytes.length, 128)];
+                System.arraycopy(dataBytes, 0, first128, 0, first128.length);
                 String first128string = new String(first128);
                 String[] tokens = first128string.split(" ");
                 verifyAtLeast(tokens, 3);
@@ -3574,46 +2981,32 @@ public class OpenGrooveRealmServer
                 }
                 catch (NumberFormatException e)
                 {
-                    throw new FailedResponseException(
-                        Status.FAIL,
+                    throw new FailedResponseException(Status.FAIL,
                         "The offset or the length/amount was not a number.");
                 }
-                int actualDataIndex = tokens[0].length()
-                    + tokens[1].length()
-                    + tokens[2].length() + 3;
+                int actualDataIndex =
+                    tokens[0].length() + tokens[1].length() + tokens[2].length() + 3;
                 if (length > 64000)
-                    throw new FailedResponseException(
-                        Status.INDEXOUTOFBOUNDS,
-                        "The length is too long (it can't "
-                            + "be longer than 64000 bytes)");
+                    throw new FailedResponseException(Status.INDEXOUTOFBOUNDS,
+                        "The length is too long (it can't " + "be longer than 64000 bytes)");
                 if ((offset + length) > MAX_MESSAGE_SIZE)
-                    throw new FailedResponseException(
-                        Status.INDEXOUTOFBOUNDS,
+                    throw new FailedResponseException(Status.INDEXOUTOFBOUNDS,
                         "Messages cannot be larger than 2GB");
                 if ((length + actualDataIndex) > dataBytes.length)
-                    throw new FailedResponseException(
-                        Status.INDEXOUTOFBOUNDS, "");
-                Message message = DataStore
-                    .getMessage(messageId);
-                verifyCanWriteMessage(message,
-                    connection.username,
-                    connection.computerName);
-                File messageFile = new File(
-                    messageDataFolder, message.getFileId());
+                    throw new FailedResponseException(Status.INDEXOUTOFBOUNDS, "");
+                Message message = DataStore.getMessage(messageId);
+                verifyCanWriteMessage(message, connection.username, connection.computerName);
+                File messageFile = new File(messageDataFolder, message.getFileId());
                 if (!messageFile.exists())
                     messageFile.createNewFile();
                 if ((messageFile.getUsableSpace() - length) < MIN_FREE_DISK_SPACE)
-                    throw new FailedResponseException(
-                        Status.FAIL,
+                    throw new FailedResponseException(Status.FAIL,
                         "The server has run out of disk space.");
-                RandomAccessFile out = new RandomAccessFile(
-                    messageFile, "rw");
+                RandomAccessFile out = new RandomAccessFile(messageFile, "rw");
                 out.seek(offset);
-                out.write(dataBytes, actualDataIndex,
-                    length);
+                out.write(dataBytes, actualDataIndex, length);
                 out.close();
-                connection.sendEncryptedPacket(packetId,
-                    command(), Status.OK, "");
+                connection.sendEncryptedPacket(packetId, command(), Status.OK, "");
             }
             
         };
@@ -3621,10 +3014,8 @@ public class OpenGrooveRealmServer
         {
             
             @Override
-            public void handle(String packetId,
-                InputStream data,
-                ConnectionHandler connection)
-                throws Exception
+            public void handle(String packetId, InputStream data,
+                ConnectionHandler connection) throws Exception
             {
             }
             
@@ -3633,19 +3024,14 @@ public class OpenGrooveRealmServer
         {
             
             @Override
-            public void handle(String packetId,
-                InputStream data,
-                ConnectionHandler connection)
-                throws Exception
+            public void handle(String packetId, InputStream data,
+                ConnectionHandler connection) throws Exception
             {
                 String[] tokens = tokenize(data);
                 verifyAtLeast(tokens, 1);
                 String messageId = tokens[0];
-                Message message = DataStore
-                    .getMessage(messageId);
-                verifyCanReadMessage(message,
-                    connection.username,
-                    connection.computerName);
+                Message message = DataStore.getMessage(messageId);
+                verifyCanReadMessage(message, connection.username, connection.computerName);
                 /*
                  * At this point, the message exists, and we are allowed to read
                  * the message. This means that if it hasn't been sent then we
@@ -3662,20 +3048,15 @@ public class OpenGrooveRealmServer
                     for (MessageRecipient recipient : DataStore
                         .listMessageRecipients(messageId))
                     {
-                        DataStore
-                            .deleteMessageRecipient(recipient);
+                        DataStore.deleteMessageRecipient(recipient);
                     }
                 }
                 else
                 {
-                    DataStore
-                        .deleteMessageRecipient(new MessageRecipient(
-                            messageId,
-                            resolveToUserid(connection.username),
-                            connection.computerName));
+                    DataStore.deleteMessageRecipient(new MessageRecipient(messageId,
+                        resolveToUserid(connection.username), connection.computerName));
                 }
-                connection.sendEncryptedPacket(packetId,
-                    command(), Status.OK, "");
+                connection.sendEncryptedPacket(packetId, command(), Status.OK, "");
             }
             
         };
@@ -3683,10 +3064,8 @@ public class OpenGrooveRealmServer
         {
             
             @Override
-            public void handle(String packetId,
-                InputStream data,
-                ConnectionHandler connection)
-                throws Exception
+            public void handle(String packetId, InputStream data,
+                ConnectionHandler connection) throws Exception
             {
                 /*
                  * This command is somewhat more complex than it would seem. At
@@ -3713,44 +3092,31 @@ public class OpenGrooveRealmServer
                  */
                 String[] tokens = tokenizeAndVerify(data, 1);
                 String messageId = tokens[0];
-                Message message = DataStore
-                    .getMessage(messageId);
-                verifyCanWriteMessage(message,
-                    connection.username,
-                    connection.computerName);
+                Message message = DataStore.getMessage(messageId);
+                verifyCanWriteMessage(message, connection.username, connection.computerName);
                 message.setSent(true);
                 DataStore.updateMessage(message);
-                tasks.execute(new MessageAvailableNotifier(
-                    messageId));
-                tasks.execute(new InterRealmMessageSender(
-                    messageId));
-                connection.sendEncryptedPacket(packetId,
-                    command(), Status.OK, "");
+                tasks.execute(new MessageAvailableNotifier(messageId));
+                tasks.execute(new InterRealmMessageSender(messageId));
+                connection.sendEncryptedPacket(packetId, command(), Status.OK, "");
             }
         };
         new Command("listinboundmessages", 0, false, false)
         {
             
             @Override
-            public void handle(String packetId,
-                InputStream data,
-                ConnectionHandler connection)
-                throws Exception
+            public void handle(String packetId, InputStream data,
+                ConnectionHandler connection) throws Exception
             {
-                String[] messageIds = DataStore
-                    .listInboundMessages(new MessageRecipient(
-                        null,
-                        resolveToUserid(connection.username),
-                        connection.computerName));
+                String[] messageIds =
+                    DataStore.listInboundMessages(new MessageRecipient(null,
+                        resolveToUserid(connection.username), connection.computerName));
                 if (messageIds.length == 0)
-                    connection.sendEncryptedPacket(
-                        packetId, command(),
-                        Status.NORESULTS, "");
+                    connection
+                        .sendEncryptedPacket(packetId, command(), Status.NORESULTS, "");
                 else
-                    connection.sendEncryptedPacket(
-                        packetId, command(), Status.OK,
-                        StringUtils.delimited(messageIds,
-                            "\n"));
+                    connection.sendEncryptedPacket(packetId, command(), Status.OK,
+                        StringUtils.delimited(messageIds, "\n"));
             }
             
         };
@@ -3758,25 +3124,20 @@ public class OpenGrooveRealmServer
         {
             
             @Override
-            public void handle(String packetId,
-                InputStream data,
-                ConnectionHandler connection)
-                throws Exception
+            public void handle(String packetId, InputStream data,
+                ConnectionHandler connection) throws Exception
             {
-                String[] messageIds = DataStore
-                    .listOutboundMessages(new Message(
-                        null,
-                        resolveToUserid(connection.username),
-                        connection.computerName, false));
+                String[] messageIds =
+                    DataStore
+                        .listOutboundMessages(new Message(null,
+                            resolveToUserid(connection.username), connection.computerName,
+                            false));
                 if (messageIds.length == 0)
-                    connection.sendEncryptedPacket(
-                        packetId, command(),
-                        Status.NORESULTS, "");
+                    connection
+                        .sendEncryptedPacket(packetId, command(), Status.NORESULTS, "");
                 else
-                    connection.sendEncryptedPacket(
-                        packetId, command(), Status.OK,
-                        StringUtils.delimited(messageIds,
-                            "\n"));
+                    connection.sendEncryptedPacket(packetId, command(), Status.OK,
+                        StringUtils.delimited(messageIds, "\n"));
             }
             
         };
@@ -3784,32 +3145,23 @@ public class OpenGrooveRealmServer
         {
             
             @Override
-            public void handle(String packetId,
-                InputStream data,
-                ConnectionHandler connection)
-                throws Exception
+            public void handle(String packetId, InputStream data,
+                ConnectionHandler connection) throws Exception
             {
                 String[] tokens = tokenizeAndVerify(data, 1);
                 String messageId = tokens[0];
-                Message message = DataStore
-                    .getMessage(messageId);
-                verifyCanReadMessage(message,
-                    connection.username,
-                    connection.computerName);
-                connection.sendEncryptedPacket(packetId,
-                    command(), Status.OK, ""
-                        + message.getSender() + "\n"
-                        + message.getComputer() + "\n"
-                        + message.isSent());
+                Message message = DataStore.getMessage(messageId);
+                verifyCanReadMessage(message, connection.username, connection.computerName);
+                connection.sendEncryptedPacket(packetId, command(), Status.OK, ""
+                    + message.getSender() + "\n" + message.getComputer() + "\n"
+                    + message.isSent());
             }
             
         };
-        System.out.println("loaded " + commands.size()
-            + " commands");
+        System.out.println("loaded " + commands.size() + " commands");
     }
     
-    protected static String[] tokenizeAndVerify(
-        InputStream data, int i) throws IOException
+    protected static String[] tokenizeAndVerify(InputStream data, int i) throws IOException
     {
         String[] tokens = tokenize(data);
         verifyAtLeast(tokens, i);
@@ -3824,23 +3176,20 @@ public class OpenGrooveRealmServer
      * @param username
      * @param computerName
      */
-    protected static void verifyCanWriteMessage(
-        Message message, String username, String computer)
+    protected static void verifyCanWriteMessage(Message message, String username,
+        String computer)
     {
         if (message == null)
-            throw new FailedResponseException(
-                Status.NOSUCHMESSAGE, "");
+            throw new FailedResponseException(Status.NOSUCHMESSAGE, "");
         username = resolveToUserid(username);
         if (message.isSent())
         {
-            throw new FailedResponseException(
-                Status.UNAUTHORIZED,
+            throw new FailedResponseException(Status.UNAUTHORIZED,
                 "The message has already been sent.");
         }
         else
         {
-            verifyIsMessageCreator(message, username,
-                computer);
+            verifyIsMessageCreator(message, username, computer);
         }
     }
     
@@ -3859,59 +3208,51 @@ public class OpenGrooveRealmServer
      * @param username
      *            The userid or username to check
      */
-    protected static void verifyCanReadMessage(
-        Message message, String username, String computer)
+    protected static void verifyCanReadMessage(Message message, String username,
+        String computer)
     {
         if (message == null)
-            throw new FailedResponseException(
-                Status.NOSUCHMESSAGE, "");
+            throw new FailedResponseException(Status.NOSUCHMESSAGE, "");
         username = resolveToUserid(username);
         if (message.isSent())
         {
-            verifyIsMessageRecipient(message, username,
-                computer);
+            verifyIsMessageRecipient(message, username, computer);
         }
         else
         {
-            verifyIsMessageCreator(message, username,
-                computer);
+            verifyIsMessageCreator(message, username, computer);
         }
     }
     
-    private static void verifyIsMessageCreator(
-        Message message, String username, String computer)
+    private static void verifyIsMessageCreator(Message message, String username,
+        String computer)
     {
         if (message == null)
-            throw new FailedResponseException(
-                Status.NOSUCHMESSAGE, "");
+            throw new FailedResponseException(Status.NOSUCHMESSAGE, "");
         username = resolveToUserid(username);
-        boolean isMessageCreator = username
-            .equalsIgnoreCase(message.getSender())
-            && computer.equalsIgnoreCase(message
-                .getComputer());
+        boolean isMessageCreator =
+            username.equalsIgnoreCase(message.getSender())
+                && computer.equalsIgnoreCase(message.getComputer());
         if (!isMessageCreator)
         {
-            throw new FailedResponseException(
-                Status.UNAUTHORIZED,
+            throw new FailedResponseException(Status.UNAUTHORIZED,
                 "This user is not the message's creator.");
         }
     }
     
-    private static void verifyIsMessageRecipient(
-        Message message, String username, String computer)
+    private static void verifyIsMessageRecipient(Message message, String username,
+        String computer)
     {
         if (message == null)
-            throw new FailedResponseException(
-                Status.NOSUCHMESSAGE, "");
+            throw new FailedResponseException(Status.NOSUCHMESSAGE, "");
         username = resolveToUserid(username);
         try
         {
-            boolean isMessageRecipient = DataStore
-                .isMessageRecipient(new MessageRecipient(
-                    message.getId(), username, computer)) > 0;
+            boolean isMessageRecipient =
+                DataStore.isMessageRecipient(new MessageRecipient(message.getId(), username,
+                    computer)) > 0;
             if (!isMessageRecipient)
-                throw new FailedResponseException(
-                    Status.UNAUTHORIZED,
+                throw new FailedResponseException(Status.UNAUTHORIZED,
                     "This user is not one of the message's recipients.");
         }
         catch (SQLException e)
@@ -3931,8 +3272,7 @@ public class OpenGrooveRealmServer
      */
     protected static String resolveToUserid(String string)
     {
-        return Userids.resolveTo(string, Userids.toUserid(
-            serverRealmAddress, ""));
+        return Userids.resolveTo(string, Userids.toUserid(serverRealmAddress, ""));
     }
     
     /**
@@ -3950,11 +3290,8 @@ public class OpenGrooveRealmServer
         if (recipientUser.equals(""))
             return;
         if (!Userids.isUsername(recipientUser))
-            throw new FailedResponseException(
-                Status.INVALIDREALM,
-                "The input \""
-                    + recipientUser
-                    + "\" was supposed to be a username, but it wasn't.");
+            throw new FailedResponseException(Status.INVALIDREALM, "The input \""
+                + recipientUser + "\" was supposed to be a username, but it wasn't.");
     }
     
     /**
@@ -3969,12 +3306,10 @@ public class OpenGrooveRealmServer
     {
         if (recipientUser.equals(""))
             return "";
-        return Userids.relativeTo(recipientUser,
-            serverRealmAddress);
+        return Userids.relativeTo(recipientUser, serverRealmAddress);
     }
     
-    public static <T> String delimited(T[] items,
-        ToString<T> generator, String delimiter)
+    public static <T> String delimited(T[] items, ToString<T> generator, String delimiter)
     {
         StringBuilder sb = new StringBuilder();
         for (int i = 0; i < items.length; i++)
@@ -3996,8 +3331,7 @@ public class OpenGrooveRealmServer
      *         the input stream passed in
      * @throws IOException
      */
-    public static String[] tokenize(InputStream data)
-        throws IOException
+    public static String[] tokenize(InputStream data) throws IOException
     {
         return tokenizeByLines(new String(readToBytes(data)));
     }
@@ -4019,26 +3353,22 @@ public class OpenGrooveRealmServer
         int pointer = 0;
         for (byte[] cb : bytes)
         {
-            System.arraycopy(cb, 0, result, pointer,
-                cb.length);
+            System.arraycopy(cb, 0, result, pointer, cb.length);
             pointer += cb.length;
         }
         return result;
     }
     
-    protected static void runLongSql(String sql,
-        Connection con) throws SQLException
+    protected static void runLongSql(String sql, Connection con) throws SQLException
     {
         String[] statements = sql.split("\\;");
         int i = 1;
         for (String s : statements)
         {
-            System.out.println("Running statement " + i++
-                + " of " + statements.length);
+            System.out.println("Running statement " + i++ + " of " + statements.length);
             if (!s.trim().equals(""))
             {
-                PreparedStatement st = con
-                    .prepareStatement(s);
+                PreparedStatement st = con.prepareStatement(s);
                 st.execute();
                 st.close();
             }
@@ -4057,10 +3387,8 @@ public class OpenGrooveRealmServer
         try
         {
             if (file.length() > (5 * 1000 * 1000))
-                throw new RuntimeException(
-                    "the file is "
-                        + file.length()
-                        + " bytes. that is too large. it can't be larger than 5000000 bytes.");
+                throw new RuntimeException("the file is " + file.length()
+                    + " bytes. that is too large. it can't be larger than 5000000 bytes.");
             ByteArrayOutputStream baos = new ByteArrayOutputStream();
             FileInputStream fis = new FileInputStream(file);
             copy(fis, baos);
@@ -4079,10 +3407,8 @@ public class OpenGrooveRealmServer
     {
         try
         {
-            ByteArrayInputStream bais = new ByteArrayInputStream(
-                string.getBytes("UTF-8"));
-            FileOutputStream fos = new FileOutputStream(
-                file);
+            ByteArrayInputStream bais = new ByteArrayInputStream(string.getBytes("UTF-8"));
+            FileOutputStream fos = new FileOutputStream(file);
             copy(bais, fos);
             bais.close();
             fos.flush();
@@ -4094,8 +3420,7 @@ public class OpenGrooveRealmServer
         }
     }
     
-    public static void copy(InputStream in, OutputStream out)
-        throws IOException
+    public static void copy(InputStream in, OutputStream out) throws IOException
     {
         byte[] buffer = new byte[8192];
         int amount;
@@ -4105,69 +3430,56 @@ public class OpenGrooveRealmServer
         }
     }
     
-    private static Context createServerContext(
-        Server server, String webroot)
+    private static Context createServerContext(Server server, String webroot)
     {
-        Context context = new Context(server, "/",
-            Context.SESSIONS);
+        Context context = new Context(server, "/", Context.SESSIONS);
         context.setResourceBase(webroot);
         return context;
     }
     
     private static void finishContext(Context context)
     {
-        ServletHolder jsp = new ServletHolder(
-            new JspServlet());
+        ServletHolder jsp = new ServletHolder(new JspServlet());
         jsp.setInitParameter("classpath", "classes;lib/*");
         jsp.setInitParameter("scratchdir", "classes");
         context.addServlet(jsp, "*.jsp");
-        ServletHolder resource = new ServletHolder(
-            new DefaultServlet());
+        ServletHolder resource = new ServletHolder(new DefaultServlet());
         context.addServlet(resource, "/");
     }
     
-    public static void sendUserNotifications(String to,
-        String subject, String message, String priority,
-        final int dismissMinutes)
-        throws NotificationException
+    public static void sendUserNotifications(String to, String subject, String message,
+        String priority, final int dismissMinutes) throws NotificationException
     {
         final Date start = new Date();
-        final Date end = new Date(start.getTime()
-            + TimeUnit.MINUTES.toMillis(dismissMinutes));
-        final String contents = "" + start.getTime() + " "
-            + start + "\n" + end.getTime() + " " + end
-            + "\n" + priority + "\n" + subject + "\n"
-            + message;
+        final Date end =
+            new Date(start.getTime() + TimeUnit.MINUTES.toMillis(dismissMinutes));
+        final String contents =
+            "" + start.getTime() + " " + start + "\n" + end.getTime() + " " + end + "\n"
+                + priority + "\n" + subject + "\n" + message;
         final ConnectionHandler[] recipientConnections;
         if (to.equalsIgnoreCase("all"))
         {
-            recipientConnections = connections
-                .toArray(new ConnectionHandler[0]);
+            recipientConnections = connections.toArray(new ConnectionHandler[0]);
         }
         else if (to.startsWith("user:"))
         {
-            recipientConnections = getConnectionsForUser(to
-                .substring("user:".length()));
+            recipientConnections = getConnectionsForUser(to.substring("user:".length()));
             if (recipientConnections.length == 0)
-                throw new NotificationException(
-                    "The user specified is not online");
+                throw new NotificationException("The user specified is not online");
         }
         else if (to.startsWith("computer:"))
         {
             String[] tokens = to.split("\\/", 2);
             if (tokens.length < 2)
-                throw new NotificationException(
-                    "Invalid target user spec");
-            ConnectionHandler computerConnection = getConnectionForComputer(
-                tokens[0], tokens[1]);
+                throw new NotificationException("Invalid target user spec");
+            ConnectionHandler computerConnection =
+                getConnectionForComputer(tokens[0], tokens[1]);
             if (computerConnection == null)
-                throw new NotificationException(
-                    "The computer specified is not online");
+                throw new NotificationException("The computer specified is not online");
             recipientConnections = new ConnectionHandler[] { computerConnection };
         }
         else
-            throw new NotificationException(
-                "Invalid scope specified");
+            throw new NotificationException("Invalid scope specified");
         tasks.execute(new Runnable()
         {
             public void run()
@@ -4176,10 +3488,8 @@ public class OpenGrooveRealmServer
                 {
                     try
                     {
-                        handler.sendEncryptedPacket(
-                            generateId(),
-                            "usernotification", Status.OK,
-                            contents);
+                        handler.sendEncryptedPacket(generateId(), "usernotification",
+                            Status.OK, contents);
                     }
                     catch (Exception ex1)
                     {
@@ -4190,11 +3500,10 @@ public class OpenGrooveRealmServer
         });
     }
     
-    private static String getConfig(String key)
-        throws SQLException
+    private static String getConfig(String key) throws SQLException
     {
-        PreparedStatement st = pdb
-            .prepareStatement("select value from " + pfix
+        PreparedStatement st =
+            pdb.prepareStatement("select value from " + pfix
                 + "configuration where name = ?");
         st.setString(1, key);
         ResultSet rs = st.executeQuery();
@@ -4205,23 +3514,22 @@ public class OpenGrooveRealmServer
         return value;
     }
     
-    private static void setConfig(String key, String value)
-        throws SQLException
+    private static void setConfig(String key, String value) throws SQLException
     {
         PreparedStatement st;
         if (getConfig(key) == null)
         {
-            st = pdb.prepareStatement("insert into " + pfix
-                + "configuration "
-                + "(name,value) values (?,?)");
+            st =
+                pdb.prepareStatement("insert into " + pfix + "configuration "
+                    + "(name,value) values (?,?)");
             st.setString(1, key);
             st.setString(2, value);
         }
         else
         {
-            st = pdb.prepareStatement("update " + lfix
-                + "configuration set value = ?"
-                + " where name = ?");
+            st =
+                pdb.prepareStatement("update " + lfix + "configuration set value = ?"
+                    + " where name = ?");
             st.setString(1, value);
             st.setString(2, key);
         }
@@ -4234,8 +3542,7 @@ public class OpenGrooveRealmServer
     
     public static synchronized String generateId()
     {
-        return "p" + System.currentTimeMillis() + "uid"
-            + nextId++;
+        return "p" + System.currentTimeMillis() + "uid" + nextId++;
     }
     
 }
