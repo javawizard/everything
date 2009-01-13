@@ -42,9 +42,9 @@
               classname="com.google.gwt.dev.GWTCompiler"
               failonerror="true">
             <classpath>
+                <pathelement location="${basedir}/../lib/gwt-dev-windows.jar" />
                 <pathelement location="${basedir}/gwt-src" />
                 <pathelement location="${basedir}/../lib/gwt-user.jar" />
-                <pathelement location="${basedir}/../lib/gwt-dev-windows.jar" />
             </classpath>
             <arg value="-out" />
             <arg value="${basedir}/web/bypass/gwt" />
