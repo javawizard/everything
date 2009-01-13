@@ -26,8 +26,8 @@
                destdir="${basedir}/classes"
                nowarn="true"
                classpath="${basedir}/lib/*">
-            <src dir="src" />
-            <src dir="gwt-src" />
+            <src path="src" />
+            <src path="gwt-src" />
         </javac>
     </target>
 
