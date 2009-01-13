@@ -186,7 +186,7 @@ public class UpdateGUI implements CustomGUI
         dialog.setSize(400, 500);
         lowerRight.add(ok);
         lowerRight.add(cancel);
-        JPanel middle = new JPanel();
+        JPanel middle = new JPanel(new BorderLayout());
         middle.setBorder(new EmptyBorder(10, 10, 10, 10));
         JEditorPane editor = new JEditorPane();
         editor.setEditable(false);
