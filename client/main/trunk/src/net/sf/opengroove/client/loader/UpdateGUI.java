@@ -193,9 +193,9 @@ public class UpdateGUI implements CustomGUI
         editor.setContentType("text/html");
         StringBuilder changelog = new StringBuilder();
         changelog.append("<html><body>"
-            + "<span style='align: center'><b>Updates are available for OpenGroove. "
+            + "<b>Updates are available for OpenGroove. "
             + "Would you like to download and install them?"
-            + "</b></span><br/><br/>Here's what will change when "
+            + "</b><br/><br/>Here's what will change when "
             + "you install these updates:<br/><br/>");
         for (ChangelogEntry entry : changelogEntries)
         {
@@ -232,6 +232,7 @@ public class UpdateGUI implements CustomGUI
                 dialog.dispose();
             }
         });
+        dialog.setLocationRelativeTo(frame);
         dialog.show();
         progress.setIndeterminate(true);
         if (!shouldUpdate)
