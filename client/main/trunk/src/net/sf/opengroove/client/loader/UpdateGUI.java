@@ -151,7 +151,7 @@ public class UpdateGUI implements CustomGUI
     {
         frame.show();
         progress.setString("");
-        textArea.append("Updates are available.<br/>");
+        textArea.append("Updates are available.");
     }
     
     public boolean shouldTryUpdate()
@@ -168,14 +168,12 @@ public class UpdateGUI implements CustomGUI
     
     public boolean shouldUpdate(ChangelogEntry[] changelogEntries)
     {
-        append("Updates are available.");
-        append("");
+        progress.setIndeterminate(false);
         if (new File("appdata/updates/noprompt").exists())
             return true;
         final JDialog dialog = new JDialog(frame, "", true);
         JPanel inner = new JPanel();
         inner.setLayout(new BorderLayout());
-        inner.setBorder(new EmptyBorder(0, 0, 0, 0));
         dialog.getContentPane().add(inner);
         JPanel lower = new JPanel();
         lower.setLayout(new BorderLayout());
@@ -194,19 +192,27 @@ public class UpdateGUI implements CustomGUI
         editor.setEditable(false);
         editor.setContentType("text/html");
         StringBuilder changelog = new StringBuilder();
-        changelog.append("<html><body>" + "<b><big>Updates are available for OpenGroove. "
+        changelog.append("<html><body>"
+            + "<span style='align: center'><b>Updates are available for OpenGroove. "
             + "Would you like to download and install them?"
-            + "</big></b><br/>Here's what will change when "
+            + "</b></span><br/><br/>Here's what will change when "
             + "you install these updates:<br/><br/>");
         for (ChangelogEntry entry : changelogEntries)
         {
             changelog.append("<b>Version " + entry.getTagName() + "-r" + entry.getRevision()
                 + "</b><br/>");
-            changelog.append(entry.getCommitMessage());
+            if (entry.getCommitMessage() != null)
+                changelog.append(entry.getCommitMessage());
+            else
+                changelog
+                    .append("<font color='#999999'>No information for this version</font>");
             changelog.append("<br/><br/>");
         }
         editor.setText(changelog.toString());
-        middle.add(new JScrollPane(editor), BorderLayout.CENTER);
+        JScrollPane editorScroll =
+            new JScrollPane(editor, JScrollPane.VERTICAL_SCROLLBAR_ALWAYS,
+                JScrollPane.HORIZONTAL_SCROLLBAR_ALWAYS);
+        middle.add(editorScroll, BorderLayout.CENTER);
         inner.add(middle);
         ok.addActionListener(new ActionListener()
         {
@@ -227,6 +233,9 @@ public class UpdateGUI implements CustomGUI
             }
         });
         dialog.show();
+        progress.setIndeterminate(true);
+        if (!shouldUpdate)
+            frame.dispose();
         return shouldUpdate;
     }
     
