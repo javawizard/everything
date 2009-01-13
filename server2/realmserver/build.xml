@@ -30,6 +30,9 @@
             <classpath>
                 <fileset dir="${basedir}/lib" />
             </classpath>
+            <classpath>
+                <fileset dir="${basedir}" />
+            </classpath>
         </javac>
     </target>
 
