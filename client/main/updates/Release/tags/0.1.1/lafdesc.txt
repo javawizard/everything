@@ -1,0 +1,10 @@
+MORE RAMBLING FROM ME ON HOW INTOUCH3 WORKS
+
+specifically, on how look and feels work
+
+As is typical of all plugins, when a look and feel is downloaded and installed (in the InTouch 3 sense, not in the swing UI manager sense)
+it does not take effect until InTouch 3 is restarted. when InTouch 3 starts, just after PluginManager.loadPlugins() is called,
+all of the lookandfeel plugins are installed into UIManager. then, the value of the user config property lookandfeel
+is used as the classname (not the plugin name) of the look and feel to use.
+
+currently, there is no support for metal themes, but expect this to be present in future releases.
