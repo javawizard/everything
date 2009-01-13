@@ -44,6 +44,9 @@
             <classpath>
                 <fileset dir="${basedir}" />
             </classpath>
+            <classpath>
+                <fileset dir="${basedir}/gwt-src" />
+            </classpath>
             <classpath location="${basedir}/../lib/gwt-user.jar" />
             <classpath location="${basedir}/../lib/gwt-dev-windows.jar" />
             <classpath>
