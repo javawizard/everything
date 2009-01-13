@@ -14,7 +14,6 @@ import javax.swing.JButton;
 import javax.swing.JDialog;
 import javax.swing.JEditorPane;
 import javax.swing.JFrame;
-import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JProgressBar;
@@ -22,13 +21,11 @@ import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
 import javax.swing.border.EmptyBorder;
 
-import org.tmatesoft.svn.core.SVNNodeKind;
-import org.tmatesoft.svn.core.wc.SVNEventAction;
-
-import sun.security.krb5.internal.APOptions;
-
 import net.interdirected.autoupdate.ChangelogEntry;
 import net.interdirected.autoupdate.CustomGUI;
+
+import org.tmatesoft.svn.core.SVNNodeKind;
+import org.tmatesoft.svn.core.wc.SVNEventAction;
 
 public class UpdateGUI implements CustomGUI
 {
