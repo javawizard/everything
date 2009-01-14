@@ -1,0 +1,14 @@
+type=tool
+class=net.sf.opengroove.client.tools.games.dotsandboxes.DotsAndBoxes
+name=Dots and Boxes
+description=\
+<html>\
+A game of connecting dots. A grid of dots is shown,<br/>\
+and players take turns connecting dots on the grid<br/>\
+with lines. When you create a box with 4 lines, you<br/>\
+capture that box. When all lines are filled in, the<br/>\
+person with the most boxes wins.
+installMessage=
+#largeIcon=icons/othello/largeIcon.png
+#mediumIcon=icons/othello/mediumIcon.png
+#smallIcon=icons/othello/smallIcon.png
