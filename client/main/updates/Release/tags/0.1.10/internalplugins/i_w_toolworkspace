@@ -1,0 +1,5 @@
+type=workspace
+class=net.sf.opengroove.client.toolworkspace.ToolWorkspace
+name=Tool Workspace
+description=<html>This workspace allows you to add tools that<br/>will stay synchronized accross all participant's computers.
+installMessage=This workspace allows you to add tools that<br/>will stay synchronized accross all participant's computers.

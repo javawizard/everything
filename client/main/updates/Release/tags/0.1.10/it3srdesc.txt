@@ -1,0 +1,26 @@
+MORE RAMBLE FROM ME ABOUT HOW INTOUCH3 WORKS
+
+***THIS IS NOT IMPLEMENTED YET
+
+it3sr:// urls are urls that download the content from the server. the user
+can download content even when they are not authenticated. to download a specified
+resource, you connect to the server on the port specified (if the server's name is default,
+then the default server is assumed, and if the port is not specified, the default port is assumed)
+and send __resource as the first line, instead of your username. the server will not send a
+response. then you send a line which is the resource to download, starting with a forward slash.
+for example, is the url is it3sr://trivergia.com:64482/some/url or if the url is
+it3sr://default/some/url then the 2nd line passed to the server would be /some/url .
+query parameters are allowed, sent in the usual manner, appended to the end of a url
+after a questionmark, separated by ampersands, and the key separated from the value by
+an equals sign. the server responds with one line of text which starts with OK or FAIL.
+if it was OK, then the rest of the text (after the newline) is the resource. if it was FAIL,
+then immediately after FAIL (on the same line) is either NOEXIST or ERROR. NOEXIST is sent
+if the resource was not found, and ERROR is sent if there was an error while getting the resource.
+those could be comparable to HTTP codes 404 and 500, respectively. after that on the same line
+may be a description of the problem, for example, FAIL ERROR an exception was thrown when
+getting the resource. 
+
+as per the protocol specification, the path (everything after the host and port but before
+the query parameters, /some/url in the above examples) can be anything, but currently the
+InTouch 3 server uses the first folder component ("some" in the above examples) as the
+resource handler identifier. more info on this is given in the documentation for the server.
