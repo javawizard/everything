@@ -1,0 +1,7 @@
+type=tool
+class=net.sf.convergia.client.tools.games.pente.PenteTool
+name=Pente
+description=\
+<html>\
+A game of Pente.
+installMessage=
