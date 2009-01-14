@@ -74,8 +74,8 @@ public class UpdateGUI implements CustomGUI
         frame.show();
         StringWriter sw = new StringWriter();
         arg0.printStackTrace(new PrintWriter(sw, true));
-        textArea.append("==============   ERROR   ==============");
-        textArea.append(sw.toString() + "\n");
+        append("==============   ERROR   ==============");
+        append(sw.toString() + "\n");
         JOptionPane.showMessageDialog(frame,
             "<html>An error occured while trying to update. OpenGroove will start, but<br/>"
                 + "we highly recommend that you don't use it until you contact<br/>"
@@ -151,7 +151,7 @@ public class UpdateGUI implements CustomGUI
     {
         frame.show();
         progress.setString("");
-        textArea.append("Updates are available.");
+        append("Updates are available.");
     }
     
     public boolean shouldTryUpdate()
