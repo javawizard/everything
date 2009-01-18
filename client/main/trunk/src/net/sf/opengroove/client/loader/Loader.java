@@ -48,53 +48,57 @@ public class Loader
      */
     public static void main(String[] args) throws Throwable
     {
-        try
-        {
-            File appdata = new File("appdata");
-            File updatesFolder = new File(appdata, "updates");
-            File updatesAvailableFile = new File(updatesFolder, "updatesavailable");
-            if (updatesAvailableFile.exists())
-            {
-                System.out.println("updates are available");
-                String level = readFile(new File(updatesFolder, "level"));
-                if (level == null)
-                    level = DEFAULT_LEVEL;
-                String modulePath = level + "/tags";
-                /*
-                 * In the future, we should reset the level to the default if
-                 * the level in question doesn't exist, to avoid getting into a
-                 * state where clients can't update. We should also reset to the
-                 * first level available if the default level doesn't exist.
-                 */
-                writeFile(" ", new File(updatesFolder, "updateinprogress"));
-                AutomatedUpdate.main(new String[] { "-tagmode", "-nofork", "-changelog",
-                    "-repositoryurl", REPOSITORY, "-moduleurl", modulePath, "-antlocation",
-                    "lib", "-applicationdirectory", ".", "-launchant", "-customgui",
-                    "net.sf.opengroove.client.loader.UpdateGUI" });
-                /*
-                 * Right now, OpenGroove is still run, even if updates fail.
-                 * This isn't a good idea, since OpenGroove can be left in a
-                 * conflicting state. In the future, something needs to be added
-                 * so that AutomatedUpdate can indicate to it's caller why
-                 * updates failed. That way, if updates fail before they begin
-                 * (which would happen if an internet connection is not
-                 * present), then OpenGroove would still start, but if updates
-                 * fail after they begin, then OpenGroove would not start until
-                 * updates succeed at least once after that.
-                 */
-                new File(updatesFolder, "updateinprogress").delete();
-                updatesAvailableFile.delete();
-                writeFile(" ", new File(updatesFolder, "updated"));
-            }
-            else
-            {
-                System.out.println("no updates are available");
-            }
-        }
-        catch (Exception exception)
-        {
-            exception.printStackTrace();
-        }
+        
+        // try
+        // {
+        // File appdata = new File("appdata");
+        // File updatesFolder = new File(appdata, "updates");
+        // File updatesAvailableFile = new File(updatesFolder,
+        // "updatesavailable");
+        // if (updatesAvailableFile.exists())
+        // {
+        // System.out.println("updates are available");
+        // String level = readFile(new File(updatesFolder, "level"));
+        // if (level == null)
+        // level = DEFAULT_LEVEL;
+        // String modulePath = level + "/tags";
+        // /*
+        // * In the future, we should reset the level to the default if
+        // * the level in question doesn't exist, to avoid getting into a
+        // * state where clients can't update. We should also reset to the
+        // * first level available if the default level doesn't exist.
+        // */
+        // writeFile(" ", new File(updatesFolder, "updateinprogress"));
+        // AutomatedUpdate.main(new String[] { "-tagmode", "-nofork",
+        // "-changelog",
+        // "-repositoryurl", REPOSITORY, "-moduleurl", modulePath,
+        // "-antlocation",
+        // "lib", "-applicationdirectory", ".", "-launchant", "-customgui",
+        // "net.sf.opengroove.client.loader.UpdateGUI" });
+        // /*
+        // * Right now, OpenGroove is still run, even if updates fail.
+        // * This isn't a good idea, since OpenGroove can be left in a
+        // * conflicting state. In the future, something needs to be added
+        // * so that AutomatedUpdate can indicate to it's caller why
+        // * updates failed. That way, if updates fail before they begin
+        // * (which would happen if an internet connection is not
+        // * present), then OpenGroove would still start, but if updates
+        // * fail after they begin, then OpenGroove would not start until
+        // * updates succeed at least once after that.
+        // */
+        // new File(updatesFolder, "updateinprogress").delete();
+        // updatesAvailableFile.delete();
+        // writeFile(" ", new File(updatesFolder, "updated"));
+        // }
+        // else
+        // {
+        // System.out.println("no updates are available");
+        // }
+        // }
+        // catch (Exception exception)
+        // {
+        // exception.printStackTrace();
+        // }
         doRun(args);
     }
     

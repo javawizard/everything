@@ -33,6 +33,10 @@ public class UpdateGUI implements CustomGUI
     private JProgressBar progress;
     private JTextArea textArea;
     private JScrollPane scroll;
+    /*
+     * Yes, static.
+     */
+    public static boolean errorOccured = false;
     
     public void buildComplete()
     {
@@ -71,6 +75,7 @@ public class UpdateGUI implements CustomGUI
     
     public boolean error(Throwable arg0, boolean arg1)
     {
+        errorOccured = true;
         frame.show();
         StringWriter sw = new StringWriter();
         arg0.printStackTrace(new PrintWriter(sw, true));
@@ -192,8 +197,7 @@ public class UpdateGUI implements CustomGUI
         editor.setEditable(false);
         editor.setContentType("text/html");
         StringBuilder changelog = new StringBuilder();
-        changelog.append("<html><body>"
-            + "<b>Updates are available for OpenGroove. "
+        changelog.append("<html><body>" + "<b>Updates are available for OpenGroove. "
             + "Would you like to download and install them?"
             + "</b><br/><br/>Here's what will change when "
             + "you install these updates:<br/><br/>");
