@@ -181,7 +181,7 @@ public class Loader
     
     private static void doRun(String[] s) throws Throwable
     {
-        OpenGroove.updatesEnabled = true;
+        // OpenGroove.updatesEnabled = true;
         OpenGroove.main(s);
     }
     
