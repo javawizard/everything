@@ -10,4 +10,4 @@ To send a message, a new Message object is created. It's recipient list is set u
 
 Receiving a message works in a similar manner. The message is made available to listInboundMessage calls, and then the message is propegated down through the hierarchy, with listener methods being called as needed.
 
-Message objects internally store a reference to the message's id, but this id is only used for equals and hashCode invocations. 
+Because Message objects don't track message ids, a new Message object will be created for each message when a list of messages is retrieved. In addition, the Message object doesn't support the equals method or the hashCode method. This shouldn't be too much of a hinderance to code wishing to use the message hierarchy, since it can process
