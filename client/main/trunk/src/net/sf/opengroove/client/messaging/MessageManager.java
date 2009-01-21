@@ -1582,7 +1582,7 @@ public class MessageManager implements MessageDeliverer, MessageReceiver
          * clobbering files for messages that are about to be advanced to that
          * stage.
          */
-        
+
         /*
          * Start all of the threads running, and scan for messages to delete.
          * Then feed all queues the runObject so that they will perform an
