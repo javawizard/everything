@@ -71,8 +71,7 @@ import net.sf.opengroove.common.utils.StringUtils;
  * @author Alexander Boyd
  * 
  */
-public class MessageManager implements MessageDeliverer,
-    MessageReceiver
+public class MessageManager implements MessageDeliverer, MessageReceiver
 {
     private boolean isRunning = true;
     private LocalUser localUser;
@@ -109,11 +108,9 @@ public class MessageManager implements MessageDeliverer,
             {
                 try
                 {
-                    Object object = outboundEncoderQueue
-                        .poll(
-                            (long) (delay + (delayVariance * Math
-                                .random())),
-                            TimeUnit.MILLISECONDS);
+                    Object object =
+                        outboundEncoderQueue.poll((long) (delay + (delayVariance * Math
+                            .random())), TimeUnit.MILLISECONDS);
                     if (object == quitObject)
                         return;
                     /*
@@ -123,36 +120,28 @@ public class MessageManager implements MessageDeliverer,
                     /*
                      * Do actual processing here
                      */
-                    OutboundMessage[] messages = localUser
-                        .listOutboundMessagesForStage(OutboundMessage.STAGE_INITIALIZED);
-                    System.out
-                        .println("scanning for initialized outbound messages");
+                    OutboundMessage[] messages =
+                        localUser
+                            .listOutboundMessagesForStage(OutboundMessage.STAGE_INITIALIZED);
+                    System.out.println("scanning for initialized outbound messages");
                     for (OutboundMessage message2 : messages)
                     {
                         try
                         {
                             OutboundMessage message = message2;
-                            System.out
-                                .println("processing stage 1 outbound message "
-                                    + message.getId());
-                            File messagePlaintextFile = new File(
-                                storage
-                                    .getOutboundMessagePlaintextStore(),
-                                message.getFileId());
-                            File messageEncodedFile = new File(
-                                storage
-                                    .getOutboundMessageEncodedStore(),
-                                message.getFileId());
-                            if (!messagePlaintextFile
-                                .exists())
+                            System.out.println("processing stage 1 outbound message "
+                                + message.getId());
+                            File messagePlaintextFile =
+                                new File(storage.getOutboundMessagePlaintextStore(), message
+                                    .getFileId());
+                            File messageEncodedFile =
+                                new File(storage.getOutboundMessageEncodedStore(), message
+                                    .getFileId());
+                            if (!messagePlaintextFile.exists())
                             {
-                                System.err
-                                    .println("No data for message "
-                                        + message.getId()
-                                        + ". The message will be deleted.");
-                                localUser
-                                    .getOutboundMessages()
-                                    .remove(message);
+                                System.err.println("No data for message " + message.getId()
+                                    + ". The message will be deleted.");
+                                localUser.getOutboundMessages().remove(message);
                                 continue;
                             }
                             if (messageEncodedFile.exists())
@@ -160,53 +149,38 @@ public class MessageManager implements MessageDeliverer,
                                  * Something interrupted the previous encoding,
                                  * so we'll just delete it and start over.
                                  */
-                                if (!messageEncodedFile
-                                    .delete())
+                                if (!messageEncodedFile.delete())
                                     throw new RuntimeException(
                                         "Couldn't delete previous encoding.");
-                            messageEncodedFile
-                                .createNewFile();
+                            messageEncodedFile.createNewFile();
                             /*
                              * We now have the message plaintext file, and an
                              * empty file to encode it into. We'll begin
                              * encoding.
                              */
-                            FileInputStream in = new FileInputStream(
-                                messagePlaintextFile);
-                            FileOutputStream out = new FileOutputStream(
-                                messageEncodedFile);
-                            DataOutputStream dout = new DataOutputStream(
-                                out);
+                            FileInputStream in = new FileInputStream(messagePlaintextFile);
+                            FileOutputStream out = new FileOutputStream(messageEncodedFile);
+                            DataOutputStream dout = new DataOutputStream(out);
                             /*
                              * First, we write the target path.
                              */
-                            String targetPath = message
-                                .getTarget();
-                            dout.writeInt(targetPath
-                                .getBytes().length);
-                            dout.write(targetPath
-                                .getBytes());
+                            String targetPath = message.getTarget();
+                            dout.writeInt(targetPath.getBytes().length);
+                            dout.write(targetPath.getBytes());
                             /*
                              * Now we write the message properties.
                              */
-                            dout.writeInt(message
-                                .getProperties().size());
-                            for (MessageProperty property : message
-                                .getProperties().isolate())
+                            dout.writeInt(message.getProperties().size());
+                            for (MessageProperty property : message.getProperties()
+                                .isolate())
                             {
-                                String name = property
-                                    .getName();
-                                String value = property
-                                    .getValue();
-                                byte[] nameBytes = name
-                                    .getBytes();
-                                byte[] valueBytes = value
-                                    .getBytes();
-                                dout
-                                    .writeInt(nameBytes.length);
+                                String name = property.getName();
+                                String value = property.getValue();
+                                byte[] nameBytes = name.getBytes();
+                                byte[] valueBytes = value.getBytes();
+                                dout.writeInt(nameBytes.length);
                                 dout.write(nameBytes);
-                                dout
-                                    .writeInt(valueBytes.length);
+                                dout.writeInt(valueBytes.length);
                                 dout.write(valueBytes);
                             }
                             /*
@@ -217,8 +191,7 @@ public class MessageManager implements MessageDeliverer,
                             in.close();
                             dout.flush();
                             dout.close();
-                            message
-                                .setStage(OutboundMessage.STAGE_ENCODED);
+                            message.setStage(OutboundMessage.STAGE_ENCODED);
                             messagePlaintextFile.delete();
                             notifyOutboundEncrypter();
                         }
@@ -244,11 +217,9 @@ public class MessageManager implements MessageDeliverer,
             {
                 try
                 {
-                    Object object = outboundEncrypterQueue
-                        .poll(
-                            (long) (delay + (delayVariance * Math
-                                .random())),
-                            TimeUnit.MILLISECONDS);
+                    Object object =
+                        outboundEncrypterQueue.poll((long) (delay + (delayVariance * Math
+                            .random())), TimeUnit.MILLISECONDS);
                     if (object == quitObject)
                         return;
                     /*
@@ -258,8 +229,9 @@ public class MessageManager implements MessageDeliverer,
                     /*
                      * Do actual processing here
                      */
-                    OutboundMessage[] messages = localUser
-                        .listOutboundMessagesForStage(OutboundMessage.STAGE_ENCODED);
+                    OutboundMessage[] messages =
+                        localUser
+                            .listOutboundMessagesForStage(OutboundMessage.STAGE_ENCODED);
                     for (OutboundMessage message : messages)
                     {
                         try
@@ -272,28 +244,20 @@ public class MessageManager implements MessageDeliverer,
                             for (OutboundMessageRecipient recipient : message
                                 .getRecipients().isolate())
                             {
-                                if (!recipientUsers
-                                    .contains(recipient
-                                        .getUserid()))
-                                    recipientUsers
-                                        .add(recipient
-                                            .getUserid());
+                                if (!recipientUsers.contains(recipient.getUserid()))
+                                    recipientUsers.add(recipient.getUserid());
                             }
-                            Contact[] userContacts = new Contact[recipientUsers
-                                .size()];
+                            Contact[] userContacts = new Contact[recipientUsers.size()];
                             boolean hasAllContacts = true;
                             for (int i = 0; i < userContacts.length; i++)
                             {
-                                userContacts[i] = storage
-                                    .getContact(recipientUsers
-                                        .get(i));
+                                userContacts[i] = storage.getContact(recipientUsers.get(i));
                                 if (userContacts[i] == null)
                                 {
                                     hasAllContacts = false;
                                     break;
                                 }
-                                if (!userContacts[i]
-                                    .isHasKeys())
+                                if (!userContacts[i].isHasKeys())
                                 {
                                     hasAllContacts = false;
                                     break;
@@ -311,24 +275,19 @@ public class MessageManager implements MessageDeliverer,
                              * each user in the list and the contacts all have
                              * security keys. Now we do the actual encrypting.
                              */
-                            File messageEncoded = new File(
-                                storage
-                                    .getOutboundMessageEncodedStore(),
-                                message.getFileId());
-                            File messageEncrypted = new File(
-                                storage
-                                    .getOutboundMessageEncryptedStore(),
-                                message.getFileId());
+                            File messageEncoded =
+                                new File(storage.getOutboundMessageEncodedStore(), message
+                                    .getFileId());
+                            File messageEncrypted =
+                                new File(storage.getOutboundMessageEncryptedStore(), message
+                                    .getFileId());
                             if (!messageEncoded.exists())
                             {
-                                System.err
-                                    .println("Encoded version of message "
-                                        + message.getId()
-                                        + " does not exist. The message will be "
-                                        + "sent back one stage for "
-                                        + "re-encoding.");
-                                message
-                                    .setStage(OutboundMessage.STAGE_INITIALIZED);
+                                System.err.println("Encoded version of message "
+                                    + message.getId()
+                                    + " does not exist. The message will be "
+                                    + "sent back one stage for " + "re-encoding.");
+                                message.setStage(OutboundMessage.STAGE_INITIALIZED);
                                 continue;
                             }
                             /*
@@ -337,66 +296,44 @@ public class MessageManager implements MessageDeliverer,
                              * of the message, and if there is, we'll delete it.
                              */
                             if (messageEncrypted.exists())
-                                if (!messageEncrypted
-                                    .delete())
-                                    throw new RuntimeException(
-                                        "failed delete");
-                            messageEncrypted
-                                .createNewFile();
-                            FileOutputStream fout = new FileOutputStream(
-                                messageEncrypted);
-                            FileInputStream in = new FileInputStream(
-                                messageEncoded);
-                            DataOutputStream out = new DataOutputStream(
-                                fout);
+                                if (!messageEncrypted.delete())
+                                    throw new RuntimeException("failed delete");
+                            messageEncrypted.createNewFile();
+                            FileOutputStream fout = new FileOutputStream(messageEncrypted);
+                            FileInputStream in = new FileInputStream(messageEncoded);
+                            DataOutputStream out = new DataOutputStream(fout);
                             /*
                              * The first thing we need to do is generate a
                              * symmetric key.
                              */
-                            byte[] aesKey = CertificateUtils
-                                .generateSymmetricKey()
-                                .getEncoded();
+                            byte[] aesKey =
+                                CertificateUtils.generateSymmetricKey().getEncoded();
                             /*
                              * We have our key for encrypting our message. Now
                              * we write the number of user recipients. Then, we
                              * write each one, followed by the aes key encoded
                              * using that user's public encryption key.
                              */
-                            out
-                                .writeInt(userContacts.length);
+                            out.writeInt(userContacts.length);
                             for (Contact contact : userContacts)
                             {
-                                out
-                                    .writeInt(contact
-                                        .getUserid()
-                                        .getBytes().length);
-                                out
-                                    .write(contact
-                                        .getUserid()
-                                        .getBytes());
-                                byte[] encryptedKeyBytes = RSA
-                                    .encrypt(
-                                        contact
-                                            .getRsaEncPub(),
-                                        contact
-                                            .getRsaEncMod(),
-                                        aesKey);
-                                out
-                                    .writeInt(encryptedKeyBytes.length);
-                                out
-                                    .write(encryptedKeyBytes);
+                                out.writeInt(contact.getUserid().getBytes().length);
+                                out.write(contact.getUserid().getBytes());
+                                byte[] encryptedKeyBytes =
+                                    RSA.encrypt(contact.getRsaEncPub(), contact
+                                        .getRsaEncMod(), aesKey);
+                                out.writeInt(encryptedKeyBytes.length);
+                                out.write(encryptedKeyBytes);
                             }
                             /*
                              * We've written the encryption keys for all the
                              * contacts. Now we'll write the message signature.
                              */
-                            byte[] hash = CertificateUtils
-                                .hash(new FileInputStream(
-                                    messageEncoded));
-                            byte[] signature = RSA.encrypt(
-                                localUser.getRsaSigPrv(),
-                                localUser.getRsaSigMod(),
-                                hash);
+                            byte[] hash =
+                                CertificateUtils.hash(new FileInputStream(messageEncoded));
+                            byte[] signature =
+                                RSA.encrypt(localUser.getRsaSigPrv(), localUser
+                                    .getRsaSigMod(), hash);
                             out.writeInt(signature.length);
                             out.write(signature);
                             /*
@@ -404,16 +341,11 @@ public class MessageManager implements MessageDeliverer,
                              * is to encrypt the message.
                              */
                             out.flush();
-                            Cipher cipher = Cipher
-                                .getInstance("AES/CBC/PKCS7Padding");
-                            cipher.init(
-                                Cipher.ENCRYPT_MODE,
-                                new SecretKeySpec(aesKey,
-                                    "AES"),
-                                new IvParameterSpec(
+                            Cipher cipher = Cipher.getInstance("AES/CBC/PKCS7Padding");
+                            cipher.init(Cipher.ENCRYPT_MODE,
+                                new SecretKeySpec(aesKey, "AES"), new IvParameterSpec(
                                     new byte[16]));
-                            CipherOutputStream cout = new CipherOutputStream(
-                                out, cipher);
+                            CipherOutputStream cout = new CipherOutputStream(out, cipher);
                             StringUtils.copy(in, cout);
                             cout.flush();
                             cout.close();
@@ -424,8 +356,7 @@ public class MessageManager implements MessageDeliverer,
                              * as such in the database and send it on to the
                              * next stage.
                              */
-                            message
-                                .setStage(OutboundMessage.STAGE_ENCRYPTED);
+                            message.setStage(OutboundMessage.STAGE_ENCRYPTED);
                             messageEncoded.delete();
                             notifyOutboundUploader();
                         }
@@ -455,11 +386,9 @@ public class MessageManager implements MessageDeliverer,
             {
                 try
                 {
-                    Object object = outboundUploaderQueue
-                        .poll(
-                            (long) (delay + (delayVariance * Math
-                                .random())),
-                            TimeUnit.MILLISECONDS);
+                    Object object =
+                        outboundUploaderQueue.poll((long) (delay + (delayVariance * Math
+                            .random())), TimeUnit.MILLISECONDS);
                     if (object == quitObject)
                         return;
                     /*
@@ -469,8 +398,9 @@ public class MessageManager implements MessageDeliverer,
                     /*
                      * Do actual processing here
                      */
-                    OutboundMessage[] messages = localUser
-                        .listOutboundMessagesForStage(OutboundMessage.STAGE_ENCRYPTED);
+                    OutboundMessage[] messages =
+                        localUser
+                            .listOutboundMessagesForStage(OutboundMessage.STAGE_ENCRYPTED);
                     for (OutboundMessage message : messages)
                     {
                         try
@@ -494,44 +424,33 @@ public class MessageManager implements MessageDeliverer,
                              */
                             try
                             {
-                                StoredMessage messageInfo = communicator
-                                    .getMessageInfo(message
-                                        .getId());
-                                if (messageInfo != null
-                                    && messageInfo.isSent())
+                                StoredMessage messageInfo =
+                                    communicator.getMessageInfo(message.getId());
+                                if (messageInfo != null && messageInfo.isSent())
                                 {
                                     /*
                                      * The message has already been sent. This
                                      * isn't supposed to happen, so we'll alert
                                      * the user of the error.
                                      */
-                                    System.err
-                                        .println("message already exists");
+                                    System.err.println("message already exists");
                                     continue;
                                 }
                                 if (messageInfo == null)
-                                    throw new FailedResponseException(
-                                        "NOSUCHMESSAGE");
+                                    throw new FailedResponseException("NOSUCHMESSAGE");
                             }
                             catch (FailedResponseException e)
                             {
-                                if (e.getResponseCode()
-                                    .equalsIgnoreCase(
-                                        "NOSUCHMESSAGE"))
+                                if (e.getResponseCode().equalsIgnoreCase("NOSUCHMESSAGE"))
                                 {
-                                    communicator
-                                        .createMessage(
-                                            message.getId(),
-                                            translateToServerRecipients(message
-                                                .getRecipients()
-                                                .isolate()));
+                                    communicator.createMessage(message.getId(),
+                                        translateToServerRecipients(message.getRecipients()
+                                            .isolate()));
                                 }
                                 else
                                 {
-                                    System.err
-                                        .println("couldn't create message because: "
-                                            + e
-                                                .getResponseCode());
+                                    System.err.println("couldn't create message because: "
+                                        + e.getResponseCode());
                                     continue;
                                 }
                             }
@@ -540,29 +459,21 @@ public class MessageManager implements MessageDeliverer,
                              * been sent. Now we'll get the message's current
                              * size and begin uploading from that point.
                              */
-                            File messageEncrypted = new File(
-                                storage
-                                    .getOutboundMessageEncryptedStore(),
-                                message.getFileId());
+                            File messageEncrypted =
+                                new File(storage.getOutboundMessageEncryptedStore(), message
+                                    .getFileId());
                             if (!messageEncrypted.exists())
                             {
-                                System.err
-                                    .println("nonexistant encryption for message "
-                                        + message.getId()
-                                        + ", sending back to the encryptor");
-                                message
-                                    .setStage(OutboundMessage.STAGE_ENCODED);
+                                System.err.println("nonexistant encryption for message "
+                                    + message.getId() + ", sending back to the encryptor");
+                                message.setStage(OutboundMessage.STAGE_ENCODED);
                                 continue;
                             }
-                            FileInputStream in = new FileInputStream(
-                                messageEncrypted);
-                            int messageSize = communicator
-                                .getMessageSize(message
-                                    .getId());
+                            FileInputStream in = new FileInputStream(messageEncrypted);
+                            int messageSize = communicator.getMessageSize(message.getId());
                             long bytesToSkip = messageSize;
                             while (bytesToSkip > 0)
-                                bytesToSkip -= in
-                                    .skip(bytesToSkip);
+                                bytesToSkip -= in.skip(bytesToSkip);
                             /*
                              * We've skipped the stream to where we need to
                              * start uploading. Now we begin uploading actual
@@ -573,32 +484,26 @@ public class MessageManager implements MessageDeliverer,
                              */
                             int l;
                             int position = messageSize;
-                            while ((l = in
-                                .read(outboundUploaderBuffer)) != -1)
+                            while ((l = in.read(outboundUploaderBuffer)) != -1)
                             {
                                 /*
                                  * We'll create a new buffer now to hold exactly
                                  * the number of bytes read.
                                  */
                                 byte[] buffer = new byte[l];
-                                System.arraycopy(
-                                    outboundUploaderBuffer,
-                                    0, buffer, 0, l);
+                                System.arraycopy(outboundUploaderBuffer, 0, buffer, 0, l);
                                 /*
                                  * Now we'll write the data to the message.
                                  */
-                                communicator
-                                    .writeMessageData(
-                                        message.getId(),
-                                        position, l, buffer);
+                                communicator.writeMessageData(message.getId(), position, l,
+                                    buffer);
                                 position += l;
                             }
                             /*
                              * The message data has now been uploaded. We'll
                              * send the message onto the next stage now.
                              */
-                            message
-                                .setStage(OutboundMessage.STAGE_UPLOADED);
+                            message.setStage(OutboundMessage.STAGE_UPLOADED);
                             messageEncrypted.delete();
                             notifyOutboundSender();
                         }
@@ -625,11 +530,9 @@ public class MessageManager implements MessageDeliverer,
             {
                 try
                 {
-                    Object object = outboundSenderQueue
-                        .poll(
-                            (long) (delay + (delayVariance * Math
-                                .random())),
-                            TimeUnit.MILLISECONDS);
+                    Object object =
+                        outboundSenderQueue.poll((long) (delay + (delayVariance * Math
+                            .random())), TimeUnit.MILLISECONDS);
                     if (object == quitObject)
                         return;
                     /*
@@ -639,17 +542,16 @@ public class MessageManager implements MessageDeliverer,
                     /*
                      * Do actual processing here
                      */
-                    OutboundMessage[] messages = localUser
-                        .listOutboundMessagesForStage(OutboundMessage.STAGE_UPLOADED);
+                    OutboundMessage[] messages =
+                        localUser
+                            .listOutboundMessagesForStage(OutboundMessage.STAGE_UPLOADED);
                     for (OutboundMessage message : messages)
                     {
                         try
                         {
                             try
                             {
-                                communicator
-                                    .sendMessage(message
-                                        .getId());
+                                communicator.sendMessage(message.getId());
                             }
                             catch (FailedResponseException e)
                             {
@@ -658,17 +560,12 @@ public class MessageManager implements MessageDeliverer,
                                  * happen is if the message has already been
                                  * sent
                                  */
-                                System.out
-                                    .println("sending message "
-                                        + message.getId()
-                                        + " appears to have already been done with code "
-                                        + e
-                                            .getResponseCode());
+                                System.out.println("sending message " + message.getId()
+                                    + " appears to have already been done with code "
+                                    + e.getResponseCode());
                             }
-                            message
-                                .setStage(OutboundMessage.STAGE_SENT);
-                            localUser.getOutboundMessages()
-                                .remove(message);
+                            message.setStage(OutboundMessage.STAGE_SENT);
+                            localUser.getOutboundMessages().remove(message);
                         }
                         catch (Exception exception)
                         {
@@ -693,11 +590,9 @@ public class MessageManager implements MessageDeliverer,
             {
                 try
                 {
-                    Object object = inboundImporterQueue
-                        .poll(
-                            (long) (delay + (delayVariance * Math
-                                .random())),
-                            TimeUnit.MILLISECONDS);
+                    Object object =
+                        inboundImporterQueue.poll((long) (delay + (delayVariance * Math
+                            .random())), TimeUnit.MILLISECONDS);
                     if (object == quitObject)
                         return;
                     /*
@@ -710,22 +605,19 @@ public class MessageManager implements MessageDeliverer,
                      * in the IMPORTED state.
                      */
                     boolean wereMessagesImported = false;
-                    String[] messageIds = communicator
-                        .listInboundMessages();
-                    System.out.println("listed "
-                        + messageIds.length
-                        + " inbound message(s)");
+                    String[] messageIds = communicator.listInboundMessages();
+                    System.out
+                        .println("listed " + messageIds.length + " inbound message(s)");
                     for (String messageId : messageIds)
                     {
-                        InboundMessage inboundMessage = localUser
-                            .getInboundMessageById(messageId);
+                        InboundMessage inboundMessage =
+                            localUser.getInboundMessageById(messageId);
                         if (inboundMessage != null)
                         {
                             /*
                              * The message is already present locally.
                              */
-                            System.out
-                                .println("server message already present locally");
+                            System.out.println("server message already present locally");
                             continue;
                         }
                         /*
@@ -733,21 +625,13 @@ public class MessageManager implements MessageDeliverer,
                          * and add it to the user's list of inbound messages.
                          */
                         wereMessagesImported = true;
-                        StoredMessage storedMessage = communicator
-                            .getMessageInfo(messageId);
-                        inboundMessage = localUser
-                            .createInboundMessage();
+                        StoredMessage storedMessage = communicator.getMessageInfo(messageId);
+                        inboundMessage = localUser.createInboundMessage();
                         inboundMessage.setId(messageId);
-                        inboundMessage
-                            .setSender(storedMessage
-                                .getSender());
-                        inboundMessage
-                            .setSendingComputer(storedMessage
-                                .getComputer());
-                        inboundMessage
-                            .setStage(InboundMessage.STAGE_IMPORTED);
-                        System.out
-                            .println("created inbound message");
+                        inboundMessage.setSender(storedMessage.getSender());
+                        inboundMessage.setSendingComputer(storedMessage.getComputer());
+                        inboundMessage.setStage(InboundMessage.STAGE_IMPORTED);
+                        System.out.println("created inbound message");
                         /*
                          * The inbound message's target isn't known at this
                          * point (it only becomes known after decoding the
@@ -756,10 +640,8 @@ public class MessageManager implements MessageDeliverer,
                          * Now we add it to the list of stored messages and
                          * notify the downloader.
                          */
-                        localUser.getInboundMessages().add(
-                            inboundMessage);
-                        System.out
-                            .println("added inbound message to local user store");
+                        localUser.getInboundMessages().add(inboundMessage);
+                        System.out.println("added inbound message to local user store");
                     }
                     if (wereMessagesImported)
                     {
@@ -788,11 +670,9 @@ public class MessageManager implements MessageDeliverer,
             {
                 try
                 {
-                    Object object = inboundDownloaderQueue
-                        .poll(
-                            (long) (delay + (delayVariance * Math
-                                .random())),
-                            TimeUnit.MILLISECONDS);
+                    Object object =
+                        inboundDownloaderQueue.poll((long) (delay + (delayVariance * Math
+                            .random())), TimeUnit.MILLISECONDS);
                     if (object == quitObject)
                         return;
                     /*
@@ -802,14 +682,13 @@ public class MessageManager implements MessageDeliverer,
                     /*
                      * Do actual processing here
                      */
-                    InboundMessage[] messages = localUser
-                        .listInboundMessagesForStage(InboundMessage.STAGE_IMPORTED);
+                    InboundMessage[] messages =
+                        localUser.listInboundMessagesForStage(InboundMessage.STAGE_IMPORTED);
                     for (InboundMessage message : messages)
                     {
                         try
                         {
-                            String messageId = message
-                                .getId();
+                            String messageId = message.getId();
                             /*
                              * First, we'll get the message's size. Then, we'll
                              * get the size of the local message file. If the
@@ -821,17 +700,13 @@ public class MessageManager implements MessageDeliverer,
                              * corrupted, or delete the message file and start
                              * over again.
                              */
-                            int messageSize = communicator
-                                .getMessageSize(messageId);
-                            File messageFile = new File(
-                                storage
-                                    .getInboundMessageEncryptedStore(),
-                                URLEncoder.encode(message
-                                    .getId()));
+                            int messageSize = communicator.getMessageSize(messageId);
+                            File messageFile =
+                                new File(storage.getInboundMessageEncryptedStore(),
+                                    URLEncoder.encode(message.getId()));
                             if (!messageFile.exists())
                                 messageFile.createNewFile();
-                            int localMessageSize = (int) messageFile
-                                .length();
+                            int localMessageSize = (int) messageFile.length();
                             if (localMessageSize >= messageSize)
                             {
                                 /*
@@ -839,8 +714,7 @@ public class MessageManager implements MessageDeliverer,
                                  * hasn't been sent to the next stage. We'll
                                  * send it to the localizer.
                                  */
-                                message
-                                    .setStage(InboundMessage.STAGE_DOWNLOADED);
+                                message.setStage(InboundMessage.STAGE_DOWNLOADED);
                                 notifyInboundLocalizer();
                                 continue;
                             }
@@ -850,20 +724,13 @@ public class MessageManager implements MessageDeliverer,
                              * message file's size, since that size means we
                              * already have that much of the message's data.
                              */
-                            RandomAccessFile out = new RandomAccessFile(
-                                messageFile, "rw");
+                            RandomAccessFile out = new RandomAccessFile(messageFile, "rw");
                             int nextReadIndex = localMessageSize;
                             while (nextReadIndex < messageSize)
                             {
-                                byte[] bytes = communicator
-                                    .readMessageData(
-                                        messageId,
-                                        nextReadIndex,
-                                        Math
-                                            .min(
-                                                32768,
-                                                messageSize
-                                                    - nextReadIndex));
+                                byte[] bytes =
+                                    communicator.readMessageData(messageId, nextReadIndex,
+                                        Math.min(32768, messageSize - nextReadIndex));
                                 out.seek(nextReadIndex);
                                 out.write(bytes);
                                 nextReadIndex += bytes.length;
@@ -874,8 +741,7 @@ public class MessageManager implements MessageDeliverer,
                              * the localizer.
                              */
                             out.close();
-                            message
-                                .setStage(InboundMessage.STAGE_DOWNLOADED);
+                            message.setStage(InboundMessage.STAGE_DOWNLOADED);
                             notifyInboundLocalizer();
                         }
                         catch (Exception exception)
@@ -912,11 +778,9 @@ public class MessageManager implements MessageDeliverer,
             {
                 try
                 {
-                    Object object = inboundLocalizerQueue
-                        .poll(
-                            (long) (delay + (delayVariance * Math
-                                .random())),
-                            TimeUnit.MILLISECONDS);
+                    Object object =
+                        inboundLocalizerQueue.poll((long) (delay + (delayVariance * Math
+                            .random())), TimeUnit.MILLISECONDS);
                     if (object == quitObject)
                         return;
                     /*
@@ -926,8 +790,9 @@ public class MessageManager implements MessageDeliverer,
                     /*
                      * Do actual processing here
                      */
-                    InboundMessage[] messages = localUser
-                        .listInboundMessagesForStage(InboundMessage.STAGE_DOWNLOADED);
+                    InboundMessage[] messages =
+                        localUser
+                            .listInboundMessagesForStage(InboundMessage.STAGE_DOWNLOADED);
                     for (InboundMessage message : messages)
                     {
                         try
@@ -944,20 +809,14 @@ public class MessageManager implements MessageDeliverer,
                              */
                             try
                             {
-                                communicator
-                                    .deleteMessage(message
-                                        .getId());
+                                communicator.deleteMessage(message.getId());
                             }
                             catch (FailedResponseException exception)
                             {
-                                if (exception
-                                    .getResponseCode()
-                                    .equalsIgnoreCase(
-                                        "UNAUTHORIZED")
-                                    || exception
-                                        .getResponseCode()
-                                        .equalsIgnoreCase(
-                                            "NOSUCHMESSAGE"))
+                                if (exception.getResponseCode().equalsIgnoreCase(
+                                    "UNAUTHORIZED")
+                                    || exception.getResponseCode().equalsIgnoreCase(
+                                        "NOSUCHMESSAGE"))
                                 {
                                     /*
                                      * The message has already been deleted, so
@@ -978,8 +837,7 @@ public class MessageManager implements MessageDeliverer,
                              * exist or we deleted it, so we'll forward to the
                              * next stage, the decrypter.
                              */
-                            message
-                                .setStage(InboundMessage.STAGE_LOCALIZED);
+                            message.setStage(InboundMessage.STAGE_LOCALIZED);
                             notifyInboundDecrypter();
                         }
                         catch (Exception exception)
@@ -1005,11 +863,9 @@ public class MessageManager implements MessageDeliverer,
             {
                 try
                 {
-                    Object object = inboundDecrypterQueue
-                        .poll(
-                            (long) (delay + (delayVariance * Math
-                                .random())),
-                            TimeUnit.MILLISECONDS);
+                    Object object =
+                        inboundDecrypterQueue.poll((long) (delay + (delayVariance * Math
+                            .random())), TimeUnit.MILLISECONDS);
                     if (object == quitObject)
                         return;
                     /*
@@ -1019,22 +875,19 @@ public class MessageManager implements MessageDeliverer,
                     /*
                      * Do actual processing here
                      */
-                    InboundMessage[] messages = localUser
-                        .listInboundMessagesForStage(InboundMessage.STAGE_LOCALIZED);
+                    InboundMessage[] messages =
+                        localUser
+                            .listInboundMessagesForStage(InboundMessage.STAGE_LOCALIZED);
                     for (InboundMessage message : messages)
                     {
                         try
                         {
-                            File messageEncryptedFile = new File(
-                                storage
-                                    .getInboundMessageEncryptedStore(),
-                                URLEncoder.encode(message
-                                    .getId()));
-                            File messageEncodedFile = new File(
-                                storage
-                                    .getInboundMessageEncodedStore(),
-                                URLEncoder.encode(message
-                                    .getId()));
+                            File messageEncryptedFile =
+                                new File(storage.getInboundMessageEncryptedStore(),
+                                    URLEncoder.encode(message.getId()));
+                            File messageEncodedFile =
+                                new File(storage.getInboundMessageEncodedStore(), URLEncoder
+                                    .encode(message.getId()));
                             /*
                              * We're essentially decrypting from
                              * messageEncryptedFile to messageEncodedFile.
@@ -1075,35 +928,24 @@ public class MessageManager implements MessageDeliverer,
                              * to have some means of notifying the user of this
                              * besides just printing it out to the console.
                              */
-                            String messageSender = message
-                                .getSender();
-                            Contact senderContact = storage
-                                .getContact(messageSender);
+                            String messageSender = message.getSender();
+                            Contact senderContact = storage.getContact(messageSender);
                             if (senderContact == null)
                             {
-                                senderContact = localUser
-                                    .createContact();
-                                senderContact
-                                    .setHasKeys(false);
-                                senderContact
-                                    .setLastModifled(0);
-                                senderContact
-                                    .setUserContact(false);
-                                senderContact
-                                    .setUserid(messageSender);
-                                senderContact
-                                    .setUserVerified(false);
-                                localUser.getContacts()
-                                    .add(senderContact);
+                                senderContact = localUser.createContact();
+                                senderContact.setHasKeys(false);
+                                senderContact.setLastModifled(0);
+                                senderContact.setUserContact(false);
+                                senderContact.setUserid(messageSender);
+                                senderContact.setUserVerified(false);
+                                localUser.getContacts().add(senderContact);
                                 if (localUser.getContext() != null)
                                 {
                                     new Thread()
                                     {
                                         public void run()
                                         {
-                                            localUser
-                                                .getContext()
-                                                .updateContactStatus();
+                                            localUser.getContext().updateContactStatus();
                                         }
                                     }.start();
                                 }
@@ -1133,103 +975,71 @@ public class MessageManager implements MessageDeliverer,
                             if (messageEncodedFile.length() > 0)
                                 throw new RuntimeException(
                                     "couldn't delete existing encoded form.");
-                            if (!messageEncryptedFile
-                                .exists())
+                            if (!messageEncryptedFile.exists())
                             {
-                                System.err
-                                    .println("input encrpted message "
-                                        + message.getId()
-                                        + " doesn't exist, the message will be deleted.");
-                                message
-                                    .setStage(InboundMessage.STAGE_READ);
-                                localUser
-                                    .getInboundMessages()
-                                    .remove(message);
+                                System.err.println("input encrpted message "
+                                    + message.getId()
+                                    + " doesn't exist, the message will be deleted.");
+                                message.setStage(InboundMessage.STAGE_READ);
+                                localUser.getInboundMessages().remove(message);
                                 continue;
                             }
-                            FileInputStream fileIn = new FileInputStream(
-                                messageEncryptedFile);
-                            DataInputStream in = new DataInputStream(
-                                fileIn);
-                            int recipientCount = in
-                                .readInt();
+                            FileInputStream fileIn =
+                                new FileInputStream(messageEncryptedFile);
+                            DataInputStream in = new DataInputStream(fileIn);
+                            int recipientCount = in.readInt();
                             byte[] messageKey = null;
                             for (int i = 0; i < recipientCount; i++)
                             {
-                                int recipientUseridSize = in
-                                    .readInt();
+                                int recipientUseridSize = in.readInt();
                                 byte[] recipientUseridBytes = new byte[recipientUseridSize];
-                                in
-                                    .readFully(recipientUseridBytes);
-                                String recipientUserid = new String(
-                                    recipientUseridBytes);
-                                int encryptedKeySize = in
-                                    .readInt();
+                                in.readFully(recipientUseridBytes);
+                                String recipientUserid = new String(recipientUseridBytes);
+                                int encryptedKeySize = in.readInt();
                                 byte[] encryptedKeyBytes = new byte[encryptedKeySize];
-                                in
-                                    .readFully(encryptedKeyBytes);
-                                if (recipientUserid
-                                    .equalsIgnoreCase(userid))
+                                in.readFully(encryptedKeyBytes);
+                                if (recipientUserid.equalsIgnoreCase(userid))
                                 {
                                     /*
                                      * The key is encrypted with our encryption
                                      * key, so we'll use our private key to
                                      * decrypt it
                                      */
-                                    messageKey = RSA
-                                        .decrypt(
-                                            localUser
-                                                .getRsaEncPrv(),
-                                            localUser
-                                                .getRasEncMod(),
-                                            encryptedKeyBytes);
+                                    messageKey =
+                                        RSA.decrypt(localUser.getRsaEncPrv(), localUser
+                                            .getRasEncMod(), encryptedKeyBytes);
                                 }
                                 
                             }
                             if (messageKey == null)
                             {
-                                System.err
-                                    .println("Message "
-                                        + message.getId()
-                                        + " does not contain a valid public-key "
-                                        + "encryption, and will be deleted.");
-                                message
-                                    .setStage(InboundMessage.STAGE_READ);
-                                localUser
-                                    .getInboundMessages()
-                                    .remove(message);
+                                System.err.println("Message " + message.getId()
+                                    + " does not contain a valid public-key "
+                                    + "encryption, and will be deleted.");
+                                message.setStage(InboundMessage.STAGE_READ);
+                                localUser.getInboundMessages().remove(message);
                             }
                             /*
                              * We have the message key at this point, and we've
                              * skipped over all of the other keys. Now we'll
                              * read in the message's signature.
                              */
-                            byte[] signature = new byte[in
-                                .readInt()];
+                            byte[] signature = new byte[in.readInt()];
                             in.readFully(signature);
-                            byte[] receivedHash = RSA
-                                .decrypt(senderContact
-                                    .getRsaSigPub(),
-                                    senderContact
-                                        .getRsaSigMod(),
-                                    signature);
+                            byte[] receivedHash =
+                                RSA.decrypt(senderContact.getRsaSigPub(), senderContact
+                                    .getRsaSigMod(), signature);
                             /*
                              * After decryption, receivedHash should hold the
                              * same value as the hash we'll compute on the
                              * message data. Now we'll decrypt the message.
                              */
-                            FileOutputStream fileOut = new FileOutputStream(
-                                messageEncodedFile);
-                            Cipher cipher = Cipher
-                                .getInstance("AES/CBC/PKCS7Padding");
-                            cipher.init(
-                                Cipher.DECRYPT_MODE,
-                                new SecretKeySpec(
-                                    messageKey, "AES"),
-                                new IvParameterSpec(
-                                    new byte[16]));
-                            CipherOutputStream out = new CipherOutputStream(
-                                fileOut, cipher);
+                            FileOutputStream fileOut =
+                                new FileOutputStream(messageEncodedFile);
+                            Cipher cipher = Cipher.getInstance("AES/CBC/PKCS7Padding");
+                            cipher.init(Cipher.DECRYPT_MODE, new SecretKeySpec(messageKey,
+                                "AES"), new IvParameterSpec(new byte[16]));
+                            CipherOutputStream out = new CipherOutputStream(fileOut, cipher);
                             StringUtils.copy(in, out);
                             out.flush();
                             out.close();
@@ -1239,23 +1049,16 @@ public class MessageManager implements MessageDeliverer,
                              * incorrect, we'll remove the message and print an
                              * error.
                              */
-                            byte[] hash = CertificateUtils
-                                .hash(new FileInputStream(
-                                    messageEncodedFile));
-                            if (!Arrays.equals(hash,
-                                receivedHash))
+                            byte[] hash =
+                                CertificateUtils
+                                    .hash(new FileInputStream(messageEncodedFile));
+                            if (!Arrays.equals(hash, receivedHash))
                             {
-                                System.err
-                                    .println("message "
-                                        + message.getId()
-                                        + " has an invalid signature");
-                                message
-                                    .setStage(InboundMessage.STAGE_READ);
-                                localUser
-                                    .getInboundMessages()
-                                    .remove(message);
-                                messageEncryptedFile
-                                    .delete();
+                                System.err.println("message " + message.getId()
+                                    + " has an invalid signature");
+                                message.setStage(InboundMessage.STAGE_READ);
+                                localUser.getInboundMessages().remove(message);
+                                messageEncryptedFile.delete();
                                 messageEncodedFile.delete();
                                 continue;
                             }
@@ -1263,8 +1066,7 @@ public class MessageManager implements MessageDeliverer,
                              * The message matches the signature. We'll send it
                              * on to the decoder.
                              */
-                            message
-                                .setStage(InboundMessage.STAGE_DECRYPTED);
+                            message.setStage(InboundMessage.STAGE_DECRYPTED);
                             messageEncryptedFile.delete();
                             notifyInboundDecoder();
                         }
@@ -1283,8 +1085,7 @@ public class MessageManager implements MessageDeliverer,
         }
     };
     @StageThread
-    private Thread inboundDecoderThread = new Thread(
-        "mm-inbound-decoder")
+    private Thread inboundDecoderThread = new Thread("mm-inbound-decoder")
     {
         public void run()
         {
@@ -1292,11 +1093,9 @@ public class MessageManager implements MessageDeliverer,
             {
                 try
                 {
-                    Object object = inboundDecoderQueue
-                        .poll(
-                            (long) (delay + (delayVariance * Math
-                                .random())),
-                            TimeUnit.MILLISECONDS);
+                    Object object =
+                        inboundDecoderQueue.poll((long) (delay + (delayVariance * Math
+                            .random())), TimeUnit.MILLISECONDS);
                     if (object == quitObject)
                         return;
                     /*
@@ -1306,25 +1105,21 @@ public class MessageManager implements MessageDeliverer,
                     /*
                      * Do actual processing here
                      */
-                    InboundMessage[] messages = localUser
-                        .listInboundMessagesForStage(InboundMessage.STAGE_DECRYPTED);
+                    InboundMessage[] messages =
+                        localUser
+                            .listInboundMessagesForStage(InboundMessage.STAGE_DECRYPTED);
                     for (InboundMessage message : messages)
                     {
                         try
                         {
-                            File messageEncoded = new File(
-                                storage
-                                    .getInboundMessageEncodedStore(),
-                                URLEncoder.encode(message
-                                    .getId()));
-                            File messagePlaintext = new File(
-                                storage
-                                    .getInboundMessagePlaintextStore(),
-                                URLEncoder.encode(message
-                                    .getId()));
+                            File messageEncoded =
+                                new File(storage.getInboundMessageEncodedStore(), URLEncoder
+                                    .encode(message.getId()));
+                            File messagePlaintext =
+                                new File(storage.getInboundMessagePlaintextStore(),
+                                    URLEncoder.encode(message.getId()));
                             if (messagePlaintext.exists())
-                                if (!messagePlaintext
-                                    .delete())
+                                if (!messagePlaintext.delete())
                                     throw new RuntimeException(
                                         "couldn't delete message plaintext form");
                             if (!messageEncoded.exists())
@@ -1333,8 +1128,7 @@ public class MessageManager implements MessageDeliverer,
                                     .println("message "
                                         + message.getId()
                                         + " doesn't have an encoded form, sending back to the decrypter");
-                                message
-                                    .setStage(InboundMessage.STAGE_LOCALIZED);
+                                message.setStage(InboundMessage.STAGE_LOCALIZED);
                             }
                             /*
                              * The message exists and it's decoded form doesn't.
@@ -1342,41 +1136,27 @@ public class MessageManager implements MessageDeliverer,
                              * 
                              * First up is the target path.
                              */
-                            FileInputStream fileIn = new FileInputStream(
-                                messageEncoded);
-                            DataInputStream in = new DataInputStream(
-                                fileIn);
-                            FileOutputStream out = new FileOutputStream(
-                                messagePlaintext);
-                            byte[] targetPathBytes = new byte[in
-                                .readInt()];
+                            FileInputStream fileIn = new FileInputStream(messageEncoded);
+                            DataInputStream in = new DataInputStream(fileIn);
+                            FileOutputStream out = new FileOutputStream(messagePlaintext);
+                            byte[] targetPathBytes = new byte[in.readInt()];
                             in.readFully(targetPathBytes);
-                            message.setTarget(new String(
-                                targetPathBytes));
+                            message.setTarget(new String(targetPathBytes));
                             /*
                              * Next we'll read in the message's parameters.
                              */
                             message.getProperties().clear();
-                            int messagePropertyCount = in
-                                .readInt();
+                            int messagePropertyCount = in.readInt();
                             for (int i = 0; i < messagePropertyCount; i++)
                             {
-                                byte[] nameBytes = new byte[in
-                                    .readInt()];
+                                byte[] nameBytes = new byte[in.readInt()];
                                 in.readFully(nameBytes);
-                                byte[] valueBytes = new byte[in
-                                    .readInt()];
+                                byte[] valueBytes = new byte[in.readInt()];
                                 in.readFully(valueBytes);
-                                MessageProperty property = message
-                                    .createProperty();
-                                property
-                                    .setName(new String(
-                                        nameBytes));
-                                property
-                                    .setValue(new String(
-                                        valueBytes));
-                                message.getProperties()
-                                    .add(property);
+                                MessageProperty property = message.createProperty();
+                                property.setName(new String(nameBytes));
+                                property.setValue(new String(valueBytes));
+                                message.getProperties().add(property);
                             }
                             /*
                              * The rest of the data is the actual contents of
@@ -1391,8 +1171,7 @@ public class MessageManager implements MessageDeliverer,
                              * The message has nwo been decoded. We'll forward
                              * it on to the dispatcher.
                              */
-                            message
-                                .setStage(InboundMessage.STAGE_DECODED);
+                            message.setStage(InboundMessage.STAGE_DECODED);
                             messageEncoded.delete();
                             System.out
                                 .println("notifying inbound dispatcher upon available message");
@@ -1413,8 +1192,7 @@ public class MessageManager implements MessageDeliverer,
         }
     };
     @StageThread
-    private Thread inboundDispatcherThread = new Thread(
-        "mm-inbound-dispatcher")
+    private Thread inboundDispatcherThread = new Thread("mm-inbound-dispatcher")
     {
         public void run()
         {
@@ -1422,15 +1200,12 @@ public class MessageManager implements MessageDeliverer,
             {
                 try
                 {
-                    Object object = inboundDispatcherQueue
-                        .poll(
-                            (long) (delay + (delayVariance * Math
-                                .random())),
-                            TimeUnit.MILLISECONDS);
+                    Object object =
+                        inboundDispatcherQueue.poll((long) (delay + (delayVariance * Math
+                            .random())), TimeUnit.MILLISECONDS);
                     if (object == quitObject)
                         return;
-                    System.out
-                        .println("run object detected in dispatcher thread");
+                    System.out.println("run object detected in dispatcher thread");
                     /*
                      * The object is the runObject or the timeout expired, so
                      * we'll do the actual processing.
@@ -1438,10 +1213,9 @@ public class MessageManager implements MessageDeliverer,
                     /*
                      * Do actual processing here
                      */
-                    System.out
-                        .println("running dispatch thread");
-                    InboundMessage[] messages = localUser
-                        .listInboundMessagesForStage(InboundMessage.STAGE_DECODED);
+                    System.out.println("running dispatch thread");
+                    InboundMessage[] messages =
+                        localUser.listInboundMessagesForStage(InboundMessage.STAGE_DECODED);
                     for (InboundMessage message : messages)
                     {
                         try
@@ -1461,12 +1235,9 @@ public class MessageManager implements MessageDeliverer,
                              * program startup to check for messages it needs to
                              * process anyway.
                              */
-                            System.out
-                                .println("dispatching message");
-                            message
-                                .setStage(InboundMessage.STAGE_DISPATCHED);
-                            hierarchyElement
-                                .injectMessage(message);
+                            System.out.println("dispatching message");
+                            message.setStage(InboundMessage.STAGE_DISPATCHED);
+                            hierarchyElement.injectMessage(message);
                         }
                         catch (Exception exception)
                         {
@@ -1491,11 +1262,9 @@ public class MessageManager implements MessageDeliverer,
             {
                 try
                 {
-                    Object object = inboundRemoverQueue
-                        .poll(
-                            (long) (delay + (delayVariance * Math
-                                .random())),
-                            TimeUnit.MILLISECONDS);
+                    Object object =
+                        inboundRemoverQueue.poll((long) (delay + (delayVariance * Math
+                            .random())), TimeUnit.MILLISECONDS);
                     if (object == quitObject)
                         return;
                     /*
@@ -1505,20 +1274,17 @@ public class MessageManager implements MessageDeliverer,
                     /*
                      * Do actual processing here
                      */
-                    InboundMessage[] messages = localUser
-                        .listInboundMessagesForStage(InboundMessage.STAGE_READ);
+                    InboundMessage[] messages =
+                        localUser.listInboundMessagesForStage(InboundMessage.STAGE_READ);
                     for (InboundMessage message : messages)
                     {
                         try
                         {
-                            File messagePlaintextFile = new File(
-                                storage
-                                    .getInboundMessagePlaintextStore(),
-                                URLEncoder.encode(message
-                                    .getId()));
+                            File messagePlaintextFile =
+                                new File(storage.getInboundMessagePlaintextStore(),
+                                    URLEncoder.encode(message.getId()));
                             messagePlaintextFile.delete();
-                            localUser.getInboundMessages()
-                                .remove(message);
+                            localUser.getInboundMessages().remove(message);
                         }
                         catch (Exception exception)
                         {
@@ -1537,43 +1303,29 @@ public class MessageManager implements MessageDeliverer,
                      * We'll check inbound messages first, and then outbound
                      * messages.
                      */
-                    File[] existenceCheckInboundFiles = DataUtils
-                        .concat(
-                            File.class,
-                            storage
-                                .getInboundMessageEncryptedStore()
-                                .listFiles(),
-                            storage
-                                .getInboundMessageEncodedStore()
-                                .listFiles(),
-                            storage
-                                .getInboundMessagePlaintextStore()
-                                .listFiles());
+                    File[] existenceCheckInboundFiles =
+                        DataUtils.concat(File.class, storage
+                            .getInboundMessageEncryptedStore().listFiles(), storage
+                            .getInboundMessageEncodedStore().listFiles(), storage
+                            .getInboundMessagePlaintextStore().listFiles());
                     for (File file : existenceCheckInboundFiles)
                     {
-                        Object message = localUser
-                            .getInboundMessageById(URLDecoder
+                        Object message =
+                            localUser.getInboundMessageById(URLDecoder
                                 .decode(file.getName()));
                         if (message == null)
                             file.delete();
                     }
-                    File[] existenceCheckOutboundFiles = DataUtils
-                        .concat(
-                            File.class,
-                            storage
-                                .getOutboundMessageEncryptedStore()
-                                .listFiles(),
-                            storage
-                                .getOutboundMessageEncodedStore()
-                                .listFiles(),
-                            storage
-                                .getOutboundMessagePlaintextStore()
-                                .listFiles());
+                    File[] existenceCheckOutboundFiles =
+                        DataUtils.concat(File.class, storage
+                            .getOutboundMessageEncryptedStore().listFiles(), storage
+                            .getOutboundMessageEncodedStore().listFiles(), storage
+                            .getOutboundMessagePlaintextStore().listFiles());
                     for (File file : existenceCheckOutboundFiles)
                     {
-                        Object message = localUser
-                            .getOutboundMessageById(URLDecoder
-                                .decode(file.getName()));
+                        Object message =
+                            localUser.getOutboundMessageById(URLDecoder.decode(file
+                                .getName()));
                         if (message == null)
                             file.delete();
                     }
@@ -1596,13 +1348,11 @@ public class MessageManager implements MessageDeliverer,
                      * additional logic to delete the message; we'll just let
                      * the next pass of this thread delete it.
                      */
-                    for (File file : storage
-                        .getOutboundMessagePlaintextStore()
-                        .listFiles())
+                    for (File file : storage.getOutboundMessagePlaintextStore().listFiles())
                     {
-                        OutboundMessage message = localUser
-                            .getOutboundMessageById(URLDecoder
-                                .decode(file.getName()));
+                        OutboundMessage message =
+                            localUser.getOutboundMessageById(URLDecoder.decode(file
+                                .getName()));
                         if (message == null)
                             continue;
                         if (message.getStage() > OutboundMessage.STAGE_INITIALIZED)
@@ -1612,13 +1362,11 @@ public class MessageManager implements MessageDeliverer,
                      * Next up is the encoded message form, with STAGE_ENCODED
                      * being the last stage to use this form.
                      */
-                    for (File file : storage
-                        .getOutboundMessageEncodedStore()
-                        .listFiles())
+                    for (File file : storage.getOutboundMessageEncodedStore().listFiles())
                     {
-                        OutboundMessage message = localUser
-                            .getOutboundMessageById(URLDecoder
-                                .decode(file.getName()));
+                        OutboundMessage message =
+                            localUser.getOutboundMessageById(URLDecoder.decode(file
+                                .getName()));
                         if (message == null)
                             continue;
                         if (message.getStage() > OutboundMessage.STAGE_ENCODED)
@@ -1628,13 +1376,11 @@ public class MessageManager implements MessageDeliverer,
                      * Last, but not least, we have the encrypted message form.
                      * The last stage to use this form is STAGE_ENCRYPTED.
                      */
-                    for (File file : storage
-                        .getOutboundMessageEncryptedStore()
-                        .listFiles())
+                    for (File file : storage.getOutboundMessageEncryptedStore().listFiles())
                     {
-                        OutboundMessage message = localUser
-                            .getOutboundMessageById(URLDecoder
-                                .decode(file.getName()));
+                        OutboundMessage message =
+                            localUser.getOutboundMessageById(URLDecoder.decode(file
+                                .getName()));
                         if (message == null)
                             continue;
                         if (message.getStage() > OutboundMessage.STAGE_ENCRYPTED)
@@ -1647,8 +1393,7 @@ public class MessageManager implements MessageDeliverer,
                     for (OutboundMessage message : localUser
                         .listOutboundMessagesForStage(OutboundMessage.STAGE_SENT))
                     {
-                        localUser.getOutboundMessages()
-                            .remove(message);
+                        localUser.getOutboundMessages().remove(message);
                     }
                     /*
                      * Now we'll begin checking the inbound message stores.
@@ -1656,12 +1401,10 @@ public class MessageManager implements MessageDeliverer,
                      * First up is the encrypted store. The last stage to use
                      * this is STAGE_LOCALIZED.
                      */
-                    for (File file : storage
-                        .getInboundMessageEncryptedStore()
-                        .listFiles())
+                    for (File file : storage.getInboundMessageEncryptedStore().listFiles())
                     {
-                        InboundMessage message = localUser
-                            .getInboundMessageById(URLDecoder
+                        InboundMessage message =
+                            localUser.getInboundMessageById(URLDecoder
                                 .decode(file.getName()));
                         if (message == null)
                             continue;
@@ -1677,12 +1420,10 @@ public class MessageManager implements MessageDeliverer,
                      * been marked as sent, at which point is will be deleted
                      * anyway and it's corresponding file deleted as well.
                      */
-                    for (File file : storage
-                        .getInboundMessageEncodedStore()
-                        .listFiles())
+                    for (File file : storage.getInboundMessageEncodedStore().listFiles())
                     {
-                        InboundMessage message = localUser
-                            .getInboundMessageById(URLDecoder
+                        InboundMessage message =
+                            localUser.getInboundMessageById(URLDecoder
                                 .decode(file.getName()));
                         if (message == null)
                             continue;
@@ -1702,38 +1443,27 @@ public class MessageManager implements MessageDeliverer,
     };
     // stage notifier queues
     @StageQueue
-    private BlockingQueue<Object> outboundEncoderQueue = new ArrayBlockingQueue<Object>(
-        1);
+    private BlockingQueue<Object> outboundEncoderQueue = new ArrayBlockingQueue<Object>(1);
     @StageQueue
-    private BlockingQueue<Object> outboundEncrypterQueue = new ArrayBlockingQueue<Object>(
-        1);
+    private BlockingQueue<Object> outboundEncrypterQueue = new ArrayBlockingQueue<Object>(1);
     @StageQueue
-    private BlockingQueue<Object> outboundUploaderQueue = new ArrayBlockingQueue<Object>(
-        1);
+    private BlockingQueue<Object> outboundUploaderQueue = new ArrayBlockingQueue<Object>(1);
     @StageQueue
-    private BlockingQueue<Object> outboundSenderQueue = new ArrayBlockingQueue<Object>(
-        1);
+    private BlockingQueue<Object> outboundSenderQueue = new ArrayBlockingQueue<Object>(1);
     @StageQueue
-    private BlockingQueue<Object> inboundImporterQueue = new ArrayBlockingQueue<Object>(
-        1);
+    private BlockingQueue<Object> inboundImporterQueue = new ArrayBlockingQueue<Object>(1);
     @StageQueue
-    private BlockingQueue<Object> inboundDownloaderQueue = new ArrayBlockingQueue<Object>(
-        1);
+    private BlockingQueue<Object> inboundDownloaderQueue = new ArrayBlockingQueue<Object>(1);
     @StageQueue
-    private BlockingQueue<Object> inboundLocalizerQueue = new ArrayBlockingQueue<Object>(
-        1);
+    private BlockingQueue<Object> inboundLocalizerQueue = new ArrayBlockingQueue<Object>(1);
     @StageQueue
-    private BlockingQueue<Object> inboundDecrypterQueue = new ArrayBlockingQueue<Object>(
-        1);
+    private BlockingQueue<Object> inboundDecrypterQueue = new ArrayBlockingQueue<Object>(1);
     @StageQueue
-    private BlockingQueue<Object> inboundDecoderQueue = new ArrayBlockingQueue<Object>(
-        1);
+    private BlockingQueue<Object> inboundDecoderQueue = new ArrayBlockingQueue<Object>(1);
     @StageQueue
-    private BlockingQueue<Object> inboundDispatcherQueue = new ArrayBlockingQueue<Object>(
-        1);
+    private BlockingQueue<Object> inboundDispatcherQueue = new ArrayBlockingQueue<Object>(1);
     @StageQueue
-    private BlockingQueue<Object> inboundRemoverQueue = new ArrayBlockingQueue<Object>(
-        1);
+    private BlockingQueue<Object> inboundRemoverQueue = new ArrayBlockingQueue<Object>(1);
     
     // stage notifier methods
     public void notifyOutboundEncoder()
@@ -1744,17 +1474,14 @@ public class MessageManager implements MessageDeliverer,
     protected StoredMessageRecipient[] translateToServerRecipients(
         ArrayList<OutboundMessageRecipient> outboundRecipients)
     {
-        StoredMessageRecipient[] recipients = new StoredMessageRecipient[outboundRecipients
-            .size()];
-        System.out.println("translating "
-            + recipients.length + " recipients");
+        StoredMessageRecipient[] recipients =
+            new StoredMessageRecipient[outboundRecipients.size()];
+        System.out.println("translating " + recipients.length + " recipients");
         for (int i = 0; i < recipients.length; i++)
         {
             recipients[i] = new StoredMessageRecipient();
-            recipients[i].setUserid(outboundRecipients.get(
-                i).getUserid());
-            recipients[i].setComputer(outboundRecipients
-                .get(i).getComputer());
+            recipients[i].setUserid(outboundRecipients.get(i).getUserid());
+            recipients[i].setComputer(outboundRecipients.get(i).getComputer());
         }
         return recipients;
     }
@@ -1801,15 +1528,13 @@ public class MessageManager implements MessageDeliverer,
     
     public void notifyInboundDispatcher()
     {
-        System.out
-            .println("notification of inbound dispatcher: "
-                + inboundDispatcherQueue.offer(runObject));
+        System.out.println("notification of inbound dispatcher: "
+            + inboundDispatcherQueue.offer(runObject));
     }
     
     // methods
     
-    public MessageManager(String userid,
-        CommandCommunicator communicator,
+    public MessageManager(String userid, CommandCommunicator communicator,
         MessageHierarchy hierarchyElement)
     {
         this.userid = userid;
@@ -1823,23 +1548,26 @@ public class MessageManager implements MessageDeliverer,
     
     public OutboundMessage createMessage()
     {
-        OutboundMessage message = localUser
-            .createOutboundMessage();
-        message.setId(userid + "-"
-            + Storage.createIdentifier());
+        OutboundMessage message = localUser.createOutboundMessage();
+        message.setId(userid + "-" + Storage.createIdentifier());
         return message;
     }
     
-    public synchronized void sendMessage(
-        OutboundMessage message)
+    /**
+     * Actually sends the outbound message specified.<br/><br/>
+     * 
+     * It's worth noting that the message manager deletes all messages that have
+     * been created but not yet passed to a call of this method when the message
+     * manager starts up.
+     */
+    public synchronized void sendMessage(OutboundMessage message)
     {
         /*
          * All we have to do is add the message to the local user's list of
          * messages (if it's not already present), and notify the message
          * encoder that it has messages available.
          */
-        if (localUser.getOutboundMessages().isolate()
-            .contains(message))
+        if (localUser.getOutboundMessages().isolate().contains(message))
             return;
         message.setStage(OutboundMessage.STAGE_INITIALIZED);
         localUser.getOutboundMessages().add(message);
@@ -1854,14 +1582,14 @@ public class MessageManager implements MessageDeliverer,
          * clobbering files for messages that are about to be advanced to that
          * stage.
          */
+        
         /*
          * Start all of the threads running, and scan for messages to delete.
          * Then feed all queues the runObject so that they will perform an
          * initial pass.
          */
         Thread[] threads = getStageThreads();
-        System.out.println("starting " + threads.length
-            + " stage threads");
+        System.out.println("starting " + threads.length + " stage threads");
         for (Thread thread : threads)
         {
             thread.start();
@@ -1901,15 +1629,13 @@ public class MessageManager implements MessageDeliverer,
     
     public File getInboundMessageFile(String messageId)
     {
-        return new File(storage
-            .getInboundMessagePlaintextStore(), URLEncoder
+        return new File(storage.getInboundMessagePlaintextStore(), URLEncoder
             .encode(messageId));
     }
     
     public File getOutboundMessageFile(String messageId)
     {
-        return new File(storage
-            .getOutboundMessagePlaintextStore(), URLEncoder
+        return new File(storage.getOutboundMessagePlaintextStore(), URLEncoder
             .encode(messageId));
     }
     
@@ -1920,14 +1646,12 @@ public class MessageManager implements MessageDeliverer,
         for (Field field : fields)
         {
             if (field.isAnnotationPresent(StageQueue.class)
-                && BlockingQueue.class
-                    .isAssignableFrom(field.getType()))
+                && BlockingQueue.class.isAssignableFrom(field.getType()))
             {
                 try
                 {
                     if (field.get(this) != null)
-                        timers.add((BlockingQueue) field
-                            .get(this));
+                        timers.add((BlockingQueue) field.get(this));
                 }
                 catch (IllegalAccessException e)
                 {
@@ -1935,14 +1659,11 @@ public class MessageManager implements MessageDeliverer,
                     e.printStackTrace();
                 }
             }
-            else if (field
-                .isAnnotationPresent(StageQueue.class))
+            else if (field.isAnnotationPresent(StageQueue.class))
             {
-                System.err
-                    .println("Field "
-                        + field.getName()
-                        + "declared in UserContext as a timer field but is "
-                        + "not an instance of ConditionalTimer");
+                System.err.println("Field " + field.getName()
+                    + "declared in UserContext as a timer field but is "
+                    + "not an instance of ConditionalTimer");
             }
         }
         return timers.toArray(new BlockingQueue[0]);
@@ -1954,16 +1675,13 @@ public class MessageManager implements MessageDeliverer,
         ArrayList<Thread> timers = new ArrayList<Thread>();
         for (Field field : fields)
         {
-            if (field
-                .isAnnotationPresent(StageThread.class)
-                && Thread.class.isAssignableFrom(field
-                    .getType()))
+            if (field.isAnnotationPresent(StageThread.class)
+                && Thread.class.isAssignableFrom(field.getType()))
             {
                 try
                 {
                     if (field.get(this) != null)
-                        timers
-                            .add((Thread) field.get(this));
+                        timers.add((Thread) field.get(this));
                 }
                 catch (IllegalAccessException e)
                 {
@@ -1971,14 +1689,11 @@ public class MessageManager implements MessageDeliverer,
                     e.printStackTrace();
                 }
             }
-            else if (field
-                .isAnnotationPresent(StageThread.class))
+            else if (field.isAnnotationPresent(StageThread.class))
             {
-                System.err
-                    .println("Field "
-                        + field.getName()
-                        + "declared in UserContext as a timer field but is "
-                        + "not an instance of ConditionalTimer");
+                System.err.println("Field " + field.getName()
+                    + "declared in UserContext as a timer field but is "
+                    + "not an instance of ConditionalTimer");
             }
         }
         return timers.toArray(new Thread[0]);
@@ -1992,20 +1707,17 @@ public class MessageManager implements MessageDeliverer,
         }
     }
     
-    public InboundMessage[] listChildMessages(
-        String floatingPath)
+    public InboundMessage[] listChildMessages(String floatingPath)
     {
         if (!floatingPath.endsWith("/"))
             floatingPath += "/";
         floatingPath += "*";
-        return localUser
-            .getInboundMessagesByFloatingTarget(floatingPath);
+        return localUser.getInboundMessagesByFloatingTarget(floatingPath);
     }
     
     public InboundMessage[] listMessages(String fixedPath)
     {
-        return localUser
-            .getInboundMessagesByFixedTarget(fixedPath);
+        return localUser.getInboundMessagesByFixedTarget(fixedPath);
     }
     
 }
