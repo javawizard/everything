@@ -1417,7 +1417,7 @@ public class MessageManager implements MessageDeliverer, MessageReceiver
                      * 
                      * We won't bother doing anything with the plaintext store,
                      * since the files in there are needed until the message has
-                     * been marked as sent, at which point is will be deleted
+                     * been marked as read, at which point is will be deleted
                      * anyway and it's corresponding file deleted as well.
                      */
                     for (File file : storage.getInboundMessageEncodedStore().listFiles())
@@ -1544,6 +1544,25 @@ public class MessageManager implements MessageDeliverer, MessageReceiver
         storage = Storage.get(userid);
         hierarchyElement.setMessageDeliverer(this);
         hierarchyElement.setReceiver(this);
+        deleteInitialOutboundMessages();
+    }
+    
+    /**
+     * This method deletes all outbound messages that are at the
+     * {@link OutboundMessage#STAGE_CREATED created} stage. It is called when
+     * the message manager is first created, to purge all outbound messages that
+     * had been created but not yet sent when the message manager shut down.<br/><br/>
+     * 
+     * This method does not remove the file for any of these messages. It's up
+     * to the inbound remover to remove the message's file.
+     */
+    private void deleteInitialOutboundMessages()
+    {
+        for (OutboundMessage message : localUser
+            .listOutboundMessagesForStage(OutboundMessage.STAGE_CREATED))
+        {
+            localUser.getOutboundMessages().remove(message);
+        }
     }
     
     public OutboundMessage createMessage()

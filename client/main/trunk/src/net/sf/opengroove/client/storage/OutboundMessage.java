@@ -17,8 +17,7 @@ public interface OutboundMessage
     public static class CustomDelegate implements Delegate
     {
         
-        public Object get(Object on, Class propertyClass,
-            String property)
+        public Object get(Object on, Class propertyClass, String property)
         {
             OutboundMessage message = (OutboundMessage) on;
             if (property.equalsIgnoreCase("fileid"))
@@ -28,6 +27,14 @@ public interface OutboundMessage
         
     }
     
+    /**
+     * Inicates that the message has been created but not yet initialized. This
+     * is the value of a message's stage when it is first created. Recipients
+     * can then be added to the message, and contents written to the message's
+     * file. Once the message's contents have been written, it's stage should be
+     * set to {@link OutboundMessage#STAGE_INITIALIZED}.
+     */
+    public static final int STAGE_CREATED = 0;
     /**
      * Indicates that the message has been initialized, and it's plaintext data
      * written and metadata stored on this object.
@@ -40,16 +47,18 @@ public interface OutboundMessage
     public static final int STAGE_ENCODED = 2;
     /**
      * Indicates that the message has been encrypted and signed. It is now ready
-     * for upload.
+     * for upload. In the future, when the concept of having MessageTransmitters
+     * deliver messages is added, then a message at this stage is ready for a
+     * MessageTransmitter to transmit it.
      */
     public static final int STAGE_ENCRYPTED = 3;
     /**
-     * Indicates that the message has been uploaded to the server.
+     * Indicates that the message has been uploaded to the server. This will be obsolete when MessageTransmitters are added.
      */
     public static final int STAGE_UPLOADED = 4;
     /**
      * Indicates that the message has been successfully sent. The message is now
-     * eligible for deletion.
+     * eligible for local deletion.
      */
     public static final int STAGE_SENT = 5;
     

@@ -10,5 +10,4 @@ To send a message, a new Message object is created. It's recipient list is set u
 
 Receiving a message works in a similar manner. The message is made available to listInboundMessage calls, and then the message is propegated down through the hierarchy, with listener methods being called as needed.
 
-deleteAllOutboundMessages can be called to delete all pending outbound messages. This could be called when OpenGroove first starts up.
-
+Message objects internally store a reference to the message's id, but this id is only used for equals and hashCode invocations. 
