@@ -1,0 +1,3 @@
+This file describes the stack used on the client side to transfer stored messages.
+
+Essentially, there are three layered components: the stored messaging facility built in to net.sf.opengroove.client.com.CommandCommunicator, which uses StoredMessage objects. Then there's the MessageManager facility, which uses InboundMessage and OutboundMessage objects. At the highest level, we have the facility provided by MessageHierarchy, which uses Message objects.
