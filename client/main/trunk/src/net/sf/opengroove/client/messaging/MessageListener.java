@@ -3,7 +3,8 @@ package net.sf.opengroove.client.messaging;
 /**
  * Instances of this clas can be added to
  * {@link MessageHierarchy message hierarchies} to listen for messages. If not
- * all methods need to be overriden
+ * all methods need to be overriden, then {@link MessageAdapter} can be used
+ * instead.
  * 
  * @author Alexander Boyd
  * 
