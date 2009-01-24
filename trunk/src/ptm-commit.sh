@@ -38,7 +38,7 @@ END_FILE
 cat tmp/dirs-added >> commandlist
 cat >> commandlist << END_FILE
 ./.ptm/end
-    patch -F 0 -p2 -u < \${basefolder}/.ptm/diffs/${newrevision}
+    patch -F 0 --binary -p2 -u < \${basefolder}/.ptm/diffs/${newrevision}
     xargs rm -rf << ./.ptm/end
 END_FILE
 cat tmp/files-removed >> commandlist

@@ -33,12 +33,12 @@ if [ \$startrev -le $newrevision ] ; then if [ \$endrev -ge $newrevision ] ; the
         echo Applying revision $newrevision
     fi
     cd \$targetfolder 
-    xargs mkdir -p > /dev/null 2> /dev/null << ./.ptm/end 
+    xargs mkdir -p << ./.ptm/end 
 END_FILE
 cat tmp/dirs-added >> commandlist
 cat >> commandlist << END_FILE
 ./.ptm/end
-    patch -u < \${basefolder}/.ptm/diffs/${newrevision} > /dev/null
+    patch -F 0 --binary -p2 -u < \${basefolder}/.ptm/diffs/${newrevision}
     xargs rm -rf << ./.ptm/end
 END_FILE
 cat tmp/files-removed >> commandlist
@@ -50,7 +50,7 @@ END_FILE
 
 cd head
 echo Performing diff of working copy and head
-diff -U 0 -a --binary --unidirectional-new-file --exclude=.ptm -r . ../.. >> ../tmp/diff-output
+diff -U 1 -p0 -a --binary --unidirectional-new-file --exclude=.ptm -r . ../.. >> ../tmp/diff-output
 echo Storing diff
 cd ..
 mv tmp/diff-output diffs/${newrevision}
