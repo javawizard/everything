@@ -1,0 +1,16 @@
+#!/bin/bash
+
+if [ $# -lt 1 ] ; then
+    echo Try \"ptm help\" for more info.
+    exit
+fi
+if [ $1 = help ] ; then
+    shift
+    ptm-help.sh $*
+    exit
+fi
+if [ $1 = create ] ; then
+    ptm-create.sh $*
+    exit
+fi
+echo Actually do stuff...
