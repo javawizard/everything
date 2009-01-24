@@ -31,18 +31,17 @@ touch revinfo
 # create the commandlist file 
 cat > commandlist << END_FILE
 #!/bin/bash
-if [ \$# -lt 2 ] ; then
-    echo commandlist called with no arguments, needs targetfolder startrev [endrev printstatus]
+if [ \$# -lt 1 ] ; then
+    echo commandlist called with no arguments, needs startrev [endrev printstatus]
     exit 2
 fi
-targetfolder=\$1
-startrev=\$2
-endrev=\$2
-if [ \$# -ge 3 ] ; then
-    endrev=\$3
+startrev=\$1
+endrev=\$1
+if [ \$# -ge 2 ] ; then
+    endrev=\$2
 fi
 printstatus=false
-if [ \$# -ge 4 ] ; then
+if [ \$# -ge 3 ] ; then
     printstatus=true
 fi
 END_FILE
