@@ -1,0 +1,13 @@
+This is yet another brainstorming file.
+
+So anyway, what needs to be done when we commit a revision? let's see...
+
+5 different types of modifications need to be stored, in this order:
+
+added directories
+added files
+changed files
+removed files
+removed directories
+
+added directories can be found by running find on the head and on the working copy (making sure to grep out the .ptm folder), sorting the output, and comparing it with ptm-linediff. removed directories can be discovered in the same way, but by reversing the arguments. For each added directory, a line should be added to the commandlist file (after the initial "if [ $1 = REV ]" statement) that runs the mkdir command on the added directory. For each removed directory, a rm -rf line should be added. For each removed file, a similar line should should be added. For each added file, the file is 
