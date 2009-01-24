@@ -13,12 +13,16 @@ mkdir head
 mkdir tmp
 mkdir diffs
 
+touch revinfo
+
 # create the commandlist file 
-echo \#\!/bin/sh > commandlist
-echo if \[ \$# -lt 1 \] \; then >> commandlist
-echo echo commandlist called with no arguments >> commandlist
-echo exit 2 >> commandlist
-echo fi >> commandlist
+cat > commandlist << END_FILE
+#!/bin/sh
+if [ $# -lt 1 ] ; then
+    echo commandlist called with no arguments
+    exit 2
+fi
+END_FILE
 chmod +x commandlist
 
 cd ..
