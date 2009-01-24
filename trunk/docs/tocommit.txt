@@ -2,11 +2,10 @@ This is yet another brainstorming file.
 
 So anyway, what needs to be done when we commit a revision? let's see...
 
-5 different types of modifications need to be stored, in this order:
+4 different types of modifications need to be stored, in this order:
 
 added directories
-added files
-changed files
+changed files (added files included here)
 removed files
 removed directories
 
@@ -18,7 +17,9 @@ For each removed directory, a rm -rf line should be added. For each removed file
 
 Added files will be captured in the diff file, so no special processing is needed for them.
 
-diff -U 0 -a --binary --unidirectional-new-file -r . ../.. is then run in the head folder, which outputs a diff of all files that exist in both the head and the working copy, and of all files that are new in the working copy.
+diff -U 0 -a --binary --unidirectional-new-file -r . ../.. is then run in the head folder, which outputs a diff of all files that exist in both the head and the working copy, and of all files that are new in the working copy. This is then stored under the diffs folder, with a name equal to the revision number.
+
+
 
 
 
