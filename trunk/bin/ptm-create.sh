@@ -11,11 +11,13 @@ mkdir head
 mkdir tmp
 mkdir diffs
 # create the messages file
-echo \#\!/bin/sh > messages
-echo if \[ \$# -lt 1 \] \; then >> messages
-echo echo messages called with no arguments >> messages
-echo exit 2 >> messages
-echo fi >> messages
+cat > messages << END_FILE
+#!/bin/sh
+if [ $# -lt 1 ] ; then
+    echo messages called with no arguments
+    exit 2
+fi
+END_FILE
 chmod +x messages
 # create the commandlist file 
 echo \#\!/bin/sh > commandlist
