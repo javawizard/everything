@@ -13,6 +13,7 @@ patch
 find
 xargs
 awk (see note below)
+bash
 
 Most of these are installed by default on any unix system. With cygwin, patch is not selected by default, so it must be manually selected for installation. PersonalTimeMachine also requires some typical utilities such as rm, mkdir, and cd, but I've yet to hear of a machine that doesn't come with these, so I won't mention more about them here. If you see a message that a particular command can't be found while executing PersonalTimeMachine, then you need to install that command.
 
