@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 if [ $# -lt 2 ] ; then
     echo Need two arguments
     exit 2
@@ -12,8 +12,8 @@ BEGIN {
 ORS=" "
 start=ARGV[1]
 count=ARGV[2]
-iv=ARGV[3]
-for(i=start;i<=count;i=i+iv)
+awkinterval=ARGV[3]
+for(i=start;i<=count;i=i+awkinterval)
     print i
 }
 END_FILE
