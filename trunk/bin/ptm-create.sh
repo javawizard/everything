@@ -3,7 +3,20 @@
 # This command creates a new repository. It essentially creates the .ptm folder and sets
 # it up with all of the files and folders that ptm needs.
 
-# TODO: check to see if the folder already exists
+if [ -d .ptm ] ; then
+    cat << END_FILE
+This folder is already versioned with ptm.
+END_FILE
+    exit 4;
+fi
+if [ -e .ptm ] ; then
+    cat << END_FILE
+There is a file present in this folder called ".ptm". ptm needs to create a folder by that same name. Delete the file named .ptm, then run "ptm create" again.
+END_FILE
+    exit 5;
+fi
+
+# Everything's in order. We'll create the folders and stuff now.
 
 mkdir .ptm
 cd .ptm
