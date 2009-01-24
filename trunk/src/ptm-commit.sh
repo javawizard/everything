@@ -40,7 +40,7 @@ cat >> commandlist << END_FILE
 ./.ptm/end
     echo working dir is \`pwd\`
     echo basefolder is \${basefolder}
-    patch -u < \${basefolder}/.ptm/diffs/${newrevision}
+    patch -u < \${basefolder}/.ptm/diffs/${newrevision} > /dev/null
     xargs rm -rf << ./.ptm/end
 END_FILE
 cat tmp/files-removed >> commandlist
