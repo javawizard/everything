@@ -23,3 +23,26 @@ cd ..
 
 # Now we'll start writing to the command list file. At this point, the working directory 
 # is the .ptm folder.
+
+cat >> commandlist << END_FILE
+if [ \$startrev -le $newrevision ] ; then if [ \$endrev -ge $newrevision ] ; then
+    if [ \$printstatus ] ; then
+        echo Applying revision $newrevision
+    fi
+    cd \$targetfolder 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

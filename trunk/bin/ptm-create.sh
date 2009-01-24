@@ -49,6 +49,6 @@ fi
 END_FILE
 chmod +x commandlist
 
-echo 0 > revision
+echo -n 0 > revision
 
 cd ..
