@@ -2,6 +2,12 @@
 
 # This command creates a new revision.
 
+if [ $# -lt 1 ] ; then
+    cat << END_FILE
+You didn't specify a commit message to use. The commit message will be set to "no commit message".
+END_FILE
+fi
+
 # first, we'll read the current revision number into an environment variable. We'll then
 # increment it, and store the result in another environment variable.
 
@@ -10,17 +16,20 @@ newrevision=`expr $oldrevision + 1`
 
 # Next, we'll work on building the folder and file changelists.
 
+echo Building sorted file lists
+
 ptm-listfiles.sh d | sort > .ptm/tmp/dirs-wc
 ptm-listfiles.sh f | sort > .ptm/tmp/files-wc
 cd .ptm/head
 ptm-listfiles.sh d | sort > ../tmp/dirs-head
 ptm-listfiles.sh f | sort > ../tmp/files-head
 cd ../tmp
+echo Building changelists
 ptm-linediff.sh dirs-head dirs-wc | uniq > dirs-removed
 ptm-linediff.sh dirs-wc dirs-head | uniq > dirs-added
 ptm-linediff.sh files-head files-wc | uniq > files-removed
 cd ..
-
+echo Appending changelists to command file
 # Now we'll start writing to the command list file. At this point, the working directory 
 # is the .ptm folder.
 
@@ -46,7 +55,15 @@ fi ; fi
 END_FILE
 
 cd head
-diff -U 0 -a --binary --unidirectional-new-file -r . ../..
+echo Performing diff of working copy and head
+diff -U 0 -a --binary --unidirectional-new-file -r . ../.. >> ../tmp/diff-output
+echo Storing diff
+cd ..
+mv tmp/diff-output diffs/${newrevision}
+echo -n $newrevision > revision
+cd ..
+echo ""
+echo Committed revision $newrevision
 
 
 
