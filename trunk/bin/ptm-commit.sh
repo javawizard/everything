@@ -2,12 +2,6 @@
 
 # This command creates a new revision.
 
-if [ $# -lt 1 ] ; then
-    cat << END_FILE
-You didn't specify a commit message to use. The commit message will be set to "no commit message".
-END_FILE
-fi
-
 # first, we'll read the current revision number into an environment variable. We'll then
 # increment it, and store the result in another environment variable.
 
@@ -39,12 +33,12 @@ if [ \$startrev -le $newrevision ] ; then if [ \$endrev -ge $newrevision ] ; the
         echo Applying revision $newrevision
     fi
     cd \$targetfolder 
-    xargs mkdir << ./.ptm/end 
+    xargs mkdir -p > /dev/null 2> /dev/null << ./.ptm/end 
 END_FILE
 cat tmp/dirs-added >> commandlist
 cat >> commandlist << END_FILE
 ./.ptm/end
-    patch -u << \${basefolder}/.ptm/diffs/${newrevision}
+    patch -u < \${basefolder}/.ptm/diffs/${newrevision} > /dev/null
     xargs rm -rf << ./.ptm/end
 END_FILE
 cat tmp/files-removed >> commandlist
@@ -56,7 +50,7 @@ END_FILE
 
 cd head
 echo Performing diff of working copy and head
-diff -U 0 -a --binary --unidirectional-new-file --exclude=^./.ptm\$ --exclude=^.ptm\$ -r . ../.. >> ../tmp/diff-output
+diff -U 0 -a --binary --unidirectional-new-file --exclude=.ptm -r . ../.. >> ../tmp/diff-output
 echo Storing diff
 cd ..
 mv tmp/diff-output diffs/${newrevision}
@@ -65,6 +59,8 @@ echo ${newrevision}_d`date` >> revinfo
 echo "${newrevision}_m$*" >> revinfo
 echo "${newrevision}_u`whoami`" >> revinfo
 cd ..
+echo Applying changeset to head
+.ptm/commandlist .ptm/head $newrevision $newrevision 0
 echo ""
 echo Committed revision $newrevision
 
