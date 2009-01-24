@@ -1,6 +1,6 @@
 #!/bin/bash
 if [ $# -lt 2 ] ; then
-    echo Need two arguments
+    echo Need two arguments, possibly a third, in this form: start end [interval]
     exit 2
 fi
 interval=1

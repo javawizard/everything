@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 if [ $# -lt 2 ] ; then
     echo Need two arguments
     exit 2
@@ -9,11 +9,11 @@ if [ $# -ge 3 ] ; then
 fi
 awk -f - $1 $2 $interval << END_FILE
 BEGIN {
-ORS=" "
-start=ARGV[1]
-count=ARGV[2]
-iv=ARGV[3]
-for(i=start;i<=count;i=i+iv)
-    print i
+    ORS=" "
+    start=ARGV[1]
+    count=ARGV[2]
+    awkinterval=ARGV[3]
+    for(i=start;i<=count;i=i+awkinterval)
+        print i
 }
 END_FILE
