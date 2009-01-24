@@ -38,7 +38,7 @@ END_FILE
 cat tmp/dirs-added >> commandlist
 cat >> commandlist << END_FILE
 ./.ptm/end
-    patch -u << \${basefolder}/.ptm/diffs/${newrevision}
+    patch -u < \${basefolder}/.ptm/diffs/${newrevision}
     xargs rm -rf << ./.ptm/end
 END_FILE
 cat tmp/files-removed >> commandlist
