@@ -9,4 +9,4 @@ fi
 
 # The above is just an input validation check. Here's the actual code.
 
-diff -u $1 $2 | tail -n +3 | grep ^- | sed -e "s/^-//"
+diff -u $1 $2 | tail -n +4 | grep ^- | sed -e "s/^-//"

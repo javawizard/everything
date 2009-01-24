@@ -16,6 +16,8 @@ For each added directory, a line should be added to the commandlist file (after 
 
 For each removed directory, a rm -rf line should be added. For each removed file, a similar line should should be added. For each added file, the file is copied to the revision's "new" folder, and a cp statement added to the commandlist file.
 
+For all files that exist in both the head and the working copy (which can be found by concatenating the added file list with the removed file list, sorting the whole thing, and running ptm-linediff on it against the current list of files), 
+
 
 
 
