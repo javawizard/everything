@@ -38,6 +38,7 @@ fi
 targetfolder=\$1
 startrev=\$2
 endrev=\$2
+basefolder=\`pwd\`
 if [ \$# -ge 3 ] ; then
     endrev=\$3
 fi
