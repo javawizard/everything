@@ -33,7 +33,7 @@ if [ \$startrev -le $newrevision ] ; then if [ \$endrev -ge $newrevision ] ; the
         echo Applying revision $newrevision
     fi
     cd \$targetfolder 
-    xargs mkdir << ./.ptm/end 
+    xargs mkdir -p > /dev/null << ./.ptm/end 
 END_FILE
 cat tmp/dirs-added >> commandlist
 cat >> commandlist << END_FILE
@@ -60,7 +60,7 @@ echo "${newrevision}_m$*" >> revinfo
 echo "${newrevision}_u`whoami`" >> revinfo
 cd ..
 echo Applying changeset to head
-.ptm/commandlist .ptm/head $newrevision $newrevision
+.ptm/commandlist .ptm/head $newrevision $newrevision 0
 echo ""
 echo Committed revision $newrevision
 
