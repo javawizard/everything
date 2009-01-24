@@ -38,8 +38,8 @@ END_FILE
 cat tmp/dirs-added >> commandlist
 cat >> commandlist << END_FILE
 ./.ptm/end
-    echo working dir is `pwd`
-    echo basefolder is ${basefolder}
+    echo working dir is \`pwd\`
+    echo basefolder is \${basefolder}
     patch -u < \${basefolder}/.ptm/diffs/${newrevision}
     xargs rm -rf << ./.ptm/end
 END_FILE
