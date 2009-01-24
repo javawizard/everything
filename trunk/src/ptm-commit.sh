@@ -2,12 +2,6 @@
 
 # This command creates a new revision.
 
-if [ $# -lt 1 ] ; then
-    cat << END_FILE
-You didn't specify a commit message to use. The commit message will be set to "no commit message".
-END_FILE
-fi
-
 # first, we'll read the current revision number into an environment variable. We'll then
 # increment it, and store the result in another environment variable.
 
