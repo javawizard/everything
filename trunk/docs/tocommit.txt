@@ -23,6 +23,14 @@ diff -U 0 -a --binary --unidirectional-new-file -r . ../.. is then run in the he
 
 
 
+TO EXPORT:
+
+Exporting isn't very fast, but is the main useful function of ptm. I'm thinking that exports might be able to track their own revision in the future (so that, for example, you could have an external folder that you use to view past versions, and you can change it's revision as you want), but not for now. Anyway, exporting is actually easier than committing. For each revision (starting with revision 1 and ending with the current revision, doing nothing if the current revision is 0), 
+
+
+
+
+
 
 
 
