@@ -33,7 +33,7 @@ if [ \$startrev -le $newrevision ] ; then if [ \$endrev -ge $newrevision ] ; the
         echo Applying revision $newrevision
     fi
     cd \$targetfolder 
-    xargs mkdir -p > /dev/null 2>\&1 << ./.ptm/end 
+    xargs mkdir -p > /dev/null 2> /dev/null << ./.ptm/end 
 END_FILE
 cat tmp/dirs-added >> commandlist
 cat >> commandlist << END_FILE
