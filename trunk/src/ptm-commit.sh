@@ -59,6 +59,8 @@ echo ${newrevision}_d`date` >> revinfo
 echo "${newrevision}_m$*" >> revinfo
 echo "${newrevision}_u`whoami`" >> revinfo
 cd ..
+echo Applying changeset to head
+.ptm/commandlist .ptm/head $newrevision $newrevision
 echo ""
 echo Committed revision $newrevision
 
