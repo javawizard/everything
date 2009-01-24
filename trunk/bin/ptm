@@ -24,6 +24,7 @@ To run this particular command ($1), your working directory needs to be a workin
 END_FILE
     exit 2;
 fi
+rm -rf .ptm/tmp/*
 if [ $1 = commit ] ; then
     shift
     ptm-commit.sh $*
