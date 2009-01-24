@@ -50,7 +50,7 @@ END_FILE
 
 cd head
 echo Performing diff of working copy and head
-diff -U 0 -a --binary --unidirectional-new-file --exclude=^./.ptm\$ --exclude=^.ptm\$ -r . ../.. >> ../tmp/diff-output
+diff -U 0 -a --binary --unidirectional-new-file --exclude=^\\./\\.ptm\$ --exclude=^\\./\\.ptm/.\* -r . ../.. >> ../tmp/diff-output
 echo Storing diff
 cd ..
 mv tmp/diff-output diffs/${newrevision}
