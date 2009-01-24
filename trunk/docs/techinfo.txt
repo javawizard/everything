@@ -15,6 +15,8 @@ d - the date and time that the revision was committed, as returned from the unix
 
 Then we have the "head" folder. The contents of this folder exactly mirror the working copy, and are used to check for differences when the working copy is committed.
 
+Then we have the "new" folder. This contains one folder per revision, who's contents are a hierarchy of the new files added during that revision.
+
 There is also a folder called "tmp". Temporary files are put into this folder. ptm removes the contents of this folder whenever it is run, so if leftover files remain for some reason, they won't get stuck for long.
 
 
