@@ -1,0 +1,1063 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"><head>
+<meta http-equiv="content-type" content="text/html; charset=UTF-8">
+
+
+<script type="text/javascript">/* Copyright 2008 Google. */ (function() {
+// Input 0
+var a=window;
+// Input 1
+var b="start";function c(){this.t={};this.tick=function(d){this.t[d]=(new Date).getTime()};this.tick(b)}var e=new c;a.jstiming={Timer:c,load:e};if(a.external&&a.external.pageT)a.jstiming.pt=a.external.pageT;
+})()
+</script>
+<link rel="shortcut icon" href="http://www.opengroove.org/_/rsrc/1225931538377/system/app/images/favicon.ico" type="image/x-icon">
+<link rel="apple-touch-icon" href="http://www.opengroove.org/_/rsrc/1225931434577/system/app/images/apple-touch-icon.png" type="image/png">
+<script>
+  window.jstiming.load.tick('scl');
+</script>
+<!--[if IE]>
+  <link rel="stylesheet" href="/_/rsrc/1225929844750/system/app/css/ie.css" type="text/css" media="screen" />
+<![endif]-->
+<link rel="stylesheet" type="text/css" href="client---realm-server_files/jot.css">
+<script>
+  window.jstiming.load.tick('cl');
+  webspace = {};
+  webspace.domain = 'opengroove.org';
+  webspace.isConsumer = false;
+  webspace.sharingPolicy = 'OPENED_WITH_INDICATOR';
+  webspace.baseUri = '';
+  webspace.siteTitle = 'OpenGroove';
+  webspace.homePath = '/';
+  webspace.analyticsAccountId = 'UA-6079740-1';
+  webspace.enableAnalytics = true;
+  webspace.domainAnalyticsAccountId = '';
+  webspace.termsUrl = 'http://www.google.com/sites/help/intl/en/terms_apps.html';
+  webspace.gadgetDirectoryUrl = 'http://www.google.com/ig/directory';
+  webspace.isStartPageEnabled = false;
+  webspace.user = {};
+  
+  webspace.user.uid = '';
+  webspace.user.primaryEmail = 'guest';
+  webspace.user.userName = 'guest';
+  webspace.user.displayNameOrEmail = 'guest';
+  webspace.user.domain = '';
+  webspace.user.hostedAccount = false;
+  webspace.user.guest_ = true;
+    
+  webspace.user.hasAdminAccess = false;
+  webspace.user.hasWriteAccess = false;
+  
+  webspace.page = {
+    type: "text",
+    properties: {},
+    title: "Client - Realm Server",
+    path: "/dev/protocol/commands/client---realm-server",
+    wuid: "wuid:gx:6e6267d7e066e69d",
+    name: "client---realm-server",
+    revision: "85",
+    parentPath: "/dev/protocol/commands",
+    canChangePath: true,
+    state: "",
+    locale: "en",
+    isRtlLocale: false,
+    bidiEnabled: false
+  };
+  var editorResources = [
+    '/_/rsrc/1225931230764/system/js/trog_edit.js',
+    '/_/rsrc/1225931049746/system/app/css/trogedit.css',
+    '/_/rsrc/1225929843104/system/app/css/editorToolbar.css'
+  ];
+  var JOT_clearDotPath = "/_/rsrc/1225931490755/system/app/images/cleardot.gif";
+</script>
+<script type="text/javascript">/* Copyright 2008 Google. */ (function() {
+var e=window,h="length";function i(a){return document.getElementById(a)}e.byId=i;var j="";function l(a){return a.replace(/^\s+|\s+$/g,j)}e.trim=l;var n="MSIE",o="6.0",p="string",q="px",r='progid:DXImageTransform.Microsoft.AlphaImageLoader(src="',s='", sizingMethod="scale")',t="noIe6ImgFix";
+function u(a){var c=e.navigator?navigator.userAgent:j;if(c.indexOf(n)!=-1&&typeof opera=="undefined"){var b=/MSIE\s+([^\);]+)(\)|;)/;b.test(c);var f=RegExp.$1;if(f==o){var d=typeof a==p?document.getElementById(a):a;d.onload=j;d.style.width=d.width+q;d.style.height=d.height+q;d.style.filter=r+d.src+s;d.src=e.JOT_clearDotPath;d.setAttribute(t,true)}}}e.ie6ImgFix=u;var v=[],w=0;function x(a,c,b){var f=new String(w++),d={eventName:a,handler:c,compId:b,key:f};v.push(d);return f}e.JOT_addListener=x;
+function y(a){var c=v;for(var b=0;b<c[h];b++)if(c[b].key==a){c.splice(b,1);break}}e.JOT_removeListenerByKey=y;function z(a){var c=v;for(var b=0;b<c[h];b++)c[b].eventName==a&&c.splice(b,1)}e.JOT_removeAllListenersForName=z;var A="function";
+function B(a,c,b){var f={eventName:a,eventSrc:c||{},payload:b||{}};if(e.JOT_fullyLoaded){var d=v,C=d[h];for(var k=0;k<C&&k<d[h];k++){var g=d[k];if(g&&g.eventName==a){f.listenerCompId=g.compId||j;var m=typeof g.handler==A?g.handler:e[g.handler];m&&m(f)}}}else e.JOT_delayedEvents.push({eventName:a,eventSrc:c,payload:b})}e.JOT_postEvent=B;e.JOT_delayedEvents=[];e.JOT_fullyLoaded=false;
+})()
+</script>
+<style xmlns="http://www.google.com/ns/jotspot" type="text/css">
+          #goog-ws-left .goog-ws-outside, #goog-ws-left .goog-ws-subfooter,
+          #goog-ws-left-nohead .goog-ws-outside, #goog-ws-left-nohead .goog-ws-subfooter {
+            margin: 0 0 0 150px;
+          }
+          #goog-ws-right .goog-ws-outside, #goog-ws-right .goog-ws-subfooter,
+          #goog-ws-right-nohead .goog-ws-outside, #goog-ws-right-nohead .goog-ws-subfooter {
+            margin: 0 150px 0 0;
+          }
+          .goog-ws-outer {
+            margin-left: auto !important;
+            margin-right: auto !important;
+            width: 100%;
+          }
+          .goog-ws-sidebar {
+            width: 145px;
+          }
+          
+        </style>
+<title>Client - Realm Server (OpenGroove)</title>
+<script src="client---realm-server_files/ga.js"></script></head><body xmlns="http://www.google.com/ns/jotspot" id="goog-ws-left">
+<div xmlns="http://www.w3.org/1999/xhtml" id="goog-ws-status" class="goog-ws-status" style="display: none;">
+<div id="goog-ws-notice" class="goog-ws-notice"> </div>
+</div>
+<div class="goog-ws-outer">
+<div xmlns="http://www.w3.org/1999/xhtml" class="goog-ws-header">
+<table class="goog-ws-header-table" cellpadding="0">
+<tbody><tr>
+<td class="goog-ws-header-title" colspan="2">
+<h2 style=""><a href="http://www.opengroove.org/">OpenGroove</a></h2>
+</td>
+<td class="goog-ws-header-search">
+<div class="goog-ws-search">
+<form action="/system/app/pages/search" onsubmit="return checkSearchField()">
+<input id="jot-ui-searchInput" name="q" size="20" value="" type="text">
+<input id="jot-ui-searchButton" value="Search Site" style="margin-top: -1px;" type="submit">
+</form>
+</div>
+</td>
+</tr>
+</tbody></table>
+</div>
+<div class="goog-ws-wrapper">
+<div xmlns="http://www.w3.org/1999/xhtml" class="goog-ws-sidebar">
+<div class="goog-ws-sidebar-inside">
+<div class="goog-ws-sidebar-content">
+<div id="COMP_2bd" class="goog-ws-sidebar-gadget">
+<h4>OpenGroove</h4>
+<div class="goog-ws-sidebar-gadget-inside goog-ws-sidebar-nav">
+<ul jotid="navList">
+<li>
+<a href="http://www.opengroove.org/opengroove" jotid="wuid:gx:4a08ddf062ddbc98">Home</a>
+</li>
+<li>
+<a href="http://www.opengroove.org/sc" jotid="wuid:gx:5194557f4b60fcaf">Screenshots</a>
+</li>
+<li>
+<a href="http://www.opengroove.org/download" jotid="wuid:gx:76e8eef2a5b35594">Download</a>
+</li>
+<li>
+<a href="http://www.opengroove.org/javadocs" jotid="wuid:gx:7f6352c7493afa3a">Javadocs</a>
+</li>
+<li>
+<a href="http://www.opengroove.org/contact" jotid="wuid:gx:512cc654c8c711f3">Contact</a>
+</li>
+<li>
+<a href="http://www.opengroove.org/credit-1" jotid="wuid:gx:5776b343c6f7f4a5">Credit</a>
+</li>
+</ul>
+</div>
+</div>
+<script>
+          var JOT_NAVIGATION_ID = "2bd";
+          var JOT_NAVIGATION_pageInNav = false;
+          JOT_addListener('addNavLink', 'JOT_NAVIGATION_addNavLink', 'COMP_2bd');
+          JOT_addListener('removeNavLink', 'JOT_NAVIGATION_removeNavLink', 'COMP_2bd');
+          JOT_addListener('titleChange', 'JOT_NAVIGATION_titleChange', 'COMP_2bd');
+        </script>
+<div id="COMP_23407508784835973" class="goog-ws-sidebar-textgadget">
+<h4 class="goog-ws-sidebar-textgadget-header">Other stuff</h4>
+<div class="goog-ws-sidebar-textgadget-inside">
+<div dir="ltr">
+<div dir="ltr" style="line-height: 1.7;"><a href="http://sf.net/projects/opengroove" rel="nofollow">OpenGroove @ SF</a><br>
+<a href="http://svn.opengroove.org/" rel="nofollow">Source code</a><br>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div id="jot-main" class="goog-ws-outside">
+<div class="goog-ws-outside-in">
+<div class="goog-ws-content-wrapper">
+<div id="goog-ws-editor-toolbar-container"> </div>
+<div xmlns="http://www.w3.org/1999/xhtml" id="title-crumbs" class="goog-ws-crumbs goog-ws-grey" style="">
+<span><a href="http://www.opengroove.org/dev">Development</a> &gt; <a href="http://www.opengroove.org/dev/protocol">Protocol</a> &gt; <a href="http://www.opengroove.org/dev/protocol/commands">Commands</a> &gt; </span>
+</div>
+<h3 xmlns="http://www.w3.org/1999/xhtml" id="goog-ws-page-title-header" class="goog-ws-page-title" style="">
+<span id="goog-ws-page-title">Client - Realm Server</span>
+</h3>
+<table xmlns="http://www.w3.org/1999/xhtml" id="jot-content-table" style="width: 100%; table-layout: fixed;">
+<tbody>
+<tr>
+<td id="col0" style="width: 100%;">
+<div id="jot-content0" class="goog-ws-content goog-ws-content-ie goog-ws-clear" style="">
+<div dir="ltr"><div dir="ltr"><div dir="ltr"><div dir="ltr"><div dir="ltr"><div dir="ltr"><div dir="ltr"><div dir="ltr">All
+of the commands from the client to the realm server (unless otherwise
+noted) receive a response acknowledging the command and providing
+rerquested data if applpicable. All of the commands from the realm
+server to the client (unless otherwise noted) do not receive a response
+from the client. Unless noted, command names are case-insensitive, but
+the values passed to the commands are usually case-sensitive. When
+"arguments" to a command are referred to, unless noted, these are text
+delimited by newlines. The first word of the response is either ok of
+failed, and the rest is the response contents themselves.<br><br>If the
+"done" column contains the word "Yes", then the command has been
+implemented in the OpenGroove Realm Server (but not necessarily
+implemented by the OpenGroove Client, or used by it). If the
+aforementioned column is empty, then the command has not yet been
+implemented or is in the process of being implemented.<br>
+<br>
+<br>
+<table style="border-color: rgb(136, 136, 136); border-width: 1px; border-collapse: collapse;" border="1" bordercolor="#888888" cellspacing="0" width="100%"><tbody>
+<tr>
+<td style="width: 60px;"><b>Command</b></td>
+<td style="width: 60px;"><b>Notes</b><br>
+</td>
+<td style="width: 100%;"><b>Description</b></td>
+<td style="width: 60px;"><b>Done<a href="http://www.opengroove.org/dev/protocol/commands/client---realm-server/done">?</a></b> <br>
+</td>
+</tr>
+<tr>
+<td>getserverinfo<br>
+</td>
+<td style="width: 60px;">&nbsp;3</td>
+<td>Instructs the server to send information about itself to the
+client. This command does not require the client to be authenticated.
+The response contains, in the properties file format, a bunch of
+properties for that server. These properties are sent from conformant
+realm servers:<br>
+<br>
+<ul>
+<li><b>name </b>The name of this realm server.</li>
+<li><b>description</b> The description of this realm server. This
+should provide a description of the realm server to any users wondering
+about it, and if it has open registration, it should provide some
+general information on what signing up will get you. <br>
+</li>
+<li><b>openregistration</b> Either true or false, true if the server
+supports open registration. Open registration means that any user
+(usually subject to a user count limit not revealed to the public) can
+register with this server by using the registeraccount command.&nbsp;</li>
+<li><b>contactemail </b>An email address that can be used to contact
+the owner of the realm server. This is not required if contactuserid is
+not empty, but is highly recommended so that the owner of the server
+can be contacted even during a server outage.<br></li>
+<li><b>contactuserid</b> The userid of an OpenGroove account to contact
+for information about this realm server. It is recommended that the
+userid specified reside on this realm server, but this is not required.
+This property is not required (in which case a user wishing to get in
+touch with the owner of this realm server must use the contactemail
+property), but it is highly recommended.<br>
+</li>
+</ul>
+</td>
+<td style="width: 60px;">&nbsp;</td>
+</tr>
+<tr>
+<td>authenticate<br>
+</td>
+<td style="width: 60px;">&nbsp;</td>
+<td>&nbsp;Authenticates with this realm server. The arguments to this
+command are a newline-separated list of the following, in the order
+specified:<br>
+<ul>
+<li>connection type (normal, channel)<br>
+</li>
+<li>username</li>
+<li>computername (blank for no computer, which limits the allowed commands to those related to creating and managing computers)</li>
+<li>password</li>
+<li>channel id (if connection type is channel)</li>
+</ul>
+The response is ok if authentication was successful, and failed, with
+the response contents being an error message, if authentication was not
+successful.<br>
+</td>
+<td style="width: 60px;">&nbsp;Yes</td>
+</tr><tr><td>createmessage<br></td><td>&nbsp;</td><td>Creates a
+message. The new message has an initial size of 0. The arguments to
+this command are a newline-separated list of a unique id for the
+message (which must start with the user's userid followed by a hyphen)
+and a list of recipients for the message. Each line of the message that
+indicates a recipient contains the userid (or username if the user is
+of the same realm) of the recipient, a space character, and one of the
+recipient's computers. If the computer is the empty string, then that
+recipient line will be expanded to include all of the target user's
+computers. When this expansion occurs is up to the server; typically,
+it happens upon the message's creation for users of this realm server,
+and upon the message being sent for users of other realm servers. In
+particular, no guarantees are made about whether a computer will be
+included in the list of recipients if that computer is created after
+the message is created.<br><br>Recipients are not checked for existence
+when this command is run. The behavior of a recipient for a message
+that does not exist is undefined. Typically, the server will silently
+discard the recipient, although there is no guarantee about when this
+will happen. In particular, there are no guarantees about whether a
+particular user will receive a message on which they are a recipient if
+their account was created after the message was created.<br><br>The
+current implementation of the OpenGroove Realm Server expands computers
+at message creation if the user is of the same realm server as the
+creating user, and at message sending if the user is of a different
+realm server. It silently discards recipients addressed to a user only
+(IE where expansion would be necessary) at message creation if the
+recipient is of the same realm server as the message sender, and
+silently discards specific username/computer recipients at message
+sending as well as recipients of a different realm server.<br><br>Message
+recipients are not able to get a list of other message recipients,
+similar to the way SMTP (Simple Mail Transport Protocol, used for
+sending email) works. If it's important for the recipients to be able
+to know about each other<br></td><td>&nbsp;Yes</td></tr><tr><td>setmessagesize<br></td><td>&nbsp;</td><td>Sets
+the size of the message's contents. If the new size is larger than the
+current size of the message, then the contents of the extra space are
+unspecified but will usually be 0s. If the new size is smaller than the
+current size of the message, then the message will be truncated at the
+end. The arguments to this message are the message's id and the new
+size for the message as a number of bytes, which must not be larger
+than 2,000,000,000. This can only be called by the sender of the
+message, and only before the message has been sent.<br></td><td>&nbsp;</td></tr><tr><td>getmessagesize<br></td><td>&nbsp;</td><td>Gets
+the size of the message, in bytes. The argument to this command is the
+id of the message, and the response is the size of the message in
+bytes. This may only be called by the message's sender before the
+message has been sent, and only by the message's recipients after the
+message has been sent.<br></td><td>&nbsp;Yes</td></tr><tr><td>readmessagedata<br></td><td>&nbsp;</td><td>Reads
+a block of the message's data. The arguments to this command are a
+newline-separated list of the message's id, the offset at which to
+begin reading, and the amount to read. The offset and the amount are
+both measued in bytes. If the sum of the offset and the amount is
+greater than the message's size, the command will fail. The response to
+the command is the requested data. This may only be called by the
+sender of the message before it is sent, and by the recipients of the
+message after the message is sent.<br></td><td>&nbsp;Yes</td></tr><tr><td>writemessagedata<br></td><td>&nbsp;</td><td>Writes
+a block of data to the message. This may only be called by the sender
+of the message before it has been sent. The arguments to the command
+are a <i>space-separated</i> list of the message's id, the offset at which to begin writing, the number of bytes to write, and the actual data to write.<br><br>If
+the sum of the offset and the limit is greater than the size of the
+message (IE the bytes to write would run past the end of the message),
+then the message's size will be increased to hold the extra data. In
+most cases, therefore, this command can be used without the use of
+setmessagesize at all to write a message. The sum of the offset and the
+limit must not, however, be larger than 2,000,000,000 (2GB).<br></td><td>&nbsp;Yes</td></tr><tr><td>readmessagehash<br></td><td>&nbsp;</td><td>Gets
+the hash of a block of the message's data. The arguments to the command
+are the message's id, the offset at which to begin hashing, and the
+length of the data to hash. If the sum of the offset and the length is
+greater than the message's length, the command will fail. The result is
+the hash as returned from <a href="http://opengroove.svn.sf.net/viewvc/opengroove/common/trunk/src/net/sf/opengroove/common/security/Hash.java" rel="nofollow">net.sf.opengroove.common.security.Hash.hash( );</a>.</td><td>&nbsp;</td></tr><tr><td>deletemessage<br></td><td>&nbsp;</td><td>Deletes
+the specified message. If this user is the sender of the message, then
+this may only be called before the message is sent, and results in the
+message being completely deleted. If this user is a recipient of the
+message, then this may only be called after the message has been sent,
+and results in the message being marked as deleted for that user and
+not being returned in the list of messages for that user.<br></td><td>&nbsp;Yes</td></tr><tr><td>sendmessage<br></td><td>&nbsp;</td><td>Sends
+a message. This must only be called once for a particular message, and
+the caller must be the sender (or creator) of the message specified.
+Once this is called, the message and it's data are made available to
+the message's recipieints, and the sender has no further control over
+or access to the message, unless the sender is also a recipient, in
+which case the sender may only perform operations that recipients are
+allowed to perform.<br></td><td>&nbsp;Yes</td></tr><tr><td>listinboundmessages<br></td><td>&nbsp;</td><td>Gets
+a list of all inbound messages. Inbound messages are messages that have
+been sent, and where this user and this computer are one of the
+message's recipients. The result from the command is a
+newline-separated list of the message ids of the messages.<br></td><td>&nbsp;Yes</td></tr><tr><td>listoutboundmessages<br></td><td>&nbsp;</td><td>Gets
+a list of all outbound messages, where this computer is the sender.
+Outbound messages are messages that have not been sent, and where this
+user is the sender of the message. The result from the command is a
+newline-separated list of the message ids of the messages.<br></td><td>&nbsp;Yes</td></tr><tr><td>messageavailable<br></td><td>&nbsp;1</td><td>Alerts the client that a new message has arrived. The content of the command is the id of the message.<br></td><td>&nbsp;Yes</td></tr><tr><td>getmessageinfo<br></td><td>&nbsp;</td><td>Gets
+information for a message. The argument to this command is the
+message's id, and the contents of the result are the message's sender
+(either a userid or a username, it's up to the realm server to decide
+which one), the message's sending computer, and the word "true" if the
+message has been sent and the word "false" if the message has not been
+sent.<br></td><td>&nbsp;Yes</td></tr>
+<tr>
+<td>sendimessage</td>
+<td style="width: 60px;">&nbsp;</td>
+<td>sends an immediate message to the user specified. the arguments (<i>delimited by spaces</i>)
+are a unique id for the message, the userid of the message's recipient,
+the name of the computer to send the message to (required), and the
+actual message itself, which can be up to 8KB long, and can contain
+binary data.<br>
+</td>
+<td style="width: 60px;">&nbsp;Yes</td>
+</tr>
+<tr>
+<td>imessagerejected<br>
+</td>
+<td>&nbsp;1</td>
+<td>alerts the user that an imessage recently sent failed to make it to
+the intended recipient. this can be because the recipient is not
+online, this user has exceeded the quota that the recipient has set on
+them, or the server is too busy servicing other immediate messages to
+accept this one. the response contains the message's id,&nbsp; the
+reason why the message was rejected (current values are
+recipientoffline, nosuchrecipient, quotaexceeded, toobusy), and a
+human-readable description of the rejection.<br>
+</td>
+<td style="width: 60px;">&nbsp;</td>
+</tr>
+<tr>
+<td>receiveimessage</td>
+<td style="width: 60px;">&nbsp;1</td>
+<td>alerts the user that a new imessage is available. the response
+(delimited by spaces) contains the message's unique id, the userid of
+the message's sender, the name of the message's sending computer or the
+empty string if not known, and the actual message itself.<br>
+</td>
+<td style="width: 60px;">&nbsp;Yes</td>
+</tr>
+<tr>
+<td>setimessagequota</td>
+<td style="width: 60px;">&nbsp;</td>
+<td>sets a quota for how many imessages a particular user can send to
+this user per minute. For users with no quota specified, the default is
+1. This is used to prevent against denial-of-service attacks. The first
+arguments is the userid or username of the user to set the quota for,
+and the second arguments is the number of imesages to allow per minute.
+Setting to -1 removes the quota and restores the default value.
+Currently, quotas of 0 aren't allowed, but they will be in the future,
+with an optional time limit for the imessage ban (essentially, that's
+what a 0 quota is) to last.<br>
+</td>
+<td style="width: 60px;">&nbsp;</td>
+</tr>
+<tr>
+<td>listimessagequotas</td>
+<td style="width: 60px;">&nbsp;</td>
+<td>lists the quotas that have been set using setimessagequota. the
+result is a newline-separated list of a userid, a space, and the quota
+in number of messages per minute.<br>
+</td>
+<td style="width: 60px;">&nbsp;</td>
+</tr>
+<tr>
+<td>getlocalimessagequota</td>
+<td style="width: 60px;">&nbsp;</td>
+<td>gets the quota that has been set by this user for a particular
+user. the argument is the userid or username of the user and the result
+is the number of allowed messages per minute.<br>
+</td>
+<td style="width: 60px;">&nbsp;</td>
+</tr>
+<tr>
+<td>getremoteimessagequota</td>
+<td style="width: 60px;">&nbsp;</td>
+<td>gets the quota that another user has set on this user. the argument
+is the userid or username of the user to check, and the result is the
+number of messages this user is allowed to send the remote user per
+minute.<br>
+</td>
+<td style="width: 60px;">&nbsp;</td>
+</tr>
+<tr>
+<td>usernotification</td>
+<td style="width: 60px;">&nbsp;1</td>
+<td>alerts the client that the server has some important information
+for the client. This should be shown to the client in a popup menu, or
+some other means of getting their attention. For example, if a server
+needs to shut down to back up it's data, it could send a
+usernotification to all of it's clients a few minutes before alerting
+them that the server will be offline for a few minutes. The contents of
+the command (separated by newlines) are the date to show as the date
+the notification was issued, the date that the notification expires (IE
+when it no longer applies and can be hidden from the user if the user
+has not dismissed it by then), the priority of the notification (info,
+which should be shown in the taskbar notification frame, alert, which
+should be shown in the taskbar notification frame but with some sort of
+indicator, such as bolding or a special icon, that indicates it needs
+immediate attention, and critical, which bypasses the taskbar
+notification frame altoghether and pops up in a new window
+immediately), the subject of the notification, and the actual
+notification message.<br>
+</td>
+<td style="width: 60px;">&nbsp;Yes</td>
+</tr>
+<tr>
+<td>quit</td>
+<td style="width: 60px;">&nbsp;2, 3<br>
+</td>
+<td>tells the server that the client wishes to quit the connection. The
+server doesn't reply to this; instead, it drops the connection. An
+attempt should be made by the client to always send this when
+disconnecting so that the server doesn't sit for a while before
+realizing that the client has gone offline.<br>
+</td>
+<td style="width: 60px;">&nbsp;Yes</td>
+</tr>
+<tr>
+<td>nop</td>
+<td style="width: 60px;">&nbsp;2, 3<br>
+</td>
+<td>does nothing. The server does not send a response to this command.
+This command exists because if nothing is sent for 120 seconds to the
+server, the server drops the connection, assuming that the client has
+lost it's connection. sending a nop every 80 seconds or so is a way to
+solve this problem. <b>this command has been superseded by the ping command. </b>The
+server now tracks outbound traffic as well as inbound traffic to watch
+for a dead client, so this command would not prevent the client from
+getting dropped. The ping command should be used instead.<br>
+</td>
+<td style="width: 60px;">&nbsp;</td>
+</tr>
+<tr>
+<td>ping</td>
+<td style="width: 60px;">&nbsp;2, 3<br>
+</td>
+<td>pings the server. the server responds with another ping command.
+the client can use this to check to see if there is still a connection
+to the server, or check the server's latency.<br>
+</td>
+<td style="width: 60px;">&nbsp;Yes</td>
+</tr><tr><td>serverping<br></td><td>&nbsp;1</td><td>pings the client.
+The server will send this to the client periodically to keep track of
+the client's network latency. When a client receives this, it should
+immediately reply with the exact same packet id as the packet sent to
+it by the server. The arguments can be anything; in particular, they
+need not be the same as the arguments sent by the server. The server
+will not send a response to the client when it receives the client's
+response.<br></td><td>&nbsp;</td></tr>
+<tr>
+<td>gettime</td>
+<td style="width: 60px;">&nbsp;2, 3<br>
+</td>
+<td>gets the server's time, in milliseconds since january 1, 1970 utc.<br>
+</td>
+<td style="width: 60px;">&nbsp;Yes</td>
+</tr><tr><td>switchserver<br></td><td>&nbsp;1,2,3<br></td><td>Indicates
+to the client that it should switch servers. The contents of the packet
+are a time for the switch to take effect, in milliseconds (if it's
+zero, this means that a switch should be attempted only once, and
+further re-connects should include this server, and a value more than
+that tells the client not to try this server for the specified amount
+of time, even if no other server can be connected to), a server to try
+(if empty, then any server for this realm will be attempted, as if this
+server was offline), and a number of attempts (if the server to try was
+not empty) to perform before returning to searching through the list of
+servers. Clients should immediately disconnect from this server, and
+start connecting to the server or servers indicated by the contents of
+the command. However, servers should allow clients to remain on the
+server even if they refuse to switch unless there is something else
+that resulted in the switch command being issued that would cause the
+server to go down anyway, such as if the server was going to shut down
+for updates, in which case it would issue a switchserver command and
+then forcibly disconnect all clients.<br></td><td>&nbsp;</td></tr>
+<tr>
+<td>searchusers</td>
+<td style="width: 60px;">&nbsp;<br>
+</td>
+<td>Searches the list of users in the public directory. This method
+searches users by their username, and optionally by the contents of a
+user setting specified. The first argument (arguments delimited by
+newlines instead of spaces) is the text to search for, the second
+argument is whether or not to search in other realm servers (the search
+may be slow), true for search other realm servers, false for only this
+realm server, and the third argument and onward is a list of user
+settings to search in, which can be empty (IE only four arguments) to
+search only in the username. If a particular user doesn't have a
+setting specified in the list, they can still show up in the list but
+only if another setting or their username matches the text to search
+by. The text to search by can contain the * character, which matches
+anything. The server automatically assumes a * at the beginning and at
+the end of text, so the empty string would match all users. The name of
+the realm server of a user is not searched. The response is a unique
+number, the search token. As search results become available,
+searchusersresult commands will be sent to the client that include this
+search token, so as to allow multiple searches going on at the same
+time to not clobber each other.<br>
+</td>
+<td style="width: 60px;">&nbsp;Yes<br>
+</td>
+</tr><tr><td>searchusersresult<br></td><td>&nbsp;1</td><td>Indicates
+that more results have become available in response to a searchusers
+command. The contents of the command are the search token, a newline,
+and a newline-separated list of userids, or possibly usernames if the
+user in question is from this realm server, of the new set of users
+that matched the search query.<br></td><td>&nbsp;</td></tr><tr><td>searchuserscomplete<br></td><td>&nbsp;1<br></td><td>Indicates
+that a user search has finished, and all results for the search have
+been sent in searchusersresult commands. The content of this command is
+the search token. <br></td><td>&nbsp;</td></tr><tr><td>cancelusersearch<br></td><td>&nbsp;</td><td>Indicates
+that the client is no longer interested in the results for a particular
+search, and would like to stop the search. This has no effect is a
+searchuserscomplete command has been sent from the server for this
+search. The content of the command is the search token.<br></td><td>&nbsp;</td></tr><tr><td>listsearchrealms<br></td><td>&nbsp;2</td><td>Gets
+a list of the realms that will be searched when searchusers is run with
+it's second argument equal to true. This usually includes all servers
+on the public server list (maintained by opengroove.org), as well as
+any additional servers that the operators of this realm have added. The
+result is a newline-separated list of the realms.<br></td><td>&nbsp;</td></tr>
+<tr>
+<td>setvisibility</td>
+<td style="width: 60px;">&nbsp;</td>
+<td>Sets whether or not this user is listed in the public directory. If
+this user is not in the public directory, then searchusers commands
+will never return this user as a result. The argument is either true or
+false. Bear in mind that some servers may cache this value for users on
+another server, so it may take some time to go into effect.<br>
+</td>
+<td style="width: 60px;">&nbsp;Yes</td>
+</tr>
+<tr>
+<td>getvisibility</td>
+<td style="width: 60px;">&nbsp;</td>
+<td>Gets whether or not this user is currently listed in the public directory. The response is either true or false.<br>
+</td>
+<td style="width: 60px;">&nbsp;Yes</td>
+</tr>
+<tr>
+<td>getuserstatus</td>
+<td style="width: 60px;">&nbsp;2</td>
+<td>Gets general status about the user. The first argument is the
+user's username or userid. The second argument, which is optional, is
+the name of one of the user's computers. The response is a newline
+separated list of whether or not the user (or the computer specified)
+is online (the word true or the word false), for just a user, true if
+any of their computers are online, and the time that the user or
+computer was last on, in milliseconds since january 1, 1970 utc. the
+response will fail if the user doesn't exist, or if the computer
+specified doesn't exist, and the returned time will be 0 if the user
+hasn't signed on yet.<br>
+</td>
+<td style="width: 60px;">&nbsp;Yes</td>
+</tr>
+<tr>
+<td>getusersetting</td>
+<td style="width: 60px;">&nbsp;2</td>
+<td>Gets the user setting specified. The arguments are a
+newline-separated list of the userid or username to get the user
+setting on (or empty for this user), and the name of the property to
+get. If the userid or username is the empty string (indicating this
+user), then the setting name may be anything, otherwise, it must begin
+with public- . the result is the value of the setting, or the empty
+string if it doesn't exist.<br>
+</td>
+<td style="width: 60px;">&nbsp;Yes</td>
+</tr>
+<tr>
+<td>listusersettings</td>
+<td style="width: 60px;">&nbsp;2</td>
+<td>Lists all of the settings for a particular user. The argument is
+the userid or username of the user to query, the empty string for this
+user. The response is a newline-separated list of properties. If the
+userid or username arguments it not the empty string, then only
+properties beginning with public- will be listed.<br>
+</td>
+<td style="width: 60px;">&nbsp;Yes</td>
+</tr>
+<tr>
+<td>setusersetting</td>
+<td style="width: 60px;">&nbsp;</td>
+<td>Sets a particular setting for this user. The arguments are the name
+of the setting, a newline, and the value that the setting should have.
+The response is essentially empty, but it can fail if there is not
+enough space for the user setting. If the value of the setting is the
+empty string, the value is deleted.<br>
+</td>
+<td style="width: 60px;">&nbsp;Yes</td>
+</tr>
+<tr>
+<td>createsubscription (subscriptions to computerstatus, computersetting, userstatus, usersetting)</td>
+<td style="width: 60px;">&nbsp;</td>
+<td>Creates a subscription. A user can create various types of
+subscriptions, but there is generally a limit on how many subscriptions
+a user can have active at a time. The limit imposed by the OpenGroove
+server is 300 by default, but it can be changed by the server owner.
+When something that has been subscribed to changes, a subscription
+event is generated. For example, a user could subscribe to the user
+status of another user, and would then be alerted whenever that user
+signed on or off. The arguments are a newline-separated list (not space
+separated). Some of the arguments are only applicable for specific
+types. If an argument is not applicable for a type, then the argument
+is left empty (IE a blank line). The arguments are, in this order:<br>
+<ul>
+<li>type. This is one of userstatus, usersetting, computerstatus, or computersetting.</li>
+<li>onuser. This is the username or userid of the user who's changes are to be subscribed to.</li>
+<li>oncomputer (for computerstatus and computersetting). This is the name of the computer who's changes are to be subscribed to.</li>
+<li>onsetting (for usersetting and computersetting). This is the name
+of the user setting or computer setting who's changes are to be
+subscribed to.</li>
+<li>deletewithtarget. If this is true, then the subscription will be
+deleted when, and if, the target is deleted. For userstatus and
+computerstatus, this would be the user or the computer, respectively.
+For usersetting and computersetting, this would be the setting
+specified in onsetting. If the target does not currently exist and this
+is true, then the command will still succeed (IE it won't return a
+failure code), but it's up to the server to decide whether the
+subscription will still be created or not. If it is created, then it
+would be deleted the the next time that the target is created and then
+deleted.</li>
+</ul>
+When a computer that has been subscribed to (IE a subscription with the
+type computerstatus) goes offline or comes online, a subscription event
+(see the subscriptionevent command) will be generated. Similarly, if a
+user has been subscribed to, and <i>any</i> of their computers change status, a subscription event is generated.<br>
+</td>
+<td style="width: 60px;">&nbsp;</td>
+</tr>
+<tr>
+<td>listsubscriptions</td>
+<td style="width: 60px;">&nbsp;</td>
+<td>Lists all of the subscriptions that this user currently has. The
+result is a newline-separated list of all of the subscriptions, in the
+format that is used to create a new subscription (but with spaces
+instead of newlines), with a blank line inbetween each entry.<br>
+</td>
+<td style="width: 60px;">&nbsp;</td>
+</tr>
+<tr>
+<td>deletesubscription</td>
+<td style="width: 60px;">&nbsp;</td>
+<td>deletes a particular subscription. the arguments are in the same format that createsubscription takes.<br>
+</td>
+<td style="width: 60px;">&nbsp;</td>
+</tr>
+<tr>
+<td>subscriptionevent<br>
+</td>
+<td>&nbsp;1 <br>
+</td>
+<td>alerts the user that something they've subscribed to has changed.
+the contents are the info for the subscription in the format accepted
+by createsubscription.<br>
+</td>
+<td style="width: 60px;">&nbsp;</td>
+</tr>
+<tr>
+<td>getquotas</td>
+<td style="width: 60px;">&nbsp;</td>
+<td>Gets the quotas that apply to you. These are set by the server and
+cannot be changed. The request is normally empty, but can contain the
+name of a computer, and the quotas for that computer are then returned.
+The response is in properties file format and contains the following
+keys:<br>
+<ul>
+<li>messagecache. This is the size (in number of bytes) that your message cache is.</li>
+<li>subscriptions. This is the maximum number of subscriptions that you may have active at a time.</li>
+<li>usersettingsize. This is the maximum number of bytes that can be
+stored in user settings. Each seting generally has an overhead of a few
+bytes, so not all of this space can be used.</li>
+<li>messagesettingsize. This is the maximum size that the settings for a stored message can be.</li>
+<li>computers. This is the maximum number of computers that can be created.</li>
+<li>channels. This is the maximum number of channels that may be active at a time.<br>
+</li>
+</ul>
+</td>
+<td style="width: 60px;">&nbsp;</td>
+</tr>
+<tr>
+<td>getquotasremainer</td>
+<td style="width: 60px;">&nbsp;</td>
+<td>Gets the amount left that you have before you reach your quotas.
+The format returned is the same as getquotas, but the values of the
+properties are the values remaining instead of the total values allowed.<br>
+</td>
+<td style="width: 60px;">&nbsp;</td>
+</tr><tr><td>banned<br></td><td>&nbsp;1</td><td>Alerts the client that
+they have been banned from this realm server. This is usually sent
+right after connecting in the case of an ip-ban, but could be sent
+later on. In all cases, the connection is terminated by the server
+immediately after sending the command. The command's content is a
+description of why the user was banned, which may be empty.<br></td><td>&nbsp;</td></tr>
+<tr>
+<td>listcomputers</td>
+<td style="width: 60px;">&nbsp;2</td>
+<td>Gets a list of computers for a particular user. the arguments is
+the username or userid of the user to query, or the empty string to
+indicate this user. the result is a newline-separated list of computer
+names.<br>
+</td>
+<td style="width: 60px;">&nbsp;Yes</td>
+</tr>
+<tr>
+<td>createcomputer</td>
+<td style="width: 60px;">&nbsp;2</td>
+<td>Creates a new computer for this user. the argument is the name of
+the new computer to create, a newline, and the computer's type.<br>
+</td>
+<td style="width: 60px;">&nbsp;Yes</td>
+</tr>
+<tr>
+<td>getcomputersetting</td>
+<td style="width: 60px;">&nbsp;2</td>
+<td>same as getusersetting, but takes an extra argument after the
+userid or username, which is the name of the computer. If the userid is
+empty (indicating this user), then all settings may be queried. If not,
+only settings starting with public- may be queried.<br>
+</td>
+<td style="width: 60px;">&nbsp;Yes</td>
+</tr>
+<tr>
+<td>listcomputersettings</td>
+<td style="width: 60px;">&nbsp;2</td>
+<td>same as listusersettings, but takes an extra argument after the userid or username, which is the name of the computer.<br>
+</td>
+<td style="width: 60px;">&nbsp;Yes</td>
+</tr>
+<tr>
+<td>setcomputersetting</td>
+<td style="width: 60px;">&nbsp;</td>
+<td>same as setusersetting, but uses the computer's name as an extra first argument.<br>
+</td>
+<td style="width: 60px;">&nbsp;Yes</td>
+</tr>
+<tr>
+<td>deletecomputer</td>
+<td style="width: 60px;">&nbsp;</td>
+<td>possibly not implement due to data loss, request deletion by email<br>
+</td>
+<td style="width: 60px;">&nbsp;</td>
+</tr>
+<tr><td>listhelpdocuments<br></td><td>&nbsp;2<br></td><td>Lists the
+help documents present on this server. The result is a
+newline-separated list of the paths of all of the documents. Each
+result should start with a forward slash, but clients should be
+tolerant of servers that err from this policy.<br></td><td>&nbsp;</td></tr><tr><td>gethelpdocument<br></td><td>&nbsp;2<br></td><td>Gets
+a help document from the server. The argument is the pathname of the
+help file to get, and the result is the contents of the help file, in
+html format. The help file can contain http urls (in &lt;a&gt; tags),
+and the viewer used to view the help should open these in the user's
+default browser. The help file can also contain help:// urls, which,
+when clicked on, should show the help page at the path specified. For
+example, if there's a help page with a pathname of /some/help/page,
+then a page at, say, /another/help/page could reference that help page
+by using the url help:///some/help/page (note the three leading
+slashes, not two). Relative urls do not work, so, in the case of the
+two examples above, ../../some/help/page would not work, and neither
+would /some/help/page. <br></td><td>&nbsp;</td></tr><tr><td>gethelpdocumenthash<br></td><td>&nbsp;2<br></td><td>Gets
+the hash of a help document from the server. The arguments is the
+pathname of the help file to get, and the result is the hash of the
+contents of the help file, as returned from <a href="http://opengroove.svn.sf.net/viewvc/opengroove/common/trunk/src/net/sf/opengroove/common/security/Hash.java" rel="nofollow">net.sf.opengroove.common.security.Hash.hash( );</a><br></td><td>&nbsp;</td></tr><tr><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td></tr>
+<tr>
+<td>createchannel</td>
+<td style="width: 60px;">&nbsp;</td>
+<td>Creates a new channel.<br>
+</td>
+<td style="width: 60px;">&nbsp;</td>
+</tr>
+<tr>
+<td>listchannelmembers</td>
+<td style="width: 60px;">&nbsp;</td>
+<td>Returns a list of the members of a channel, and their packet names.<br>
+</td>
+<td style="width: 60px;">&nbsp;</td>
+</tr>
+<tr>
+<td>removechannelmember</td>
+<td style="width: 60px;">&nbsp;</td>
+<td>Removes a member from a channel. This must only be called by the
+creator of the channel. Other users can call leavechannel if they wish
+to leave.<br>
+</td>
+<td style="width: 60px;">&nbsp;</td>
+</tr>
+<tr>
+<td>addchannelmember</td>
+<td style="width: 60px;">&nbsp;</td>
+<td>Adds a new channel member.<br>
+</td>
+<td style="width: 60px;">&nbsp;</td>
+</tr>
+<tr>
+<td>invitetochannel</td>
+<td style="width: 60px;">&nbsp;1</td>
+<td>Alerts this user that someone has run the addchannelmember command,
+attempting to add this user to the channel. The acceptchannelinvite
+command should be called to accept the invitation.<br>
+</td>
+<td style="width: 60px;">&nbsp;</td>
+</tr>
+<tr>
+<td>newchannelmember<br>
+</td>
+<td>&nbsp;1 <br>
+</td>
+<td>Alerts the users on a channel that the channel has a new member. TODO: should just send on the channel itself?<br>
+</td>
+<td style="width: 60px;">&nbsp;</td>
+</tr>
+<tr>
+<td>acceptchannelinvite</td>
+<td style="width: 60px;">&nbsp;</td>
+<td>Called to accept an invitation to a channel<br>
+</td>
+<td style="width: 60px;">&nbsp;</td>
+</tr>
+<tr>
+<td>deletechannel</td>
+<td style="width: 60px;">&nbsp;</td>
+<td>Deletes a channel, dropping all members of it. (TODO: need a
+command for alerting of a dropped channel, possibly just close tcp/ip
+socket and saying that channel doesn't exist if connection tried again)<br>
+</td>
+<td style="width: 60px;">&nbsp;</td>
+</tr>
+<tr>
+<td>leavechannel</td>
+<td style="width: 60px;">&nbsp;</td>
+<td>Called to leave a channel. If this client has a connection opened on that channel, it will be closed.<br>
+</td>
+<td style="width: 60px;">&nbsp;</td>
+</tr>
+<tr>
+<td>setpassword<br>
+</td>
+<td style="width: 60px;">&nbsp;2</td>
+<td>sets the password for this user. the password is not computer
+specific, so changing the password for one computer changes it for all
+computers, and the new password must be entered on all of the new
+computers before they can connect.<br>
+</td>
+<td style="width: 60px;">&nbsp;Yes</td>
+</tr>
+<tr>
+<td>registeraccount<br>
+</td>
+<td style="width: 60px;">&nbsp;3</td>
+<td>Registers a new account with this server. Unlike most other
+commands, the arguments to this command are a list of keys and values,
+formatted as if they were to come after the ? character in a URL. When
+a user wants to register an account, they call this command with the
+parameters username and password set to a username and password that
+they would like for their account. The response to this command will
+fail if the username specified already exists (with ALREADYEXISTS) or
+if the password is too short or contains invalid characters (with
+BADPASSWORD). It can also fail with BADUSERNAME if, for some reason,
+the username specified is not a username that is allowed on this
+server. If none of these are true, then the server will send the
+response status OK, and the first word of the actual response will be
+either DONE or CONTINUE. If the first word is done, then the account
+has been successfully created, and the user can then run the
+authenticate command to log in, or connect using a new connection and
+run the authenticate command. A block of HTML can be included after the
+done command, which can show some general information from the server.
+If the first word is continue, then the content after that will be a
+string of HTML (suitable for embedding within a page, so without
+&lt;html&gt; or &lt;body&gt;), containing some more information for the
+user. Included in the html should be either a link or a form who's
+target is the word register (if it's a form, the method must be GET)
+that may contain query parameters or form fields. There may also be a
+form or link who's target is the word cancel, which the user can click
+on to have their client cancel registration. Any resources, such as
+images or stylesheets, can be included either as a data: URI, or an
+HTTP URL. When the user submits a form who's target is register, or
+clicks on a link who's target is register, the registeraccount command
+is run again, passing in the parameters that the form or link
+generated, along with an extra username and password parameter if those
+parameters were not present in the form or link activated. This
+continues until registeraccount returns done or the user cancels
+registration. Here's an example registration conversation (not
+including packet ids, which, as a note, need not be the same across
+multiple invocations of the registeraccount command for the same
+registration), where the user bobjoe is attempting to register with the
+password secret, and &gt;&gt;&gt; is to the server and &lt;&lt;&lt; is
+to the client:<br><br>&gt;&gt;&gt;registeraccount username=bobjoe&amp;password=secret<br>&lt;&lt;&lt;registeraccount
+OK continue &lt;font color="#202020" size="3"&gt;Register with Example
+server&lt;/font&gt;&lt;br/&gt;Would you like to receive Example.com's
+daily newsletter via an OpenGroove message?&lt;br/&gt;&lt;form
+method="get" action="register"&gt;<br>&lt;input type="radio" name="newsletter" value="yes" checked="checked"/&gt;Yes&lt;br/&gt;<br>&lt;input type="radio" name="newsletter" value="no"/&gt;No&lt;br/&gt;<br>&lt;input type="submit" value="Register"/&gt;&lt;/form&gt;&lt;br/&gt;<br>&lt;a href="cancel"&gt; Cancel registration&lt;/a&gt;<br><i>Now let's say that the user decides to register, and accepts the server's offer to receive the newsletter</i><br>&gt;&gt;&gt;registeraccount newsletter=yes&amp;username=bobjoe&amp;password=secret<br>&lt;&lt;&lt;registeraccount
+OK done &lt;font color="#202020" size="3"&gt;Register with Example
+server&lt;/font&gt;&lt;br/&gt;Thank you for signing up with our server.
+You've opted in to receive our newsletter. Your first issue will be
+delivered in a few minutes, and each successive issue will be delivered
+the following morning. If you're not online to receive it, issues will
+be queued up and delivered in a single message, for up to 7 days.<br>
+</td>
+<td style="width: 60px;">&nbsp;</td>
+</tr>
+<tr>
+<td>&nbsp;</td>
+<td style="width: 60px;">&nbsp;</td>
+<td>&nbsp;</td>
+<td style="width: 60px;">&nbsp;</td>
+</tr>
+<tr>
+<td>&nbsp;</td>
+<td style="width: 60px;">&nbsp;</td>
+<td>&nbsp;</td>
+<td style="width: 60px;">&nbsp;</td>
+</tr>
+<tr>
+<td>register ?<br>
+</td>
+<td style="width: 60px;">&nbsp;</td>
+<td>&nbsp;</td>
+<td style="width: 60px;">&nbsp;</td>
+</tr>
+</tbody></table>
+1&nbsp;&nbsp; these commands are server-initiated<br>
+2&nbsp;&nbsp; only these work when a computer was not specified when authenticating<br>
+3&nbsp;&nbsp; these can be run when the user has not authenticated<br>
+<br>
+<br>
+</div></div></div></div></div></div></div></div>
+</div>
+</td>
+</tr>
+</tbody>
+</table>
+<div xmlns="http://www.w3.org/1999/xhtml" class="goog-ws-bottom">
+<div id="COMP_page-subpages" style="display: none;"> </div>
+</div>
+</div>
+</div>
+</div>
+<div class="goog-ws-subfooter">
+<p>
+          
+              &nbsp;
+              <a href="https://www.google.com/a/UniversalLogin?continue1=http%3A%2F%2Fsites.google.com%2Fa%2Fopengroove.org%2Fopengroove%2Fdev%2Fprotocol%2Fcommands%2Fclient---realm-server&amp;md=opengroove.org&amp;continue2=http%3A%2F%2Fsites.google.com%2Fa%2Fopengroove.org%2Fopengroove%2Fdev%2Fprotocol%2Fcommands%2Fclient---realm-server&amp;continue=http%3A%2F%2Fsites.google.com%2Fa%2Fopengroove.org%2Fopengroove%2Fdev%2Fprotocol%2Fcommands%2Fclient---realm-server&amp;service=jotspot">Sign in</a>
+            
+          &nbsp;
+          <a href="http://www.opengroove.org/">Home</a>
+          &nbsp;
+          <a href="http://www.opengroove.org/system/app/pages/sitemap/hierarchy">Sitemap</a>
+          
+          &nbsp;
+          <a href="javascript:void(window.open('http://www.google.com/sites/help/intl/en/terms_apps.html'))">Terms</a>
+          &nbsp;
+          <a href="javascript:;" onclick="JOT_reportAbuse()">Report Abuse</a>
+          
+              &nbsp;
+              <a href="javascript:;" onclick="window.open(webspace.printUrl)">Print</a>
+            
+          &nbsp;|&nbsp;
+          <b xmlns="http://www.w3.org/1999/xhtml">Powered by <a href="http://sites.google.com/">Google Sites</a></b>
+</p>
+<div class="goog-temp-spew">
+</div>
+</div>
+</div>
+<script xmlns="http://www.w3.org/1999/xhtml" type="text/javascript">
+    window.jstiming.load.tick('sjl');
+  </script>
+<script xmlns="http://www.w3.org/1999/xhtml" src="client---realm-server_files/jot_min.js"></script>
+<script xmlns="http://www.w3.org/1999/xhtml" type="text/javascript">
+      function checkSearchField() {
+        if (!goog.string.trim(goog.dom.$('jot-ui-searchInput').value)) {
+          JOT_setStatusMsg('Please enter the text to be searched.');
+          return false;
+        }
+      }
+    </script>
+<script xmlns="http://www.w3.org/1999/xhtml">
+                    window.onload = function() {
+                      var loadTimer = window.jstiming.load;
+                      loadTimer.tick("ol");
+                      loadTimer["name"] = "load";
+                      window.jstiming.report(loadTimer);
+                    }
+                  </script>
+<script xmlns="http://www.w3.org/1999/xhtml" type="text/javascript">
+    window.jstiming.load.tick('jl');
+  </script>
+<script xmlns="http://www.w3.org/1999/xhtml" type="text/javascript">
+        JOT_insertAnalyticsCode();
+      </script>
+<script xmlns="http://www.w3.org/1999/xhtml" type="text/javascript" defer="true">
+  //<![CDATA[
+    // Fires delayed events.
+    (function() {
+      JOT_fullyLoaded = true;
+      var delayedEvents = JOT_delayedEvents;
+      for (var x = 0; x < delayedEvents.length; x++) {
+        var event = delayedEvents[x];
+        JOT_postEvent(event.eventName, event.eventSrc, event.payload);
+      }
+      JOT_delayedEvents = null;
+    })();
+ //]]>
+</script>
+<div id="client-timer-div" class="goog-ws-subfooter goog-temp-spew"> </div>
+<div id="server-timer-div" class="goog-ws-subfooter goog-temp-spew"> </div>
+<script>
+          window.jstiming.load.tick('render');
+        </script>
+</div></body></html>
