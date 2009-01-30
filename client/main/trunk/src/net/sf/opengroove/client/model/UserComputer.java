@@ -5,6 +5,18 @@ public class UserComputer
     private String userid;
     private String computer;
     
+    public UserComputer()
+    {
+        super();
+    }
+    
+    public UserComputer(String userid, String computer)
+    {
+        super();
+        this.userid = userid;
+        this.computer = computer;
+    }
+    
     public String getUserid()
     {
         return userid;
@@ -24,7 +36,7 @@ public class UserComputer
     {
         this.computer = computer;
     }
-
+    
     public int hashCode()
     {
         final int prime = 31;
@@ -33,7 +45,7 @@ public class UserComputer
         result = prime * result + ((userid == null) ? 0 : userid.hashCode());
         return result;
     }
-
+    
     public boolean equals(Object obj)
     {
         if (this == obj)

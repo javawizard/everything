@@ -6,7 +6,9 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 
+import net.sf.opengroove.client.model.UserComputer;
 import net.sf.opengroove.client.storage.InboundMessage;
+import net.sf.opengroove.client.storage.MessageProperty;
 import net.sf.opengroove.client.storage.OutboundMessage;
 import net.sf.opengroove.common.utils.StringUtils;
 
@@ -39,7 +41,20 @@ public abstract class MessageHierarchy
      * A map that maps names to child elements. When a child is added to this
      * hierarchy element, it is placed in this map with it's name as the key.
      */
-    private HashMap<String, MessageHierarchy> children = new HashMap<String, MessageHierarchy>();
+    private HashMap<String, MessageHierarchy> children =
+        new HashMap<String, MessageHierarchy>();
+    private ArrayList<MessageListener> listeners = new ArrayList<MessageListener>();
+    
+    public void addMessageListener(MessageListener listener)
+    {
+        listeners.add(listener);
+    }
+    
+    public void removeMessageListener(MessageListener listener)
+    {
+        listeners.remove(listener);
+    }
+    
     /**
      * The MessageDeliverer associated with this hierarchy. Generally, only the
      * top level hierarchy element should have a deliverer. The rest of them
@@ -95,8 +110,7 @@ public abstract class MessageHierarchy
      * 
      * @param message
      */
-    public void beforeHandleLowerMessage(
-        InboundMessage message)
+    public void beforeHandleLowerMessage(InboundMessage message)
     {
         /*
          * Do nothing. Subclasses can override this method if they want.
@@ -111,12 +125,9 @@ public abstract class MessageHierarchy
      * 
      * @param message
      */
-    public void afterHandleLowerMessage(
-        InboundMessage message)
+    public void afterHandleLowerMessage(InboundMessage message)
     {
-        /*
-         * Do nothing. Subclasses can override this method if they want.
-         */
+        
     }
     
     /**
@@ -126,8 +137,31 @@ public abstract class MessageHierarchy
      * 
      * @param message
      */
-    public abstract void handleMessage(
-        InboundMessage message);
+    public void handleMessage(InboundMessage inboundMessage)
+    {
+        if (listeners.size() == 0)
+        {
+            System.err.println("No message listeners to receive this message. It "
+                + "can still be retrieved by listing inbound messages.");
+            return;
+        }
+        Message message = convertInboundMessageToMessage(inboundMessage);
+        for (MessageListener listener : listeners)
+        {
+            listener.messageReceived(message);
+        }
+    }
+    
+    private Message convertInboundMessageToMessage(InboundMessage inboundMessage)
+    {
+        Message message = new Message();
+        for (MessageProperty property : inboundMessage.getProperties().isolate())
+        {
+            message.getProperties().put(property.getName(), property.getValue());
+        }
+        message.setSender(new UserComputer(inboundMessage.getSender(), inboundMessage
+            .getSendingComputer()));
+    }
     
     /**
      * Called if a message cannot propegate further down in the hierarchy
@@ -139,8 +173,7 @@ public abstract class MessageHierarchy
      * 
      * @param message
      */
-    public void handleInvalidLowerMessage(
-        InboundMessage message)
+    public void handleInvalidLowerMessage(InboundMessage message)
     {
         /*
          * Do nothing. Subclasses can override this method if they want.
@@ -157,8 +190,7 @@ public abstract class MessageHierarchy
      */
     public void injectMessage(InboundMessage message)
     {
-        sendDownward(message,
-            parsePath(message.getTarget()));
+        sendDownward(message, parsePath(message.getTarget()));
     }
     
     /**
@@ -169,12 +201,10 @@ public abstract class MessageHierarchy
      * @param message
      * @param currentPath
      */
-    private void sendDownward(InboundMessage message,
-        ArrayList<String> currentPath)
+    private void sendDownward(InboundMessage message, ArrayList<String> currentPath)
     {
         if (currentPath.size() == 0
-            || (currentPath.size() == 1 && currentPath.get(
-                0).equals("")))
+            || (currentPath.size() == 1 && currentPath.get(0).equals("")))
         {
             /*
              * Addressed to us.
@@ -189,8 +219,7 @@ public abstract class MessageHierarchy
             String nextElement = currentPath.get(0);
             currentPath.remove(0);
             beforeHandleLowerMessage(message);
-            MessageHierarchy child = children
-                .get(nextElement);
+            MessageHierarchy child = children.get(nextElement);
             if (child == null)
             {
                 handleInvalidLowerMessage(message);
@@ -251,8 +280,7 @@ public abstract class MessageHierarchy
                 throw new IllegalStateException(
                     "This hierarchy does not have a deliverer or a parent. At least one of these is required to get a message's file.");
             else
-                return parent
-                    .getOutboundMessageFile(messageId);
+                return parent.getOutboundMessageFile(messageId);
         }
         return deliverer.getOutboundMessageFile(messageId);
     }
@@ -265,8 +293,7 @@ public abstract class MessageHierarchy
                 throw new IllegalStateException(
                     "This hierarchy does not have a deliverer or a parent. At least one of these is required to get a message's file.");
             else
-                return parent
-                    .getInboundMessageFile(messageId);
+                return parent.getInboundMessageFile(messageId);
         }
         return deliverer.getInboundMessageFile(messageId);
     }
@@ -296,8 +323,7 @@ public abstract class MessageHierarchy
      * @param message
      * @param relativePath
      */
-    public void sendMessage(OutboundMessage message,
-        String relativePath)
+    public void sendMessage(OutboundMessage message, String relativePath)
     {
         throw new IllegalStateException(
             "This hasn't been implemented yet. Only sendMessage "
@@ -312,8 +338,7 @@ public abstract class MessageHierarchy
      * @param message
      * @param absolutePath
      */
-    public void sendAbsoluteMessage(
-        OutboundMessage message, String absolutePath)
+    public void sendAbsoluteMessage(OutboundMessage message, String absolutePath)
     {
         sendUpward(message, parsePath(absolutePath), false);
     }
@@ -328,8 +353,8 @@ public abstract class MessageHierarchy
      * @param currentPath
      * @param addPath
      */
-    private void sendUpward(OutboundMessage message,
-        ArrayList<String> currentPath, boolean addPath)
+    private void sendUpward(OutboundMessage message, ArrayList<String> currentPath,
+        boolean addPath)
     {
         if (parent == null)
         {
@@ -338,8 +363,7 @@ public abstract class MessageHierarchy
              * if there is one.
              */
             if (deliverer == null)
-                throw new IllegalStateException(
-                    "No deliverer and no parent");
+                throw new IllegalStateException("No deliverer and no parent");
             message.setTarget(buildPath(currentPath));
             deliverer.sendMessage(message);
         }
@@ -351,14 +375,12 @@ public abstract class MessageHierarchy
              */
             if (addPath)
                 currentPath.add(0, name);
-            parent
-                .sendUpward(message, currentPath, addPath);
+            parent.sendUpward(message, currentPath, addPath);
         }
     }
     
-    private InboundMessage[] sendMessageRequestUpward(
-        ArrayList<String> currentPath, boolean addPath,
-        boolean floating)
+    private InboundMessage[] sendMessageRequestUpward(ArrayList<String> currentPath,
+        boolean addPath, boolean floating)
     {
         if (parent == null)
         {
@@ -367,14 +389,11 @@ public abstract class MessageHierarchy
              * if there is one.
              */
             if (receiver == null)
-                throw new IllegalStateException(
-                    "No deliverer and no parent");
+                throw new IllegalStateException("No deliverer and no parent");
             if (floating)
-                return receiver
-                    .listChildMessages(buildPath(currentPath));
+                return receiver.listChildMessages(buildPath(currentPath));
             else
-                return receiver
-                    .listMessages(buildPath(currentPath));
+                return receiver.listMessages(buildPath(currentPath));
         }
         else
         {
@@ -384,28 +403,23 @@ public abstract class MessageHierarchy
              */
             if (addPath)
                 currentPath.add(0, name);
-            return parent.sendMessageRequestUpward(
-                currentPath, addPath, floating);
+            return parent.sendMessageRequestUpward(currentPath, addPath, floating);
         }
     }
     
     public InboundMessage[] listMessages()
     {
-        return sendMessageRequestUpward(
-            new ArrayList<String>(), true, false);
+        return sendMessageRequestUpward(new ArrayList<String>(), true, false);
     }
     
     public InboundMessage[] listChildMessages()
     {
-        return sendMessageRequestUpward(
-            new ArrayList<String>(), true, true);
+        return sendMessageRequestUpward(new ArrayList<String>(), true, true);
     }
     
-    private static String buildPath(
-        ArrayList<String> pathComponents)
+    private static String buildPath(ArrayList<String> pathComponents)
     {
-        return StringUtils.delimited(pathComponents
-            .toArray(new String[0]), "/");
+        return StringUtils.delimited(pathComponents.toArray(new String[0]), "/");
     }
     
     private static ArrayList<String> parsePath(String path)
