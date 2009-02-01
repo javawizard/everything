@@ -32,7 +32,7 @@ if [ \$startrev -le $newrevision ] ; then if [ \$endrev -ge $newrevision ] ; the
     if [ \$printstatus ] ; then
         echo Applying revision $newrevision
     fi
-    cd \$targetfolder 
+    pushd \$targetfolder 
     xargs mkdir -p << ./.ptm/end 
 END_FILE
 cat tmp/dirs-added >> commandlist
@@ -45,6 +45,7 @@ cat tmp/files-removed >> commandlist
 cat tmp/dirs-removed >> commandlist
 cat >> commandlist << END_FILE
 ./.ptm/end
+popd
 fi ; fi
 END_FILE
 
