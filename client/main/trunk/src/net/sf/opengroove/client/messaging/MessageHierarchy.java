@@ -15,18 +15,21 @@ import net.sf.opengroove.common.utils.StringUtils;
 /**
  * A class for allowing hierarchical organization of message sending and
  * receiving. It extends the listener concept to provide hierarchical listening
- * and message sending.<br/><br/>
+ * and message sending.<br/>
+ * <br/>
  * 
  * When paths are referenced as ArrayLists, the first element is the highest in
  * the hierarchy and the last element is the lowest (IE path element n denotes a
- * hierarchy element who's parent is path element n - 1)<br/><br/>
+ * hierarchy element who's parent is path element n - 1)<br/>
+ * <br/>
  * 
  * When a message is received, the data contents of the message are stored in
  * the file obtained by getInboundMessageFile(). When an inbound message is
  * marked as read, it is recommended that the corresponding file be deleted.
  * This is not required, however, as OpenGroove will periodically scan and
  * delete files where the message is marked as read or where the message doesn't
- * exist.<Br/><br/>
+ * exist.<Br/>
+ * <br/>
  * 
  * When a message is to be sent, A message object is created by a call to
  * createMessage(). Then the data is written to the file returned by
@@ -141,7 +144,8 @@ public abstract class MessageHierarchy
     {
         if (listeners.size() == 0)
         {
-            System.err.println("No message listeners to receive this message. It "
+            System.err.println("No message listeners to receive the message \""
+                + inboundMessage.getId() + "\". It "
                 + "can still be retrieved by listing inbound messages.");
             return;
         }
