@@ -1,0 +1,3 @@
+The technotes folder is a folder that holds random technical information. When I'm making a complicated change to OpenGroove, I'll typically create a file in this folder, and type ideas related to the change until I've come up with a good solution.
+
+Files in this folder (and files in folders in this folder) should be plain-text documents, not rich text. This document is a great example of the format that documents should be in. Paragraphs are not indented, and are separated by a blank line. Hard line breaks should not be included, so the line wrap functionality of the editor will be in charge of where line breaks appear.
