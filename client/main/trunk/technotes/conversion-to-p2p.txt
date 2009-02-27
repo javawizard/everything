@@ -1,0 +1,3 @@
+This technote contains information related to http://www.opengroove.org/dev/ideas/completepeer-to-peerconversionservernotneededatalltorunopengroove . I highly recommend you read that first, before reading this.
+
+Anyway, Connector is an interface. Service is also an interface. ConnectorContext and ServiceContext are classes. 
