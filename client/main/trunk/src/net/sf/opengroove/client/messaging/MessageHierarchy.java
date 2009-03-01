@@ -165,6 +165,7 @@ public abstract class MessageHierarchy
         }
         message.setSender(new UserComputer(inboundMessage.getSender(), inboundMessage
             .getSendingComputer()));
+        throw new UnsupportedOperationException("TODO: finish writing this method");
     }
     
     /**
