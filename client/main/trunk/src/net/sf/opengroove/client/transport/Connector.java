@@ -2,6 +2,8 @@ package net.sf.opengroove.client.transport;
 
 import java.net.URI;
 
+import net.sf.opengroove.client.UserContext;
+
 /**
  * A connector.
  * 
@@ -10,7 +12,11 @@ import java.net.URI;
  */
 public interface Connector
 {
-    public void init();
+    /**
+     * Initializes this connector. 
+     * @param context
+     */
+    public void init(UserContext context);
     
     public Service getService(URI uri) throws NoSuchServiceException;
     
