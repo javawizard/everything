@@ -27,4 +27,5 @@ There is also a folder called "tmp". Temporary files are put into this folder. p
 
 
 
-Yes, PersonalTimeMachine contains a lot of uses of the "cat" command where the "<" operator would be faster. I'll get around to removing these sometime.
+Yes, PersonalTimeMachine contains a lot of uses of the "cat" command where the "<" operator would be faster. I'll get around to removing these sometime. This is called "useless use of cat", and to be honest I really don't give a darn right now. If someone wants to clean all of that up, I'd be happy to let you. Just tell me. But I don't plan on doing it myself any time soon.
+
