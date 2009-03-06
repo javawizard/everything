@@ -18,16 +18,18 @@ find .ptm/tmp/lineformatted -type f -print0 | xargs -0 ptm-line-format.sh
 
 echo Building sorted file lists
 
-ptm-listfiles.sh d | sort > .ptm/tmp/dirs-wc
-ptm-listfiles.sh f | sort > .ptm/tmp/files-wc
-cd .ptm/head
+cd /.ptm/tmp/lineformatted
+
+ptm-listfiles.sh d | sort > ../dirs-wc
+ptm-listfiles.sh f | sort > ../files-wc
+cd ../../head
 ptm-listfiles.sh d | sort > ../tmp/dirs-head
 ptm-listfiles.sh f | sort > ../tmp/files-head
 cd ../tmp
 echo Building changelists
-ptm-linediff.sh dirs-head dirs-wc | uniq > dirs-removed
-ptm-linediff.sh dirs-wc dirs-head | uniq > dirs-added
-ptm-linediff.sh files-head files-wc | uniq > files-removed
+ptm-linediff.sh dirs-head dirs-wc | sort | uniq > dirs-removed
+ptm-linediff.sh dirs-wc dirs-head | sort | uniq > dirs-added
+ptm-linediff.sh files-head files-wc | sort | uniq > files-removed
 cd ..
 echo Appending changelists to command file
 # Now we'll start writing to the command list file. At this point, the working directory 
@@ -56,8 +58,8 @@ fi ; fi
 END_FILE
 
 cd head
-echo Performing diff of working copy and head
-diff -U 1 -p0 -a --binary --unidirectional-new-file --exclude=.ptm -r . ../.. >> ../tmp/diff-output
+echo Performing diff of lineformatted working copy and head
+diff -U 1 -p0 -a --unidirectional-new-file -r . ../tmp/lineformatted >> ../tmp/diff-output
 echo Storing diff
 cd ..
 mv tmp/diff-output diffs/${newrevision}
@@ -66,21 +68,11 @@ echo ${newrevision}_d`date` >> revinfo
 echo "${newrevision}_m$*" >> revinfo
 echo "${newrevision}_u`whoami`" >> revinfo
 cd ..
-echo Applying changeset to head
-.ptm/commandlist .ptm/head $newrevision $newrevision 0
+echo Moving lineformatted working copy to head
+rm -rf .ptm/head
+mv .ptm/tmp/lineformatted .ptm/head
 echo ""
 echo Committed revision $newrevision
-
-
-
-
-
-
-
-
-
-
-
 
 
 
