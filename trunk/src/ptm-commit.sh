@@ -11,10 +11,7 @@ newrevision=`expr $oldrevision + 1`
 # Now we'll copy the working copy over to .ptm/tmp/lineformatted, and line-format
 # everything in it.
 
-ptm-listfiles.sh d | sort > .ptm/tmp/dirs-base-wc
-ptm-listfiles.sh f | sort > .ptm/tmp/files-base-wc
-
-
+ptm-wc-to-formatted.sh
 
 # Next, we'll work on building the folder and file changelists.
 
