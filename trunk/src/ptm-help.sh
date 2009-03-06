@@ -7,11 +7,7 @@ if [ $# -lt 1 ] ; then
     echo     changed
     
 elif [ $1 = commit -o $1 = co ] ; then
-    cat << END_FILE
-usage: ptm commit <message>
-       ptm ci <message>
-
-  creates a new revision. <message> is a commit message that will be included with the revision, and can be used to describe what's changed.
+    echo Creates a new revision.
 elif [ $1 = create ] ; then
     echo Creates a new repository in the current directory.
     echo Files can exist in the current directory. They will not be overwritten, and they can be added to the repository via "ptm commit".

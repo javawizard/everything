@@ -1,1 +1,1 @@
-@bash ./ptm %*
+@bash ptm %*
