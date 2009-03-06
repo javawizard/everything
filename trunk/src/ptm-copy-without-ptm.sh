@@ -13,4 +13,4 @@ mkdir -p $1
 
 echo rsyncing `pwd` to $1
 
-rsync --exclude=/.ptm/ . $1
+rsync -r --exclude=/.ptm/ . $1
