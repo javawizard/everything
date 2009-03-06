@@ -173,6 +173,12 @@ public class ProxyStorage<E>
      */
     final Object lock = new Object();
     
+    /**
+     * Calls <tt>this(rootClass, location, 800, 2000, 400);</tt>
+     * 
+     * @param rootClass
+     * @param location
+     */
     public ProxyStorage(Class<E> rootClass, File location)
     {
         this(rootClass, location, 800, 2000, 400);
