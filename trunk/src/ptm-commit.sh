@@ -8,6 +8,8 @@
 oldrevision=`cat .ptm/revision`
 newrevision=`expr $oldrevision + 1`
 
+# Now we'll copy the working copy over to .ptm/tmp/
+
 # Next, we'll work on building the folder and file changelists.
 
 echo Building sorted file lists
