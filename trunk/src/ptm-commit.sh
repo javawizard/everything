@@ -11,7 +11,8 @@ newrevision=`expr $oldrevision + 1`
 # Now we'll copy the working copy over to .ptm/tmp/lineformatted, and line-format
 # everything in it.
 
-ptm-wc-to-formatted.sh
+ptm-copy-without-ptm.sh .ptm/tmp/lineformatted
+find .ptm/tmp/lineformatted -type f -print0 | xargs -0 ptm-line-format.sh
 
 # Next, we'll work on building the folder and file changelists.
 
