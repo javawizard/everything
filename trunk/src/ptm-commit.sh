@@ -35,6 +35,7 @@ ptm-linediff.sh dirs-wc dirs-head | sort | uniq > dirs-added
 ptm-linediff.sh files-head files-wc | sort | uniq > files-removed
 cd ..
 echo in `pwd`
+
 echo Appending changelists to command file
 # Now we'll start writing to the command list file. At this point, the working directory 
 # is the .ptm folder.
@@ -65,19 +66,23 @@ cd head
 echo in `pwd`
 echo Performing diff of lineformatted working copy and head
 diff -U 1 -p0 -a --unidirectional-new-file -r . ../tmp/lineformatted >> ../tmp/diff-output
+
 echo Storing diff
 cd ..
 echo in `pwd`
 mv tmp/diff-output diffs/${newrevision}
+
 echo -n $newrevision > revision
 echo ${newrevision}_d`date` >> revinfo
 echo "${newrevision}_m$*" >> revinfo
 echo "${newrevision}_u`whoami`" >> revinfo
+
 cd ..
 echo in `pwd`
 echo Moving lineformatted working copy to head
 rm -rf .ptm/head
 mv .ptm/tmp/lineformatted .ptm/head
+
 echo ""
 echo Committed revision $newrevision
 
