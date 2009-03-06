@@ -14,4 +14,21 @@ fi
 
 # The actual program...
 
-cat $sourcefile | xxd -c 1 -p | awk 'BEGIN {skip = 0
+cat $sourcefile | xxd -c 1 -p | awk '{
+if ($0 == "0a")
+{ 
+    print "30"
+    print "31"
+}
+else if($0 == "0d")
+{
+    print "30"
+    print "32"
+}
+else if($0 == "30")
+{
+    print "30"
+    print "33"
+}
+print $0
+}' | xxd -c 1 -p -r > $destfile
