@@ -6,8 +6,14 @@
 
 # xxd -c 1 -p encodes, xxd -c 1 -p -r decodes
 
+if [ $# -lt 1 ] ; then
+    echo ptm-line-format needs arguments
+    exit 25
+fi
+
 sourcefile=$1
 destfile=$sourcefile
+echo lineformatting source $sourcefile dest $destfile 1 $1 2 $2
 if [ $# -gt 1 ] ; then
     destfile=$2
 fi
