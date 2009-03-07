@@ -25,6 +25,7 @@ cd .ptm
 mkdir head
 mkdir tmp
 mkdir diffs
+mkdir new
 
 touch revinfo
 
@@ -42,9 +43,9 @@ basefolder=\`pwd\`
 if [ \$# -ge 3 ] ; then
     endrev=\$3
 fi
-printstatus=false
+printstatus=0
 if [ \$# -ge 4 ] ; then
-    printstatus=true
+    printstatus=1
 fi
 END_FILE
 chmod +x commandlist

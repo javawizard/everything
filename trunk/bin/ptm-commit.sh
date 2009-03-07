@@ -82,7 +82,7 @@ echo in `pwd`
 echo Moving lineformatted working copy to head
 rm -rf .ptm/head
 mv .ptm/tmp/lineformatted .ptm/head
-exit
+
 echo ""
 echo Committed revision $newrevision
 

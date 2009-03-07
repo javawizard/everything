@@ -32,6 +32,7 @@ echo in `pwd`
 echo Building changelists
 ptm-linediff.sh dirs-head dirs-wc | sort | uniq > dirs-removed
 ptm-linediff.sh dirs-wc dirs-head | sort | uniq > dirs-added
+ptm-linediff.sh files-wc files-head | sort | uniq > files-added
 ptm-linediff.sh files-head files-wc | sort | uniq > files-removed
 cd ..
 echo in `pwd`
@@ -65,7 +66,7 @@ END_FILE
 cd head
 echo in `pwd`
 echo Performing diff of lineformatted working copy and head
-diff -U 1 -p0 -a --unidirectional-new-file -r . ../tmp/lineformatted >> ../tmp/diff-output
+diff -U 1 -p0 -a -r . ../tmp/lineformatted >> ../tmp/diff-output
 
 echo Storing diff
 cd ..
