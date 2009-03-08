@@ -7,6 +7,6 @@
 # working copy, and appends it, prepended with _FILENAME (where FILENAME is the path of 
 # the file) and appended with *, to diffs/REV, where REV is the current revision.
 
-echo -ne _$2\\n >> diffs/$1
+echo -ne _${2}\\n >> diffs/$1
 diff -U 1 -a "head/$2" "tmp/lineformatted/$2" >> diffs/$1
-echo -ne \*\\n >> diffs/$1  
+echo -ne \*${2}\\n >> diffs/$1  

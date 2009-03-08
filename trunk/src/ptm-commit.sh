@@ -47,16 +47,21 @@ if [ \$startrev -le $newrevision ] ; then if [ \$endrev -ge $newrevision ] ; the
         echo Applying revision $newrevision
     fi
     pushd \$targetfolder 
-    xargs mkdir -p << ./.ptm/end 
+    xargs -d "\`echo -ne \\\\\\\\n\`" mkdir -p << ./.ptm/end 
 END_FILE
 cat tmp/dirs-added >> commandlist
 cat >> commandlist << END_FILE
 ./.ptm/end
     patch -F 0 -p2 -u < \${basefolder}/.ptm/diffs/${newrevision}
-    xargs rm -rf << ./.ptm/end
+    xargs -d "\`echo -ne \\\\\\\\n\`" rm -rf << ./.ptm/end
 END_FILE
 cat tmp/files-removed >> commandlist
 cat tmp/dirs-removed >> commandlist
+cat >> commandlist << END_FILE
+./.ptm/end
+    xargs -d "\`echo -ne \\\\\\\\n\`" ptm-apply-diff.sh ${newrevision} << ./.ptm/end
+END_FILE
+cat tmp/files-added >> commandlist
 cat >> commandlist << END_FILE
 ./.ptm/end
 popd
@@ -66,12 +71,10 @@ END_FILE
 cd head
 echo in `pwd`
 echo Performing diff of lineformatted working copy and head
-diff -U 1 -p0 -a -r . ../tmp/lineformatted >> ../tmp/diff-output
-
-echo Storing diff
 cd ..
-echo in `pwd`
-mv tmp/diff-output diffs/${newrevision}
+echo \# diff for revision $newrevision > diffs/$newrevision
+
+cat tmp/files-added | xargs -d "`echo -ne \\\\n`" pt-create-diff.sh $newrevision
 
 echo -n $newrevision > revision
 echo ${newrevision}_d`date` >> revinfo
