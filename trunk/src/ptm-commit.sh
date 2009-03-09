@@ -34,6 +34,8 @@ ptm-linediff.sh dirs-head dirs-wc | sort | uniq > dirs-removed
 ptm-linediff.sh dirs-wc dirs-head | sort | uniq > dirs-added
 ptm-linediff.sh files-wc files-head | sort | uniq > files-added
 ptm-linediff.sh files-head files-wc | sort | uniq > files-removed
+cat files-added files-removed | sort | uniq > files-changed
+ptm-linediff.sh files-wc files-changed | sort | uniq > files-common
 cd ..
 echo in `pwd`
 
@@ -47,21 +49,21 @@ if [ \$startrev -le $newrevision ] ; then if [ \$endrev -ge $newrevision ] ; the
         echo Applying revision $newrevision
     fi
     pushd \$targetfolder 
-    xargs -d "\`echo -ne \\\\\\\\n\`" mkdir -p << ./.ptm/end 
+    xargs -r -d "\`echo -ne \\\\\\\\n\`" mkdir -p << ./.ptm/end 
 END_FILE
 cat tmp/dirs-added >> commandlist
 cat >> commandlist << END_FILE
 ./.ptm/end
     patch -F 0 -p2 -u < \${basefolder}/.ptm/diffs/${newrevision}
-    xargs -d "\`echo -ne \\\\\\\\n\`" rm -rf << ./.ptm/end
+    xargs -r -d "\`echo -ne \\\\\\\\n\`" rm -rf << ./.ptm/end
 END_FILE
 cat tmp/files-removed >> commandlist
 cat tmp/dirs-removed >> commandlist
 cat >> commandlist << END_FILE
 ./.ptm/end
-    xargs -d "\`echo -ne \\\\\\\\n\`" ptm-apply-diff.sh ${newrevision} << ./.ptm/end
+    xargs -r -d "\`echo -ne \\\\\\\\n\`" ptm-apply-diff.sh \$basefolder ${newrevision} << ./.ptm/end
 END_FILE
-cat tmp/files-added >> commandlist
+cat tmp/files-common >> commandlist
 cat >> commandlist << END_FILE
 ./.ptm/end
 popd
