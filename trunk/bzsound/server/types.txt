@@ -24,6 +24,10 @@ This packet contains actual audio data from the client. The first byte is the nu
 
 This packet contains actual audio data from the server. The first byte is the number of samples per second that the data represents. The server will scale the sample rate delivered to the client as necessary if the client is losing data. The second byte is the number of bytes per sample. The third byte is the number of people that contributed audio to the sample in question. The rest of the bytes are actual data.
 
+30 - client voice receipt
+
+This packet tells the server that a voice packet has been received by the client.
+
 
 
 
