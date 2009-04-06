@@ -1,1 +1,19 @@
-This is the list of packet types. The number at the beginning is the decimal value that
+This is the list of packet types. The number at the beginning is the decimal value that is assigned to that packet type. 
+
+
+
+01 - client hello
+
+This packet is the first one sent once communication with the server has been established, and is sent by the client. It contains the string "bzsound/1.0", followed by a newline. This allows the server to distinguish a bzsound client from an http client, and therefore potentially serve http resources over the same port in the future. 
+
+
+
+02 - server hello
+
+This packet is sent in response to the client's client hello packet. It contains the string "bzsound/1.0", but without a newline at the end. This is always the second packet sent.
+
+
+
+20 - client voice update
+
+This packet contains actual audio data from the client. 
