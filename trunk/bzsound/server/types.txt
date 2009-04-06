@@ -1,0 +1,1 @@
+This is the list of packet types. The number at the beginning is the decimal value that

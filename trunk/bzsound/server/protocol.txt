@@ -1,0 +1,5 @@
+BZSound currently runs over TCP only. I don't want to deal with UDP right now.
+
+BZSound's protocol is based on a concept of packets. Every transmission starts out with two bytes, which indicates the length, after those two bytes, of the packet. The next byte is the packet's type. Every byte after that is packet-type-specific.
+
+ 
