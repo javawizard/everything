@@ -16,4 +16,16 @@ This packet is sent in response to the client's client hello packet. It contains
 
 20 - client voice update
 
-This packet contains actual audio data from the client. 
+This packet contains actual audio data from the client. The first byte is the number of samples per second the data was captured at, in khz. This should either be 8 or 16 for now. The second byte is the number of bytes for each sample. This should either be 1 or 2 for now. Every byte after that is sample data.
+
+
+
+
+
+
+
+
+
+
+
+
