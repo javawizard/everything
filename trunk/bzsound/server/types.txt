@@ -16,7 +16,13 @@ This packet is sent in response to the client's client hello packet. It contains
 
 20 - client voice update
 
-This packet contains actual audio data from the client. The first byte is the number of samples per second the data was captured at, in khz. This should either be 8 or 16 for now. The second byte is the number of bytes for each sample. This should either be 1 or 2 for now. Every byte after that is sample data. If there are two bytes per sample, then the first byte after that is the high-order byte for the first sample, the second byte after that is the low-order byte for the frist sample, and so on. 
+This packet contains actual audio data from the client. The first byte is the number of samples per second the data was captured at, in khz. This should either be 8 or 16 for now. The second byte is the number of bytes for each sample. This should either be 1 or 2 for now. Every byte after that is sample data. If there are two bytes per sample, then the first byte after that is the high-order byte for the first sample, the second byte after that is the low-order byte for the frist sample, and so on. Clients typically divide any given second into 8 slices, and send one packet per slice. Sampling at 8khz and at 1 byte per sample, then, would result in 1KB packets being sent. 4KB packets would be sent for 16khz and 2 bytes per sample.
+
+
+
+21 - server voice update
+
+This packet contains actual audio data from the server. It 
 
 
 
