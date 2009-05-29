@@ -13,4 +13,21 @@ public interface Engine
      * @param storage
      */
     public void init(File storage);
+    
+    /**
+     * Creates a new EngineWriter for writing to the engine. This must create a
+     * new writer each time it is called.
+     * 
+     * @return
+     */
+    public EngineWriter createWriter();
+    
+    /**
+     * Creates a new EngineReader for reading from this engine.
+     * 
+     * @return
+     */
+    public EngineReader createReader();
+    
+    public DataBlock
 }

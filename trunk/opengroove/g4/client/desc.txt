@@ -1,0 +1,24 @@
+G4 is the 4th generation of OpenGroove (aka the fourth rewrite). I know that's a lot of rewrites.
+
+Anyway, I think I started to write the kitchen sink into generation 3 (the first one known as OpenGroove; generation 1 was known as InTouch and generation 2 was known as Convergia). This made it not really feasible to complete. I'm going to simplify dramatically for G4.
+
+So anyway, I'm going to simplify things quite a bit. Organizations have to run a G4 server; if it gets big I'll add a public server and options to create new accounts.
+
+Contacts can't be edited. A user's "contact" list is a list of all users on the server.
+
+Users are stored in a properties file, mapping usernames to hashed passwords. Users, for now, can't be edited via any sort of UI.
+
+Like MS Groove, the server will only support stored messages. Also like groove, the server will only store a complete message, not a partially uploaded one.
+
+Clients won't have security keys for now, and clients must not connect from multiple computers. SSL will be used to encrypt data as it goes over the wire.
+
+The server has a message store for allowing clients to exchange stored messages. A client that wants to send a stored message from one user to another connects to the messaging socket and sends the message or receives one.
+
+All workspace data is stored as a master copy on the server. The dynamics system concept is still used to provide concurrency, but everything synchronizes against the server. So this means that engines run commands on a server, and the server stores all command history back until the last synchronization with the oldest-synchronzied client.
+
+Workspaces currently have managers, participants, and guests. Managers can read and write the workspace and can modify its user list (including who else are managers/participants/guests). Participants can read and write the workspace, but they can't modify the user list. Guests can only read the workspace, and the server won't let them write it.
+
+Workspaces cannot be created by the client right now; they can only be created on the server. Also, I'm thinking that the list of users in a workspace can only be modified on the server, not by users.
+
+
+
