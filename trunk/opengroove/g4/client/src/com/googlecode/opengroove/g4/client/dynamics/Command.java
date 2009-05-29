@@ -2,7 +2,11 @@ package com.googlecode.opengroove.g4.client.dynamics;
 
 /**
  * A command to an engine. This stores the command's name and the command's
- * data.
+ * data.<br/>
+ * <br/>
+ * 
+ * Command names can only contain alphanumeric characters (of any case).
+ * Including other characters, such as symbols, might cause problems.
  * 
  * @author Alexander Boyd
  * 
