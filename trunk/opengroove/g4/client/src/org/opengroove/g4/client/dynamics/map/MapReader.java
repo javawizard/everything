@@ -1,6 +1,6 @@
-package com.googlecode.opengroove.g4.client.dynamics.map;
+package org.opengroove.g4.client.dynamics.map;
 
-import com.googlecode.opengroove.g4.client.dynamics.EngineReader;
+import org.opengroove.g4.client.dynamics.EngineReader;
 
 public class MapReader implements EngineReader
 {

@@ -1,4 +1,4 @@
-package com.googlecode.opengroove.g4.client.dynamics;
+package org.opengroove.g4.client.dynamics;
 
 /**
  * An engine writer. This can be obtained from an engine, and its sole

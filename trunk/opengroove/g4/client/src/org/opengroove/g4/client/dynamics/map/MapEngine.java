@@ -1,4 +1,4 @@
-package com.googlecode.opengroove.g4.client.dynamics.map;
+package org.opengroove.g4.client.dynamics.map;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -9,12 +9,13 @@ import java.net.URLDecoder;
 import java.net.URLEncoder;
 import java.util.Properties;
 
-import com.googlecode.opengroove.g4.client.dynamics.ByteBlock;
-import com.googlecode.opengroove.g4.client.dynamics.Command;
-import com.googlecode.opengroove.g4.client.dynamics.DataBlock;
-import com.googlecode.opengroove.g4.client.dynamics.Engine;
-import com.googlecode.opengroove.g4.client.dynamics.EngineReader;
-import com.googlecode.opengroove.g4.client.dynamics.EngineWriter;
+import org.opengroove.g4.client.dynamics.ByteBlock;
+import org.opengroove.g4.client.dynamics.Command;
+import org.opengroove.g4.client.dynamics.DataBlock;
+import org.opengroove.g4.client.dynamics.Engine;
+import org.opengroove.g4.client.dynamics.EngineReader;
+import org.opengroove.g4.client.dynamics.EngineWriter;
+
 
 /**
  * An engine that provides a conceptual map (in the java.util.Map sense),

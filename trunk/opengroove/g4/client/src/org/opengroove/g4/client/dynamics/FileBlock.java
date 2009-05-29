@@ -1,4 +1,4 @@
-package com.googlecode.opengroove.g4.client.dynamics;
+package org.opengroove.g4.client.dynamics;
 
 import java.io.File;
 import java.io.FileInputStream;

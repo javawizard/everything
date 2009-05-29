@@ -1,4 +1,4 @@
-package com.googlecode.opengroove.g4.client.dynamics;
+package org.opengroove.g4.client.dynamics;
 
 /**
  * A command to an engine. This stores the command's name and the command's

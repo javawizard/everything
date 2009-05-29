@@ -1,11 +1,12 @@
-package com.googlecode.opengroove.g4.client.dynamics.map;
+package org.opengroove.g4.client.dynamics.map;
 
 import java.net.URLEncoder;
 
-import com.googlecode.opengroove.g4.client.dynamics.AbstractListWriter;
-import com.googlecode.opengroove.g4.client.dynamics.ByteBlock;
-import com.googlecode.opengroove.g4.client.dynamics.Command;
-import com.googlecode.opengroove.g4.client.dynamics.EngineWriter;
+import org.opengroove.g4.client.dynamics.AbstractListWriter;
+import org.opengroove.g4.client.dynamics.ByteBlock;
+import org.opengroove.g4.client.dynamics.Command;
+import org.opengroove.g4.client.dynamics.EngineWriter;
+
 
 public class MapWriter extends AbstractListWriter
 {
