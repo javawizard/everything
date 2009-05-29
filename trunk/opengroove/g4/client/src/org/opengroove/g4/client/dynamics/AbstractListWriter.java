@@ -14,7 +14,7 @@ import java.util.ArrayList;
  */
 public abstract class AbstractListWriter implements EngineWriter
 {
-    private ArrayList<Command> commands;
+    private ArrayList<Command> commands = new ArrayList<Command>();
     private Command[] commandArray;
     
     public void commit()

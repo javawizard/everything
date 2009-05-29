@@ -26,7 +26,7 @@ import org.opengroove.g4.client.dynamics.EngineWriter;
  */
 public class MapEngine implements Engine
 {
-    Properties props;
+    Properties props = new Properties();
     
     private File mainFile;
     

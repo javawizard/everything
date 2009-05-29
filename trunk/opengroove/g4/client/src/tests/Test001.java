@@ -2,7 +2,11 @@ package tests;
 
 import java.io.File;
 
+import org.opengroove.g4.client.dynamics.ByteBlock;
+import org.opengroove.g4.client.dynamics.Command;
+import org.opengroove.g4.client.dynamics.DataBlock;
 import org.opengroove.g4.client.dynamics.map.MapEngine;
+import org.opengroove.g4.client.dynamics.map.MapWriter;
 
 public class Test001
 {
@@ -16,6 +20,12 @@ public class Test001
         storage.mkdirs();
         MapEngine engine = new MapEngine();
         engine.init(storage);
+        // test-specific stuff
+        MapWriter writer = engine.createWriter();
+        writer.removeProperty("testprop");
+        writer.commit();
+        System.out.println(engine.applyCommands(new DataBlock[] {}, writer
+            .getCommands())[0].getString());
     }
     
 }
