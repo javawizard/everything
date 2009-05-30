@@ -22,3 +22,8 @@ Workspaces cannot be created by the client right now; they can only be created o
 
 
 
+
+
+One big problem that contributed to the excessive size and complexity of G3 was that I kept adding fixes for problems that didn't exist. The main thing was that I kept adding timed tasks to basically check for when other things skipped over tasks, which actually never happened throughout all of G3's tests. This, however, added a ton of complication. In G4, I'm going to try to have exactly 0 periodic tasks. And I think I should be able to do it.
+
+And now I'm deciding
