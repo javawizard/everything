@@ -1,0 +1,1 @@
+UPDATE: this document has been merged into desc.txt. This document would have described how engines synchronize across computers, and how that works with workspaces.

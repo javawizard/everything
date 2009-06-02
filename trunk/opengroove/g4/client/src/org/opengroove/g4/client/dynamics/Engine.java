@@ -1,6 +1,7 @@
 package org.opengroove.g4.client.dynamics;
 
 import java.io.File;
+import java.util.concurrent.locks.ReentrantReadWriteLock;
 
 /**
  * An engine. See
@@ -10,7 +11,13 @@ import java.io.File;
  * 
  * It is guaranteed that multiple engines accessing the same file store won't
  * exist at the same time. Therefore, an engine can store its state in memory,
- * and write it to disk but not read it, and this will not have any problems.
+ * and write it to disk but not read it, and this will not have any problems.<br/>
+ * <br/>
+ * 
+ * Engines must not modify or read data in any other code except that in the
+ * applyCommand and applyRevert methods, or methods called by those methods. In
+ * particular, engines must never start threads that periodically read or modify
+ * data in the engine.
  * 
  * @author Alexander Boyd
  * 
@@ -43,26 +50,46 @@ public interface Engine
     public EngineReader createReader();
     
     /**
-     * Applies the specified commands, optionally applying the reverts specified
-     * before-hand. The reverts and the commands should be applied in the exact
-     * order specified. The reverts will always be provided in the opposite
-     * order that their commands were, so the order of the reverts should not be
-     * reversed before they are executed.<br/>
+     * Locks the engine and any of its readers. applyCommand and applyRevert are
+     * only called by threads that have locked this engine. The engine must
+     * guarantee that if a thread has locked it, that thread is the only one
+     * that can read from readers on this engine. If another thread has locked
+     * this engine already, then this method will block until the other thread
+     * unlocks this engine.<br/>
      * <br/>
      * 
-     * This method should block all EngineReaders (but not EngineWriters) that
-     * might be in use by this engine. This could be done by having this engine
-     * maintain a lock object, and then having this method and all EngineReader
-     * methods synchronize on the lock.
-     * 
-     * @param reverts
-     *            The reverts to execute before executing the commands. This
-     *            array can be empty to not execute any reverts.
-     * @param commands
-     *            The commands to execute after executing the specified reverts
-     * @return A list of reverts for each of the commands specified that can be
-     *         used to revert those commands, in the exact same order that the
-     *         commands are provided in.
+     * Code that writes to the engine (using the apply methods) must lock the
+     * engine first. Code that reads from the engine should instead lock the
+     * reader of the engine. This method is therefore equivalent to obtaining a
+     * write lock on a read-write lock. In fact, most Engine implementations
+     * that are part of G4 use a {@link ReentrantReadWriteLock}, with this
+     * method obtaining the write lock.
      */
-    public DataBlock[] applyCommands(DataBlock[] reverts, Command[] commands);
+    public void lock();
+    
+    /**
+     * Applies the specified command, generating a command that can be itself
+     * applied to revert this command. This is also called to revert commands,
+     * by passing in the generated revert command.<br/>
+     * <br/>
+     * 
+     * This method can only be called when the engine is locked by the thread
+     * calling it. Engine implementations are highly recommended to enforce
+     * this, although they are not required to.
+     * 
+     * @param command
+     *            The command or revert to apply
+     * @return A command that will revert this one. If this command is a command
+     *         that can only appear as a revert (IE it will never be generated
+     *         by an engine writer produced by this engine), then this can be
+     *         null. Otherwise, this must be a command which can revert the
+     *         command passed into this method.
+     */
+    public DataBlock applyCommand(Command command);
+    
+    /**
+     * Unlocks this engine. Reads may progress concurrently after the engine is
+     * unlocked.
+     */
+    public void unlock();
 }
