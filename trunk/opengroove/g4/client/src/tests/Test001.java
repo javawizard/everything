@@ -2,12 +2,19 @@ package tests;
 
 import java.io.File;
 
-import org.opengroove.g4.client.dynamics.ByteBlock;
+import net.sf.opengroove.common.utils.DataUtils;
+import net.sf.opengroove.common.utils.StringUtils;
+
 import org.opengroove.g4.client.dynamics.Command;
-import org.opengroove.g4.client.dynamics.DataBlock;
+import org.opengroove.g4.client.dynamics.data.ByteBlock;
+import org.opengroove.g4.client.dynamics.data.DataBlock;
 import org.opengroove.g4.client.dynamics.map.MapEngine;
 import org.opengroove.g4.client.dynamics.map.MapWriter;
-
+/**
+ * A class to test out the functionality of a MapEngine.
+ * @author Alexander Boyd
+ *
+ */
 public class Test001
 {
     
@@ -17,15 +24,10 @@ public class Test001
     public static void main(String[] args)
     {
         File storage = new File("test-storage/test001/db");
+        DataUtils.recursiveDelete(storage);
         storage.mkdirs();
         MapEngine engine = new MapEngine();
         engine.init(storage);
-        // test-specific stuff
-        MapWriter writer = engine.createWriter();
-        writer.removeProperty("testprop");
-        writer.commit();
-        System.out.println(engine.applyCommands(new DataBlock[] {}, writer
-            .getCommands())[0].getString());
     }
     
 }

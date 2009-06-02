@@ -52,6 +52,22 @@ This also removes the concept of a "delta". The original reason for having a del
 
 So now it seems that the easiest thing to do is to have all of the engines act as one collective engine, as it appears from the perspective of the log and from the perspective of commands being pushed into this one large "workspace engine" (not to be confused with the management engine), as it's called. This pseudo-engine is also capable of intercepting commands instead of handing them down to the actual engine. Where this comes in useful is in the case that a new engine is created by Alice, Bob gets this update and modifies the engine's data, and Carol signs on but gets only Bob's update. When Carol gets the update for that engine, the engine does not exist. The workspace engine sees that, and realizing that it has no engine to hand the information down to, it simply ignores it and returns an empty revert string. When Bob's update finally arrives, Carol's update is reverted (which has no effect since it has an empty revert string), Bob's update is applied (which instructs the management engine to create the new engine, which it does), and then Carol's update is re-applied. This time, however, the workspace engine realizes that the target engine actually does exist, so it hands the command off to the target engine.
 
+There is one other slight issue: what to do with updates incoming from a user that's not a member of a workspace. Initial thought would tell us to discard these, but that causes some complications. The only really safe way is to save them up until the last synchronized date with every other user in the workspace, so in effect they would be injected into the log and "applied", and the workspace engine would filter them out into a nop because they're from a user that's not a member of the workspace. This is why this is needed: Alice and Bob share a workspace. Bob invites Carol to the workspace. Carol then makes some changes. Alice then signs on and receives Carol's updates before Bob's update adding Carol. If Alice were to discard Carol's changes, then Bob and Carol would have Carol's changes, but not Alice (all users would still have the correct member list). This would be solved by storing Carol's change. Then, when Bob's update adding Carol arrives, Carol's change would be reverted (which does nothing since it was filtered out by the workspace engine), Bob's change adding Carol applied, and then Carol's change re-applied (which would actually go into effect this time because Carol is now a member of the workspace according to Alice's management engine). This would solve the problem, but it adds the issue that anyone could spam another user with updates for a workspace, and the user would have to store them for a while before they know whether or not they are valid. I think I'll still use the solution, however, and worry about this denial-of-service issue later.
+
+Another issue is how users should receive updates from others in the workspace that have made changes before they were added, but the inviter didn't get those changes before the workspace was sent out. Here's an example: Alice and Bob are members of a workspace. Alice modifies some data. Bob adds Carol to the workspace and sends her the workspace as he sees it. Bob then receives Alice's change and applies it. Alice then receives Bob's change and adds Carol to her list of workspace members. Alice and Bob then have Alice's change, but Carol doesn't. Everyone has the correct user list (Alice, Bob, and Carol), though. So there needs to be some sort of means to solve this issue. 
+
+
+
+
+
+
+
+
+
+
+
+One other problem I just thought of is how updates should propegate to newly-added users. 
+
 Now to cover the management engine. Whenever the management engine is about to apply a command, it locks every other engine in the workspace before doing so. This might seem like it would slow down G4 considerably, but commands are only applied to the management engine when an engine is created or deleted, or a user is added, removed, or their permissions are changed. The reason for this locking is that the management engine has the ability to modify other engines (and their actual data storage, too) when applying its commands. 
 
 

@@ -1,7 +1,8 @@
-package org.opengroove.g4.client.dynamics;
+package org.opengroove.g4.client.dynamics.data;
 
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
+
 
 /**
  * A DataBlock that implements its storage in the form of a byte array. This
@@ -53,6 +54,11 @@ public class ByteBlock implements DataBlock
     public int getSize()
     {
         return bytes.length;
+    }
+    
+    public void release()
+    {
+        bytes = null;
     }
     
 }

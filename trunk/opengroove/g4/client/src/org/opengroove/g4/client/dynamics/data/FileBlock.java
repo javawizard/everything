@@ -1,8 +1,9 @@
-package org.opengroove.g4.client.dynamics;
+package org.opengroove.g4.client.dynamics.data;
 
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.InputStream;
+
 
 /**
  * A DataBlock that implements its storage in the form of a file. This should be
@@ -16,15 +17,16 @@ public class FileBlock implements DataBlock
     private File file;
     
     /**
-     * Creates a new FileBlock from the file specified. This does not mark the
-     * file for deletion at VM termination; it's strongly recommended that you
-     * call File.deleteOnExit on the passed-in file before you create this
-     * FileBlock.
+     * Creates a new FileBlock from the file specified. This marks the file for
+     * deletion from the VM when it shuts down, so important files should not be
+     * included here. When this block is released, the file will be deleted.
      * 
      * @param file
+     *            The file to use as the data for this block
      */
     public FileBlock(File file)
     {
+        file.deleteOnExit();
         this.file = file;
     }
     
@@ -68,6 +70,11 @@ public class FileBlock implements DataBlock
     public String getString()
     {
         return new String(getBytes());
+    }
+    
+    public void release()
+    {
+        file.delete();
     }
     
 }

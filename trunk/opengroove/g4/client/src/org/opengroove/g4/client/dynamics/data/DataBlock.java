@@ -1,4 +1,4 @@
-package org.opengroove.g4.client.dynamics;
+package org.opengroove.g4.client.dynamics.data;
 
 import java.io.InputStream;
 
@@ -41,4 +41,18 @@ public interface DataBlock
      * @return
      */
     public int getSize();
+    
+    /**
+     * Releases any data being held by this data block. This should usually be
+     * called after the block has been used and is no longer needed.<br/>
+     * <br/>
+     * 
+     * If any streams obtained from getStream() are still opened when this
+     * method is called, then the results are undefined, and may include an
+     * exception being thrown, or nothing happening.<br/>
+     * <br/>
+     * 
+     * Implementations should not rely on this method being called.
+     */
+    public void release();
 }

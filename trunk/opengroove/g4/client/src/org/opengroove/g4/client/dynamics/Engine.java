@@ -81,7 +81,11 @@ public interface Engine
      * <b>This method should not save changes to disk.</b> This method should
      * simply apply the command in such a way that a failure of the computer
      * would cause the command to be reverted. Changes are only saved to disk
-     * when the unlock method is called.
+     * when the unlock method is called.<br/>
+     * <br/>
+     * 
+     * Workspaces that make use of engines generally shouldn't call this method
+     * directly, since it would only apply changes to their local copy.
      * 
      * @param command
      *            The command or revert to apply

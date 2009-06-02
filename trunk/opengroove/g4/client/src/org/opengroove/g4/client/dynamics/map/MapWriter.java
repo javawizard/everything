@@ -3,9 +3,9 @@ package org.opengroove.g4.client.dynamics.map;
 import java.net.URLEncoder;
 
 import org.opengroove.g4.client.dynamics.AbstractListWriter;
-import org.opengroove.g4.client.dynamics.ByteBlock;
 import org.opengroove.g4.client.dynamics.Command;
 import org.opengroove.g4.client.dynamics.EngineWriter;
+import org.opengroove.g4.client.dynamics.data.ByteBlock;
 
 
 public class MapWriter extends AbstractListWriter
