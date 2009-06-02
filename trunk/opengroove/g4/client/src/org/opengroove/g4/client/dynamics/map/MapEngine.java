@@ -8,6 +8,7 @@ import java.io.IOException;
 import java.net.URLDecoder;
 import java.net.URLEncoder;
 import java.util.Properties;
+import java.util.concurrent.locks.ReentrantReadWriteLock;
 
 import org.opengroove.g4.client.dynamics.ByteBlock;
 import org.opengroove.g4.client.dynamics.Command;
@@ -15,7 +16,6 @@ import org.opengroove.g4.client.dynamics.DataBlock;
 import org.opengroove.g4.client.dynamics.Engine;
 import org.opengroove.g4.client.dynamics.EngineReader;
 import org.opengroove.g4.client.dynamics.EngineWriter;
-
 
 /**
  * An engine that provides a conceptual map (in the java.util.Map sense),
@@ -32,10 +32,13 @@ public class MapEngine implements Engine
     
     private File backupFile;
     
+    ReentrantReadWriteLock lock;
+    
     public void init(File storage)
     {
         try
         {
+            lock = new ReentrantReadWriteLock();
             mainFile = new File(storage, "values.props");
             backupFile = new File(storage, "backup.props");
             /*
@@ -62,45 +65,81 @@ public class MapEngine implements Engine
         }
     }
     
-    public synchronized DataBlock[] applyCommands(DataBlock[] reverts,
-        Command[] commands)
+    /**
+     * Applies a single command. This just applies it to <tt>props</tt>, it
+     * doesn't save it to disk or anything. It also generates a revert string
+     * based on the current properties.
+     * 
+     * @param command
+     */
+    public Command applyCommand(Command command)
     {
-        /*
-         * Revert format is the first char being "s" or "r", and then the data,
-         * in the exact same form that a command would expect.
-         */
-        for (DataBlock block : reverts)
+        String commandData = command.getData().getString();
+        String revertData;
+        String revertCommand;
+        if (command.getName().equals("SET"))
         {
-            String blockData = block.getString();
-            if (blockData.equals(""))
-                // occurs when this is a revert for a remove command where the
-                // property to remove didn't exist anyway
-                continue;
-            /*
-             * We don't care about the return value of applySingleCommand here,
-             * since you can revert a revert by just re-running the
-             * corresponding command again
-             */
-            if (blockData.startsWith("s"))
-                applySingleCommand(new Command("SET", new ByteBlock(blockData
-                    .substring(1))));
-            else if (blockData.startsWith("r"))
-                applySingleCommand(new Command("REMOVE", new ByteBlock(blockData
-                    .substring(1))));
+            String[] tokens = commandData.split("\\=");
+            String key = URLDecoder.decode(tokens[0]);
+            String value = URLDecoder.decode(tokens[1]);
+            if (props.getProperty(key) != null)
+            {
+                revertCommand = "SET";
+                revertData =
+                    URLEncoder.encode(key) + "="
+                        + URLEncoder.encode(props.getProperty(key));
+            }
             else
-                throw new RuntimeException();
+            {
+                revertCommand = "REMOVE";
+                revertData = URLEncoder.encode(key);
+            }
+            props.setProperty(key, value);
         }
-        /**
-         * Everything's reverted. Now run the new commands.
-         */
-        DataBlock[] newReverts = new DataBlock[commands.length];
-        for (int i = 0; i < commands.length; i++)
+        else if (command.getName().equals("REMOVE"))
         {
-            newReverts[i] = applySingleCommand(commands[i]);
+            String key = URLDecoder.decode(commandData);
+            if (props.getProperty(key) != null)
+            {
+                revertCommand = "SET";
+                revertData =
+                    URLEncoder.encode(key) + "="
+                        + URLEncoder.encode(props.getProperty(key));
+            }
+            else
+            {
+                revertCommand = "NOP";
+                revertData = "";
+            }
+            props.remove(key);
         }
-        /*
-         * Commands are applied. Now save changes to disk and return reverts.
-         */
+        else if (command.getName().equals("NOP"))
+        {
+            revertCommand = "NOP";
+            revertData = "";
+        }
+        else
+            throw new RuntimeException();
+        return new Command(revertCommand, new ByteBlock(revertData));
+    }
+    
+    public MapReader createReader()
+    {
+        return new MapReader(this);
+    }
+    
+    public MapWriter createWriter()
+    {
+        return new MapWriter();
+    }
+    
+    public void lock()
+    {
+        lock.writeLock().lock();
+    }
+    
+    public void unlock()
+    {
         try
         {
             props.store(new FileOutputStream(backupFile), "MapEngine values");
@@ -112,57 +151,10 @@ public class MapEngine implements Engine
             throw new RuntimeException(e.getClass().getName() + ": " + e.getMessage(),
                 e);
         }
-        return newReverts;
-    }
-    
-    /**
-     * Applies a single command. This just applies it to <tt>props</tt>, it
-     * doesn't save it to disk or anything. It also generates a revert string
-     * based on the current properties.
-     * 
-     * @param command
-     */
-    private DataBlock applySingleCommand(Command command)
-    {
-        String commandData = command.getData().getString();
-        String revertData;
-        if (command.getName().equals("SET"))
+        finally
         {
-            String[] tokens = commandData.split("\\=");
-            String key = URLDecoder.decode(tokens[0]);
-            String value = URLDecoder.decode(tokens[1]);
-            if (props.getProperty(key) != null)
-                revertData =
-                    "s" + URLEncoder.encode(key) + "="
-                        + URLEncoder.encode(props.getProperty(key));
-            else
-                revertData = "r" + URLEncoder.encode(key);
-            props.setProperty(key, value);
+            lock.writeLock().unlock();
         }
-        else if (command.getName().equals("REMOVE"))
-        {
-            String key = URLDecoder.decode(commandData);
-            if (props.getProperty(key) != null)
-                revertData =
-                    "s" + URLEncoder.encode(key) + "="
-                        + URLEncoder.encode(props.getProperty(key));
-            else
-                revertData = "";
-            props.remove(key);
-        }
-        else
-            throw new RuntimeException();
-        return new ByteBlock(revertData);
-    }
-    
-    public MapReader createReader()
-    {
-        return new MapReader(this);
-    }
-    
-    public MapWriter createWriter()
-    {
-        return new MapWriter();
     }
     
 }

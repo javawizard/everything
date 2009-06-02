@@ -75,21 +75,32 @@ public interface Engine
      * 
      * This method can only be called when the engine is locked by the thread
      * calling it. Engine implementations are highly recommended to enforce
-     * this, although they are not required to.
+     * this, although they are not required to.<br/>
+     * <br/>
+     * 
+     * <b>This method should not save changes to disk.</b> This method should
+     * simply apply the command in such a way that a failure of the computer
+     * would cause the command to be reverted. Changes are only saved to disk
+     * when the unlock method is called.
      * 
      * @param command
      *            The command or revert to apply
      * @return A command that will revert this one. If this command is a command
      *         that can only appear as a revert (IE it will never be generated
      *         by an engine writer produced by this engine), then this can be
-     *         null. Otherwise, this must be a command which can revert the
-     *         command passed into this method.
+     *         null, but if it isn't, it must be a command equivalent to the one
+     *         that generated this revert. Otherwise, this must be a command
+     *         which can revert the command passed into this method.
      */
-    public DataBlock applyCommand(Command command);
+    public Command applyCommand(Command command);
     
     /**
      * Unlocks this engine. Reads may progress concurrently after the engine is
-     * unlocked.
+     * unlocked.<br/>
+     * <br/>
+     * 
+     * This method should save any changes that were applied by applyCommand. In
+     * effect, then, lock() starts a new transaction and unlock() commits it.
      */
     public void unlock();
 }

@@ -13,17 +13,21 @@ public class MapReader implements EngineReader
     
     public String getProperty(String name)
     {
-        synchronized (engine)
-        {
-            return engine.props.getProperty(name);
-        }
+        return engine.props.getProperty(name);
     }
     
     public String[] listProperties()
     {
-        synchronized (engine)
-        {
-            return engine.props.keySet().toArray(new String[0]);
-        }
+        return engine.props.keySet().toArray(new String[0]);
+    }
+    
+    public void lock()
+    {
+        engine.lock.readLock().lock();
+    }
+    
+    public void unlock()
+    {
+        engine.lock.readLock().unlock();
     }
 }
