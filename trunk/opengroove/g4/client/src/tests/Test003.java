@@ -21,11 +21,27 @@ public class Test003
             new XMPPConnection(new ConnectionConfiguration("localhost", 5222));
         System.out.println("connecting");
         con.connect();
+        con.addPacketListener(new PacketListener()
+        {
+            
+            public void processPacket(Packet packet)
+            {
+                System.out.println("packet " + packet);
+            }
+        }, null);
         System.out.println("logging in");
         con.login("testusername2", "testpassword", "g4");
-        Message message = new Message("testusername1@localhost", Message.Type.normal);
-        message.setBody("Hello, this is a message sent from Test003 at " + new Date());
-        // <%!$org.opengroove.g4$!%>(--:base64:sdjkfldsjklfjkldjfk:--)
+        for (int i = 0; i < 1; i++)
+        {
+            System.out.println("Message " + (i + 1));
+            Message message =
+                new Message("testusername1@localhost", Message.Type.normal);
+            message.setBody("Hello, this is a message sent from Test003 at "
+                + new Date() + ". This is message " + (i + 1) + ".");
+            con.sendPacket(message);
+        }
+        Thread.sleep(3000);
+        con.disconnect();
     }
     
 }

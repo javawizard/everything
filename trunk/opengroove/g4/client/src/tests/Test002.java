@@ -21,7 +21,7 @@ public class Test002
     public static void main(String[] args) throws Throwable
     {
         XMPPConnection con =
-            new XMPPConnection(new ConnectionConfiguration("localhost", 5222));
+            new XMPPConnection("localhost");
         System.out.println("connecting");
         con.connect();
         con.addPacketListener(new PacketListener()
@@ -29,20 +29,24 @@ public class Test002
             
             public void processPacket(Packet packet)
             {
-                Message message = (Message) packet;
-                System.out.println("New message");
-                System.out.println("From:     " + message.getFrom());
-                System.out.println("To:       " + message.getTo());
-                System.out.println("Type:     " + message.getType());
-                System.out.println("Subject:  " + message.getSubject());
-                System.out.println("Body:     " + message.getBody());
-                System.out.println();
+                System.out.println("packet " + packet);
+                if (packet instanceof Message)
+                {
+                    Message message = (Message) packet;
+                    System.out.println("New message");
+                    System.out.println("From:     " + message.getFrom());
+                    System.out.println("To:       " + message.getTo());
+                    System.out.println("Type:     " + message.getType());
+                    System.out.println("Subject:  " + message.getSubject());
+                    System.out.println("Body:     " + message.getBody());
+                    System.out.println();
+                }
             }
-        }, new PacketTypeFilter(Message.class));
+        }, null);
         System.out.println("logging in");
         con.login("testusername1", "testpassword", "g4");
         System.out.println("ready");
-        Thread.sleep(25000);
+        Thread.sleep(45000);
         con.disconnect();
     }
 }

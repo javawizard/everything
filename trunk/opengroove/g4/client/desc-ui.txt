@@ -1,0 +1,24 @@
+G4 is going to be a lot simpler than G3 was, in terms of the plugin system and the UI. And like I mentioned in desc.txt, there will be no recurring tasks except for a select few (like reconnecting to the server and adding a nop every day to the changelist of a workspace). In particular, there are no recurring tasks to reload a contact list, broadcast presence, or check for messages. In xmpp, messages are pushed to the client, similar to how sstp works. This has one disadvantage that disconnecting from the internet can cause message loss if messages are currently being received. An openfire modification to not discard offline messages until they are acknowledged would fix this problem at the expense of protocol complexity.
+
+Anyway, on to the UI and how to implement this whole thing. When G4 starts up, it adds a tray icon and sets up the taskbar notification frame, adding an item that says "G4 has started up". Then it goes and sees if there are any users. If there are, it goes off and loads their account and everything, sets up their XMPPMessageService (which handles when a block of bytes needs to be sent, it chucks it up, caches it, and sends it when possible, and takes care of processing chunks sent to it by the xmpp connection when they arrive, composing them together once all of them have arrived, and then delivering it to the MessageService), their MessageService (which handles examining a message and figuring out where it is supposed to be routed to), and their launchbar. If there are not any users, then it shows the new user dialog, probably with an introduction screen explaning that they need to create an account. 
+
+The new account screen is a fairly simple one. It allows them to choose to use an existing xmpp account (but warns them that they should not, under any circumstances, use the same account on multiple computers, because of things like one computer's workspace getting half the updates and another computer's workspace getting the other half, or half a message arriving on one computer and the other half arriving on the other computer, which results in neither of the halves showing up to the user), or create a new account. Creating a new account uses in-band account creation to create the account. Then they choose their username and password (and confirm their password if they're creating an account), and choose their server if they want to (there's a link that says roughly "Choose a server (advanced users only)" that causes an extra text box to appear where they can type an xmpp domain to use and information on what G4's default server is). Then there's a button that says Add, that when they click it it creates the account using in-band registration, prompting for additional information if the server asks for it (or maybe when they choose the radio button to create an account it asks the server for necessary fields then) if they are creating an account. Then, either way, it logs them in to validate their username and password, and then adds their account to G4.
+
+When an XMPP connection is established, G4 goes out and loads the roster. Contacts can currently only be added while the user is online. When the contact is added, a new "message" appears on the target contact's computer, titled in the notification frame "Contact request from testusername on ...", which they can click to accept or reject the contact being added. When they accept, the server updates the roster, and this gets pushed to the client, which then adds the contact. Contacts are copied to the local computer so that messages may be sent to them while the user is offline.
+
+Contacts in workspaces do not show presence information unless they are added as an actual contact, since if I remember correctly xmpp only allows subscriptions to user presence when the user is on the contact list.
+
+When a user wants to send a stored message, they open the stored message dialog (which will probably be copied from OpenGroove), and create their message with attachments or what not. Then they send it. The message is then merged down to a single DataBlock. This is then sent to the MessageService for delivery to the StoredMessageService on the recipient's computer. This takes care of all of the chunking and routing involved in delivering the message. When the recipient's StoredMessageService receives a message, it replies with a message indicating that this message has been delivered. When the recipient's message is then opened, it replies with a message indicating that this message has been opened.
+
+
+
+
+
+
+
+
+
+
+
+
+
