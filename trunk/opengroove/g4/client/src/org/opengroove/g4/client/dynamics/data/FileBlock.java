@@ -30,6 +30,12 @@ public class FileBlock implements DataBlock
         this.file = file;
     }
     
+    protected void finalize() throws Throwable
+    {
+        System.out.println("Finalizing a FileBlock");
+        file.delete();
+    }
+
     public byte[] getBytes()
     {
         try
