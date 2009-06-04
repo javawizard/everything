@@ -1,8 +1,19 @@
 package org.opengroove.g4.client.dynamics.data;
 
 import java.io.InputStream;
+import java.io.Serializable;
 
-public interface DataBlock
+/**
+ * A block of data.<br/>
+ * <br/>
+ * 
+ * Data blocks are always serializable. It's up to the implementation how it
+ * wants to handle this.
+ * 
+ * @author Alexander Boyd
+ * 
+ */
+public interface DataBlock extends Serializable
 {
     /**
      * Returns a string representation of this data block.

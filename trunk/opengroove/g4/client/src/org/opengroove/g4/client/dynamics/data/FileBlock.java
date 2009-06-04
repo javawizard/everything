@@ -2,8 +2,14 @@ package org.opengroove.g4.client.dynamics.data;
 
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.IOException;
 import java.io.InputStream;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
 
+import org.opengroove.g4.client.TemporaryFileStore;
+
+import net.sf.opengroove.common.utils.StringUtils;
 
 /**
  * A DataBlock that implements its storage in the form of a file. This should be
@@ -14,7 +20,7 @@ import java.io.InputStream;
  */
 public class FileBlock implements DataBlock
 {
-    private File file;
+    private transient File file;
     
     /**
      * Creates a new FileBlock from the file specified. This marks the file for
@@ -35,7 +41,7 @@ public class FileBlock implements DataBlock
         System.out.println("Finalizing a FileBlock");
         file.delete();
     }
-
+    
     public byte[] getBytes()
     {
         try
@@ -81,6 +87,24 @@ public class FileBlock implements DataBlock
     public void release()
     {
         file.delete();
+    }
+    
+    private void writeObject(ObjectOutputStream out) throws IOException
+    {
+        out.defaultWriteObject();
+        out.writeInt(getSize());
+        InputStream stream = getStream();
+        StringUtils.copy(stream, out);
+        stream.close();
+    }
+    
+    private void readObject(ObjectInputStream in) throws IOException,
+        ClassNotFoundException
+    {
+        in.defaultReadObject();
+        file = TemporaryFileStore.createFile();
+        // FIXME: finish this up, read data from the stream and write it to the
+        // file, deleteOnExit() the file
     }
     
 }
