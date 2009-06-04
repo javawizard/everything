@@ -6,6 +6,7 @@ import org.jivesoftware.smack.XMPPConnection;
 import org.jivesoftware.smack.filter.PacketTypeFilter;
 import org.jivesoftware.smack.packet.Message;
 import org.jivesoftware.smack.packet.Packet;
+import org.jivesoftware.smackx.packet.OfflineMessageRequest;
 
 /**
  * A class that tests out offline messaging. It connects as testusername1@localhost
@@ -20,8 +21,11 @@ public class Test002
 {
     public static void main(String[] args) throws Throwable
     {
-        XMPPConnection con =
-            new XMPPConnection("localhost");
+        // set this to true to respond acknowledging messages when they are
+        // received, by the entire body of the message, false to not
+        // acknowledge them
+        final boolean ackMessages = false;
+        final XMPPConnection con = new XMPPConnection("localhost");
         System.out.println("connecting");
         con.connect();
         con.addPacketListener(new PacketListener()
@@ -34,19 +38,25 @@ public class Test002
                 {
                     Message message = (Message) packet;
                     System.out.println("New message");
-                    System.out.println("From:     " + message.getFrom());
-                    System.out.println("To:       " + message.getTo());
-                    System.out.println("Type:     " + message.getType());
+                    
                     System.out.println("Subject:  " + message.getSubject());
                     System.out.println("Body:     " + message.getBody());
                     System.out.println();
+                    if (ackMessages)
+                    {
+                        OfflineMessageRequest omr = new OfflineMessageRequest();
+                        OfflineMessageRequest.Item omrItem =
+                            new OfflineMessageRequest.Item(message.getSubject());
+                        omrItem.setAction("rcontent");
+                        omr.addItem(omrItem);
+                        con.sendPacket(omr);
+                    }
                 }
             }
         }, null);
         System.out.println("logging in");
         con.login("testusername1", "testpassword", "g4");
         System.out.println("ready");
-        Thread.sleep(45000);
-        con.disconnect();
+        Thread.sleep(100000000);
     }
 }

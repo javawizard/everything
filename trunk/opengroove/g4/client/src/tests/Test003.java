@@ -31,13 +31,13 @@ public class Test003
         }, null);
         System.out.println("logging in");
         con.login("testusername2", "testpassword", "g4");
-        for (int i = 0; i < 1; i++)
+        for (int i = 0; i < 10000; i++)
         {
-            System.out.println("Message " + (i + 1));
+            if ((i % 500) == 0)
+                System.out.println("Message " + (i + 1));
             Message message =
                 new Message("testusername1@localhost", Message.Type.normal);
-            message.setBody("Hello, this is a message sent from Test003 at "
-                + new Date() + ". This is message " + (i + 1) + ".");
+            message.setBody("This is test message " + (i + 1) + ".");
             con.sendPacket(message);
         }
         Thread.sleep(3000);
