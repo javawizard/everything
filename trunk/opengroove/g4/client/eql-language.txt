@@ -6,14 +6,15 @@ Basic structure:
 
 
 SELECT FROM <entity-type> 
-    [WHERE  <where>]
+    [WHERE  <check>]
     [ORDER BY <column> ( ASC | DESC) [, <column> ( ASC | DESC ) ...]]
+    [OFFSET <offset>]
+    [LIMIT <limit>]
     
 	
 
+<check>      := ( <condition> | <check> ( AND | OR | NOT ) <check> ) 
 
-<where>      :=   ( <condition> | <where> AND <where> | <where> OR <where> | 
-                  NOT <where> )
 <condition>  :=   <column-name> ( = | > | >= | < | <= | != | <- | -> ) 
                   ( <column-name> | <literal-value> )
 
