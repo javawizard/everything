@@ -1,0 +1,20 @@
+This file is the official reference for the Entity Query Language, the query language used by G4's TableEngine.
+
+EQL is a query language that is more advanced than GQL but significantly less advanced than SQL. It is designed for use with the table engine's schema-less layout.
+
+Basic structure:
+
+
+SELECT FROM <entity-type> 
+    [WHERE  <where>]
+    [ORDER BY <column> ( ASC | DESC) [, <column> ( ASC | DESC ) ...]]
+    
+	
+
+
+<where>      :=   ( <condition> | <where> AND <where> | <where> OR <where> | 
+                  NOT <where> )
+<condition>  :=   <column-name> ( = | > | >= | < | <= | != | <- | -> ) 
+                  ( <column-name> | <literal-value> )
+
+ 
