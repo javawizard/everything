@@ -20,7 +20,7 @@ public class RegisterInfoResponse extends Packet
          * the user just needs to provide a username and a password, and the
          * server will be happy to provide them with an account.
          */
-        OPEN,
+        Open,
         /**
          * Indicates that registration requires additional information beyond
          * the user's username and password. The server may choose to limit
@@ -29,7 +29,7 @@ public class RegisterInfoResponse extends Packet
          * register for an account). {@link RegisterInfoResponse#component}
          * should have a swing component that can accept this additional info.
          */
-        INFO,
+        Info,
         /**
          * Indicates that registration for this server is closed, and that the
          * user must use some other means to register.
@@ -39,7 +39,7 @@ public class RegisterInfoResponse extends Packet
          * {@link RegisterInfoResponse#url} can also contain a link to
          * information on how to register.
          */
-        CLOSED
+        Closed
     }
     
     private Status status;
