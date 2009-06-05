@@ -14,5 +14,5 @@ import org.opengroove.g4.common.Packet;
  */
 public class RosterPacket extends Packet
 {
-    
+    private boolean isInitial;
 }
