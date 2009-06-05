@@ -1,4 +1,4 @@
-package org.opengroove.g4.common.protocol;
+package org.opengroove.g4.common;
 
 import java.io.Serializable;
 
