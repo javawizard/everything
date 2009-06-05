@@ -5,8 +5,7 @@ import java.net.URLEncoder;
 import org.opengroove.g4.client.dynamics.AbstractListWriter;
 import org.opengroove.g4.client.dynamics.Command;
 import org.opengroove.g4.client.dynamics.EngineWriter;
-import org.opengroove.g4.client.dynamics.data.ByteBlock;
-
+import org.opengroove.g4.common.data.ByteBlock;
 
 public class MapWriter extends AbstractListWriter
 {

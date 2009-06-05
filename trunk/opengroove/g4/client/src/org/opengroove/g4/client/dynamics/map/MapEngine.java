@@ -14,8 +14,7 @@ import org.opengroove.g4.client.dynamics.Command;
 import org.opengroove.g4.client.dynamics.Engine;
 import org.opengroove.g4.client.dynamics.EngineReader;
 import org.opengroove.g4.client.dynamics.EngineWriter;
-import org.opengroove.g4.client.dynamics.data.ByteBlock;
-import org.opengroove.g4.client.dynamics.data.DataBlock;
+import org.opengroove.g4.common.data.ByteBlock;
 
 /**
  * An engine that provides a conceptual map (in the java.util.Map sense),

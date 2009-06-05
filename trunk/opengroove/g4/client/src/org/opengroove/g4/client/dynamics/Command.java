@@ -5,13 +5,13 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 
+import org.opengroove.g4.common.data.ByteBlockBuilder;
+import org.opengroove.g4.common.data.DataBlock;
+import org.opengroove.g4.common.data.DataBlockBuilder;
+import org.opengroove.g4.common.data.FileBlockBuilder;
+
 import net.sf.opengroove.common.utils.StringUtils;
 
-import org.opengroove.g4.client.TemporaryFileStore;
-import org.opengroove.g4.client.dynamics.data.ByteBlockBuilder;
-import org.opengroove.g4.client.dynamics.data.DataBlock;
-import org.opengroove.g4.client.dynamics.data.DataBlockBuilder;
-import org.opengroove.g4.client.dynamics.data.FileBlockBuilder;
 
 /**
  * A command to an engine. This stores the command's name and the command's

@@ -6,8 +6,6 @@ import net.sf.opengroove.common.utils.DataUtils;
 import net.sf.opengroove.common.utils.StringUtils;
 
 import org.opengroove.g4.client.dynamics.Command;
-import org.opengroove.g4.client.dynamics.data.ByteBlock;
-import org.opengroove.g4.client.dynamics.data.DataBlock;
 import org.opengroove.g4.client.dynamics.map.MapEngine;
 import org.opengroove.g4.client.dynamics.map.MapWriter;
 /**
