@@ -9,7 +9,7 @@ import java.io.Serializable;
  * @author Alexander Boyd
  * 
  */
-public class Packet implements Serializable
+public abstract class Packet implements Serializable
 {
     
     /**
