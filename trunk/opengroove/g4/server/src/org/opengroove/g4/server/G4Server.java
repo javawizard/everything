@@ -77,10 +77,35 @@ public class G4Server
         serverUserid = new Userid(serverName + "::");
         threadPool.allowCoreThreadTimeOut(true);
         scheduleIdleConnectionKiller();
+        startGarbageCollectingThread();
         server = new ServerSocket(G4Defaults.CLIENT_SERVER_PORT);
         loadCommands();
         System.out.println("G4 Server is up and running.");
         runServer();
+    }
+    
+    private static void startGarbageCollectingThread()
+    {
+        Thread t = new Thread("g4-garbage-collector")
+        {
+            public void run()
+            {
+                while (true)
+                {
+                    try
+                    {
+                        Thread.sleep(30 * 1000);
+                    }
+                    catch (Exception exception)
+                    {
+                        exception.printStackTrace();
+                    }
+                    System.gc();
+                }
+            }
+        };
+        t.setDaemon(true);
+        t.start();
     }
     
     private static void runServer()
@@ -225,5 +250,18 @@ public class G4Server
         }
         return userids;
     }
-
+    
+    public static boolean userExists(Userid user)
+    {
+        user = user.validateServer(serverName);
+        return new File(authFolder, user.getUsername()).exists();
+    }
+    
+    public static boolean computerExists(Userid computer)
+    {
+        computer = computer.validateServer(serverName);
+        return new File(authFolder, computer.getUsername() + "/computers/"
+            + computer.getComputer()).exists();
+    }
+    
 }

@@ -14,6 +14,7 @@ import org.opengroove.g4.common.protocol.ExceptionPacket;
 import org.opengroove.g4.common.protocol.InboundMessagePacket;
 import org.opengroove.g4.common.user.Userid;
 import org.opengroove.g4.common.utils.ObjectUtils;
+import org.opengroove.g4.common.utils.ProtocolUtils;
 
 /**
  * A connection from a client.
@@ -160,8 +161,8 @@ public class ServerConnection extends Thread
             {
                 InboundMessagePacket messageObject =
                     (InboundMessagePacket) ObjectUtils.readObject(messageFile);
-                messageObject.setMessageId(URLDecoder.decode(messageFile.getName()));
-                messageObject.setPacketThread(G4Server.generateId());
+                messageObject.setPacketThread(ProtocolUtils.generateId());
+                send(messageObject);
             }
         }
     }
