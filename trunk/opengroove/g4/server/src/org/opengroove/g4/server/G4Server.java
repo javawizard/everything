@@ -16,10 +16,9 @@ public class G4Server
     /**
      * The auth folder. This contains one folder per user. The user's folder
      * contains a file called password which is the user's password. It contains
-     * a file (which is currently empty) for each computer called
-     * "computer_NAME", where NAME is the name of the computer. In the future,
-     * it will contain a file called roster whose format I haven't figured out
-     * yet.
+     * a folder called computers which has one file per computer in it. That
+     * file is named the computer's name and is empty. In the future, it will
+     * contain a file called roster whose format I haven't figured out yet.
      */
     private static File authFolder;
     
