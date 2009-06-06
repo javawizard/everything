@@ -5,6 +5,7 @@ import java.io.FileInputStream;
 import java.io.FilenameFilter;
 import java.lang.reflect.Method;
 import java.net.ServerSocket;
+import java.net.Socket;
 import java.util.HashMap;
 import java.util.Properties;
 import java.util.concurrent.ArrayBlockingQueue;
@@ -79,7 +80,18 @@ public class G4Server
     
     private static void runServer()
     {
-        
+        while (!server.isClosed())
+        {
+            try
+            {
+                Socket socket = server.accept();
+                new ServerConnection(socket).start();
+            }
+            catch (Exception e)
+            {
+                e.printStackTrace();
+            }
+        }
     }
     
     private static void scheduleIdleConnectionKiller()
