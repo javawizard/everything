@@ -42,20 +42,31 @@ public class LoginResponse extends Packet
     
     private Status status;
     private String reason;
+    
     public Status getStatus()
     {
         return status;
     }
+    
     public void setStatus(Status status)
     {
         this.status = status;
     }
+    
     public String getReason()
     {
         return reason;
     }
+    
     public void setReason(String reason)
     {
+        this.reason = reason;
+    }
+    
+    public LoginResponse(Status status, String reason)
+    {
+        super();
+        this.status = status;
         this.reason = reason;
     }
 }
