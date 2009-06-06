@@ -2,6 +2,7 @@ package org.opengroove.g4.server;
 
 import java.io.File;
 import java.io.FileInputStream;
+import java.lang.reflect.Method;
 import java.net.ServerSocket;
 import java.util.HashMap;
 import java.util.Properties;
@@ -10,10 +11,20 @@ import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 
 import org.opengroove.g4.common.G4Defaults;
+import org.opengroove.g4.common.Packet;
+import org.opengroove.g4.common.protocol.LoginPacket;
 import org.opengroove.g4.common.user.Userid;
+import org.opengroove.g4.server.commands.types.ComputerCommand;
+import org.opengroove.g4.server.commands.types.UnauthCommand;
+import org.opengroove.g4.server.commands.types.UserCommand;
 
 public class G4Server
 {
+    public static HashMap<Class, Command> unauthCommands =
+        new HashMap<Class, Command>();
+    public static HashMap<Class, Command> computerCommands =
+        new HashMap<Class, Command>();
+    public static HashMap<Class, Command> userCommands = new HashMap<Class, Command>();
     public static File storageFolder;
     /**
      * The message store folder, Within here is one folder for each username,
@@ -42,6 +53,7 @@ public class G4Server
     public static ThreadPoolExecutor threadPool =
         new ThreadPoolExecutor(5, 100, 60, TimeUnit.SECONDS,
             new ArrayBlockingQueue<Runnable>(500));
+    public static String serverName;
     
     /**
      * @param args
@@ -55,15 +67,17 @@ public class G4Server
         authFolder.mkdirs();
         configProperties.load(new FileInputStream(new File(storageFolder,
             "config.props")));
+        serverName = configProperties.getProperty("server-name");
         threadPool.allowCoreThreadTimeOut(true);
         scheduleIdleConnectionKiller();
         server = new ServerSocket(G4Defaults.CLIENT_SERVER_PORT);
+        loadCommands();
+        System.out.println("G4 Server is up and running.");
         runServer();
     }
     
     private static void runServer()
     {
-        // TODO Auto-generated method stub
         
     }
     
@@ -75,4 +89,43 @@ public class G4Server
          */
     }
     
+    private static void loadCommands()
+    {
+    }
+    
+    private static void installCommand(Command command)
+    {
+        boolean isUnauth = command.getClass().isAnnotationPresent(UnauthCommand.class);
+        boolean isUser = command.getClass().isAnnotationPresent(UserCommand.class);
+        boolean isComputer =
+            command.getClass().isAnnotationPresent(ComputerCommand.class);
+        Method[] methods = command.getClass().getMethods();
+        Class argumentType = null;
+        for (Method method : methods)
+        {
+            if (method.getName().equals("process")
+                && method.getParameterTypes().length == 1
+                && Packet.class.isAssignableFrom(method.getParameterTypes()[0]))
+            {
+                /*
+                 * If the method's name is process, the method has exactly one
+                 * parameter, and that parameter is a subclass of Packet
+                 */
+                argumentType = method.getParameterTypes()[0];
+                break;
+            }
+        }
+        /*
+         * argumentType will never be null here because of the Command
+         * interface, which defines exactly the method we're searching for but
+         * leaves the parameter type up to the subclass so long as it extends
+         * Packet
+         */
+        if (isUnauth)
+            unauthCommands.put(argumentType, command);
+        if (isComputer)
+            computerCommands.put(argumentType, command);
+        if (isUser)
+            userCommands.put(argumentType, command);
+    }
 }
