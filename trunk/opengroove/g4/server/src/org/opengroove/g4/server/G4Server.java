@@ -264,4 +264,15 @@ public class G4Server
             + computer.getComputer()).exists();
     }
     
+    public static void verifyUserExists(Userid user)
+    {
+        if (!userExists(user))
+            throw new RuntimeException("User " + user + " doesn't exist");
+    }
+    
+    public static void verifyComputerExists(Userid user)
+    {
+        if (!computerExists(user))
+            throw new RuntimeException("Computer " + user + " doesn't exist");
+    }
 }

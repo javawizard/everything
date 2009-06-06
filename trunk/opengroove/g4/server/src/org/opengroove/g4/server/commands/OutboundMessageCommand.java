@@ -1,7 +1,10 @@
 package org.opengroove.g4.server.commands;
 
+import java.io.File;
+import java.net.URLEncoder;
 import java.util.ArrayList;
 
+import org.opengroove.g4.common.protocol.InboundMessagePacket;
 import org.opengroove.g4.common.protocol.OutboundMessagePacket;
 import org.opengroove.g4.common.user.Userid;
 import org.opengroove.g4.server.Command;
@@ -54,6 +57,7 @@ public class OutboundMessageCommand implements Command<OutboundMessagePacket>
                  * The recipient specifies a computer. We'll add them directly
                  * to the list.
                  */
+                G4Server.verifyComputerExists(normalRecipient);
                 recipientList.add(normalRecipient);
             }
             else
@@ -62,7 +66,32 @@ public class OutboundMessageCommand implements Command<OutboundMessagePacket>
                  * The recipient does not specify a computer. We'll add all of
                  * their computers to the list.
                  */
+                G4Server.verifyUserExists(normalRecipient);
                 G4Server.listComputers(normalRecipient);
+            }
+        }
+        /*
+         * We now have the actual list of computers to send the message to, and
+         * all of them exist. We'll go and write them to disk now in the
+         * computer's recipient message folder.
+         */
+        InboundMessagePacket inboundMessage = new InboundMessagePacket();
+        inboundMessage.setMessageId(id);
+        inboundMessage.setSender(connection.getUserid());
+        inboundMessage.setMessage(packet.getMessage());
+        for (Userid user : recipientList)
+        {
+            try
+            {
+                File messageFolder = G4Server.getMessageFolder(user);
+                File messageFile = new File(messageFolder, URLEncoder.encode(id));
+                if(messageFile.exists())
+                    continue;
+                
+            }
+            catch (Exception exception)
+            {
+                exception.printStackTrace();
             }
         }
     }
