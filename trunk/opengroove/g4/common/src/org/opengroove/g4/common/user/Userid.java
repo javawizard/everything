@@ -1,5 +1,7 @@
 package org.opengroove.g4.common.user;
 
+import java.io.Serializable;
+
 /**
  * A G4 userid. A userid can represent a server, a user, or a computer. A userid
  * can also be relative to a server or to a user.<br/>
@@ -10,7 +12,7 @@ package org.opengroove.g4.common.user;
  * @author Alexander Boyd
  * 
  */
-public class Userid
+public class Userid implements Serializable
 {
     private String server;
     private String username;
