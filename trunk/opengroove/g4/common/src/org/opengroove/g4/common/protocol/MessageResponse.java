@@ -15,4 +15,14 @@ import org.opengroove.g4.common.protocol.doc.ServerToClient;
 public class MessageResponse extends Packet
 {
     private String messageId;
+
+    public String getMessageId()
+    {
+        return messageId;
+    }
+
+    public void setMessageId(String messageId)
+    {
+        this.messageId = messageId;
+    }
 }
