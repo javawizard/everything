@@ -11,6 +11,7 @@ import java.util.Properties;
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicLong;
 
 import org.opengroove.g4.common.G4Defaults;
 import org.opengroove.g4.common.Packet;
@@ -22,6 +23,7 @@ import org.opengroove.g4.server.commands.types.UserCommand;
 
 public class G4Server
 {
+    public static final Object authLock = new Object();
     public static HashMap<Class, Command> unauthCommands =
         new HashMap<Class, Command>();
     public static HashMap<Class, Command> computerCommands =
@@ -223,4 +225,5 @@ public class G4Server
         }
         return userids;
     }
+
 }

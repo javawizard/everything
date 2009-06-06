@@ -6,11 +6,14 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.io.OutputStream;
 import java.net.Socket;
+import java.net.URLDecoder;
 
 import org.opengroove.g4.common.Packet;
 import org.opengroove.g4.common.PacketSpooler;
 import org.opengroove.g4.common.protocol.ExceptionPacket;
+import org.opengroove.g4.common.protocol.InboundMessagePacket;
 import org.opengroove.g4.common.user.Userid;
+import org.opengroove.g4.common.utils.ObjectUtils;
 
 /**
  * A connection from a client.
@@ -139,4 +142,27 @@ public class ServerConnection extends Thread
         return threadLocalConnection.get();
     }
     
+    /**
+     * Sends initial login state. This is called when the user logs in, and
+     * should be called from the server connection thread.
+     * 
+     * @param hasComputer
+     */
+    public void sendInitialLoginState(boolean hasComputer)
+    {
+        if (hasComputer)
+        {
+            /*
+             * Send messages cached for the user
+             */
+            File messageFolder = G4Server.getMessageFolder(userid);
+            for (File messageFile : messageFolder.listFiles())
+            {
+                InboundMessagePacket messageObject =
+                    (InboundMessagePacket) ObjectUtils.readObject(messageFile);
+                messageObject.setMessageId(URLDecoder.decode(messageFile.getName()));
+                messageObject.setPacketThread(G4Server.generateId());
+            }
+        }
+    }
 }
