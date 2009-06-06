@@ -2,6 +2,7 @@ package org.opengroove.g4.server;
 
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FilenameFilter;
 import java.lang.reflect.Method;
 import java.net.ServerSocket;
 import java.util.HashMap;
@@ -91,6 +92,37 @@ public class G4Server
     
     private static void loadCommands()
     {
+        String thisPackageName = G4Server.class.getPackage().getName();
+        File commandsFolder =
+            new File("classes/" + thisPackageName.replace(".", "/") + "/commands");
+        File[] files = commandsFolder.listFiles(new FilenameFilter()
+        {
+            
+            public boolean accept(File parent, String name)
+            {
+                return name.endsWith(".class");
+            }
+        });
+        for (File file : files)
+        {
+            String name = file.getName();
+            name = name.substring(0, name.length() - ".class".length());
+            Command command;
+            try
+            {
+                command =
+                    (Command) Class.forName(thisPackageName + "." + name).newInstance();
+            }
+            catch (Exception e)
+            {
+                System.out.println("Exception while instantiating command " + name
+                    + ":");
+                e.printStackTrace();
+                throw new RuntimeException(e.getClass().getName() + ": "
+                    + e.getMessage(), e);
+            }
+            installCommand(command);
+        }
     }
     
     private static void installCommand(Command command)
@@ -127,5 +159,9 @@ public class G4Server
             computerCommands.put(argumentType, command);
         if (isUser)
             userCommands.put(argumentType, command);
+        if (!(isUser || isUnauth || isComputer))
+            System.err.println("Warning: command class "
+                + command.getClass().getSimpleName()
+                + " did not specify where it should be installed");
     }
 }
