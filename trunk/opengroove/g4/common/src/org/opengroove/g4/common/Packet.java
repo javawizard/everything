@@ -46,10 +46,12 @@ public abstract class Packet implements Serializable
      * effectively making this packet a "response" of <tt>other</tt>.
      * 
      * @param other
+     * @return this packet
      */
-    public void respondTo(Packet other)
+    public Packet respondTo(Packet other)
     {
         setPacketThread(other.getPacketThread());
+        return this;
     }
     
 }
