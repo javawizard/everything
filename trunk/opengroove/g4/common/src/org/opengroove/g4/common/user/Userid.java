@@ -176,4 +176,23 @@ public class Userid
                 + username + ",c:" + computer);
     }
     
+    public boolean hasServer()
+    {
+        return server != null;
+    }
+    
+    public boolean hasUsername()
+    {
+        return username != null;
+    }
+    
+    public boolean hasComputer()
+    {
+        return computer != null;
+    }
+    
+    public boolean isRelative()
+    {
+        return !hasServer();
+    }
 }
