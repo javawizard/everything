@@ -312,4 +312,19 @@ public class Userid
     {
         return hasServer();
     }
+    
+    /**
+     * Returns a userid absolute to the specified server. If the userid passed
+     * in is relative, it wil be made absolute to this server If it is absolute
+     * and not of this server, an exception will be thrown.
+     * 
+     * @param server
+     * @return
+     */
+    public Userid validateServer(String server)
+    {
+        if (isAbsolute() && !getServer().equals(server))
+            throw new RuntimeException("Incorrect server");
+        return relativeTo(new Userid(server + "::"));
+    }
 }
