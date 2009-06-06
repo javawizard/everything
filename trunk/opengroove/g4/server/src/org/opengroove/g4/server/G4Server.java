@@ -47,7 +47,8 @@ public class G4Server
     public static ServerSocket server;
     public static Properties configProperties = new Properties();
     /**
-     * All client-server connections that are active.
+     * All client-server connections that are active and that have both a
+     * username and a computer.
      */
     public static HashMap<Userid, ServerConnection> connections =
         new HashMap<Userid, ServerConnection>();
@@ -56,6 +57,7 @@ public class G4Server
         new ThreadPoolExecutor(5, 100, 60, TimeUnit.SECONDS,
             new ArrayBlockingQueue<Runnable>(500));
     public static String serverName;
+    public static Userid serverUserid;
     
     /**
      * @param args
@@ -70,6 +72,7 @@ public class G4Server
         configProperties.load(new FileInputStream(new File(storageFolder,
             "config.props")));
         serverName = configProperties.getProperty("server-name");
+        serverUserid = new Userid(serverName + "::");
         threadPool.allowCoreThreadTimeOut(true);
         scheduleIdleConnectionKiller();
         server = new ServerSocket(G4Defaults.CLIENT_SERVER_PORT);
@@ -175,5 +178,49 @@ public class G4Server
             System.err.println("Warning: command class "
                 + command.getClass().getSimpleName()
                 + " did not specify where it should be installed");
+    }
+    
+    /**
+     * Gets the message folder for the computer specified. The userid specified
+     * must be absolute and must contain a computer, and the folder returned
+     * will always exist.
+     * 
+     * @param user
+     *            The computer userid to look up
+     * @return The message folder for the computer userid in question
+     */
+    public static File getMessageFolder(Userid user)
+    {
+        user = user.validateServer(serverName);
+        if (!user.hasComputer())
+            throw new RuntimeException();
+        File folder =
+            new File(messageFolder, "" + user.getUsername() + "/" + user.getComputer());
+        folder.mkdirs();
+        return folder;
+    }
+    
+    /**
+     * Lists the computers for the user specified. The user can contain a
+     * computer, but this will be ignored.
+     * 
+     * @param user
+     * @return
+     */
+    public static Userid[] listComputers(Userid user)
+    {
+        user = user.validateServer(serverName);
+        if (!user.hasUsername())
+            throw new RuntimeException("No username");
+        String username = user.getUsername();
+        File userFolder = new File(authFolder, username);
+        File computersFolder = new File(userFolder, "computers");
+        File[] files = computersFolder.listFiles();
+        Userid[] userids = new Userid[files.length];
+        for (int i = 0; i < files.length; i++)
+        {
+            userids[i] = new Userid(serverName, username, files[i].getName());
+        }
+        return userids;
     }
 }

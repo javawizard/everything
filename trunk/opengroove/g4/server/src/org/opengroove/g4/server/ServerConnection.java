@@ -1,5 +1,6 @@
 package org.opengroove.g4.server;
 
+import java.io.File;
 import java.io.InputStream;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
@@ -46,12 +47,13 @@ public class ServerConnection extends Thread
      * not authenticated yet. This is always absolute, and will either be a
      * username userid or a computer userid.
      */
-    private Userid userid;
+    public Userid userid;
+    public File userFolder;
     private PacketSpooler spooler;
     
     public void send(Packet packet)
     {
-        
+        spooler.send(packet);
     }
     
     public Userid getUserid()
@@ -84,6 +86,19 @@ public class ServerConnection extends Thread
         catch (Exception e)
         {
             e.printStackTrace();
+            try
+            {
+                socket.close();
+            }
+            catch (Exception exception)
+            {
+                exception.printStackTrace();
+            }
+        }
+        finally
+        {
+            if (userid.hasComputer())
+                G4Server.connections.remove(userid);
         }
     }
     
