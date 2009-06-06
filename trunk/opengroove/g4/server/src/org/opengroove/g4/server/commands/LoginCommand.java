@@ -31,7 +31,8 @@ public class LoginCommand implements Command<LoginPacket>
             {
                 connection.send(new LoginResponse(LoginResponse.Status.WrongServer,
                     "You tried to use the server " + userid.getServer()
-                        + " as the server, but this server is " + G4Server.serverName));
+                        + " as the server, but this server is " + G4Server.serverName)
+                    .respondTo(packet));
                 return;
             }
             String username = userid.getUsername();
@@ -40,7 +41,8 @@ public class LoginCommand implements Command<LoginPacket>
             File userFolder = new File(G4Server.authFolder, username);
             if (!userFolder.exists())
             {
-                connection.send(new LoginResponse(LoginResponse.Status.BadAuth, null));
+                connection.send(new LoginResponse(LoginResponse.Status.BadAuth, null)
+                    .respondTo(packet));
                 return;
             }
             String realEncPassword =
@@ -48,7 +50,8 @@ public class LoginCommand implements Command<LoginPacket>
             String encPassword = Hash.hash(password);
             if (!encPassword.equals(realEncPassword))
             {
-                connection.send(new LoginResponse(LoginResponse.Status.BadAuth, null));
+                connection.send(new LoginResponse(LoginResponse.Status.BadAuth, null)
+                    .respondTo(packet));
                 return;
             }
             /*
@@ -67,7 +70,7 @@ public class LoginCommand implements Command<LoginPacket>
                      * doesn't currently exist
                      */
                     connection.send(new LoginResponse(LoginResponse.Status.BadComputer,
-                        null));
+                        null).respondTo(packet));
                     return;
                 }
                 /*
@@ -80,7 +83,7 @@ public class LoginCommand implements Command<LoginPacket>
                      * We're already connected as this computer
                      */
                     connection.send(new LoginResponse(
-                        LoginResponse.Status.AlreadyConnected, null));
+                        LoginResponse.Status.AlreadyConnected, null).respondTo(packet));
                     return;
                 }
                 /*
@@ -90,7 +93,8 @@ public class LoginCommand implements Command<LoginPacket>
             }
             connection.userid = userid;
             connection.userFolder = userFolder;
-            connection.send(new LoginResponse(LoginResponse.Status.Successful, null));
+            connection.send(new LoginResponse(LoginResponse.Status.Successful, null)
+                .respondTo(packet));
         }
         /*
          * Ok, we've successfully logged in. Now we'll send initial state.

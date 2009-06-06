@@ -5,8 +5,10 @@ import java.net.URLEncoder;
 import java.util.ArrayList;
 
 import org.opengroove.g4.common.protocol.InboundMessagePacket;
+import org.opengroove.g4.common.protocol.MessageResponse;
 import org.opengroove.g4.common.protocol.OutboundMessagePacket;
 import org.opengroove.g4.common.user.Userid;
+import org.opengroove.g4.common.utils.ObjectUtils;
 import org.opengroove.g4.server.Command;
 import org.opengroove.g4.server.G4Server;
 import org.opengroove.g4.server.ServerConnection;
@@ -73,7 +75,8 @@ public class OutboundMessageCommand implements Command<OutboundMessagePacket>
         /*
          * We now have the actual list of computers to send the message to, and
          * all of them exist. We'll go and write them to disk now in the
-         * computer's recipient message folder.
+         * computer's recipient message folder, and then send the message to the
+         * recipient if they are online.
          */
         InboundMessagePacket inboundMessage = new InboundMessagePacket();
         inboundMessage.setMessageId(id);
@@ -85,14 +88,29 @@ public class OutboundMessageCommand implements Command<OutboundMessagePacket>
             {
                 File messageFolder = G4Server.getMessageFolder(user);
                 File messageFile = new File(messageFolder, URLEncoder.encode(id));
-                if(messageFile.exists())
+                if (messageFile.exists())
                     continue;
-                
+                ObjectUtils.writeObject(inboundMessage, messageFile);
+                /*
+                 * We've written the message to disk. Now we'll queue it for
+                 * sending to the target user.
+                 */
+                ServerConnection recipientConnection = G4Server.connections.get(user);
+                if (recipientConnection != null)
+                    recipientConnection.send(inboundMessage);
             }
             catch (Exception exception)
             {
                 exception.printStackTrace();
             }
         }
+        /*
+         * The message has been sent. We'll reply to the user now, stating that
+         * the message has been sent.
+         */
+        MessageResponse response = new MessageResponse();
+        response.setPacketThread(packet.getPacketThread());
+        response.setMessageId(id);
+        connection.send(response.respondTo(packet));
     }
 }

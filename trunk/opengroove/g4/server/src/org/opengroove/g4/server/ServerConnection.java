@@ -12,6 +12,7 @@ import org.opengroove.g4.common.Packet;
 import org.opengroove.g4.common.PacketSpooler;
 import org.opengroove.g4.common.protocol.ExceptionPacket;
 import org.opengroove.g4.common.protocol.InboundMessagePacket;
+import org.opengroove.g4.common.protocol.InitialCompletePacket;
 import org.opengroove.g4.common.user.Userid;
 import org.opengroove.g4.common.utils.ObjectUtils;
 import org.opengroove.g4.common.utils.ProtocolUtils;
@@ -165,5 +166,8 @@ public class ServerConnection extends Thread
                 send(messageObject);
             }
         }
+        InitialCompletePacket initialDonePacket = new InitialCompletePacket();
+        initialDonePacket.setPacketThread(ProtocolUtils.generateId());
+        send(initialDonePacket);
     }
 }
