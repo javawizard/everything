@@ -13,18 +13,11 @@ public class PacketSpooler extends Thread
 {
     private ObjectOutputStream out;
     private BlockingQueue<Packet> queue;
-    private DatagramSocket datagramSocket;
-    private InetAddress targetAddress;
-    private int targetPort;
     
-    public PacketSpooler(ObjectOutputStream out, DatagramSocket datagramSocket,
-        InetAddress targetAddress, int targetPort, int queueSize)
+    public PacketSpooler(ObjectOutputStream out, int queueSize)
     {
         this.out = out;
         this.queue = new LinkedBlockingQueue<Packet>(queueSize);
-        this.datagramSocket = datagramSocket;
-        this.targetAddress = targetAddress;
-        this.targetPort = targetPort;
     }
     
     public synchronized boolean send(Packet packet)
