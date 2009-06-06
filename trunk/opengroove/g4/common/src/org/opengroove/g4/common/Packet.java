@@ -41,4 +41,15 @@ public abstract class Packet implements Serializable
         return packetThread;
     }
     
+    /**
+     * Sets this packet's thread id to be the thread id of <tt>other</tt>,
+     * effectively making this packet a "response" of <tt>other</tt>.
+     * 
+     * @param other
+     */
+    public void respondTo(Packet other)
+    {
+        setPacketThread(other.getPacketThread());
+    }
+    
 }
