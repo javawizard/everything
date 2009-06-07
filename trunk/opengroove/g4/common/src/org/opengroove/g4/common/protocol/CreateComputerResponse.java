@@ -31,4 +31,11 @@ public class CreateComputerResponse extends Packet
     {
         this.reason = reason;
     }
+
+    public CreateComputerResponse(Status status, String reason)
+    {
+        super();
+        this.status = status;
+        this.reason = reason;
+    }
 }

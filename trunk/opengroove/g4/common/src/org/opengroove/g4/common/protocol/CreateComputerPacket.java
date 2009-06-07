@@ -15,4 +15,10 @@ public class CreateComputerPacket extends Packet
     {
         this.name = name;
     }
+
+    public CreateComputerPacket(String name)
+    {
+        super();
+        this.name = name;
+    }
 }
