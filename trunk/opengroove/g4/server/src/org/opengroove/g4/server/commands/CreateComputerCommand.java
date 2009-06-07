@@ -37,6 +37,8 @@ public class CreateComputerCommand implements Command<CreateComputerPacket>
             throw new RuntimeException(e.getClass().getName() + ": " + e.getMessage(),
                 e);
         }
+        connection.respond(new CreateComputerResponse(
+            CreateComputerResponse.Status.Successful, null));
     }
     
 }
