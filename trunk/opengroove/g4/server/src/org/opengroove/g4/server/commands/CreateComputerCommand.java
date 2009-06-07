@@ -1,8 +1,10 @@
 package org.opengroove.g4.server.commands;
 
 import java.io.File;
+import java.io.IOException;
 
 import org.opengroove.g4.common.protocol.CreateComputerPacket;
+import org.opengroove.g4.common.protocol.CreateComputerResponse;
 import org.opengroove.g4.server.Command;
 import org.opengroove.g4.server.ServerConnection;
 import org.opengroove.g4.server.commands.types.ComputerCommand;
@@ -19,9 +21,21 @@ public class CreateComputerCommand implements Command<CreateComputerPacket>
         File computersFolder = new File(connection.userFolder, "computers");
         File computerFile =
             new File(computersFolder, packet.getName().replaceAll("[\\.\\/\\\\", ""));
-        if(computerFile.exists())
+        if (computerFile.exists())
         {
-            
+            connection.respond(new CreateComputerResponse(
+                CreateComputerResponse.Status.AlreadyExists, null));
+            return;
+        }
+        try
+        {
+            computerFile.createNewFile();
+        }
+        catch (IOException e)
+        {
+            e.printStackTrace();
+            throw new RuntimeException(e.getClass().getName() + ": " + e.getMessage(),
+                e);
         }
     }
     

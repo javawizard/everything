@@ -48,6 +48,11 @@ public class ServerConnection extends Thread
      */
     private ObjectOutputStream out;
     /**
+     * The current packet being read by this connection. This is used in
+     * respond().
+     */
+    private Packet currentPacket;
+    /**
      * The id of the user that this connection is for, or null if the user has
      * not authenticated yet. This is always absolute, and will either be a
      * username userid or a computer userid.
@@ -85,11 +90,14 @@ public class ServerConnection extends Thread
             while (!socket.isClosed())
             {
                 Packet packet = (Packet) in.readObject();
+                this.currentPacket = packet;
                 process(packet);
+                this.currentPacket = null;
             }
         }
         catch (Exception e)
         {
+            this.currentPacket = null;
             e.printStackTrace();
             try
             {
@@ -169,5 +177,11 @@ public class ServerConnection extends Thread
         InitialCompletePacket initialDonePacket = new InitialCompletePacket();
         initialDonePacket.setPacketThread(ProtocolUtils.generateId());
         send(initialDonePacket);
+    }
+    
+    public void respond(Packet response)
+    {
+        response.respondTo(currentPacket);
+        send(response);
     }
 }
