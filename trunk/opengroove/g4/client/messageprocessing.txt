@@ -1,0 +1,11 @@
+A user's MessageManager accepts an argument which specifies the communicator to use. It then adds a listener to that communicator which listens for InboundMessagePackets. When one arrives, it checks to make sure that there is a handler for the class of message that arrived. Then it serializes the message (the InboundMessagePacket to be precise) to disk. Then it passes the message to the appropriate handler. After the handler returns, the message file is then deleted.
+
+On MessageManager startup, it scans through this list of files and sends them off to their respective handlers. This opens up a possibility of a message being processed twice, if the handler stops working right as the message is being processed, so handlers should act accordingly and finalize any actions right before they return.
+
+The StoredMessageManager registers itself as a message handler for StoredMessage objects. When it is instructed to handle a message, it creates a temporary file via the temporary file store, serializes the StoredMessage to that file, renames it to reside in the stored message unread folder, and adds a notification to the taskbar notification frame. On startup, it scans and adds all unread messages to the notification frame.
+
+When a stored message is opened, it renames the message file to the read message folder and then displays it. It also loads the stored message's message object into memory. When the user saves an attachment, it copies it off from the message's FileBlock.
+
+I'm also thinking that the message's general summary information will be stored in a similar StoredMessage object, without attachments, so that it can be quickly loaded when messages are listed. Actually, probably what should happen is that when a message arrives, it sticks the message itself in the unread folder or the read folder or whatever, but then in the header folder it writes a file that contains the serialized StoredMessageHeader object. the header contains everything about the message except for its attachments and body.
+
+I'm also thinking that synthetic attachments can be added to a message. These don't show up as regular attachments, but instead cause the message to display differently. A synthetic message would be an object, and synthetic message handlers handle different object classes. Thus a workspace invitation would be a synthetic message attachment.
