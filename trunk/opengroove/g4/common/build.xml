@@ -11,5 +11,6 @@
         <delete file="../G4-server/lib/g4common.jar" failonerror="false" />
         <copy file="output/g4common.jar" todir="../G4-client/lib" />
         <copy file="output/g4common.jar" todir="../G4-server/lib" />
+        <copy file="output/g4common.jar" todir="../OpenGroove Client/lib" />
     </target>
 </project>

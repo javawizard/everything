@@ -3,6 +3,7 @@ package org.opengroove.g4.common.protocol;
 import org.opengroove.g4.common.Packet;
 import org.opengroove.g4.common.protocol.doc.ClientToServer;
 import org.opengroove.g4.common.user.Userid;
+
 @ClientToServer
 public class OutboundMessagePacket extends Packet
 {
@@ -21,10 +22,11 @@ public class OutboundMessagePacket extends Packet
     }
     
     /**
-     * The id for this message. This must always start with the user's userid
-     * (containing exactly the server and the username), followed by a dollar
-     * sign. For example, opengroove.org::javawizard$27483728473 would be a
-     * valid message id.
+     * The message's payload. This is the actual data that is delivered to the
+     * recipients. Since this is deserialized on the server before being sent to
+     * the recipients, it should be wrapped in a PassThroughObject if it
+     * contains objects of a class not present on the server, to avoid the
+     * server throwing a ClassNotFoundException on deserialization.
      * 
      * @return
      */
