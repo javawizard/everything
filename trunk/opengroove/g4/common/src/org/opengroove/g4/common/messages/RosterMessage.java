@@ -33,6 +33,11 @@ import org.opengroove.g4.common.user.Userid;
  */
 public class RosterMessage implements Serializable
 {
+    /**
+     * 
+     */
+    private static final long serialVersionUID = 7865774539021019005L;
+    
     public static enum Action
     {
         /**
