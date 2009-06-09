@@ -25,7 +25,8 @@ import net.sf.opengroove.client.OpenGroove;
  * This class is used to actually start OpenGroove on a user's box. developers
  * should use the class {@link OpenGroove} to start, instead of this one, to
  * avoid installing updates from the server. This class installs any updates to
- * OpenGroove itself that are downloaded, and then calls OpenGroove.main().<br/><br/>
+ * OpenGroove itself that are downloaded, and then calls OpenGroove.main().<br/>
+ * <br/>
  * 
  * This class is deprecated because it is in the process of being replaced by
  * Java ANT/SVN Automatic Updater, an auto-updater package from Interdirected.
@@ -106,7 +107,8 @@ public class Loader
      * reads the file specified in to a string. the file must not be larger than
      * 5 MB.
      * 
-     * @param file.
+     * @param file
+     *            .
      * @return
      */
     public static String readFile(File file)
@@ -114,8 +116,10 @@ public class Loader
         try
         {
             if (file.length() > (5 * 1000 * 1000))
-                throw new RuntimeException("the file is " + file.length()
-                    + " bytes. that is too large. it can't be larger than 5000000 bytes.");
+                throw new RuntimeException(
+                    "the file is "
+                        + file.length()
+                        + " bytes. that is too large. it can't be larger than 5000000 bytes.");
             ByteArrayOutputStream baos = new ByteArrayOutputStream();
             FileInputStream fis = new FileInputStream(file);
             copy(fis, baos);
@@ -144,7 +148,8 @@ public class Loader
     {
         try
         {
-            ByteArrayInputStream bais = new ByteArrayInputStream(string.getBytes("UTF-8"));
+            ByteArrayInputStream bais =
+                new ByteArrayInputStream(string.getBytes("UTF-8"));
             FileOutputStream fos = new FileOutputStream(file);
             copy(bais, fos);
             bais.close();
@@ -182,6 +187,10 @@ public class Loader
     private static void doRun(String[] s) throws Throwable
     {
         // OpenGroove.updatesEnabled = true;
+        /*
+         * FIXME: this forces the OpenGroove class not to be updated on IBM's
+         * J9. This should instead be changed to use reflection to call OpenGroove.main to get around this problem
+         */
         OpenGroove.main(s);
     }
     
