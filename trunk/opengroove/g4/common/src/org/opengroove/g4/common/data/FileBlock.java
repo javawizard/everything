@@ -2,6 +2,7 @@ package org.opengroove.g4.common.data;
 
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.ObjectInputStream;
@@ -103,8 +104,18 @@ public class FileBlock implements DataBlock
     {
         in.defaultReadObject();
         file = TemporaryFileStore.createFile();
-        // FIXME: finish this up, read data from the stream and write it to the
-        // file, deleteOnExit() the file
+        int dataSize = in.readInt();
+        // TODO: this loop is grossly innefficient, since it only reads a single
+        // byte at a time. It should be changed to a loop that reads like 512
+        // bytes at a time, since in my experience this is around an order of
+        // magnitude faster.
+        FileOutputStream out = new FileOutputStream(file);
+        for (int i = 0; i < dataSize; i++)
+        {
+            out.write(in.read());
+        }
+        out.flush();
+        out.close();
     }
     
 }
