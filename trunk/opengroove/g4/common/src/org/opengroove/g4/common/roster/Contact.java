@@ -11,6 +11,10 @@ public class Contact implements Serializable
      */
     private Userid userid;
     /**
+     * The computers that this contact has
+     */
+    private Userid[] computers;
+    /**
      * The local name that this user has set for the contact, or null if the
      * user has not set a local name for this contact
      */
@@ -70,5 +74,15 @@ public class Contact implements Serializable
     public void setExists(boolean exists)
     {
         this.exists = exists;
+    }
+    
+    public Userid[] getComputers()
+    {
+        return computers;
+    }
+    
+    public void setComputers(Userid[] computers)
+    {
+        this.computers = computers;
     }
 }
