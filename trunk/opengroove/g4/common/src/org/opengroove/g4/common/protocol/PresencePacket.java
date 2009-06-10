@@ -20,11 +20,38 @@ public class PresencePacket extends Packet
 {
     public static enum Status
     {
-        Online, Offline, Idle
+        /**
+         * Indicates that the user just came online, or has come back from being
+         * idle.
+         */
+        Online,
+        /**
+         * Indicates that the user is now offline. Clients currently cannot sent
+         * this to the server (it will throw an exception if it receives this),
+         * although an "invisible" mode, similar to Gmail's invisible mode where
+         * the user appears offline but is really online, might be added in the
+         * future, and it would be activated by sending this packet from the
+         * client to the server.
+         */
+        Offline,
+        /**
+         * Indicates that the user is currently not using their computer. This
+         * is typically calculated from the last time that the user's mouse was
+         * moved (since java doesn't have the capability to see when the user
+         * last pressed a key on their keyboard).
+         */
+        Idle
     }
     
     private Status status;
-    private long date;
+    /**
+     * The time that the user has been idle, if the status is Idle. This is not
+     * a date but rather the amount of time that has passed since the user went
+     * idle. When the client is reporting their idle status, they calculate this
+     * using their own time compared to their locally stored time of when they
+     * went idle. Same with the server.
+     */
+    private long duration;
     private Userid userid;
     
     /**
@@ -43,25 +70,9 @@ public class PresencePacket extends Packet
     }
     
     /**
-     * For outbound presence, the date at which this transition occured
-     * (relative to the server's time). For inbound presence, the date that the
-     * remote user specified.
-     * 
-     * @return
-     */
-    public long getDate()
-    {
-        return date;
-    }
-    
-    public void setDate(long date)
-    {
-        this.date = date;
-    }
-    
-    /**
-     * For outbound presence, irrelevant. For inbound presence, the user that
-     * this presence corresponds to.
+     * For outbound presence, irrelevant. For inbound presence, the computer
+     * userid that this presence corresponds to. This will always be a computer
+     * userid; it won't ever be just a username userid.
      * 
      * @return
      */
@@ -73,5 +84,15 @@ public class PresencePacket extends Packet
     public void setUserid(Userid userid)
     {
         this.userid = userid;
+    }
+    
+    public long getDuration()
+    {
+        return duration;
+    }
+    
+    public void setDuration(long duration)
+    {
+        this.duration = duration;
     }
 }
