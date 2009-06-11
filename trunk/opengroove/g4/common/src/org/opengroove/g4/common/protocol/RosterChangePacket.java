@@ -1,7 +1,9 @@
-package org.opengroove.g4.common.messages;
+package org.opengroove.g4.common.protocol;
 
 import java.io.Serializable;
 
+import org.opengroove.g4.common.Packet;
+import org.opengroove.g4.common.protocol.doc.ClientToServer;
 import org.opengroove.g4.common.user.Userid;
 
 /**
@@ -31,7 +33,8 @@ import org.opengroove.g4.common.user.Userid;
  * @author Alexander Boyd
  * 
  */
-public class RosterMessage implements Serializable
+@ClientToServer
+public class RosterChangePacket extends Packet
 {
     /**
      * 
