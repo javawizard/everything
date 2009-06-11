@@ -14,10 +14,14 @@ import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicLong;
 
+import net.sf.opengroove.common.utils.StringUtils;
+
 import org.opengroove.g4.common.G4Defaults;
 import org.opengroove.g4.common.Packet;
 import org.opengroove.g4.common.protocol.LoginPacket;
 import org.opengroove.g4.common.protocol.PresencePacket;
+import org.opengroove.g4.common.protocol.RosterPacket;
+import org.opengroove.g4.common.roster.Contact;
 import org.opengroove.g4.common.user.Userid;
 import org.opengroove.g4.common.utils.PropUtils;
 import org.opengroove.g4.server.commands.types.ComputerCommand;
@@ -374,10 +378,76 @@ public class G4Server
      *            The userid of the user whose roster we are updating
      * @param source
      */
-    protected static void resendRosterSync(Userid userid, Userid source)
+    public static void resendRosterSync(Userid userid, Userid source)
     {
-        // TODO Auto-generated method stub
-        
+        sendToAnyOnlineComputers(userid, createRosterPacket(userid, false, source));
+    }
+    
+    /**
+     * Creates a roster packet that contains the roster of the specified user.
+     * This roster packet can then be sent to the user.
+     * 
+     * @param user
+     *            The user whose roster we are assembling
+     * @param isInitial
+     *            True if this roster packet should be marked as initial, false
+     *            if it should not
+     * @param source
+     *            If isInitial is false, then this is the user that generated
+     *            this roster packet update
+     * @return A new roster packet, ready for sending to the user
+     */
+    public static RosterPacket createRosterPacket(Userid user, boolean isInitial,
+        Userid source)
+    {
+        File userFolder = new File(authFolder, user.getUsername());
+        File rosterFile = new File(userFolder, "roster");
+        Properties rosterProps = PropUtils.getProperties(rosterFile);
+        RosterPacket packet = new RosterPacket();
+        packet.setInitial(isInitial);
+        packet.setSource(source);
+        String[] contactUsernameList = rosterProps.keySet().toArray(new String[0]);
+        Contact[] contacts = new Contact[contactUsernameList.length];
+        packet.setContacts(contacts);
+        for (int i = 0; i < contacts.length; i++)
+        {
+            String propValue = rosterProps.getProperty(contactUsernameList[i]);
+            Contact contact = new Contact();
+            contacts[i] = contact;
+            File contactUserFolder =
+                new File(authFolder, new Userid(contactUsernameList[i]).getUsername());
+            contact.setExists(contactUserFolder.exists());
+            contact.setUserid(new Userid(contactUsernameList[i])
+                .relativeTo(serverUserid));
+            contact.setVisible(propValue.toLowerCase().startsWith("true"));
+            String contactLocalName = propValue.split("\\:", 2)[1];
+            if (contactLocalName.trim().equals(""))
+                contactLocalName = null;
+            contact.setName(contactLocalName);
+            if (contact.isExists())
+            {
+                if (new File(contactUserFolder, "realname").exists())
+                    contact.setRealName(StringUtils.readFile(new File(
+                        contactUserFolder, "realname")));
+                if (contact.getRealName() != null
+                    && contact.getRealName().trim().equals(""))
+                    contact.setRealName(null);
+                String[] contactComputerNames =
+                    new File(contactUserFolder, "computers").list();
+                Userid[] computerUserids = new Userid[contactComputerNames.length];
+                contact.setComputers(computerUserids);
+                for (int c = 0; c < computerUserids.length; c++)
+                {
+                    computerUserids[c] =
+                        new Userid(":" + contactComputerNames[c]).relativeTo(contact
+                            .getUserid());
+                }
+            }
+            else
+            {
+                contact.setComputers(new Userid[0]);
+            }
+        }
     }
     
     /**
