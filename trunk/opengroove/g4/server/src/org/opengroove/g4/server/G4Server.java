@@ -16,7 +16,9 @@ import java.util.concurrent.atomic.AtomicLong;
 import org.opengroove.g4.common.G4Defaults;
 import org.opengroove.g4.common.Packet;
 import org.opengroove.g4.common.protocol.LoginPacket;
+import org.opengroove.g4.common.protocol.PresencePacket;
 import org.opengroove.g4.common.user.Userid;
+import org.opengroove.g4.common.utils.PropUtils;
 import org.opengroove.g4.server.commands.types.ComputerCommand;
 import org.opengroove.g4.server.commands.types.UnauthCommand;
 import org.opengroove.g4.server.commands.types.UserCommand;
@@ -29,6 +31,12 @@ public class G4Server
     public static HashMap<Class, Command> computerCommands =
         new HashMap<Class, Command>();
     public static HashMap<Class, Command> userCommands = new HashMap<Class, Command>();
+    /**
+     * Maps computer userids to the point in time (in server time) at which the
+     * computer went idle. If a computer doesn't have an entry here, then the
+     * computer is not idle or the computer has since disconnected.
+     */
+    public static HashMap<Userid, Long> idleTimes = new HashMap<Userid, Long>();
     public static File storageFolder;
     /**
      * The message store folder, Within here is one folder for each username,
@@ -57,7 +65,23 @@ public class G4Server
     
     public static ThreadPoolExecutor threadPool =
         new ThreadPoolExecutor(5, 100, 60, TimeUnit.SECONDS,
-            new ArrayBlockingQueue<Runnable>(500));
+            new ArrayBlockingQueue<Runnable>(1000));
+    /**
+     * A thread pool executor that has only one thread. This guarantees that
+     * tasks will be executed strictly sequentially. Since there is only one
+     * thread, tasks added to this queue should execute quickly to avoid holding
+     * up everything else.
+     */
+    public static ThreadPoolExecutor stackedThreadPool =
+        new ThreadPoolExecutor(1, 1, 30, TimeUnit.SECONDS,
+            new ArrayBlockingQueue<Runnable>(2000));
+    
+    /**
+     * In the future, this will probably be split out into per-user variables.
+     * All operations that read from or write to a user's roster file lock on
+     * this first, so that none of them will overwrite each other.
+     */
+    public static final Object rosterLock = new Object();
     public static String serverName;
     public static Userid serverUserid;
     
@@ -240,6 +264,8 @@ public class G4Server
         if (!user.hasUsername())
             throw new RuntimeException("No username");
         String username = user.getUsername();
+        if (username.equals("_profile"))
+            return new Userid[] { new Userid(user.getServer(), "_profile", "_computer") };
         File userFolder = new File(authFolder, username);
         File computersFolder = new File(userFolder, "computers");
         File[] files = computersFolder.listFiles();
@@ -251,9 +277,18 @@ public class G4Server
         return userids;
     }
     
+    /**
+     * Returns true if the specified user exists. The user _profile returns true
+     * from this method.
+     * 
+     * @param user
+     * @return
+     */
     public static boolean userExists(Userid user)
     {
         user = user.validateServer(serverName);
+        if (user.getUsername().equals("_profile"))
+            return true;
         return new File(authFolder, user.getUsername()).exists();
     }
     
@@ -274,5 +309,66 @@ public class G4Server
     {
         if (!computerExists(user))
             throw new RuntimeException("Computer " + user + " doesn't exist");
+    }
+    
+    /**
+     * Broadcasts a roster update to all users that have the specified user as a
+     * contact.
+     * 
+     * @param user
+     */
+    public static void updateContainingRosters(Userid user)
+    {
+        
+    }
+    
+    /**
+     * Finds all users that have this user as a contact and sends them this
+     * presence packet. This is used to tell these users that the user just came
+     * online, went offline, went idle, or came back from being idle.
+     * 
+     * @param user
+     */
+    public static void updateContainingPresence(Userid user, PresencePacket packet)
+    {
+        /*
+         * This is basically the user's userid without their computer but with
+         * their server. So something like "trivergia.com::javawizard". This is
+         * the format that contacts are stored in.
+         */
+        final String useridString = toContactUseridString(user);
+        stackedThreadPool.execute(new Runnable()
+        {
+            
+            public void run()
+            {
+                File[] userFileList = authFolder.listFiles();
+                for (File userFolder : userFileList)
+                {
+                    try
+                    {
+                        if (PropUtils.getProperty(new File(userFolder, "roster"),
+                            useridString) != null)
+                        {
+                            /*
+                             * This user has us on their contact list. We'll
+                             * scan for any of their computers and send this
+                             * presence packet to them.
+                             */
+                            
+                        }
+                    }
+                    catch (Exception exception)
+                    {
+                        exception.printStackTrace();
+                    }
+                }
+            }
+        });
+    }
+    
+    private static String toContactUseridString(Userid user)
+    {
+        return user.withoutComputer().relativeTo(serverUserid).toString();
     }
 }

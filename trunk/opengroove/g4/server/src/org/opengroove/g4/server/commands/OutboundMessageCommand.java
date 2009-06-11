@@ -3,6 +3,7 @@ package org.opengroove.g4.server.commands;
 import java.io.File;
 import java.net.URLEncoder;
 import java.util.ArrayList;
+import java.util.Arrays;
 
 import org.opengroove.g4.common.protocol.InboundMessagePacket;
 import org.opengroove.g4.common.protocol.MessageResponse;
@@ -69,7 +70,8 @@ public class OutboundMessageCommand implements Command<OutboundMessagePacket>
                  * their computers to the list.
                  */
                 G4Server.verifyUserExists(normalRecipient);
-                G4Server.listComputers(normalRecipient);
+                recipientList.addAll(Arrays.asList(G4Server
+                    .listComputers(normalRecipient)));
             }
         }
         /*
@@ -78,6 +80,12 @@ public class OutboundMessageCommand implements Command<OutboundMessagePacket>
          * computer's recipient message folder, and then send the message to the
          * recipient if they are online.
          */
+        if (recipientList.size() == 1
+            && recipientList.get(0).getUsername().equals("_profile"))
+        {
+            connection.dispatchProfileMessage(packet);
+            return;
+        }
         InboundMessagePacket inboundMessage = new InboundMessagePacket();
         inboundMessage.setMessageId(id);
         inboundMessage.setSender(connection.getUserid());
@@ -90,6 +98,15 @@ public class OutboundMessageCommand implements Command<OutboundMessagePacket>
                 File messageFile = new File(messageFolder, URLEncoder.encode(id));
                 if (messageFile.exists())
                     continue;
+                if (!messageFolder.getAbsoluteFile().getParent().exists())
+                    /*
+                     * Message to a nonexistant recipient, since the message
+                     * folder's parent folder (the user's folder) doesn't exist;
+                     * discard for now but we should notify the user in the
+                     * future
+                     */
+                    continue;
+                messageFolder.mkdirs();
                 ObjectUtils.writeObject(inboundMessage, messageFile);
                 /*
                  * We've written the message to disk. Now we'll queue it for

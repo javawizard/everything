@@ -7,12 +7,16 @@ import java.io.ObjectOutputStream;
 import java.io.OutputStream;
 import java.net.Socket;
 import java.net.URLDecoder;
+import java.util.concurrent.atomic.AtomicLong;
 
 import org.opengroove.g4.common.Packet;
 import org.opengroove.g4.common.PacketSpooler;
+import org.opengroove.g4.common.messages.RosterMessage;
 import org.opengroove.g4.common.protocol.ExceptionPacket;
 import org.opengroove.g4.common.protocol.InboundMessagePacket;
 import org.opengroove.g4.common.protocol.InitialCompletePacket;
+import org.opengroove.g4.common.protocol.MessageResponse;
+import org.opengroove.g4.common.protocol.OutboundMessagePacket;
 import org.opengroove.g4.common.user.Userid;
 import org.opengroove.g4.common.utils.ObjectUtils;
 import org.opengroove.g4.common.utils.ProtocolUtils;
@@ -27,6 +31,7 @@ public class ServerConnection extends Thread
 {
     private static ThreadLocal<ServerConnection> threadLocalConnection =
         new ThreadLocal<ServerConnection>();
+    private static AtomicLong threadNameCounter = new AtomicLong(1);
     /**
      * The socket that the client is connecting with
      */
@@ -73,6 +78,7 @@ public class ServerConnection extends Thread
     
     public ServerConnection(Socket socket)
     {
+        super("G4-server-connection-" + threadNameCounter.getAndIncrement());
         this.socket = socket;
     }
     
@@ -163,6 +169,18 @@ public class ServerConnection extends Thread
         if (hasComputer)
         {
             /*
+             * Send the user's initial roster
+             */
+            /*
+             * Send the initial presence of all of the user's contacts
+             */
+            /*
+             * Schedule the user for initial presence sending. This can take
+             * some time, since it has to scan through every other user's
+             * contact list to see if this user is on their contact list, so
+             * we'll do it asynchronously.
+             */
+            /*
              * Send messages cached for the user
              */
             File messageFolder = G4Server.getMessageFolder(userid);
@@ -183,5 +201,28 @@ public class ServerConnection extends Thread
     {
         response.respondTo(currentPacket);
         send(response);
+    }
+    
+    public void dispatchProfileMessage(OutboundMessagePacket packet)
+    {
+        boolean wasProcessed = false;
+        /*
+         * We'll go through and see if the message is of a supported class type.
+         * If it is, we'll process it appropriately. If it isn't, we'll send a
+         * message response first (so that the client will delete the message),
+         * then we'll throw an exception.
+         */
+        Object messageObject = packet.getMessage();
+        if (messageObject instanceof RosterMessage)
+        {
+            
+        }
+        MessageResponse response = new MessageResponse();
+        response.setPacketThread(packet.getPacketThread());
+        response.setMessageId(packet.getMessageId());
+        send(response.respondTo(packet));
+        if (!wasProcessed)
+            throw new RuntimeException(
+                "This server doesn't support the profile message type specified.");
     }
 }
