@@ -331,6 +331,9 @@ public class G4Server
      *            The userid that has changed and hence requires all users with
      *            this userid on their contact list to receive a new roster
      */
+    // TODO: review the actual algorithm, actual complexity might be O(n^3)
+    // instead of O(n^2) like is documented (listing all users, listing each
+    // user's contacts, listing each contact's computers)
     public static void updateContainingRosters(final Userid user)
     {
         /*
