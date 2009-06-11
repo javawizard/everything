@@ -34,6 +34,28 @@ public class PropUtils
     }
     
     /**
+     * Gets the properties in the file specified, or returns an empty Properties
+     * object if the file does not exist.
+     * 
+     * @param file
+     * @return
+     */
+    public static Properties getProperties(File file)
+    {
+        try
+        {
+            Properties props = new Properties();
+            if (file.exists())
+                props.load(new FileInputStream(file));
+            return props;
+        }
+        catch (Exception e)
+        {
+            throw new RuntimeException(e);
+        }
+    }
+    
+    /**
      * Sets the specified property. If the file doesn't already exist, it will
      * be created (even if the value is null). If the property's value is null,
      * then the property will be removed.
