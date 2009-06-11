@@ -356,7 +356,7 @@ public class G4Server
                              * resend their roster now.
                              */
                             resendRosterSync(new Userid(serverName, userFolder
-                                .getName(), null), false, user);
+                                .getName(), null), user);
                         }
                     }
                     catch (Exception exception)
@@ -448,6 +448,7 @@ public class G4Server
                 contact.setComputers(new Userid[0]);
             }
         }
+        return packet;
     }
     
     /**
