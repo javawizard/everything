@@ -6,6 +6,7 @@ import java.io.FilenameFilter;
 import java.lang.reflect.Method;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Properties;
 import java.util.concurrent.ArrayBlockingQueue;
@@ -313,12 +314,69 @@ public class G4Server
     
     /**
      * Broadcasts a roster update to all users that have the specified user as a
-     * contact.
+     * contact. This is much the same as updateContainingPresence, but it
+     * dynamically creates the roster packet for each user since each user's
+     * roster will be different.<br/>
+     * <br/>
+     * 
+     * This method returns immediately, executing the actual update on the stack
+     * thread pool. This executed runnable is rather slow, since it has a
+     * maximum complexity of O(n<sup>2</sup>).
      * 
      * @param user
+     *            The userid that has changed and hence requires all users with
+     *            this userid on their contact list to receive a new roster
      */
-    public static void updateContainingRosters(Userid user)
+    public static void updateContainingRosters(final Userid user)
     {
+        /*
+         * First, we'll loop over all users, searching out those that have this
+         * user on their contact list.
+         */
+        final String useridString = toContactUseridString(user);
+        stackedThreadPool.execute(new Runnable()
+        {
+            
+            public void run()
+            {
+                File[] userFileList = authFolder.listFiles();
+                for (File userFolder : userFileList)
+                {
+                    try
+                    {
+                        if (PropUtils.getProperty(new File(userFolder, "roster"),
+                            useridString) != null)
+                        {
+                            /*
+                             * This user has us on their contact list. We'll
+                             * resend their roster now.
+                             */
+                            resendRosterSync(new Userid(serverName, userFolder
+                                .getName(), null), false, user);
+                        }
+                    }
+                    catch (Exception exception)
+                    {
+                        exception.printStackTrace();
+                    }
+                }
+            }
+        });
+    }
+    
+    /**
+     * Synchronously (IE on the current thread) creates a new roster packet for
+     * the user specified, which contains all of their current contacts and
+     * information for those contacts, and sends it to all online computers for
+     * that user.
+     * 
+     * @param userid
+     *            The userid of the user whose roster we are updating
+     * @param source
+     */
+    protected static void resendRosterSync(Userid userid, Userid source)
+    {
+        // TODO Auto-generated method stub
         
     }
     
@@ -329,7 +387,7 @@ public class G4Server
      * 
      * @param user
      */
-    public static void updateContainingPresence(Userid user, PresencePacket packet)
+    public static void updateContainingPresence(Userid user, final PresencePacket packet)
     {
         /*
          * This is basically the user's userid without their computer but with
@@ -355,7 +413,8 @@ public class G4Server
                              * scan for any of their computers and send this
                              * presence packet to them.
                              */
-                            
+                            sendToAnyOnlineComputers(new Userid(serverName, userFolder
+                                .getName(), null), packet);
                         }
                     }
                     catch (Exception exception)
@@ -365,6 +424,43 @@ public class G4Server
                 }
             }
         });
+    }
+    
+    /**
+     * Sends this packet to any of this user's online computers. This userid is
+     * treated as if it were a username userid, regardless of whether or not it
+     * is a computer userid.
+     * 
+     * @param userid
+     *            The userid to send to, which should be on this server (but
+     *            this is not checked)
+     * @param packet
+     *            The packet to send
+     */
+    protected static void sendToAnyOnlineComputers(Userid userid, Packet packet)
+    {
+        for (Userid potential : new ArrayList<Userid>(connections.keySet()))
+        {
+            if (potential.getUsername().equals(userid.getUsername()))
+            {
+                /*
+                 * Match! We'll get the connection and send the packet.
+                 */
+                ServerConnection connection = connections.get(potential);
+                if (connection != null)// could be if the user just barely
+                // signed off
+                {
+                    try
+                    {
+                        connection.send(packet);
+                    }
+                    catch (Exception exception)
+                    {
+                        exception.printStackTrace();
+                    }
+                }
+            }
+        }
     }
     
     private static String toContactUseridString(Userid user)
