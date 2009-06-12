@@ -98,7 +98,7 @@ public class OutboundMessageCommand implements Command<OutboundMessagePacket>
                 File messageFile = new File(messageFolder, URLEncoder.encode(id));
                 if (messageFile.exists())
                     continue;
-                if (!messageFolder.getAbsoluteFile().getParent().exists())
+                if (!messageFolder.getAbsoluteFile().getParentFile().exists())
                     /*
                      * Message to a nonexistant recipient, since the message
                      * folder's parent folder (the user's folder) doesn't exist;

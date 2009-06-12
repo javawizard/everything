@@ -34,6 +34,7 @@ public class RealNameCommand implements Command<RealNamePacket>
         else
             StringUtils.writeFile(newRealName, realNameFile);
         G4Server.updateContainingRosters(con.userid);
+        G4Server.sendToAnyOnlineComputers(con.userid, packet);
         /*
          * This packet has no response.
          */

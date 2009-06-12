@@ -7,18 +7,25 @@ import java.io.ObjectOutputStream;
 import java.io.OutputStream;
 import java.net.Socket;
 import java.net.URLDecoder;
+import java.util.Properties;
 import java.util.concurrent.atomic.AtomicLong;
+
+import net.sf.opengroove.common.utils.StringUtils;
 
 import org.opengroove.g4.common.Packet;
 import org.opengroove.g4.common.PacketSpooler;
-import org.opengroove.g4.common.messages.RosterMessage;
 import org.opengroove.g4.common.protocol.ExceptionPacket;
 import org.opengroove.g4.common.protocol.InboundMessagePacket;
 import org.opengroove.g4.common.protocol.InitialCompletePacket;
 import org.opengroove.g4.common.protocol.MessageResponse;
 import org.opengroove.g4.common.protocol.OutboundMessagePacket;
+import org.opengroove.g4.common.protocol.PresencePacket;
+import org.opengroove.g4.common.protocol.RealNamePacket;
+import org.opengroove.g4.common.protocol.RosterPacket;
+import org.opengroove.g4.common.roster.Contact;
 import org.opengroove.g4.common.user.Userid;
 import org.opengroove.g4.common.utils.ObjectUtils;
+import org.opengroove.g4.common.utils.PropUtils;
 import org.opengroove.g4.common.utils.ProtocolUtils;
 
 /**
@@ -160,7 +167,9 @@ public class ServerConnection extends Thread
     
     /**
      * Sends initial login state. This is called when the user logs in, and
-     * should be called from the server connection thread.
+     * should be called from the server connection thread. In addition to
+     * sending initial state to this user, it also broadcasts to all other users
+     * that this user is now online.
      * 
      * @param hasComputer
      */
@@ -171,15 +180,38 @@ public class ServerConnection extends Thread
             /*
              * Send the user's initial roster
              */
+            RosterPacket rosterPacket = G4Server.createRosterPacket(userid, true, null);
+            send(rosterPacket);
+            /*
+             * Send the user's current real name
+             */
+            RealNamePacket realNamePacket = new RealNamePacket();
+            File realNameFile = new File(userFolder, "realname");
+            if (realNameFile.exists())
+                realNamePacket.setName(StringUtils.readFile(realNameFile));
+            send(realNamePacket);
             /*
              * Send the initial presence of all of the user's contacts
              */
+            for (Contact contact : rosterPacket.getContacts())
+            {
+                for (Userid contactComputer : contact.getComputers())
+                {
+                    PresencePacket computerPresence =
+                        createCurrentPresencePacket(contactComputer);
+                    send(computerPresence);
+                }
+            }
             /*
              * Schedule the user for initial presence sending. This can take
              * some time, since it has to scan through every other user's
              * contact list to see if this user is on their contact list, so
              * we'll do it asynchronously.
              */
+            PresencePacket presencePacket = new PresencePacket();
+            presencePacket.setStatus(PresencePacket.Status.Online);
+            presencePacket.setUserid(userid);
+            G4Server.updateContainingPresence(userid, presencePacket);
             /*
              * Send messages cached for the user
              */
@@ -197,6 +229,38 @@ public class ServerConnection extends Thread
         send(initialDonePacket);
     }
     
+    /**
+     * Creates a PresencePacket that reflects the current status of the
+     * specified computer.
+     * 
+     * @param computer
+     *            The computer whose status we are generating
+     * @return The new packet representing the computer's status
+     */
+    private PresencePacket createCurrentPresencePacket(Userid computer)
+    {
+        PresencePacket packet = new PresencePacket();
+        packet.setUserid(computer);
+        if (G4Server.connections.get(computer) == null)
+        {
+            packet.setStatus(PresencePacket.Status.Offline);
+        }
+        else
+        {
+            Long idleTime = G4Server.idleTimes.get(computer);
+            if (idleTime != null)
+            {
+                packet.setStatus(PresencePacket.Status.Idle);
+                packet.setDuration(System.currentTimeMillis() - idleTime);
+            }
+            else
+            {
+                packet.setStatus(PresencePacket.Status.Online);
+            }
+        }
+        return packet;
+    }
+    
     public void respond(Packet response)
     {
         response.respondTo(currentPacket);
@@ -208,7 +272,7 @@ public class ServerConnection extends Thread
         Object payload = packet.getMessage();
         Command command = G4Server.computerCommands.get(payload.getClass());
         boolean wasProcessed = command != null;
-        if(command != null)
+        if (command != null)
             command.process((Packet) payload);
         MessageResponse response = new MessageResponse();
         response.setPacketThread(packet.getPacketThread());

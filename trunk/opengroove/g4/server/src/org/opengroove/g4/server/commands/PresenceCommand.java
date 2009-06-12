@@ -27,6 +27,19 @@ public class PresenceCommand implements Command<PresencePacket>
          */
         packet.setUserid(con.userid);
         /*
+         * If the presence is online, then remove this computer's entry from the
+         * idle table. If the presence is idle, set the entry.
+         */
+        if (packet.getStatus() == Status.Idle)
+        {
+            G4Server.idleTimes.put(con.userid, System.currentTimeMillis()
+                - packet.getDuration());
+        }
+        else
+        {
+            G4Server.idleTimes.remove(con.userid);
+        }
+        /*
          * Now actually broadcast the presence packet
          */
         G4Server.updateContainingPresence(con.userid, packet);

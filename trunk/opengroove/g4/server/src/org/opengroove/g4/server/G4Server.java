@@ -530,7 +530,7 @@ public class G4Server
      * @param packet
      *            The packet to send
      */
-    protected static void sendToAnyOnlineComputers(Userid userid, Packet packet)
+    public static void sendToAnyOnlineComputers(Userid userid, Packet packet)
     {
         for (Userid potential : new ArrayList<Userid>(connections.keySet()))
         {
