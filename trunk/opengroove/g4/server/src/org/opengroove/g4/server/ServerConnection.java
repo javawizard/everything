@@ -205,18 +205,11 @@ public class ServerConnection extends Thread
     
     public void dispatchProfileMessage(OutboundMessagePacket packet)
     {
-        boolean wasProcessed = false;
-        /*
-         * We'll go through and see if the message is of a supported class type.
-         * If it is, we'll process it appropriately. If it isn't, we'll send a
-         * message response first (so that the client will delete the message),
-         * then we'll throw an exception.
-         */
-        Object messageObject = packet.getMessage();
-        if (messageObject instanceof RosterMessage)
-        {
-            
-        }
+        Object payload = packet.getMessage();
+        Command command = G4Server.computerCommands.get(payload.getClass());
+        boolean wasProcessed = command != null;
+        if(command != null)
+            command.process((Packet) payload);
         MessageResponse response = new MessageResponse();
         response.setPacketThread(packet.getPacketThread());
         response.setMessageId(packet.getMessageId());

@@ -387,6 +387,24 @@ public class G4Server
     }
     
     /**
+     * Same as resendRosterSync, but executes on the stack thread pool.
+     * 
+     * @param userid
+     * @param source
+     */
+    public static void resendRoster(final Userid userid, final Userid source)
+    {
+        stackedThreadPool.execute(new Runnable()
+        {
+            
+            public void run()
+            {
+                resendRosterSync(userid, source);
+            }
+        });
+    }
+    
+    /**
      * Creates a roster packet that contains the roster of the specified user.
      * This roster packet can then be sent to the user.
      * 
@@ -423,7 +441,8 @@ public class G4Server
             contact.setUserid(new Userid(contactUsernameList[i])
                 .relativeTo(serverUserid));
             contact.setVisible(propValue.toLowerCase().startsWith("true"));
-            String contactLocalName = propValue.split("\\:", 2)[1];
+            String contactLocalName =
+                propValue.contains(":") ? propValue.split("\\:", 2)[1] : null;
             if (contactLocalName.trim().equals(""))
                 contactLocalName = null;
             contact.setName(contactLocalName);
@@ -537,8 +556,28 @@ public class G4Server
         }
     }
     
-    private static String toContactUseridString(Userid user)
+    public static String toContactUseridString(Userid user)
     {
         return user.withoutComputer().relativeTo(serverUserid).toString();
+    }
+    
+    public static boolean rosterLineIsVisible(String line)
+    {
+        return line.startsWith("true");
+    }
+    
+    public static String rosterLineContactLocal(String propValue)
+    {
+        String contactLocalName =
+            propValue.contains(":") ? propValue.split("\\:", 2)[1] : null;
+        if (contactLocalName.trim().equals(""))
+            contactLocalName = null;
+        return contactLocalName;
+    }
+    
+    public static String createRosterLine(boolean visible, String localName)
+    {
+        return "" + ("" + visible).toLowerCase()
+            + (localName == null ? "" : ":" + localName);
     }
 }
