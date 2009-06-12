@@ -26,6 +26,13 @@ public class PresenceCommand implements Command<PresencePacket>
          * Prevent the user from spoofing the stauts of other users
          */
         packet.setUserid(con.userid);
+        /*
+         * Now actually broadcast the presence packet
+         */
         G4Server.updateContainingPresence(con.userid, packet);
+        /*
+         * That's it! Presence packets don't have a response packet, so there's
+         * no need to send one.
+         */
     }
 }
