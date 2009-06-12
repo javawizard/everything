@@ -68,7 +68,7 @@ public class RosterChangePacket extends Packet
          */
         NAME
     }
-    
+    private Action action;
     private Userid contact;
     private String name;
     private boolean shown;
@@ -101,5 +101,15 @@ public class RosterChangePacket extends Packet
     public void setShown(boolean shown)
     {
         this.shown = shown;
+    }
+
+    public Action getAction()
+    {
+        return action;
+    }
+
+    public void setAction(Action action)
+    {
+        this.action = action;
     }
 }
