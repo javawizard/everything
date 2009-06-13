@@ -9,6 +9,13 @@ import java.net.InetAddress;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
 
+/**
+ * A class that can spool packets asynchronously onto an ObjectOutputStream. The
+ * code primarily comes from the 6jet project (http://6jet.googlecode.com).
+ * 
+ * @author Alexander Boyd
+ * 
+ */
 public class PacketSpooler extends Thread
 {
     private ObjectOutputStream out;
@@ -62,6 +69,32 @@ public class PacketSpooler extends Thread
                     .println("Closed packet spooler with the above abnormal exception");
             }
         }
+        finally
+        {
+            closed = true;
+        }
+    }
+    
+    /**
+     * Returns true if this packet spooler has been closed, either by a call to
+     * close() or by an exception being thrown when writing a packet.
+     * 
+     * @return
+     */
+    public boolean isClosed()
+    {
+        return closed;
+    }
+    
+    /**
+     * Returns true if this packet spooler has unsent packets, false if the
+     * command spooler has flushed all packets and is waiting for more to send.
+     * 
+     * @return
+     */
+    public boolean hasPackets()
+    {
+        return queue.size() > 0;
     }
     
 }
