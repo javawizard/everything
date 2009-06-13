@@ -12,6 +12,7 @@ import java.util.concurrent.atomic.AtomicLong;
 
 import net.sf.opengroove.common.utils.StringUtils;
 
+import org.opengroove.g4.common.G4Defaults;
 import org.opengroove.g4.common.Packet;
 import org.opengroove.g4.common.PacketSpooler;
 import org.opengroove.g4.common.protocol.ExceptionPacket;
@@ -71,7 +72,7 @@ public class ServerConnection extends Thread
      */
     public Userid userid;
     public File userFolder;
-    private PacketSpooler spooler;
+    public PacketSpooler spooler;
     
     public void send(Packet packet)
     {
@@ -94,6 +95,7 @@ public class ServerConnection extends Thread
         try
         {
             threadLocalConnection.set(this);
+            socket.setSoTimeout(G4Defaults.SOCKET_TIMEOUT);
             socketIn = socket.getInputStream();
             socketOut = socket.getOutputStream();
             out = new ObjectOutputStream(socketOut);

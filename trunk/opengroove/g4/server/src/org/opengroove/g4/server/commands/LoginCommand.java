@@ -5,6 +5,8 @@ import java.io.File;
 import net.sf.opengroove.common.security.Hash;
 import net.sf.opengroove.common.utils.StringUtils;
 
+import org.opengroove.g4.common.G4Defaults;
+import org.opengroove.g4.common.NopThread;
 import org.opengroove.g4.common.protocol.LoginPacket;
 import org.opengroove.g4.common.protocol.LoginResponse;
 import org.opengroove.g4.common.user.Userid;
@@ -97,8 +99,10 @@ public class LoginCommand implements Command<LoginPacket>
                 .respondTo(packet));
         }
         /*
-         * Ok, we've successfully logged in. Now we'll send initial state.
+         * Ok, we've successfully logged in. Now we'll start a NopThread, and
+         * send initial state.
          */
+        new NopThread(connection.spooler, G4Defaults.NOP_INTERVAL).start();
         connection.sendInitialLoginState(userid.hasComputer());
     }
 }
