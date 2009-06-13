@@ -123,8 +123,29 @@ public class ServerConnection extends Thread
         }
         finally
         {
-            if (userid.hasComputer())
-                G4Server.connections.remove(userid);
+            connectionCleanup();
+        }
+    }
+    
+    private void connectionCleanup()
+    {
+        if (userid.hasComputer())
+        {
+            /*
+             * Remove this connection from the connection map
+             */
+            G4Server.connections.remove(userid);
+            /*
+             * Remove the idle time for this computer from the connection map
+             */
+            G4Server.idleTimes.remove(userid);
+            /*
+             * Broadcast to all users that this user is offline
+             */
+            PresencePacket presencePacket = new PresencePacket();
+            presencePacket.setStatus(PresencePacket.Status.Offline);
+            presencePacket.setUserid(userid);
+            G4Server.updateContainingPresence(userid, presencePacket);
         }
     }
     
