@@ -15,6 +15,7 @@ import java.util.concurrent.BlockingQueue;
 import org.opengroove.g4.common.G4Defaults;
 import org.opengroove.g4.common.Packet;
 import org.opengroove.g4.common.PacketSpooler;
+import org.opengroove.g4.common.protocol.ExceptionPacket;
 import org.opengroove.g4.common.protocol.LoginPacket;
 import org.opengroove.g4.common.protocol.LoginResponse;
 
@@ -62,6 +63,10 @@ public class Communicator
      * to the server is lost.
      */
     private Socket socket;
+    /**
+     * The object input stream associated with the current socket.
+     */
+    private ObjectInputStream objectIn;
     
     private static final int MAX_WAIT_DELAY = 20;
     
@@ -270,6 +275,15 @@ public class Communicator
              * time, inject everything into the appropiate fields, and be on our
              * merry way.
              */
+            currentWaitDelay = 0;
+            this.objectIn = lIn;
+            this.spooler = lSpooler;
+            this.socket = lSock;
+            notifyStatusConnected();
+            /*
+             * We're done. Everything else is left up to the runConnection
+             * method, so we'll return.
+             */
         }
         catch (RuntimeException e)
         {
@@ -278,6 +292,22 @@ public class Communicator
         catch (Exception e)
         {
             throw new RuntimeException(e);
+        }
+    }
+    
+    private void notifyStatusConnected()
+    {
+        for (StatusListener listener : new ArrayList<StatusListener>(statusListeners))
+        {
+            listener.connectionReady();
+        }
+    }
+    
+    private void notifyStatusDisconnected()
+    {
+        for (StatusListener listener : new ArrayList<StatusListener>(statusListeners))
+        {
+            listener.lostConnection();
         }
     }
     
@@ -295,7 +325,120 @@ public class Communicator
      */
     private void runConnection()
     {
-        
+        while (isRunning)
+        {
+            try
+            {
+                /*
+                 * Read a packet from the server.
+                 */
+                Packet packet = (Packet) objectIn.readObject();
+                /*
+                 * We've received a packet. Now we'll see if a synchronous block
+                 * is waiting for it.
+                 */
+                BlockingQueue<Packet> thisBlock =
+                    syncBlocks.get(packet.getPacketThread());
+                if (thisBlock != null)
+                {
+                    /*
+                     * There is a block waiting. We'll hand it the packet.
+                     */
+                    if (!thisBlock.offer(packet))
+                        thisBlock = null;
+                    syncBlocks.remove(packet.getPacketThread());
+                }
+                /*
+                 * Now we'll send the packet to any listeners that are
+                 * interested in processing it.
+                 */
+                if (thisBlock == null)
+                    /*
+                     * Packet wasn't dispatched to a sync block
+                     */
+                    notifyProcessPacket(packet);
+                notifyProcessSyncBlockedPacket(packet);
+            }
+            catch (Exception e)
+            {
+                e.printStackTrace();
+                break;
+            }
+        }
+        /*
+         * The connection has ended. We'll go clean up after it.
+         */
+        try
+        {
+            Socket lSock = socket;
+            socket = null;
+            objectIn = null;
+            spooler.close();
+            spooler = null;
+            notifyStatusDisconnected();
+            killPendingSyncBlocks();
+        }
+        catch (Exception exception)
+        {
+            exception.printStackTrace();
+        }
+    }
+    
+    private void killPendingSyncBlocks()
+    {
+        for (String threadId : new ArrayList<String>(syncBlocks.keySet()))
+        {
+            BlockingQueue queue = syncBlocks.get(threadId);
+            ExceptionPacket exceptionPacket = new ExceptionPacket();
+            exceptionPacket.setException(new DisconnectedException());
+            if (queue != null)
+                queue.offer(exceptionPacket);
+            syncBlocks.remove(threadId);
+        }
+    }
+    
+    private void notifyProcessPacket(Packet packet)
+    {
+        for (PacketListener listener : new ArrayList<PacketListener>(packetListeners))
+        {
+            try
+            {
+                listener.packetReceived(packet);
+            }
+            catch (ClassCastException e)
+            {
+                /*
+                 * Will occur if the packet listener isn't listening for this
+                 * type of packet; we'll just ignore it
+                 */
+            }
+            catch (Exception exception)
+            {
+                exception.printStackTrace();
+            }
+        }
+    }
+    
+    private void notifyProcessSyncBlockedPacket(Packet packet)
+    {
+        for (PacketListener listener : new ArrayList<PacketListener>(packetListeners))
+        {
+            try
+            {
+                listener.processedPacketReceived(packet);
+            }
+            catch (ClassCastException e)
+            {
+                /*
+                 * Will occur if the packet listener isn't listening for this
+                 * type of packet; we'll just ignore it
+                 */
+            }
+            catch (Exception exception)
+            {
+                exception.printStackTrace();
+            }
+        }
     }
     
     public void close()
