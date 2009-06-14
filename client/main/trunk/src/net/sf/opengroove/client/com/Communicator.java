@@ -176,8 +176,22 @@ public class Communicator
                 {
                     while (isRunning)
                     {
-                        setupConnection();
-                        runConnection();
+                        try
+                        {
+                            setupConnection();
+                        }
+                        catch (Exception exception)
+                        {
+                            exception.printStackTrace();
+                        }
+                        try
+                        {
+                            runConnection();
+                        }
+                        catch (Exception exception)
+                        {
+                            exception.printStackTrace();
+                        }
                     }
                 }
             };
@@ -222,8 +236,18 @@ public class Communicator
              */
             if (loginPacket != null)
             {
+                /*
+                 * Send the login packet
+                 */
                 lSpooler.send(loginPacket);
+                /*
+                 * Read the login response
+                 */
                 LoginResponse loginResponse = (LoginResponse) lIn.readObject();
+                /*
+                 * If login failed, close the connection, notify everyone, and
+                 * throw an exception.
+                 */
                 if (loginResponse.getStatus() != LoginResponse.Status.Successful)
                 {
                     try
@@ -235,9 +259,17 @@ public class Communicator
                     {
                         exception.printStackTrace();
                     }
-                    throw new Faile
+                    notifyStatusFailedAuth(loginResponse);
+                    throw new FailedLoginException(loginResponse);
                 }
             }
+            /*
+             * We've successfully logged in, or we're not a communicator that
+             * should automatically log in at the start of a connection. Either
+             * way, the connection is now ready to go. We'll reset the wait
+             * time, inject everything into the appropiate fields, and be on our
+             * merry way.
+             */
         }
         catch (RuntimeException e)
         {
@@ -246,6 +278,14 @@ public class Communicator
         catch (Exception e)
         {
             throw new RuntimeException(e);
+        }
+    }
+    
+    private void notifyStatusFailedAuth(LoginResponse loginResponse)
+    {
+        for (StatusListener listener : new ArrayList<StatusListener>(statusListeners))
+        {
+            listener.authenticationFailed(loginResponse);
         }
     }
     
