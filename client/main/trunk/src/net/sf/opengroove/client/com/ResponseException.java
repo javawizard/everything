@@ -17,5 +17,29 @@ public class ResponseException extends RuntimeException
      * 
      */
     private static final long serialVersionUID = -5234251157623296594L;
+
+    public ResponseException()
+    {
+        super();
+        // TODO Auto-generated constructor stub
+    }
+
+    public ResponseException(String message, Throwable cause)
+    {
+        super(message, cause);
+        // TODO Auto-generated constructor stub
+    }
+
+    public ResponseException(String message)
+    {
+        super(message);
+        // TODO Auto-generated constructor stub
+    }
+
+    public ResponseException(Throwable cause)
+    {
+        super(cause);
+        // TODO Auto-generated constructor stub
+    }
     
 }

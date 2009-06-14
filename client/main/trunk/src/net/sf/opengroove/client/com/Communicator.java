@@ -1,11 +1,15 @@
 package net.sf.opengroove.client.com;
 
+import java.net.Socket;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.concurrent.BlockingQueue;
 
 import org.opengroove.g4.common.Packet;
+import org.opengroove.g4.common.PacketSpooler;
 import org.opengroove.g4.common.protocol.LoginPacket;
 
 /**
@@ -33,6 +37,25 @@ public class Communicator
     private LoginPacket loginPacket;
     
     private boolean isRunning = true;
+    /**
+     * The thread that manages this communicator. It is the thread that connects
+     * the communicator if it is one that attempts to reconnect when
+     * disconnected, and it is the thread that reads packets from the server and
+     * processes them.
+     */
+    private Thread coordinator;
+    /**
+     * A packet spooler that will spool packets to the server. This is set to
+     * null until a connection is established to the server, and is again set to
+     * null when the connection is dropped.
+     */
+    private PacketSpooler spooler;
+    /**
+     * The socket that is currently connected to the server. This is not set
+     * until after successful authentication, and is cleared when the connection
+     * to the server is lost.
+     */
+    private Socket socket;
     
     private static final int MAX_WAIT_DELAY = 20;
     
@@ -40,6 +63,32 @@ public class Communicator
     
     private Map<String, BlockingQueue<Packet>> syncBlocks =
         Collections.synchronizedMap(new HashMap<String, BlockingQueue<Packet>>());
+    
+    private List<StatusListener> statusListeners =
+        Collections.synchronizedList(new ArrayList<StatusListener>());
+    
+    private List<PacketListener> packetListeners =
+        Collections.synchronizedList(new ArrayList<PacketListener>());
+    
+    public void addStatusListener(StatusListener listener)
+    {
+        statusListeners.add(listener);
+    }
+    
+    public void removeStatusListener(StatusListener listener)
+    {
+        statusListeners.remove(listener);
+    }
+    
+    public void addPacketListener(PacketListener listener)
+    {
+        packetListeners.add(listener);
+    }
+    
+    public void removePacketListener(PacketListener listener)
+    {
+        packetListeners.remove(listener);
+    }
     
     /**
      * Creates a new communicator using the settings specified. After the
@@ -89,6 +138,91 @@ public class Communicator
      */
     public void start()
     {
+        if (loginPacket == null)
+        {
+            /*
+             * One-time communicator. Synchronously connect to the server and
+             * then asynchronously process packets.
+             */
+            setupConnection();
+            coordinator = new Thread()
+            {
+                public void run()
+                {
+                    runConnection();
+                }
+            };
+            coordinator.start();
+        }
+        else
+        {
+            /*
+             * Multi-use communicator. Asynchronously connect to the server and
+             * process packets.
+             */
+            coordinator = new Thread()
+            {
+                public void run()
+                {
+                    while (isRunning)
+                    {
+                        setupConnection();
+                        runConnection();
+                    }
+                }
+            };
+            coordinator.start();
+        }
+    }
+    
+    /**
+     * Sets up a connection to the server, throwing an exception if a problem
+     * occurs while doing so.
+     */
+    private void setupConnection()
+    {
+        /*
+         * First, wait for currentWaitDelay seconds.
+         */
+        try
+        {
+            Thread.sleep(currentWaitDelay * 1000);
+        }
+        catch (Exception exception)
+        {
+            exception.printStackTrace();
+        }
+    }
+    
+    /**
+     * Processes packets from the server, returning when the connection to the
+     * server is lost after cleaning up the connection.
+     */
+    private void runConnection()
+    {
         
+    }
+    
+    public void close()
+    {
+        isRunning = false;
+        try
+        {
+            socket.close();
+        }
+        catch (Exception exception)
+        {
+            exception.printStackTrace();
+        }
+    }
+    
+    public boolean isAlive()
+    {
+        return coordinator != null && coordinator.isAlive();
+    }
+    
+    public boolean isConnected()
+    {
+        return socket != null;
     }
 }

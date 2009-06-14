@@ -2,6 +2,16 @@ package net.sf.opengroove.client.com;
 
 import org.opengroove.g4.common.Packet;
 
+/**
+ * A listener that can receive packets from the server.
+ * 
+ * @author Alexander Boyd
+ * 
+ * @param <E>
+ *            The class of the packet type that this listener can receive. Any
+ *            packet that can be successfully cast to this type will be sent to
+ *            this listener, even packets that are a subclass of this type.
+ */
 public interface PacketListener<E extends Packet>
 {
     /**
