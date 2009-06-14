@@ -463,4 +463,24 @@ public class Communicator
     {
         return socket != null;
     }
+    
+    public void reconnect()
+    {
+        try
+        {
+            if (socket != null)
+                socket.close();
+        }
+        catch (Exception exception)
+        {
+            /*
+             * Typically will be an exception indicating that the socket is
+             * already closed. There is a race condition, however, that occurs
+             * if the socket is set to null between the two lines in the try
+             * block; this will result in this exception being an NPE. Either
+             * way, we'll treat it the same.
+             */
+            exception.printStackTrace();
+        }
+    }
 }
