@@ -10,9 +10,12 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.BlockingQueue;
+import java.util.concurrent.atomic.AtomicLong;
 
 import org.opengroove.g4.common.G4Defaults;
+import org.opengroove.g4.common.NopThread;
 import org.opengroove.g4.common.Packet;
 import org.opengroove.g4.common.PacketSpooler;
 import org.opengroove.g4.common.protocol.ExceptionPacket;
@@ -279,6 +282,7 @@ public class Communicator
             this.objectIn = lIn;
             this.spooler = lSpooler;
             this.socket = lSock;
+            new NopThread(lSpooler, G4Defaults.NOP_INTERVAL).start();
             notifyStatusConnected();
             /*
              * We're done. Everything else is left up to the runConnection
@@ -482,5 +486,74 @@ public class Communicator
              */
             exception.printStackTrace();
         }
+    }
+    
+    /**
+     * Generates a unique thread id for this packet and sends the packet. When a
+     * response is received, it is returned. If an exception occurs on the
+     * server side while processing this packet, it is wrapped in a
+     * ResponseException and thrown from this method. If the server connection
+     * is lost, an exception is thrown.
+     * 
+     * @param packet
+     * @return
+     */
+    public Packet query(Packet packet)
+    {
+        if (socket == null)
+            throw new RuntimeException("Not connected");
+        packet.setPacketThread(generateThreadId());
+        BlockingQueue thisBlock = new ArrayBlockingQueue(1);
+        syncBlocks.put(packet.getPacketThread(), thisBlock);
+        /*
+         * We've been added to the sync block map, and we have a connection. Now
+         * we'll send the packet and wait for a response.
+         */
+        PacketSpooler lSpooler = spooler;
+        if (lSpooler == null)
+        {
+            syncBlocks.remove(packet.getPacketThread());
+            throw new RuntimeException("Not connected");
+        }
+        lSpooler.send(packet);
+        /*
+         * Now we wait for the response.
+         */
+        try
+        {
+            Packet response = (Packet) thisBlock.take();
+            if (packet instanceof ExceptionPacket)
+            {
+                throw new ResponseException("The server threw an exception",
+                    ((ExceptionPacket) packet).getException());
+            }
+            return response;
+        }
+        catch (InterruptedException e)
+        {
+            e.printStackTrace();
+            throw new RuntimeException(e.getClass().getName() + ": " + e.getMessage(),
+                e);
+        }
+    }
+    
+    /**
+     * Sends a packet to the server, ignoring its response if the server ever
+     * sends one.
+     * 
+     * @param packet
+     */
+    public void send(Packet packet)
+    {
+        if (socket == null)
+            throw new RuntimeException("Not connected");
+        spooler.send(packet);
+    }
+    
+    private static final AtomicLong threadIdSequence = new AtomicLong();
+    
+    private static String generateThreadId()
+    {
+        return System.currentTimeMillis() + "-" + threadIdSequence.getAndIncrement();
     }
 }
