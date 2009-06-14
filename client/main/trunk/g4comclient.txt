@@ -1,0 +1,15 @@
+The communicator has a start method. This starts the communicator. If the communicator is one-time, then this method attempts to connect to the server and blocks until it has connected, throwing an exception if it could not connect. One-time connections do not perform authentication.
+
+If the connection is multiple time, then it starts a thread. This thread waits the waitTime number of seconds, then connects to the server and sets up a packet spooler and the appropriate object streams. If this fails, it increments the wait time (up until the max) and then continues with the loop.
+
+If it succeeds instead of fails, then it sticks the packet spooler into a field. It then sets SO_TIMEOUT, writes the login packet, and waits for the response. If the response is a failure, then it notifies listeners of the auth failure, closes the connection, and starts over with the loop. If the repsonse is successful, it sets the waitTime to 0, notifies listeners of a successful connection establishment, sticks the objects into the fields (like the spooler, etc), and then begins to read packets. These packets it dispatches to their sync blocking queues, and notifies listeners of the packets. It does this until reading the next packet throws an exception.
+
+When this exception is received, it removes the spooler and streams from their fields, sends exception packets to all of the pending sync blocks, notifies listeners that a connection was lost, and starts over with the next loop cycle.
+
+Oh, and between every read packet, and between connectivity loops, it checks to see if the communicator has been shut down by request, and if it has, it closes the connection and returns from the loop.
+
+
+
+Anyway, when we call start, if we are not supposed to reconnect, then we just wait the appropriate amount of time (which will be 0), do all of the connection stuff, and return when the connection has been established and we have authenticated.
+
+So basically, then, the coordinator functions are two separate methods: setupConnection and runConnection. setupConnection waits the wait time, connects to the server, performs auth, and notifies listeners that connection was successful (and sticks values into fields). runConnection reads off packets from the server and processes them, clearing all fields and such when the connection fails and closing the connection. 
