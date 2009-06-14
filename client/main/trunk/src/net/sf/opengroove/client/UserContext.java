@@ -204,7 +204,8 @@ public class UserContext
                     wasLastIdle = false;
                     markedIdleIcon = false;
                 }
-                else if (!markedIdleIcon && (lastIdle + IDLE_THRESHOLD) < getServerTime())
+                else if (!markedIdleIcon
+                    && (lastIdle + IDLE_THRESHOLD) < getServerTime())
                 {
                     markedIdleIcon = true;
                     updateLocalStatusIcon();
@@ -240,12 +241,14 @@ public class UserContext
     /**
      * A timer that downloads the status updates for all of the contacts (IE the
      * status updates uploaded by those contacts' {@link #myStatusTimer}s), and
-     * updates the icons in the launchbar's contact's pane. <br/> <br/>
+     * updates the icons in the launchbar's contact's pane. <br/>
+     * <br/>
      * 
      * This timer, unlike most of the other timers, uses
      * {@link Conditional#True} instead of {@link #connectionConditional}, so
      * that it will run even if there is no connection to the server, so as to
-     * set all of the user's statuses to offline.<br/> <br/>
+     * set all of the user's statuses to offline.<br/>
+     * <br/>
      * 
      * This timer runs every 3 minutes.
      */
@@ -378,7 +381,8 @@ public class UserContext
     
     /**
      * Starts all of this context's timers. Specifically, starts all timers in
-     * any field on this user context that are annotated with {@link TimerField} .
+     * any field on this user context that are annotated with {@link TimerField}
+     * .
      */
     public void startTimers()
     {
@@ -422,8 +426,8 @@ public class UserContext
                     /*
                      * First, add a subscription to the contact's current status
                      */
-                    putSubscription(subscriptions, new Subscription("userstatus", contact
-                        .getUserid(), "", "", false));
+                    putSubscription(subscriptions, new Subscription("userstatus",
+                        contact.getUserid(), "", "", false));
                     /*
                      * The userstatus subscription will take care of the status
                      * of all of the user's computers. Now we need to subscribe
@@ -679,7 +683,8 @@ public class UserContext
         return userNotificationListener;
     }
     
-    public void setUserNotificationListener(UserNotificationListener userNotificationListener)
+    public void setUserNotificationListener(
+        UserNotificationListener userNotificationListener)
     {
         this.userNotificationListener = userNotificationListener;
     }
@@ -739,29 +744,30 @@ public class UserContext
     {
         userStatusMenu = new JPopupMenu();
         JLabel onlineLabel =
-            new JLabel("Online", new ImageIcon(OpenGroove.Icons.USER_ONLINE_16.getImage()),
-                JLabel.LEFT);
+            new JLabel("Online", new ImageIcon(OpenGroove.Icons.USER_ONLINE_16
+                .getImage()), JLabel.LEFT);
         JLabel offlineLabel =
-            new JLabel("Offline",
-                new ImageIcon(OpenGroove.Icons.USER_OFFLINE_16.getImage()), JLabel.LEFT);
+            new JLabel("Offline", new ImageIcon(OpenGroove.Icons.USER_OFFLINE_16
+                .getImage()), JLabel.LEFT);
         JLabel idleLabel =
             new JLabel("Idle", new ImageIcon(OpenGroove.Icons.USER_IDLE_16.getImage()),
                 JLabel.LEFT);
         JLabel unknownLabel =
-            new JLabel("Unknown",
-                new ImageIcon(OpenGroove.Icons.USER_UNKNOWN_16.getImage()), JLabel.LEFT);
-        JLabel nonexistantLabel =
-            new JLabel("Nonexistant", new ImageIcon(OpenGroove.Icons.USER_NONEXISTANT_16
+            new JLabel("Unknown", new ImageIcon(OpenGroove.Icons.USER_UNKNOWN_16
                 .getImage()), JLabel.LEFT);
+        JLabel nonexistantLabel =
+            new JLabel("Nonexistant", new ImageIcon(
+                OpenGroove.Icons.USER_NONEXISTANT_16.getImage()), JLabel.LEFT);
         onlineLabel.setToolTipText(ComponentUtils
             .htmlTipWrap("This means that the user is connected to the"
                 + " internet and is using their computer."));
         offlineLabel.setToolTipText(ComponentUtils
             .htmlTipWrap("This means that the user is not connected "
                 + "to the internet, or their computer is off."));
-        idleLabel.setToolTipText(ComponentUtils
-            .htmlTipWrap("This means that the user is connected "
-                + "to the internet, but they are not using their computer right now."));
+        idleLabel
+            .setToolTipText(ComponentUtils
+                .htmlTipWrap("This means that the user's computer is on and is connected "
+                    + "to the internet, but the user is not using their computer right now."));
         unknownLabel.setToolTipText(ComponentUtils
             .htmlTipWrap("This means that OpenGroove doesn't know what the "
                 + "user's current status is. This typically happens when you "
@@ -827,14 +833,15 @@ public class UserContext
                         {
                             String computersString = "";
                             int computersAdded = 0;
-                            for (ContactComputer computer : contact.getComputers().isolate())
+                            for (ContactComputer computer : contact.getComputers()
+                                .isolate())
                             {
                                 String statusUri;
                                 try
                                 {
                                     statusUri =
-                                        getStatusIcon(computer.getStatus()).getScaledFile()
-                                            .toURI().toURL().toString();
+                                        getStatusIcon(computer.getStatus())
+                                            .getScaledFile().toURI().toURL().toString();
                                 }
                                 catch (MalformedURLException e1)
                                 {
@@ -844,7 +851,8 @@ public class UserContext
                                 computersAdded++;
                                 computersString +=
                                     " &nbsp; <img width=\"16\" height=\"16\" src=\""
-                                        + statusUri + "\"/> " + computer.getName() + "<br/>";
+                                        + statusUri + "\"/> " + computer.getName()
+                                        + "<br/>";
                             }
                             if (computersAdded == 0)
                             {
@@ -937,7 +945,8 @@ public class UserContext
                             @Override
                             public void actionPerformed(ActionEvent e)
                             {
-                                contactButton.scrollRectToVisible(new Rectangle(0, 0, 0, 0));
+                                contactButton.scrollRectToVisible(new Rectangle(0, 0,
+                                    0, 0));
                                 contactRenameField.setText(contact.getLocalName());
                                 contactRenamePopup.show(contactButton, 0, 0);
                                 contactRenameField.requestFocusInWindow();
@@ -1066,7 +1075,8 @@ public class UserContext
      * by the one that took a lot of time. all of the newly-started threads are
      * {@link Thread#join() joined} before this method returns, so that when it
      * returns, all contacts in the contacts list at the time the method was
-     * started will have their status icons updated.<br/> <br/>
+     * started will have their status icons updated.<br/>
+     * <br/>
      * 
      * UPDATE: this no longer runs in separate threads, due to issues that were
      * occuring. Instead, it runs the cotact updates one after another.
@@ -1092,12 +1102,13 @@ public class UserContext
      * online, whether or not it is idle, etc. This information is then stored
      * into the contact, and the contact is stored into this context's storage
      * object. The icon in the contacts pane is then updated to reflect the
-     * information.<br/> <br/>
+     * information.<br/>
+     * <br/>
      * 
      * This <b>must not</b> be called by any method besides
-     * {@link #updateContactStatus()}, unless the caller explicitly
-     * synchronizes on {@link #contactStatusLock} first. This is to avoid two
-     * threads trying to update the same contact at the same time.
+     * {@link #updateContactStatus()}, unless the caller explicitly synchronizes
+     * on {@link #contactStatusLock} first. This is to avoid two threads trying
+     * to update the same contact at the same time.
      * 
      * @param contact
      */
@@ -1128,8 +1139,9 @@ public class UserContext
                     }
                     catch (TimeoutException e)
                     {
-                        new Exception("Timeout while getting user status, trying again...",
-                            e).printStackTrace();
+                        new Exception(
+                            "Timeout while getting user status, trying again...", e)
+                            .printStackTrace();
                         if (i == 2)
                             throw e;
                     }
@@ -1188,14 +1200,16 @@ public class UserContext
                             com.getComputerSetting(contact.getUserid(), computerName,
                                 "public-idle");
                         if (idleTimeString != null)
-                            computer.getStatus().setIdleTime(Long.parseLong(idleTimeString));
+                            computer.getStatus().setIdleTime(
+                                Long.parseLong(idleTimeString));
                         computer.getStatus().setKnown(true);
                         computer.getStatus().setNonexistant(false);
                         computer.getStatus().setOnline(
-                            com.getUserStatus(contact.getUserid(), computerName).isOnline());
+                            com.getUserStatus(contact.getUserid(), computerName)
+                                .isOnline());
                     }// end of computer foreach
-                    for (ContactComputer computer : new ArrayList<ContactComputer>(contact
-                        .getComputers()))
+                    for (ContactComputer computer : new ArrayList<ContactComputer>(
+                        contact.getComputers()))
                     {
                         if (!StringUtils.isMemberOfIgnoreCase(computer.getName(),
                             contactComputers))
@@ -1225,7 +1239,8 @@ public class UserContext
                             isActive = true;
                         if (computer.getStatus().isOnline())
                             isOnline = true;
-                        idleTime = Math.max(idleTime, computer.getStatus().getIdleTime());
+                        idleTime =
+                            Math.max(idleTime, computer.getStatus().getIdleTime());
                     }
                     if (idleTime == -1)
                         idleTime = getServerTime();
@@ -1247,17 +1262,17 @@ public class UserContext
                              * attempt to download them now.
                              */
                             String encPub =
-                                com.getUserSetting(contactUserid, UserSettings.KEY_ENC_PUB
-                                    .toString());
+                                com.getUserSetting(contactUserid,
+                                    UserSettings.KEY_ENC_PUB.toString());
                             String encMod =
-                                com.getUserSetting(contactUserid, UserSettings.KEY_ENC_MOD
-                                    .toString());
+                                com.getUserSetting(contactUserid,
+                                    UserSettings.KEY_ENC_MOD.toString());
                             String sigPub =
-                                com.getUserSetting(contactUserid, UserSettings.KEY_SIG_PUB
-                                    .toString());
+                                com.getUserSetting(contactUserid,
+                                    UserSettings.KEY_SIG_PUB.toString());
                             String sigMod =
-                                com.getUserSetting(contactUserid, UserSettings.KEY_SIG_MOD
-                                    .toString());
+                                com.getUserSetting(contactUserid,
+                                    UserSettings.KEY_SIG_MOD.toString());
                             if (encPub != null && encMod != null && sigPub != null
                                 && sigMod != null)
                             {
@@ -1435,7 +1450,8 @@ public class UserContext
     
     public void showNonexistantContactInfoDialog()
     {
-        ArrayList<Contact> contacts = getStorage().getLocalUser().getContacts().isolate();
+        ArrayList<Contact> contacts =
+            getStorage().getLocalUser().getContacts().isolate();
         ArrayList<Contact> nonexistantContacts = new ArrayList<Contact>();
         for (Contact contact : contacts)
         {
@@ -1516,14 +1532,15 @@ public class UserContext
             /*
              * Idle
              */
-            localStatusButton
-                .setIcon(new ImageIcon(OpenGroove.Icons.USER_IDLE_16.getImage()));
+            localStatusButton.setIcon(new ImageIcon(OpenGroove.Icons.USER_IDLE_16
+                .getImage()));
             return;
         }
         /*
          * Online
          */
-        localStatusButton.setIcon(new ImageIcon(OpenGroove.Icons.USER_ONLINE_16.getImage()));
+        localStatusButton.setIcon(new ImageIcon(OpenGroove.Icons.USER_ONLINE_16
+            .getImage()));
         return;
     }
     
