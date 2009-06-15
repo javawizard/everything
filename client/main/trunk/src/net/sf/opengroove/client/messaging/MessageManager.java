@@ -8,10 +8,11 @@ import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 
-import org.eclipse.jdt.internal.compiler.lookup.ExtraCompilerModifiers;
 import org.opengroove.g4.common.messaging.Message;
+import org.opengroove.g4.common.object.ExtractedPassThroughObject;
 import org.opengroove.g4.common.protocol.InboundMessagePacket;
 import org.opengroove.g4.common.protocol.LoginResponse;
+import org.opengroove.g4.common.protocol.MessageResponse;
 import org.opengroove.g4.common.user.Userid;
 import org.opengroove.g4.common.utils.ObjectUtils;
 
@@ -62,6 +63,14 @@ public class MessageManager implements StatusListener,
              * the future.
              */
             Object message = messagePacket.getMessage();
+            /*
+             * If the message was sent by the sender with sendWrappedMessage, we
+             * need to unwrap the message before we handle it
+             */
+            if (message instanceof ExtractedPassThroughObject)
+            {
+                message = ((ExtractedPassThroughObject) message).getObject();
+            }
             MessageHandler handler = handlerMap.get(message.getClass());
             if (handler != null)
             {
@@ -162,8 +171,51 @@ public class MessageManager implements StatusListener,
     public void packetReceived(InboundMessagePacket packet)
     {
         /*
-         * We store this in a file, in case
+         * First, we store the message to a file in the inbound message folder.
+         * If there's already a file with the name of the message id, then we've
+         * already received the message so we'll discard it.
          */
+        File file = new File(inboundMessageFolder, encodeId(packet.getMessageId()));
+        if (file.exists())
+        {
+            /*
+             * Message already received, so we'll just return.
+             */
+            return;
+        }
+        /*
+         * Message hasn't been received. We'll write it to disk.
+         */
+        ObjectUtils.writeObject(packet, file);
+        /*
+         * We've got the message safely on disk. Now we'll tell the server that
+         * we have the message.
+         */
+        MessageResponse response = new MessageResponse();
+        response.setMessageId(packet.getMessageId());
+        response.setPacketThread(packet.getPacketThread());
+        if (!communicator.isConnected())
+        {
+            /*
+             * Lost connection. We'll discard the message, since we'll be
+             * getting it the next time we connect.
+             */
+            file.delete();
+            return;
+        }
+        try
+        {
+            communicator.send(packet);
+        }
+        catch (Exception exception)
+        {
+            exception.printStackTrace();
+        }
+        /*
+         * We've told the server that we received the message. Now we'll
+         * dispatch it.
+         */
+        stackedThreadPool.execute(new MessageDispatcher(packet));
     }
     
     public void processedPacketReceived(InboundMessagePacket packet)
@@ -185,6 +237,8 @@ public class MessageManager implements StatusListener,
      */
     public void sendMessage(Userid[] recipients, Object message)
     {
+        if (message == null)
+            throw new IllegalArgumentException("Can't send a null message");
     }
     
     /**
@@ -207,7 +261,11 @@ public class MessageManager implements StatusListener,
      */
     public void sendWrappedMessage(Userid[] recipients, Object message)
     {
-        ExtraCompilerModifiers
+        if (message == null)
+            throw new IllegalArgumentException("Can't send a null message");
+        ExtractedPassThroughObject wrapper = new ExtractedPassThroughObject();
+        wrapper.setObject(message);
+        sendMessage(recipients, wrapper);
     }
     
 }
