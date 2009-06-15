@@ -147,6 +147,7 @@ public class MessageManager implements StatusListener,
         this.localUser = localUser;
         this.communicator = communicator;
         communicator.addPacketListener(this);
+        communicator.addPacketListener(new MessageResponseReceiver());
         communicator.addStatusListener(this);
         this.inboundMessageFolder = inboundMessageFolder;
         this.outboundMessageFolder = outboundMessageFolder;
