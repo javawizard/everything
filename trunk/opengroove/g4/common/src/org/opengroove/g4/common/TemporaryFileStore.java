@@ -81,6 +81,33 @@ public class TemporaryFileStore
         return f;
     }
     
+    /**
+     * Creates a new temporary file. This file, however, will not be deleted on
+     * VM exit. It will be deleted on VM startup if it is not moved elsewhere,
+     * though.
+     * 
+     * @return
+     */
+    public static synchronized File createPersistentFile()
+    {
+        if (store == null)
+            initDefault();
+        File f =
+            new File(store, "file-" + System.currentTimeMillis() + "-"
+                + sequence.getAndIncrement());
+        try
+        {
+            f.createNewFile();
+        }
+        catch (IOException e)
+        {
+            e.printStackTrace();
+            throw new RuntimeException("Exception while creating a temporary file: "
+                + e.getClass().getName() + ": " + e.getMessage(), e);
+        }
+        return f;
+    }
+    
     public static synchronized File createFolder()
     {
         if (store == null)
