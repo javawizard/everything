@@ -1,0 +1,17 @@
+This technote contains information related to http://www.opengroove.org/dev/ideas/completepeer-to-peerconversionservernotneededatalltorunopengroove . I highly recommend you read that first, before reading this.
+
+Anyway, Connector is an interface. Service is also an interface.
+
+What we need is a means to give an imessage to a service and ask it to deliver it to a specific user. It will either succeed or fail. Then we need a means to ask it to deliver a pmessage, in the form of an input stream, to a list of recipients, and a method for it to report which ones it could be sent to, and the reason why it couldn't send it to others. Valid reasons would be that the connector doesn't know how to deliver the message to that recipient, and that it was delivering the message but got interrupted. OpenGroove will immediately ask the service to re-deliver the message to the interrupted recipients. It will do this either until the maximum redelivery limit is reached, at which point it will treat the message as if the service didn't know how to deliver it, or until the service delivers the message.
+
+A service is represented by a URI of the form ogservice:CONNECTOR?name=value. CONNECTOR is the connector's id, and all of the parameters are passed to the connector when asking it for a matching service.
+
+A connector's list of supported services generally shouldn't change. For example, in the case of a connector that provides a service for each relay server it handles, it should provide services even if the computer is offline, and these services will reject messages on the grounds that they cannot get the message to the recipient. In other words, a service should only be unavailable for construction if the format of the URI passed to it is incorrect.
+
+OpenGroove does not directly provide storage for configuration settings to connectors and services. Connectors written as plugins should therefore use some other means of storage, such as one of the OpenGroove storage extension points, for storing connection settings.
+
+OpenGroove will supply the service with the UserContext object corresponding to the user that will be using the service for communication. A new service instance is created for each user, even if the service URL is the same.
+
+Currently, there is not an interface for configuring connectors and services. In the future, I'll probably provide some sort of interface for obtaining a configuration component from a connector or a service. This component could then be displayed when a "configure" button is chosen for the connector or service. The service would also be able to request display of this component, in the case that the connector needs configuration info before it can connect, and it would also be able to request initial display of the component, which means that the user will see the component before the service is actually created. If they choose cancel when configuring the service, then, then the service will not be created or added. In fact, I'm thinking that the connector would be requested to remove the service in question.
+
+So for now, connectors that need information from the user should add a menu item to the launchbar. 
