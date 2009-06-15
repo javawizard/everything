@@ -108,7 +108,6 @@ import net.sf.opengroove.client.settings.SettingStore;
 import net.sf.opengroove.client.settings.SettingsManager;
 import net.sf.opengroove.client.settings.types.CheckboxParameters;
 import net.sf.opengroove.client.storage.Contact;
-import net.sf.opengroove.client.storage.InboundMessage;
 import net.sf.opengroove.client.storage.LocalUser;
 import net.sf.opengroove.client.storage.Storage;
 import net.sf.opengroove.client.text.TextManager;
@@ -121,7 +120,6 @@ import net.sf.opengroove.client.ui.StatusDialog;
 import net.sf.opengroove.client.ui.WebsiteButton;
 import net.sf.opengroove.client.ui.frames.LoginFrame;
 import net.sf.opengroove.client.ui.frames.MessageHistoryFrame;
-import net.sf.opengroove.client.ui.frames.UserNotificationFrame;
 import net.sf.opengroove.client.ui.transitions.included.SlideInNotificationFrameTransition;
 import net.sf.opengroove.common.concurrent.Conditional;
 import net.sf.opengroove.common.security.Hash;
@@ -142,11 +140,8 @@ import com.jidesoft.wizard.WizardDialogPane;
 import com.l2fprod.common.swing.JLinkButton;
 
 /**
- * This is the class that does most of the thinking for OpenGroove. If you don't
- * want OpenGroove to update itself (for example, if you are developing it),
- * then you would run this class. If you do want OpenGroove to update itself,
- * you would call Loader, which then calls this class after a bit of processing
- * related to updates.
+ * This is the class that does most of the setup for OpenGroove. It's the class
+ * that you run to get OpenGroove going.
  * 
  * @author Alexander Boyd
  * 
@@ -235,13 +230,14 @@ public class OpenGroove
     {
         UP_FOLDER_16("upfolder16.png", 16), GENERIC_ADD_16("add.png", 16),
         GENERIC_REMOVE_16("remove.png", 16), CONFIGURE_WORKSPACE_16(
-            "configure-workspace.png", 16), DELETE_WORKSPACE_16("delete-workspace.png", 16),
-        INVITE_TO_WORKSPACE_16("invite-to-workspace.png", 16),
-        POP_OUT_16("pop-out.png", 16), WORKSPACE_INFO_16("workspace-info.png", 16),
-        WORKSPACE_WARNING_16("workspace-warning.png", 16), BACK_BUTTON_32("back-button.png",
-            32), FOLDER_DOCS_16("folder-docs.png", 16), EDIT_16("edit16.gif", 16), NOTES_16(
-            "notes16.gif", 16), USER_ONLINE_16("user-green.png", 16), USER_IDLE_16(
-            "user-yellow.png", 16), USER_NONEXISTANT_16("user-red.png", 16),
+            "configure-workspace.png", 16), DELETE_WORKSPACE_16("delete-workspace.png",
+            16), INVITE_TO_WORKSPACE_16("invite-to-workspace.png", 16), POP_OUT_16(
+            "pop-out.png", 16), WORKSPACE_INFO_16("workspace-info.png", 16),
+        WORKSPACE_WARNING_16("workspace-warning.png", 16), BACK_BUTTON_32(
+            "back-button.png", 32), FOLDER_DOCS_16("folder-docs.png", 16), EDIT_16(
+            "edit16.gif", 16), NOTES_16("notes16.gif", 16), USER_ONLINE_16(
+            "user-green.png", 16), USER_IDLE_16("user-yellow.png", 16),
+        USER_NONEXISTANT_16("user-red.png", 16),
         USER_UNKNOWN_16("user-purple.png", 16), USER_OFFLINE_16("user-gray.png", 16),
         SETTINGS_48("settings48.png", 48), SETTINGS_16("settings16.png", 16),
         MESSAGE_CONFIG_16("messageconfig16.png", 16), MESSAGE_CONFIG_48(
@@ -451,7 +447,8 @@ public class OpenGroove
                 }
                 catch (Exception e)
                 {
-                    frame3.setTitle("exception," + e.getClass() + " : " + e.getMessage());
+                    frame3.setTitle("exception," + e.getClass() + " : "
+                        + e.getMessage());
                     e.printStackTrace();
                     Thread.sleep(3000);
                 }
@@ -489,7 +486,8 @@ public class OpenGroove
         splashScreenProgress.setString("Initializing...");
         splashScreenWindow.pack();
         splashScreenWindow.setLocationRelativeTo(null);
-        splashScreenWindow.getContentPane().add(splashScreenProgress, BorderLayout.SOUTH);
+        splashScreenWindow.getContentPane().add(splashScreenProgress,
+            BorderLayout.SOUTH);
         /*
          * It's important to pack and setlocationrelativeto BEFORE adding the
          * progress bar, to get the positioning correct with respect to the
@@ -574,7 +572,8 @@ public class OpenGroove
                         try
                         {
                             Thread.sleep(3000);
-                            isNotificationAlertShowing = notificationFrame.containsAlerts();
+                            isNotificationAlertShowing =
+                                notificationFrame.containsAlerts();
                         }
                         catch (Exception ex1)
                         {
@@ -612,7 +611,8 @@ public class OpenGroove
                                     if (currentNotificationIndex >= nimages.length
                                         || currentNotificationIndex >= ndelays.length)
                                         currentNotificationIndex = 0;
-                                    trayicon.setImage(nimages[currentNotificationIndex]);
+                                    trayicon
+                                        .setImage(nimages[currentNotificationIndex]);
                                     try
                                     {
                                         Thread.sleep(ndelays[currentNotificationIndex]);
@@ -706,8 +706,8 @@ public class OpenGroove
                 File file = trayfiles[i];
                 notificationTrayImages[i] = ImageIO.read(file);
                 notificationTrayImages[i] =
-                    scaleImage(blockTransparify(notificationTrayImages[i], new Color(255, 0,
-                        0)), 16, 16);
+                    scaleImage(blockTransparify(notificationTrayImages[i], new Color(
+                        255, 0, 0)), 16, 16);
                 String filename = file.getName();
                 System.out.println(filename);
                 int hIndex = filename.lastIndexOf("-");
@@ -737,8 +737,8 @@ public class OpenGroove
                 File file = trayofflinefiles[i];
                 notificationTrayOfflineImages[i] = ImageIO.read(file);
                 notificationTrayOfflineImages[i] =
-                    scaleImage(blockTransparify(notificationTrayOfflineImages[i], new Color(
-                        255, 0, 0)), 16, 16);
+                    scaleImage(blockTransparify(notificationTrayOfflineImages[i],
+                        new Color(255, 0, 0)), 16, 16);
                 String filename = file.getName();
                 System.out.println(filename);
                 int hIndex = filename.lastIndexOf("-");
@@ -891,10 +891,9 @@ public class OpenGroove
                  * they be automatically logged in.
                  */
                 // TODO: actually do what the above comment says.
-                notificationFrame.addNotification("OpenGroove", new NotificationAdapter(
-                    notificationFrame,
-                    new JLabel("OpenGroove has successfully started up."), false, true),
-                    true);
+                notificationFrame.addNotification("OpenGroove",
+                    new NotificationAdapter(notificationFrame, new JLabel(
+                        "OpenGroove has successfully started up."), false, true), true);
             }
             /*
              * We should get rid of the splash screen so that the user isn't
@@ -944,7 +943,8 @@ public class OpenGroove
                 int r = at.getRed();
                 int g = at.getGreen();
                 int b = at.getBlue();
-                if (r > rMin && r < rMax && g > gMin && g < gMax && b > bMin && b < bMax)
+                if (r > rMin && r < rMax && g > gMin && g < gMax && b > bMin
+                    && b < bMax)
                 {
                     Color sub = new Color(r, g, b, 0);
                     image.setRGB(x, y, sub.getRGB());
@@ -1038,22 +1038,26 @@ public class OpenGroove
                 context.setRootMessageHierarchy(new NullHierarchy(""));
                 context.setInternalMessageHierarchy(new NullHierarchy("internal"));
                 context.setPluginMessageHierarchy(new NullHierarchy("plugins"));
-                context.getRootMessageHierarchy().add(context.getInternalMessageHierarchy());
-                context.getRootMessageHierarchy().add(context.getPluginMessageHierarchy());
+                context.getRootMessageHierarchy().add(
+                    context.getInternalMessageHierarchy());
+                context.getRootMessageHierarchy().add(
+                    context.getPluginMessageHierarchy());
                 // context.getRootMessageHierarchy().add(
                 // context.getUserMessageHierarchy());
                 Communicator com =
                     new Communicator(launchbar, Userids.toRealm(userid), true, false,
-                        "normal", Userids.toUsername(userid), user.getComputer(), password,
-                        user.getTrustedCertificates(), context.getStatusListener(), null);
+                        "normal", Userids.toUsername(userid), user.getComputer(),
+                        password, user.getTrustedCertificates(), context
+                            .getStatusListener(), null);
                 CommandCommunicator commandCom = new CommandCommunicator(com);
                 MessageManager messageManager =
-                    new MessageManager(userid, commandCom, context.getRootMessageHierarchy());
+                    new MessageManager(userid, commandCom, context
+                        .getRootMessageHierarchy());
                 context.setMessageManager(messageManager);
-                context.setMessageHistoryFrame(new MessageHistoryFrame(Storage.get(context
-                    .getUserid())));
-                commandCom
-                    .addUserNotificationListener(context.getUserNotificationListener());
+                context.setMessageHistoryFrame(new MessageHistoryFrame(Storage
+                    .get(context.getUserid())));
+                commandCom.addUserNotificationListener(context
+                    .getUserNotificationListener());
                 context.setCom(commandCom);
                 loadContextSubscriptionListener(context);
                 setupInboundUserMessaging(context, userid);
@@ -1077,8 +1081,8 @@ public class OpenGroove
                 successLoggedInLabel.setCursor(Cursor
                     .getPredefinedCursor(Cursor.HAND_CURSOR));
                 notificationFrame.addNotification(context.getUserid(),
-                    new NotificationAdapter(notificationFrame, successLoggedInLabel, false,
-                        true), true);
+                    new NotificationAdapter(notificationFrame, successLoggedInLabel,
+                        false, true), true);
                 context.getLaunchbar().show();
                 bringToFront(context.getLaunchbar());
             }
@@ -1159,10 +1163,12 @@ public class OpenGroove
         });
     }
     
-    private static void loadContextNonexistantContactNotification(final UserContext context)
+    private static void loadContextNonexistantContactNotification(
+        final UserContext context)
     {
-        context.setNonexistantContactNotification(new NotificationAdapter(notificationFrame,
-            new JLabel("One or more of your contacts do not exist"), false, false)
+        context.setNonexistantContactNotification(new NotificationAdapter(
+            notificationFrame, new JLabel("One or more of your contacts do not exist"),
+            false, false)
         {
             
             @Override
@@ -1187,8 +1193,8 @@ public class OpenGroove
                  * date passes the date that the notification expires
                  */
                 UserNotificationFrame uframe =
-                    new UserNotificationFrame(context.formatDateTime(dateIssued), context
-                        .formatDateTime(dateExpires), priority, subject, message);
+                    new UserNotificationFrame(context.formatDateTime(dateIssued),
+                        context.formatDateTime(dateExpires), priority, subject, message);
                 uframe.setTitle("Server Notification - OpenGroove");
                 uframe.setIconImage(getWindowIcon());
                 uframe.setLocationRelativeTo(null);
@@ -1204,8 +1210,8 @@ public class OpenGroove
                         component.setIcon(new ImageIcon(Icons.WORKSPACE_WARNING_16
                             .getImage()));
                     FrameShowingNotification tn =
-                        new FrameShowingNotification(notificationFrame, component, uframe,
-                            true, false);
+                        new FrameShowingNotification(notificationFrame, component,
+                            uframe, true, false);
                     notificationFrame.addNotification(context.getUserid(), tn, true);
                 }
             }
@@ -1348,11 +1354,13 @@ public class OpenGroove
     public static final SettingSpec SPEC_MESSAGE_REPLY_PREFIX =
         new SettingSpec("msg", "compose", "", "replyprefix");
     
-    private static void loadBuiltInSettings(SettingsManager settingsManager, LocalUser user)
+    private static void loadBuiltInSettings(SettingsManager settingsManager,
+        LocalUser user)
     {
         settingsManager.addTab("g", Icons.SETTINGS_48.getIcon(), "General", "");
         
-        settingsManager.addTab("msg", Icons.MESSAGE_CONFIG_48.getIcon(), "Messaging", "");
+        settingsManager.addTab("msg", Icons.MESSAGE_CONFIG_48.getIcon(), "Messaging",
+            "");
         settingsManager.addSubnav("msg", "compose", "Composing", "");
         settingsManager.addSubnav("g", "lb", "Launchbar", "");
         settingsManager.addSetting("g", "lb", "", "alwaysontop", "Always on top",
@@ -1382,7 +1390,8 @@ public class OpenGroove
      * @param context
      * @param userid
      */
-    private static void setupInboundUserMessaging(final UserContext context, String userid)
+    private static void setupInboundUserMessaging(final UserContext context,
+        String userid)
     {
         /*
          * TODO: actually implement this method. Some sort of "preferences"
@@ -1460,7 +1469,8 @@ public class OpenGroove
                     
                     public void actionPerformed(ActionEvent e)
                     {
-                        user.getContext().composeMessage("", "", "", "", new String[] {});
+                        user.getContext().composeMessage("", "", "", "",
+                            new String[] {});
                     }
                 });
                 userMenu.add(sendMessageItem);
@@ -1517,7 +1527,8 @@ public class OpenGroove
             @Override
             public void run(ActionEvent e)
             {
-                showNewAccountWizard(onlineUsers.length == 0 && offlineUsers.length == 0);
+                showNewAccountWizard(onlineUsers.length == 0
+                    && offlineUsers.length == 0);
             }
         });
         trayPopup.addSeparator();
@@ -1557,7 +1568,8 @@ public class OpenGroove
      * Shows the login window for the specified user. If the login window is
      * already showing, it is changed to this user. If this user is already
      * logged in, this method does nothing. If this user does not exist, or the
-     * userid is null, the new account wizard is shown instead.<br/> <br/>
+     * userid is null, the new account wizard is shown instead.<br/>
+     * <br/>
      * 
      * If the new user wizard is currently showing, it is brought to the front,
      * and this method returns.
@@ -1684,8 +1696,8 @@ public class OpenGroove
     /**
      * Shows the new account wizard. If the wizard is already showing, it will
      * be brought to the front. If not, the current wizard page will be reset to
-     * it's first page. If <code>welcome</code> is true, the wizard will have
-     * an added initial screen that gives the user more information about
+     * it's first page. If <code>welcome</code> is true, the wizard will have an
+     * added initial screen that gives the user more information about
      * OpenGroove. If not, this initial screen won't be displayed, and the first
      * screen will instead be the one that allows users to choose between
      * creating a new account, importing one they have already created, or
@@ -1749,7 +1761,8 @@ public class OpenGroove
             private JLabel titleLabel;
             
             @Override
-            protected void updateBannerPanel(JComponent bannerPanel, AbstractDialogPage page)
+            protected void updateBannerPanel(JComponent bannerPanel,
+                AbstractDialogPage page)
             {
                 titleLabel.setText(page.getTitle());
             }
@@ -1805,8 +1818,9 @@ public class OpenGroove
                 {
                     JPanel panel = new JPanel();
                     newButton =
-                        new JRadioButton("<html><b>Create a new OpenGroove account</b><br/>"
-                            + "Choose this if this is your first time using OpenGroove");
+                        new JRadioButton(
+                            "<html><b>Create a new OpenGroove account</b><br/>"
+                                + "Choose this if this is your first time using OpenGroove");
                     existingButton =
                         new JRadioButton(
                             "<html><b>Use an OpenGroove account that you have already created</b><br/>"
@@ -1932,8 +1946,8 @@ public class OpenGroove
                                 setAllowClosing(true);
                                 return;
                             }
-                            if (!((JButton) e.getSource()).getName()
-                                .equals(ButtonNames.NEXT))
+                            if (!((JButton) e.getSource()).getName().equals(
+                                ButtonNames.NEXT))
                             {
                                 setAllowClosing(true);
                                 return;
@@ -1962,8 +1976,9 @@ public class OpenGroove
                             final String password = passwordField.getText();
                             if (Storage.getLocalUser(userid) != null)
                             {
-                                JOptionPane.showMessageDialog(newAccountFrame,
-                                    "You've already added that userid to this computer.");
+                                JOptionPane
+                                    .showMessageDialog(newAccountFrame,
+                                        "You've already added that userid to this computer.");
                                 return;
                             }
                             if (userid.equals("") || password.equals(""))
@@ -2017,12 +2032,14 @@ public class OpenGroove
                                             {
                                                 lcom =
                                                     new CommandCommunicator(
-                                                        new Communicator(newAccountFrame,
-                                                            Userids.toRealm(userid), false,
-                                                            true, "normal", Userids
-                                                                .toUsername(userid), "",
-                                                            password, vars.trustedCerts,
-                                                            null, null));
+                                                        new Communicator(
+                                                            newAccountFrame, Userids
+                                                                .toRealm(userid),
+                                                            false, true, "normal",
+                                                            Userids.toUsername(userid),
+                                                            "", password,
+                                                            vars.trustedCerts, null,
+                                                            null));
                                             }
                                             catch (Exception e2)
                                             {
@@ -2050,7 +2067,8 @@ public class OpenGroove
                                             {
                                                 String res =
                                                     lcom.authenticate("normal", Userids
-                                                        .toUsername(userid), "", password);
+                                                        .toUsername(userid), "",
+                                                        password);
                                                 if (!res.equalsIgnoreCase("OK"))
                                                     throw new RuntimeException(
                                                         "Expected status OK, but received "
@@ -2168,15 +2186,20 @@ public class OpenGroove
                             String sigPubString = vars.sigPub.toString(16);
                             String sigModString = vars.sigMod.toString(16);
                             com =
-                                new CommandCommunicator(new Communicator(newAccountFrame,
-                                    Userids.toRealm(vars.userid), false, true, "normal", "",
-                                    "", "", vars.trustedCerts, null, null));
-                            com.authenticate("normal", Userids.toUsername(vars.userid), "",
-                                vars.password);
-                            com.setUserSetting("" + UserSettings.KEY_ENC_PUB, encPubString);
-                            com.setUserSetting("" + UserSettings.KEY_ENC_MOD, encModString);
-                            com.setUserSetting("" + UserSettings.KEY_SIG_PUB, sigPubString);
-                            com.setUserSetting("" + UserSettings.KEY_SIG_MOD, sigModString);
+                                new CommandCommunicator(new Communicator(
+                                    newAccountFrame, Userids.toRealm(vars.userid),
+                                    false, true, "normal", "", "", "",
+                                    vars.trustedCerts, null, null));
+                            com.authenticate("normal", Userids.toUsername(vars.userid),
+                                "", vars.password);
+                            com.setUserSetting("" + UserSettings.KEY_ENC_PUB,
+                                encPubString);
+                            com.setUserSetting("" + UserSettings.KEY_ENC_MOD,
+                                encModString);
+                            com.setUserSetting("" + UserSettings.KEY_SIG_PUB,
+                                sigPubString);
+                            com.setUserSetting("" + UserSettings.KEY_SIG_MOD,
+                                sigModString);
                         }
                         catch (Exception e)
                         {
@@ -2243,7 +2266,8 @@ public class OpenGroove
                         {
                             file = new FieldFile(fc.getSelectedFile());
                             if (!file.checkExists(Fields.encMod, Fields.encPrv,
-                                Fields.encPub, Fields.sigMod, Fields.sigPrv, Fields.sigPub))
+                                Fields.encPub, Fields.sigMod, Fields.sigPrv,
+                                Fields.sigPub))
                                 throw new Exception();
                             encPub = new BigInteger(file.getField(Fields.encPub), 16);
                             encPrv = new BigInteger(file.getField(Fields.encPrv), 16);
@@ -2312,11 +2336,12 @@ public class OpenGroove
                         try
                         {
                             com =
-                                new CommandCommunicator(new Communicator(newAccountFrame,
-                                    Userids.toRealm(vars.userid), false, true, "normal", "",
-                                    "", "", vars.trustedCerts, null, null));
-                            com.authenticate("normal", Userids.toUsername(vars.userid), "",
-                                vars.password);
+                                new CommandCommunicator(new Communicator(
+                                    newAccountFrame, Userids.toRealm(vars.userid),
+                                    false, true, "normal", "", "", "",
+                                    vars.trustedCerts, null, null));
+                            com.authenticate("normal", Userids.toUsername(vars.userid),
+                                "", vars.password);
                             BigInteger existingEncPub =
                                 new BigInteger(com.getUserSetting("", ""
                                     + UserSettings.KEY_ENC_PUB), 16);
@@ -2424,17 +2449,21 @@ public class OpenGroove
                                         CommandCommunicator com = null;
                                         try
                                         {
-                                            System.out.println("checking for security keys");
+                                            System.out
+                                                .println("checking for security keys");
                                             com =
-                                                new CommandCommunicator(new Communicator(
-                                                    newAccountFrame, Userids
-                                                        .toRealm(vars.userid), false, true,
-                                                    "normal", "", "", "", vars.trustedCerts,
-                                                    null, null));
+                                                new CommandCommunicator(
+                                                    new Communicator(newAccountFrame,
+                                                        Userids.toRealm(vars.userid),
+                                                        false, true, "normal", "", "",
+                                                        "", vars.trustedCerts, null,
+                                                        null));
                                             System.out.println("security key auth");
                                             com.authenticate("normal", Userids
-                                                .toUsername(vars.userid), "", vars.password);
-                                            System.out.println("downloading remote keys");
+                                                .toUsername(vars.userid), "",
+                                                vars.password);
+                                            System.out
+                                                .println("downloading remote keys");
                                             String existingEncPub =
                                                 com.getUserSetting("", ""
                                                     + UserSettings.KEY_ENC_PUB);
@@ -2483,8 +2512,8 @@ public class OpenGroove
                                                         + "OpenGroove with a file that contains your account's "
                                                         + "private keys. This should have the file extension .ogva, "
                                                         + "and can be created by choosing "
-                                                        + Conventions.formatMenuPath("File",
-                                                            "Export Account")
+                                                        + Conventions.formatMenuPath(
+                                                            "File", "Export Account")
                                                         + " in the launchbar on a computer on which you are "
                                                         + "already using this account. If you aren't using "
                                                         + "this account on any computers, send us an email at "
@@ -2645,8 +2674,8 @@ public class OpenGroove
                                          * for their account.
                                          */
                                         String computerName = field.getText();
-                                        if (!computerName.replaceAll("[^a-zA-Z0-9]", "-")
-                                            .equalsIgnoreCase(computerName))
+                                        if (!computerName.replaceAll("[^a-zA-Z0-9]",
+                                            "-").equalsIgnoreCase(computerName))
                                         {
                                             JOptionPane
                                                 .showMessageDialog(newAccountFrame,
@@ -2659,13 +2688,15 @@ public class OpenGroove
                                         try
                                         {
                                             com =
-                                                new CommandCommunicator(new Communicator(
-                                                    newAccountFrame, Userids
-                                                        .toRealm(vars.userid), false, true,
-                                                    "normal", "", "", "", vars.trustedCerts,
-                                                    null, null));
+                                                new CommandCommunicator(
+                                                    new Communicator(newAccountFrame,
+                                                        Userids.toRealm(vars.userid),
+                                                        false, true, "normal", "", "",
+                                                        "", vars.trustedCerts, null,
+                                                        null));
                                             com.authenticate("normal", Userids
-                                                .toUsername(vars.userid), "", vars.password);
+                                                .toUsername(vars.userid), "",
+                                                vars.password);
                                             try
                                             {
                                                 com.createComputer(computerName, "pc");
@@ -2674,9 +2705,9 @@ public class OpenGroove
                                             {
                                                 if (!(e2 instanceof FailedResponseException))
                                                     throw e2;
-                                                JOptionPane.showMessageDialog(
-                                                    newAccountFrame,
-                                                    "That computer name is already in use.");
+                                                JOptionPane
+                                                    .showMessageDialog(newAccountFrame,
+                                                        "That computer name is already in use.");
                                                 return;
                                             }
                                         }
@@ -2706,7 +2737,8 @@ public class OpenGroove
                                          * a LocalUser object, and add it to the
                                          * storage.
                                          */
-                                        LocalUser user = Storage.getStore().createUser();
+                                        LocalUser user =
+                                            Storage.getStore().createUser();
                                         user.setAutoSignOn(false);
                                         user.setComputer(computerName);
                                         user.setEmailAddress("");
@@ -2906,7 +2938,8 @@ public class OpenGroove
                         URL updateJarUrl = new URL(p.getProperty("url"));
                         UpdateNotification notification = new UpdateNotification();
                         JProgressBar bar = notification.getProgressBar();
-                        notificationFrame.addNotification("OpenGroove", notification, true);
+                        notificationFrame.addNotification("OpenGroove", notification,
+                            true);
                         File updateFile = new File("appdata/systemupdates/updates.jar");
                         File versionFile = new File("appdata/systemupdates/version");
                         if (!updateFile.getParentFile().exists())
@@ -2950,8 +2983,8 @@ public class OpenGroove
                                     notificationFrame.removeNotification(this);
                                 }
                             };
-                        notificationFrame.addNotification("OpenGroove", readyNotification,
-                            true);
+                        notificationFrame.addNotification("OpenGroove",
+                            readyNotification, true);
                         return true;
                     }
                     else
@@ -3137,21 +3170,23 @@ public class OpenGroove
             {
             }
         });
-        context.getLocalUser().addChangeListener("realName", new PropertyChangeListener()
-        {
-            
-            @Override
-            public void propertyChange(PropertyChangeEvent evt)
+        context.getLocalUser().addChangeListener("realName",
+            new PropertyChangeListener()
             {
-                context.getLocalUsernameButton().setText(context.getDisplayName());
-                context.getLaunchbar().setTitle(context.createLaunchbarTitle());
-                notificationFrame.reloadNotifications();
-                refreshTrayMenu();
-            }
-        });
+                
+                @Override
+                public void propertyChange(PropertyChangeEvent evt)
+                {
+                    context.getLocalUsernameButton().setText(context.getDisplayName());
+                    context.getLaunchbar().setTitle(context.createLaunchbarTitle());
+                    notificationFrame.reloadNotifications();
+                    refreshTrayMenu();
+                }
+            });
         contactRenameField.setToolTipText(ComponentUtils
             .htmlTipWrap("Type a new name for yourself here. If you leave "
-                + "this blank, then your userid will be used. " + "Everyone can see this."));
+                + "this blank, then your userid will be used. "
+                + "Everyone can see this."));
         lowerPanel.add(context.getLocalUsernameButton(), BorderLayout.CENTER);
         JMenuBar bar =
             loadLaunchbarMenus(userid, context, launchbar, rightPanel, lowerPanel);
@@ -3215,15 +3250,17 @@ public class OpenGroove
             + ComponentUtils.lineWrap(
                 "If you check this, then users that you've interacted with "
                     + "will be shown, in addition to your contacts. If "
-                    + "it's not checked, only your contacts will be shown.", "<br/>", 60));
+                    + "it's not checked, only your contacts will be shown.", "<br/>",
+                60));
         context.setShowKnownUsersAsContacts(showKnownUsers);
         contactsNorth.add(pad(showKnownUsers, 2, 2));
         contactsNorth.add(pad(contactsPanel, 2, 6));
         contactsPanel.setOpaque(false);
         contactsTab.add(contactsNorth, BorderLayout.NORTH);
         contactsNorth.setOpaque(false);
-        System.out.println("p3preferred:" + contactsTab.getPreferredSize() + ",p4preferred:"
-            + contactsNorth.getPreferredSize() + ",c:" + contactsPanel.getPreferredSize());
+        System.out.println("p3preferred:" + contactsTab.getPreferredSize()
+            + ",p4preferred:" + contactsNorth.getPreferredSize() + ",c:"
+            + contactsPanel.getPreferredSize());
         launchbarTabbedPane.add("Contacts", new JScrollPane(contactsTab));
         JPanel p = new JPanel();
         p.setLayout(new BoxLayout(p, BoxLayout.Y_AXIS));
@@ -3256,16 +3293,16 @@ public class OpenGroove
         if (context.getStorage().getConfigProperty("launchbarx") != null
             && context.getStorage().getConfigProperty("launchbary") != null)
         {
-            launchbar.setLocation(Integer.parseInt(context.getStorage().getConfigProperty(
-                "launchbarx")), Integer.parseInt(context.getStorage().getConfigProperty(
-                "launchbary")));
+            launchbar.setLocation(Integer.parseInt(context.getStorage()
+                .getConfigProperty("launchbarx")), Integer.parseInt(context
+                .getStorage().getConfigProperty("launchbary")));
         }
         if (context.getStorage().getConfigProperty("launchbarwidth") != null
             && context.getStorage().getConfigProperty("launchbarheight") != null)
         {
             launchbar.setSize(Integer.parseInt(context.getStorage().getConfigProperty(
-                "launchbarwidth")), Integer.parseInt(context.getStorage().getConfigProperty(
-                "launchbarheight")));
+                "launchbarwidth")), Integer.parseInt(context.getStorage()
+                .getConfigProperty("launchbarheight")));
         }
         launchbar.addComponentListener(new ComponentListener()
         {
@@ -3278,8 +3315,10 @@ public class OpenGroove
             
             public void componentMoved(ComponentEvent e)
             {
-                context.getStorage().setConfigProperty("launchbarx", "" + launchbar.getX());
-                context.getStorage().setConfigProperty("launchbary", "" + launchbar.getY());
+                context.getStorage().setConfigProperty("launchbarx",
+                    "" + launchbar.getX());
+                context.getStorage().setConfigProperty("launchbary",
+                    "" + launchbar.getY());
             }
             
             public void componentResized(ComponentEvent e)
@@ -3302,8 +3341,8 @@ public class OpenGroove
     {
         String choice =
             ItemChooser.showItemChooser(context.getLaunchbar(),
-                "How would you like to add a contact?", new String[] { "search", "userid" },
-                new String[] {
+                "How would you like to add a contact?", new String[] { "search",
+                    "userid" }, new String[] {
                     "<html><b>Search for other users</b><br/>"
                         + ComponentUtils.lineWrap(
                             "You can search for users on your server or on "
@@ -3351,7 +3390,8 @@ public class OpenGroove
             }
             assert contactId != null;
             if (context.getStorage().getLocalUser().getContact(contactId) != null
-                && context.getStorage().getLocalUser().getContact(contactId).isUserContact())
+                && context.getStorage().getLocalUser().getContact(contactId)
+                    .isUserContact())
             {
                 JOptionPane.showMessageDialog(context.getLaunchbar(),
                     "The contact specified already exists.");
@@ -3400,34 +3440,37 @@ public class OpenGroove
     /**
      * Loads the menu bar on the launchbar.
      */
-    private static JMenuBar loadLaunchbarMenus(String userid, final UserContext context,
-        final JFrame launchbar, JPanel rightPanel, JPanel lowerPanel)
+    private static JMenuBar loadLaunchbarMenus(String userid,
+        final UserContext context, final JFrame launchbar, JPanel rightPanel,
+        JPanel lowerPanel)
     {
         JMenuBar bar = new JMenuBar();
         final JMenu convergiaMenu =
-            new IMenu("OpenGroove", new IMenuItem[] { new IMenuItem("Check for updates")
-            {
-                
-                public void actionPerformed(ActionEvent e)
+            new IMenu("OpenGroove", new IMenuItem[] {
+                new IMenuItem("Check for updates")
                 {
-                    new Thread()
+                    
+                    public void actionPerformed(ActionEvent e)
                     {
-                        public void run()
+                        new Thread()
                         {
-                            if (!checkForUpdates())
-                                JOptionPane.showMessageDialog(launchbar,
-                                    "No updates were found. OpenGroove is up to date.");
-                        }
-                    }.start();
-                }
-            }, new IMenuItem("Settings")
-            {
-                
-                public void actionPerformed(ActionEvent e)
+                            public void run()
+                            {
+                                if (!checkForUpdates())
+                                    JOptionPane
+                                        .showMessageDialog(launchbar,
+                                            "No updates were found. OpenGroove is up to date.");
+                            }
+                        }.start();
+                    }
+                }, new IMenuItem("Settings")
                 {
-                    showOptionsWindow(context);
-                }
-            } });
+                    
+                    public void actionPerformed(ActionEvent e)
+                    {
+                        showOptionsWindow(context);
+                    }
+                } });
         final JMenu pluginsMenu =
             new IMenu("Plugins", new IMenuItem[] { new IMenuItem("Manage plugins")
             {
@@ -3475,8 +3518,8 @@ public class OpenGroove
         double[] colSpecs = new double[menus.length + 1];
         Arrays.fill(colSpecs, 0, menus.length, TableLayout.PREFERRED);
         colSpecs[menus.length] = TableLayout.FILL;
-        bar.setLayout(new TableLayout(colSpecs, new double[] { TableLayout.PREFERRED, 6,
-            TableLayout.PREFERRED, 3 }));
+        bar.setLayout(new TableLayout(colSpecs, new double[] { TableLayout.PREFERRED,
+            6, TableLayout.PREFERRED, 3 }));
         for (int i = 0; i < menus.length; i++)
         {
             // menus[i].setOpaque(false);
@@ -3554,8 +3597,8 @@ public class OpenGroove
          * really only for other methods that use one; the actual scaling is
          * done by the Image class itself.
          */
-        g.drawImage(image.getScaledInstance(width, height, Image.SCALE_AREA_AVERAGING), 0,
-            0, width, height, null);
+        g.drawImage(image.getScaledInstance(width, height, Image.SCALE_AREA_AVERAGING),
+            0, 0, width, height, null);
         return b;
     }
     
@@ -3648,15 +3691,16 @@ public class OpenGroove
      */
     public static synchronized String generateId(UserContext context)
     {
-        return context.getUserid().replace(":", "..") + "-" + System.currentTimeMillis()
-            + "-" + nextGenId.getAndIncrement();
+        return context.getUserid().replace(":", "..") + "-"
+            + System.currentTimeMillis() + "-" + nextGenId.getAndIncrement();
     }
     
     /**
      * This is now obsolete (it will be replaced by the concept of
      * LanguageContexts) and will be removed once I'm sure it's not used by
      * anything else. However, I may end up deciding to keep it and have it
-     * delegate to the current language context for OpenGroove.<br/> <br/>
+     * delegate to the current language context for OpenGroove.<br/>
+     * <br/>
      * 
      * shorthand for TextManager.text(key);
      * 
@@ -3727,7 +3771,8 @@ public class OpenGroove
      * @param allowedMembersModel
      * @param allowedUsers
      */
-    private static void addAllToModel(DefaultListModel allowedMembersModel, List allowedUsers)
+    private static void addAllToModel(DefaultListModel allowedMembersModel,
+        List allowedUsers)
     {
         for (Object o : allowedUsers)
         {
@@ -3989,7 +4034,8 @@ public class OpenGroove
             File tempWrite = File.createTempFile("opengroovetemp", ".jar");
             System.out.println("tempwrite:" + tempWrite);
             tempWrite.deleteOnExit();
-            JarOutputStream output = new JarOutputStream(new FileOutputStream(tempWrite));
+            JarOutputStream output =
+                new JarOutputStream(new FileOutputStream(tempWrite));
             output.putNextEntry(new ZipEntry("META-INF/MANIFEST.MF"));
             mf.write(output);
             System.out.println("manifest:");
@@ -4027,7 +4073,8 @@ public class OpenGroove
                     + tempDiscard);
                 longRename(target, tempDiscard);
             }
-            System.out.println("renaming tempwrite " + tempWrite + " to target " + target);
+            System.out.println("renaming tempwrite " + tempWrite + " to target "
+                + target);
             longRename(tempWrite, target);
             tempDiscard.delete();
         }
