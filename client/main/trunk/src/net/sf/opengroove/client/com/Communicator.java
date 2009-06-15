@@ -552,7 +552,7 @@ public class Communicator
     
     private static final AtomicLong threadIdSequence = new AtomicLong();
     
-    private static String generateThreadId()
+    public static String generateThreadId()
     {
         return System.currentTimeMillis() + "-" + threadIdSequence.getAndIncrement();
     }

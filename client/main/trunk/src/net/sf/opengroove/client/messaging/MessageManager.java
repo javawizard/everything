@@ -13,6 +13,7 @@ import org.opengroove.g4.common.object.ExtractedPassThroughObject;
 import org.opengroove.g4.common.protocol.InboundMessagePacket;
 import org.opengroove.g4.common.protocol.LoginResponse;
 import org.opengroove.g4.common.protocol.MessageResponse;
+import org.opengroove.g4.common.protocol.OutboundMessagePacket;
 import org.opengroove.g4.common.user.Userid;
 import org.opengroove.g4.common.utils.ObjectUtils;
 
@@ -33,6 +34,31 @@ public class MessageManager implements StatusListener,
     private ThreadPoolExecutor stackedThreadPool =
         new ThreadPoolExecutor(1, 1, 30, TimeUnit.SECONDS,
             new LinkedBlockingQueue<Runnable>());
+    
+    private class MessageResponseReceiver implements PacketListener<MessageResponse>
+    {
+        
+        public void packetReceived(MessageResponse packet)
+        {
+            /*
+             * Delete the local file for the message, if we still have it.
+             */
+            File file =
+                new File(outboundMessageFolder, encodeId(packet.getMessageId()));
+            if (!file.delete())
+                System.err.println("ERROR: Couldn't delete outbound message file "
+                    + packet.getMessageId() + ", the message will be sent twice. "
+                    + "This is a critical error.");
+        }
+        
+        public void processedPacketReceived(MessageResponse packet)
+        {
+            /*
+             * Ignored.
+             */
+        }
+        
+    }
     
     /**
      * A class that finds a handler for the message type specified and
@@ -113,9 +139,12 @@ public class MessageManager implements StatusListener,
         return URLEncoder.encode(id);
     }
     
-    public MessageManager(Communicator communicator, File inboundMessageFolder,
-        File outboundMessageFolder)
+    private Userid localUser;
+    
+    public MessageManager(Userid localUser, Communicator communicator,
+        File inboundMessageFolder, File outboundMessageFolder)
     {
+        this.localUser = localUser;
         this.communicator = communicator;
         communicator.addPacketListener(this);
         communicator.addStatusListener(this);
@@ -159,6 +188,36 @@ public class MessageManager implements StatusListener,
         /*
          * Send off all messages cached on the file system for sending outward
          */
+        new Thread()
+        {
+            public void run()
+            {
+                File[] files = outboundMessageFolder.listFiles();
+                for (File file : files)
+                {
+                    if (!communicator.isConnected())
+                        /*
+                         * We lost our connection, so we'll just return.
+                         */
+                        return;
+                    OutboundMessagePacket packet =
+                        (OutboundMessagePacket) ObjectUtils.readObject(file);
+                    if (communicator.isConnected())
+                    {
+                        communicator.send(packet);
+                    }
+                    else
+                    {
+                        return;
+                    }
+                    /*
+                     * FIXME: if the communicator disconnects and then
+                     * reconnects while we're reading off and sending messages,
+                     * then we might send a message twice.
+                     */
+                }
+            }
+        }.start();
     }
     
     public void lostConnection()
@@ -239,6 +298,31 @@ public class MessageManager implements StatusListener,
     {
         if (message == null)
             throw new IllegalArgumentException("Can't send a null message");
+        OutboundMessagePacket packet = new OutboundMessagePacket();
+        packet.setMessageId(localUser.withoutComputer().toString() + "$"
+            + Communicator.generateThreadId());
+        packet.setRecipients(recipients);
+        packet.setMessage(message);
+        /*
+         * Now we'll write the message to disk.
+         */
+        File file = new File(outboundMessageFolder, encodeId(packet.getMessageId()));
+        ObjectUtils.writeObject(packet, file);
+        /*
+         * We've written the message to disk. Now we'll send it to the
+         * communicator, if the communicator currently has a connection.
+         */
+        if (communicator.isConnected())
+        {
+            try
+            {
+                communicator.send(packet);
+            }
+            catch (Exception exception)
+            {
+                exception.printStackTrace();
+            }
+        }
     }
     
     /**
