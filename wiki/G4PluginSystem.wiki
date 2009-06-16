@@ -1,9 +1,10 @@
-*The G4 plugin system and how it works.*
-
-The G4 plugin system adds versioned dependency management to the G3 plugin system, as well as the concept of plugin bundles.
-
-<wiki:toc max_depth="1"/>
+The G4 plugin system and how it works.
 
 =Dependency Management=
------
 The G4 plugin system includes support for managing dependencies. In particular, it includes support for dependency versions. This means that the Foo plugin can depend on the Bar plugin version 1, and the Baz plugin can depend on the Bar plugin version 2. Both versions will be downloaded, and the class loader will handle making Bar 1 available to Foo and Bar 2 available to Baz.
+
+Plugins might therefore be installed simply because another plugin depends on them, and not because the user wanted to install that plugin. That brings me to the concept of "automatic plugins". An automatic plugin is one that was installed because another depended on it.
+
+So now we have plugins and versions. A plugin is basically information that a particular plugin is wanted, whatever version is available. A version is a particular version of a plugin. Versions are installed for two reasons: 1, they are installed as a plugin and they are the latest version of that plugin (or the user has selected that they want that version specifically), and 2, because another version of another plugin depends on this version. Versions are updated as needed to satisfy dependencies, and always to the latest possible version.
+
+A version can depend on any number of other plugin versions. And not just a specific version; plugin versions can depend on a version range too, which can be open-ended. So a plugin can say that it depends on any version later than, say, version 3 of another plugin, and the other plugin will be automatically updated when a new version of it is out even if the original plugin doesn't have any updates available.
