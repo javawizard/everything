@@ -2,6 +2,7 @@
 
 The G4 plugin system adds versioned dependency management to the G3 plugin system, as well as the concept of plugin bundles.
 
+-----
+
 =Dependency Management=
-===Third===
-====Fourth====
+The G4 plugin system includes support for managing dependencies. In particular, it includes support for dependency versions. This means that the Foo plugin can depend on the Bar plugin version 1, and the Baz plugin can depend on the Bar plugin version 2. Both versions will be downloaded, and the class loader will handle making Bar 1 available to Foo and Bar 2 available to Baz.
