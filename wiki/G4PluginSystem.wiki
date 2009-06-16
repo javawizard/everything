@@ -1,0 +1,3 @@
+*The G4 plugin system and how it works.*
+
+`this is text`
