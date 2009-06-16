@@ -2,9 +2,7 @@
 
 The G4 plugin system adds versioned dependency management to the G3 plugin system, as well as the concept of plugin bundles.
 
-
-<br/><br/><br/><br/>
-
+<wiki:toc max_depth="1"/>
 
 =Dependency Management=
 -----
