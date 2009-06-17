@@ -777,19 +777,9 @@ public class Storage
         return outboundMessageEncryptedStore;
     }
     
-    public static File getMessageDraftsFolder()
-    {
-        return messageDraftsFolder;
-    }
-    
     public static void setMessageDraftsFolder(File messageDraftsFolder)
     {
         Storage.messageDraftsFolder = messageDraftsFolder;
-    }
-    
-    public static File getMessageSentFolder()
-    {
-        return messageSentFolder;
     }
     
     public static void setMessageSentFolder(File messageSentFolder)
@@ -797,19 +787,9 @@ public class Storage
         Storage.messageSentFolder = messageSentFolder;
     }
     
-    public static File getMessageUnreadFolder()
-    {
-        return messageUnreadFolder;
-    }
-    
     public static void setMessageUnreadFolder(File messageUnreadFolder)
     {
         Storage.messageUnreadFolder = messageUnreadFolder;
-    }
-    
-    public static File getMessageReadFolder()
-    {
-        return messageReadFolder;
     }
     
     public static void setMessageReadFolder(File messageReadFolder)
