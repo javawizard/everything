@@ -44,6 +44,12 @@ public class Storage
     
     private static File logFolder;
     
+    private static File messageFolder;
+    private static File messageDraftsFolder;
+    private static File messageSentFolder;
+    private static File messageUnreadFolder;
+    private static File messageReadFolder;
+    
     private static DataStore dataStore;
     
     private static ProxyStorage<DataStore> proxyStorage;
@@ -68,23 +74,19 @@ public class Storage
     public static void initStorage(File file)
     {
         if (base != null)
-            throw new RuntimeException(
-                "Storage is already initialized");
+            throw new RuntimeException("Storage is already initialized");
         base = file;
         logFolder = new File(base, "logs");
         if (!logFolder.exists())
             logFolder.mkdirs();
-        proxyStorage = new ProxyStorage<DataStore>(
-            DataStore.class, new File(base, "proxystorage"));
+        proxyStorage =
+            new ProxyStorage<DataStore>(DataStore.class, new File(base, "proxystorage"));
         if (showDebugProxyOpFrame)
         {
-            JFrame frame = new JFrame(
-                "ProxyStorage opcounts");
+            JFrame frame = new JFrame("ProxyStorage opcounts");
             frame.setSize(300, 150);
-            final JLabel opcountLabel = new JLabel(""
-                + proxyStorage.getOpcount());
-            frame.getContentPane().setLayout(
-                new FlowLayout());
+            final JLabel opcountLabel = new JLabel("" + proxyStorage.getOpcount());
+            frame.getContentPane().setLayout(new FlowLayout());
             frame.getContentPane().add(opcountLabel);
             new Thread()
             {
@@ -95,10 +97,7 @@ public class Storage
                         try
                         {
                             Thread.sleep(1000);
-                            opcountLabel
-                                .setText(""
-                                    + proxyStorage
-                                        .getOpcount());
+                            opcountLabel.setText("" + proxyStorage.getOpcount());
                         }
                         catch (Exception exception)
                         {
@@ -127,73 +126,30 @@ public class Storage
     protected Storage(String userid)
     {
         this.user = dataStore.getUser(userid);
-        File tbase = new File(
-            new File(base, "userspecific"), URLEncoder
-                .encode(userid));
+        File tbase =
+            new File(new File(base, "userspecific"), URLEncoder.encode(userid));
         if (!tbase.exists())
             tbase.mkdirs();
         pluginStore = iItem(tbase, "plugins");
         helpStore = iItem(tbase, "help");
-        inboundMessageStore = iItem(tbase,
-            "inboundmessages");
-        outboundMessageStore = iItem(tbase,
-            "outboundmessages");
-        inboundMessagePlaintextStore = iItem(
-            inboundMessageStore, "plaintext");
-        inboundMessageEncodedStore = iItem(
-            inboundMessageStore, "encoded");
-        inboundMessageEncryptedStore = iItem(
-            inboundMessageStore, "encrypted");
-        outboundMessagePlaintextStore = iItem(
-            outboundMessageStore, "plaintext");
-        outboundMessageEncodedStore = iItem(
-            outboundMessageStore, "encoded");
-        outboundMessageEncryptedStore = iItem(
-            outboundMessageStore, "encrypted");
-        messageAttachmentStore = iItem(tbase,
-            "messageattachments");
-        ArrayList<UserMessage> messagesList = getLocalUser()
-            .getUserMessages().isolate();
-        HashSet<File> messageFileSet = new HashSet<File>();
-        for (UserMessage message : messagesList)
-        {
-            messageFileSet
-                .add(getMessageAttachmentFolder(message
-                    .getId()));
-        }
-        File[] messageAttachmentFolders = messageAttachmentStore
-            .listFiles();
-        for (File f : messageAttachmentFolders)
-        {
-            if (!messageFileSet.contains(f))
-            {
-                DataUtils.recursiveDelete(f);
-            }
-        }
-        for (UserMessage message : messagesList)
-        {
-            File[] attachmentFiles = getMessageAttachmentFolder(
-                message.getId()).listFiles();
-            HashSet<File> attachmentFileSet = new HashSet<File>();
-            for (UserMessageAttachment attachment : message
-                .getAttachments().isolate())
-            {
-                attachmentFileSet
-                    .add(getMessageAttachmentFile(message
-                        .getId(), attachment.getName()));
-            }
-            if (attachmentFiles != null)
-            {
-                for (File f : attachmentFiles)
-                {
-                    if (!attachmentFileSet.contains(f))
-                        f.delete();
-                }
-            }
-        }
+        inboundMessageStore = iItem(tbase, "inboundmessages");
+        outboundMessageStore = iItem(tbase, "outboundmessages");
+        inboundMessagePlaintextStore = iItem(inboundMessageStore, "plaintext");
+        inboundMessageEncodedStore = iItem(inboundMessageStore, "encoded");
+        inboundMessageEncryptedStore = iItem(inboundMessageStore, "encrypted");
+        outboundMessagePlaintextStore = iItem(outboundMessageStore, "plaintext");
+        outboundMessageEncodedStore = iItem(outboundMessageStore, "encoded");
+        outboundMessageEncryptedStore = iItem(outboundMessageStore, "encrypted");
+        messageAttachmentStore = iItem(tbase, "messageattachments");
+        messageFolder = iItem(tbase, "storedmessagestore");
+        messageDraftsFolder = iItem(messageFolder, "drafts");
+        messageReadFolder = iItem(messageFolder, "read");
+        messageSentFolder = iItem(messageFolder, "sent");
+        messageUnreadFolder = iItem(messageFolder, "unread");
     }
     
-    private static final Hashtable<String, Storage> singletons = new Hashtable<String, Storage>();
+    private static final Hashtable<String, Storage> singletons =
+        new Hashtable<String, Storage>();
     
     /**
      * Gets the singleton storage object for the specified user. Storage objects
@@ -271,14 +227,12 @@ public class Storage
      */
     public File getMessageAttachmentFolder(String messageId)
     {
-        File folder = new File(getMessageAttachmentStore(),
-            URLEncoder.encode(messageId));
+        File folder =
+            new File(getMessageAttachmentStore(), URLEncoder.encode(messageId));
         if (!folder.exists())
             folder.mkdirs();
         if (!folder.isDirectory())
-            throw new RuntimeException(
-                "folder already exists as a file, "
-                    + messageId);
+            throw new RuntimeException("folder already exists as a file, " + messageId);
         return folder;
     }
     
@@ -292,12 +246,10 @@ public class Storage
      * @param attachmentName
      * @return
      */
-    public File getMessageAttachmentFile(String messageId,
-        String attachmentName)
+    public File getMessageAttachmentFile(String messageId, String attachmentName)
     {
-        return new File(
-            getMessageAttachmentFolder(messageId),
-            URLEncoder.encode(attachmentName));
+        return new File(getMessageAttachmentFolder(messageId), URLEncoder
+            .encode(attachmentName));
     }
     
     public File getHelpStore()
@@ -312,8 +264,7 @@ public class Storage
      */
     public static LocalUser[] getUsers()
     {
-        return dataStore.getUsers().toArray(
-            new LocalUser[0]);
+        return dataStore.getUsers().toArray(new LocalUser[0]);
     }
     
     public static LocalUser[] getUsersLoggedIn()
@@ -386,7 +337,8 @@ public class Storage
      * reads the file specified in to a string. the file must not be larger than
      * 5 MB.
      * 
-     * @param file.
+     * @param file
+     *            .
      * @return
      */
     public static String readFile(File file)
@@ -424,10 +376,9 @@ public class Storage
     {
         try
         {
-            ByteArrayInputStream bais = new ByteArrayInputStream(
-                string.getBytes("UTF-8"));
-            FileOutputStream fos = new FileOutputStream(
-                file);
+            ByteArrayInputStream bais =
+                new ByteArrayInputStream(string.getBytes("UTF-8"));
+            FileOutputStream fos = new FileOutputStream(file);
             copy(bais, fos);
             bais.close();
             fos.flush();
@@ -451,8 +402,7 @@ public class Storage
      * @throws IOException
      *             if an I/O error occurs
      */
-    public static void copy(InputStream in, OutputStream out)
-        throws IOException
+    public static void copy(InputStream in, OutputStream out) throws IOException
     {
         byte[] buffer = new byte[8192];
         int amount;
@@ -489,12 +439,10 @@ public class Storage
      * @return <code>true</code> if the password entered matches the password
      *         stored to the file system, false otherwise.
      */
-    public static boolean checkPassword(String userid,
-        String pass)
+    public static boolean checkPassword(String userid, String pass)
     {
         LocalUser user = getLocalUser(userid);
-        return user.getEncPassword()
-            .equals(Hash.hash(pass));
+        return user.getEncPassword().equals(Hash.hash(pass));
     }
     
     /**
@@ -507,8 +455,7 @@ public class Storage
      */
     private String resolve(String useridOrUsername)
     {
-        return Userids.resolveTo(useridOrUsername, user
-            .getUserid());
+        return Userids.resolveTo(useridOrUsername, user.getUserid());
     }
     
     /**
@@ -520,13 +467,11 @@ public class Storage
      * @param file
      *            The file to write the object to
      */
-    private static void writeObjectToFile(
-        Serializable object, File file)
+    private static void writeObjectToFile(Serializable object, File file)
     {
         try
         {
-            ObjectOutputStream oos = new ObjectOutputStream(
-                new FileOutputStream(file));
+            ObjectOutputStream oos = new ObjectOutputStream(new FileOutputStream(file));
             oos.writeObject(object);
             oos.flush();
             oos.close();
@@ -550,17 +495,15 @@ public class Storage
     {
         try
         {
-            ObjectInputStream ois = new ObjectInputStream(
-                new FileInputStream(file));
+            ObjectInputStream ois = new ObjectInputStream(new FileInputStream(file));
             Object object = ois.readObject();
             ois.close();
             return (Serializable) object;
         }
         catch (Exception ex)
         {
-            throw new RuntimeException(
-                "Error while reading "
-                    + file.getAbsolutePath(), ex);
+            throw new RuntimeException("Error while reading " + file.getAbsolutePath(),
+                ex);
         }
     }
     
@@ -573,8 +516,7 @@ public class Storage
      * 
      * @param transmissionFolder
      */
-    public static void recursiveDelete(
-        File transmissionFolder)
+    public static void recursiveDelete(File transmissionFolder)
     {
         if (transmissionFolder.isDirectory())
         {
@@ -584,18 +526,15 @@ public class Storage
             }
         }
         if (!transmissionFolder.delete())
-            throw new RuntimeException(
-                "Couldn't delete the file "
-                    + transmissionFolder.getAbsolutePath());
+            throw new RuntimeException("Couldn't delete the file "
+                + transmissionFolder.getAbsolutePath());
     }
     
-    private static AtomicInteger cIdVar = new AtomicInteger(
-        1);
+    private static AtomicInteger cIdVar = new AtomicInteger(1);
     
     public static synchronized String createIdentifier()
     {
-        return "i" + System.currentTimeMillis() + "z"
-            + cIdVar.getAndIncrement();
+        return "i" + System.currentTimeMillis() + "z" + cIdVar.getAndIncrement();
     }
     
     /**
@@ -670,16 +609,13 @@ public class Storage
      * attachmentSetIdentifier) { return new File(mAttachments,
      * attachmentSetIdentifier).listFiles(); }
      */
-    public static <T> HashMap<String, T> listObjectContents(
-        File folder, Class<T> c)
+    public static <T> HashMap<String, T> listObjectContents(File folder, Class<T> c)
     {
         HashMap<String, T> map = new HashMap<String, T>();
-        for (File file : folder
-            .listFiles(new SubversionFileFilter()))
+        for (File file : folder.listFiles(new SubversionFileFilter()))
         {
             if (file.isFile())
-                map.put(file.getName(),
-                    (T) readObjectFromFile(file));
+                map.put(file.getName(), (T) readObjectFromFile(file));
         }
         return map;
     }
@@ -703,11 +639,10 @@ public class Storage
      *             if the deserialized objects from any of the files are not
      *             instances of class c.
      */
-    public static <T> T[] listObjectContentsAsArray(
-        File folder, Class<T> c)
+    public static <T> T[] listObjectContentsAsArray(File folder, Class<T> c)
     {
-        return listObjectContents(folder, c).values()
-            .toArray((T[]) Array.newInstance(c, 0));
+        return listObjectContents(folder, c).values().toArray(
+            (T[]) Array.newInstance(c, 0));
     }
     
     /**
@@ -738,8 +673,7 @@ public class Storage
      * @param defaultValue
      * @return
      */
-    public synchronized String getConfigProperty(
-        String key, String defaultValue)
+    public synchronized String getConfigProperty(String key, String defaultValue)
     {
         ConfigProperty property = user.getProperty(key);
         if (property == null)
@@ -753,8 +687,7 @@ public class Storage
         return property.getValue();
     }
     
-    public synchronized void setConfigProperty(String key,
-        String value)
+    public synchronized void setConfigProperty(String key, String value)
     {
         ConfigProperty property = user.getProperty(key);
         if (property != null && key == null)
@@ -780,21 +713,17 @@ public class Storage
      * @param key
      * @return
      */
-    public static synchronized String getSystemConfigProperty(
-        String key)
+    public static synchronized String getSystemConfigProperty(String key)
     {
-        ConfigProperty property = dataStore
-            .getProperty(key);
+        ConfigProperty property = dataStore.getProperty(key);
         if (property == null)
             return null;
         return property.getValue();
     }
     
-    public static synchronized void setSystemConfigProperty(
-        String key, String value)
+    public static synchronized void setSystemConfigProperty(String key, String value)
     {
-        ConfigProperty property = dataStore
-            .getProperty(key);
+        ConfigProperty property = dataStore.getProperty(key);
         if (property != null && key == null)
         {
             dataStore.getProperties().remove(property);
@@ -811,11 +740,9 @@ public class Storage
         property.setValue(value);
     }
     
-    public static TrustedCertificate createTrustedCertificate(
-        String encoded)
+    public static TrustedCertificate createTrustedCertificate(String encoded)
     {
-        TrustedCertificate tcert = proxyStorage
-            .create(TrustedCertificate.class);
+        TrustedCertificate tcert = proxyStorage.create(TrustedCertificate.class);
         tcert.setEncoded(encoded);
         return tcert;
     }
@@ -848,6 +775,46 @@ public class Storage
     public File getOutboundMessageEncryptedStore()
     {
         return outboundMessageEncryptedStore;
+    }
+    
+    public static File getMessageDraftsFolder()
+    {
+        return messageDraftsFolder;
+    }
+    
+    public static void setMessageDraftsFolder(File messageDraftsFolder)
+    {
+        Storage.messageDraftsFolder = messageDraftsFolder;
+    }
+    
+    public static File getMessageSentFolder()
+    {
+        return messageSentFolder;
+    }
+    
+    public static void setMessageSentFolder(File messageSentFolder)
+    {
+        Storage.messageSentFolder = messageSentFolder;
+    }
+    
+    public static File getMessageUnreadFolder()
+    {
+        return messageUnreadFolder;
+    }
+    
+    public static void setMessageUnreadFolder(File messageUnreadFolder)
+    {
+        Storage.messageUnreadFolder = messageUnreadFolder;
+    }
+    
+    public static File getMessageReadFolder()
+    {
+        return messageReadFolder;
+    }
+    
+    public static void setMessageReadFolder(File messageReadFolder)
+    {
+        Storage.messageReadFolder = messageReadFolder;
     }
     
 }
