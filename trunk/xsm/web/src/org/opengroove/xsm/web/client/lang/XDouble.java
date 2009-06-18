@@ -18,4 +18,10 @@ public class XDouble extends XData
     {
         return "" + value;
     }
+
+    public XDouble(double value)
+    {
+        super();
+        this.value = value;
+    }
 }

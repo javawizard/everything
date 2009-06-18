@@ -18,4 +18,10 @@ public class XNumber extends XData
     {
         return "" + value;
     }
+
+    public XNumber(long value)
+    {
+        super();
+        this.value = value;
+    }
 }

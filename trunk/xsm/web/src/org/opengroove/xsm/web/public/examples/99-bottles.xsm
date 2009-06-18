@@ -1,0 +1,30 @@
+<!--     
+         This raises the instruction limit imposed by the interpreter to 
+         help prevent infinite loops. The default limit is too small, so
+         we have to raise it here.
+-->
+<config name="limit" value="8000"/>
+
+<!-- Now for the actual program -->
+
+
+<for var="i" initial="99" final="1" step="-1">
+    <print>
+        <string><var name="i"/> bottles of pop on the wall</string>
+    </print>
+    <print>
+        <string><var name="i"/> bottles of pop.</string>
+    </print>
+    <print>
+        <string>Take one down, pass it around</string>
+    </print>
+    <print>
+        <string>
+            <subtract>
+                <var name="i"/>
+                <number>1</number>
+            </subtract>
+            bottles of pop on the wall
+        </string>
+    </print>
+</for>

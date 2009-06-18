@@ -71,7 +71,7 @@ public class XSM_web implements EntryPoint
         VerticalPanel examplesPanel = new VerticalPanel();
         examplesPanel.add(new HTML("&nbsp;"));
         examplesPanel.add(new HTML(
-            "<b>Examples: </b><small>Click an example to load it "
+            "&nbsp; &nbsp; <b>Examples: </b><small>Click an example to load it "
                 + "into the text area at left</small>"));
         loadExamplesPanel(examplesPanel);
         codePanel.add(examplesPanel);
@@ -112,7 +112,10 @@ public class XSM_web implements EntryPoint
     {
         for (final String s : examples.keySet())
         {
-            Anchor a = new Anchor(" &nbsp; &nbsp; " + s, true);
+            Anchor a = new Anchor(s);
+            HorizontalPanel p = new HorizontalPanel();
+            p.add(new HTML(" &nbsp; &nbsp; &nbsp; &nbsp; "));
+            p.add(a);
             a.addClickListener(new ClickListener()
             {
                 
@@ -129,15 +132,16 @@ public class XSM_web implements EntryPoint
                         });
                 }
             });
-            examplesPanel.add(a);
+            examplesPanel.add(p);
         }
     }
     
     private void loadExamples()
     {
         loadExample("Hello world", "hello-world");
-        loadExample("Print numbers from 1 to 10", "one-to-ten.xsm");
-        loadExample("Print multiples of 3 up to 15", "three-times.xsm");
+        loadExample("99 bottles of pop", "99-bottles");
+        loadExample("Print numbers from 1 to 10", "one-to-ten");
+        loadExample("Print multiples of 3 up to 15", "three-times");
     }
     
     private void loadExample(String string, String string2)

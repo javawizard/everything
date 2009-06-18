@@ -73,14 +73,25 @@ public class XInterpreter
             throw new XLimitExceededException("Instruction limit exceeded.");
     }
     
-    public void executeChildren(XElement element, XInterpreterContext context)
+    public void executeChildren(XElement element, XInterpreterContext context, int startIndex)
     {
         if (context == null)
             context = new XInterpreterContext(this, true);
+        int skipped = 0;
         for (XNode node : element.getChildren())
         {
+            if(skipped < startIndex)
+            {
+                skipped++;
+                continue;
+            }
             execute((XElement) node, context);
         }
+    }
+    
+    public void executeChildren(XElement element, XInterpreterContext context)
+    {
+        executeChildren(element,context,0);
     }
     
     public XDisplayDevice getDisplay()
@@ -108,6 +119,14 @@ public class XInterpreter
     public void setInput(XInputDevice input)
     {
         this.input = input;
+    }
+    
+    public static XData parseNumeric(String value)
+    {
+        if (value.contains("."))
+            return new XDouble(Double.parseDouble(value));
+        else
+            return new XNumber(Long.parseLong(value));
     }
     
 }
