@@ -8,7 +8,7 @@ Then there could be some sort of pattern, maybe like `<wiki:comment><nohelp-star
 =The language=
 The language is kind of a cross between Java, Javascript, and Logo (a variant of Lisp). I program in all three, so I've gotten ideas from them. The language shares javascript's and logo's dynamic typing (IE a variable does not have a type; its type is the type of whatever it's holding at the moment), and it shares java's and javascript's autolocal variables (IE you can't see a variable declared in a method that's calling yours). It does not support classes; it is therefore a procedural language. Functions are not first-class objects. Code can be run outside of a function. Code that returns that is run in a context where output is not expected has the output silently discarded.
 
-For tags whose content is intended to be code (which is all of them except the literal tags, I'll get to those later), the content must only be other xml tags, not text.
+All tags, except the literal tags, must contain only other XML tags, not plain text. For functions that accept some sort of text as an argument, the text should be wrapped with a string tag.
 
 ==Functions==
 Functions are defined using the function tag. It has one attribute, name, which is the name of the function.
@@ -34,6 +34,11 @@ a value
 12345
 }}}
 
+==Code functions vs. Argument functions==
+First off, all custom-defined functions (those created by the user with the function tag) are argument functions.
+
+Code functions are those that are invoked with their tag content being XSM code. They then do something with it. The function tag itself is a code function. Other examples include `if` and `while`. Argument functions are those that are invoked with their tag content being a list of values. These functions then do stuff with the values, not with the code. Functions _defined_ with the function tag are argument functions. Other examples include `set` and `var`.
+
 ==Variables==
 Variables are dynamically-typed. XSM is a procedural language; there is no such thing as objects in XSM. Variables, therefore, hold one of these types of value:
 
@@ -44,11 +49,41 @@ Variables are dynamically-typed. XSM is a procedural language; there is no such 
 || string  || A piece of text. ||
 || null    || Nothing. ||
 
+Each of the literal tags can be used, with the tag's content being the value to use (which is specific to the type). Additionally, the tags true and false can be used directly in place of `<boolean>true</boolean>` and `<boolean>false</boolean>`, respectively. The string literal can have other tags embedded within it, amid text, and their return value will be embedded in the string.
+
 To create a variable, you use the set tag. This can be invoked with the name attribute and one argument, or two arguments. In the latter case, the first argument is taken as the name of the variable.
 
-To get a variable's value, you use the var tag. 
+To get a variable's value, you use the var tag. It takes either an attribute called name or a single argument, which is used as the name.
+
+For example, the code:
+{{{
+<set name="foo">
+    <string>Hello, how are you?</string>
+</set>
+<set>
+    <string>bar</string>
+    <string>I am fine</string>
+</set>
+<print>
+    <var>
+        <string>foo</string>
+    </var>
+</print>
+<print>
+    <var name="bar"/>
+</print>
+}}}
+Prints the following output:
+{{{
+Hello, how are you?
+I am fine
+}}}
+
+==Looping==
+Looping is done with the 
 
 =Examples=
-{{
+{{{
 <xsm>
     <var name="testvar"><number>1</number></var>
+}}}
