@@ -1,14 +1,9 @@
-<!--     
-         This raises the instruction limit imposed by the interpreter to 
-         help prevent infinite loops. The default limit is too small, so
-         we have to raise it here.
--->
-<config name="limit" value="8000"/>
-
-<!-- Now for the actual program -->
-
-
-<for var="i" initial="99" final="1" step="-1">
+<for var="i" final="1" step="-1">
+    <initial>
+        <number>
+            <prompt message="How many bottles of pop? Do less than 20, more than that is slow."/>
+        </number>
+    </initial>
     <print>
         <string><var name="i"/> bottles of pop on the wall</string>
     </print>
@@ -24,7 +19,7 @@
                 <var name="i"/>
                 <number>1</number>
             </subtract>
-            bottles of pop on the wall
+            bottles of pop on the wall.
         </string>
     </print>
 </for>

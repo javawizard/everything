@@ -87,6 +87,13 @@ public class XSM_web implements EntryPoint
         mainPanel.add(runPanel);
         mainPanel.add(new HTML("<b>Output:</b>"));
         mainPanel.add(outputArea);
+        mainPanel.add(new HTML("The original idea for an XML-based programming "
+            + "language came from Mark Carter's XS "
+            + "programming language, <a target='_blank' href='"
+            + "http://www.markcarter.me.uk/computing/xs.html'>"
+            + "http://www.markcarter.me.uk/computing/xs.html</a>"));
+        mainPanel
+            .add(new HTML("XSM is written by Alexander Boyd (aka javawizard2539)."));
         runButton.addClickListener(new ClickListener()
         {
             
@@ -139,7 +146,7 @@ public class XSM_web implements EntryPoint
     private void loadExamples()
     {
         loadExample("Hello world", "hello-world");
-        loadExample("99 bottles of pop", "99-bottles");
+        loadExample("9 bottles of pop", "9-bottles");
         loadExample("Print numbers from 1 to 10", "one-to-ten");
         loadExample("Print multiples of 3 up to 15", "three-times");
     }
