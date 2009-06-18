@@ -4,20 +4,30 @@ import org.opengroove.xsm.web.client.lang.XCommand;
 import org.opengroove.xsm.web.client.lang.XData;
 import org.opengroove.xsm.web.client.lang.XElement;
 import org.opengroove.xsm.web.client.lang.XInterpreterContext;
+import org.opengroove.xsm.web.client.lang.XNull;
+import org.opengroove.xsm.web.client.lang.XString;
 
 public class CXPrompt implements XCommand
 {
     
     public String getName()
     {
-        // TODO Auto-generated method stub
-        return null;
+        return "prompt";
     }
     
     public XData invoke(XInterpreterContext context, XElement element)
     {
-        // TODO Auto-generated method stub
-        return null;
+        String message = element.getAttribute("message");
+        if (message == null)
+        {
+            XData data = context.execute(element.getSingleElement());
+            if (data != null)
+                message = ((XString) data).getValue();
+        }
+        String result = context.getInterpreter().input.prompt(message);
+        if (result == null)
+            return new XNull();
+        return new XString(result);
     }
     
 }

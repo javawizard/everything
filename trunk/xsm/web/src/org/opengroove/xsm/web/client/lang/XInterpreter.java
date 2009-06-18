@@ -2,8 +2,11 @@ package org.opengroove.xsm.web.client.lang;
 
 import java.util.HashMap;
 
+import org.opengroove.xsm.web.client.lang.i.CXConfig;
 import org.opengroove.xsm.web.client.lang.i.CXPrint;
+import org.opengroove.xsm.web.client.lang.i.CXPrompt;
 import org.opengroove.xsm.web.client.lang.i.CXSet;
+import org.opengroove.xsm.web.client.lang.i.CXString;
 import org.opengroove.xsm.web.client.lang.i.CXVar;
 
 public class XInterpreter
@@ -12,7 +15,7 @@ public class XInterpreter
     
     private XDisplayDevice display;
     
-    private XInputDevice input;
+    public XInputDevice input;
     
     public HashMap<String, String> configuration = new HashMap<String, String>();
     
