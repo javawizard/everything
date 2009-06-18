@@ -3,6 +3,14 @@ package org.opengroove.xsm.web.client.lang;
 public interface XCommand
 {
     /**
+     * Returns the name of the command. This command can be invoked using a tag
+     * that has this name.
+     * 
+     * @return
+     */
+    public String getName();
+    
+    /**
      * Invokes this command.
      * 
      * @param context
