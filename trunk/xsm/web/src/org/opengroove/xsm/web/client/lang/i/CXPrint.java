@@ -5,18 +5,21 @@ import org.opengroove.xsm.web.client.lang.XData;
 import org.opengroove.xsm.web.client.lang.XElement;
 import org.opengroove.xsm.web.client.lang.XInterpreterContext;
 
-public class XXSet implements XCommand
+public class CXPrint implements XCommand
 {
     
     public String getName()
     {
-        // TODO Auto-generated method stub
-        return null;
+        return "print";
     }
     
     public XData invoke(XInterpreterContext context, XElement element)
     {
-        // TODO Auto-generated method stub
+        XData toPrint = context.execute(element.getSingleElement());
+        boolean newline =
+            !"true".equals(element.getAttributes().get("newline").toLowerCase());
+        String value = toPrint.toString();
+        context.getInterpreter().getDisplay().print(value, newline);
         return null;
     }
     
