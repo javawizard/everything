@@ -31,7 +31,7 @@ public class XWebParser
      */
     public static XElement parse(String text)
     {
-        Document doc = XMLParser.parse("<xwebparser>" + text + "</xwebparser>");
+        Document doc = XMLParser.parse(text);
         return nodeToElement((Element) doc.getFirstChild());
     }
     

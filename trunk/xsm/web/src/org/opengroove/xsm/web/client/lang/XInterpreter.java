@@ -75,6 +75,7 @@ public class XInterpreter
     
     public void executeChildren(XElement element, XInterpreterContext context)
     {
+        display.print("Executing children of " + element.getTag(), true);
         if (context == null)
             context = new XInterpreterContext(this, true);
         for (XNode node : element.getChildren())
