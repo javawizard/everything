@@ -1,24 +1,21 @@
-package org.opengroove.xsm.web.client.gwt;
+package org.opengroove.xsm.dom;
+
+import java.io.StringReader;
+
+import javax.xml.parsers.DocumentBuilderFactory;
 
 import org.opengroove.xsm.web.client.lang.XElement;
 import org.opengroove.xsm.web.client.lang.XText;
+import org.w3c.dom.Attr;
+import org.w3c.dom.Document;
+import org.w3c.dom.Element;
+import org.w3c.dom.NamedNodeMap;
+import org.w3c.dom.Node;
+import org.w3c.dom.NodeList;
+import org.w3c.dom.Text;
+import org.xml.sax.InputSource;
 
-import com.google.gwt.xml.client.Attr;
-import com.google.gwt.xml.client.Document;
-import com.google.gwt.xml.client.Element;
-import com.google.gwt.xml.client.NamedNodeMap;
-import com.google.gwt.xml.client.Node;
-import com.google.gwt.xml.client.NodeList;
-import com.google.gwt.xml.client.Text;
-import com.google.gwt.xml.client.XMLParser;
-
-/**
- * A class that can parse a string into an XElement using GWT's DOM library.
- * 
- * @author Alexander Boyd
- * 
- */
-public class XWebParser
+public class XDomParser
 {
     /**
      * Parses the specified text into an XElement. The text should be a single
@@ -31,8 +28,17 @@ public class XWebParser
      */
     public static XElement parse(String text)
     {
-        Document doc = XMLParser.parse(text);
-        return nodeToElement((Element) doc.getFirstChild());
+        try
+        {
+            Document doc =
+                DocumentBuilderFactory.newInstance().newDocumentBuilder().parse(
+                    new InputSource(new StringReader(text)));
+            return nodeToElement((Element) doc.getFirstChild());
+        }
+        catch (Exception e)
+        {
+            throw new RuntimeException(e);
+        }
     }
     
     /**
@@ -62,11 +68,10 @@ public class XWebParser
             }
             else if (child instanceof Text)
             {
-                Text text = (Text) child;
-                if (!text.getNodeValue().trim().equals(""))
-                    element.getChildren().add(new XText(child.getNodeValue().trim()));
+                element.getChildren().add(new XText(((Text) child).getNodeValue()));
             }
         }
         return element;
     }
+    
 }

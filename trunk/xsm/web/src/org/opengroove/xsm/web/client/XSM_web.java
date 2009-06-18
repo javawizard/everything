@@ -1,5 +1,7 @@
 package org.opengroove.xsm.web.client;
 
+import java.util.HashMap;
+
 import org.opengroove.xsm.web.client.gwt.XWebParser;
 import org.opengroove.xsm.web.client.lang.XDisplayDevice;
 import org.opengroove.xsm.web.client.lang.XElement;
@@ -10,7 +12,10 @@ import org.opengroove.xsm.web.client.lang.XLimitExceededException;
 import org.opengroove.xsm.web.client.lang.XStackFrame;
 
 import com.google.gwt.core.client.EntryPoint;
+import com.google.gwt.user.client.HTTPRequest;
+import com.google.gwt.user.client.ResponseTextHandler;
 import com.google.gwt.user.client.Window;
+import com.google.gwt.user.client.ui.Anchor;
 import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.ClickListener;
 import com.google.gwt.user.client.ui.DialogBox;
@@ -33,11 +38,14 @@ public class XSM_web implements EntryPoint
     
     public static TextArea outputArea;
     
+    private static HashMap<String, String> examples = new HashMap<String, String>();
+    
     /**
      * This is the entry point method.
      */
     public void onModuleLoad()
     {
+        loadExamples();
         RootPanel root = RootPanel.get();
         HTMLPanel wrapper =
             new HTMLPanel("<table width='100%' height='100%' border='0' "
@@ -58,7 +66,16 @@ public class XSM_web implements EntryPoint
         codeArea = new TextArea();
         codeArea.setCharacterWidth(100);
         codeArea.setVisibleLines(15);
-        mainPanel.add(codeArea);
+        HorizontalPanel codePanel = new HorizontalPanel();
+        codePanel.add(codeArea);
+        VerticalPanel examplesPanel = new VerticalPanel();
+        examplesPanel.add(new HTML("&nbsp;"));
+        examplesPanel.add(new HTML(
+            "<b>Examples: </b><small>Click an example to load it "
+                + "into the text area at left</small>"));
+        loadExamplesPanel(examplesPanel);
+        codePanel.add(examplesPanel);
+        mainPanel.add(codePanel);
         outputArea = new TextArea();
         outputArea.setCharacterWidth(100);
         outputArea.setVisibleLines(10);
@@ -77,6 +94,7 @@ public class XSM_web implements EntryPoint
             {
                 outputArea.setText("");
                 doInterpreter();
+                appendOutput("", true);
                 appendOutput("Done.", true);
             }
         });
@@ -88,6 +106,43 @@ public class XSM_web implements EntryPoint
                 outputArea.setText("");
             }
         });
+    }
+    
+    private void loadExamplesPanel(VerticalPanel examplesPanel)
+    {
+        for (final String s : examples.keySet())
+        {
+            Anchor a = new Anchor(" &nbsp; &nbsp; " + s, true);
+            a.addClickListener(new ClickListener()
+            {
+                
+                public void onClick(Widget sender)
+                {
+                    HTTPRequest.asyncGet("examples/" + examples.get(s),
+                        new ResponseTextHandler()
+                        {
+                            
+                            public void onCompletion(String responseText)
+                            {
+                                codeArea.setText(responseText);
+                            }
+                        });
+                }
+            });
+            examplesPanel.add(a);
+        }
+    }
+    
+    private void loadExamples()
+    {
+        loadExample("Hello world", "hello-world");
+        loadExample("Print numbers from 1 to 10", "one-to-ten.xsm");
+        loadExample("Print multiples of 3 up to 15", "three-times.xsm");
+    }
+    
+    private void loadExample(String string, String string2)
+    {
+        examples.put(string, string2 + ".xsm");
     }
     
     protected void doInterpreter()
