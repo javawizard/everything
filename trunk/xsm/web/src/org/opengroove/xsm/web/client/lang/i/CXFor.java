@@ -71,7 +71,7 @@ public class CXFor implements XCommand
          */
         XData currentValue = initialValue;
         boolean isUp = stepValue.getAsDouble() > 0;
-        XData previousValue = context.getVariable(var);
+        XData previousValue = context.getVariables().get(var);
         /*
          * While (we're going up and we're not more than the final) or (we're
          * going down and we're not less than the final)
@@ -99,6 +99,10 @@ public class CXFor implements XCommand
         /*
          * We're done!
          */
+        if (initialValue == null)
+            context.getVariables().remove(var);
+        else
+            context.getVariables().put(var, initialValue);
         return null;
     }
 }
