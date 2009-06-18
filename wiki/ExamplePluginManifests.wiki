@@ -1,0 +1,22 @@
+*Some settings*
+{{{
+<plugin id="org.opengroove.examples.test01">
+    <authors>
+        <author name="The OpenGroove Team"/>
+        <author name="Alexander Boyd"/>
+    </authors>
+    <requires>
+        <import name="org.opengroove.client.settings"/>
+    </requires>
+    <runtime>
+        <internal/>
+    </runtime> 
+    <extensions>
+        <extension plugin="org.opengroove.client.settings" point="settings">
+            <tab id="testtab" name="Test tab" icon="testtab-icon.png" description="This is a test tab">
+                <setting id="name" name="Your name" description="Type your name here" type="text" rows="1" cols="20" default="No name"/>
+            </tab>
+        </extension>
+    </extensions>
+</plugin>
+                   
