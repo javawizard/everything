@@ -1,0 +1,25 @@
+*The settings manager on the client side.*
+
+One quick note first. When a plugin is to load its extension points, in the plugin's main class, it should create named classes for an extension by using a special method on the extension, instead of by using Class.forName. Then if the class implements PluginAware, it will be injected with various information about itself such as its supervisor.
+
+=Settings management=
+The settings manager in G3 was done entirely in code. This meant that to request a setting you specified in code the layout of all of the settings. I'm doing away with this in G4, and instead you register an extension with OpenGroove's settings extension point to add preferences.
+
+You can register a setting type too. And since depended plugins are always activated before the ones that depend on them, you can depend on a plugin that provides a particular type of setting.
+
+==Specifying settings==
+Settings are specified in the extension. Though verbose, I think it's going to be easiest to strictly order settings as tab/subnav/group/setting. If the group's id is default, then the settings are shown not in a group. Other groups are shown collapsed by default, and can be expanded by the user as needed.
+
+The subnav/group/setting either appears within the tag for a parent element, or it specifies a parent attribute (which is the id of the parent, paths separated by forward slashes). Ids must be unique throughout opengroove, so they generally should be prefixed with the plugin's package name.
+
+Settings can use a parent outside of their plugin. This allows, for example, a plugin that modifies stored messaging in some way to add a subnav to the Messages tab that OpenGroove uses.
+
+==Setting types==
+A setting type specifies the actual UI component for the setting, as well as the setting's backing storage mechanism. Individual settings always store their data as serialized objects.
+
+A setting type must also be able to read itself in from a specially-formatted string. This allows for use of the default parameter, which is used to generate the setting's value if the user has not yet visited that setting's page since they installed the plugin.
+
+A setting type must also be able to create a widget that represents a concise form of its value. This is used in the *changes* button's dialog to display the list of things that have changed since the user opened the settings dialog.
+
+==Looking up setting values==
+The value of a particular setting can be found out with knowledge of the setting's id and the setting's 
