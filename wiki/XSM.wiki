@@ -47,6 +47,7 @@ Variables are dynamically-typed. XSM is a procedural language; there is no such 
 || number  || An signed, 64-bit integer. ||
 || double  || A signed, 64-bit decimal number. ||
 || string  || A piece of text. ||
+|| list    || A list of other values. Lists themselves are passed around by reference, so passing a list to a function that modifies the list's content will result in the list being modified in the caller. The literal list tag is an argument function instead of a literal function, and makes a list of each value within it. ||
 || null    || Nothing. ||
 
 Each of the literal tags can be used, with the tag's content being the value to use (which is specific to the type). Additionally, the tags true and false can be used directly in place of `<boolean>true</boolean>` and `<boolean>false</boolean>`, respectively. The string literal can have other tags embedded within it, amid text, and their return value will be embedded in the string.
@@ -80,7 +81,7 @@ I am fine
 }}}
 
 ==Looping==
-Looping is done with the 
+Looping is done with the while tag and the for tag.
 
 =Examples=
 {{{
