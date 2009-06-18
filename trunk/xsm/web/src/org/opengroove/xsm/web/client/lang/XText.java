@@ -13,4 +13,15 @@ public class XText extends XNode
     {
         this.text = text;
     }
+
+    public XText(String text)
+    {
+        super();
+        this.text = text;
+    }
+
+    public XText()
+    {
+        super();
+    }
 }

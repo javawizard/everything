@@ -27,12 +27,12 @@ public class XInterpreter
      */
     public void install(XCommand command)
     {
-        commands.put(command.getName(), command);
+        commands.put(command.getName().toLowerCase(), command);
     }
     
     public XData execute(XElement element, XInterpreterContext context)
     {
-        XCommand command = commands.get(element.getTag());
+        XCommand command = commands.get(element.getTag().toLowerCase());
         if (command == null)
             throw new XException("Nonexistent command: " + element.getTag());
         return command.invoke(context, element);

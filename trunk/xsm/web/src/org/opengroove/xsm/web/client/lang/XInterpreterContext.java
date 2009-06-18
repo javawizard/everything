@@ -39,4 +39,17 @@ public class XInterpreterContext
         this.interpreter = interpreter;
         this.isTopLevel = isTopLevel;
     }
+    
+    /**
+     * Executes the specified command in this context, returning its return
+     * value.
+     * 
+     * @param singleElement
+     *            The element
+     * @return The value that the command returned
+     */
+    public XData execute(XElement element)
+    {
+        return interpreter.execute(element, this);
+    }
 }
