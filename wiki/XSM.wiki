@@ -10,9 +10,7 @@ The language is kind of a cross between Java, Javascript, and Logo (a variant of
 
 For tags whose content is intended to be code (which is all of them except the literal tags, I'll get to those later), the content must only be other xml tags, not text.
 
-==Concepts==
-
-===Functions===
+==Functions==
 Functions are defined using the function tag. It has one attribute, name, which is the name of the function.
 
 Functions are called by using the name of the function as a tag name. Tag attribute values are available within the function as variables named "param.NAME", where NAME is the name of the attribute. Each element within the function call's tag that returns a value is available as an "arg.N" variable, where N is the number starting at 1.
@@ -22,18 +20,33 @@ For example, the code:
 <function name="test">
     <print><var name="param.somevalue"></print>
     <print><var name="arg.1"></print>
+    <print><var name="arg.2"></print>
 </function>
 <test somevalue="an attribute">
     <string>a value</string>
+    <number>12345</number>
 </test>
 }}}
 Prints the following output:
 {{{
 an attribute
 a value
+12345
 }}}
 
+==Variables==
+Variables are dynamically-typed. XSM is a procedural language; there is no such thing as objects in XSM. Variables, therefore, hold one of these types of value:
 
+|| *Literal tag name* || Description ||
+|| boolean || A value that is either true or false. ||
+|| number  || An signed, 64-bit integer. ||
+|| double  || A signed, 64-bit decimal number. ||
+|| string  || A piece of text. ||
+|| null    || Nothing. ||
+
+To create a variable, you use the set tag. This can be invoked with the name attribute and one argument, or two arguments. In the latter case, the first argument is taken as the name of the variable.
+
+To get a variable's value, you use the var tag. 
 
 =Examples=
 {{
