@@ -228,6 +228,8 @@ Defines a new function. See [#Functions Functions] for more info.
 
 ==Step (a)==
 
+==Return (a)==
+
 =Examples=
 {{{
 <var name="testvar"><number>1</number></var>
