@@ -123,10 +123,36 @@ The number is 6
 ===For===
 For takes two forms: one that iterates a specified number of times, storing the current iteration count in a variable, and one that iterates over each element in a list.
 
+The iteration for loop takes the attributes var, initial, final, 
 
+=Built-in functions=
+This is the list of functions that are built in to the XSM language. These do not include !OpenGroove-specific functions.
+
+==Set==
+
+==Var==
+
+==Print==
+
+==Boolean==
+
+==True==
+
+==False==
+
+==Number==
+
+==Double==
+
+==String==
+
+==List==
+
+==Null==
+
+==Function==
 
 =Examples=
 {{{
-<xsm>
-    <var name="testvar"><number>1</number></var>
+<var name="testvar"><number>1</number></var>
 }}}
