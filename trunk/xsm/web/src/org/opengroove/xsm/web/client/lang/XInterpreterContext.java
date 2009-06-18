@@ -52,4 +52,33 @@ public class XInterpreterContext
     {
         return interpreter.execute(element, this);
     }
+    
+    /**
+     * Calls the specified command, which must return a string. If it does not
+     * (including when it doesn't return or it returns XNull), an exception will
+     * be thrown.
+     * 
+     * @param element
+     * @return
+     */
+    public String executeForString(XElement element)
+    {
+        return ((XString) execute(element)).getValue();
+    }
+    
+    /**
+     * Gets the specified variable, throwing an exception if the variable
+     * doesn't exist (but successfully returning XNull if that is the variable's
+     * current value)
+     * 
+     * @param name
+     *            The name of the variable
+     * @return
+     */
+    public XData getVariable(String name)
+    {
+        if (variables.get(name) == null)
+            throw new XException("The variable " + name + " doesn't exist");
+        return variables.get(name);
+    }
 }

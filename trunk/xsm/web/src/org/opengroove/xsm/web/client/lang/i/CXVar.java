@@ -10,14 +10,16 @@ public class CXVar implements XCommand
     
     public String getName()
     {
-        // TODO Auto-generated method stub
-        return null;
+        return "var";
     }
     
     public XData invoke(XInterpreterContext context, XElement element)
     {
-        // TODO Auto-generated method stub
-        return null;
+        String name = element.getAttribute("name");
+        if (name == null)
+            name = context.executeForString(element.getSingleElement());
+        XData value = context.getVariable(name);
+        return value;
     }
     
 }

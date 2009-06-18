@@ -44,4 +44,14 @@ public class XElement extends XNode
             throw new RuntimeException("Single child was not an element");
         return (XElement) children.get(0);
     }
+    
+    public String getAttribute(String name)
+    {
+        return attributes.get(name);
+    }
+    
+    public XNode getChild(int i)
+    {
+        return children.get(i);
+    }
 }

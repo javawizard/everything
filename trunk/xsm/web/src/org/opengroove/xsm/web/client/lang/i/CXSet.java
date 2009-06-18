@@ -10,14 +10,22 @@ public class CXSet implements XCommand
     
     public String getName()
     {
-        // TODO Auto-generated method stub
-        return null;
+        return "set";
     }
     
     public XData invoke(XInterpreterContext context, XElement element)
     {
-        // TODO Auto-generated method stub
-        return null;
+        String name = element.getAttribute("name");
+        XData value;
+        if (name == null)
+        {
+            name = context.executeForString((XElement) element.getChild(0));
+            value = context.execute((XElement) element.getChild(1));
+        }
+        else
+        {
+            value = context.execute(element.getSingleElement());
+        }
+        context.getVariables().put(name, value);
     }
-    
 }

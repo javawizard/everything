@@ -2,9 +2,9 @@ package org.opengroove.xsm.web.client.lang;
 
 import java.util.HashMap;
 
-import org.opengroove.xsm.web.client.lang.i.XPrint;
-import org.opengroove.xsm.web.client.lang.i.XSet;
-import org.opengroove.xsm.web.client.lang.i.XVar;
+import org.opengroove.xsm.web.client.lang.i.CXPrint;
+import org.opengroove.xsm.web.client.lang.i.CXSet;
+import org.opengroove.xsm.web.client.lang.i.CXVar;
 
 public class XInterpreter
 {
@@ -14,9 +14,9 @@ public class XInterpreter
     
     public void installDefaultCommands()
     {
-        install(new XPrint());
-        install(new XSet());
-        install(new XVar());
+        install(new CXPrint());
+        install(new CXSet());
+        install(new CXVar());
     }
     
     /**
@@ -35,7 +35,15 @@ public class XInterpreter
         XCommand command = commands.get(element.getTag().toLowerCase());
         if (command == null)
             throw new XException("Nonexistent command: " + element.getTag());
-        return command.invoke(context, element);
+        try
+        {
+            return command.invoke(context, element);
+        }
+        catch (XException e)
+        {
+            e.getProgramStack().add(new XStackFrame(element.getTag()));
+            throw e;
+        }
     }
     
     public void executeChildren(XElement element, XInterpreterContext context)

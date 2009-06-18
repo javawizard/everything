@@ -18,4 +18,10 @@ public class XString extends XData
     {
         return value;
     }
+
+    public XString(String value)
+    {
+        super();
+        this.value = value;
+    }
 }
