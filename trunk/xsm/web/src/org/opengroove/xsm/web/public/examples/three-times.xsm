@@ -1,0 +1,11 @@
+<for var="i" initial="1" final="5" step="1">
+    <print>
+        <string>
+            3 times <var name="i"/> is 
+            <multiply>
+                <number>3</number>
+                <var name="i"/>
+            </multiply>
+        </string>
+    </print>
+</for>

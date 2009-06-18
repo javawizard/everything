@@ -1,0 +1,5 @@
+<for var="i" initial="1" final="10" step="1">
+    <print>
+        <string>This is number <var name="i"/></string>
+    </print>
+</for>

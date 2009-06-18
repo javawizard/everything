@@ -12,11 +12,25 @@ public class XInterpreter
     
     private XDisplayDevice display;
     
+    private XInputDevice input;
+    
+    public HashMap<String, String> configuration = new HashMap<String, String>();
+    
+    public XInterpreter()
+    {
+        configuration.put("limit", "1000");
+    }
+    
+    public int instructionCount;
+    
     public void installDefaultCommands()
     {
         install(new CXPrint());
         install(new CXSet());
         install(new CXVar());
+        install(new CXString());
+        install(new CXConfig());
+        install(new CXPrompt());
     }
     
     /**
@@ -32,6 +46,9 @@ public class XInterpreter
     
     public XData execute(XElement element, XInterpreterContext context)
     {
+        instructionCount += 1;
+        if ((instructionCount % 10) == 0)
+            validateInstructionCount();
         XCommand command = commands.get(element.getTag().toLowerCase());
         if (command == null)
             throw new XException("Nonexistent command: " + element.getTag());
@@ -44,6 +61,13 @@ public class XInterpreter
             e.getProgramStack().add(new XStackFrame(element.getTag()));
             throw e;
         }
+    }
+    
+    private void validateInstructionCount()
+    {
+        int allowed = Integer.parseInt(configuration.get("limit"));
+        if (instructionCount > allowed)
+            throw new XLimitExceededException("Instruction limit exceeded.");
     }
     
     public void executeChildren(XElement element, XInterpreterContext context)
@@ -71,6 +95,16 @@ public class XInterpreter
     public void setDisplay(XDisplayDevice display)
     {
         this.display = display;
+    }
+    
+    public XInputDevice getInput()
+    {
+        return input;
+    }
+    
+    public void setInput(XInputDevice input)
+    {
+        this.input = input;
     }
     
 }
