@@ -3,10 +3,14 @@ package org.opengroove.xsm.web.client.lang;
 import java.util.HashMap;
 
 import org.opengroove.xsm.web.client.lang.i.CXConfig;
+import org.opengroove.xsm.web.client.lang.i.CXEach;
+import org.opengroove.xsm.web.client.lang.i.CXFor;
+import org.opengroove.xsm.web.client.lang.i.CXNumber;
 import org.opengroove.xsm.web.client.lang.i.CXPrint;
 import org.opengroove.xsm.web.client.lang.i.CXPrompt;
 import org.opengroove.xsm.web.client.lang.i.CXSet;
 import org.opengroove.xsm.web.client.lang.i.CXString;
+import org.opengroove.xsm.web.client.lang.i.CXSubtract;
 import org.opengroove.xsm.web.client.lang.i.CXVar;
 
 public class XInterpreter
@@ -28,12 +32,16 @@ public class XInterpreter
     
     public void installDefaultCommands()
     {
-        install(new CXPrint());
-        install(new CXSet());
-        install(new CXVar());
-        install(new CXString());
         install(new CXConfig());
+        install(new CXEach());
+        install(new CXFor());
+        install(new CXNumber());
+        install(new CXPrint());
         install(new CXPrompt());
+        install(new CXSet());
+        install(new CXString());
+        install(new CXSubtract());
+        install(new CXVar());
     }
     
     /**
@@ -44,6 +52,8 @@ public class XInterpreter
      */
     public void install(XCommand command)
     {
+        if(command.getName() == null)
+            return;
         commands.put(command.getName().toLowerCase(), command);
     }
     
