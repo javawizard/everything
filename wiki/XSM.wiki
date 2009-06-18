@@ -81,7 +81,49 @@ I am fine
 }}}
 
 ==Looping==
-Looping is done with the while tag and the for tag.
+Looping is done with the while tag and the for tag. These are code functions that execute their content multiple times.
+
+===While===
+While takes an attribute called var. This should be the name of a variable that holds a boolean. The content of the while loop generally modifies this variable as it needs to. When the variable's value is false, the while loop stops looping.
+
+For example, the code:
+{{{
+<set name="condition">
+    <true/>
+</set>
+<set name="loop">
+    <number>3</number>
+</set>
+<while var="condition">
+    <print>
+        <string>The number is <var name="loop"/></string>
+    </print>
+    <set name="loop">
+        <add>
+            <var name="loop"/>
+            <number>1</number>
+        </add>
+    </set>
+    <set name="condition">
+        <less>
+            <var name="loop"/>
+            <number>7</number>
+        </less>
+    </set>
+</while>
+}}}
+Prints the following output:
+{{{
+The number is 3
+The number is 4
+The number is 5
+The number is 6
+}}}
+
+===For===
+For takes two forms: one that iterates a specified number of times, storing the current iteration count in a variable, and one that iterates over each element in a list.
+
+
 
 =Examples=
 {{{
