@@ -27,5 +27,6 @@ public class CXSet implements XCommand
             value = context.execute(element.getSingleElement());
         }
         context.getVariables().put(name, value);
+        return null;
     }
 }
