@@ -9,6 +9,12 @@ XSM is a programming language written in XML. The "meta" part of the name reflec
 
 Then there could be some sort of pattern, maybe like `<wiki:comment><nohelp-start/></wiki:comment>` and then a corresponding nohelp-end pattern, that could appear, and the content between would show up on google code but !OpenGroove would ignore it. This would allow for warnings at the top of pages that indicate that the user is viewing this on the wiki, not !OpenGroove, so dynamic content might be missing.
 
+------
+
+<wiki:toc max_depth="3"/>
+
+------
+
 =The language=
 The language is kind of a cross between Java, Javascript, and Logo (a variant of Lisp). I program in all three, so I've gotten ideas from them. The language shares javascript's and logo's dynamic typing (IE a variable does not have a type; its type is the type of whatever it's holding at the moment), and it shares java's and javascript's autolocal variables (IE you can't see a variable declared in a method that's calling yours). It does not support classes; it is therefore a procedural language. Functions are not first-class objects. Code can be run outside of a function. Code that returns that is run in a context where output is not expected has the output silently discarded.
 
