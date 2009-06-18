@@ -5,7 +5,7 @@ import org.opengroove.xsm.web.client.lang.XData;
 import org.opengroove.xsm.web.client.lang.XElement;
 import org.opengroove.xsm.web.client.lang.XInterpreterContext;
 
-public class XVar implements XCommand
+public class XXSet implements XCommand
 {
     
     public String getName()
