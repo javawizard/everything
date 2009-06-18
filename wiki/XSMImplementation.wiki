@@ -17,3 +17,5 @@ When an element (which should be an xsm element) is executed, the interpreter sc
 The function command creates a new command implementation that sets the appropriate variables and executes all of the commands within it.
 
 Oh, and a command is given a context with its function-specific variable list. It can set and get variables. Invoking a user-defined function creates a new context for that function, adds the arguments and attributes to that function, and runs it.
+
+Ok, so there's a method on the interpreter for executing an element as a command and returning the result, if there was one.
