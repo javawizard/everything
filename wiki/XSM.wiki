@@ -1,7 +1,7 @@
-*XSM: Xml Programming Language*
+*XSM: XML Scripting Metalanguage*
 
 =Description=
-XSM is a programming language written in XML. It will be used as the embedded programming language inside !OpenGroove's help pages. The main reason is that the help pages need a small server-side scripting language (JSP is too heavyweight for this one, and I'm not inclined to jump through the hoops required to get it working in an embedded environment without TCP sockets being needed, and I implemented a Logo programming language interpreter in a single night so an XML programming language for which there are already syntax parsers can't be that difficult) that can be used to embed dynamic help content. This language needs to be independent of the help source (be it the opengroove wiki or files within a plugin), and should preferably be a language that will get ignored by Google Code's wiki parser. An XML-based programming language works nicely for this. It can be embedded within `<wiki:comment>` tags so that Google Code will ignore it, but !OpenGroove can know that xsm within a wiki comment should be run instead of ignored.
+XSM is a programming language written in XML. The "meta" part of the name reflects that it was initially written to dynamically generate content for Google Code's wiki language. It will be used as the embedded programming language inside !OpenGroove's help pages. The main reason is that the help pages need a small server-side scripting language (JSP is too heavyweight for this one, and I'm not inclined to jump through the hoops required to get it working in an embedded environment without TCP sockets being needed, and I implemented a Logo programming language interpreter in a single night so an XML programming language for which there are already syntax parsers can't be that difficult) that can be used to embed dynamic help content. This language needs to be independent of the help source (be it the opengroove wiki or files within a plugin), and should preferably be a language that will get ignored by Google Code's wiki parser. An XML-based programming language works nicely for this. It can be embedded within `<wiki:comment>` tags so that Google Code will ignore it, but !OpenGroove can know that xsm within a wiki comment should be run instead of ignored.
 
 Then there could be some sort of pattern, maybe like `<wiki:comment><nohelp-start/></wiki:comment>` and then a corresponding nohelp-end pattern, that could appear, and the content between would show up on google code but !OpenGroove would ignore it. This would allow for warnings at the top of pages that indicate that the user is viewing this on the wiki, not !OpenGroove, so dynamic content might be missing.
 
@@ -9,6 +9,11 @@ Then there could be some sort of pattern, maybe like `<wiki:comment><nohelp-star
 The language is kind of a cross between Java, Javascript, and Logo (a variant of Lisp). I program in all three, so I've gotten ideas from them. The language shares javascript's and logo's dynamic typing (IE a variable does not have a type; its type is the type of whatever it's holding at the moment), and it shares java's and javascript's autolocal variables (IE you can't see a variable declared in a method that's calling yours). It does not support classes; it is therefore a procedural language. Functions are not first-class objects. Code can be run outside of a function. Code that returns that is run in a context where output is not expected has the output silently discarded.
 
 For tags whose content is intended to be code (which is all of them except the literal tags, I'll get to those later), the content must only be other xml tags, not text.
+
+==Concepts==
+
+===Functions===
+Functions are defined using the function tag. It has one attribute, name, which is the name of the function.
 
 Functions are called by using the name of the function as a tag name. Tag attribute values are available within the function as variables named "param.NAME", where NAME is the name of the attribute. Each element within the function call's tag that returns a value is available as an "arg.N" variable, where N is the number starting at 1.
 
