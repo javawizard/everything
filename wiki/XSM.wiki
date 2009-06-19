@@ -5,9 +5,7 @@
 <font color="#00aa00" size="3"><b>To run XSM programs online using a Javascript interpreter I wrote, go [http://trivergia.com/xsm/interpreter.jsp here].</b></font>
 
 =Description=
-XSM is a programming language that uses XML to represent programs. It will be used as the embedded programming language inside !OpenGroove's help pages. The main reason is that the help pages need a small server-side scripting language (JSP is too heavyweight for this one, and I'm not inclined to jump through the hoops required to get it working in an embedded environment without TCP sockets being needed, and I implemented a Logo programming language interpreter in a single night so an XML programming language for which there are already syntax parsers can't be that difficult) that can be used to embed dynamic help content. This language needs to be independent of the help source (be it the opengroove wiki or files within a plugin), and should preferably be a language that will get ignored by Google Code's wiki parser. An XML-based programming language works nicely for this. It can be embedded within `<wiki:comment>` tags so that Google Code will ignore it, but !OpenGroove can know that xsm within a wiki comment should be run instead of ignored.
-
-Then there could be some sort of pattern, maybe like `<wiki:comment><nohelp-start/></wiki:comment>` and then a corresponding nohelp-end pattern, that could appear, and the content between would show up on google code but !OpenGroove would ignore it. This would allow for warnings at the top of pages that indicate that the user is viewing this on the wiki, not !OpenGroove, so dynamic content might be missing.
+XSM is a programming language that uses XML to represent programs. It's probably one of the most pointless projects I've started, but I need a small server-side scripting language for OpenGroove's help pages, and this fits the bill for the moment.
 
 ------
 
