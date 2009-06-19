@@ -20,7 +20,7 @@ public class CXReturn implements XCommand
          * Execute the single child of the return, and then throw a new
          * XReturnException containing the value to return.
          */
-        XData returnData = context.execute(element);
+        XData returnData = context.execute(element.getSingleElement());
         throw new XReturnException(returnData);
     }
     
