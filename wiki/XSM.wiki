@@ -52,7 +52,7 @@ Functions are divided into three different types. User-defined functions are alw
 
  * *Argument functions* are those that are invoked with their tag content being a list of values. These functions then do stuff with the values, not with the code. All tags within an argument function must return a value (but they are allowed to return null as their value). Functions _defined_ with the function tag are argument functions. Other examples include `set` and `print`.
 
- * *Literal functions* are those that take raw text as arguments. These might allow tags to be embedded within them, but they do their own special processing on the tags. Examples of literal functions include `string` and `number`.
+ * *Literal functions* are those that take raw text as arguments. These might allow tags to be embedded within them, but they do their own special processing on the tags. Examples of literal functions include `print` and `number`.
 
 ==Variables==
 Variables are dynamically-typed. XSM is a procedural language; there is no such thing as objects in XSM. Variables, therefore, hold one of these types of value:
@@ -168,7 +168,7 @@ Sets the value of a variable, creating one if one does not already exist. The at
 Returns the value of the specified variable. The variable is either contained in the attribute name, or it is the single argument to the var function.
 
 ===Print (a)===
-Prints its single argument. If this program is a standalone program, this will be printed to the console. If this program is embedded inside a web page or an !OpenGroove help page, this will be sent to the page itself. If an attribute called newline has the value "false", then a newline will not be appended.
+Prints the text contained within the tag. The contents of the print tag have an implied `<string>` tag around them, so literal text can appear within the print function. If this program is a standalone program (programs run in the interpreter mentioned at the top of the page are considered to be standalone programs), this will be printed to the console. If this program is embedded inside a web page or an !OpenGroove help page, this will be sent to the page itself. If an attribute called newline has the value "false", then a newline will not be appended.
 
 ===Prompt (a)===
 Prompts the user for some input. In the above interpreter, this uses javascript to ask them for a single line of text via Window.prompt(). One attribute may be specified, message, or there may be a single child element, and this is the message that will be shown to the user. Prompt then returns the user's input, or null if the user chose cancel.
