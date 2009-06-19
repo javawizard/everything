@@ -1,6 +1,6 @@
 package org.opengroove.xsm.web.client.lang;
 
-public class XData
+public abstract class XData
 {
     public double getAsDouble()
     {

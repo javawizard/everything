@@ -6,4 +6,9 @@ public class XNull extends XData
     {
         return "null";
     }
+    
+    public boolean equals(Object obj)
+    {
+        return obj != null && obj instanceof XNull;
+    }
 }
