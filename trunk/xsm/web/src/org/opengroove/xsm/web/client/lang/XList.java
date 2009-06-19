@@ -36,6 +36,6 @@ public class XList extends XData
         if (data == null)
             throw new XException("Trying to add an element to a list when the "
                 + "element didn't return a value to be added");
-        add(data);
+        value.add(data);
     }
 }
