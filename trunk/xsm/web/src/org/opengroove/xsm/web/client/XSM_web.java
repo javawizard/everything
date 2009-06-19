@@ -92,11 +92,16 @@ public class XSM_web implements EntryPoint
             + "programming language, <a target='_blank' href='"
             + "http://www.markcarter.me.uk/computing/xs.html'>"
             + "http://www.markcarter.me.uk/computing/xs.html</a>"));
-        mainPanel
-            .add(new HTML("XSM is written by Alexander Boyd (aka javawizard2539)."));
+        mainPanel.add(new HTML(
+            "XSM is written by Alexander Boyd (aka javawizard2539/jcp). "
+                + "Source code for the interpreter is "
+                + "<a target='_blank' href='http://opengroove.googlecode.com/svn/"
+                + "trunk/xsm/web/src/org/opengroove/xsm/web"
+                + "/client/lang/'>here</a>, go up one folder for the web " +
+                		"viewer source, or <tt>svn checkout</tt> "
+                + "that location."));
         runButton.addClickListener(new ClickListener()
         {
-            
             public void onClick(Widget sender)
             {
                 outputArea.setText("");
@@ -119,7 +124,7 @@ public class XSM_web implements EntryPoint
             String prefix = Window.Location.getParameter("prefix");
             String start = Window.Location.getParameter("start");
             String end = Window.Location.getParameter("end");
-            populateCode(url,prefix,start,end);
+            populateCode(url, prefix, start, end);
         }
     }
     

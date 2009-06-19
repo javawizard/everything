@@ -2,9 +2,13 @@ package org.opengroove.xsm.web.client.lang;
 
 import java.util.HashMap;
 
+import org.opengroove.xsm.web.client.lang.i.CXAdd;
 import org.opengroove.xsm.web.client.lang.i.CXConfig;
+import org.opengroove.xsm.web.client.lang.i.CXDivide;
 import org.opengroove.xsm.web.client.lang.i.CXEach;
 import org.opengroove.xsm.web.client.lang.i.CXFor;
+import org.opengroove.xsm.web.client.lang.i.CXList;
+import org.opengroove.xsm.web.client.lang.i.CXMultiply;
 import org.opengroove.xsm.web.client.lang.i.CXNumber;
 import org.opengroove.xsm.web.client.lang.i.CXPrint;
 import org.opengroove.xsm.web.client.lang.i.CXPrompt;
@@ -32,9 +36,13 @@ public class XInterpreter
     
     public void installDefaultCommands()
     {
+        install(new CXAdd());
         install(new CXConfig());
+        install(new CXDivide());
         install(new CXEach());
         install(new CXFor());
+        install(new CXList());
+        install(new CXMultiply());
         install(new CXNumber());
         install(new CXPrint());
         install(new CXPrompt());
