@@ -11,8 +11,7 @@ public class CXFalse implements XCommand
     
     public String getName()
     {
-        // TODO Auto-generated method stub
-        return null;
+        return "false";
     }
     
     public XData invoke(XInterpreterContext context, XElement element)

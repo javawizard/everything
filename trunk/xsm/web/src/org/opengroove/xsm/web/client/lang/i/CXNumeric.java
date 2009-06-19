@@ -10,12 +10,12 @@ import org.opengroove.xsm.web.client.lang.XNumber;
 import org.opengroove.xsm.web.client.lang.XString;
 import org.opengroove.xsm.web.client.lang.XText;
 
-public class CXNumber implements XCommand
+public class CXNumeric implements XCommand
 {
     
     public String getName()
     {
-        return "number";
+        return "numeric";
     }
     
     public XData invoke(XInterpreterContext context, XElement element)
@@ -41,7 +41,7 @@ public class CXNumber implements XCommand
         }
         if (buffer.length() == 0)
             buffer.append("0");
-        return new XNumber(Long.parseLong(buffer.toString().replaceAll("\\s", "")));
+        return XInterpreter.parseNumeric(buffer.toString().replaceAll("\\s", ""));
     }
     
 }

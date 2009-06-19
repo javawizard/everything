@@ -11,8 +11,7 @@ public class CXTrue implements XCommand
     
     public String getName()
     {
-        // TODO Auto-generated method stub
-        return null;
+        return "true";
     }
     
     public XData invoke(XInterpreterContext context, XElement element)

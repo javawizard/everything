@@ -2,6 +2,7 @@ package org.opengroove.xsm.web.client.lang.i;
 
 import org.opengroove.xsm.web.client.lang.XCommand;
 import org.opengroove.xsm.web.client.lang.XData;
+import org.opengroove.xsm.web.client.lang.XDouble;
 import org.opengroove.xsm.web.client.lang.XElement;
 import org.opengroove.xsm.web.client.lang.XInterpreter;
 import org.opengroove.xsm.web.client.lang.XInterpreterContext;
@@ -10,12 +11,12 @@ import org.opengroove.xsm.web.client.lang.XNumber;
 import org.opengroove.xsm.web.client.lang.XString;
 import org.opengroove.xsm.web.client.lang.XText;
 
-public class CXNumber implements XCommand
+public class CXDouble implements XCommand
 {
     
     public String getName()
     {
-        return "number";
+        return "double";
     }
     
     public XData invoke(XInterpreterContext context, XElement element)
@@ -41,7 +42,7 @@ public class CXNumber implements XCommand
         }
         if (buffer.length() == 0)
             buffer.append("0");
-        return new XNumber(Long.parseLong(buffer.toString().replaceAll("\\s", "")));
+        return new XDouble(Double.parseDouble(buffer.toString().replaceAll("\\s", "")));
     }
     
 }
