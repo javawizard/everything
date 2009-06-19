@@ -45,11 +45,11 @@ a value
 ==Code/Argument/Literal functions==
 Functions are divided into three different types. User-defined functions are always argument functions.
 
-* *Code functions* are those that are invoked with their tag content being XSM code. They then do something with it. Tags within a code function don't always have to return something for the code function to use. The function tag itself is a code function. Other examples include `if` and `while`. 
+ * *Code functions* are those that are invoked with their tag content being XSM code. They then do something with it. Tags within a code function don't always have to return something for the code function to use. The function tag itself is a code function. Other examples include `if` and `while`. 
 
-* *Argument functions* are those that are invoked with their tag content being a list of values. These functions then do stuff with the values, not with the code. All tags within an argument function must return a value (but they are allowed to return null as their value). Functions _defined_ with the function tag are argument functions. Other examples include `set` and `var`.
+ * *Argument functions* are those that are invoked with their tag content being a list of values. These functions then do stuff with the values, not with the code. All tags within an argument function must return a value (but they are allowed to return null as their value). Functions _defined_ with the function tag are argument functions. Other examples include `set` and `print`.
 
-* *Literal functions* are those that take raw text as arguments. These might allow tags to be embedded within them, but they do their own special processing on the tags. Examples of literal functions include `string` and `number`.
+ * *Literal functions* are those that take raw text as arguments. These might allow tags to be embedded within them, but they do their own special processing on the tags. Examples of literal functions include `string` and `number`.
 
 ==Variables==
 Variables are dynamically-typed. XSM is a procedural language; there is no such thing as objects in XSM. Variables, therefore, hold one of these types of value:
