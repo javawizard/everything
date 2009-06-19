@@ -42,6 +42,9 @@ a value
 12345
 }}}
 
+==Variadic functions (varargs)
+Since functions don't explicitly specify what attributes and arguments they take when they are defined, any old function can be variadic, both in terms of attributes and in terms of arguments. It's up to the function to decide how it handles both cases. See the [#Defined defined] command for more information on how to get the number of arguments that were given to the function.
+
 ==Code/Argument/Literal functions==
 Functions are divided into three different types. User-defined functions are always argument functions.
 
