@@ -194,6 +194,8 @@ Defines a new function. See [#Functions Functions] for more info.
 
 ==For (c)==
 
+==Each (c)==
+
 ==If (c) (todo)==
 
 ==Else (c) (todo)==
