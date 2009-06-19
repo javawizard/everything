@@ -203,6 +203,9 @@ Defines a new function. See [#Functions Functions] for more info.
 
 ==Else (c) (todo)==
 
+==Type (a) (todo)==
+Takes either one attribute, var, or contains one element. Returns the type, as a string, of the value of the attribute or of the element, which is the same as the element's literal tag name (null included; the type of null is "null").
+
 ==Add (a)==
 
 ==Subtract (a)==
