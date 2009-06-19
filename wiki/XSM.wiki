@@ -269,7 +269,7 @@ Strings only. Concatenates the strings given end-to-end, without the space inbet
 Given a number, outputs a string with a single character, the char represented by that number (so, for example, 65 is A). Given a list of numbers, outputs a string with one character for each number. Given a string of length 1, outputs a single number. Given a string larger than that, outputs a list of numbers. Given a list of length 0, null, or an empty string, outputs null.
 
 ==Substring (a)==
-Takes two attributes, start and end. Either can be missing, but not both. If given as arguments, they must be surrounded by `<start>` and `<end>` tags. Takes one argument after that, a string. Returns a substring of that string. start and end are 1 based.
+Takes two attributes, start and end. Either can be missing, but not both. If given as arguments, they must be surrounded by `<start>` and `<end>` tags. Takes one argument after that, a string. Returns a substring of that string. start and end are 1 based and are inclusive. End can never be less than start for now, which means strings will (and must) have at least one character. 
 
 ==Defined (a) (todo)==
 Takes one attribute, name (var works too), or a single tag within it that returns a string. Returns true if the variable by that name exists, and false if it doesn't. This can be used within a while loop to figure out how many arguments were given to a custom-defined function:
