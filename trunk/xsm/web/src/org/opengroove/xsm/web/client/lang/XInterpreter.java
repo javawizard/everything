@@ -60,8 +60,17 @@ public class XInterpreter
      */
     public void install(XCommand command)
     {
-        if(command.getName() == null)
+        if (command.getName() == null)
+        {
+            if (display != null)
+            {
+                display.print("XInterpreter warning: null command for class "
+                    + command.getClass().getName()
+                    + ". The interpreter will continue, but "
+                    + "without support for this command.", true);
+            }
             return;
+        }
         commands.put(command.getName().toLowerCase(), command);
     }
     
@@ -91,14 +100,15 @@ public class XInterpreter
             throw new XLimitExceededException("Instruction limit exceeded.");
     }
     
-    public void executeChildren(XElement element, XInterpreterContext context, int startIndex)
+    public void executeChildren(XElement element, XInterpreterContext context,
+        int startIndex)
     {
         if (context == null)
             context = new XInterpreterContext(this, true);
         int skipped = 0;
         for (XNode node : element.getChildren())
         {
-            if(skipped < startIndex)
+            if (skipped < startIndex)
             {
                 skipped++;
                 continue;
@@ -109,7 +119,7 @@ public class XInterpreter
     
     public void executeChildren(XElement element, XInterpreterContext context)
     {
-        executeChildren(element,context,0);
+        executeChildren(element, context, 0);
     }
     
     public XDisplayDevice getDisplay()

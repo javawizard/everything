@@ -15,4 +15,9 @@ public class XBoolean extends XData
     {
         this.value = value;
     }
+    public XBoolean(boolean value)
+    {
+        super();
+        this.value = value;
+    }
 }
