@@ -29,9 +29,11 @@ public class XInterpreter
         install(new CXDivide());
         install(new CXDouble());
         install(new CXEach());
+        install(new CXEquals());
         install(new CXFalse());
         install(new CXFor());
         install(new CXFunction());
+        install(new CXIf());
         install(new CXList());
         install(new CXMultiply());
         install(new CXNull());
@@ -80,7 +82,17 @@ public class XInterpreter
             throw new XException("Nonexistent command: " + element.getTag());
         try
         {
-            return command.invoke(context, element);
+            try
+            {
+                return command.invoke(context, element);
+            }
+            catch (ClassCastException e)
+            {
+                throw new XException(
+                    "Cast error. This usually means you tried to pass "
+                        + "some data of the wrong type to a function. "
+                        + "Java exception message:" + e.getMessage());
+            }
         }
         catch (XException e)
         {
