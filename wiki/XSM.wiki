@@ -191,7 +191,7 @@ Creates a list that contains each argument to the function. The list command can
 ==Null (a)==
 Returns the value null.
 
-==Function (c) (todo)==
+==Function (c)==
 Defines a new function. See [#Functions Functions] for more info.
 
 ==While (c) (todo)==
@@ -284,7 +284,7 @@ Takes one attribute, name (var works too), or a single tag within it that return
 </function>
 }}}
 
-==Return (a) (todo)==
+==Return (a)==
 Returns the return value of its only child tag from the current custom-defined function.
 
 ==Replace (a) (todo)==
