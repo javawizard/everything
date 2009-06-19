@@ -200,15 +200,16 @@ Returns the value null.
 ==Function (c)==
 Defines a new function. See [#Functions Functions] for more info.
 
-==While (c) (todo)==
+==While (c)==
+A while loop. Same syntax as `<if>`, except that it executes its contents and the condition (the condition first) over and over again until the condition is false.
 
 ==For (c)==
 
 ==Each (c)==
 
-==If (c) (todo)==
+==If (c)==
 
-==Else (c) (todo)==
+==Else (c)==
 
 ==Type (a) (todo)==
 Takes either one attribute, var, or contains one element. Returns the type, as a string, of the value of the attribute or of the element, which is the same as the element's literal tag name (null included; the type of null is "null").
@@ -238,20 +239,34 @@ Not implemented yet. The same thing can be done with `<set name="var"><add><var 
 Not implemented yet. The same thing can be done with `<set name="var"><subtract><var name="var"/><number>1</number></subtract></set>`
 
 ==Size (a) (todo)==
+Works on lists and strings.
 
 ==Copy (a) (todo)==
+Works on lists.
 
 ==Round (a) (todo)==
+Double to number.
 
 ==Floor (a) (todo)==
+Double to number.
 
 ==Ceiling (a) (todo)==
+Double to number.
 
 ==Item (a) (todo)==
+Lists only. Strings use substring.
 
 ==Overwrite (a) (todo)==
+Lists only.
 
 ==Resize (a) (todo)==
+Lists only.
+
+==Cat (a)==
+Strings only. Concatenates the strings given end-to-end, without the space inbetween each of its arguments that `<string>` inserts, but also without support for literal strings.
+
+==Char (a)==
+Given a number, outputs a string with a single character, the char represented by that number (so, for example, 65 is A). Given a list of numbers, outputs a string with one character for each number. Given a string of length 1, outputs a single number. Given a string larger than that, outputs a list of numbers. Given a list of length 0, null, or an empty string, outputs null.
 
 ==Defined (a) (todo)==
 Takes one attribute, name (var works too), or a single tag within it that returns a string. Returns true if the variable by that name exists, and false if it doesn't. This can be used within a while loop to figure out how many arguments were given to a custom-defined function:
