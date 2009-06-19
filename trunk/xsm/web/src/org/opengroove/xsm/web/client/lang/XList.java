@@ -26,4 +26,16 @@ public class XList extends XData
         buffer.append("]");
         return buffer.toString();
     }
+    
+    public void add(XData data)
+    {
+        /*
+         * Make sure that there actually is a value. XNull is allowed in lists,
+         * but null (which means no value was returned) is not.
+         */
+        if (data == null)
+            throw new XException("Trying to add an element to a list when the "
+                + "element didn't return a value to be added");
+        add(data);
+    }
 }
