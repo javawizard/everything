@@ -147,7 +147,7 @@ The each loop takes three attributes, any of which can be specified as named tag
 =Built-in functions=
 This is the list of functions that are built in to the XSM language. These do not include !OpenGroove-specific functions. The letter in parentheses immediately after the function name specifies what type of function it is: (a) means an argument function, (c) means a code function, and (l) means a literal function.
 
-Functions that have (todo) after their name are not yet implemented in the interpreter mentioned at the top (the one at the very top, in blue text), or are somewhat implemented but are missing features. Functions without (todo) may not yet be in the version of the interpreter that's been uploaded, but they are functioning on my machine and they will be up within a day or two.
+Functions that have (todo) after their name are not yet implemented in the interpreter mentioned at the top (the one at the very top, in green text), or are somewhat implemented but are missing features. Functions without (todo) may not yet be in the version of the interpreter that's been uploaded, but they are functioning on my machine and they will be up within a day or two.
 
 If you want to implement any (todo) functions, send me an email (I'm javawiz...@trivergia.com, see the main OpenGroove project page for my full email address)
 
