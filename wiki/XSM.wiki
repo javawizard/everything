@@ -293,8 +293,11 @@ Replaces text in a string with other text. This takes one of two attributes, reg
 ==Identity (a) (todo)==
 Returns the return value of its only child tag. It essentially acts as if it were not there, and were replaced by its child element. This can be used in cases where a particular tag name is treated specially at the top of another tag. For example, if, for some reason, you wanted to include a call to the var function at the top of a for loop, you would have to enclose it in an identity tag to prevent the for loop from interpreting it as the name of the variable to stick the current count in. 
 
-==Global (c) (todo)==
-The global function is only meaningful when present within a `<function>` tag. It runs its contents partially as if they were run outside of the custom function. Ordinarily, global variables (those set outside of a custom function) are not visible within custom functions. Code within a global tag can read and write global variables. Any variables set within the global tag are set globally, and will not be readable outside of the global tag but inside of the function tag. Variables that already exist as function-local variables, however, can be set, and the new value will be stored in the function-local variable. Variables where there is a global variable and a local variable set will show up as the local variable inside a global tag.
+==Gset (a) (todo)==
+Sets a global variable. Same as `<gvar>`, but sets a variable instead of getting one. Same syntax as `<set>`.
+
+==Gvar (a) (todo)==
+Gets a global variable (one defined with `<set>` while not within a custom function or one defined with `<gset>`). Exactly the same attributes and arguments as `<var>`.
 
 =Examples=
 
