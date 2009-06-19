@@ -9,7 +9,7 @@ XSM is a programming language that uses XML to represent programs. It's probably
 
 ------
 
-<wiki:toc max_depth="2"/>
+<wiki:toc max_depth="1"/>
 
 ------
 
