@@ -163,13 +163,13 @@ Prints its single argument. If this program is a standalone program, this will b
 ==Prompt (a)==
 Prompts the user for some input. In the above interpreter, this uses javascript to ask them for a single line of text via Window.prompt(). One attribute may be specified, message, or there may be a single child element, and this is the message that will be shown to the user. Prompt then returns the user's input, or null if the user chose cancel.
 
-==Boolean (l) (todo)==
+==Boolean (l)==
 Returns a boolean that represents the literal value passed to it.
 
-==True (a) (todo)==
+==True (a)==
 Returns the boolean true.
 
-==False (a) (todo)==
+==False (a)==
 Returns the boolean false.
 
 ==Number (l)==
@@ -177,6 +177,9 @@ Returns a number that represents the literal number passed to it. The number is 
 
 ==Double (l) (todo)==
 Returns a double that represents the literal number passed to it. The number is a 64-bit floating-point number.
+
+==Numeric (l) (todo)==
+Sort of a combination of number and double. It functions exactly as if it were `<number>` when the content does not contain a decimal point, and `<double>` when the content does contain a decimal point (even if the number after it is 0).
 
 ==String (l)==
 Returns a string representing its string content. Tags that return can be embedded, and the return value will be converted to a string form and included inside the string. Lists are represented as an open bracket and the value of each item in the list, separated by commas, followed by a close bracket.
