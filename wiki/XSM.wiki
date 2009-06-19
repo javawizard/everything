@@ -158,120 +158,120 @@ Functions that have (todo) after their name are not yet implemented in the inter
 
 If you want to implement any (todo) functions, send me an email (I'm javawiz...@trivergia.com, see the main OpenGroove project page for my full email address)
 
-==Set (a)==
+===Set (a)===
 Sets the value of a variable, creating one if one does not already exist. The attribute name specifies the name of the variable to create. The first argument is the value that the variable should have. If the name attribute is not present, then the first argument is the name of the variable to create and the second is the value.
 
-==Var (a)==
+===Var (a)===
 Returns the value of the specified variable. The variable is either contained in the attribute name, or it is the single argument to the var function.
 
-==Print (a)==
+===Print (a)===
 Prints its single argument. If this program is a standalone program, this will be printed to the console. If this program is embedded inside a web page or an !OpenGroove help page, this will be sent to the page itself. If an attribute called newline has the value "false", then a newline will not be appended.
 
-==Prompt (a)==
+===Prompt (a)===
 Prompts the user for some input. In the above interpreter, this uses javascript to ask them for a single line of text via Window.prompt(). One attribute may be specified, message, or there may be a single child element, and this is the message that will be shown to the user. Prompt then returns the user's input, or null if the user chose cancel.
 
-==Boolean (l)==
+===Boolean (l)===
 Returns a boolean that represents the literal value passed to it.
 
-==True (a)==
+===True (a)===
 Returns the boolean true.
 
-==False (a)==
+===False (a)===
 Returns the boolean false.
 
-==Number (l)==
+===Number (l)===
 Returns a number that represents the literal number passed to it. The number is a 64-bit signed integer.
 
-==Double (l)==
+===Double (l)===
 Returns a double that represents the literal number passed to it. The number is a 64-bit floating-point number.
 
-==Numeric (l)==
+===Numeric (l)===
 Sort of a combination of number and double. It functions exactly as if it were `<number>` when the content does not contain a decimal point, and `<double>` when the content does contain a decimal point (even if the number after it is 0).
 
-==String (l)==
+===String (l)===
 Returns a string representing its string content. Tags that return can be embedded, and the return value will be converted to a string form and included inside the string. Lists are represented as an open bracket and the value of each item in the list, separated by commas, followed by a close bracket.
 
-==List (a)==
+===List (a)===
 Creates a list that contains each argument to the function. The list command can be empty, which creates a list with no items in it.
 
-==Null (a)==
+===Null (a)===
 Returns the value null.
 
-==Function (c)==
+===Function (c)===
 Defines a new function. See [#Functions Functions] for more info.
 
-==While (c)==
+===While (c)===
 A while loop. Same syntax as `<if>`, except that it executes its contents and the condition (the condition first) over and over again until the condition is false.
 
-==For (c)==
+===For (c)===
 
-==Each (c)==
+===Each (c)===
 
-==If (c)==
+===If (c)===
 
-==Else (c)==
+===Else (c)===
 
-==Type (a) (todo)==
+===Type (a) (todo)===
 Takes either one attribute, var, or contains one element. Returns the type, as a string, of the value of the attribute or of the element, which is the same as the element's literal tag name (null included; the type of null is "null").
 
-==Add (a)==
+===Add (a)===
 
-==Subtract (a)==
+===Subtract (a)===
 
-==Multiply (a)==
+===Multiply (a)===
 
-==Divide (a)==
+===Divide (a)===
 
-==Less (a) (todo)==
+===Less (a) (todo)===
 
-==Greater (a) (todo)==
+===Greater (a) (todo)===
 
-==And (a) (todo)==
+===And (a) (todo)===
 
-==Or (a) (todo)==
+===Or (a) (todo)===
 
-==Not (a) (todo)==
+===Not (a) (todo)===
 
-==Increment (a) (todo)==
+===Increment (a) (todo)===
 Not implemented yet. The same thing can be done with `<set name="var"><add><var name="var"/><number>1</number></add></set>`
 
-==Decrement (a) (todo)==
+===Decrement (a) (todo)===
 Not implemented yet. The same thing can be done with `<set name="var"><subtract><var name="var"/><number>1</number></subtract></set>`
 
-==Size (a) (todo)==
+===Size (a) (todo)===
 Works on lists and strings.
 
-==Copy (a) (todo)==
+===Copy (a) (todo)===
 Works on lists.
 
-==Round (a) (todo)==
+===Round (a) (todo)===
 Double to number.
 
-==Floor (a) (todo)==
+===Floor (a) (todo)===
 Double to number.
 
-==Ceiling (a) (todo)==
+===Ceiling (a) (todo)===
 Double to number.
 
-==Item (a) (todo)==
+===Item (a) (todo)===
 Lists only. Strings use substring.
 
-==Overwrite (a) (todo)==
+===Overwrite (a) (todo)===
 Lists only.
 
-==Resize (a) (todo)==
+===Resize (a) (todo)===
 Lists only.
 
-==Cat (a)==
+===Cat (a)===
 Strings only. Concatenates the strings given end-to-end, without the space inbetween each of its arguments that `<string>` inserts, but also without support for literal strings.
 
-==Char (a)==
+===Char (a)===
 Given a number, outputs a string with a single character, the char represented by that number (so, for example, 65 is A). Given a list of numbers, outputs a string with one character for each number. Given a string of length 1, outputs a single number. Given a string larger than that, outputs a list of numbers. Given a list of length 0, null, or an empty string, outputs null.
 
-==Substring (a)==
+===Substring (a)===
 Takes two attributes, start and end. Either can be missing, but not both. If given as arguments, they must be surrounded by `<start>` and `<end>` tags. Takes one argument after that, a string. Returns a substring of that string. start and end are 1 based and are inclusive. End can never be less than start for now, which means strings will (and must) have at least one character. 
 
-==Defined (a) (todo)==
+===Defined (a) (todo)===
 Takes one attribute, name (var works too), or a single tag within it that returns a string. Returns true if the variable by that name exists, and false if it doesn't. This can be used within a while loop to figure out how many arguments were given to a custom-defined function:
 {{{
 <function name="print-arg-count">
@@ -308,19 +308,19 @@ Takes one attribute, name (var works too), or a single tag within it that return
 </function>
 }}}
 
-==Return (a)==
+===Return (a)===
 Returns the return value of its only child tag from the current custom-defined function.
 
-==Replace (a) (todo)==
+===Replace (a) (todo)===
 Replaces text in a string with other text. This takes one of two attributes, regex or target, which define what to replace it with (target means search for an exact string match and regex means search for a regular expression), and replacement, which defines the new replacement. Unlike most other argument functions that allow arguments as child tags, the replace tag requires all of its attributes that are to be dynamic to be enclosed in a tag named after the attribute. This is because otherwise it wouldn't be able to figure out which is which of regex and target. The very last child tag within the replace tag, however, should not be enclosed in another name tag, and should be a tag that returns a string which is the string to search and replace in. That string itself will not be modified; replace will return the new, modified, string.
 
-==Identity (a) (todo)==
+===Identity (a) (todo)===
 Returns the return value of its only child tag. It essentially acts as if it were not there, and were replaced by its child element. This can be used in cases where a particular tag name is treated specially at the top of another tag. For example, if, for some reason, you wanted to include a call to the var function at the top of a for loop, you would have to enclose it in an identity tag to prevent the for loop from interpreting it as the name of the variable to stick the current count in. 
 
-==Gset (a) (todo)==
+===Gset (a) (todo)===
 Sets a global variable. Same as `<gvar>`, but sets a variable instead of getting one. Same syntax as `<set>`.
 
-==Gvar (a) (todo)==
+===Gvar (a) (todo)===
 Gets a global variable (one defined with `<set>` while not within a custom function or one defined with `<gset>`). Exactly the same attributes and arguments as `<var>`.
 
 =Examples=
