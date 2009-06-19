@@ -147,6 +147,10 @@ The each loop takes three attributes, any of which can be specified as named tag
 =Built-in functions=
 This is the list of functions that are built in to the XSM language. These do not include !OpenGroove-specific functions. The letter in parentheses immediately after the function name specifies what type of function it is: (a) means an argument function, (c) means a code function, and (l) means a literal function.
 
+Functions that have (todo) after their name are not yet implemented in the interpreter mentioned at the top (the one at the very top, in blue text), or are somewhat implemented but are missing features. Functions without (todo) may not yet be in the version of the interpreter that's been uploaded, but they are functioning on my machine and they will be up within a day or two.
+
+If you want to implement any (todo) functions, send me an email (I'm javawiz...@trivergia.com, see the main OpenGroove project page for my full email address)
+
 ==Set (a)==
 Sets the value of a variable, creating one if one does not already exist. The attribute name specifies the name of the variable to create. The first argument is the value that the variable should have. If the name attribute is not present, then the first argument is the name of the variable to create and the second is the value.
 
@@ -156,19 +160,22 @@ Returns the value of the specified variable. The variable is either contained in
 ==Print (a)==
 Prints its single argument. If this program is a standalone program, this will be printed to the console. If this program is embedded inside a web page or an !OpenGroove help page, this will be sent to the page itself. If an attribute called newline has the value "false", then a newline will not be appended.
 
-==Boolean (l)==
+==Prompt (a)==
+Prompts the user for some input. In the above interpreter, this uses javascript to ask them for a single line of text via Window.prompt(). One attribute may be specified, message, or there may be a single child element, and this is the message that will be shown to the user. Prompt then returns the user's input, or null if the user chose cancel.
+
+==Boolean (l) (todo)==
 Returns a boolean that represents the literal value passed to it.
 
-==True (a)==
+==True (a) (todo)==
 Returns the boolean true.
 
-==False (a)==
+==False (a) (todo)==
 Returns the boolean false.
 
 ==Number (l)==
 Returns a number that represents the literal number passed to it. The number is a 64-bit signed integer.
 
-==Double (l)==
+==Double (l) (todo)==
 Returns a double that represents the literal number passed to it. The number is a 64-bit floating-point number.
 
 ==String (l)==
@@ -177,21 +184,19 @@ Returns a string representing its string content. Tags that return can be embedd
 ==List (a)==
 Creates a list that contains each argument to the function. The list command can be empty, which creates a list with no items in it.
 
-==Null (a)==
+==Null (a) (todo)==
 Returns the value null.
 
-==Function (c)==
+==Function (c) (todo)==
 Defines a new function. See [#Functions Functions] for more info.
 
-==While (c)==
+==While (c) (todo)==
 
 ==For (c)==
 
-==If (c)==
+==If (c) (todo)==
 
-==Else (c)==
-
-==Condition (a)==
+==Else (c) (todo)==
 
 ==Add (a)==
 
@@ -201,45 +206,37 @@ Defines a new function. See [#Functions Functions] for more info.
 
 ==Divide (a)==
 
-==Less (a)==
+==Less (a) (todo)==
 
-==Greater (a)==
+==Greater (a) (todo)==
 
-==And (a)==
+==And (a) (todo)==
 
-==Or (a)==
+==Or (a) (todo)==
 
-==Not (a)==
+==Not (a) (todo)==
 
-==Increment (a)==
+==Increment (a) (todo)==
+Not implemented yet. The same thing can be done with `<set name="var"><add><var name="var"/><number>1</number></add></set>`
 
-==Decrement (a)==
+==Decrement (a) (todo)==
+Not implemented yet. The same thing can be done with `<set name="var"><subtract><var name="var"/><number>1</number></subtract></set>`
 
-==Size (a)==
+==Size (a) (todo)==
 
-==Copy (a)==
+==Copy (a) (todo)==
 
-==Round (a)==
+==Round (a) (todo)==
 
-==Floor (a)==
+==Floor (a) (todo)==
 
-==Ceiling (a)==
+==Ceiling (a) (todo)==
 
-==Item (a)==
+==Item (a) (todo)==
 
-==Overwrite (a)==
+==Overwrite (a) (todo)==
 
-==Resize (a)==
+==Resize (a) (todo)==
 
-==Initial (a)==
+==Return (a) (todo)==
 
-==Final (a)==
-
-==Step (a)==
-
-==Return (a)==
-
-=Examples=
-{{{
-<var name="testvar"><number>1</number></var>
-}}}
