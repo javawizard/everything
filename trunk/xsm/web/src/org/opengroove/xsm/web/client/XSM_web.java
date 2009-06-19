@@ -34,6 +34,8 @@ import com.google.gwt.user.client.ui.Widget;
  */
 public class XSM_web implements EntryPoint
 {
+    private static final int MAX_STACK_LENGTH = 25;
+    
     public static TextArea codeArea;
     
     public static TextArea outputArea;
@@ -238,8 +240,16 @@ public class XSM_web implements EntryPoint
         catch (XException e)
         {
             appendOutput("XSM Error: " + e.getMessage());
+            int framesPrinted = 0;
             for (XStackFrame frame : e.getProgramStack())
             {
+                if (++framesPrinted > MAX_STACK_LENGTH)
+                {
+                    appendOutput("... stack truncated at " + MAX_STACK_LENGTH
+                        + " elements, "
+                        + (e.getProgramStack().size() - MAX_STACK_LENGTH) + " more");
+                    break;
+                }
                 appendOutput("    in " + frame.getCommand());
             }
             if (e instanceof XLimitExceededException)

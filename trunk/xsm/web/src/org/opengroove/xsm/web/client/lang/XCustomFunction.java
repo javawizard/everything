@@ -40,7 +40,7 @@ public class XCustomFunction implements XCommand
             /*
              * We'll convert names to lowercase to make them case-insensitive.
              */
-            newContext.setVariable(attributeName.toLowerCase(), new XString(
+            newContext.setVariable("param." + attributeName.toLowerCase(), new XString(
                 callerElement.getAttribute(attributeName)));
         }
         /*
