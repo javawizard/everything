@@ -21,7 +21,7 @@ All tags, except the literal tags, must contain only other XML tags, not plain t
 ==Functions==
 Functions are defined using the function tag. It has one attribute, name, which is the name of the function.
 
-Functions are called by using the name of the function as a tag name. Tag attribute values are available within the function as variables named "param.NAME", where NAME is the name of the attribute. Each element within the function call's tag that returns a value is available as an "arg.N" variable, where N is the number starting at 1.
+Functions are called by using the name of the function as a tag name. Tag attribute values are available within the function as variables named "param.NAME", where NAME is the lowercase name of the attribute. Each element within the function call's tag that returns a value is available as an "arg.N" variable, where N is the number starting at 1.
 
 For example, the code:
 {{{
