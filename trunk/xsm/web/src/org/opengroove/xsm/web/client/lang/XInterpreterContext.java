@@ -81,4 +81,21 @@ public class XInterpreterContext
             throw new XException("The variable " + name + " doesn't exist");
         return variables.get(name);
     }
+    
+    /**
+     * Sets the specified variable. If <tt>value</tt> is null, the variable is
+     * deleted instead of set.
+     * 
+     * @param var
+     *            The name of the variable
+     * @param value
+     *            The variable's value
+     */
+    public void setVariable(String var, XData value)
+    {
+        if (var == null)
+            variables.remove(var);
+        else
+            variables.put(var, value);
+    }
 }

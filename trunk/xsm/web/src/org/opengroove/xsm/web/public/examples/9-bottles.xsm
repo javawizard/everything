@@ -5,7 +5,7 @@
         </number>
     </initial>
     <print>
-        <string><var name="i"/> bottles of pop on the wall</string>
+        <string><var name="i"/> bottles of pop on the wall,</string>
     </print>
     <print>
         <string><var name="i"/> bottles of pop.</string>
