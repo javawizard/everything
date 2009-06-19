@@ -244,7 +244,51 @@ Not implemented yet. The same thing can be done with `<set name="var"><subtract>
 
 ==Resize (a) (todo)==
 
+==Defined (a) (todo)==
+Takes one attribute, name (var works too), or a single tag within it that returns a string. Returns true if the variable by that name exists, and false if it doesn't. This can be used within a while loop to figure out how many arguments were given to a custom-defined function:
+{{{
+<function name="print-arg-count">
+    <set name="argcount">
+        <number>1</number>
+    </set>
+    <while>
+        <condition>
+            <defined>
+                <replace regex="\s" replacement="">
+                    <string>
+                        arg.
+                        <var name="argcount"/>
+                    </string>
+                </replace>
+            </defined>
+        </condition>
+        <set name="argcount">
+            <add>
+                <var name="argcount"/>
+                <number>1</number>
+            </add>
+        </set>
+    </while>
+    <set name="argcount">
+        <subtract>
+            <var name="argcount"/>
+            <number>1</number>varargs
+        </subtract,>
+    </set>
+    <print>
+        <string><var name="argcount"/> arguments were given to this function.</string>
+    </print>
+</function>
+}}}
+
 ==Return (a) (todo)==
+Returns the return value of its only child tag from the current custom-defined function.
+
+==Replace (a) (todo)==
+Replaces text in a string with other text. This takes one of two attributes, regex or target, which define what to replace it with (target means search for an exact string match and regex means search for a regular expression), and replacement, which defines the new replacement. Unlike most other argument functions that allow arguments as child tags, the replace tag requires all of its attributes that are to be dynamic to be enclosed in a tag named after the attribute. This is because otherwise it wouldn't be able to figure out which is which of regex and target. The very last child tag within the replace tag, however, should not be enclosed in another name tag, and should be a tag that returns a string which is the string to search and replace in. That string itself will not be modified; replace will return the new, modified, string.
+
+==Identity (a) (todo)==
+Returns the return value of its only child tag. It essentially acts as if it were not there, and were replaced by its child element. This can be used in cases where a particular tag name is treated specially at the top of another tag. For example, if, for some reason, you wanted to include a call to the var function at the top of a for loop, you would have to enclose it in an identity tag to prevent the for loop from interpreting it as the name of the variable to stick the current count in. 
 
 =Examples=
 
