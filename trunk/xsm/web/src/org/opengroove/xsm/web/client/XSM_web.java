@@ -122,10 +122,21 @@ public class XSM_web implements EntryPoint
         if (Window.Location.getParameter("example") != null)
         {
             String url = Window.Location.getParameter("example");
+            if (url.equals("w"))
+                url = "http://opengroove.googlecode.com/svn/wiki/XSM.wiki";
             String prefix = Window.Location.getParameter("prefix");
             String start = Window.Location.getParameter("start");
             String end = Window.Location.getParameter("end");
-            populateCode(url, prefix, start, end);
+            try
+            {
+                populateCode(url, prefix, start, end);
+            }
+            catch (Exception e)
+            {
+                e.printStackTrace();
+                Window.alert("Could not populate code: " + e.getClass().getName()
+                    + ": " + e.getMessage());
+            }
         }
     }
     
@@ -195,6 +206,7 @@ public class XSM_web implements EntryPoint
         loadExample("99 bottles of pop", "9-bottles");
         loadExample("Print numbers from 1 to 10", "one-to-ten");
         loadExample("Print multiples of 3 up to 15", "three-times");
+        loadExample("Test custom function", "test-function");
     }
     
     private void loadExample(String string, String string2)

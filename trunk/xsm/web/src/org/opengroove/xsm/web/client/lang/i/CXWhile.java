@@ -10,8 +10,7 @@ public class CXWhile implements XCommand
     
     public String getName()
     {
-        // TODO Auto-generated method stub
-        return null;
+        return "while";
     }
     
     public XData invoke(XInterpreterContext context, XElement element)
