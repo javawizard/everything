@@ -18,23 +18,23 @@ public class XDouble extends XData
     {
         return "" + value;
     }
-
+    
     public XDouble(double value)
     {
         super();
         this.value = value;
     }
-
+    
     public int hashCode()
     {
         final int prime = 31;
         int result = 1;
         long temp;
-        temp = Double.doubleToLongBits(value);
+        temp = (long) value;
         result = prime * result + (int) (temp ^ (temp >>> 32));
         return result;
     }
-
+    
     public boolean equals(Object obj)
     {
         if (this == obj)
@@ -44,7 +44,7 @@ public class XDouble extends XData
         if (getClass() != obj.getClass())
             return false;
         XDouble other = (XDouble) obj;
-        if (Double.doubleToLongBits(value) != Double.doubleToLongBits(other.value))
+        if (Double.compare(other.value, value) != 0)
             return false;
         return true;
     }
