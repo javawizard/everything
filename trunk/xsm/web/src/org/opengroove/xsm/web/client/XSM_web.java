@@ -207,6 +207,7 @@ public class XSM_web implements EntryPoint
         loadExample("Print numbers from 1 to 10", "one-to-ten");
         loadExample("Print multiples of 3 up to 15", "three-times");
         loadExample("Test custom function", "test-function");
+        loadExample("Simple calculator", "simple-calculator");
     }
     
     private void loadExample(String string, String string2)
