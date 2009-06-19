@@ -113,6 +113,14 @@ public class XSM_web implements EntryPoint
                 outputArea.setText("");
             }
         });
+        if (Window.Location.getParameter("example") != null)
+        {
+            String url = Window.Location.getParameter("example");
+            String prefix = Window.Location.getParameter("prefix");
+            String start = Window.Location.getParameter("start");
+            String end = Window.Location.getParameter("end");
+            populateCode(url,prefix,start,end);
+        }
     }
     
     private void loadExamplesPanel(VerticalPanel examplesPanel)
@@ -128,25 +136,57 @@ public class XSM_web implements EntryPoint
                 
                 public void onClick(Widget sender)
                 {
-                    HTTPRequest.asyncGet("examples/" + examples.get(s),
-                        new ResponseTextHandler()
-                        {
-                            
-                            public void onCompletion(String responseText)
-                            {
-                                codeArea.setText(responseText);
-                            }
-                        });
+                    populateCode("examples/" + examples.get(s), null, null, null);
                 }
             });
             examplesPanel.add(p);
         }
     }
     
+    /**
+     * Populates the code field with code from the specified url.<br/>
+     * <br/>
+     * 
+     * For some help on what all the parameters mean, see
+     * http://opengroove.googlecode.com/svn/wiki/XSM.wiki . It has a bunch of
+     * URLs that cause this method to be called.
+     * 
+     * @param url
+     *            The url to look for
+     * @param prefix
+     *            The prefix. If this is not null, this location will be found
+     *            in the file, and wherever <tt>start</tt>occurs after that will
+     *            be where the code starts.
+     * @param start
+     *            The start text, which comes after prefix
+     * @param end
+     *            The end text, which ends the code example
+     */
+    protected void populateCode(String url, final String prefix, final String start,
+        final String end)
+    {
+        HTTPRequest.asyncGet(url, new ResponseTextHandler()
+        {
+            
+            public void onCompletion(String responseText)
+            {
+                if (prefix != null && start != null && end != null)
+                {
+                    int prefixIndex = responseText.indexOf(prefix);
+                    int startIndex = responseText.indexOf(start, prefixIndex);
+                    int endIndex = responseText.indexOf(end, startIndex);
+                    responseText =
+                        responseText.substring(startIndex + start.length(), endIndex);
+                }
+                codeArea.setText(responseText);
+            }
+        });
+    }
+    
     private void loadExamples()
     {
         loadExample("Hello world", "hello-world");
-        loadExample("9 bottles of pop", "9-bottles");
+        loadExample("99 bottles of pop", "9-bottles");
         loadExample("Print numbers from 1 to 10", "one-to-ten");
         loadExample("Print multiples of 3 up to 15", "three-times");
     }
