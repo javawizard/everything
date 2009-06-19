@@ -187,7 +187,7 @@ Returns a string representing its string content. Tags that return can be embedd
 ==List (a)==
 Creates a list that contains each argument to the function. The list command can be empty, which creates a list with no items in it.
 
-==Null (a) (todo)==
+==Null (a)==
 Returns the value null.
 
 ==Function (c) (todo)==
