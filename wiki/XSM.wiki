@@ -240,3 +240,6 @@ Not implemented yet. The same thing can be done with `<set name="var"><subtract>
 
 ==Return (a) (todo)==
 
+=Examples=
+
+Visit [http://trivergia.com/xsm the online interpreter] for some examples, To the right of that page there are some links which you can use to load some examples into the interpreter. You can then experiment with them and change them, and see what they do.
