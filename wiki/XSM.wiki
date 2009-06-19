@@ -158,6 +158,9 @@ Functions that have (todo) after their name are not yet implemented in the inter
 
 If you want to implement any (todo) functions, send me an email (I'm javawiz...@trivergia.com, see the main OpenGroove project page for my full email address)
 
+==Internal==
+Internal functions are those coded in Java (or at least in my interpreter, see the link in green at the top of the page, the Java code is then compiled down to Javascript by [http://gwt.google.com GWT]). They tend to run fairly fast. Currently, all functions are internal. In the future, though, some of the functions will be implemented in XSM itself. Those will be called library functions, and are similar to MSWLogo's concept of library functions.
+
 ===Set (a)===
 Sets the value of a variable, creating one if one does not already exist. The attribute name specifies the name of the variable to create. The first argument is the value that the variable should have. If the name attribute is not present, then the first argument is the name of the variable to create and the second is the value.
 
