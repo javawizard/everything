@@ -175,10 +175,10 @@ Returns the boolean false.
 ==Number (l)==
 Returns a number that represents the literal number passed to it. The number is a 64-bit signed integer.
 
-==Double (l) (todo)==
+==Double (l)==
 Returns a double that represents the literal number passed to it. The number is a 64-bit floating-point number.
 
-==Numeric (l) (todo)==
+==Numeric (l)==
 Sort of a combination of number and double. It functions exactly as if it were `<number>` when the content does not contain a decimal point, and `<double>` when the content does contain a decimal point (even if the number after it is 0).
 
 ==String (l)==
