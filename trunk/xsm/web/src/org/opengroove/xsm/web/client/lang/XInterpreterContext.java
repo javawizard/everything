@@ -5,6 +5,11 @@ import java.util.HashMap;
 public class XInterpreterContext
 {
     private XInterpreter interpreter;
+    /**
+     * This could be a plain java boolean, except that we want to know if an if
+     * statement hasn't yet been executed in this context
+     */
+    private XBoolean lastIfResult = null;
     private boolean isTopLevel;
     private HashMap<String, XData> variables = new HashMap<String, XData>();
     
@@ -97,5 +102,29 @@ public class XInterpreterContext
             variables.remove(var);
         else
             variables.put(var, value);
+    }
+    
+    public void validateNotNull(XData data)
+    {
+        if (data == null)
+            throw new XException("An input was expected, but none was given");
+    }
+    
+    /**
+     * Gets the last if result, throwing an exception if the if result hasn't
+     * been set yet
+     * 
+     * @return
+     */
+    public XBoolean getLastIfResult()
+    {
+        if (lastIfResult == null)
+            throw new XException("The if command hasn't been run yet");
+        return lastIfResult;
+    }
+    
+    public void setLastIfResult(XBoolean lastIfResult)
+    {
+        this.lastIfResult = lastIfResult;
     }
 }

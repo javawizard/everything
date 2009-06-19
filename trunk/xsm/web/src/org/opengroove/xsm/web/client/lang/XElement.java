@@ -54,4 +54,11 @@ public class XElement extends XNode
     {
         return children.get(i);
     }
+    
+    public void checkExactChildCount(int i)
+    {
+        if (i != children.size())
+            throw new XException("Exactly " + i + " elements were needed, but "
+                + children.size() + " were found");
+    }
 }
