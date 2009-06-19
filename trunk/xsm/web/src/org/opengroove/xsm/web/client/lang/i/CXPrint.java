@@ -17,7 +17,7 @@ public class CXPrint implements XCommand
     {
         XData toPrint = context.execute(element.getSingleElement());
         boolean newline =
-            !"true".equals(element.getAttributes().get("newline"));
+            !"false".equals(element.getAttributes().get("newline"));
         String value = toPrint.toString();
         context.getInterpreter().getDisplay().print(value, newline);
         return null;
