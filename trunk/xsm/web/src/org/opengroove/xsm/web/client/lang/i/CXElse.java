@@ -15,7 +15,14 @@ public class CXElse implements XCommand
     
     public XData invoke(XInterpreterContext context, XElement element)
     {
-        // TODO Auto-generated method stub
+        /*
+         * Execute all children as normal if the last if result was false,
+         * otherwise do nothing
+         */
+        if (!context.getLastIfResult().isValue())
+        {
+            context.getInterpreter().executeChildren(element, context);
+        }
         return null;
     }
     
