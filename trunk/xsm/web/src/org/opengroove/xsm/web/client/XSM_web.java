@@ -97,9 +97,8 @@ public class XSM_web implements EntryPoint
                 + "Source code for the interpreter is "
                 + "<a target='_blank' href='http://opengroove.googlecode.com/svn/"
                 + "trunk/xsm/web/src/org/opengroove/xsm/web"
-                + "/client/lang/'>here</a>, go up one folder for the web " +
-                		"viewer source, or <tt>svn checkout</tt> "
-                + "that location."));
+                + "/client/lang/'>here</a>, go up one folder for the web "
+                + "viewer source, or <tt>svn checkout</tt> " + "that location."));
         runButton.addClickListener(new ClickListener()
         {
             public void onClick(Widget sender)
@@ -206,7 +205,6 @@ public class XSM_web implements EntryPoint
         XInterpreter interpreter = new XInterpreter();
         try
         {
-            interpreter.installDefaultCommands();
             interpreter.setDisplay(new XDisplayDevice()
             {
                 
@@ -225,8 +223,16 @@ public class XSM_web implements EntryPoint
                     return Window.prompt(message, "");
                 }
             });
+            interpreter.installDefaultCommands();
             XElement rootElement =
                 XWebParser.parse("<xsm>" + codeArea.getText() + "</xsm>");
+            if (rootElement.getChildren().size() == 1
+                && (rootElement.getChild(0) instanceof XElement))
+            {
+                XElement ce = (XElement) rootElement.getChild(0);
+                if (ce.getTag().equalsIgnoreCase("xsm"))
+                    rootElement = ce;
+            }
             interpreter.executeChildren(rootElement, null);
         }
         catch (XException e)

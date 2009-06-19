@@ -2,20 +2,7 @@ package org.opengroove.xsm.web.client.lang;
 
 import java.util.HashMap;
 
-import org.opengroove.xsm.web.client.lang.i.CXAdd;
-import org.opengroove.xsm.web.client.lang.i.CXConfig;
-import org.opengroove.xsm.web.client.lang.i.CXDivide;
-import org.opengroove.xsm.web.client.lang.i.CXEach;
-import org.opengroove.xsm.web.client.lang.i.CXFor;
-import org.opengroove.xsm.web.client.lang.i.CXList;
-import org.opengroove.xsm.web.client.lang.i.CXMultiply;
-import org.opengroove.xsm.web.client.lang.i.CXNumber;
-import org.opengroove.xsm.web.client.lang.i.CXPrint;
-import org.opengroove.xsm.web.client.lang.i.CXPrompt;
-import org.opengroove.xsm.web.client.lang.i.CXSet;
-import org.opengroove.xsm.web.client.lang.i.CXString;
-import org.opengroove.xsm.web.client.lang.i.CXSubtract;
-import org.opengroove.xsm.web.client.lang.i.CXVar;
+import org.opengroove.xsm.web.client.lang.i.*;
 
 public class XInterpreter
 {
@@ -37,19 +24,28 @@ public class XInterpreter
     public void installDefaultCommands()
     {
         install(new CXAdd());
+        install(new CXBoolean());
         install(new CXConfig());
         install(new CXDivide());
+        install(new CXDouble());
         install(new CXEach());
+        install(new CXFalse());
         install(new CXFor());
+        install(new CXFunction());
         install(new CXList());
         install(new CXMultiply());
+        install(new CXNull());
         install(new CXNumber());
+        install(new CXNumeric());
         install(new CXPrint());
         install(new CXPrompt());
+        install(new CXReturn());
         install(new CXSet());
         install(new CXString());
         install(new CXSubtract());
+        install(new CXTrue());
         install(new CXVar());
+        install(new CXWhile());
     }
     
     /**

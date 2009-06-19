@@ -15,6 +15,11 @@ public class XReturnException extends XException
     
     public XReturnException(XData returnValue)
     {
+        /*
+         * Add an error message in case this isn't within a function and it gets
+         * thrown out of the program
+         */
+        super("Attempted to return a value when not inside a function");
         this.value = returnValue;
     }
     
