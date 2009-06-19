@@ -29,6 +29,7 @@ public class XInterpreter
         install(new CXDivide());
         install(new CXDouble());
         install(new CXEach());
+        install(new CXElse());
         install(new CXEquals());
         install(new CXFalse());
         install(new CXFor());
