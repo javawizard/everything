@@ -7,6 +7,7 @@ import org.opengroove.xsm.web.client.lang.XInterpreterContext;
 
 public class CXPrint implements XCommand
 {
+    private static final CXString stringCommand = new CXString();
     
     public String getName()
     {
@@ -15,9 +16,8 @@ public class CXPrint implements XCommand
     
     public XData invoke(XInterpreterContext context, XElement element)
     {
-        XData toPrint = context.execute(element.getSingleElement());
-        boolean newline =
-            !"false".equals(element.getAttributes().get("newline"));
+        XData toPrint = stringCommand.invoke(context, element);
+        boolean newline = !"false".equals(element.getAttributes().get("newline"));
         String value = toPrint.toString();
         context.getInterpreter().getDisplay().print(value, newline);
         return null;
