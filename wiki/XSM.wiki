@@ -257,7 +257,7 @@ Double to number.
 Double to number.
 
 ===Item (a) (todo)===
-Lists only. Strings use substring.
+Lists and strings. Index as attribute, contained element is the list or string. Additional element, above the list or string, can be index.
 
 ===Overwrite (a) (todo)===
 Lists only.
