@@ -160,7 +160,7 @@ This is the list of functions that are built in to the XSM language. These do no
 
 Functions that have (todo) after their name are not yet implemented in the interpreter mentioned at the top (the one at the very top, in green text), or are somewhat implemented but are missing features. Functions without (todo) may not yet be in the version of the interpreter that's been uploaded, but they are functioning on my machine and they will be up within a day or two.
 
-If you want to implement any (todo) functions, send me an email (I'm javawiz...@trivergia.com, see [http://opengroove.googlecode.com the main OpenGroove project page] for my full email address, or replace "javawiz..." with "javawizard")
+If you want to implement any (todo) functions, send me an email (my email address is [http://www.facebook.com/string_image.php?ct=AAAAAQAQsAOsubkIGPDoK_h5i91dDQAAABjELNrZhbSyWhSzUHb-qQd1iYb8s8mXRkc%2C&fp=9&state=0&highlight=&bogusvariable=.png]
 
 ==Internal functions==
 Internal functions are those coded in Java (or at least in my interpreter, see the link in green at the top of the page, the Java code is then compiled down to Javascript by [http://gwt.google.com GWT]). They tend to run fairly fast. Currently, all functions are internal. In the future, though, some of the functions will be implemented in XSM itself. Those will be called library functions, and are similar to MSWLogo's concept of library functions.
