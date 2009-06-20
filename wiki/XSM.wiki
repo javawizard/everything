@@ -264,7 +264,7 @@ Double to number.
 Lists and strings. Index as attribute, contained element is the list or string. Additional element, above the list or string, can be index. Null if nonexistent, item in list, substring of length 1 in string
 
 ===Overwrite (a) (todo)===
-Lists only. Expands as needed, filling with nulls.
+Lists only. Expands as needed, filling with nulls. Value attribute means a literal string value to put into the list.
 
 ===Resize (a) (todo)===
 Lists only. Truncates if smaller, fills with nulls if larger.
