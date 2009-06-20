@@ -257,13 +257,13 @@ Double to number.
 Double to number.
 
 ===Item (a) (todo)===
-Lists and strings. Index as attribute, contained element is the list or string. Additional element, above the list or string, can be index.
+Lists and strings. Index as attribute, contained element is the list or string. Additional element, above the list or string, can be index. Null if nonexistent, item in list, substring of length 1 in string
 
 ===Overwrite (a) (todo)===
-Lists only.
+Lists only. Expands as needed, filling with nulls.
 
 ===Resize (a) (todo)===
-Lists only.
+Lists only. Truncates and fills with nulls.
 
 ===Cat (a)===
 Strings only. Concatenates the strings given end-to-end, without the space inbetween each of its arguments that `<string>` inserts, but also without support for literal strings.
