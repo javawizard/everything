@@ -5,7 +5,7 @@
 <font color="#00aa00" size="3"><b>To run XSM programs online using a Javascript interpreter I wrote, go [http://trivergia.com/xsm/org.opengroove.xsm.web.XSM_web/XSM_web.html here].</b></font>
 
 =Description=
-XSM is a programming language that uses XML to represent programs. It's probably one of the most pointless projects I've started, but I need a small server-side scripting language for !OpenGroove's help pages, and this fits the bill for the moment.
+XSM is a programming language invented by Alexander Boyd that uses XML to represent programs. It's probably one of the most pointless projects I've started, but I need a small server-side scripting language for !OpenGroove's help pages, and this fits the bill for the moment.
 
 ------
 
