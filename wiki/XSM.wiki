@@ -16,7 +16,7 @@ XSM is a programming language invented by Alexander Boyd that uses XML to repres
 =The language=
 The language is kind of a cross between Java, Javascript, and Logo (a variant of Lisp). I program in all three, so I've gotten ideas from them. The language shares javascript's and logo's dynamic typing (IE a variable does not have a type; its type is the type of whatever it's holding at the moment), and it shares java's and javascript's autolocal variables (IE you can't see a variable declared in a method that's calling yours). It does not support classes; it is therefore a procedural language. Functions are not first-class objects. Code can be run outside of a function. Code that returns that is run in a context where output is not expected has the output silently discarded.
 
-All tags, except the literal tags, must contain only other XML tags, not plain text. For functions that accept some sort of text as an argument, the text should be wrapped with a string tag.
+All tags, except the literal tags, must contain only other XML tags, not plain text. For functions that accept some sort of text as an argument, the text should be wrapped with a string tag. The exception to this is `<print>`, which acts as if its contents were wrapped with an implicit `<string>` tag.
 
 ==Functions==
 Functions are defined using the function tag. It has one attribute, name, which is the name of the function.
