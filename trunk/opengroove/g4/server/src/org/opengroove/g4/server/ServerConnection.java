@@ -37,6 +37,7 @@ import org.opengroove.g4.common.utils.ProtocolUtils;
  */
 public class ServerConnection extends Thread
 {
+    private static final int PACKET_SPOOLER_SIZE = 90 * 1000;
     private static ThreadLocal<ServerConnection> threadLocalConnection =
         new ThreadLocal<ServerConnection>();
     private static AtomicLong threadNameCounter = new AtomicLong(1);
@@ -100,7 +101,7 @@ public class ServerConnection extends Thread
             socketOut = socket.getOutputStream();
             out = new ObjectOutputStream(socketOut);
             in = new ObjectInputStream(socketIn);
-            spooler = new PacketSpooler(out, 300);
+            spooler = new PacketSpooler(out, PACKET_SPOOLER_SIZE);
             spooler.start();
             while (!socket.isClosed())
             {

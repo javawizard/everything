@@ -18,6 +18,11 @@ import net.sf.opengroove.common.utils.StringUtils;
 
 import org.opengroove.g4.common.G4Defaults;
 import org.opengroove.g4.common.Packet;
+import org.opengroove.g4.common.data.ByteBlock;
+import org.opengroove.g4.common.messaging.Message;
+import org.opengroove.g4.common.messaging.MessageAttachment;
+import org.opengroove.g4.common.messaging.MessageHeader;
+import org.opengroove.g4.common.protocol.InboundMessagePacket;
 import org.opengroove.g4.common.protocol.LoginPacket;
 import org.opengroove.g4.common.protocol.PresencePacket;
 import org.opengroove.g4.common.protocol.RosterPacket;
@@ -579,5 +584,55 @@ public class G4Server
     {
         return "" + ("" + visible).toLowerCase()
             + (localName == null ? "" : ":" + localName);
+    }
+    
+    /**
+     * Sends a user message to the specified connection. A new message id will
+     * be generated for the message.
+     * 
+     * @param connection
+     *            The connection to send the message to
+     * @param from
+     *            The userid that the message should show up as coming from.
+     *            This is usually the server's userid.
+     * @param to
+     *            The userid list that the message should show. When the user
+     *            reads the message, they will see this list as the recipient
+     *            list for the message. This doesn't cause the server to send
+     *            the message to each of these recipients, though.
+     * @param subject
+     *            The subject of the message
+     * @param body
+     *            The body of the message
+     * @param inReplyId
+     *            The id of the message that this one is in reply to, or null if
+     *            this one is not in reply
+     * @param inReplySubject
+     *            The subject of the message that this one is in reply to, or
+     *            null if this one is not in reply
+     */
+    public static void sendUserMessage(ServerConnection connection, Userid from,
+        Userid[] to, String subject, String body, String inReplyId,
+        String inReplySubject)
+    {
+        Message message = new Message();
+        MessageHeader header = new MessageHeader();
+        header.setDate(System.currentTimeMillis());
+        header.setInReplyMessageId(inReplyId);
+        header.setInReplySubject(inReplySubject);
+        header.setMessageId("" + from + "$" + System.currentTimeMillis() + "."
+            + Math.random() + ".server.sendUserMessage");
+        header.setRecipients(to);
+        header.setSender(from);
+        header.setSubject(subject);
+        header.setBody(new ByteBlock(body));
+        message.setHeader(header);
+        message.setAttachments(new MessageAttachment[0]);
+        InboundMessagePacket packet = new InboundMessagePacket();
+        packet.setSender(from);
+        packet.setMessageId(header.getMessageId());
+        packet.setMessage(message);
+        packet.setPacketThread(header.getMessageId());
+        connection.send(packet);
     }
 }
