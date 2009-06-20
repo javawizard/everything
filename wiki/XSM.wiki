@@ -45,6 +45,10 @@ a value
 ==Variadic functions (varargs)==
 Since functions don't explicitly specify what attributes and arguments they take when they are defined, any old function can be variadic, both in terms of attributes and in terms of arguments. It's up to the function to decide how it handles both cases. See the `<defined>` function (lower on in the page, at the list of built-in commands) for more information on how to get the number of arguments that were given to the function.
 
+Creating functions that can accept parameters either as attributes or as child tags with the specified name, like the built-in for tag, is somewhat different. To do that, you use an args tag at the top of the function tag. This contains any number of arg tags.
+
+Each arg tag contains the attributes name (which specifies the attribute or tag name), optional (which is either true or false, defaults to false), number (which defaults to false and only applies if resolve is false; it means that the attribute, if it is specified as an attribute, will be parsed to a number instead of a string), and resolve (which only applies when the argument appears as an attribute, and indicates that the argument's value should be the value of the variable named by the attribute instead of a string containing the attribute's literal value). 
+
 ==Code/Argument/Literal functions==
 Functions are divided into three different types. User-defined functions are always argument functions.
 
