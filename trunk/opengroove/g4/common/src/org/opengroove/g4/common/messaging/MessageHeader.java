@@ -27,6 +27,7 @@ public class MessageHeader implements Serializable
     private String subject;
     private String inReplyMessageId;
     private String inReplySubject;
+    private String contentType = "text/html";
     private DataBlock body;
     
     public String getMessageId()
@@ -107,5 +108,21 @@ public class MessageHeader implements Serializable
     public void setDate(long date)
     {
         this.date = date;
+    }
+    
+    /**
+     * The content type of the message's body. Most clients use text/html for
+     * this, and the server typically uses text/plain for notifications.
+     * 
+     * @return
+     */
+    public String getContentType()
+    {
+        return contentType;
+    }
+    
+    public void setContentType(String contentType)
+    {
+        this.contentType = contentType;
     }
 }
