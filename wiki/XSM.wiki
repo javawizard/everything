@@ -263,7 +263,7 @@ Lists and strings. Index as attribute, contained element is the list or string. 
 Lists only. Expands as needed, filling with nulls.
 
 ===Resize (a) (todo)===
-Lists only. Truncates and fills with nulls.
+Lists only. Truncates if smaller, fills with nulls if larger.
 
 ===Cat (a)===
 Strings only. Concatenates the strings given end-to-end, without the space inbetween each of its arguments that `<string>` inserts, but also without support for literal strings.
