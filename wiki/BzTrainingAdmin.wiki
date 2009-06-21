@@ -21,3 +21,7 @@ The ban list can be viewed and edited.
 A bzgroups configuration can be set up for the entire group, and an additional one on a per-server basis. Or the specific server can choose to use only its bzgroup file, not the entire group file.
 
 I'll work on options for a replay server in the future. 
+
+The server will most likely use proxy storage, since I think it could handle it in terms of speed. Although for some things, serialized objects might be a better idea. I don't know yet.
+
+The user could also choose which plugins to load onto the server, from a list. serverControl would always be loaded, and would be automatically configured. All the other plugins can be specified if they load, and the user can configure, via a UI, each plugin has its own specific UI for configuring it.
