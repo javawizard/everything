@@ -1,6 +1,0 @@
-This is a test page.[#anchor Link]
-
-<a name="anchor"/>Something
-
-Something else
-<br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/>Last item
