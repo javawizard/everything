@@ -1,0 +1,5 @@
+=BZNetwork=
+BZNetwork is a web administration interface for a bzflag server network. It allows groups to be created. These groups act as independent networks for all purposes concerned except for the fact that they are on the same host. 
+
+=Authentication=
+Authentication should be pluggable. Authentication providers are installed by adding a new folder under WEB-INF/auth. The folder contains  
