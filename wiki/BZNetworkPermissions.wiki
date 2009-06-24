@@ -3,6 +3,22 @@ This file documents all permissions in the BZNetwork interface. Permissions have
 For example, view-logs is a server-level permission. This means that you typically grant view-logs on a per-server basis, or maybe on a per-group basis (allowing viewing of any logs within that group).
 
 =Available permissions=
-||*Permission*    ||*Level*||*Sensitive*||*Description*||
-||manage-users    ||global ||Allows the user to add, edit, and delete internal users, and set a particular user's role.
-||
+Here is the list of available permissions and what they do. At the bottom of the table is a list of sensitive permissions. Sensitive permissions are those that generally allow a user to take full control of the server with them.
+
+||*Permission*            ||*Level*||*Description*||
+||manage-users            ||global ||Allows the user to add, edit, and delete internal users, and set a particular user's role.||
+||manage-roles            ||global ||Allows the user to add, and delete roles and edit the permissions applied to each role.||
+||manage-auth             ||global ||Allows the user to manage which authentication providers are enabled on the server, and select what the default provider is or if there is a default.     ||
+||view-logs               ||server ||Allows the user to view the logs of a server.||
+||edit-map                ||server ||Allows the user to manage the map of a server.||
+||edit-groupdb            ||server ||Allows the user to edit the group db of a server.||
+||inherit-parent-groupdb  ||server ||Allows the user to select whether a server also inherits its group's groupdb.||
+||edit-group-groupdb      ||group  ||Allows the user to edit a particular group's groupdb.||
+||edit-server-settings    ||server ||Allows the user to edit general settings about the server.||
+||manage-callsign-auth    ||global ||Allows the user to manage the mapping of a particular bzflag authentication group with the role that applies to it, and the mapping of a particular bzflag callsign with the role that applies to it (in addition to any roles applied by the callsign's groups)||
+
+
+The following permissions are sensitive:
+ * *manage-users:* The user can apply any role to their own account, allowing them to gain the highest possible level of access of anyone on the server.
+ * *manage-roles:* The user can add any permissions they want to their own role.
+ * *manage-auth:* This one is only sensitive if the server owner doesn't take some precautions. If the server owner doesn't remove the internal admin account, but disables the internal authentication provider (assuming that this will prevent other users from gaining permissions through use of the admin account), then a user with manage-auth can re-enable the provider and gain full access.
