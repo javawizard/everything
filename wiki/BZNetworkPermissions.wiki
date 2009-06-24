@@ -10,6 +10,8 @@ Here is the list of available permissions and what they do. At the bottom of the
 || manage-roles            || global  ||Allows the user to add, and delete roles and edit the permissions applied to each role.||
 || manage-auth             || global  ||Allows the user to manage which authentication providers are enabled on the server, and select what the default provider is or if there is a default.     ||
 || view-logs               || server  ||Allows the user to view the logs of a server, and to view the server's chat in real time via the web interface.||
+|| view-user               || global  ||Allows the user to view information about a particular bzflag user that has visited a server.||
+|| cross-reference-user    || global  ||Allows the user to cross-reference users. This shows them the list of ip address that the user has signed on, and allows them to look up an ip address and see the users that have signed on from it.||
 || edit-map                || server  ||Allows the user to manage the map of a server.||
 || edit-groupdb            || server  ||Allows the user to edit the group db of a server.||
 || inherit-parent-groupdb  || server  ||Allows the user to select whether a server also inherits its group's groupdb.||
@@ -27,8 +29,23 @@ Here is the list of available permissions and what they do. At the bottom of the
 || view-reports            || server  ||Allows the user to view reports made on a particular server.||
 || say                     || server  ||Allows the user to say something on the actual server. The message will appear as if coming from the server, but will be prefixed with the user's username plus a colon. The last character of the message must not be a close-parenthesis (with trailing whitespace removed)., to prevent spoofing of the in-game /say command.||
 || hidden-say              || server  ||Allows the user to say something on the actual server. Unlike the say permission, the message can be anything (and it can end with a close-parenthesis), and it will not be prefixed.||
+|| view-in-server-list     || server  ||Allows the user to view a particular server in the server list. This also allows them to view the users currently logged into the server, and in the future their ip addresses. Most other server-related permissions are pointless without this one.||
 
 The following permissions are sensitive:
  * *manage-users:* The user can apply any role to their own account, allowing them to gain the highest possible level of access of anyone on the server.
  * *manage-roles:* The user can add any permissions they want to their own role.
  * *manage-auth:* This one is only sensitive if the server owner doesn't take some precautions. If the server owner doesn't remove the internal admin account, but disables the internal authentication provider (assuming that this will prevent other users from gaining permissions through use of the admin account), then a user with manage-auth can re-enable the provider and gain full access.
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
