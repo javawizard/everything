@@ -1,6 +1,16 @@
 package jw.bznetwork.server;
 
+import java.io.StringReader;
+
+import javax.servlet.ServletContext;
+import javax.servlet.ServletContextEvent;
+import javax.servlet.ServletContextListener;
 import javax.servlet.http.HttpServletRequest;
+
+import jw.bznetwork.utils.StringUtils;
+
+import com.ibatis.sqlmap.client.SqlMapClient;
+import com.ibatis.sqlmap.client.SqlMapClientBuilder;
 
 /**
  * Provides methods related to the BZNetwork system as a whole.
@@ -8,10 +18,11 @@ import javax.servlet.http.HttpServletRequest;
  * @author Alexander Boyd
  * 
  */
-public class BZNetwork
+public class BZNetwork implements ServletContextListener
 {
     /**
-     * Sticks information on to the request indicating that the user has just logged in.
+     * Sticks information on to the request indicating that the user has just
+     * logged in.
      * 
      * @param request
      * @param provider
@@ -23,4 +34,62 @@ public class BZNetwork
     {
         
     }
+    
+    private static SqlMapClient generalDataClient;
+    
+    private static ServletContext context;
+    
+    public static ServletContext getServletContext()
+    {
+        return context;
+    }
+    
+    public static SqlMapClient getGeneralDataClient()
+    {
+        return generalDataClient;
+    }
+    
+    public void contextDestroyed(ServletContextEvent sce)
+    {
+        
+    }
+    
+    public void contextInitialized(ServletContextEvent sce)
+    {
+        context = sce.getServletContext();
+        String generalDataConfig =
+            StringUtils.readStream(getClass().getResourceAsStream("/general-sql.xml"));
+        /*
+         * FIXME: Some sort of configuration mechanism needs to be added for
+         * this, so that when epc is actually deployed, it can connect to the
+         * real postgres database. For now, epc will be hard-coded to use an h2
+         * database.
+         * 
+         * This could be changed to use an environment variable,
+         * EPC_DATABASE_URL for example.
+         */
+        String dbLocation = "C:/apache/tomcat/epc-db/db";
+        if (System.getenv("EPC_DATABASE_URL") != null)
+        {
+            dbLocation = System.getenv("EPC_DATABASE_URL");
+            System.out.println("Using alternate data storage location " + dbLocation);
+        }
+        generalDataConfig = generalDataConfig.replace("$$driver$$", "org.h2.Driver");
+        generalDataConfig =
+            generalDataConfig.replace("$$url$$", "jdbc:h2:" + dbLocation);
+        generalDataConfig = generalDataConfig.replace("$$username$$", "sa");
+        generalDataConfig = generalDataConfig.replace("$$password$$", "");
+        try
+        {
+            Class.forName("org.h2.Driver");
+        }
+        catch (ClassNotFoundException e)
+        {
+            e.printStackTrace();
+            throw new RuntimeException(e);
+        }
+        generalDataClient =
+            SqlMapClientBuilder.buildSqlMapClient(new StringReader(generalDataConfig));
+    }
+    
 }

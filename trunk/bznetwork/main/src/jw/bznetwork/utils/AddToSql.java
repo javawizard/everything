@@ -1,4 +1,4 @@
-package net.sf.opengroove.devutils;
+package jw.bznetwork.utils;
 
 import java.awt.BorderLayout;
 import java.awt.event.ActionEvent;
@@ -19,8 +19,8 @@ import javax.swing.*;
 
 /**
  * This utility was originally part of OpenGroove. I decided that it would
- * probably be useful for EPC too, so I copied it over. Hence the
- * net.sf.opengroove package. Send any questions to support@opengroove.org.<br/>
+ * probably be useful for BZNetwork too, so I copied it over. Send any questions
+ * to support@opengroove.org.<br/>
  * <br/>
  * 
  * This file is released under the terms of the GNU Lesser General Public
@@ -117,7 +117,7 @@ public class AddToSql
                         + sqlMapContents.substring(sqlMapAddIndex);
                 writeFile(sqlMapContents, sqlFile);
                 File dataStoreFile =
-                    new File("WEB-INF/src/com/trivergia/epc/server/data/DataStore.java");
+                    new File("WEB-INF/src/jw/bznetwork/server/data/DataStore.java");
                 String dataStoreContents = readFile(dataStoreFile);
                 int dataStoreMarkerIndex = dataStoreContents.indexOf("!ADDTOSQL");
                 int dataStoreAddIndex =
@@ -225,7 +225,7 @@ public class AddToSql
         classes.add(new ClassChoice());
         File[] files =
             new File(
-                "WEB-INF/gwt-src/com/trivergia/epc/gwt/admin/core/server/data/model")
+                "WEB-INF/src/jw/bznetwork/client/data/model")
                 .listFiles(new FileFilter()
                 {
                     
@@ -238,7 +238,7 @@ public class AddToSql
         {
             String name = file.getName().substring(0, file.getName().length() - 5);
             Class c =
-                Class.forName("com.trivergia.epc.gwt.admin.core.server.data.model."
+                Class.forName("jw.bznetwork.client.data.model."
                     + name);
             ClassChoice cc = new ClassChoice();
             cc.setName(c.getName().substring(c.getName().lastIndexOf(".") + 1));
