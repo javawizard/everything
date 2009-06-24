@@ -23,8 +23,9 @@
 
 	<listener>
 		<listener-class>
-			jw.bznetwork.server.BZNetwork
+			jw.bznetwork.server.BZNetworkServer
 		</listener-class>
+		
 	</listener>
 
 </web-app>

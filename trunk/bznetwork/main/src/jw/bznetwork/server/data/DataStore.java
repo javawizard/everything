@@ -1,5 +1,9 @@
 package jw.bznetwork.server.data;
 
+import jw.bznetwork.server.BZNetworkServer;
+
+import com.ibatis.sqlmap.client.SqlMapClient;
+
 /**
  * Conventions (there are some contradictions in this file; these need to be
  * fixed as soon as possible):<br/>
@@ -32,9 +36,8 @@ public class DataStore
     
     private static SqlMapClient getGdbClient()
     {
-        return EPC.getGeneralDataClient();
+        return BZNetworkServer.getGeneralDataClient();
     }
-
     
     // !ADDTOSQL
     

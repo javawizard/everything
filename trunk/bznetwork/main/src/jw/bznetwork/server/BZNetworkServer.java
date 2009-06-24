@@ -18,7 +18,7 @@ import com.ibatis.sqlmap.client.SqlMapClientBuilder;
  * @author Alexander Boyd
  * 
  */
-public class BZNetwork implements ServletContextListener
+public class BZNetworkServer implements ServletContextListener
 {
     /**
      * Sticks information on to the request indicating that the user has just
