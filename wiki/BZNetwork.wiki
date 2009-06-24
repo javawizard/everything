@@ -3,7 +3,7 @@ BZNetwork is a web administration interface for a bzflag server network. It allo
 
 =Authentication=
 ==Providers==
-Authentication should be pluggable. Authentication providers are installed by adding an entry to WEB-INF/config/auth.txt. The file contains lines that look like id|name|text|url|description. 
+Authentication should be pluggable. Authentication providers are installed by adding an entry to WEB-INF/server/auth.txt. The file contains lines that look like id|name|text|url|description. 
 
 The url specified can contain the string {path}, which will be replaced with the full url to the webapp that bznetwork is running at, without a trailing slash. The url does not need to point to a local page, and in the case of the BZFlag Callsign provider, the url points to my.bzflag.org/webauth.php. {path-encoded} can be used as the url-encoded form of {path}, which can be used, as in the case of webauth.php, with an external page that takes a parameter specifying a return url.
 
@@ -20,6 +20,8 @@ The url should somehow eventually result in the user's machine visiting a url un
 
 =Authorization=
 Roles are the primary mechanism behind authorization. Permissions can be added to a role, and if a particular user logs in with multiple roles assigned to them they will get the combined set of permissions from all roles that they are a member of.
+
+
 
 
 

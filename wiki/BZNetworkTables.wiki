@@ -1,0 +1,8 @@
+This page documents the tables in BZNetwork.
+
+=Tables=
+Here are the tables:
+
+==Users==
+Holds the list of users.
+ * 
