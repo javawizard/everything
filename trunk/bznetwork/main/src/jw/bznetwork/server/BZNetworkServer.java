@@ -61,17 +61,14 @@ public class BZNetworkServer implements ServletContextListener
             StringUtils.readStream(getClass().getResourceAsStream("/general-sql.xml"));
         /*
          * FIXME: Some sort of configuration mechanism needs to be added for
-         * this, so that when epc is actually deployed, it can connect to the
-         * real postgres database. For now, epc will be hard-coded to use an h2
-         * database.
-         * 
-         * This could be changed to use an environment variable,
-         * EPC_DATABASE_URL for example.
+         * this, so that when bznetwork is actually deployed, it can connect to
+         * the real postgres database. For now, bznetwork will be hard-coded to
+         * use an h2 database.
          */
-        String dbLocation = "C:/apache/tomcat/epc-db/db";
-        if (System.getenv("EPC_DATABASE_URL") != null)
+        String dbLocation = "/home/amboyd/bznetwork-db";
+        if (System.getenv("BZNETWORK_DATABASE_URL") != null)
         {
-            dbLocation = System.getenv("EPC_DATABASE_URL");
+            dbLocation = System.getenv("BZNETWORK_DATABASE_URL");
             System.out.println("Using alternate data storage location " + dbLocation);
         }
         generalDataConfig = generalDataConfig.replace("$$driver$$", "org.h2.Driver");
