@@ -12,20 +12,29 @@
 
 	<!-- Servlets -->
 	<servlet>
-		<servlet-name>greetServlet</servlet-name>
-		<servlet-class>jw.bznetwork.server.GreetingServiceImpl</servlet-class>
+		<servlet-name>authLink</servlet-name>
+		<servlet-class>jw.bznetwork.server.rpc.GlobalLinkImpl</servlet-class>
 	</servlet>
 
 	<servlet-mapping>
-		<servlet-name>greetServlet</servlet-name>
-		<url-pattern>/bznetwork/greet</url-pattern>
+		<servlet-name>authLink</servlet-name>
+		<url-pattern>/auth-link</url-pattern>
+	</servlet-mapping>
+
+	<servlet>
+		<servlet-name>unauthLink</servlet-name>
+		<servlet-class>jw.bznetwork.server.rpc.GlobalUnauthLinkImpl</servlet-class>
+	</servlet>
+
+	<servlet-mapping>
+		<servlet-name>unauthLink</servlet-name>
+		<url-pattern>/bypass/unauth-link</url-pattern>
 	</servlet-mapping>
 
 	<listener>
 		<listener-class>
 			jw.bznetwork.server.BZNetworkServer
 		</listener-class>
-		
 	</listener>
 
 </web-app>

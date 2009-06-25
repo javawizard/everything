@@ -1,0 +1,9 @@
+.bznetwork-ServerListTable {
+	border: 1px solid #cccccc
+}
+
+.bznetwork-MenuCurrentScreenItem {
+	text-decoration: none;
+	color: black;
+	font-weight: bold
+}
