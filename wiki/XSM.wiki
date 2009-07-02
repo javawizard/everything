@@ -274,7 +274,7 @@ Takes one attribute, name (var works too), or a single tag within it that return
         <condition>
             <defined>
                 <cat>
-                    arg.
+                    <string>arg.</string>
                     <var name="argcount"/>
                 </cat>
             </defined>
@@ -284,6 +284,11 @@ Takes one attribute, name (var works too), or a single tag within it that return
     <decrement name="argcount"/>
     <print><var name="argcount"/> arguments were given to this function.</print>
 </function>
+<print-arg-count>
+    <string>hi</string>
+    <string>bye</string>
+    <string>another</string>
+</print-arg-count>
 }}}
 
 ===Return (a)===
