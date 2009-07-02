@@ -24,8 +24,12 @@ public class XInterpreter
     public void installDefaultCommands()
     {
         install(new CXAdd());
+        install(new CXAnd());
         install(new CXBoolean());
+        install(new CXCat());
+        install(new CXChar());
         install(new CXConfig());
+        install(new CXDefined());
         install(new CXDivide());
         install(new CXDouble());
         install(new CXEach());
@@ -34,16 +38,25 @@ public class XInterpreter
         install(new CXFalse());
         install(new CXFor());
         install(new CXFunction());
+        install(new CXGreater());
+        install(new CXIdentity());
         install(new CXIf());
+        install(new CXItem());
+        install(new CXLess());
         install(new CXList());
         install(new CXMultiply());
+        install(new CXNot());
         install(new CXNull());
         install(new CXNumber());
         install(new CXNumeric());
+        install(new CXOr());
+        install(new CXOverwrite());
         install(new CXPrint());
         install(new CXPrompt());
+        install(new CXResize());
         install(new CXReturn());
         install(new CXSet());
+        install(new CXSpace());
         install(new CXString());
         install(new CXSubtract());
         install(new CXTrue());
