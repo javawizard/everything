@@ -37,8 +37,8 @@ public class CXDecrement implements XCommand
             throw new XException("Incompatible type to decrement, only"
                 + " number and double are allowed");
         }
+        context.setVariable(var, data);
         return null;
-        
     }
     
 }

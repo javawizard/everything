@@ -38,6 +38,7 @@ public class CXIncrement implements XCommand
                 "Incompatible type to increment, only" +
                 " number and double are allowed");
         }
+        context.setVariable(var, data);
         return null;
     }
 }
