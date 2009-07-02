@@ -239,14 +239,14 @@ Takes as many child tags as are wanted (but there must be at least one). Returns
 ===Not (a)===
 Takes a single child tag and returns the inverse of it. The tag must return a boolean.
 
-===Increment (a) (todo)===
-Not implemented yet. The same thing can be done with `<set name="var"><add><var name="var"/><number>1</number></add></set>`
+===Increment (a)===
+Takes either name or var as an attribute. Increments the number or double stored in that variable.
 
-===Decrement (a) (todo)===
-Not implemented yet. The same thing can be done with `<set name="var"><subtract><var name="var"/><number>1</number></subtract></set>`
+===Decrement (a)===
+Takes either name or var as an attribute. Decrements the number or double stored in that variable.
 
 ===Size (a)===
-Works on lists and strings.
+Works on lists and strings. Returns the character count for a string or the number of items in a list.
 
 ===Item (a)===
 Lists and strings. Index as attribute, contained element is the list or string. Additional element, above the list or string, can be index. Null if nonexistent, item in list, substring of length 1 in string
