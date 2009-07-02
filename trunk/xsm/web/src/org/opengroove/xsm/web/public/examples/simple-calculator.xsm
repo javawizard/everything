@@ -67,6 +67,4 @@
         </divide>
     </set>
 </if>
-<print>
-    <string>The result is <var name="result"/></string>
-</print>    
+<print>The result is <var name="result"/></print>    

@@ -6,22 +6,14 @@
             <prompt message="How many bottles of pop? Do less than 20, more than that is slow."/>
         </number>
     </initial>
+    <print><var name="i"/> bottles of pop on the wall,</print>
+    <print><var name="i"/> bottles of pop.</print>
+    <print>Take one down, pass it around</print>
     <print>
-        <string><var name="i"/> bottles of pop on the wall,</string>
-    </print>
-    <print>
-        <string><var name="i"/> bottles of pop.</string>
-    </print>
-    <print>
-        <string>Take one down, pass it around</string>
-    </print>
-    <print>
-        <string>
-            <subtract>
-                <var name="i"/>
-                <number>1</number>
-            </subtract>
-            bottles of pop on the wall.
-        </string>
+        <subtract>
+            <var name="i"/>
+            <number>1</number>
+        </subtract>
+        bottles of pop on the wall.
     </print>
 </for>
