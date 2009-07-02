@@ -288,12 +288,10 @@ Takes one attribute, name (var works too), or a single tag within it that return
     <while>
         <condition>
             <defined>
-                <replace regex="\s" replacement="">
-                    <string>
-                        arg.
-                        <var name="argcount"/>
-                    </string>
-                </replace>
+                <cat>
+                    arg.
+                    <var name="argcount"/>
+                </cat>
             </defined>
         </condition>
         <set name="argcount">
