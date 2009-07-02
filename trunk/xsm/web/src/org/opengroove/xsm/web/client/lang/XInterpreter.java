@@ -75,6 +75,10 @@ public class XInterpreter
     
     public XData execute(XElement element, XInterpreterContext context)
     {
+        if (element == null)
+            throw new XException("Trying to run a null element. This usually "
+                + "means a command was expecting "
+                + "more tags as input than you gave to it.");
         instructionCount += 1;
         if ((instructionCount % 10) == 0)
             validateInstructionCount();
