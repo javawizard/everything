@@ -30,7 +30,8 @@ public class CXWhile implements XCommand
              * the loop is empty
              */
             context.getInterpreter().instructionCount += 1;
-            context.getInterpreter().executeChildren(element, context);
+            context.getInterpreter().executeChildren(element, context,
+                attributeSet.getTagCount());
         }
         return null;
     }

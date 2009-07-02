@@ -112,7 +112,7 @@ public class XInterpreter
                 throw new XException(
                     "Cast error. This usually means you tried to pass "
                         + "some data of the wrong type to a function. "
-                        + "Java exception message:" + e.getMessage());
+                        + "Java exception message: " + e.getMessage());
             }
         }
         catch (XException e)
