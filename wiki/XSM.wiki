@@ -279,22 +279,10 @@ Takes one attribute, name (var works too), or a single tag within it that return
                 </cat>
             </defined>
         </condition>
-        <set name="argcount">
-            <add>
-                <var name="argcount"/>
-                <number>1</number>
-            </add>
-        </set>
+        <increment name="argcount"/>
     </while>
-    <set name="argcount">
-        <subtract>
-            <var name="argcount"/>
-            <number>1</number>varargs
-        </subtract>
-    </set>
-    <print>
-        <string><var name="argcount"/> arguments were given to this function.</string>
-    </print>
+    <decrement name="argcount"/>
+    <print><var name="argcount"/> arguments were given to this function.</print>
 </function>
 }}}
 
