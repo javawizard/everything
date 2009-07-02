@@ -56,6 +56,7 @@ public class XInterpreter
         install(new CXResize());
         install(new CXReturn());
         install(new CXSet());
+        install(new CXSize());
         install(new CXSpace());
         install(new CXString());
         install(new CXSubtract());
