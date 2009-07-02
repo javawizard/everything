@@ -29,6 +29,7 @@ public class XInterpreter
         install(new CXCat());
         install(new CXChar());
         install(new CXConfig());
+        install(new CXDecrement());
         install(new CXDefined());
         install(new CXDivide());
         install(new CXDouble());
@@ -41,6 +42,7 @@ public class XInterpreter
         install(new CXGreater());
         install(new CXIdentity());
         install(new CXIf());
+        install(new CXIncrement());
         install(new CXItem());
         install(new CXLess());
         install(new CXList());
