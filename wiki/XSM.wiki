@@ -234,10 +234,13 @@ Takes either one attribute, var, or contains one element. Returns the type, as a
 ===Greater (a) (todo)===
 
 ===And (a) (todo)===
+Takes as many child tags as are wanted (but there must be at least one). Returns true if all of the child tags return true, false otherwise. This tag is a short-circuit operator; as soon as a child tag returns false, `<and>` returns false without evaluating further children.
 
 ===Or (a) (todo)===
+Takes as many child tags as are wanted (but there must be at least one). Returns false if all of the child tags return false, true otherwise. This tag is a short-circuit operator; as soon as a child tag returns true, `<or>` returns true without evaluating further children.
 
 ===Not (a) (todo)===
+Takes a single child tag and returns the inverse of it. The tag must return a boolean.
 
 ===Increment (a) (todo)===
 Not implemented yet. The same thing can be done with `<set name="var"><add><var name="var"/><number>1</number></add></set>`
