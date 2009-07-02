@@ -19,7 +19,7 @@ public class CXSize implements XCommand
     
     public XData invoke(XInterpreterContext context, XElement element)
     {
-        XData data = context.execute(element);
+        XData data = context.execute(element.getSingleElement());
         if (data instanceof XString)
         {
             return new XNumber(((XString) data).getValue().length());
