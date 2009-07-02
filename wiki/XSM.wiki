@@ -229,17 +229,19 @@ Takes either one attribute, var, or contains one element. Returns the type, as a
 
 ===Divide (a)===
 
-===Less (a) (todo)===
+===Less (a)===
+Takes two child tags, which must return a number or a double. Returns true if the first is less than the second.
 
-===Greater (a) (todo)===
+===Greater (a)===
+Same as `<less>`, but returns true if the first is greater than the second.
 
-===And (a) (todo)===
+===And (a)===
 Takes as many child tags as are wanted (but there must be at least one). Returns true if all of the child tags return true, false otherwise. This tag is a short-circuit operator; as soon as a child tag returns false, `<and>` returns false without evaluating further children.
 
-===Or (a) (todo)===
+===Or (a)===
 Takes as many child tags as are wanted (but there must be at least one). Returns false if all of the child tags return false, true otherwise. This tag is a short-circuit operator; as soon as a child tag returns true, `<or>` returns true without evaluating further children.
 
-===Not (a) (todo)===
+===Not (a)===
 Takes a single child tag and returns the inverse of it. The tag must return a boolean.
 
 ===Increment (a) (todo)===
@@ -263,13 +265,13 @@ Double to number.
 ===Ceiling (a) (todo)===
 Double to number.
 
-===Item (a) (todo)===
+===Item (a)===
 Lists and strings. Index as attribute, contained element is the list or string. Additional element, above the list or string, can be index. Null if nonexistent, item in list, substring of length 1 in string
 
-===Overwrite (a) (todo)===
+===Overwrite (a)===
 Lists only. Expands as needed, filling with nulls. Value attribute means a literal string value to put into the list.
 
-===Resize (a) (todo)===
+===Resize (a)===
 Lists only. Truncates if smaller, fills with nulls if larger.
 
 ===Cat (a)===
