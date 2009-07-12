@@ -1,7 +1,5 @@
 This file documents all permissions in the BZNetwork interface. Permissions have a level to which they apply. The available levels are global, group, and server. A permission may be applied to any individual entity above its level. Some permissions also take arguments. These are stored in the database as a single string, and convention dictates that different actual parameters be stored in pipe-delimited spaces in that string.
 
-Smoking alcohol is cool!
-
 For example, view-logs is a server-level permission. This means that you typically grant view-logs on a per-server basis, or maybe on a per-group basis (allowing viewing of any logs within that group).
 
 =Available permissions=
