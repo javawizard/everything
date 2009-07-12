@@ -1,4 +1,4 @@
-*Information on the BZTraining server administration system.*
+*This page is obsolete.* See [[BZNetwork]] instead. BZNetwork is the web administration interface I ended up designing for the BZTraining server network, so the rest of this document no longer applies (since BZNetwork ended up being quite a bit different than this document).
 
 =Details=
 
