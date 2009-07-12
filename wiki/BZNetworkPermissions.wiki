@@ -9,7 +9,7 @@ Here is the list of available permissions and what they do. At the bottom of the
 || manage-users            || global  ||Allows the user to add, edit, and delete internal users, and set a particular user's role.||
 || manage-roles            || global  ||Allows the user to add, and delete roles and edit the permissions applied to each role.||
 || manage-auth             || global  ||Allows the user to manage which authentication providers are enabled on the server, and select what the default provider is or if there is a default.     ||
-|| view-logs               || server  ||Allows the user to view the logs of a server, and to view the server's chat in real time via the web interface.||
+|| view-logs               || server  ||Allows the user to view the logs of a server, and to view the server's chat in real time via the web interface. NOTE: As a side note, I'm thinking that the user might be able to select how they want to view the logs: in a grid style ("grid"), or in a console style ("console"). Grid shows chat and such like norang's log interface, and Console shows chat as if the user was watching a bzflag console. They're both just different modes of displaying stuff.||
 || view-user               || global  ||Allows the user to view information about a particular bzflag user that has visited a server.||
 || cross-reference-user    || global  ||Allows the user to cross-reference users. This shows them the list of ip address that the user has signed on, and allows them to look up an ip address and see the users that have signed on from it.||
 || edit-map                || server  ||Allows the user to manage the map of a server.||
