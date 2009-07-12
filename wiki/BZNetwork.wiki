@@ -1,5 +1,5 @@
 =BZNetwork=
-BZNetwork is a web administration interface for a bzflag server network. It allows groups to be created. These groups act as independent networks for all purposes concerned except for the fact that they are on the same host. 
+BZNetwork is a web administration interface for a bzflag server network.
 
 =Authentication=
 ==Providers==
@@ -20,8 +20,6 @@ The url should somehow eventually result in the user's machine visiting a url un
 
 =Authorization=
 Roles are the primary mechanism behind authorization. Permissions can be added to a role, and if a particular user logs in with multiple roles assigned to them they will get the combined set of permissions from all roles that they are a member of.
-
-
 
 
 
