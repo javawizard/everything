@@ -24,7 +24,7 @@ Here is the list of available permissions and what they do. At the bottom of the
 || add-group-ipban         || group   ||Allows the user to add IP bans to a group banfile.||
 || add-group-idban         || group   ||Same as add-group-ipban, but for BZID bans.||
 || add-group-hostban       || group   ||Same as add-group-ipban, but for hostnames.||
-|| add-long-ban            || group   ||Allows the user to select a ban duration longer than 5 hours when adding bans. Users without this can only ban for up to 5 hours.
+|| add-long-ban            || group   ||Allows the user to select a ban duration longer than 5 hours when adding bans. Users without this can only ban for up to 5 hours.||
 || delete-group-ban        || group   ||Allows the user to delete bans from a group banfile.||
 || delete-self-group-ban   || group   ||Allows the user to delete bans from a group banfile that they added themselves.||
 || view-reports            || server  ||Allows the user to view reports made on a particular server.||
