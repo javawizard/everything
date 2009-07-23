@@ -1,6 +1,10 @@
 =BZNetwork=
 BZNetwork is a web administration interface for a bzflag server network. It is a Java webapp, so it must be run inside a Java Servlet Container (such as Apache Tomcat, http://tomcat.apache.org). It starts and stops all of the bzfs instances itself, and can use a custom executable other than bzfs if needed.
 
+BZNetwork was originally written for the BZTraining server network. Join irc.freenode.net/#bztraining if you have questions about it, or get in touch with javawizard2539 or jcp.
+
+Due to the fact that this document was written before most of BZNetwork itself was written, most of the document is in the future tense.
+
 =Authentication=
 ==Providers==
 Authentication should be pluggable. Authentication providers are installed by adding an entry to WEB-INF/server/auth.txt. The file contains lines that look like id|name|text|url|description. 
@@ -19,7 +23,7 @@ The text is shown on the login page, asking the user which login method to use.
 The url should somehow eventually result in the user's machine visiting a url under the bypass folder. This url should be specific to the authentication mechanism, and should call BZNetwork.login(), passing in the identifier of the login method used, the user's "username" (whatever that means is up to the provider, but it must remain constant for any given user when they authenticate in the future; the callsign provider uses the user's callsign and the internal provider uses the user's username), and the roles that the user has applied to them. Usually, a user only has one role, but callsign-based users can be members of multiple bzflag groups, each of which could have a role, and they will get all permissions from all roles applied to them.
 
 =Authorization=
-Roles are the primary mechanism behind authorization. Permissions can be added to a role, and if a particular user logs in with multiple roles assigned to them they will get the combined set of permissions from all roles that they are a member of.
+Roles are the primary mechanism behind authorization. Permissions can be added to a role, and if a particular user logs in with multiple roles assigned to them they will get the combined set of permissions from all roles that they are a member of. See [BZNetworkPermissions] for a list of permissions that BZNetwork currently supports.
 
 
 
