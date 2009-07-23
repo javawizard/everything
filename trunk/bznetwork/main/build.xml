@@ -1,5 +1,5 @@
 <project name="BZNetwork">
-	<property name="target-folder" value="/host/apache/tomcat/webapps/bznetwork">
+	<property name="target-folder" value="/data/apache/tomcat/webapps/bznetwork">
 	</property>
 	<target name="deploy">
 		<delete dir="${target-folder}">
