@@ -1,7 +1,7 @@
 =BZNetwork=
 BZNetwork is a web administration interface for a bzflag server network. It is a Java webapp, so it must be run inside a Java Servlet Container (such as Apache Tomcat, http://tomcat.apache.org). It starts and stops all of the bzfs instances itself, and can use a custom executable other than bzfs if needed.
 
-BZNetwork was originally written for the BZTraining server network. Join irc.freenode.net/#bztraining if you have questions about it, or get in touch with javawizard2539 or jcp.
+BZNetwork was originally written for [http://bztraining.org the BZTraining server network]. Join irc.freenode.net/#bztraining if you have questions about it, or get in touch with javawizard2539 or jcp.
 
 Due to the fact that this document was written before most of BZNetwork itself was written, most of the document is in the future tense.
 
@@ -24,8 +24,6 @@ The url should somehow eventually result in the user's machine visiting a url un
 
 =Authorization=
 Roles are the primary mechanism behind authorization. Permissions can be added to a role, and if a particular user logs in with multiple roles assigned to them they will get the combined set of permissions from all roles that they are a member of. See [BZNetworkPermissions] for a list of permissions that BZNetwork currently supports.
-
-
 
 
 
