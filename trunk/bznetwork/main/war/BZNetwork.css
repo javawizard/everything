@@ -7,3 +7,20 @@
 	color: black;
 	font-weight: bold
 }
+
+.bznetwork-MainScreenHeader {
+	font-weight: bold;
+	font-size: 24px
+}
+
+.bznetwork-MainScreenHeaderName {
+	font-weight: bold;
+	font-size: 24px;
+	color: #444444
+}
+
+.bznetwork-MainScreenHeaderSeparator {
+	font-weight: bold;
+	font-size: 24px;
+	color: #888888
+}

@@ -1,42 +1,31 @@
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
-<!-- The HTML 4.01 Transitional DOCTYPE declaration-->
-<!-- above set at the top of the file will set     -->
-<!-- the browser's rendering engine into           -->
-<!-- "Quirks Mode". Replacing this declaration     -->
-<!-- with a "Standards Mode" doctype is supported, -->
-<!-- but may lead to some differences in layout.   -->
+
+
+<!--
+      BZNetwork itself is written in Java, and then compiled
+      down to JavaScript by GWT (http://gwt.google.com). So
+      you're not going to see any meaningful code in this
+      page or any of the scripts it includes, since GWT
+      obfuscates the whole thing to save bandwidth. 
+      BZNetwork's actual Java source code can be found at 
+      https://bzsound.googlecode.com/svn/trunk/bznetwork/main
+      using Subversion. Join #bztraining at irc.freenode.net
+      if you have questions.
+ -->
+
 
 <html>
 <head>
 <meta http-equiv="content-type" content="text/html; charset=UTF-8">
-
-<!--                                                               -->
-<!-- Consider inlining CSS to reduce the number of requested files -->
-<!--                                                               -->
 <link type="text/css" rel="stylesheet" href="BZNetwork.css">
-
-<!--                                           -->
-<!-- Any title is fine                         -->
-<!--                                           -->
 <title>BZNetwork</title>
-
-<!--                                           -->
-<!-- This script loads your compiled module.   -->
-<!-- If you add any GWT meta tags, they must   -->
-<!-- be added before this line.                -->
-<!--                                           -->
 <script type="text/javascript" language="javascript"
 	src="bznetwork/bznetwork.nocache.js"></script>
 </head>
 
-<!--                                           -->
-<!-- The body can have arbitrary html, or      -->
-<!-- you can leave the body empty if you want  -->
-<!-- to create a completely dynamic UI.        -->
-<!--                                           -->
 <body>
 
-<!-- OPTIONAL: include this if you want history support -->
+<!-- The GWT history frame, used to track history state -->
 <iframe src="javascript:''" id="__gwt_historyFrame" tabIndex='-1'
 	style="position: absolute; width: 0; height: 0; border: 0"></iframe>
 <div id="mainContentPanel" style="width: 100%"></div>

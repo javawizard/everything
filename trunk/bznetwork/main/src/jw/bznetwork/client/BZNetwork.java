@@ -35,14 +35,13 @@ public class BZNetwork implements EntryPoint
      * The message displayed to the user when the server cannot be reached or
      * returns an error.
      */
-    public static final String SERVER_ERROR =
-        "An error occurred while "
+    public static final String SERVER_ERROR = "An error occurred while "
             + "attempting to contact the server. Please check your network "
             + "connection and try again.";
     
     public static final GlobalLinkAsync authLink = GWT.create(GlobalLink.class);
-    public static final GlobalUnauthLinkAsync unauthLink =
-        GWT.create(GlobalUnauthLink.class);
+    public static final GlobalUnauthLinkAsync unauthLink = GWT
+            .create(GlobalUnauthLink.class);
     
     private static VerticalPanel mainPagePanel = new VerticalPanel();
     
@@ -51,17 +50,26 @@ public class BZNetwork implements EntryPoint
      */
     public void onModuleLoad()
     {
-        start();
+        init1();
+    }
+    
+    /**
+     * Asks the server if we're logged in. If we are, then proceeds to init2. If
+     * we're not, then proceeds to initUnauth2.
+     */
+    private void init1()
+    {
+        // TODO Auto-generated method stub
+        
     }
     
     @SuppressWarnings("deprecation")
     public static void start()
     {
         RootPanel rootPanel = RootPanel.get("mainContentPanel");
-        HTMLPanel wrapper =
-            new HTMLPanel(
+        HTMLPanel wrapper = new HTMLPanel(
                 "<table width='100%' border='0' cellspacing='0' cellpadding='20'><tr><td><div id='network"
-                    + "InternalContentWrapper' style='width:100%'></div></td></tr></table>");
+                        + "InternalContentWrapper' style='width:100%'></div></td></tr></table>");
         wrapper.add(mainPagePanel, "networkInternalContentWrapper");
         rootPanel.add(wrapper);
         mainPagePanel.setWidth("100%");
@@ -78,14 +86,15 @@ public class BZNetwork implements EntryPoint
             {
                 PopupPanel box = new PopupPanel(true, false);
                 box.setPopupPosition(menuAnchor.getAbsoluteLeft(), menuAnchor
-                    .getAbsoluteTop()
-                    + menuAnchor.getOffsetHeight());
+                        .getAbsoluteTop()
+                        + menuAnchor.getOffsetHeight());
                 VerticalPanel dialogPanel = new VerticalPanel();
                 dialogPanel.add(new Anchor("Reports"));
                 dialogPanel.add(new Anchor("Bans"));
-                dialogPanel.add(new Anchor(
-                    "<span class='bznetwork-MenuCurrentScreenItem'>Servers</span>",
-                    true));
+                dialogPanel
+                        .add(new Anchor(
+                                "<span class='bznetwork-MenuCurrentScreenItem'>Servers</span>",
+                                true));
                 dialogPanel.add(new Anchor("Logs"));
                 dialogPanel.add(new Anchor("Live"));
                 dialogPanel.add(new Anchor("Users"));
@@ -103,21 +112,22 @@ public class BZNetwork implements EntryPoint
         upperRightPanel.setVerticalAlignment(VerticalPanel.ALIGN_TOP);
         topTable.setWidget(0, 1, upperRightPanel);
         topTable.getFlexCellFormatter().setHorizontalAlignment(0, 0,
-            HorizontalPanel.ALIGN_LEFT);
+                HorizontalPanel.ALIGN_LEFT);
         topTable.getFlexCellFormatter().setHorizontalAlignment(0, 1,
-            HorizontalPanel.ALIGN_RIGHT);
+                HorizontalPanel.ALIGN_RIGHT);
         topTable.getFlexCellFormatter().setVerticalAlignment(0, 1,
-            VerticalPanel.ALIGN_TOP);
+                VerticalPanel.ALIGN_TOP);
         topTable.setWidth("100%");
         mainPagePanel.add(topTable);
         DisclosurePanel disclosure = new DisclosurePanel("Overlord by Dutchrai");
         final VerticalPanel serverPanel = new VerticalPanel();
         serverPanel.add(new HTML("<b>Users:</b>"));
         serverPanel
-            .add(new HTML(
-                "&nbsp;&nbsp;<font color='#00cccc'>@</font>&nbsp;<font color='#cc0000'>javawizard2539</font> (Excellence in Action)"));
-        serverPanel.add(new HTML(
-            "&nbsp;&nbsp;<font color='#00cc00'>phenoxydine</font> (is phake)"));
+                .add(new HTML(
+                        "&nbsp;&nbsp;<font color='#00cccc'>@</font>&nbsp;<font color='#cc0000'>javawizard2539</font> (Excellence in Action)"));
+        serverPanel
+                .add(new HTML(
+                        "&nbsp;&nbsp;<font color='#00cc00'>phenoxydine</font> (is phake)"));
         serverPanel.setVisible(false);
         disclosure.addEventHandler(new DisclosureHandler()
         {
@@ -153,19 +163,21 @@ public class BZNetwork implements EntryPoint
         table.getFlexCellFormatter().setColSpan(2, 0, 2);
         table.setHTML(3, 0, "5154");
         table.getFlexCellFormatter().setHorizontalAlignment(3, 0,
-            HorizontalPanel.ALIGN_RIGHT);
+                HorizontalPanel.ALIGN_RIGHT);
         table.setWidget(3, 1, disclosure);
         table.setHTML(2, 2, "<u>create server</u> <u>rename</u>");
         table
-            .setHTML(3, 3,
-                "<u>start</u> <u>stop</u> <u>restart</u> <u>logs</u> <u>say</u> <u>live chat</u>");
+                .setHTML(
+                        3,
+                        3,
+                        "<u>start</u> <u>stop</u> <u>restart</u> <u>logs</u> <u>say</u> <u>live chat</u>");
         table
-            .setHTML(
-                3,
-                4,
-                "<font color='#cc0000'>1</font><font color='#aa0000'>/</font><font color='#880000'>15</font>"
-                    + "&nbsp;&nbsp;<font color='#00cc00'>1</font><font color='#00aa00'>/</font><font color='#008800'>15</font>"
-                    + "&nbsp;&nbsp;<font color='#cccccc'>0</font><font color='#aaaaaa'>/</font><font color='#888888'>15</font>");
+                .setHTML(
+                        3,
+                        4,
+                        "<font color='#cc0000'>1</font><font color='#aa0000'>/</font><font color='#880000'>15</font>"
+                                + "&nbsp;&nbsp;<font color='#00cc00'>1</font><font color='#00aa00'>/</font><font color='#008800'>15</font>"
+                                + "&nbsp;&nbsp;<font color='#cccccc'>0</font><font color='#aaaaaa'>/</font><font color='#888888'>15</font>");
         table.setWidget(4, 1, serverPanel);
         table.getFlexCellFormatter().setColSpan(4, 1, 4);
     }
