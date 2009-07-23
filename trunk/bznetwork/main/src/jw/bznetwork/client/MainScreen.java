@@ -1,15 +1,19 @@
 package jw.bznetwork.client;
 
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashMap;
 
 import com.google.gwt.user.client.ui.Anchor;
 import com.google.gwt.user.client.ui.ClickListener;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.FlexTable;
+import com.google.gwt.user.client.ui.HTML;
 import com.google.gwt.user.client.ui.HTMLPanel;
 import com.google.gwt.user.client.ui.HorizontalPanel;
 import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.PopupPanel;
+import com.google.gwt.user.client.ui.SimplePanel;
 import com.google.gwt.user.client.ui.VerticalPanel;
 import com.google.gwt.user.client.ui.Widget;
 
@@ -35,12 +39,17 @@ import com.google.gwt.user.client.ui.Widget;
  * @author Alexander Boyd
  * 
  */
-public class MainScreen extends Composite
+@SuppressWarnings("deprecation")
+public class MainScreen extends Composite implements ClickListener
 {
     private Label headerLabel;
     private Label headerScreenLabel;
     private ArrayList<Screen> screens = new ArrayList<Screen>();
+    private ArrayList<Anchor> screenMenuLinks = new ArrayList<Anchor>();
     private Screen selectedScreen;
+    private PopupPanel menuBox = new PopupPanel(true, false);
+    private SimplePanel mainContentWrapper = new SimplePanel();
+    private HashMap<String, Screen> screensByName = new HashMap<String, Screen>();
     
     /**
      * Creates a new MainScreen.
@@ -88,34 +97,106 @@ public class MainScreen extends Composite
         topTable.setWidget(0, 0, headerPositionWidget);
         HorizontalPanel upperRightPanel = new HorizontalPanel();
         final Anchor menuAnchor = new Anchor("Menu");
+        VerticalPanel menuBoxPanel = new VerticalPanel();
+        for (Screen screen : screens)
+        {
+            Anchor anchor = new Anchor(screen.getTitle());
+            anchor.addClickListener(this);
+            anchor.addStyleName("bznetwork-MenuScreenItem");
+            menuBoxPanel.add(anchor);
+            screenMenuLinks.add(anchor);
+        }
+        menuBox.setWidget(menuBoxPanel);
         menuAnchor.addClickListener(new ClickListener()
         {
             
             @Override
             public void onClick(Widget sender)
             {
-                PopupPanel box = new PopupPanel(true, false);
-                box.setPopupPosition(menuAnchor.getAbsoluteLeft(), menuAnchor
-                        .getAbsoluteTop()
-                        + menuAnchor.getOffsetHeight());
-                VerticalPanel dialogPanel = new VerticalPanel();
-                dialogPanel.add(new Anchor("Reports"));
-                dialogPanel.add(new Anchor("Bans"));
-                dialogPanel
-                        .add(new Anchor(
-                                "<span class='bznetwork-MenuCurrentScreenItem'>Servers</span>",
-                                true));
-                dialogPanel.add(new Anchor("Logs"));
-                dialogPanel.add(new Anchor("Live"));
-                dialogPanel.add(new Anchor("Users"));
-                dialogPanel.add(new Anchor("Callsigns"));
-                dialogPanel.add(new Anchor("Roles"));
-                dialogPanel.add(new Anchor("Authentication"));
-                dialogPanel.add(new Anchor("Help"));
-                box.setWidget(dialogPanel);
-                box.show();
+                menuBox.setPopupPosition(menuAnchor.getAbsoluteLeft(),
+                        menuAnchor.getAbsoluteTop()
+                                + menuAnchor.getOffsetHeight());
+                menuBox.show();
             }
         });
-        
+        upperRightPanel.add(menuAnchor);
+        for (int i = 0; i < links.length; i++)
+        {
+            Anchor linkAnchor = new Anchor(links[i], true);
+            linkAnchor.addClickListener(listeners[i]);
+            linkAnchor.addStyleName("bznetwork-MainScreenRightLink");
+            upperRightPanel.add(new HTML("&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;"));
+            upperRightPanel.add(linkAnchor);
+        }
+        upperRightPanel.setVerticalAlignment(VerticalPanel.ALIGN_TOP);
+        topTable.setWidget(0, 1, upperRightPanel);
+        topTable.getFlexCellFormatter().setHorizontalAlignment(0, 0,
+                HorizontalPanel.ALIGN_LEFT);
+        topTable.getFlexCellFormatter().setHorizontalAlignment(0, 1,
+                HorizontalPanel.ALIGN_RIGHT);
+        topTable.getFlexCellFormatter().setVerticalAlignment(0, 1,
+                VerticalPanel.ALIGN_TOP);
+        topTable.setWidth("100%");
+        mainPagePanel.add(topTable);
+        mainPagePanel.add(mainContentWrapper);
+        this.screens.addAll(Arrays.asList(screens));
+        for (Screen s : screens)
+        {
+            screensByName.put(s.getName(), s);
+        }
+        selectScreen(0);
+    }
+    
+    @Override
+    public void onClick(Widget sender)
+    {
+        int anchorIndex = screenMenuLinks.indexOf(sender);
+        selectScreen(anchorIndex);
+    }
+    
+    public void selectScreen(int index)
+    {
+        Screen previous = selectedScreen;
+        if (previous != null)
+        {
+            if (previous == screens.get(index))
+            {
+                /*
+                 * We're selecting the currently-selected screen, so we'll just
+                 * reselect it.
+                 */
+                previous.reselect();
+                return;
+            }
+            /*
+             * We're selecting a different screen than the currently-selected
+             * one, but there is, indeed, one that is currently selected. We'll
+             * deselect it.
+             */
+            previous.deselect();
+            screenMenuLinks.get(screens.indexOf(previous)).removeStyleName(
+                    "bznetwork-MenuCurrentScreenItem");
+        }
+        /*
+         * We're either selecting a different screen than the current one, or
+         * there is no currently-selected screen.
+         */
+        mainContentWrapper.clear();
+        selectedScreen = screens.get(index);
+        mainContentWrapper.setWidget(selectedScreen.getWidget());
+        selectedScreen.select();
+        screenMenuLinks.get(index).addStyleName(
+                "bznetwork-MenuCurrentScreenItem");
+        headerScreenLabel.setText(selectedScreen.getTitle());
+    }
+    
+    public void selectScreen(String name)
+    {
+        selectScreen(screens.indexOf(screensByName.get(name)));
+    }
+    
+    public Screen get(String screenName)
+    {
+        return screensByName.get(screenName);
     }
 }

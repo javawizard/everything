@@ -51,7 +51,6 @@ create table servers (
     notes           varchar(4096), -- Some notes on the server. This can be any text, and serves simply to note what the server is for.
     inheritgroupdb  boolean        -- True if the server should inherit its parent group's groupdb. The parent group's groupdb always comes before the server's own groupdb when handing the groupdb to the server, so the server's groupdb can use bzflag groups defined in the parent group's groupdb.
 );
-
 -- Holds the actions performed on the server. This is simply a log that users with appropriate permissions can use to view what other users have done on the server. This is similar to other services (such as SourceForge)'s concept of auditing.
 create table actions (
     provider varchar(64),    -- The name of the authentication provider that the user that triggered this event is using
@@ -61,10 +60,18 @@ create table actions (
     details  varchar(8192),  -- Additional details as to what the event is about. For example, the event "create-internal-user" might use this to specify information about the user that was created. Or "change-auth-provider" might specify what change actually happened (enabling a provider, disabling it, or changing the default provider).
     target   int             -- If this event had to do with a particular server or group, then this is its id. If not, this is -1 (including events on other objects that have ids, such as roles; -1 is used in that case also, although I might change that in the future)
 );
+-- Holds general server configuration. Configuration that is likely to be changed often is stored here. There should only ever be one row in this table.
+create table configuration (
+    welcome  varchar(4096), -- A message that is shown on the welcome screen, right at the top, above the list of servers. It can contain html.
+    sitename varchar(64),   -- The name of the site. For example, BZTraining. This must not contain html.
+    contact  varchar(512),  -- Some sort of contact information that could adequately replace <contact> in the sentence "Get in touch with <contact> if you have problems with our site". This could be an email address, a list of people, or whatever.  
+);
 
 
 
-
+-- Now for some initial table rows.
+insert into configuration values ('Congratulations! You''ve successfully installed BZNetwork onto your server. Head on over to the <b>Configuration</b> page, which can be accessed by using the <b>Menu</b> link in the upper-right corner, to change this message. Then check out the <b>Help</b> page, again accessed using the <b>Menu</b> link, to get started.', 'MySiteName', 'mysitename@example.com');
+insert into idsequence values (10);
 
 
 
