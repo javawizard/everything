@@ -34,6 +34,8 @@ Here is the list of available permissions and what they do. At the bottom of the
 || edit-server-notes       || server  ||Allows the user to edit a server's notes. These notes are general information on what the server is for. Anyone with view-in-server-list on a server can read the server's notes, but this permission is required to actually edit those notes.||
 || edit-group-notes        || group   ||Allows the user to edit a group's notes. This is identical to edit-server-notes, except that note viewing is dependent on view-in-group-list instead of view-in-server-list.||
 || view-in-group-list      || group   ||Allows the user to view a particular group in the group list. This is similar to view-in-server-list. View-in-server-list, and consequently almost all other server-related permissions, are pointless without view-in-group-list for the group that owns the servers.||
+|| view-action-log         || global  ||Allows the user to view the action log, which records the actions of all users on the site.||
+|| clear-action-log        || global  ||Allows the user to clear the action log of any user. After the action log is cleared, it will contain one event, noting that the action log was cleared.||
 
 The following permissions are sensitive:
  * *manage-users:* The user can apply any role to their own account, allowing them to gain the highest possible level of access of anyone on the server.
