@@ -19,10 +19,10 @@ Welcome to a new installation of BZNetwork. Before you can log in,
 you'll need to provide some information that BZNetwork can use to set
 everything up. Make sure that you've placed BZNetwork in a folder whose
 full path does not contain any HTML special characters (&gt;, &lt;,
-&quot;, and &amp; specifically).<br/>
+&quot;, and &amp; specifically).
 <br />
 <form method="post" action="doinstall.jsp" onsubmit="document.thesubmitbutton.disabled=true;return true;">
-<table border="0" cellspacing="0" cellpadding="1">
+<table border="0" cellspacing="0" cellpadding="1"><tr><td colspan="2"><hr/></td></tr>
 	<tr>
 		<td width="250px"><b>Database Driver:</b></td>
 		<td><input type="text" name="db-driver" value="org.h2.Driver" /></td>
@@ -79,7 +79,7 @@ full path does not contain any HTML special characters (&gt;, &lt;,
 		when a bzfs server is started by BZNetwork. BZNetwork must have
 		read/write access to this folder, but bzfs only needs read access to
 		this folder.</small></td>
-	</tr>
+	</tr><tr><td colspan="2"><hr/></td></tr>
 	<tr>
 		<td colspan="2">You're now ready to set up BZNetwork. Make sure
 		you've double-checked everything. When you're ready, click <b>Install</b>.
