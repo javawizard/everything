@@ -114,7 +114,7 @@ full path does not contain any HTML special characters (&gt;, &lt;,
 		every time BZNetwork starts up.<br />
 		<br />
 		Ok, now you're really ready to set up BZNetwork. Go ahead and
-		click that shiny install button right below this text.</td>
+		click that install button.</td>
 	</tr>
 	<tr>
 		<td>&nbsp;</td>
