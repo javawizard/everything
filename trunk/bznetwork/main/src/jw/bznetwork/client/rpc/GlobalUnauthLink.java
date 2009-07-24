@@ -5,5 +5,5 @@ import com.google.gwt.user.client.rpc.RemoteServiceRelativePath;
 @RemoteServiceRelativePath("bypass/unauth-link")
 public interface GlobalUnauthLink extends RemoteService
 {
-    
+    public boolean isLoggedIn();
 }
