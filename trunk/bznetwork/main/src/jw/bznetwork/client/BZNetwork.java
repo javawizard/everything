@@ -7,6 +7,7 @@ import jw.bznetwork.client.rpc.GlobalUnauthLinkAsync;
 
 import com.google.gwt.core.client.EntryPoint;
 import com.google.gwt.core.client.GWT;
+import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.Anchor;
 import com.google.gwt.user.client.ui.Button;
@@ -54,8 +55,8 @@ public class BZNetwork implements EntryPoint
     }
     
     /**
-     * Asks the server if we're logged in. If we are, then proceeds to init2. If
-     * we're not, then proceeds to initUnauth2.
+     * Asks the server if we're logged in. If we are, then proceed to init2. If
+     * we're not, then proceed to initUnauth2.
      */
     private void init1()
     {
@@ -180,5 +181,20 @@ public class BZNetwork implements EntryPoint
                                 + "&nbsp;&nbsp;<font color='#cccccc'>0</font><font color='#aaaaaa'>/</font><font color='#888888'>15</font>");
         table.setWidget(4, 1, serverPanel);
         table.getFlexCellFormatter().setColSpan(4, 1, 4);
+    }
+    
+    public static void fail(Throwable t)
+    {
+        if (t instanceof PermissionDeniedException)
+        {
+            Window.alert("A permission error was encountered: "
+                    + t.getMessage());
+        }
+        else
+        {
+            t.printStackTrace();
+            Window.alert("An unknown error has occured: "
+                    + t.getClass().getName() + ": " + t.getMessage());
+        }
     }
 }

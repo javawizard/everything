@@ -62,17 +62,23 @@ create table actions (
 );
 -- Holds general server configuration. Configuration that is likely to be changed often is stored here. There should only ever be one row in this table.
 create table configuration (
-    welcome  varchar(4096), -- A message that is shown on the welcome screen, right at the top, above the list of servers. It can contain html.
-    sitename varchar(64),   -- The name of the site. For example, BZTraining. This must not contain html.
-    contact  varchar(512),  -- Some sort of contact information that could adequately replace <contact> in the sentence "Get in touch with <contact> if you have problems with our site". This could be an email address, a list of people, or whatever.  
+    welcome    varchar(4096), -- A message that is shown on the welcome screen, right at the top, above the list of servers. It can contain html.
+    sitename   varchar(64),   -- The name of the site. For example, BZTraining. This must not contain html.
+    contact    varchar(512),  -- Some sort of contact information that could adequately replace <contact> in the sentence "Get in touch with <contact> if you have problems with our site". This could be an email address, a list of people, or whatever.
+    executable varchar(512)   -- The executable that should be run to start the bzflag server. This is, by default, "bzfs".
 );
 
 
 
 -- Now for some initial table rows.
-insert into configuration values ('Congratulations! You''ve successfully installed BZNetwork onto your server. Head on over to the <b>Configuration</b> page, which can be accessed by using the <b>Menu</b> link in the upper-right corner, to change this message. Then check out the <b>Help</b> page, again accessed using the <b>Menu</b> link, to get started.', 'MySiteName', 'mysitename@example.com');
+insert into configuration values ('Congratulations! You''ve successfully installed BZNetwork onto your server. Head on over to the <b>Configuration</b> page, which can be accessed by using the <b>Menu</b> link in the upper-right corner, to change this message. Then check out the <b>Help</b> page, again accessed using the <b>Menu</b> link, to get started.', 
+'MySiteName', 'mysitename@example.com', 'bzfs');
 insert into idsequence values (10);
-
+insert into roles values (1, 'Administrator');
+insert into permissions values (1, 'all', -1);
+-- The hashed password is admin, so both the username and the password are admin.
+insert into users values ('admin', '-3852bb345289d5a25f5bad0617ab023e1f185ad5c7fea0dc0c154e27f46ce22b8d9cb20538e32cb143ca2e954804756f37e068aeec2938ac72396227216f8814', 1);
+insert into actions values ('internal', 'admin', NOW(), 'setup', 'BZNetwork installation was successfully completed.', -1);
 
 
 

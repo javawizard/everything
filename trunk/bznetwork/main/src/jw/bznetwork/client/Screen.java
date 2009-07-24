@@ -11,6 +11,13 @@ import com.google.gwt.user.client.ui.Widget;
 public interface Screen
 {
     /**
+     * Called only once throughout the screen's lifetime. This is called when
+     * the screen is first installed into the MainScreen, and can be used to do
+     * stuff like set up the widget.
+     */
+    public void init();
+    
+    /**
      * Called when this screen becomes the active screen, after another screen
      * was deselected or if this is the first screen to become active.
      */
@@ -48,7 +55,9 @@ public interface Screen
     
     /**
      * Returns this screen's widget. This is the widget that is used to actually
-     * display the screen.
+     * display the screen. The widget returned should be exactly the same object
+     * every time this method is called, so it's advisable to initialize the
+     * widget in the init method and then store it in a field.
      * 
      * @return
      */

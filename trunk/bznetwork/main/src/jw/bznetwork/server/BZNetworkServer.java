@@ -1,6 +1,8 @@
 package jw.bznetwork.server;
 
 import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileInputStream;
 import java.io.InputStreamReader;
 import java.io.StringReader;
 import java.util.ArrayList;
@@ -27,6 +29,9 @@ import com.ibatis.sqlmap.client.SqlMapClientBuilder;
 public class BZNetworkServer implements ServletContextListener
 {
     private static HashMap<String, AuthProvider> authProviders = new HashMap<String, AuthProvider>();
+    private static boolean isInstalled;
+    private static File cacheFolder;
+    private static File storeFolder;
     
     /**
      * Sticks information on to the request indicating that the user has just
@@ -112,30 +117,29 @@ public class BZNetworkServer implements ServletContextListener
         try
         {
             context = sce.getServletContext();
+            File configFolder = new File(context.getRealPath("/WEB-INF/config"));
+            if (!configFolder.exists())
+            {
+                isInstalled = false;
+                return;
+            }
+            isInstalled = true;
+            Properties settingsProps = new Properties();
+            settingsProps.load(new FileInputStream(new File(configFolder,
+                    "settings.props")));
             String generalDataConfig = StringUtils.readStream(getClass()
                     .getResourceAsStream("/general-sql.xml"));
-            /*
-             * FIXME: Some sort of configuration mechanism needs to be added for
-             * this, so that when bznetwork is actually deployed, it can connect
-             * to the real postgres database. For now, bznetwork will be
-             * hard-coded to use an h2 database.
-             */
-            String dbLocation = "/home/amboyd/bznetwork-db";
-            if (System.getenv("BZNETWORK_DATABASE_URL") != null)
-            {
-                dbLocation = System.getenv("BZNETWORK_DATABASE_URL");
-                System.out.println("Using alternate data storage location "
-                        + dbLocation);
-            }
             generalDataConfig = generalDataConfig.replace("$$driver$$",
-                    "org.h2.Driver");
-            generalDataConfig = generalDataConfig.replace("$$url$$", "jdbc:h2:"
-                    + dbLocation);
-            generalDataConfig = generalDataConfig.replace("$$username$$", "sa");
-            generalDataConfig = generalDataConfig.replace("$$password$$", "");
+                    settingsProps.getProperty("db-driver"));
+            generalDataConfig = generalDataConfig.replace("$$url$$",
+                    settingsProps.getProperty("db-url"));
+            generalDataConfig = generalDataConfig.replace("$$username$$",
+                    settingsProps.getProperty("db-username"));
+            generalDataConfig = generalDataConfig.replace("$$password$$",
+                    settingsProps.getProperty("db-password"));
             try
             {
-                Class.forName("org.h2.Driver");
+                Class.forName(settingsProps.getProperty("db-driver"));
             }
             catch (ClassNotFoundException e)
             {
@@ -150,8 +154,9 @@ public class BZNetworkServer implements ServletContextListener
              * that can change during the lifetime of the vm.
              */
             BufferedReader authProviderReader = new BufferedReader(
-                    new InputStreamReader(context
-                            .getResourceAsStream("/WEB-INF/server/auth.txt")));
+                    new InputStreamReader(new FileInputStream(new File(
+                            settingsProps.getProperty("store-folder"),
+                            "enabled-auth-providers.props"))));
             String line;
             while ((line = authProviderReader.readLine()) != null)
             {
@@ -169,6 +174,11 @@ public class BZNetworkServer implements ServletContextListener
             e.printStackTrace();
             throw new RuntimeException(e);
         }
+    }
+    
+    public static boolean isInstalled()
+    {
+        return isInstalled;
     }
     
 }

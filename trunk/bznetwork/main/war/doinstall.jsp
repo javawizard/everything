@@ -11,6 +11,7 @@ BZNetwork is already installed on this server, and doesn't need to be installed 
     else
     {
 %>
+<!-- BZNetwork has not yet been installed, so we're in business. -->
 <%
     }
 %>
