@@ -1,10 +1,11 @@
 
-<%@page import="java.io.File"%><html>
-<body>
+<%@page import="java.io.File"%>
+<%@page import="jw.bznetwork.server.BZNetworkServer"%><html>
+<body style="font-family: sans-serif">
 <%
     File configFolder = new File(application
             .getRealPath("/WEB-INF/config"));
-    if (configFolder.exists())
+    if (BZNetworkServer.isInstalled())
     {
 %>
 BZNetwork is already installed on this server, and doesn't need to be
@@ -102,11 +103,22 @@ full path does not contain any HTML special characters (&gt;, &lt;,
 		BZNetwork will try to write to <tt><%=application
                                 .getRealPath("/WEB-INF/config/settings.props")%></tt>
 		while installing. If this file can't be written to, you will be given
-		some text that you will need to copy into this file.</td>
+		some text that you will need to copy into this file.<br />
+		<br />
+		If BZNetwork has already been installed in the specified database, you
+		will receive a warning. You will still be able to continue (and
+		BZNetwork will preserve your existing data), but you should
+		double-check that the store folder that you're using is the same store
+		folder that you used with your previous installation. The cache folder
+		can be different without any consequences, as its contents are deleted
+		every time BZNetwork starts up.<br />
+		<br />
+		Ok, now you're really ready to set up BZNetwork. Go ahead and
+		click that shiny install button right below this text.</td>
 	</tr>
 	<tr>
 		<td>&nbsp;</td>
-		<td><input type="submit" name="thesubmitbutton" value="Install" /></td>
+		<td><input type="submit" name="thesubmitbutton" value="Install" style="font-weight: bold"/></td>
 	</tr>
 
 </table>

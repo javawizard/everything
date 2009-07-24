@@ -16,21 +16,28 @@
 -->
 
 <%
-    AuthProvider[] enabledProviders = BZNetworkServer
-            .getEnabledAuthProviders();
-    String defaultProviderId = BZNetworkServer.getDefaultAuthProvider();
     String targetUrl = null;
-    if (defaultProviderId == null)
-        targetUrl = request.getContextPath()
-                + "/BZTraining.html?mode=choose-auth-provider";
+    String defaultProviderId = BZNetworkServer.getDefaultAuthProvider();
+    if (!BZNetworkServer.isInstalled())
+    {
+        targetUrl = request.getContextPath() + "/install.jsp";
+    }
     else
     {
-        for (AuthProvider provider : enabledProviders)
+        AuthProvider[] enabledProviders = BZNetworkServer
+                .getEnabledAuthProviders();
+        if (defaultProviderId == null)
+            targetUrl = request.getContextPath()
+                    + "/BZTraining.html?mode=choose-auth-provider";
+        else
         {
-            if (provider.getId().equals(defaultProviderId))
+            for (AuthProvider provider : enabledProviders)
             {
-                targetUrl = provider.getUrl();
-                break;
+                if (provider.getId().equals(defaultProviderId))
+                {
+                    targetUrl = provider.getUrl();
+                    break;
+                }
             }
         }
     }

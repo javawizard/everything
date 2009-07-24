@@ -68,11 +68,12 @@ public class BZNetworkServer implements ServletContextListener
     private static Properties loadEnabledAuthProps()
     {
         Properties props = new Properties();
+        if (!isInstalled())
+            return props;
         try
         {
-            props
-                    .load(context
-                            .getResourceAsStream("/WEB-INF/config/enabled-auth-providers.props"));
+            props.load(new FileInputStream(new File(storeFolder,
+                    "enabled-auth-providers.props")));
         }
         catch (Exception e)
         {
@@ -83,6 +84,8 @@ public class BZNetworkServer implements ServletContextListener
     
     public static AuthProvider[] getEnabledAuthProviders()
     {
+        if (!isInstalled())
+            return new AuthProvider[0];
         Properties props = loadEnabledAuthProps();
         ArrayList<AuthProvider> enabledProviders = new ArrayList<AuthProvider>();
         for (AuthProvider provider : authProviders.values())
@@ -148,15 +151,16 @@ public class BZNetworkServer implements ServletContextListener
             }
             generalDataClient = SqlMapClientBuilder
                     .buildSqlMapClient(new StringReader(generalDataConfig));
+            storeFolder = new File(settingsProps.getProperty("store-folder"));
+            cacheFolder = new File(settingsProps.getProperty("cache-folder"));
             /*
              * Now we'll load the authentication providers. We're just loading
              * the providers here, not the list of which ones are enabled, since
              * that can change during the lifetime of the vm.
              */
             BufferedReader authProviderReader = new BufferedReader(
-                    new InputStreamReader(new FileInputStream(new File(
-                            settingsProps.getProperty("store-folder"),
-                            "enabled-auth-providers.props"))));
+                    new InputStreamReader(context
+                            .getResourceAsStream("/WEB-INF/server/auth.txt")));
             String line;
             while ((line = authProviderReader.readLine()) != null)
             {
