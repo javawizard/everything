@@ -10,7 +10,7 @@
 
 BZ_GET_PLUGIN_VERSION
 
-std::vector<std::string> stdinList;
+std::vector<std::string*> stdinList;
 pthread_mutex_t stdinListLock =
 PTHREAD_MUTEX_INITIALIZER;
 pthread_t stdinReadThread;
@@ -18,19 +18,46 @@ std::string currentStdinString;
 
 void bzn_outputData(std::string value);
 
+void processStdinString(std::string* currentString)
+{
+	printf("This string was supplied for processing: %s\n",
+			currentString->c_str());
+}
+
+// START EVENT HANDLERS
+
+void eProcessTickEvent(bz_TickEventData *eventData)
+{
+	pthread_mutex_lock(&stdinListLock);
+	while (stdinList.size() > 0)
+	{
+		std::string* currentString = stdinList.at(0);
+		processStdinString(currentString);
+		stdinList.erase(stdinList.begin());
+		delete currentString;
+	}
+	pthread_mutex_unlock(&stdinListLock);
+}
+
+// END EVENT HANDLERS
+
 class BZNetworkEventHandler: public bz_EventHandler,
 		public bz_CustomSlashCommandHandler
 {
 	public:
 		virtual void process(bz_EventData *eventData)
 		{
+			if (eventData->eventType == bz_eTickEvent)
+			{
+				eProcessTickEvent((bz_TickEventData*) eventData);
+			}
 		}
 		virtual bool handle(int playerID, bzApiString command,
 				bzApiString message, bzAPIStringList *params)
 		{
-			if (strcasecmp(command.c_str(), "bzn")) // is it for me ?
+			if (strcasecmp(command.c_str(), "bzn"))
 				return false;
-			bzn_outputData("Message received");
+			bzn_outputData("bzncmd");
 			bz_sendTextMessage(BZ_SERVER, playerID,
 					"I just received a /bzn command from you.");
 			return true;
@@ -44,6 +71,7 @@ BZNetworkEventHandler singleEventHandler;
 BZF_PLUGIN_CALL int bz_Load(const char* /*commandLine*/)
 {
 	bz_registerCustomSlashCommand("bzn", &singleEventHandler);
+	bz_registerEvent(bz_eTickEvent, &singleEventHandler);
 	// Perhaps allow this to be configured via an argument, and
 	// then have this value be a BZNetwork configuration setting
 	bz_setMaxWaitTime(1.0);
@@ -66,16 +94,18 @@ void bzn_outputData(std::string value)
 int bz_Unload(void)
 {
 	bz_removeCustomSlashCommand("bzn");
+	bz_removeEvent(bz_eTickEvent, &singleEventHandler);
 	bzn_outputData("bznunload");
 	return 0;
 }
 
 void* threadedStdinReadLoop(void* bogus)
 {
-	while(true)
+	while (true)
 	{
-		getline(cin,currentStdinString);
-		std::string newReadString = new std::string(currentStdinString.c_str());
+		getline(cin, currentStdinString);
+		std::string* newReadString =
+				new std::string(currentStdinString.c_str());
 		pthread_mutex_lock(&stdinListLock);
 		stdinList.push_back(newReadString);
 		pthread_mutex_unlock(&stdinListLock);
