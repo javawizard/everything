@@ -218,6 +218,19 @@ void stringSplit(std::string string, std::vector<std::string>* vector,
 	{
 		attempts += 1;
 		matchedIndex = string.find(search, afterLastMatchedIndex);
+		if (matchedIndex == std::string::npos)
+			/*
+			 * We'll just break. The if statement after this will take
+			 * care of adding the rest of the string to the vector.
+			 */
+			break;
+		/*
+		 * If we're here, then we do have a match. We'll substring from
+		 * afterLastMatchedIndex to matchedIndex, add that string to the
+		 * vector, and set afterLastMatchedIndex to matchedIndex+searchSize.
+		 */
+		vector->push_back(string.substr(afterLastMatchedIndex, matchedIndex));
+		afterLastMatchedIndex = matchedIndex + searchSize;
 	}
 	if (afterLastMatchedIndex < string.size())
 	{
