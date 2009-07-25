@@ -1,0 +1,1 @@
+bz_iplugin_bznetwork is a plugin written by javawizard2539/jcp for BZNetwork. The plugin is loaded into all bzfs servers that bznetwork runs, and it uses the plugin to interact with bzfs. The plugin takes over stdin and stdout, and in order for bznetwork to function correctly bz_iplugin_bznetwork must be the only plugin to access these streams.
