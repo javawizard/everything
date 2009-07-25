@@ -14,6 +14,7 @@ std::vector<std::string> stdinList;
 pthread_mutex_t stdinListLock =
 PTHREAD_MUTEX_INITIALIZER;
 pthread_t stdinReadThread;
+std::string currentStdinString;
 
 void bzn_outputData(std::string value);
 
@@ -71,7 +72,14 @@ int bz_Unload(void)
 
 void* threadedStdinReadLoop(void* bogus)
 {
-
+	while(true)
+	{
+		getline(cin,currentStdinString);
+		std::string newReadString = new std::string(currentStdinString.c_str());
+		pthread_mutex_lock(&stdinListLock);
+		stdinList.push_back(newReadString);
+		pthread_mutex_unlock(&stdinListLock);
+	}
 }
 
 // Local Variables: ***
