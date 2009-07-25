@@ -20,8 +20,15 @@ void bzn_outputData(std::string value);
 
 void processStdinString(std::string* currentString)
 {
-	printf("This string was supplied for processing: %s\n",
-			currentString->c_str());
+	size_t firstSpaceIndex = currentString->find(" ");
+	if (firstSpaceIndex == std::string::npos)
+		bzn_outputData(
+				"bznerror noinputspace There was no space in the input line.");
+	std::string commandName = currentString->substr(0, firstSpaceIndex);
+	std::string commandArguments = currentString->substr(firstSpaceIndex + 1,
+			std::string::npos);
+	printf("Command: \"%s\", Arguments: \"%s\"\n", commandName.c_str(),
+			commandArguments.c_str());
 }
 
 // START EVENT HANDLERS
@@ -87,7 +94,12 @@ BZF_PLUGIN_CALL int bz_Load(const char* /*commandLine*/)
 
 void bzn_outputData(std::string value)
 {
-	assert(value.length() < 65529);
+	if (value.length() > 65523)
+	{
+		bzn_outputData(
+				"bznerror excessiveoutput The output length was too long.");
+		return;
+	}
 	printf("|%.5d%s\n", value.length(), value.c_str());
 }
 
