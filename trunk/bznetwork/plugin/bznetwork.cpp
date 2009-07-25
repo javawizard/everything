@@ -15,38 +15,98 @@ pthread_mutex_t stdinListLock =
 PTHREAD_MUTEX_INITIALIZER;
 pthread_t stdinReadThread;
 std::string currentStdinString;
+typedef std::map<std::string, int> stringIntMap;
+stringIntMap playerIdsByCallsign;
 
 bz_eTeamType colorNameToDef(const char* color);
 const char* colorDefToName(bz_eTeamType team);
 int parseInt(std::string value);
 void bzn_outputData(std::string value);
 void stringSplit(std::string string, std::vector<std::string>* vector,
-		int maxItems);
+		std::string search, int maxItems);
+int getPlayerByCallsign(std::string callsign);
 
 void processStdinString(std::string* currentString)
 {
-	size_t firstSpaceIndex = currentString->find(" ");
-	if (firstSpaceIndex == std::string::npos)
-	{
-		bzn_outputData(
-				"bznerror noinputspace There was no space in the input line.");
-		return;
-	}
-	std::string command = currentString->substr(0, firstSpaceIndex);
-	std::string arguments = currentString->substr(firstSpaceIndex + 1,
-			std::string::npos);
+	std::vector<std::string> argumentList;
+	stringSplit((*currentString), &argumentList, " ", 2);
+	std::string command = argumentList.at(0);
+	std::string arguments;
+	if (argumentList.size() > 1)
+		arguments = argumentList.at(1);
+	else
+		arguments = "";
 	if (command == "say")
 	{
 		bz_sendTextMessage(BZ_SERVER, BZ_ALLUSERS, arguments.c_str());
 	}
 	else if (command == "saytofromplayer")
 	{
-		int space1 = arguments.find(" ");
-		int space2 = arguments.find(" ", space1 + 1);
-		std::string string1 = arguments.substr(0, space1);
-		std::string string2 = arguments.substr(space1 + 1, (space2 - space1)
-				- 1);
-		bz_sendTextMessage(BZ_SERVER, BZ_ALLUSERS, arguments.c_str());
+		stringSplit(arguments, &argumentList, "|", 3);
+		if (argumentList.size() < 3)
+		{
+			bzn_outputData(
+					"bznerror other Need 3 arguments (separated by pipes) to saytofromplayer: fromcallsign, tocallsign, message, +server for the server, +all for all players");
+			return;
+		}
+		std::string fromString = argumentList.at(0);
+		std::string toString = argumentList.at(1);
+		std::string messageString = argumentList.at(2);
+		int fromInt = getPlayerByCallsign(fromString);
+		int toInt = getPlayerByCallsign(toString);
+		if (fromInt == BZ_NULLUSER)
+		{
+			std::string output;
+			output += "bznerror nosuchplayer The from player "
+				"is not a valid player here: ";
+			output += fromString;
+			bzn_outputData(output);
+			return;
+		}
+		if (toInt == BZ_NULLUSER)
+		{
+			std::string output;
+			output += "bznerror nosuchplayer The to player "
+				"is not a valid player here: ";
+			output += toString;
+			bzn_outputData(output);
+			return;
+		}
+		bz_sendTextMessage(fromInt, toInt, messageString.c_str());
+	}
+	else if (command == "saytofromplayerteam")
+	{
+		stringSplit(arguments, &argumentList, "|", 3);
+		if (argumentList.size() < 3)
+		{
+			bzn_outputData(
+					"bznerror other Need 3 arguments (separated by pipes) to saytofromplayerteam: fromcallsign, toteam, message, +server for the server, +all for all players");
+			return;
+		}
+		std::string fromString = argumentList.at(0);
+		std::string toString = argumentList.at(1);
+		std::string messageString = argumentList.at(2);
+		int fromInt = getPlayerByCallsign(fromString);
+		bz_eTeamType toTeam = colorNameToDef(toString.c_str());
+		if (fromInt == BZ_NULLUSER)
+		{
+			std::string output;
+			output += "bznerror nosuchplayer The from player "
+				"is not a valid player here: ";
+			output += fromString;
+			bzn_outputData(output);
+			return;
+		}
+		if (toTeam == eNoTeam)
+		{
+			std::string output;
+			output += "bznerror nosuchplayer The to team "
+				"is not a valid team here: ";
+			output += toString;
+			bzn_outputData(output);
+			return;
+		}
+		bz_sendTextMessage(fromInt, toTeam, messageString.c_str());
 	}
 	else
 	{
@@ -54,23 +114,6 @@ void processStdinString(std::string* currentString)
 				"bznerror invalidcommand The command specified is not valid");
 	}
 }
-
-// START EVENT HANDLERS
-
-void eProcessTickEvent(bz_TickEventData *eventData)
-{
-	pthread_mutex_lock(&stdinListLock);
-	while (stdinList.size() > 0)
-	{
-		std::string* currentString = stdinList.at(0);
-		processStdinString(currentString);
-		stdinList.erase(stdinList.begin());
-		delete currentString;
-	}
-	pthread_mutex_unlock(&stdinListLock);
-}
-
-// END EVENT HANDLERS
 
 class BZNetworkEventHandler: public bz_EventHandler,
 		public bz_CustomSlashCommandHandler
@@ -80,7 +123,79 @@ class BZNetworkEventHandler: public bz_EventHandler,
 		{
 			if (eventData->eventType == bz_eTickEvent)
 			{
-				eProcessTickEvent((bz_TickEventData*) eventData);
+				bz_TickEventData* event = (bz_TickEventData*) eventData;
+				pthread_mutex_lock(&stdinListLock);
+				while (stdinList.size() > 0)
+				{
+					std::string* currentString = stdinList.at(0);
+					processStdinString(currentString);
+					stdinList.erase(stdinList.begin());
+					delete currentString;
+				}
+				pthread_mutex_unlock(&stdinListLock);
+			}
+			else if (eventData->eventType == bz_ePlayerJoinEvent)
+			{
+				bz_PlayerJoinPartEventData* event =
+						(bz_PlayerJoinPartEventData*) eventData;
+				std::string playerCallsign = event->callsign.c_str();
+				std::string playerEmail = event->email.c_str();
+				std::string playerGlobal = event->globalUser.c_str();
+				if (playerCallsign.find("|") != std::string::npos
+						|| playerCallsign.find("+") == 0 || playerEmail.find(
+						"|") != std::string::npos || playerEmail.find("+") == 0
+						|| playerGlobal.find("|") != std::string::npos
+						|| playerGlobal.find("+") == 0)
+				{
+					bz_kickUser(
+							event->playerID,
+							"Invalid callsign/email: can't contain | or start with +",
+							true);
+					return;
+				}
+				playerIdsByCallsign.insert(std::pair<std::string, int>(
+						playerCallsign, event->playerID));
+				std::string output;
+				output += "playerjoin ";
+				output += event->ipAddress.c_str();
+				output += "|";
+				output += colorDefToName(event->team);
+				output += "|";
+				output += (event->verified ? "verified" : "notverified");
+				output += "|";
+				output += (event->callsign.c_str());
+				output += "|";
+				output += (event->email.c_str());
+				output += "|";
+				output += (event->globalUser.c_str());
+				bzn_outputData(output);
+			}
+			else if (eventData->eventType == bz_ePlayerPartEvent)
+			{
+				bz_PlayerJoinPartEventData* event =
+						(bz_PlayerJoinPartEventData*) eventData;
+				stringIntMap::iterator iter = playerIdsByCallsign.find(
+						event->callsign.c_str());
+				if (iter != playerIdsByCallsign.end())
+				{
+					std::string output;
+					output += "playerpart ";
+					output += event->ipAddress.c_str();
+					output += "|";
+					output += colorDefToName(event->team);
+					output += "|";
+					output += (event->verified ? "verified" : "notverified");
+					output += "|";
+					output += (event->callsign.c_str());
+					output += "|";
+					output += (event->email.c_str());
+					output += "|";
+					output += (event->globalUser.c_str());
+					output += "|";
+					output += (event->reason.c_str());
+					bzn_outputData(output);
+					playerIdsByCallsign.erase(iter);
+				}
 			}
 		}
 		virtual bool handle(int playerID, bzApiString command,
@@ -103,6 +218,8 @@ BZF_PLUGIN_CALL int bz_Load(const char* /*commandLine*/)
 {
 	bz_registerCustomSlashCommand("bzn", &singleEventHandler);
 	bz_registerEvent(bz_eTickEvent, &singleEventHandler);
+	bz_registerEvent(bz_ePlayerJoinEvent, &singleEventHandler);
+	bz_registerEvent(bz_ePlayerPartEvent, &singleEventHandler);
 	// Perhaps allow this to be configured via an argument, and
 	// then have this value be a BZNetwork configuration setting
 	bz_setMaxWaitTime(1.0);
@@ -112,7 +229,20 @@ BZF_PLUGIN_CALL int bz_Load(const char* /*commandLine*/)
 				"bznfail readthread The stdin read thread could not be created.");
 		return 1;
 	}
+	playerIdsByCallsign.insert(pair<std::string, int> ("+server", BZ_SERVER));
+	playerIdsByCallsign.insert(pair<std::string, int> ("+all", BZ_ALLUSERS));
 	bzn_outputData("bznload");
+	return 0;
+}
+
+int bz_Unload(void)
+{
+	bz_removeCustomSlashCommand("bzn");
+	bz_removeEvent(bz_eTickEvent, &singleEventHandler);
+	bz_removeEvent(bz_ePlayerJoinEvent, &singleEventHandler);
+	bz_removeEvent(bz_ePlayerPartEvent, &singleEventHandler);
+	bzn_outputData("bznunload");
+	playerIdsByCallsign.clear();
 	return 0;
 }
 
@@ -125,14 +255,6 @@ void bzn_outputData(std::string value)
 		return;
 	}
 	printf("|%.5d%s\n", value.length(), value.c_str());
-}
-
-int bz_Unload(void)
-{
-	bz_removeCustomSlashCommand("bzn");
-	bz_removeEvent(bz_eTickEvent, &singleEventHandler);
-	bzn_outputData("bznunload");
-	return 0;
 }
 
 void* threadedStdinReadLoop(void* bogus)
@@ -204,7 +326,7 @@ int parseInt(std::string value)
 }
 
 void stringSplit(std::string string, std::vector<std::string>* vector,
-		std::string search = " ", int maxItems = 10000)
+		std::string search, int maxItems)
 {
 	/*
 	 * If the vector is not empty, we clear it. Then, while...
@@ -229,7 +351,8 @@ void stringSplit(std::string string, std::vector<std::string>* vector,
 		 * afterLastMatchedIndex to matchedIndex, add that string to the
 		 * vector, and set afterLastMatchedIndex to matchedIndex+searchSize.
 		 */
-		vector->push_back(string.substr(afterLastMatchedIndex, matchedIndex));
+		vector->push_back(string.substr(afterLastMatchedIndex, (matchedIndex
+				- afterLastMatchedIndex)));
 		afterLastMatchedIndex = matchedIndex + searchSize;
 	}
 	if (afterLastMatchedIndex < string.size())
@@ -237,4 +360,18 @@ void stringSplit(std::string string, std::vector<std::string>* vector,
 		vector->push_back(string.substr(afterLastMatchedIndex,
 				std::string::npos));
 	}
+}
+/**
+ * Returns the id for the specified callsign, or BZ_NULLUSER if that
+ * user is not signed on.
+ * @param callsign The callsign to search for
+ * @return The corresponding id, or BZ_NULLUSER if that user is not
+ * connected to the server
+ */
+int getPlayerByCallsign(std::string callsign)
+{
+	stringIntMap::iterator iter = playerIdsByCallsign.find(callsign);
+	if (iter == playerIdsByCallsign.end())
+		return BZ_NULLUSER;
+	return iter->second;
 }

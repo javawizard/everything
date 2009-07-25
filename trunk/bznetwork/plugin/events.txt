@@ -1,0 +1,1 @@
+The events that are going to be implemented by the plugin are:
