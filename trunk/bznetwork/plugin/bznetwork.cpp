@@ -16,19 +16,43 @@ PTHREAD_MUTEX_INITIALIZER;
 pthread_t stdinReadThread;
 std::string currentStdinString;
 
+bz_eTeamType colorNameToDef(const char* color);
+const char* colorDefToName(bz_eTeamType team);
+int parseInt(std::string value);
 void bzn_outputData(std::string value);
+void stringSplit(std::string string, std::vector<std::string>* vector,
+		int maxItems);
 
 void processStdinString(std::string* currentString)
 {
 	size_t firstSpaceIndex = currentString->find(" ");
 	if (firstSpaceIndex == std::string::npos)
+	{
 		bzn_outputData(
 				"bznerror noinputspace There was no space in the input line.");
-	std::string commandName = currentString->substr(0, firstSpaceIndex);
-	std::string commandArguments = currentString->substr(firstSpaceIndex + 1,
+		return;
+	}
+	std::string command = currentString->substr(0, firstSpaceIndex);
+	std::string arguments = currentString->substr(firstSpaceIndex + 1,
 			std::string::npos);
-	printf("Command: \"%s\", Arguments: \"%s\"\n", commandName.c_str(),
-			commandArguments.c_str());
+	if (command == "say")
+	{
+		bz_sendTextMessage(BZ_SERVER, BZ_ALLUSERS, arguments.c_str());
+	}
+	else if (command == "saytofromplayer")
+	{
+		int space1 = arguments.find(" ");
+		int space2 = arguments.find(" ", space1 + 1);
+		std::string string1 = arguments.substr(0, space1);
+		std::string string2 = arguments.substr(space1 + 1, (space2 - space1)
+				- 1);
+		bz_sendTextMessage(BZ_SERVER, BZ_ALLUSERS, arguments.c_str());
+	}
+	else
+	{
+		bzn_outputData(
+				"bznerror invalidcommand The command specified is not valid");
+	}
 }
 
 // START EVENT HANDLERS
@@ -124,11 +148,80 @@ void* threadedStdinReadLoop(void* bogus)
 	}
 }
 
-// Local Variables: ***
-// mode:C++ ***
-// tab-width: 8 ***
-// c-basic-offset: 2 ***
-// indent-tabs-mode: t ***
-// End: ***
-// ex: shiftwidth=2 tabstop=8
+bz_eTeamType colorNameToDef(const char* color)
+{
+	if (!strncasecmp(color, "gre", 3))
+		return eGreenTeam;
+	if (!strncasecmp(color, "red", 3))
+		return eRedTeam;
+	if (!strncasecmp(color, "pur", 3))
+		return ePurpleTeam;
+	if (!strncasecmp(color, "blu", 3))
+		return eBlueTeam;
+	if (!strncasecmp(color, "rog", 3))
+		return eRogueTeam;
+	if (!strncasecmp(color, "obs", 3))
+		return eObservers;
+	if (!strncasecmp(color, "rab", 3))
+		return eRabbitTeam;
+	if (!strncasecmp(color, "hun", 3))
+		return eHunterTeam;
+	if (!strncasecmp(color, "adm", 3))
+		return eAdministrators;
+	return eNoTeam;
+}
 
+const char* colorDefToName(bz_eTeamType team)
+{
+	switch (team)
+	{
+		case eGreenTeam:
+			return ("green");
+		case eBlueTeam:
+			return ("blue");
+		case eRedTeam:
+			return ("red");
+		case ePurpleTeam:
+			return ("purple");
+		case eObservers:
+			return ("observer");
+		case eRogueTeam:
+			return ("rogue");
+		case eRabbitTeam:
+			return ("rabbit");
+		case eHunterTeam:
+			return ("hunters");
+		case eAdministrators:
+			return ("admin");
+		default:
+			return ("noteam");
+	}
+}
+
+int parseInt(std::string value)
+{
+	return atoi(value.c_str());
+}
+
+void stringSplit(std::string string, std::vector<std::string>* vector,
+		std::string search = " ", int maxItems = 10000)
+{
+	/*
+	 * If the vector is not empty, we clear it. Then, while...
+	 */
+	vector->clear();
+	int attempts = 1;
+	int afterLastMatchedIndex = 0;
+	int searchSize = search.size();
+	int matchedIndex;
+	while (attempts < maxItems)
+	{
+		attempts += 1;
+		matchedIndex = string.find(search, afterLastMatchedIndex);
+	}
+	if (afterLastMatchedIndex < string.size())
+	{
+		vector->push_back(string.substr(afterLastMatchedIndex,
+				std::string::npos));
+	}
+}
