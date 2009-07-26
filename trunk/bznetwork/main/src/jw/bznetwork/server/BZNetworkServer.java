@@ -38,12 +38,17 @@ public class BZNetworkServer implements ServletContextListener
      * logged in.
      * 
      * @param request
+     *            The request that is being made to log in. The login
+     *            information will be added to this request's session.
      * @param provider
+     *            The provider being used to log in
      * @param username
+     *            The username being used to log in
      * @param roles
+     *            The integer ids of the roles that should be applied
      */
     public static void login(HttpServletRequest request, String provider,
-            String username, String[] roles)
+            String username, int[] roles)
     {
         
     }

@@ -1,5 +1,8 @@
 package jw.bznetwork.server.rpc;
 
+import javax.servlet.http.HttpSession;
+
+import jw.bznetwork.client.data.AuthUser;
 import jw.bznetwork.client.rpc.GlobalUnauthLink;
 
 import com.google.gwt.user.server.rpc.RemoteServiceServlet;
@@ -9,10 +12,12 @@ public class GlobalUnauthLinkImpl extends RemoteServiceServlet implements
 {
     
     @Override
-    public boolean isLoggedIn()
+    public AuthUser getThisUser()
     {
-        // TODO Auto-generated method stub
-        return false;
+        HttpSession session = getThreadLocalRequest().getSession(false);
+        if (session == null)
+            return null;
+        return (AuthUser) session.getAttribute("user");
     }
     
 }
