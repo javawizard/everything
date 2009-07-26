@@ -81,6 +81,14 @@ public class BZNetwork implements EntryPoint
             @Override
             public void onSuccess(Configuration result)
             {
+                if (result == null)
+                {
+                    /*
+                     * This indicates that BZNetwork hasn't been installed.
+                     */
+                    Window.Location.replace(CONTEXT_URL + "/index.jsp");
+                    return;
+                }
                 publicConfiguration = result;
                 init1();
             }
@@ -169,7 +177,15 @@ public class BZNetwork implements EntryPoint
     protected void showChooseAuthScreen1(AuthProvider[] providers)
     {
         rootPanel.clear();
-        FlexTable table = new FlexTable();
+        VerticalPanel panel = new VerticalPanel();
+        panel.setHorizontalAlignment(panel.ALIGN_CENTER);
+        panel.add(new HTML("<span style='font-size:24px'><b>"
+                + publicConfiguration.getSitename() + "</b></span>"));
+        panel.add(new HTML("How would you like to log in?"));
+        for(AuthProvider p : providers)
+        {
+            Button b = new Button();
+        }
     }
     
     /**

@@ -11,5 +11,5 @@ package jw.bznetwork.client;
  */
 public interface PermissionsProvider
 {
-    public boolean has(String perm, int target);
+    public boolean group
 }

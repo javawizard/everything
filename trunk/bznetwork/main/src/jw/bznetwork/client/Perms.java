@@ -27,23 +27,23 @@ public class Perms
         Perms.provider = provider;
     }
     
-    /**
-     * Returns true if the currently-authenticated user has the specified
-     * permission on the specified target.
-     * 
-     * @param perm
-     *            The permission to check for
-     * @param target
-     *            The target on which to check for the permission. -1 represents
-     *            the global target.
-     * @return True if the target or any of its parents have the specified
-     *         permission for the specified user, false if they do not
-     */
-    public boolean has(String perm, int target)
+    public boolean global(String name)
     {
-        if (provider == null)
-            throw new IllegalStateException(
-                    "A provider has not yet been installed into the Perms class");
-        return provider.has(perm, target);
+        
+    }
+    
+    public boolean group(int id)
+    {
+        
+    }
+    
+    public boolean server(Server server)
+    {
+        
+    }
+    
+    public boolean server(int serverid, int groupid)
+    {
+        
     }
 }
