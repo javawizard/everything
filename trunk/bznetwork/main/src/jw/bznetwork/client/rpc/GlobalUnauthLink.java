@@ -2,6 +2,7 @@ package jw.bznetwork.client.rpc;
 
 import jw.bznetwork.client.AuthProvider;
 import jw.bznetwork.client.data.AuthUser;
+import jw.bznetwork.client.data.model.Configuration;
 
 import com.google.gwt.user.client.rpc.RemoteService;
 import com.google.gwt.user.client.rpc.RemoteServiceRelativePath;
@@ -23,4 +24,12 @@ public interface GlobalUnauthLink extends RemoteService
      * @return
      */
     public AuthProvider[] listEnabledAuthProviders();
+    
+    /**
+     * Returns configuration options which should be publicly available.
+     * Currently, this is just the site name.
+     * 
+     * @return
+     */
+    public Configuration getPublicConfiguration();
 }

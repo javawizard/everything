@@ -1,6 +1,7 @@
 package jw.bznetwork.client;
 
 import jw.bznetwork.client.data.AuthUser;
+import jw.bznetwork.client.data.model.Configuration;
 import jw.bznetwork.client.rpc.GlobalLink;
 import jw.bznetwork.client.rpc.GlobalLinkAsync;
 import jw.bznetwork.client.rpc.GlobalUnauthLink;
@@ -17,6 +18,7 @@ import com.google.gwt.user.client.ui.DialogBox;
 import com.google.gwt.user.client.ui.DisclosureEvent;
 import com.google.gwt.user.client.ui.DisclosureHandler;
 import com.google.gwt.user.client.ui.DisclosurePanel;
+import com.google.gwt.user.client.ui.DockPanel;
 import com.google.gwt.user.client.ui.FlexTable;
 import com.google.gwt.user.client.ui.HTML;
 import com.google.gwt.user.client.ui.HTMLPanel;
@@ -45,6 +47,8 @@ public class BZNetwork implements EntryPoint
     public static final GlobalUnauthLinkAsync unauthLink = GWT
             .create(GlobalUnauthLink.class);
     
+    public static Configuration publicConfiguration;
+    
     private static VerticalPanel mainPagePanel = new VerticalPanel();
     
     public static RootPanel rootPanel;
@@ -56,15 +60,6 @@ public class BZNetwork implements EntryPoint
      */
     public void onModuleLoad()
     {
-        init1();
-    }
-    
-    /**
-     * Asks the server if we're logged in. If we are, then proceed to init2. If
-     * we're not, then proceed to initUnauth2.
-     */
-    private void init1()
-    {
         rootPanel = RootPanel.get("mainContentPanel");
         rootPanel.add(new Label("Loading..."));
         CONTEXT_URL = GWT.getHostPageBaseURL();
@@ -74,6 +69,31 @@ public class BZNetwork implements EntryPoint
             fourthSlashIndex = CONTEXT_URL.indexOf('/', fourthSlashIndex + 1);
         }
         CONTEXT_URL = CONTEXT_URL.substring(0, fourthSlashIndex);
+        unauthLink.getPublicConfiguration(new AsyncCallback<Configuration>()
+        {
+            
+            @Override
+            public void onFailure(Throwable caught)
+            {
+                epicFail(caught);
+            }
+            
+            @Override
+            public void onSuccess(Configuration result)
+            {
+                publicConfiguration = result;
+                init1();
+            }
+        });
+        init1();
+    }
+    
+    /**
+     * Asks the server if we're logged in. If we are, then proceed to init2. If
+     * we're not, then proceed to initUnauth2.
+     */
+    private void init1()
+    {
         unauthLink.getThisUser(new AsyncCallback<AuthUser>()
         {
             
@@ -141,9 +161,32 @@ public class BZNetwork implements EntryPoint
             public void onSuccess(AuthProvider[] result)
             {
                 rootPanel.clear();
-                
+                showChooseAuthScreen1(result);
             }
         });
+    }
+    
+    protected void showChooseAuthScreen1(AuthProvider[] providers)
+    {
+        rootPanel.clear();
+        FlexTable table = new FlexTable();
+    }
+    
+    /**
+     * Creates a dock panel that is 100% width and height, center-aligned in
+     * both directions, and adds the specified widget to the center of the dock
+     * panel, effectively centering it in the screen.
+     * 
+     * @param widget
+     * @return
+     */
+    public static DockPanel wrapCentered(Widget widget)
+    {
+        DockPanel panel = new DockPanel();
+        panel.setHorizontalAlignment(panel.ALIGN_CENTER);
+        panel.setVerticalAlignment(panel.ALIGN_MIDDLE);
+        panel.add(widget, panel.CENTER);
+        return panel;
     }
     
     private void showInternalAuthScreen()
