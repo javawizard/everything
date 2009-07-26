@@ -13,6 +13,6 @@ import com.google.gwt.user.client.rpc.AsyncCallback;
 public interface GlobalUnauthLinkAsync
 {
     
-    public void isLoggedIn(AsyncCallback callback);
+    public void isLoggedIn(AsyncCallback<Boolean> callback);
     
 }

@@ -1,26 +1,29 @@
 package jw.bznetwork.client.screens;
 
+import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.Widget;
 
 import jw.bznetwork.client.Screen;
 
+/**
+ * The welcome screen shows the default welcome message.
+ * 
+ * @author Alexander Boyd
+ * 
+ */
 public class WelcomeScreen implements Screen
 {
-    private Widget widget;
-    private 
+    private Label widget = new Label("_LOADING_");
     
     @Override
     public void deselect()
     {
-        // TODO Auto-generated method stub
-        
     }
     
     @Override
     public String getName()
     {
-        // TODO Auto-generated method stub
-        return null;
+        return "welcome";
     }
     
     @Override
@@ -32,28 +35,27 @@ public class WelcomeScreen implements Screen
     @Override
     public Widget getWidget()
     {
-        // TODO Auto-generated method stub
-        return null;
+        return widget;
     }
     
     @Override
     public void reselect()
     {
-        // TODO Auto-generated method stub
-        
+        select();
     }
     
     @Override
     public void select()
     {
-        // TODO Auto-generated method stub
-        
+        if (widget.getText().equals("_LOADING_"))
+        {
+            
+        }
     }
     
     @Override
     public void init()
     {
-        widget = new Label();
     }
     
 }

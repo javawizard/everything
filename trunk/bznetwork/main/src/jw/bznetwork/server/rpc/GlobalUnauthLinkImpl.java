@@ -5,7 +5,14 @@ import jw.bznetwork.client.rpc.GlobalUnauthLink;
 import com.google.gwt.user.server.rpc.RemoteServiceServlet;
 
 public class GlobalUnauthLinkImpl extends RemoteServiceServlet implements
-    GlobalUnauthLink
+        GlobalUnauthLink
 {
+    
+    @Override
+    public boolean isLoggedIn()
+    {
+        // TODO Auto-generated method stub
+        return false;
+    }
     
 }

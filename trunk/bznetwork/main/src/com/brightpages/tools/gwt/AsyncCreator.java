@@ -173,6 +173,13 @@ public class AsyncCreator
                         if (member.getKind().equals(Kind.METHOD))
                         {
                             MethodTree method = (MethodTree) member;
+                            String methodReturnString = method.getReturnType()
+                                    .toString();
+                            if ("|boolean|byte|char|double|float|int|long|short|void|"
+                                    .contains("|" + methodReturnString + "|"))
+                                methodReturnString = methodReturnString
+                                        .substring(0, 1).toUpperCase()
+                                        + methodReturnString.substring(1);
                             String comments = jcUnit.docComments.get(method);
                             if (comments != null)
                             {
@@ -185,7 +192,8 @@ public class AsyncCreator
                             }
                             
                             // always return void for async
-                            asyncVersion.append("public void " + method.getName());
+                            asyncVersion.append("public void "
+                                    + method.getName());
                             asyncVersion.append("(");
                             for (VariableTree param : method.getParameters())
                             {
@@ -204,7 +212,8 @@ public class AsyncCreator
                                 throwsExpr += " " + tree.toString();
                             }
                             // add async method
-                            asyncVersion.append("AsyncCallback callback)"
+                            asyncVersion.append("AsyncCallback<"
+                                    + methodReturnString + "> callback)"
                                     + throwsExpr + ";\n\n");
                         }
                         else
