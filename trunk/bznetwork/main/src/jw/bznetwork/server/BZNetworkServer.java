@@ -15,6 +15,7 @@ import javax.servlet.ServletContextEvent;
 import javax.servlet.ServletContextListener;
 import javax.servlet.http.HttpServletRequest;
 
+import jw.bznetwork.client.AuthProvider;
 import jw.bznetwork.utils.StringUtils;
 
 import com.ibatis.sqlmap.client.SqlMapClient;

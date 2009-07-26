@@ -1,4 +1,4 @@
-package jw.bznetwork.server;
+package jw.bznetwork.client;
 
 import java.net.URLEncoder;
 

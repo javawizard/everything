@@ -45,7 +45,7 @@ create table servers (
     serverid        int,           -- The id of the server
     name            varchar(64),   -- The name of the server, which is used as the server's public name if the server is public
     groupid         int,           -- The id of the server's parent group
-    public          boolean,       -- True if this server is public, false if it is not. If it is public, the public name is the name column.
+    listed          boolean,       -- True if this server is public, false if it is not. If it is public, the public name is the name column.
     running         boolean,       -- True if this server is running, false if it is not. This is used to allow a server to remain shut down across bznetwork restart.
     dirty           boolean,       -- True if this server is dirty, false if it is not. A dirty server is one that has had changes made to its configuration that is currently running, and that has not been restarted since the changes were made. A dirty server is, in essence, one that is running on an old configuration and needs a restart for new configuration changes to be applied. When a server is started or shut down, the dirty flag is cleared, and it is never set when the server is not running.
     notes           varchar(4096), -- Some notes on the server. This can be any text, and serves simply to note what the server is for.

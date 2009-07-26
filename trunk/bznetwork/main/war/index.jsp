@@ -1,6 +1,6 @@
 
 <%@page import="jw.bznetwork.server.BZNetworkServer"%>
-<%@page import="jw.bznetwork.server.AuthProvider"%><html>
+<%@page import="jw.bznetwork.client.AuthProvider"%><html>
 <head>
 
 <!--
