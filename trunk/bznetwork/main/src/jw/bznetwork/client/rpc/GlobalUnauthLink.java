@@ -1,5 +1,6 @@
 package jw.bznetwork.client.rpc;
 
+import jw.bznetwork.client.AuthProvider;
 import jw.bznetwork.client.data.AuthUser;
 
 import com.google.gwt.user.client.rpc.RemoteService;
@@ -15,4 +16,11 @@ public interface GlobalUnauthLink extends RemoteService
      * @return
      */
     public AuthUser getThisUser();
+    
+    /**
+     * Gets a list of all enabled auth providers.
+     * 
+     * @return
+     */
+    public AuthProvider listEnabledAuthProviders();
 }

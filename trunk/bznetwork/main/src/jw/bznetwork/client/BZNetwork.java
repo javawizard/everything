@@ -1,5 +1,6 @@
 package jw.bznetwork.client;
 
+import jw.bznetwork.client.data.AuthUser;
 import jw.bznetwork.client.rpc.GlobalLink;
 import jw.bznetwork.client.rpc.GlobalLinkAsync;
 import jw.bznetwork.client.rpc.GlobalUnauthLink;
@@ -46,6 +47,10 @@ public class BZNetwork implements EntryPoint
     
     private static VerticalPanel mainPagePanel = new VerticalPanel();
     
+    public static RootPanel rootPanel;
+    
+    public static String CONTEXT_URL;
+    
     /**
      * This is the entry point method.
      */
@@ -59,6 +64,51 @@ public class BZNetwork implements EntryPoint
      * we're not, then proceed to initUnauth2.
      */
     private void init1()
+    {
+        rootPanel = RootPanel.get("mainContentPanel");
+        rootPanel.add(new Label("Loading..."));
+        CONTEXT_URL = GWT.getHostPageBaseURL();
+        int fourthSlashIndex = 0;
+        for (int i = 0; i < 4; i++)
+        {
+            fourthSlashIndex = CONTEXT_URL.indexOf('/', fourthSlashIndex + 1);
+        }
+        CONTEXT_URL = CONTEXT_URL.substring(0, fourthSlashIndex);
+        unauthLink.getThisUser(new AsyncCallback<AuthUser>()
+        {
+            
+            @Override
+            public void onFailure(Throwable caught)
+            {
+                rootPanel.clear();
+                rootPanel.add(new Label(
+                        "An error occured. Refresh the page to try again."));
+                fail(caught);
+            }
+            
+            @Override
+            public void onSuccess(AuthUser authUser)
+            {
+                if (authUser == null)
+                {
+                    initUnauth2();
+                }
+                else
+                {
+                    initAuth2(authUser);
+                }
+            }
+        });
+    }
+    
+    protected void initAuth2(AuthUser authUser)
+    {
+        rootPanel.clear();
+        rootPanel.add(new Label("You're logged in. More coming soon! Visit "
+                + CONTEXT_URL + "/logout.jsp to log out."));
+    }
+    
+    protected void initUnauth2()
     {
         // TODO Auto-generated method stub
         
@@ -185,6 +235,7 @@ public class BZNetwork implements EntryPoint
     
     public static void fail(Throwable t)
     {
+        t.printStackTrace();
         if (t instanceof PermissionDeniedException)
         {
             Window.alert("A permission error was encountered: "
@@ -192,7 +243,6 @@ public class BZNetwork implements EntryPoint
         }
         else
         {
-            t.printStackTrace();
             Window.alert("An unknown error has occured: "
                     + t.getClass().getName() + ": " + t.getMessage());
         }

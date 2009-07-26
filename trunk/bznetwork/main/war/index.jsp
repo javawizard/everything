@@ -1,6 +1,9 @@
-
 <%@page import="jw.bznetwork.server.BZNetworkServer"%>
-<%@page import="jw.bznetwork.client.AuthProvider"%><html>
+<%@page import="jw.bznetwork.client.AuthProvider"%>
+<%
+    response.setHeader("Cache-control", "no-cache, must-revalidate");
+    response.setHeader("Expires", "Fri, 01 Jan 1990 00:00:00 GMT");
+%><html>
 <head>
 
 <!--
@@ -28,7 +31,7 @@
                 .getEnabledAuthProviders();
         if (defaultProviderId == null)
             targetUrl = request.getContextPath()
-                    + "/BZTraining.html?mode=choose-auth-provider";
+                    + "/BZNetwork.html?mode=choose-auth-provider";
         else
         {
             for (AuthProvider provider : enabledProviders)
