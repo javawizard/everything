@@ -80,10 +80,7 @@ public class BZNetwork implements EntryPoint
             @Override
             public void onFailure(Throwable caught)
             {
-                rootPanel.clear();
-                rootPanel.add(new Label(
-                        "An error occured. Refresh the page to try again."));
-                fail(caught);
+                epicFail(caught);
             }
             
             @Override
@@ -110,8 +107,49 @@ public class BZNetwork implements EntryPoint
     
     protected void initUnauth2()
     {
-        // TODO Auto-generated method stub
-        
+        String mode = Window.Location.getParameter("mode");
+        if ("choose-auth-provider".equals(mode))
+        {
+            showChooseAuthScreen();
+        }
+        else if ("internal-auth".equals(mode))
+        {
+            showInternalAuthScreen();
+        }
+        else
+        {
+            /*
+             * If no mode is specified and we're unauthenticated, redirect to
+             * index.jsp
+             */
+            Window.Location.replace(CONTEXT_URL + "/index.jsp");
+        }
+    }
+    
+    private void showChooseAuthScreen()
+    {
+        unauthLink.listEnabledAuthProviders(new AsyncCallback<AuthProvider[]>()
+        {
+            
+            @Override
+            public void onFailure(Throwable caught)
+            {
+                epicFail(caught);
+            }
+            
+            @Override
+            public void onSuccess(AuthProvider[] result)
+            {
+                rootPanel.clear();
+                
+            }
+        });
+    }
+    
+    private void showInternalAuthScreen()
+    {
+        rootPanel.clear();
+        rootPanel.add(new Label("Coming soon!"));
     }
     
     @SuppressWarnings("deprecation")
@@ -246,5 +284,28 @@ public class BZNetwork implements EntryPoint
             Window.alert("An unknown error has occured: "
                     + t.getClass().getName() + ": " + t.getMessage());
         }
+    }
+    
+    /**
+     * Same as fail, but replaces the entire page with a message that says An
+     * error occured. Refresh the page to try again, or visit <logout-url> to
+     * log out. Generally reserved for unrecoverable errors, as the method name
+     * would imply.
+     * 
+     * @param t
+     */
+    public void epicFail(Throwable t)
+    {
+        rootPanel.clear();
+        rootPanel.add(new Label(
+                "An error occured. Refresh the page to try again, "
+                        + "or, if you're logged in, visit " + CONTEXT_URL
+                        + "/logout.jsp to log out. "
+                        + "And if you're not logged in, "
+                        + "it wouldn't hurt to visit that "
+                        + "url to try logging "
+                        + "out, just in case you're logged"
+                        + " in but you don't know it."));
+        fail(t);
     }
 }

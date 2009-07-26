@@ -25,6 +25,11 @@ public interface GlobalUnauthLinkAsync
      */
     public void getThisUser(AsyncCallback<AuthUser> callback);
     
-    public void listEnabledAuthProviders(AsyncCallback<AuthProvider> callback);
+    /**
+     * Gets a list of all enabled auth providers.
+     * 
+     * @return
+     */
+    public void listEnabledAuthProviders(AsyncCallback<AuthProvider[]> callback);
     
 }

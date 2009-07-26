@@ -22,5 +22,5 @@ public interface GlobalUnauthLink extends RemoteService
      * 
      * @return
      */
-    public AuthProvider listEnabledAuthProviders();
+    public AuthProvider[] listEnabledAuthProviders();
 }
