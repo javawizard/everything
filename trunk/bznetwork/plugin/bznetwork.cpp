@@ -203,9 +203,10 @@ class BZNetworkEventHandler: public bz_EventHandler,
 		{
 			if (strcasecmp(command.c_str(), "bzn"))
 				return false;
-			bzn_outputData("bzncmd");
-			bz_sendTextMessage(BZ_SERVER, playerID,
-					"I just received a /bzn command from you.");
+			std::string output;
+			output += "bznslashcommand ";
+			output += message.c_str();
+			bzn_outputData(output.c_str());
 			return true;
 		}
 };
