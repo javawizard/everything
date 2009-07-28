@@ -21,6 +21,9 @@ public class AuthProvider
         String[] tokens = line.split("\\|");
         id = tokens[0];
         name = tokens[1];
+        text = tokens[2];
+        url = tokens[3];
+        description = tokens[4];
     }
     
     /**
@@ -33,7 +36,7 @@ public class AuthProvider
     public String getUrl(String path)
     {
         return getUrl().replace("{path}", path).replace("{path-encoded}",
-            URLEncoder.encode(path));
+                URLEncoder.encode(path));
     }
     
     public String getId()
