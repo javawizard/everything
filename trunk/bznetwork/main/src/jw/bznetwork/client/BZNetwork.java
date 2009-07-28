@@ -6,6 +6,8 @@ import jw.bznetwork.client.rpc.GlobalLink;
 import jw.bznetwork.client.rpc.GlobalLinkAsync;
 import jw.bznetwork.client.rpc.GlobalUnauthLink;
 import jw.bznetwork.client.rpc.GlobalUnauthLinkAsync;
+import jw.bznetwork.client.ui.HorizontalRule;
+import jw.bznetwork.client.ui.Spacer;
 
 import com.google.gwt.core.client.EntryPoint;
 import com.google.gwt.core.client.GWT;
@@ -181,12 +183,15 @@ public class BZNetwork implements EntryPoint
         rootPanel.clear();
         VerticalPanel panel = new VerticalPanel();
         panel.setHorizontalAlignment(panel.ALIGN_CENTER);
-        panel.add(new HTML("<span style='font-size:24px'><b>"
+        panel.add(new HTML("<span style='font-size:18px'><b>"
                 + publicConfiguration.getSitename() + "</b></span>"));
+        panel.add(new HorizontalRule("100%"));
         panel.add(new HTML("How would you like to log in?"));
+        panel.add(new Spacer("3px", "3px"));
         for (AuthProvider p : providers)
         {
             Button b = new Button(p.getText());
+            b.addStyleName("plainbutton");
             b.setWidth("250px");
             panel.add(b);
         }

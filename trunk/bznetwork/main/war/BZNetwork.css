@@ -24,3 +24,8 @@
 	font-size: 24px;
 	color: #444444
 }
+
+.plainbutton {
+	background: none;
+	border: none;
+}

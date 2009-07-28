@@ -7,7 +7,7 @@ import jw.bznetwork.client.data.model.Configuration;
 import com.google.gwt.user.client.rpc.RemoteService;
 import com.google.gwt.user.client.rpc.RemoteServiceRelativePath;
 
-@RemoteServiceRelativePath("bypass/unauth-link")
+@RemoteServiceRelativePath("unauth-link")
 public interface GlobalUnauthLink extends RemoteService
 {
     /**

@@ -27,6 +27,8 @@ public class GlobalUnauthLinkImpl extends RemoteServiceServlet implements
     @Override
     public Configuration getPublicConfiguration()
     {
+        if (!BZNetworkServer.isInstalled())
+            return null;
         Configuration allConfig = DataStore.getConfiguration();
         Configuration publicConfig = new Configuration();
         publicConfig.setSitename(allConfig.getSitename());
