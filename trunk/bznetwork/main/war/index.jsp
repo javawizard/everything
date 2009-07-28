@@ -34,6 +34,11 @@
     {
         targetUrl = request.getContextPath() + "/install.jsp";
     }
+    else if (request.getSession(false) != null
+            && request.getSession().getAttribute("user") != null)
+    {
+        targetUrl = request.getContextPath() + "/BZNetwork.html";
+    }
     else
     {
         AuthProvider[] enabledProviders = BZNetworkServer

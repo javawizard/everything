@@ -59,7 +59,7 @@ public class GlobalUnauthLinkImpl extends RemoteServiceServlet implements
             return incorrectAuth;
         }
         String enteredPasswordEnc = Hash.hash(password);
-        if (!enteredPasswordEnc.equals(password))
+        if (!enteredPasswordEnc.equals(user.getPassword()))
         /*
          * Incorrect password
          */
