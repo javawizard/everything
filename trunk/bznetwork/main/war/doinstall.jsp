@@ -21,14 +21,7 @@ If it is, we'll issue a warning to the user, telling them that the tables will n
 re-created and that they should make sure the store folder is the same, unless there is
 a query parameter called supress-existence-warning in the request (which is what is sent
 when they choose ok when presented with the warning). -->
-<%
-    String dbDriver = request.getParameter("db-driver");
-        String dbUrl = request.getParameter("db-url");
-        String dbUsername = request.getParameter("db-username");
-        String dbPassword = request.getParameter("db-password");
-        String storeFolder = request.getParameter("store-folder");
-        String cacheFolder = request.getParameter("cache-folder");
-%>
+<%%>
 <%
     }
 %>

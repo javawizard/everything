@@ -194,4 +194,9 @@ public class BZNetworkServer implements ServletContextListener
         return isInstalled;
     }
     
+    public static InstallResponse doInstall(HttpServletRequest request)
+    {
+        
+    }
+    
 }
