@@ -5,6 +5,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.InputStreamReader;
 import java.io.StringReader;
+import java.io.StringWriter;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
@@ -355,9 +356,34 @@ public class BZNetworkServer implements ServletContextListener
         Connection con2 = DriverManager.getConnection(dbUrl, dbUsername,
                 dbPassword);
         Statement st = con2.createStatement();
-        st
-                .executeQuery(readFile(new File(getServletContext()
-                        .getRealPath(""))));
+        st.executeQuery(StringUtils.readFile(new File(getServletContext()
+                .getRealPath("/WEB-INF/tables.sql"))));
+        st.close();
+        con2.close();
+        /*
+         * Write the config file
+         */
+        Properties props = new Properties();
+        props.setProperty("db-driver", dbDriver);
+        props.setProperty("db-url", dbUrl);
+        props.setProperty("db-username", dbUsername);
+        props.setProperty("db-password", dbPassword);
+        props.setProperty("store-folder", storeFolder);
+        props.setProperty("cache-folder", cacheFolder);
+        StringWriter sw = new StringWriter();
+        props.store(sw, "BZNetwork");
+        String configContents = sw.toString();
+        try
+        {
+            new File(getServletContext()
+                    .getRealPath("/WEB-INF/config")).mkdirs();
+            StringUtils.writeFile(configContents, new File(getServletContext()
+                    .getRealPath("/WEB-INF/config/settings.props")));
+        }
+        catch (Exception e)
+        {
+            
+        }
         lockAccess("You need to restart your server to "
                 + "complete the installation. Then log in with username"
                 + " 'admin' and password 'admin' to use " + "BZNetwork.");
