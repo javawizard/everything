@@ -1,6 +1,8 @@
 package jw.bznetwork.client;
 
-public class AuthProvider
+import java.io.Serializable;
+
+public class AuthProvider implements Serializable
 {
     private String id;
     private String name;
