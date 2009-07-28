@@ -250,12 +250,20 @@ public class BZNetworkServer implements ServletContextListener
                 return new InstallResponse(
                         "supress-existence-warning",
                         "BZNetwork is already installed in that database. If "
-                                + "you continue, your tables will not be overwritten. "
+                                + "you continue, your tables will not be overwritten, "
+                                + "and all of your previous installation's data "
+                                + "(including usernames; the admin username that"
+                                + " will be mentioned at the end of the install"
+                                + " will not be created) will be retained. "
                                 + "You should make sure that you're using the same "
-                                + "store folder that you did with your previous installation.",
-                        true);
+                                + "store folder that you did with your previous "
+                                + "installation. You don't, however, need to "
+                                + "use the same cache folder.", true);
             }
         }
+        /*
+         * Now try to create the store and cache folders.
+         */
         File storeFolderFile = new File(storeFolder);
         File cacheFolderFile = new File(cacheFolder);
         if (!storeFolderFile.exists())
@@ -320,6 +328,10 @@ public class BZNetworkServer implements ServletContextListener
                         false);
             }
         }
+        /*
+         * Now we'll copy enabled-auth-providers to the store folder.
+         */
+
         lockAccess("You need to restart your server to "
                 + "complete the installation. Then log in with username"
                 + " 'admin' and password 'admin' to use " + "BZNetwork.");
