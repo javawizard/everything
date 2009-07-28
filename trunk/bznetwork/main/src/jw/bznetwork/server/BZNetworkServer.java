@@ -356,7 +356,7 @@ public class BZNetworkServer implements ServletContextListener
         Connection con2 = DriverManager.getConnection(dbUrl, dbUsername,
                 dbPassword);
         Statement st = con2.createStatement();
-        st.executeQuery(StringUtils.readFile(new File(getServletContext()
+        st.executeUpdate(StringUtils.readFile(new File(getServletContext()
                 .getRealPath("/WEB-INF/tables.sql"))));
         st.close();
         con2.close();
@@ -373,28 +373,48 @@ public class BZNetworkServer implements ServletContextListener
         StringWriter sw = new StringWriter();
         props.store(sw, "BZNetwork");
         String configContents = sw.toString();
+        boolean writeConfigWorked = true;
         try
         {
-            new File(getServletContext()
-                    .getRealPath("/WEB-INF/config")).mkdirs();
+            new File(getServletContext().getRealPath("/WEB-INF/config"))
+                    .mkdirs();
             StringUtils.writeFile(configContents, new File(getServletContext()
                     .getRealPath("/WEB-INF/config/settings.props")));
         }
         catch (Exception e)
         {
-            
+            e.printStackTrace();
+            writeConfigWorked = false;
         }
         lockAccess("You need to restart your server to "
                 + "complete the installation. Then log in with username"
                 + " 'admin' and password 'admin' to use " + "BZNetwork.");
-        return new InstallResponse(
-                null,
-                "<html><body><b>Congratulations.</b> BZNetwork has been successfully "
-                        + "installed. Restart the web server, then visit <a href='"
-                        + request.getContextPath()
-                        + "/'>your BZNetwork installation</a> to begin using it. "
-                        + "<b>Use the username</b> <tt>admin</tt> and the password "
-                        + "<tt>admin</tt> to log in.</body></html>", false);
+        if (writeConfigWorked)
+            return new InstallResponse(
+                    null,
+                    "<html><body><b>Congratulations.</b> BZNetwork has been successfully "
+                            + "installed. Restart the web server, then visit <a href='"
+                            + request.getContextPath()
+                            + "/'>your BZNetwork installation</a> to begin using it. "
+                            + "<b>Use the username</b> <tt>admin</tt> and the password "
+                            + "<tt>admin</tt> to log in.</body></html>", false);
+        else
+            return new InstallResponse(
+                    null,
+                    "<html><body><b>BZNetwork is almost installed.</b> The "
+                            + "only problem is, the file "
+                            + getServletContext().getRealPath(
+                                    "/WEB-INF/config/settings.props")
+                            + "can't be written to. So you'll need to manually "
+                            + "create this file. <b>Copy the text you see below</b>"
+                            + " in monospaced font into that file. Create the "
+                            + "file if it doesn't exist. Then restart the web "
+                            + "server, and visit <a href='"
+                            + request.getContextPath()
+                            + "/'>your BZNetwork installation</a> to begin using it. "
+                            + "<b>Use the username</b> <tt>admin</tt> and the password "
+                            + "<tt>admin</tt> to log in.</body></html>", false);
+        
     }
     
     public static void lockAccess(String message)
