@@ -187,7 +187,7 @@ public class BZNetwork implements EntryPoint
                 + publicConfiguration.getSitename() + "</b></span>"));
         panel.add(new HorizontalRule("100%"));
         panel.add(new HTML("How would you like to log in?"));
-        panel.add(new Spacer("3px", "3px"));
+        panel.add(new Spacer("5px", "5px"));
         for (AuthProvider p : providers)
         {
             Button b = new Button(p.getText());

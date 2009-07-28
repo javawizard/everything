@@ -6,7 +6,7 @@ public class Spacer extends Label
 {
     public Spacer(String width, String height)
     {
-        super("&nbsp;");
+        super(" ");
         setWidth(width);
         setHeight(height);
     }
