@@ -290,6 +290,16 @@ public class BZNetwork implements EntryPoint
                 showChooseAuthScreen();
             }
         });
+        loginButton.addClickListener(new ClickListener()
+        {
+            
+            @Override
+            public void onClick(Widget sender)
+            {
+                // TODO Auto-generated method stub
+                
+            }
+        });
     }
     
     @SuppressWarnings("deprecation")
