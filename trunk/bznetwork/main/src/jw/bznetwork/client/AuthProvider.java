@@ -4,6 +4,10 @@ import java.io.Serializable;
 
 public class AuthProvider implements Serializable
 {
+    /**
+     * 
+     */
+    private static final long serialVersionUID = 3962776083585075455L;
     private String id;
     private String name;
     private String text;
