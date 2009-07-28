@@ -32,6 +32,24 @@ public void getThisUser(AsyncCallback<AuthUser> callback);
 */
 public void listEnabledAuthProviders(AsyncCallback<AuthProvider[]> callback);
 
+/**
+* Returns configuration options which should be publicly available.
+* Currently, this is just the site name.
+* 
+* @return
+*/
 public void getPublicConfiguration(AsyncCallback<Configuration> callback);
+
+/**
+* Attempts to authenticate using an internal username and password.
+* 
+* @param username
+*            The username to log in with
+* @param password
+*            The password (plain-text, not hashed) to log in with
+* @return Null if the login was successful, at which point GlobalLink
+*         methods will work, or a message indicating why the login failed.
+*/
+public void login(String username, String password, AsyncCallback<String> callback);
 
 }

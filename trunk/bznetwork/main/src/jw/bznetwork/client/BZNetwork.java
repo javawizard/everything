@@ -247,8 +247,8 @@ public class BZNetwork implements EntryPoint
                         "<span style='font-size: 14px'>Enter your username and password.</span>"));
         panel.add(new Spacer("6px", "6px"));
         FlexTable table = new FlexTable();
-        TextBox usernameField = new TextBox();
-        PasswordTextBox passwordField = new PasswordTextBox();
+        final TextBox usernameField = new TextBox();
+        final PasswordTextBox passwordField = new PasswordTextBox();
         usernameField.setVisibleLength(17);
         passwordField.setVisibleLength(17);
         table.setHTML(0, 0, "Username:");
@@ -296,8 +296,36 @@ public class BZNetwork implements EntryPoint
             @Override
             public void onClick(Widget sender)
             {
-                // TODO Auto-generated method stub
-                
+                final PopupPanel box = showLoadingBox();
+                unauthLink.login(usernameField.getText(), passwordField
+                        .getText(), new AsyncCallback<String>()
+                {
+                    
+                    @Override
+                    public void onFailure(Throwable caught)
+                    {
+                        box.hide();
+                        fail(caught);
+                    }
+                    
+                    @Override
+                    public void onSuccess(String result)
+                    {
+                        if (result == null)
+                        {
+                            /*
+                             * We've successfully logged in.
+                             */
+                            Window.Location.assign(CONTEXT_URL
+                                    + "/BZNetwork.html");
+                        }
+                        else
+                        {
+                            box.hide();
+                            Window.alert(result);
+                        }
+                    }
+                });
             }
         });
     }
@@ -421,6 +449,11 @@ public class BZNetwork implements EntryPoint
         table.getFlexCellFormatter().setColSpan(4, 1, 4);
     }
     
+    /**
+     * Pops up a message indicating that an error has occurred.
+     * 
+     * @param t
+     */
     public static void fail(Throwable t)
     {
         t.printStackTrace();
@@ -437,10 +470,10 @@ public class BZNetwork implements EntryPoint
     }
     
     /**
-     * Same as fail, but replaces the entire page with a message that says An
-     * error occured. Refresh the page to try again, or visit <logout-url> to
-     * log out. Generally reserved for unrecoverable errors, as the method name
-     * would imply.
+     * Same as fail, but replaces the entire page with a message that says
+     * something like An error occured, refresh the page to try again, or visit
+     * <logout-url> to log out. Generally reserved for unrecoverable errors, as
+     * the method name would imply.
      * 
      * @param t
      */
@@ -457,5 +490,19 @@ public class BZNetwork implements EntryPoint
                         + "out, just in case you're logged"
                         + " in but you don't know it."));
         fail(t);
+    }
+    
+    /**
+     * Creates a modal dialog box that says "Loading..." (and will have a
+     * spinner widget in the future), shows it, centers it, and returns it.
+     * 
+     * @return
+     */
+    public static PopupPanel showLoadingBox()
+    {
+        PopupPanel box = new PopupPanel(false, true);
+        box.setWidget(new Label("Loading..."));
+        box.center();
+        return box;
     }
 }

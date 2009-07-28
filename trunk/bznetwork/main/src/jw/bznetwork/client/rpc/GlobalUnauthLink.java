@@ -32,4 +32,16 @@ public interface GlobalUnauthLink extends RemoteService
      * @return
      */
     public Configuration getPublicConfiguration();
+    
+    /**
+     * Attempts to authenticate using an internal username and password.
+     * 
+     * @param username
+     *            The username to log in with
+     * @param password
+     *            The password (plain-text, not hashed) to log in with
+     * @return Null if the login was successful, at which point GlobalLink
+     *         methods will work, or a message indicating why the login failed.
+     */
+    public String login(String username, String password);
 }
