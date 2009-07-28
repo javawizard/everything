@@ -30,6 +30,11 @@ public class AuthProvider implements Serializable
         description = tokens[4];
     }
     
+    public AuthProvider()
+    {
+        
+    }
+    
     public String getId()
     {
         return id;
