@@ -1,6 +1,11 @@
 
 <%@page import="java.io.File"%>
-<%@page import="jw.bznetwork.server.BZNetworkServer"%><html>
+<%@page import="jw.bznetwork.server.BZNetworkServer"%>
+<%@page import="jw.bznetwork.server.InstallResponse"%>
+<%@page import="java.util.Arrays"%>
+<%@page import="org.apache.commons.lang.StringEscapeUtils"%>
+<%@page import="java.io.StringWriter"%>
+<%@page import="java.io.PrintWriter"%><html>
 <body>
 <%
     File configFolder = new File(application
@@ -15,15 +20,52 @@ installed again.
     else
     {
 %>
-<!-- BZNetwork has not yet been installed, so we're in business. The first thing to
-do is check to see if BZNetwork has already been installed in the specified database.
-If it is, we'll issue a warning to the user, telling them that the tables will not be
-re-created and that they should make sure the store folder is the same, unless there is
-a query parameter called supress-existence-warning in the request (which is what is sent
-when they choose ok when presented with the warning). -->
-<%%>
+<!-- BZNetwork has not yet been installed, so we're in business.  -->
+<%
+    InstallResponse ires = null;
+        try
+        {
+            ires = BZNetworkServer.doInstall(request);
+        }
+        catch (Exception e)
+        {
+            e.printStackTrace();
+%>An internal error occured:
+<br />
+<pre>
+<%
+    StringWriter sw = new StringWriter();
+            e.printStackTrace(new PrintWriter(sw, true));
+%><%=sw.toString()%>
+</pre>
+<%
+    ires = new InstallResponse(null, "", false);
+        }
+%>
+<%=ires.getMessage()%><br />
+<%
+    if (ires.isShowContinueButton())
+        {
+%>
+<form method="post" action="doinstall.jsp">
+<%
+    for (Object keyObject : Arrays.asList(request
+                    .getParameterNames()))
+            {
+                String key = keyObject.toString();
+                String value = request.getParameter(key);
+%><input type="hidden" name="<%=StringEscapeUtils.escapeXml(key)%>"
+	value="<%=StringEscapeUtils.escapeXml(value)%>" /> <%
+     }
+ %><input type="hidden" name="<%=ires.getContinueAddParameter()%>"
+	value="true" /><input type="submit" value="Continue"
+	style="font-weight: bold" /></form>
 <%
     }
 %>
+<%
+    }
+%>
+
 </body>
 </html>

@@ -25,6 +25,13 @@ public class RequestTrackerFilter implements Filter
             FilterChain chain) throws IOException, ServletException
     {
         HttpServletRequest req = (HttpServletRequest) request;
+        if (BZNetworkServer.isAccessLocked())
+        {
+            HttpServletResponse res = (HttpServletResponse) response;
+            res.sendError(res.SC_FORBIDDEN, BZNetworkServer
+                    .getAccessLockMessage());
+            return;
+        }
         HttpServletRequest oldReq = threadLocalRequest.get();
         threadLocalRequest.set(req);
         chain.doFilter(request, response);

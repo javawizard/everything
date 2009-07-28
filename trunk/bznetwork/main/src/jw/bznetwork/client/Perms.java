@@ -36,7 +36,7 @@ public class Perms
         return provider.hasGlobalPermission(name);
     }
     
-    public boolean group(String name. int id)
+    public boolean group(String name, int id)
     {
         if (provider == null)
             throw new IllegalStateException("No provider installed");
@@ -52,6 +52,6 @@ public class Perms
     {
         if (provider == null)
             throw new IllegalStateException("No provider installed");
-        return provider.hasPermissionOnServer(name,groupid,serverid);
+        return provider.hasPermissionOnServer(name, groupid, serverid);
     }
 }

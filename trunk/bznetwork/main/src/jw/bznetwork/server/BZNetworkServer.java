@@ -5,6 +5,10 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.InputStreamReader;
 import java.io.StringReader;
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Properties;
@@ -34,6 +38,7 @@ public class BZNetworkServer implements ServletContextListener
     private static boolean isInstalled;
     private static File cacheFolder;
     private static File storeFolder;
+    private static String accessLockMessage;
     
     /**
      * Sticks information on to the request indicating that the user has just
@@ -195,8 +200,152 @@ public class BZNetworkServer implements ServletContextListener
     }
     
     public static InstallResponse doInstall(HttpServletRequest request)
+            throws Exception
     {
-        
+        if (isInstalled)
+            return new InstallResponse(null,
+                    "BZNetwork is already installed on this server.", false);
+        String dbDriver = request.getParameter("db-driver");
+        String dbUrl = request.getParameter("db-url");
+        String dbUsername = request.getParameter("db-username");
+        String dbPassword = request.getParameter("db-password");
+        String storeFolder = request.getParameter("store-folder");
+        String cacheFolder = request.getParameter("cache-folder");
+        /*
+         * First, we'll connect to the database and select from the
+         * configuration table. If we get an exception, or if there are no rows,
+         * then we know that we're working with a clean database. If we don't,
+         * then we issue a warning to the user.
+         */
+        try
+        {
+            Class.forName(dbDriver);
+        }
+        catch (Exception e)
+        {
+            e.printStackTrace();
+            return new InstallResponse(null,
+                    "You specified an invalid driver name.", false);
+        }
+        Connection con1 = DriverManager.getConnection(dbUrl, dbUsername,
+                dbPassword);
+        boolean areTablesInstalled = true;
+        try
+        {
+            PreparedStatement st = con1
+                    .prepareStatement("select * from configuration");
+            ResultSet rs = st.executeQuery();
+            if (!rs.next())
+                throw new RuntimeException();
+        }
+        catch (Exception e)
+        {
+            areTablesInstalled = false;
+        }
+        con1.close();
+        if (areTablesInstalled)
+        {
+            if (request.getParameter("supress-existence-warning") == null)
+            {
+                return new InstallResponse(
+                        "supress-existence-warning",
+                        "BZNetwork is already installed in that database. If "
+                                + "you continue, your tables will not be overwritten. "
+                                + "You should make sure that you're using the same "
+                                + "store folder that you did with your previous installation.",
+                        true);
+            }
+        }
+        File storeFolderFile = new File(storeFolder);
+        File cacheFolderFile = new File(cacheFolder);
+        if (!storeFolderFile.exists())
+        {
+            if (!storeFolderFile.mkdirs())
+                return new InstallResponse(null,
+                        "The store folder you specified cannot be created.",
+                        false);
+        }
+        if (!cacheFolderFile.exists())
+        {
+            if (!cacheFolderFile.mkdirs())
+                return new InstallResponse(null,
+                        "The cache folder you specified cannot be created.",
+                        false);
+        }
+        if (storeFolderFile.exists())
+        {
+            if (!storeFolderFile.isDirectory())
+            {
+                return new InstallResponse(
+                        null,
+                        "The store folder you specified exists but is not a folder.",
+                        false);
+            }
+            if (!storeFolderFile.canRead())
+            {
+                return new InstallResponse(
+                        null,
+                        "The store folder you specified exists but cannot be read.",
+                        false);
+            }
+            if (!storeFolderFile.canWrite())
+            {
+                return new InstallResponse(
+                        null,
+                        "The store folder you specified exists but cannot be written.",
+                        false);
+            }
+        }
+        if (cacheFolderFile.exists())
+        {
+            if (!cacheFolderFile.isDirectory())
+            {
+                return new InstallResponse(
+                        null,
+                        "The cache folder you specified exists but is not a folder.",
+                        false);
+            }
+            if (!cacheFolderFile.canRead())
+            {
+                return new InstallResponse(
+                        null,
+                        "The cache folder you specified exists but cannot be read.",
+                        false);
+            }
+            if (!cacheFolderFile.canWrite())
+            {
+                return new InstallResponse(
+                        null,
+                        "The cache folder you specified exists but cannot be written.",
+                        false);
+            }
+        }
+        lockAccess("You need to restart your server to "
+                + "complete the installation. Then log in with username"
+                + " 'admin' and password 'admin' to use " + "BZNetwork.");
+        return new InstallResponse(
+                null,
+                "<html><body><b>Congratulations.</b> BZNetwork has been successfully "
+                        + "installed. Restart the web server, then visit <a href='"
+                        + request.getContextPath()
+                        + "/'>your BZNetwork installation</a> to begin using it. "
+                        + "<b>Use the username</b> <tt>admin</tt> and the password "
+                        + "<tt>admin</tt> to log in.</body></html>", false);
+    }
+    
+    public static void lockAccess(String message)
+    {
+        accessLockMessage = message;
+    }
+    
+    public static boolean isAccessLocked()
+    {
+        return accessLockMessage != null;
+    }
+    
+    public static String getAccessLockMessage()
+    {
+        return accessLockMessage;
     }
     
 }

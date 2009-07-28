@@ -22,8 +22,8 @@ everything up. Make sure that you've placed BZNetwork in a folder whose
 full path does not contain any HTML special characters (&gt;, &lt;,
 &quot;, and &amp; specifically).
 <br />
-<form method="post" action="doinstall.jsp"
-	onsubmit="document.thesubmitbutton.disabled=true;return true;">
+<form name="theform" method="post" action="doinstall.jsp"
+	onsubmit="document.theform.thesubmitbutton.disabled=true;return true;">
 <table border="0" cellspacing="0" cellpadding="1">
 	<tr>
 		<td colspan="2">
