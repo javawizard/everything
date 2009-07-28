@@ -3,7 +3,8 @@
 <%
     response.setHeader("Cache-control", "no-cache, must-revalidate");
     response.setHeader("Expires", "Fri, 01 Jan 1990 00:00:00 GMT");
-%><html>
+%>
+<%@page import="java.net.URLEncoder"%><html>
 <head>
 
 <!--
@@ -20,6 +21,14 @@
 
 <%
     String targetUrl = null;
+    String contextUrl = request.getRequestURL().toString();
+    int fourthSlashIndex = 0;
+    for (int i = 0; i < 4; i++)
+    {
+        fourthSlashIndex = contextUrl
+                .indexOf('/', fourthSlashIndex + 1);
+    }
+    contextUrl = contextUrl.substring(0, fourthSlashIndex);
     String defaultProviderId = BZNetworkServer.getDefaultAuthProvider();
     if (!BZNetworkServer.isInstalled())
     {
@@ -48,6 +57,9 @@
         throw new ServletException(
                 "Malformed configuration; targetUrl is null, defaultProvider is "
                         + defaultProviderId);
+    targetUrl = targetUrl.replace("{path}", contextUrl);
+    targetUrl = targetUrl.replace("{path-encoded}", URLEncoder
+            .encode(contextUrl));
 %>
 <meta http-equiv="refresh" content="0;url=<%=targetUrl%>" />
 </head>
