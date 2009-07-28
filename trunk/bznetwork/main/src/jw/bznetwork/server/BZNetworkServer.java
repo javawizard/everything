@@ -16,6 +16,7 @@ import javax.servlet.ServletContextListener;
 import javax.servlet.http.HttpServletRequest;
 
 import jw.bznetwork.client.AuthProvider;
+import jw.bznetwork.client.Perms;
 import jw.bznetwork.utils.StringUtils;
 
 import com.ibatis.sqlmap.client.SqlMapClient;
@@ -130,6 +131,7 @@ public class BZNetworkServer implements ServletContextListener
             if (!configFolder.exists())
             {
                 isInstalled = false;
+                Perms.installProvider(ServerPermissionsProvider.NULL_PROVIDER);
                 return;
             }
             isInstalled = true;
@@ -176,6 +178,7 @@ public class BZNetworkServer implements ServletContextListener
                     authProviders.put(providerObject.getId(), providerObject);
                 }
             }
+            Perms.installProvider(new ServerPermissionsProvider());
         }
         catch (Exception e)
         {

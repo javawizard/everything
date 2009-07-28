@@ -1,5 +1,7 @@
 package jw.bznetwork.client;
 
+import jw.bznetwork.client.data.model.Server;
+
 /**
  * Holds information about what permissions the currently-authenticated user
  * has. This is the class typically queried by client-side code to see if a user
@@ -29,21 +31,27 @@ public class Perms
     
     public boolean global(String name)
     {
-        
+        if (provider == null)
+            throw new IllegalStateException("No provider installed");
+        return provider.hasGlobalPermission(name);
     }
     
-    public boolean group(int id)
+    public boolean group(String name. int id)
     {
-        
+        if (provider == null)
+            throw new IllegalStateException("No provider installed");
+        return provider.hasPermissionOnGroup(name, id);
     }
     
-    public boolean server(Server server)
+    public boolean server(String name, Server server)
     {
-        
+        return server(name, server.getServerid(), server.getGroupid());
     }
     
-    public boolean server(int serverid, int groupid)
+    public boolean server(String name, int serverid, int groupid)
     {
-        
+        if (provider == null)
+            throw new IllegalStateException("No provider installed");
+        return provider.hasPermissionOnServer(name,groupid,serverid);
     }
 }

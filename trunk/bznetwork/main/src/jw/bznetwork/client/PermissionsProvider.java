@@ -11,5 +11,10 @@ package jw.bznetwork.client;
  */
 public interface PermissionsProvider
 {
-    public boolean group
+    public boolean hasPermissionOnGroup(String permission, int group);
+    
+    public boolean hasPermissionOnServer(String permission, int group,
+            int server);
+    
+    public boolean hasGlobalPermission(String permission);
 }
