@@ -14,7 +14,7 @@
     {
 %>
 BZNetwork is already installed on this server, and doesn't need to be
-installed again.
+installed again. <a href="index.jsp">Log in</a> to BZNetwork.
 <%
     }
     else

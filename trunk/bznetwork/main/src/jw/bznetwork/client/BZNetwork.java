@@ -11,12 +11,12 @@ import jw.bznetwork.client.ui.Spacer;
 
 import com.google.gwt.core.client.EntryPoint;
 import com.google.gwt.core.client.GWT;
+import com.google.gwt.http.client.URL;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.Anchor;
 import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.ClickListener;
-import com.google.gwt.user.client.ui.DialogBox;
 import com.google.gwt.user.client.ui.DisclosureEvent;
 import com.google.gwt.user.client.ui.DisclosureHandler;
 import com.google.gwt.user.client.ui.DisclosurePanel;
@@ -26,6 +26,7 @@ import com.google.gwt.user.client.ui.HTML;
 import com.google.gwt.user.client.ui.HTMLPanel;
 import com.google.gwt.user.client.ui.HorizontalPanel;
 import com.google.gwt.user.client.ui.Label;
+import com.google.gwt.user.client.ui.PasswordTextBox;
 import com.google.gwt.user.client.ui.PopupPanel;
 import com.google.gwt.user.client.ui.RootPanel;
 import com.google.gwt.user.client.ui.TextBox;
@@ -178,22 +179,38 @@ public class BZNetwork implements EntryPoint
         });
     }
     
+    @SuppressWarnings("deprecation")
     protected void showChooseAuthScreen1(AuthProvider[] providers)
     {
         rootPanel.clear();
         VerticalPanel panel = new VerticalPanel();
         panel.setHorizontalAlignment(panel.ALIGN_CENTER);
-        panel.add(new HTML("<span style='font-size:18px'><b>"
+        panel.add(new HTML("<span style='font-size:20px'><b>"
                 + publicConfiguration.getSitename() + "</b></span>"));
         panel.add(new HorizontalRule("100%"));
-        panel.add(new HTML("How would you like to log in?"));
-        panel.add(new Spacer("5px", "5px"));
-        for (AuthProvider p : providers)
+        panel
+                .add(new HTML(
+                        "<span style='font-size: 15px'>How would you like to log in?</span>"));
+        panel.add(new Spacer("6px", "6px"));
+        for (final AuthProvider p : providers)
         {
-            Button b = new Button(p.getText());
+            Button b = new Button(p.getText().replace("{site-name}",
+                    publicConfiguration.getSitename()));
             b.addStyleName("plainbutton");
             b.setWidth("250px");
+            b.addClickListener(new ClickListener()
+            {
+                
+                @Override
+                public void onClick(Widget sender)
+                {
+                    Window.Location.assign(p.getUrl().replace("{path}",
+                            CONTEXT_URL).replace("{path-encoded}",
+                            URL.encode(CONTEXT_URL)));
+                }
+            });
             panel.add(b);
+            panel.add(new Spacer("5px", "5px"));
         }
         rootPanel.add(wrapCentered(panel));
     }
@@ -220,7 +237,59 @@ public class BZNetwork implements EntryPoint
     private void showInternalAuthScreen()
     {
         rootPanel.clear();
-        rootPanel.add(new Label("Coming soon!"));
+        VerticalPanel panel = new VerticalPanel();
+        panel.setHorizontalAlignment(panel.ALIGN_CENTER);
+        panel.add(new HTML("<span style='font-size:20px'><b>"
+                + publicConfiguration.getSitename() + "</b></span>"));
+        panel.add(new HorizontalRule("100%"));
+        panel
+                .add(new HTML(
+                        "<span style='font-size: 14px'>Enter your username and password.</span>"));
+        panel.add(new Spacer("6px", "6px"));
+        FlexTable table = new FlexTable();
+        TextBox usernameField = new TextBox();
+        PasswordTextBox passwordField = new PasswordTextBox();
+        usernameField.setVisibleLength(17);
+        passwordField.setVisibleLength(17);
+        table.setHTML(0, 0, "Username:");
+        table.setHTML(1, 0, "Password:");
+        table.setWidget(0, 1, usernameField);
+        table.setWidget(1, 1, passwordField);
+        table.setWidth("100%");
+        table.getFlexCellFormatter().setHorizontalAlignment(0, 1,
+                HorizontalPanel.ALIGN_RIGHT);
+        table.getFlexCellFormatter().setHorizontalAlignment(1, 1,
+                HorizontalPanel.ALIGN_RIGHT);
+        Button loginButton = new Button("<b>Log in</b>");
+        Anchor differentProviderLink = new Anchor(
+                "<small>Log in with different credentials</small>", true);
+        VerticalPanel vp = new VerticalPanel();
+        vp.setVerticalAlignment(vp.ALIGN_MIDDLE);
+        vp.setHorizontalAlignment(vp.ALIGN_LEFT);
+        vp.setHeight("100%");
+        vp.add(differentProviderLink);
+        differentProviderLink
+                .setTitle("Click this to use other credentials to log "
+                        + "in, such as your bzflag callsign.");
+        panel.add(table);
+        DockPanel dp = new DockPanel();
+        dp.setWidth("100%");
+        panel.add(dp);
+        dp.add(vp, DockPanel.WEST);
+        dp.add(loginButton, DockPanel.EAST);
+        dp.setVerticalAlignment(dp.ALIGN_MIDDLE);
+        rootPanel.add(wrapCentered(panel));
+        differentProviderLink.addClickListener(new ClickListener()
+        {
+            
+            @Override
+            public void onClick(Widget sender)
+            {
+                rootPanel.clear();
+                rootPanel.add(new Label("Loading..."));
+                showChooseAuthScreen();
+            }
+        });
     }
     
     @SuppressWarnings("deprecation")
