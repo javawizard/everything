@@ -1,5 +1,6 @@
 package jw.bznetwork.server.data;
 
+import jw.bznetwork.client.data.model.Configuration;
 import jw.bznetwork.server.BZNetworkServer;
 
 import com.ibatis.sqlmap.client.SqlMapClient;
@@ -40,5 +41,19 @@ public class DataStore
     }
     
     // !ADDTOSQL
+    
+    public static synchronized Configuration getConfiguration()
+    {
+        try
+        {
+            return (Configuration) getGdbClient().queryForObject(
+                    "getConfiguration");
+        }
+        catch (Exception e)
+        {
+            throw new RuntimeException(
+                    "Exception in database statement getConfiguration", e);
+        }
+    }
     
 }

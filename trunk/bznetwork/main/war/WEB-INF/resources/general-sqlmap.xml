@@ -8,5 +8,10 @@
 
 	<!-- !ADDTOSQL -->
 
+    <select id="getConfiguration" 
+         resultClass="jw.bznetwork.client.data.model.Configuration" >
+        select * from configuration
+    </select>
+
 
 </sqlMap>

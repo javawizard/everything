@@ -1,7 +1,5 @@
 package jw.bznetwork.client;
 
-import java.net.URLEncoder;
-
 public class AuthProvider
 {
     private String id;
@@ -24,19 +22,6 @@ public class AuthProvider
         text = tokens[2];
         url = tokens[3];
         description = tokens[4];
-    }
-    
-    /**
-     * Returns the url for this provider, but with {path} replaced by this path
-     * and {path-encoded} replaced by the url-encoded form of this path.
-     * 
-     * @param path
-     * @return
-     */
-    public String getUrl(String path)
-    {
-        return getUrl().replace("{path}", path).replace("{path-encoded}",
-                URLEncoder.encode(path));
     }
     
     public String getId()

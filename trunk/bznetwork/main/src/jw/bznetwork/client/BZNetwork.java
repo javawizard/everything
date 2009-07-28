@@ -85,15 +85,17 @@ public class BZNetwork implements EntryPoint
                 {
                     /*
                      * This indicates that BZNetwork hasn't been installed.
+                     * We'll redirect to install.jsp instead of index.jsp to
+                     * prevent an endless redirect loop in case the server is
+                     * mistaken.
                      */
-                    Window.Location.replace(CONTEXT_URL + "/index.jsp");
+                    Window.Location.replace(CONTEXT_URL + "/install.jsp");
                     return;
                 }
                 publicConfiguration = result;
                 init1();
             }
         });
-        init1();
     }
     
     /**
@@ -148,7 +150,7 @@ public class BZNetwork implements EntryPoint
         {
             /*
              * If no mode is specified and we're unauthenticated, redirect to
-             * index.jsp
+             * index.jsp.
              */
             Window.Location.replace(CONTEXT_URL + "/index.jsp");
         }
@@ -182,10 +184,13 @@ public class BZNetwork implements EntryPoint
         panel.add(new HTML("<span style='font-size:24px'><b>"
                 + publicConfiguration.getSitename() + "</b></span>"));
         panel.add(new HTML("How would you like to log in?"));
-        for(AuthProvider p : providers)
+        for (AuthProvider p : providers)
         {
-            Button b = new Button();
+            Button b = new Button(p.getText());
+            b.setWidth("250px");
+            panel.add(b);
         }
+        rootPanel.add(wrapCentered(panel));
     }
     
     /**
@@ -201,6 +206,8 @@ public class BZNetwork implements EntryPoint
         DockPanel panel = new DockPanel();
         panel.setHorizontalAlignment(panel.ALIGN_CENTER);
         panel.setVerticalAlignment(panel.ALIGN_MIDDLE);
+        panel.setWidth("100%");
+        panel.setHeight("100%");
         panel.add(widget, panel.CENTER);
         return panel;
     }
