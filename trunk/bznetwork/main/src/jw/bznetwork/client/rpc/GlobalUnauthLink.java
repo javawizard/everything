@@ -1,6 +1,7 @@
 package jw.bznetwork.client.rpc;
 
 import jw.bznetwork.client.AuthProvider;
+import jw.bznetwork.client.SerializationWorkaround;
 import jw.bznetwork.client.data.AuthUser;
 import jw.bznetwork.client.data.model.Configuration;
 
@@ -44,4 +45,13 @@ public interface GlobalUnauthLink extends RemoteService
      *         methods will work, or a message indicating why the login failed.
      */
     public String login(String username, String password);
+    
+    /**
+     * Does nothing, and returns null. This method is present to work around a
+     * problem with GWT not adding indirectly-referenced serializable types to
+     * the serialization whitelist.
+     * 
+     * @return
+     */
+    public SerializationWorkaround serializationWorkaround();
 }

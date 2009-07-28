@@ -5,6 +5,7 @@ import javax.servlet.http.HttpSession;
 import net.sf.opengroove.common.security.Hash;
 
 import jw.bznetwork.client.AuthProvider;
+import jw.bznetwork.client.SerializationWorkaround;
 import jw.bznetwork.client.data.AuthUser;
 import jw.bznetwork.client.data.model.Configuration;
 import jw.bznetwork.client.data.model.User;
@@ -78,6 +79,12 @@ public class GlobalUnauthLinkImpl extends RemoteServiceServlet implements
         {
             return e.getMessage();
         }
+        return null;
+    }
+    
+    @Override
+    public SerializationWorkaround serializationWorkaround()
+    {
         return null;
     }
 }
