@@ -8,6 +8,24 @@
 
 	<!-- !ADDTOSQL -->
 
+    <select id="getPermissionsByRole" 
+         parameterClass="java.lang.Integer" 
+         resultClass="jw.bznetwork.client.data.model.Permission" >
+        select * from permissions where roleid = #value#
+    </select>
+
+    <select id="getRoleById" 
+         parameterClass="java.lang.Integer" 
+         resultClass="jw.bznetwork.client.data.model.Role" >
+        select * from roles where roleid = #value#
+    </select>
+
+    <select id="getUserByUsername" 
+         parameterClass="java.lang.String" 
+         resultClass="jw.bznetwork.client.data.model.User" >
+        select * from users where username = #value#
+    </select>
+
     <select id="getConfiguration" 
          resultClass="jw.bznetwork.client.data.model.Configuration" >
         select * from configuration

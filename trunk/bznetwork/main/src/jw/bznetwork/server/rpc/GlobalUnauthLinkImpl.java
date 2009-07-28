@@ -2,11 +2,16 @@ package jw.bznetwork.server.rpc;
 
 import javax.servlet.http.HttpSession;
 
+import net.sf.opengroove.common.security.Hash;
+
 import jw.bznetwork.client.AuthProvider;
 import jw.bznetwork.client.data.AuthUser;
 import jw.bznetwork.client.data.model.Configuration;
+import jw.bznetwork.client.data.model.User;
 import jw.bznetwork.client.rpc.GlobalUnauthLink;
 import jw.bznetwork.server.BZNetworkServer;
+import jw.bznetwork.server.LoginException;
+import jw.bznetwork.server.RequestTrackerFilter;
 import jw.bznetwork.server.data.DataStore;
 
 import com.google.gwt.user.server.rpc.RemoteServiceServlet;
@@ -39,5 +44,40 @@ public class GlobalUnauthLinkImpl extends RemoteServiceServlet implements
     public AuthProvider[] listEnabledAuthProviders()
     {
         return BZNetworkServer.getEnabledAuthProviders();
+    }
+    
+    @Override
+    public String login(String username, String password)
+    {
+        String incorrectAuth = "Incorrect username or password.";
+        User user = DataStore.getUserByUsername(username);
+        if (user == null)
+        /*
+         * Incorrect username
+         */
+        {
+            return incorrectAuth;
+        }
+        String enteredPasswordEnc = Hash.hash(password);
+        if (!enteredPasswordEnc.equals(password))
+        /*
+         * Incorrect password
+         */
+        {
+            return incorrectAuth;
+        }
+        try
+        {
+            BZNetworkServer.login(RequestTrackerFilter.getCurrentRequest(),
+                    "internal", username, new int[]
+                    {
+                        user.getRole()
+                    });
+        }
+        catch (LoginException e)
+        {
+            return e.getMessage();
+        }
+        return null;
     }
 }

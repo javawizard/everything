@@ -20,7 +20,7 @@ create table authgroups (
 );
 -- Holds the list of bzflag callsigns and the role associated with them.
 create table callsigns (
-    callsign varchar(64), -- The callsign that this is for. For example, javawizard2539, Bambino, or MyPhy.
+    callsign varchar(64), -- The callsign that this is for. For example, javawizard2539, Bambino, or MrDudle.
     role int              -- The role that is assigned to this callsign
 );
 -- Holds the list of roles on the server.

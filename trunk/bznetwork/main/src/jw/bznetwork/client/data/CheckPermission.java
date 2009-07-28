@@ -3,6 +3,12 @@ package jw.bznetwork.client.data;
 public class CheckPermission
 {
     private String permission;
+    
+    public CheckPermission()
+    {
+        super();
+    }
+    
     private int target;
     
     public String getPermission()

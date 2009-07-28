@@ -13,6 +13,7 @@ import java.sql.ResultSet;
 import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Properties;
 import java.util.Scanner;
 
@@ -24,7 +25,13 @@ import javax.servlet.http.HttpServletRequest;
 import net.sf.opengroove.common.utils.DataUtils;
 
 import jw.bznetwork.client.AuthProvider;
+import jw.bznetwork.client.ClientPermissionsProvider;
 import jw.bznetwork.client.Perms;
+import jw.bznetwork.client.data.AuthUser;
+import jw.bznetwork.client.data.CheckPermission;
+import jw.bznetwork.client.data.model.Permission;
+import jw.bznetwork.client.data.model.Role;
+import jw.bznetwork.server.data.DataStore;
 import jw.bznetwork.utils.StringUtils;
 
 import com.ibatis.sqlmap.client.SqlMapClient;
@@ -61,7 +68,62 @@ public class BZNetworkServer implements ServletContextListener
     public static void login(HttpServletRequest request, String provider,
             String username, int[] roles)
     {
-        
+        /*
+         * Validate that this provider is enabled
+         */
+        Properties enabledAuthProps = loadEnabledAuthProps();
+        if (!(enabledAuthProps.getProperty(provider).equals("enabled") || enabledAuthProps
+                .getProperty(provider).equals("default")))
+            throw new LoginException("That authentication provider ("
+                    + provider + ") is disabled on this server.");
+        /*
+         * Validate that all of the roles specified exist
+         */
+        ArrayList<String> roleNames = new ArrayList<String>();
+        for (int roleid : roles)
+        {
+            Role role = DataStore.getRoleById(roleid);
+            if (role == null)
+                throw new LoginException("The role " + roleid
+                        + " is assigned to this user, but "
+                        + "has since been deleted.");
+            roleNames.add(role.getName());
+        }
+        /*
+         * All of the roles exist. Now we go and load the AuthProvider.
+         */
+        AuthUser authUser = new AuthUser();
+        authUser.setUsername(username);
+        authUser.setProvider(provider);
+        authUser.setRoles(roles);
+        authUser.getRoleNames().addAll(roleNames);
+        /*
+         * Now we'll get all of the permissions assigned to this role.
+         */
+        for (int roleid : roles)
+        {
+            Permission[] rolePermissions = DataStore
+                    .getPermissionsByRole(roleid);
+            for (Permission rolePermission : rolePermissions)
+            {
+                authUser.getPermissions().add(
+                        new CheckPermission(rolePermission.getPermission(),
+                                rolePermission.getTarget()));
+            }
+        }
+        /*
+         * The auth user has been successfully set up. Now we go and stick the
+         * auth user on the session.
+         */
+        request.getSession().setAttribute("user", authUser);
+        /*
+         * Now we need to add a permissions provider.
+         */
+        request.getSession().setAttribute("permissions-provider",
+                new ClientPermissionsProvider(authUser));
+        /*
+         * We're done!
+         */
     }
     
     /**

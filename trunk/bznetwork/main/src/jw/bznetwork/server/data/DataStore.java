@@ -1,6 +1,9 @@
 package jw.bznetwork.server.data;
 
 import jw.bznetwork.client.data.model.Configuration;
+import jw.bznetwork.client.data.model.Permission;
+import jw.bznetwork.client.data.model.Role;
+import jw.bznetwork.client.data.model.User;
 import jw.bznetwork.server.BZNetworkServer;
 
 import com.ibatis.sqlmap.client.SqlMapClient;
@@ -41,6 +44,46 @@ public class DataStore
     }
     
     // !ADDTOSQL
+    
+    public static synchronized Permission[] getPermissionsByRole(Integer v)
+    {
+        try
+        {
+            return (Permission[]) getGdbClient().queryForList(
+                    "getPermissionsByRole", v).toArray(new Permission[0]);
+        }
+        catch (Exception e)
+        {
+            throw new RuntimeException(
+                    "Exception in database statement getPermissionsByRole", e);
+        }
+    }
+    
+    public static synchronized Role getRoleById(Integer v)
+    {
+        try
+        {
+            return (Role) getGdbClient().queryForObject("getRoleById", v);
+        }
+        catch (Exception e)
+        {
+            throw new RuntimeException(
+                    "Exception in database statement getRoleById", e);
+        }
+    }
+    
+    public static synchronized User getUserByUsername(String v)
+    {
+        try
+        {
+            return (User) getGdbClient().queryForObject("getUserByUsername", v);
+        }
+        catch (Exception e)
+        {
+            throw new RuntimeException(
+                    "Exception in database statement getUserByUsername", e);
+        }
+    }
     
     public static synchronized Configuration getConfiguration()
     {
