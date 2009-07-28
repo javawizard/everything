@@ -9,6 +9,7 @@ import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
+import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Properties;
@@ -18,6 +19,8 @@ import javax.servlet.ServletContext;
 import javax.servlet.ServletContextEvent;
 import javax.servlet.ServletContextListener;
 import javax.servlet.http.HttpServletRequest;
+
+import net.sf.opengroove.common.utils.DataUtils;
 
 import jw.bznetwork.client.AuthProvider;
 import jw.bznetwork.client.Perms;
@@ -227,8 +230,19 @@ public class BZNetworkServer implements ServletContextListener
             return new InstallResponse(null,
                     "You specified an invalid driver name.", false);
         }
-        Connection con1 = DriverManager.getConnection(dbUrl, dbUsername,
-                dbPassword);
+        Connection con1;
+        try
+        {
+            con1 = DriverManager.getConnection(dbUrl, dbUsername, dbPassword);
+        }
+        catch (Exception e)
+        {
+            e.printStackTrace();
+            return new InstallResponse(null,
+                    "The database couldn't be connected to. Error message: "
+                            + e.getClass().getName() + ": " + e.getMessage(),
+                    false);
+        }
         boolean areTablesInstalled = true;
         try
         {
@@ -329,9 +343,21 @@ public class BZNetworkServer implements ServletContextListener
             }
         }
         /*
-         * Now we'll copy enabled-auth-providers to the store folder.
+         * Now we'll copy enabled-auth-providers.props to the store folder.
          */
-
+        StringUtils.writeFile(StringUtils.readFile(new File(getServletContext()
+                .getRealPath(
+                        "/WEB-INF/config-stub/enabled-auth-providers.props"))),
+                new File(storeFolder, "enabled-auth-providers.props"));
+        /*
+         * Now we'll connect to the database and insert the tables.
+         */
+        Connection con2 = DriverManager.getConnection(dbUrl, dbUsername,
+                dbPassword);
+        Statement st = con2.createStatement();
+        st
+                .executeQuery(readFile(new File(getServletContext()
+                        .getRealPath(""))));
         lockAccess("You need to restart your server to "
                 + "complete the installation. Then log in with username"
                 + " 'admin' and password 'admin' to use " + "BZNetwork.");
