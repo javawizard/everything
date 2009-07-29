@@ -8,6 +8,76 @@
 
 	<!-- !ADDTOSQL -->
 
+    <update id="updateConfiguration" 
+         parameterClass="jw.bznetwork.client.data.model.Configuration" >
+        update configuration set
+        welcome = #welcome#,
+        sitename = #sitename#,
+        contact = #contact#,
+        executable = #executable#,
+        menuleft = #menuleft#,
+        currentname = #currentname#
+    </update>
+
+    <insert id="addAuthgroup" 
+         parameterClass="jw.bznetwork.client.data.model.Authgroup" >
+        insert into authgroups values 
+        (#name#,#role#)
+    </insert>
+
+    <delete id="deleteAuthgroup" 
+         parameterClass="java.lang.String" >
+        delete from authgroups
+        where name = #value#
+    </delete>
+
+    <delete id="deletePermissionsByTarget" 
+         parameterClass="java.lang.Integer" >
+        delete from permissions
+        where target = #target#
+    </delete>
+
+    <delete id="deletePermissionsByRole" 
+         parameterClass="java.lang.Integer" >
+        delete from permissions
+        where roleid = #value#
+    </delete>
+
+    <update id="deletePermission" 
+         parameterClass="jw.bznetwork.client.data.model.Permission" >
+        delete from permissions
+        where roleid = #roleid#
+        and permission = #permission#
+        and target = #target#
+    </update>
+
+    <insert id="addPermission" 
+         parameterClass="jw.bznetwork.client.data.model.Permission" >
+        insert into permissions values
+        (#roleid#, #permission#, #target#)
+    </insert>
+
+    <delete id="deleteRole" 
+         parameterClass="java.lang.Integer" >
+        delete from roles where roleid = #value#
+    </delete>
+
+    <update id="updateRole" 
+         parameterClass="jw.bznetwork.client.data.model.Role" >
+        update roles set name = #name#
+        where roleid = #roleid#
+    </update>
+
+    <insert id="addRole" 
+         parameterClass="jw.bznetwork.client.data.model.Role" >
+        insert into roles values (#roleid#, #name#)
+    </insert>
+
+    <select id="listRoles" 
+         resultClass="jw.bznetwork.client.data.model.Role" >
+        select * from roles
+    </select>
+
     <select id="getAuthgroupByName" 
          parameterClass="java.lang.String" 
          resultClass="jw.bznetwork.client.data.model.Authgroup" >

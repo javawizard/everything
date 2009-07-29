@@ -34,7 +34,7 @@ public class HelpScreen extends VerticalScreen
     {
         widget.setWidth("100%");
         widget.setHorizontalAlignment(widget.ALIGN_CENTER);
-        widget.add(new Spacer("5px", "60px"));
+        widget.add(new Spacer("5px", "40px"));
         HTML gettingStartedLink = new HTML(
                 "<span class='bznetwork-GettingStartedLink-out'><a href='http://code.google.com/p/bzsound/wiki/BZNetworkGettingStarted' target='_blank'>"
                         + "<span class='bznetwork-GettingStartedLink'>"

@@ -46,6 +46,152 @@ public class DataStore
     
     // !ADDTOSQL
     
+    public static synchronized void updateConfiguration(Configuration v)
+    {
+        try
+        {
+            getGdbClient().update("updateConfiguration", v);
+        }
+        catch (Exception e)
+        {
+            throw new RuntimeException(
+                    "Exception in database statement updateConfiguration", e);
+        }
+    }
+    
+    public static synchronized void addAuthgroup(Authgroup v)
+    {
+        try
+        {
+            getGdbClient().insert("addAuthgroup", v);
+        }
+        catch (Exception e)
+        {
+            throw new RuntimeException(
+                    "Exception in database statement addAuthgroup", e);
+        }
+    }
+    
+    public static synchronized void deleteAuthgroup(String v)
+    {
+        try
+        {
+            getGdbClient().delete("deleteAuthgroup", v);
+        }
+        catch (Exception e)
+        {
+            throw new RuntimeException(
+                    "Exception in database statement deleteAuthgroup", e);
+        }
+    }
+    
+    public static synchronized void deletePermissionsByTarget(Integer v)
+    {
+        try
+        {
+            getGdbClient().delete("deletePermissionsByTarget", v);
+        }
+        catch (Exception e)
+        {
+            throw new RuntimeException(
+                    "Exception in database statement deletePermissionsByTarget",
+                    e);
+        }
+    }
+    
+    public static synchronized void deletePermissionsByRole(Integer v)
+    {
+        try
+        {
+            getGdbClient().delete("deletePermissionsByRole", v);
+        }
+        catch (Exception e)
+        {
+            throw new RuntimeException(
+                    "Exception in database statement deletePermissionsByRole",
+                    e);
+        }
+    }
+    
+    public static synchronized void deletePermission(Permission v)
+    {
+        try
+        {
+            getGdbClient().update("deletePermission", v);
+        }
+        catch (Exception e)
+        {
+            throw new RuntimeException(
+                    "Exception in database statement deletePermission", e);
+        }
+    }
+    
+    public static synchronized void addPermission(Permission v)
+    {
+        try
+        {
+            getGdbClient().insert("addPermission", v);
+        }
+        catch (Exception e)
+        {
+            throw new RuntimeException(
+                    "Exception in database statement addPermission", e);
+        }
+    }
+    
+    public static synchronized void deleteRole(Integer v)
+    {
+        try
+        {
+            getGdbClient().delete("deleteRole", v);
+        }
+        catch (Exception e)
+        {
+            throw new RuntimeException(
+                    "Exception in database statement deleteRole", e);
+        }
+    }
+    
+    public static synchronized void updateRole(Role v)
+    {
+        try
+        {
+            getGdbClient().update("updateRole", v);
+        }
+        catch (Exception e)
+        {
+            throw new RuntimeException(
+                    "Exception in database statement updateRole", e);
+        }
+    }
+    
+    public static synchronized void addRole(Role v)
+    {
+        try
+        {
+            getGdbClient().insert("addRole", v);
+        }
+        catch (Exception e)
+        {
+            throw new RuntimeException(
+                    "Exception in database statement addRole", e);
+        }
+    }
+    
+    public static synchronized Role[] listRoles()
+    {
+        try
+        {
+            return (Role[]) getGdbClient().queryForList("listRoles").toArray(
+                    new Role[0]);
+        }
+        catch (Exception e)
+        {
+            throw new RuntimeException(
+                    "Exception in database statement listRoles", e);
+        }
+    }
+    
     public static synchronized Authgroup getAuthgroupByName(String v)
     {
         try
