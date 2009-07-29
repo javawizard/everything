@@ -36,12 +36,16 @@ Here is the list of available permissions and what they do. At the bottom of the
 || view-in-group-list      || group   ||Allows the user to view a particular group in the group list. This is similar to view-in-server-list. View-in-server-list, and consequently almost all other server-related permissions, are pointless without view-in-group-list for the group that owns the servers.||
 || view-action-log         || global  ||Allows the user to view the action log, which records the actions of all users on the site.||
 || clear-action-log        || global  ||Allows the user to clear the action log of any user. After the action log is cleared, it will contain one event, noting that the action log was cleared.||
+|| edit-configuration      || global  ||Allows the user to edit the server's configuration. Currently, this includes the welcome message, the site name, the bzflag executable, and the site contact.||
 
 The following permissions are sensitive:
  * *manage-users:* The user can apply any role to their own account, allowing them to gain the highest possible level of access of anyone on the server.
  * *manage-roles:* The user can add any permissions they want to their own role.
  * *manage-auth:* This one is only sensitive if the server owner doesn't take some precautions. If the server owner doesn't remove the internal admin account, but disables the internal authentication provider (assuming that this will prevent other users from gaining permissions through use of the admin account), then a user with manage-auth can re-enable the provider and gain full access.
  * *manage-callsign-auth:* TODO
+ * *edit-configuration:* The user could set the bzfs executable to some other executable such as vsftpd, and then use this to connect to the server and do whatever they want. 
+
+In particlar, *edit-configuration* allows a user to grant themselves access to the physical server on which BZNetwork is running, so it should be used with extreme caution.
  
  
  
