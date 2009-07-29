@@ -2,10 +2,7 @@ package jw.bznetwork.server.rpc;
 
 import javax.servlet.http.HttpSession;
 
-import net.sf.opengroove.common.security.Hash;
-
 import jw.bznetwork.client.AuthProvider;
-import jw.bznetwork.client.SerializationWorkaround;
 import jw.bznetwork.client.data.AuthUser;
 import jw.bznetwork.client.data.model.Configuration;
 import jw.bznetwork.client.data.model.User;
@@ -14,6 +11,7 @@ import jw.bznetwork.server.BZNetworkServer;
 import jw.bznetwork.server.LoginException;
 import jw.bznetwork.server.RequestTrackerFilter;
 import jw.bznetwork.server.data.DataStore;
+import net.sf.opengroove.common.security.Hash;
 
 import com.google.gwt.user.server.rpc.RemoteServiceServlet;
 
@@ -82,9 +80,4 @@ public class GlobalUnauthLinkImpl extends RemoteServiceServlet implements
         return null;
     }
     
-    @Override
-    public SerializationWorkaround serializationWorkaround()
-    {
-        return null;
-    }
 }

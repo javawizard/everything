@@ -1,6 +1,8 @@
 package jw.bznetwork.client.data;
 
-public class CheckPermission
+import java.io.Serializable;
+
+public class CheckPermission implements Serializable
 {
     private String permission;
     

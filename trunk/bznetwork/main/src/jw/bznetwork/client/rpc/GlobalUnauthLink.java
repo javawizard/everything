@@ -1,7 +1,6 @@
 package jw.bznetwork.client.rpc;
 
 import jw.bznetwork.client.AuthProvider;
-import jw.bznetwork.client.SerializationWorkaround;
 import jw.bznetwork.client.data.AuthUser;
 import jw.bznetwork.client.data.model.Configuration;
 
@@ -53,5 +52,4 @@ public interface GlobalUnauthLink extends RemoteService
      * 
      * @return
      */
-    public SerializationWorkaround serializationWorkaround();
 }
