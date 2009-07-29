@@ -1,11 +1,14 @@
 package jw.bznetwork.client;
 
+import java.util.ArrayList;
+
 import jw.bznetwork.client.data.AuthUser;
 import jw.bznetwork.client.data.model.Configuration;
 import jw.bznetwork.client.rpc.GlobalLink;
 import jw.bznetwork.client.rpc.GlobalLinkAsync;
 import jw.bznetwork.client.rpc.GlobalUnauthLink;
 import jw.bznetwork.client.rpc.GlobalUnauthLinkAsync;
+import jw.bznetwork.client.screens.ConfigurationScreen;
 import jw.bznetwork.client.screens.WelcomeScreen;
 import jw.bznetwork.client.ui.HorizontalRule;
 import jw.bznetwork.client.ui.Spacer;
@@ -143,10 +146,11 @@ public class BZNetwork implements EntryPoint
         currentUser = authUser;
         Perms.installProvider(new ClientPermissionsProvider(authUser));
         rootPanel.clear();
-        defaultScreens = new Screen[]
-        {
-            new WelcomeScreen()
-        };
+        ArrayList<Screen> defaultScreenList = new ArrayList<Screen>();
+        defaultScreenList.add(new WelcomeScreen());
+        // FIXME: only add if the user has appropriate perms
+        defaultScreenList.add(new ConfigurationScreen());
+        defaultScreens = defaultScreenList.toArray(new Screen[0]);
         mainScreen = new MainScreen(publicConfiguration.getSitename(), true,
                 new String[]
                 {
