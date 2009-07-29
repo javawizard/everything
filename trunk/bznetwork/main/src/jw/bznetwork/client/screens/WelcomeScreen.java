@@ -1,8 +1,11 @@
 package jw.bznetwork.client.screens;
 
+import com.google.gwt.user.client.ui.HTML;
 import com.google.gwt.user.client.ui.Label;
+import com.google.gwt.user.client.ui.VerticalPanel;
 import com.google.gwt.user.client.ui.Widget;
 
+import jw.bznetwork.client.BZNetwork;
 import jw.bznetwork.client.Screen;
 
 /**
@@ -13,7 +16,7 @@ import jw.bznetwork.client.Screen;
  */
 public class WelcomeScreen implements Screen
 {
-    private Label widget = new Label("_LOADING_");
+    private VerticalPanel widget = new VerticalPanel();
     
     @Override
     public void deselect()
@@ -47,15 +50,12 @@ public class WelcomeScreen implements Screen
     @Override
     public void select()
     {
-        if (widget.getText().equals("_LOADING_"))
-        {
-            
-        }
     }
     
     @Override
     public void init()
     {
+        widget.add(new HTML(BZNetwork.publicConfiguration.getWelcome()));
     }
     
 }
