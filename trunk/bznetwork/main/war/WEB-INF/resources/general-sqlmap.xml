@@ -8,6 +8,17 @@
 
 	<!-- !ADDTOSQL -->
 
+    <select id="getAuthgroupByName" 
+         parameterClass="java.lang.String" 
+         resultClass="jw.bznetwork.client.data.model.Authgroup" >
+        select * from authgroups where name = #value#
+    </select>
+
+    <select id="listAuthgroups" 
+         resultClass="jw.bznetwork.client.data.model.Authgroup" >
+        select * from authgroups
+    </select>
+
     <select id="getPermissionsByRole" 
          parameterClass="java.lang.Integer" 
          resultClass="jw.bznetwork.client.data.model.Permission" >

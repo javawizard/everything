@@ -1,5 +1,6 @@
 package jw.bznetwork.server.data;
 
+import jw.bznetwork.client.data.model.Authgroup;
 import jw.bznetwork.client.data.model.Configuration;
 import jw.bznetwork.client.data.model.Permission;
 import jw.bznetwork.client.data.model.Role;
@@ -44,6 +45,34 @@ public class DataStore
     }
     
     // !ADDTOSQL
+    
+    public static synchronized Authgroup getAuthgroupByName(String v)
+    {
+        try
+        {
+            return (Authgroup) getGdbClient().queryForObject(
+                    "getAuthgroupByName", v);
+        }
+        catch (Exception e)
+        {
+            throw new RuntimeException(
+                    "Exception in database statement getAuthgroupByName", e);
+        }
+    }
+    
+    public static synchronized Authgroup[] listAuthgroups()
+    {
+        try
+        {
+            return (Authgroup[]) getGdbClient().queryForList("listAuthgroups")
+                    .toArray(new Authgroup[0]);
+        }
+        catch (Exception e)
+        {
+            throw new RuntimeException(
+                    "Exception in database statement listAuthgroups", e);
+        }
+    }
     
     public static synchronized Permission[] getPermissionsByRole(Integer v)
     {
