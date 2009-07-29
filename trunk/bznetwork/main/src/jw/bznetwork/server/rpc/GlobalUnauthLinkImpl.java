@@ -36,6 +36,11 @@ public class GlobalUnauthLinkImpl extends RemoteServiceServlet implements
         Configuration allConfig = DataStore.getConfiguration();
         Configuration publicConfig = new Configuration();
         publicConfig.setSitename(allConfig.getSitename());
+        if (getThisUser() != null)
+        {
+            publicConfig.setContact(allConfig.getContact());
+            publicConfig.setWelcome(allConfig.getWelcome());
+        }
         return publicConfig;
     }
     

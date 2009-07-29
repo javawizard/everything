@@ -6,6 +6,7 @@ import jw.bznetwork.client.rpc.GlobalLink;
 import jw.bznetwork.client.rpc.GlobalLinkAsync;
 import jw.bznetwork.client.rpc.GlobalUnauthLink;
 import jw.bznetwork.client.rpc.GlobalUnauthLinkAsync;
+import jw.bznetwork.client.screens.WelcomeScreen;
 import jw.bznetwork.client.ui.HorizontalRule;
 import jw.bznetwork.client.ui.Spacer;
 
@@ -57,6 +58,12 @@ public class BZNetwork implements EntryPoint
     public static RootPanel rootPanel;
     
     public static String CONTEXT_URL;
+    
+    public static AuthUser currentUser;
+    
+    public static MainScreen mainScreen;
+    
+    private Screen[] defaultScreens;
     
     /**
      * This is the entry point method.
@@ -133,9 +140,33 @@ public class BZNetwork implements EntryPoint
     
     protected void initAuth2(AuthUser authUser)
     {
+        currentUser = authUser;
+        Perms.installProvider(new ClientPermissionsProvider(authUser));
         rootPanel.clear();
-        rootPanel.add(new Label("You're logged in. More coming soon! Visit "
-                + CONTEXT_URL + "/logout.jsp to log out."));
+        defaultScreens = new Screen[]
+        {
+            new WelcomeScreen()
+        };
+        mainScreen = new MainScreen(publicConfiguration.getSitename(), true,
+                new String[]
+                {
+                    "Log out"
+                }, new ClickListener[]
+                {
+                    new ClickListener()
+                    {
+                        
+                        @Override
+                        public void onClick(Widget sender)
+                        {
+                            showLoadingBox();
+                            Window.Location.assign(CONTEXT_URL + "/logout.jsp");
+                        }
+                    }
+                }, defaultScreens);
+        mainScreen.selectScreen("welcome");
+        mainScreen.setWidth("100%");
+        rootPanel.add(mainScreen);
     }
     
     protected void initUnauth2()

@@ -29,26 +29,26 @@ public class Perms
         Perms.provider = provider;
     }
     
-    public boolean global(String name)
+    public static boolean global(String name)
     {
         if (provider == null)
             throw new IllegalStateException("No provider installed");
         return provider.hasGlobalPermission(name);
     }
     
-    public boolean group(String name, int id)
+    public static boolean group(String name, int id)
     {
         if (provider == null)
             throw new IllegalStateException("No provider installed");
         return provider.hasPermissionOnGroup(name, id);
     }
     
-    public boolean server(String name, Server server)
+    public static boolean server(String name, Server server)
     {
         return server(name, server.getServerid(), server.getGroupid());
     }
     
-    public boolean server(String name, int serverid, int groupid)
+    public static boolean server(String name, int serverid, int groupid)
     {
         if (provider == null)
             throw new IllegalStateException("No provider installed");

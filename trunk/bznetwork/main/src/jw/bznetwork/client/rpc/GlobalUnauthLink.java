@@ -27,7 +27,8 @@ public interface GlobalUnauthLink extends RemoteService
     
     /**
      * Returns configuration options which should be publicly available.
-     * Currently, this is just the site name.
+     * Currently, this is just the site name. If the user is logged in, however,
+     * then this returns the contact and the welcome message.
      * 
      * @return
      */
