@@ -3,6 +3,7 @@
 <%@page import="jw.bznetwork.server.BZNetworkServer"%><html>
 <body style="font-family: sans-serif">
 <%
+    request.getSession().invalidate();
     File configFolder = new File(application
             .getRealPath("/WEB-INF/config"));
     if (BZNetworkServer.isInstalled())
@@ -113,12 +114,13 @@ full path does not contain any HTML special characters (&gt;, &lt;,
 		can be different without any consequences, as its contents are deleted
 		every time BZNetwork starts up.<br />
 		<br />
-		Ok, now you're really ready to set up BZNetwork. Go ahead and
-		click that install button.</td>
+		Ok, now you're really ready to set up BZNetwork. Go ahead and click
+		that install button.</td>
 	</tr>
 	<tr>
 		<td>&nbsp;</td>
-		<td><input type="submit" name="thesubmitbutton" value="Install" style="font-weight: bold"/></td>
+		<td><input type="submit" name="thesubmitbutton" value="Install"
+			style="font-weight: bold" /></td>
 	</tr>
 
 </table>

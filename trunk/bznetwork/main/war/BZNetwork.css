@@ -16,13 +16,16 @@
 .bznetwork-MainScreenHeaderName {
 	font-weight: bold;
 	font-size: 24px;
-	color: #888888
+	color: #aaaaaa
 }
 
 .bznetwork-MainScreenHeaderSeparator {
 	font-weight: bold;
 	font-size: 24px;
-	color: #444444
+	color: #555555;
+	text-align: center;
+	width: 20px;
+	padding-right: 5px
 }
 
 .plainbutton {

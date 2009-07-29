@@ -152,6 +152,7 @@ public class MainScreen extends Composite implements ClickListener
     {
         int anchorIndex = screenMenuLinks.indexOf(sender);
         selectScreen(anchorIndex);
+        menuBox.hide();
     }
     
     public void selectScreen(int index)
