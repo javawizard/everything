@@ -9,6 +9,7 @@ import jw.bznetwork.client.rpc.GlobalLinkAsync;
 import jw.bznetwork.client.rpc.GlobalUnauthLink;
 import jw.bznetwork.client.rpc.GlobalUnauthLinkAsync;
 import jw.bznetwork.client.screens.ConfigurationScreen;
+import jw.bznetwork.client.screens.HelpScreen;
 import jw.bznetwork.client.screens.WelcomeScreen;
 import jw.bznetwork.client.ui.HorizontalRule;
 import jw.bznetwork.client.ui.Spacer;
@@ -150,6 +151,7 @@ public class BZNetwork implements EntryPoint
         defaultScreenList.add(new WelcomeScreen());
         // FIXME: only add if the user has appropriate perms
         defaultScreenList.add(new ConfigurationScreen());
+        defaultScreenList.add(new HelpScreen());
         defaultScreens = defaultScreenList.toArray(new Screen[0]);
         mainScreen = new MainScreen(publicConfiguration.getSitename(), true,
                 new String[]

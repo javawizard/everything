@@ -32,3 +32,14 @@
 	background: none;
 	border: none;
 }
+
+.bznetwork-GettingStartedLink {
+	color: #888888;
+	font-size: 20px;
+	font-weight: bold;
+	text-decoration: underline;
+}
+
+.bznetwork-GettingStartedLink-out a {
+	text-decoration: none
+}
