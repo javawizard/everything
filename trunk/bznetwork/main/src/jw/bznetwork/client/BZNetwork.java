@@ -153,7 +153,7 @@ public class BZNetwork implements EntryPoint
         defaultScreenList.add(new WelcomeScreen());
         if (Perms.global("edit-configuration"))
             defaultScreenList.add(new ConfigurationScreen());
-        if (Perms.global("manage-callsign-auth"))
+        if (Perms.global("manage-roles"))
             defaultScreenList.add(new RolesScreen());
         /*
          * This one is dependent on some perms, but since the rules are
