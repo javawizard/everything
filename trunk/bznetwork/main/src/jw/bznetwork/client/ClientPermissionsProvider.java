@@ -26,8 +26,11 @@ public class ClientPermissionsProvider implements PermissionsProvider
     @Override
     public boolean hasGlobalPermission(String permission)
     {
-        return user.getPermissions().contains(
-                new CheckPermission(permission, -1));
+        if (user.getPermissions().contains(new CheckPermission(permission, -1)))
+            return true;
+        if (user.getPermissions().contains(new CheckPermission("all", -1)))
+            return true;
+        return false;
     }
     
     @Override
@@ -35,6 +38,8 @@ public class ClientPermissionsProvider implements PermissionsProvider
     {
         if (user.getPermissions().contains(
                 new CheckPermission(permission, group)))
+            return true;
+        if (user.getPermissions().contains(new CheckPermission("all", group)))
             return true;
         return hasGlobalPermission(permission);
     }
@@ -45,6 +50,8 @@ public class ClientPermissionsProvider implements PermissionsProvider
     {
         if (user.getPermissions().contains(
                 new CheckPermission(permission, server)))
+            return true;
+        if (user.getPermissions().contains(new CheckPermission("all", server)))
             return true;
         return hasPermissionOnGroup(permission, group);
     }
