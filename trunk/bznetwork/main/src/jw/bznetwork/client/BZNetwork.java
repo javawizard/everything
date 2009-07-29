@@ -363,6 +363,7 @@ public class BZNetwork implements EntryPoint
                 });
             }
         });
+        usernameField.setFocus(true);
     }
     
     @SuppressWarnings("deprecation")

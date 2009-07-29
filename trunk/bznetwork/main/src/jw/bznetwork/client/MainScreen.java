@@ -4,6 +4,9 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 
+import jw.bznetwork.client.ui.HorizontalRule;
+import jw.bznetwork.client.ui.Spacer;
+
 import com.google.gwt.user.client.ui.Anchor;
 import com.google.gwt.user.client.ui.ClickListener;
 import com.google.gwt.user.client.ui.Composite;
@@ -96,6 +99,7 @@ public class MainScreen extends Composite implements ClickListener
         }
         topTable.setWidget(0, 0, headerPositionWidget);
         HorizontalPanel upperRightPanel = new HorizontalPanel();
+        upperRightPanel.setVerticalAlignment(upperRightPanel.ALIGN_MIDDLE);
         final Anchor menuAnchor = new Anchor("Menu");
         VerticalPanel menuBoxPanel = new VerticalPanel();
         for (Screen screen : screens)
@@ -135,9 +139,11 @@ public class MainScreen extends Composite implements ClickListener
         topTable.getFlexCellFormatter().setHorizontalAlignment(0, 1,
                 HorizontalPanel.ALIGN_RIGHT);
         topTable.getFlexCellFormatter().setVerticalAlignment(0, 1,
-                VerticalPanel.ALIGN_TOP);
+                VerticalPanel.ALIGN_MIDDLE);
         topTable.setWidth("100%");
         mainPagePanel.add(topTable);
+        mainPagePanel.add(new HorizontalRule("100%"));
+        mainPagePanel.add(new Spacer("3px", "3px"));
         mainPagePanel.add(mainContentWrapper);
         this.screens.addAll(Arrays.asList(screens));
         for (Screen s : screens)
