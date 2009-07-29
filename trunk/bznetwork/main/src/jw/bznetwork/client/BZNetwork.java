@@ -10,6 +10,8 @@ import jw.bznetwork.client.rpc.GlobalUnauthLink;
 import jw.bznetwork.client.rpc.GlobalUnauthLinkAsync;
 import jw.bznetwork.client.screens.ConfigurationScreen;
 import jw.bznetwork.client.screens.HelpScreen;
+import jw.bznetwork.client.screens.RolesScreen;
+import jw.bznetwork.client.screens.ServersScreen;
 import jw.bznetwork.client.screens.WelcomeScreen;
 import jw.bznetwork.client.ui.HorizontalRule;
 import jw.bznetwork.client.ui.Spacer;
@@ -149,8 +151,16 @@ public class BZNetwork implements EntryPoint
         rootPanel.clear();
         ArrayList<Screen> defaultScreenList = new ArrayList<Screen>();
         defaultScreenList.add(new WelcomeScreen());
-        // FIXME: only add if the user has appropriate perms
-        defaultScreenList.add(new ConfigurationScreen());
+        if (Perms.global("edit-configuration"))
+            defaultScreenList.add(new ConfigurationScreen());
+        if (Perms.global("manage-callsign-auth"))
+            defaultScreenList.add(new RolesScreen());
+        /*
+         * This one is dependent on some perms, but since the rules are
+         * complicated, we'll just add the screen anyway and let the server
+         * decide the perms when it sends the server list back to the client.
+         */
+        defaultScreenList.add(new ServersScreen());
         defaultScreenList.add(new HelpScreen());
         defaultScreens = defaultScreenList.toArray(new Screen[0]);
         mainScreen = new MainScreen(publicConfiguration.getSitename(), true,
