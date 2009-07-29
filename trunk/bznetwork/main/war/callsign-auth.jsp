@@ -61,7 +61,7 @@
 %>
 <body>
 You entered a correct callsign and password, but you don't have any
-permissions at this server.
+permissions at this server. <a href="<%=request.getContextPath() %>">Log in with different credentials</a>.
 </body>
 <%
     }
