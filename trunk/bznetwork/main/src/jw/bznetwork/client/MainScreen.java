@@ -142,6 +142,7 @@ public class MainScreen extends Composite implements ClickListener
         this.screens.addAll(Arrays.asList(screens));
         for (Screen s : screens)
         {
+            s.init();
             screensByName.put(s.getName(), s);
         }
         selectScreen(0);
@@ -182,7 +183,6 @@ public class MainScreen extends Composite implements ClickListener
          * We're either selecting a different screen than the current one, or
          * there is no currently-selected screen.
          */
-        mainContentWrapper.clear();
         selectedScreen = screens.get(index);
         mainContentWrapper.setWidget(selectedScreen.getWidget());
         selectedScreen.select();
