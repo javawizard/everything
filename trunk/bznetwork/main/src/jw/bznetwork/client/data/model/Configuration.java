@@ -7,7 +7,29 @@ public class Configuration implements Serializable
     private String welcome;
     private String sitename;
     private String contact;
+    private boolean menuleft;
+    private boolean currentname;
     
+    public boolean isMenuleft()
+    {
+        return menuleft;
+    }
+
+    public void setMenuleft(boolean menuleft)
+    {
+        this.menuleft = menuleft;
+    }
+
+    public boolean isCurrentname()
+    {
+        return currentname;
+    }
+
+    public void setCurrentname(boolean currentname)
+    {
+        this.currentname = currentname;
+    }
+
     public String getWelcome()
     {
         return welcome;

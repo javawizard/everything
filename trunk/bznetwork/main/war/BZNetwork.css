@@ -10,7 +10,11 @@
 
 .bznetwork-MainScreenHeader {
 	font-weight: bold;
-	font-size: 24px
+	font-size: 24px;
+}
+
+.bznetwork-MainScreenHeaderLeft {
+	padding-left: 117px;
 }
 
 .bznetwork-MainScreenHeaderName {
@@ -42,4 +46,11 @@
 
 .bznetwork-GettingStartedLink-out a {
 	text-decoration: none
+}
+
+.bznetwork-MenuBoxPanelLeft {
+	width: 112px;
+	border-right: 1px solid #888888;
+	margin-right: 6px;
+	font-size: 12px;
 }

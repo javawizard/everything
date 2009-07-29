@@ -40,6 +40,8 @@ public class GlobalUnauthLinkImpl extends RemoteServiceServlet implements
         {
             publicConfig.setContact(allConfig.getContact());
             publicConfig.setWelcome(allConfig.getWelcome());
+            publicConfig.setMenuleft(allConfig.isMenuleft());
+            publicConfig.setCurrentname(allConfig.isCurrentname());
         }
         return publicConfig;
     }

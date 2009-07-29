@@ -10,6 +10,7 @@ import jw.bznetwork.client.ui.Spacer;
 import com.google.gwt.user.client.ui.Anchor;
 import com.google.gwt.user.client.ui.ClickListener;
 import com.google.gwt.user.client.ui.Composite;
+import com.google.gwt.user.client.ui.DockPanel;
 import com.google.gwt.user.client.ui.FlexTable;
 import com.google.gwt.user.client.ui.HTML;
 import com.google.gwt.user.client.ui.HTMLPanel;
@@ -62,6 +63,10 @@ public class MainScreen extends Composite implements ClickListener
      * @param headerScreenName
      *            True to show the name of the current screen right after the
      *            header
+     * @param menuLeft
+     *            True to show the menu to the left of the page, like Evaluation
+     *            Portal does with the subnav list, and false to show it as a
+     *            menu link like the rest of the docs for this class describe
      * @param links
      *            The list of links, which can contain html
      * @param listeners
@@ -71,8 +76,9 @@ public class MainScreen extends Composite implements ClickListener
      *            one of these.
      */
     @SuppressWarnings("deprecation")
-    public MainScreen(String header, boolean headerScreenName, String[] links,
-            ClickListener[] listeners, Screen[] screens)
+    public MainScreen(String header, boolean headerScreenName,
+            boolean menuLeft, String[] links, ClickListener[] listeners,
+            Screen[] screens)
     {
         this.headerLabel = new Label(header);
         this.headerScreenLabel = new Label("");
@@ -88,6 +94,8 @@ public class MainScreen extends Composite implements ClickListener
         FlexTable topTable = new FlexTable();
         HorizontalPanel headerPositionWidget = new HorizontalPanel();
         headerLabel.addStyleName("bznetwork-MainScreenHeader");
+        if (menuLeft)
+            headerLabel.addStyleName("bznetwork-MainScreenHeaderLeft");
         headerPositionWidget.add(headerLabel);
         if (headerScreenName)
         {
@@ -110,7 +118,8 @@ public class MainScreen extends Composite implements ClickListener
             menuBoxPanel.add(anchor);
             screenMenuLinks.add(anchor);
         }
-        menuBox.setWidget(menuBoxPanel);
+        if (!menuLeft)
+            menuBox.setWidget(menuBoxPanel);
         menuAnchor.addClickListener(new ClickListener()
         {
             
@@ -123,7 +132,8 @@ public class MainScreen extends Composite implements ClickListener
                 menuBox.show();
             }
         });
-        upperRightPanel.add(menuAnchor);
+        if (!menuLeft)
+            upperRightPanel.add(menuAnchor);
         for (int i = 0; i < links.length; i++)
         {
             Anchor linkAnchor = new Anchor(links[i], true);
@@ -144,7 +154,20 @@ public class MainScreen extends Composite implements ClickListener
         mainPagePanel.add(topTable);
         mainPagePanel.add(new HorizontalRule("100%"));
         mainPagePanel.add(new Spacer("3px", "3px"));
-        mainPagePanel.add(mainContentWrapper);
+        if (menuLeft)
+        {
+            DockPanel dock = new DockPanel();
+            menuBoxPanel.addStyleName("bznetwork-MenuBoxPanelLeft");
+            dock.add(menuBoxPanel, dock.WEST);
+            dock.setCellWidth(menuBoxPanel, "120px");
+            dock.add(mainContentWrapper, dock.CENTER);
+            dock.setWidth("100%");
+            mainPagePanel.add(dock);
+        }
+        else
+        {
+            mainPagePanel.add(mainContentWrapper);
+        }
         this.screens.addAll(Arrays.asList(screens));
         for (Screen s : screens)
         {

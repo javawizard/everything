@@ -166,8 +166,9 @@ public class BZNetwork implements EntryPoint
         defaultScreenList.add(new ServersScreen());
         defaultScreenList.add(new HelpScreen());
         defaultScreens = defaultScreenList.toArray(new Screen[0]);
-        mainScreen = new MainScreen(publicConfiguration.getSitename(), true,
-                new String[]
+        mainScreen = new MainScreen(publicConfiguration.getSitename(),
+                publicConfiguration.isCurrentname(), publicConfiguration
+                        .isMenuleft(), new String[]
                 {
                     "Log out"
                 }, new ClickListener[]
