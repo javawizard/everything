@@ -8,6 +8,15 @@
 
 	<!-- !ADDTOSQL -->
 
+    <select id="getPermission" 
+         parameterClass="jw.bznetwork.client.data.model.Permission" 
+         resultClass="jw.bznetwork.client.data.model.Permission" >
+        select * from permissions
+        where roleid = #roleid#
+        and permission = #permission#
+        and target = #target#
+    </select>
+
     <select id="listServers" 
          resultClass="jw.bznetwork.client.data.model.Server" >
         select * from servers

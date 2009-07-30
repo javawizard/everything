@@ -48,6 +48,8 @@ public class DataStore
     }
     
     // !ADDTOSQL
+
+public static synchronized Permission getPermission(Permission v){try{return (Permission) getGdbClient().queryForObject("getPermission",v);}catch(Exception e){throw new RuntimeException("Exception in database statement getPermission",e);}}
     
     public static synchronized Server[] listServers()
     {

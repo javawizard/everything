@@ -150,4 +150,16 @@ public class GlobalLinkImpl extends RemoteServiceServlet implements GlobalLink
         DataStore.updateRole(role);
     }
     
+    @Override
+    public void addPermission(int roleid, String permission, int target)
+    {
+        Verify.global("manage-roles");
+    }
+    
+    @Override
+    public void deletePermission(int roleid, String permission, int target)
+    {
+        Verify.global("manage-roles");
+    }
+    
 }
