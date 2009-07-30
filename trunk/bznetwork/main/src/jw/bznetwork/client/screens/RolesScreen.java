@@ -7,6 +7,7 @@ import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.ClickListener;
 import com.google.gwt.user.client.ui.DialogBox;
 import com.google.gwt.user.client.ui.FlexTable;
+import com.google.gwt.user.client.ui.HorizontalPanel;
 import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.PopupPanel;
 import com.google.gwt.user.client.ui.TextBox;
@@ -15,6 +16,7 @@ import com.google.gwt.user.client.ui.Widget;
 import jw.bznetwork.client.BZNetwork;
 import jw.bznetwork.client.BoxCallback;
 import jw.bznetwork.client.VerticalScreen;
+import jw.bznetwork.client.data.model.EditablePermission;
 import jw.bznetwork.client.data.model.Permission;
 import jw.bznetwork.client.data.model.Role;
 import jw.bznetwork.client.ui.Header2;
@@ -124,18 +126,52 @@ public class RolesScreen extends VerticalScreen
                     @Override
                     public void run(Permission[] result)
                     {
-                        showPermissionEditor1(result, roleid, name);
+                        showPermissionEditor1((EditablePermission[]) result,
+                                roleid, name);
                     }
                 });
     }
     
-    protected void showPermissionEditor1(Permission[] result, int roleid,
-            String roleName)
+    protected void showPermissionEditor1(EditablePermission[] result,
+            final int roleid, final String roleName)
     {
         widget.clear();
         widget.add(new Header2("Permissions for " + roleName));
         FlexTable table = new FlexTable();
-        //TODO: pick up 2009.07.30
+        for (int i = 0; i < result.length; i++)
+        {
+            EditablePermission permission = result[i];
+            table.setText(i, 0, permission.getPermission());
+            table.setHTML(i, 1, "&nbsp;on&nbsp;");
+            table.getFlexCellFormatter().addStyleName(i, 1,
+                    "bznetwork-PermsTableOn");
+            HorizontalPanel targetPanel = new HorizontalPanel();
+            if (permission.getGroupName() == null
+                    && permission.getServerName() == null)
+            {
+                Label l = new Label("Global");
+                l.addStyleName("bznetwork-PermsTableGlobal");
+                targetPanel.add(l);
+            }
+            else if (permission.getServerName() == null)
+            {
+                Label l = new Label(permission.getGroupName());
+                targetPanel.add(l);
+            }
+            else
+            {
+                Label l1 = new Label(permission.getGroupName());
+                targetPanel.add(l1);
+                Label l2 = new Label("/");
+                l2.addStyleName("bznetwork-PermsTableGroupServerSlash");
+                targetPanel.add(l2);
+                Label l3 = new Label(permission.getServerName());
+                targetPanel.add(l3);
+            }
+            table.setWidget(i, 2, targetPanel);
+            Anchor deleteLink = new Anchor("delete");
+            table.setWidget(i, 3, deleteLink);
+        }
     }
     
     @Override

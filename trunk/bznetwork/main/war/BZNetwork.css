@@ -59,3 +59,15 @@
 	font-weight: bold;
 	font-size: 20px;
 }
+
+.bznetwork-PermsTableOn {
+	color: #888888
+}
+
+.bznetwork-PermsTableGlobal {
+	color: #888888
+}
+
+.bznetwork-PermsTableGroupServerSlash {
+	color: #888888
+}
