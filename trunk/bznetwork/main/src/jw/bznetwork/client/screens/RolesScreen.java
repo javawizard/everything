@@ -22,6 +22,7 @@ import jw.bznetwork.client.data.model.EditablePermission;
 import jw.bznetwork.client.data.model.Permission;
 import jw.bznetwork.client.data.model.Role;
 import jw.bznetwork.client.ui.Header2;
+import jw.bznetwork.client.ui.Spacer;
 
 public class RolesScreen extends VerticalScreen
 {
@@ -200,6 +201,7 @@ public class RolesScreen extends VerticalScreen
                 select();
             }
         });
+        widget.add(new Spacer("7px", "7px"));
         widget.add(backLink);
     }
     
