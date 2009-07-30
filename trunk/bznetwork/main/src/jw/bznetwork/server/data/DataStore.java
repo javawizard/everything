@@ -45,10 +45,39 @@ public class DataStore
     }
     
     // !ADDTOSQL
-
-public static synchronized void setNextId(Integer v){try{getGdbClient().update("setNextId",v);}catch(Exception e){throw new RuntimeException("Exception in database statement setNextId",e);}}
-
-public static synchronized Integer getNextId(){try{return (Integer) getGdbClient().queryForObject("getNextId");}catch(Exception e){throw new RuntimeException("Exception in database statement getNextId",e);}}
+    
+    private static synchronized void setNextId(Integer v)
+    {
+        try
+        {
+            getGdbClient().update("setNextId", v);
+        }
+        catch (Exception e)
+        {
+            throw new RuntimeException(
+                    "Exception in database statement setNextId", e);
+        }
+    }
+    
+    private static synchronized Integer getNextIdDb()
+    {
+        try
+        {
+            return (Integer) getGdbClient().queryForObject("getNextId");
+        }
+        catch (Exception e)
+        {
+            throw new RuntimeException(
+                    "Exception in database statement getNextId", e);
+        }
+    }
+    
+    public static synchronized int getNextId()
+    {
+        int nextId = getNextIdDb();
+        setNextId(nextId + 1);
+        return nextId;
+    }
     
     public static synchronized void updateConfiguration(Configuration v)
     {
