@@ -5,7 +5,7 @@ For example, view-logs is a server-level permission. This means that you typical
 =Available permissions=
 Here is the list of available permissions and what they do. At the bottom of the table is a list of sensitive permissions. Sensitive permissions are those that generally allow a user to take full control of the server with them.
 
-|| *Permission*            || *Level* || *Description* ||
+|| *Permission*            || *Target* || *Description* ||
 || manage-users            || global  ||Allows the user to add, edit, and delete internal users, and set a particular user's role.||
 || manage-roles            || global  ||Allows the user to add, and delete roles and edit the permissions applied to each role. This inherently allows the user to get at the list of groups and servers, since they need that list to select which groups and servers certain permissions apply to.||
 || manage-auth             || global  ||Allows the user to manage which authentication providers are enabled on the server, and select what the default provider is or if there is a default.     ||
