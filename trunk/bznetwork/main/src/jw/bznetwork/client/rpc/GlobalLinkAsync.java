@@ -1,5 +1,7 @@
 package jw.bznetwork.client.rpc;
 
+import jw.bznetwork.client.ShowMessageException;
+
 import jw.bznetwork.client.data.EditPermissionsModel;
 
 import jw.bznetwork.client.data.model.Permission;
@@ -31,7 +33,7 @@ public void renameRole(int id, String newName, AsyncCallback<Void> callback);
 
 public void getPermissionsForRole(int roleid, AsyncCallback<EditPermissionsModel> callback);
 
-public void addPermission(int roleid, String permission, int target, AsyncCallback<Void> callback);
+public void addPermission(int roleid, String permission, int target, AsyncCallback<Void> callback) throws ShowMessageException;
 
 public void deletePermission(int roleid, String permission, int target, AsyncCallback<Void> callback);
 

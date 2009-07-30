@@ -1,5 +1,6 @@
 package jw.bznetwork.client.rpc;
 
+import jw.bznetwork.client.ShowMessageException;
 import jw.bznetwork.client.data.EditPermissionsModel;
 import jw.bznetwork.client.data.model.Permission;
 import jw.bznetwork.client.data.model.Role;
@@ -24,7 +25,8 @@ public interface GlobalLink extends RemoteService
     
     public EditPermissionsModel getPermissionsForRole(int roleid);
     
-    public void addPermission(int roleid, String permission, int target);
+    public void addPermission(int roleid, String permission, int target)
+            throws ShowMessageException;
     
     public void deletePermission(int roleid, String permission, int target);
 }

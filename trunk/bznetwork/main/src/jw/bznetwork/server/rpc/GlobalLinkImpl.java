@@ -153,6 +153,7 @@ public class GlobalLinkImpl extends RemoteServiceServlet implements GlobalLink
     
     @Override
     public void addPermission(int roleid, String permission, int target)
+            throws ShowMessageException
     {
         Verify.global("manage-roles");
         Permission p = new Permission();
