@@ -8,6 +8,20 @@
 
 	<!-- !ADDTOSQL -->
 
+    <select id="getServerById" 
+         parameterClass="java.lang.Integer" 
+         resultClass="jw.bznetwork.client.data.model.Server" >
+        select * from servers
+        where serverid = #value#
+    </select>
+
+    <select id="getGroupById" 
+         parameterClass="java.lang.Integer" 
+         resultClass="jw.bznetwork.client.data.model.Group" >
+        select * from groups
+        where groupid = #value#
+    </select>
+
     <update id="executeSql" 
          parameterClass="java.lang.String" >
         $value$

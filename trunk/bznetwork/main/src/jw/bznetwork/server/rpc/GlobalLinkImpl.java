@@ -10,8 +10,11 @@ import javax.servlet.http.HttpServletResponse;
 
 import jw.bznetwork.client.Perms;
 import jw.bznetwork.client.Verify;
+import jw.bznetwork.client.data.model.EditablePermission;
+import jw.bznetwork.client.data.model.Group;
 import jw.bznetwork.client.data.model.Permission;
 import jw.bznetwork.client.data.model.Role;
+import jw.bznetwork.client.data.model.Server;
 import jw.bznetwork.client.rpc.GlobalLink;
 import jw.bznetwork.server.data.DataStore;
 
@@ -57,7 +60,54 @@ public class GlobalLinkImpl extends RemoteServiceServlet implements GlobalLink
     public Permission[] getPermissionsForRole(int roleid)
     {
         Verify.global("manage-roles");
-        return DataStore.getPermissionsByRole(roleid);
+        Permission[] perms = DataStore.getPermissionsByRole(roleid);
+        EditablePermission[] result = new EditablePermission[perms.length];
+        for (int i = 0; i < perms.length; i++)
+        {
+            result[i] = new EditablePermission();
+            result[i].setGroup(perms[i].getGroup());
+            result[i].setRoleid(perms[i].getRoleid());
+            result[i].setPermission(perms[i].getPermission());
+            result[i].setTarget(perms[i].getTarget());
+            if (perms[i].getTarget() == -1)
+            {
+                /*
+                 * Global permission
+                 */
+                result[i].setGroupName(null);
+                result[i].setServerName(null);
+            }
+            else if (perms[i].getGroup() == null)
+            {
+                /*
+                 * Group permission, since the parent group is null
+                 */
+                Group group = DataStore.getGroupById(perms[i].getTarget());
+                if (group == null)
+                    result[i].setGroupName("_missing_" + perms[i].getTarget());
+                else
+                    result[i].setGroupName(group.getName());
+                result[i].setServerName(null);
+                
+            }
+            else
+            {
+                /*
+                 * Server permission, since parent group is not null
+                 */
+                Server server = DataStore.getServerById(perms[i].getTarget());
+                if (server == null)
+                    result[i].setServerName("_missing_" + perms[i].getTarget());
+                else
+                    result[i].setServerName(server.getName());
+                Group group = DataStore.getGroupById(perms[i].getGroup());
+                if (group == null)
+                    result[i].setGroupName("_missing_" + perms[i].getGroup());
+                else
+                    result[i].setGroupName(group.getName());
+            }
+        }
+        return result;
     }
     
     @Override

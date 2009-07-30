@@ -21,16 +21,17 @@ public class Permission implements Serializable
      * parent group.<br/><br/>
      * 
      * The field is an Integer instead of an int because the database returns
-     * null if the outer join indicates that there is no such server.
+     * null if this permission is not for a server. (so it doesn't have a parent
+     * group to return).
      */
     private Integer group;
     
-    public int getGroup()
+    public Integer getGroup()
     {
         return group;
     }
     
-    public void setGroup(int group)
+    public void setGroup(Integer group)
     {
         this.group = group;
     }
