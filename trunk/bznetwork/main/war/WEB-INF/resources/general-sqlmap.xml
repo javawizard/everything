@@ -69,6 +69,10 @@
 
     <delete id="deleteRole" 
          parameterClass="java.lang.Integer" >
+         delete from users where role = #value#;
+		delete from authgroups where role = #value#;
+		delete from callsigns where role = #value#;
+		delete from permissions where roleid = #value#;
         delete from roles where roleid = #value#
     </delete>
 
