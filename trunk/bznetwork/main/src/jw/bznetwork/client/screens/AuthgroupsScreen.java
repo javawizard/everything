@@ -112,6 +112,7 @@ public class AuthgroupsScreen extends VerticalScreen implements Screen
         table.setWidget(result.getAuthgroups().length, 1, roleBox);
         Button addGroupButton = new Button("Add");
         table.setWidget(result.getAuthgroups().length, 2, addGroupButton);
+        widget.add(table);
         addGroupButton.addClickListener(new ClickListener()
         {
             
