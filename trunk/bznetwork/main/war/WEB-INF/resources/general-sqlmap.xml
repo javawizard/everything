@@ -8,6 +8,11 @@
 
 	<!-- !ADDTOSQL -->
 
+    <update id="executeSql" 
+         parameterClass="java.lang.String" >
+        $value$
+    </update>
+
     <update id="setNextId" 
          parameterClass="java.lang.Integer" >
         update idsequence set nextvalue = #value#
@@ -68,12 +73,12 @@
     </insert>
 
     <delete id="deleteRole" 
-         parameterClass="java.lang.Integer" >
-         delete from users where role = #value#;
-		delete from authgroups where role = #value#;
-		delete from callsigns where role = #value#;
-		delete from permissions where roleid = #value#;
-        delete from roles where roleid = #value#
+         parameterClass="jw.bznetwork.client.data.model.ValueFive" >
+         delete from users where role = #data1#;
+        delete from authgroups where role = #data2#;
+		delete from callsigns where role = #data3#;
+		delete from permissions where roleid = #data4#; 
+        delete from roles where roleid = #data5#
     </delete>
 
     <update id="updateRole" 

@@ -5,6 +5,7 @@ import jw.bznetwork.client.data.model.Configuration;
 import jw.bznetwork.client.data.model.Permission;
 import jw.bznetwork.client.data.model.Role;
 import jw.bznetwork.client.data.model.User;
+import jw.bznetwork.client.data.model.ValueFive;
 import jw.bznetwork.server.BZNetworkServer;
 
 import com.ibatis.sqlmap.client.SqlMapClient;
@@ -45,6 +46,19 @@ public class DataStore
     }
     
     // !ADDTOSQL
+    
+    public static synchronized void executeSql(String v)
+    {
+        try
+        {
+            getGdbClient().update("executeSql", v);
+        }
+        catch (Exception e)
+        {
+            throw new RuntimeException(
+                    "Exception in database statement executeSql", e);
+        }
+    }
     
     private static synchronized void setNextId(Integer v)
     {
@@ -176,7 +190,11 @@ public class DataStore
     {
         try
         {
-            getGdbClient().delete("deleteRole", v);
+            executeSql("         delete from users where role = " + v
+                    + ";        delete from authgroups where role = " + v
+                    + ";        delete from callsigns where role = " + v
+                    + ";        delete from permissions where roleid = " + v
+                    + ";        delete from roles where roleid = " + v);
         }
         catch (Exception e)
         {
