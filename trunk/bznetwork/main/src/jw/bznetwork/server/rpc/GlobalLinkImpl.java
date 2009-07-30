@@ -12,8 +12,10 @@ import javax.servlet.http.HttpServletResponse;
 import jw.bznetwork.client.Perms;
 import jw.bznetwork.client.ShowMessageException;
 import jw.bznetwork.client.Verify;
+import jw.bznetwork.client.data.EditAuthgroupsModel;
 import jw.bznetwork.client.data.EditPermissionsModel;
 import jw.bznetwork.client.data.GroupedServer;
+import jw.bznetwork.client.data.model.Authgroup;
 import jw.bznetwork.client.data.model.EditablePermission;
 import jw.bznetwork.client.data.model.Group;
 import jw.bznetwork.client.data.model.Permission;
@@ -24,6 +26,13 @@ import jw.bznetwork.server.data.DataStore;
 
 import com.google.gwt.user.server.rpc.RemoteServiceServlet;
 
+/**
+ * TODO: consider making the methods synchronized, to avoid a few concurrency
+ * issues that are present
+ * 
+ * @author Alexander Boyd
+ * 
+ */
 public class GlobalLinkImpl extends RemoteServiceServlet implements GlobalLink
 {
     
@@ -186,6 +195,43 @@ public class GlobalLinkImpl extends RemoteServiceServlet implements GlobalLink
         p.setRoleid(roleid);
         p.setTarget(target);
         DataStore.deletePermission(p);
+    }
+    
+    @Override
+    public void addAuthgroup(String name, int roleid)
+            throws ShowMessageException
+    {
+        Verify.global("manage-callsign-auth");
+        Authgroup authgroup = new Authgroup();
+        authgroup.setName(name.trim());
+        authgroup.setRole(roleid);
+        if (DataStore.getAuthgroupByName(name.trim()) != null)
+        {
+            throw new ShowMessageException(
+                    "An authgroup for that group already exists.");
+        }
+        DataStore.addAuthgroup(authgroup);
+    }
+    
+    @Override
+    public void deleteAuthgroup(String name)
+    {
+        Verify.global("manage-callsign-auth");
+        DataStore.deleteAuthgroup(name);
+    }
+    
+    @Override
+    public EditAuthgroupsModel getEditAuthgroupsModel()
+    {
+        Verify.global("manage-callsign-auth");
+        EditAuthgroupsModel model = new EditAuthgroupsModel();
+        model.setAuthgroups(DataStore.listAuthgroups());
+        Role[] roles = DataStore.listRoles();
+        for (Role role : roles)
+        {
+            model.getRoleIdsToNames().put(role.getRoleid(), role.getName());
+        }
+        return model;
     }
     
 }

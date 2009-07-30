@@ -1,6 +1,7 @@
 package jw.bznetwork.client;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 
 import jw.bznetwork.client.data.AuthUser;
 import jw.bznetwork.client.data.model.Configuration;
@@ -34,6 +35,7 @@ import com.google.gwt.user.client.ui.HTML;
 import com.google.gwt.user.client.ui.HTMLPanel;
 import com.google.gwt.user.client.ui.HorizontalPanel;
 import com.google.gwt.user.client.ui.Label;
+import com.google.gwt.user.client.ui.ListBox;
 import com.google.gwt.user.client.ui.PasswordTextBox;
 import com.google.gwt.user.client.ui.PopupPanel;
 import com.google.gwt.user.client.ui.RootPanel;
@@ -559,6 +561,17 @@ public class BZNetwork implements EntryPoint
         PopupPanel box = new PopupPanel(false, true);
         box.setWidget(new Label("Loading..."));
         box.center();
+        return box;
+    }
+    
+    public static ListBox createRoleBox(HashMap<Integer, String> roleIdsToNames)
+    {
+        ListBox box = new ListBox();
+        box.addItem("", "");
+        for (int roleid : roleIdsToNames.keySet())
+        {
+            box.addItem(roleIdsToNames.get(roleid), "" + roleid);
+        }
         return box;
     }
 }

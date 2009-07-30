@@ -1,6 +1,7 @@
 package jw.bznetwork.client.rpc;
 
 import jw.bznetwork.client.ShowMessageException;
+import jw.bznetwork.client.data.EditAuthgroupsModel;
 import jw.bznetwork.client.data.EditPermissionsModel;
 import jw.bznetwork.client.data.model.Permission;
 import jw.bznetwork.client.data.model.Role;
@@ -29,4 +30,10 @@ public interface GlobalLink extends RemoteService
             throws ShowMessageException;
     
     public void deletePermission(int roleid, String permission, int target);
+    
+    public EditAuthgroupsModel getEditAuthgroupsModel();
+    
+    public void addAuthgroup(String name, int roleid) throws ShowMessageException;
+    
+    public void deleteAuthgroup(String name);
 }

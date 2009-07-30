@@ -2,6 +2,8 @@ package jw.bznetwork.client.rpc;
 
 import jw.bznetwork.client.ShowMessageException;
 
+import jw.bznetwork.client.data.EditAuthgroupsModel;
+
 import jw.bznetwork.client.data.EditPermissionsModel;
 
 import jw.bznetwork.client.data.model.Permission;
@@ -36,5 +38,11 @@ public void getPermissionsForRole(int roleid, AsyncCallback<EditPermissionsModel
 public void addPermission(int roleid, String permission, int target, AsyncCallback<Void> callback);
 
 public void deletePermission(int roleid, String permission, int target, AsyncCallback<Void> callback);
+
+public void getEditAuthgroupsModel(AsyncCallback<EditAuthgroupsModel> callback);
+
+public void addAuthgroup(String name, int roleid, AsyncCallback<Void> callback);
+
+public void deleteAuthgroup(String name, AsyncCallback<Void> callback);
 
 }
