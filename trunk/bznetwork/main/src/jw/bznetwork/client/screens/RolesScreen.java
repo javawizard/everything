@@ -7,6 +7,7 @@ import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.ClickListener;
 import com.google.gwt.user.client.ui.DialogBox;
 import com.google.gwt.user.client.ui.FlexTable;
+import com.google.gwt.user.client.ui.HTML;
 import com.google.gwt.user.client.ui.HorizontalPanel;
 import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.ListBox;
@@ -185,7 +186,8 @@ public class RolesScreen extends VerticalScreen
         Button addPermissionButton = new Button("Add");
         table.setWidget(result.length, 3, addPermissionButton);
         widget.add(table);
-        widget.add(new Label(
+        widget.add(new Spacer("8px", "8px"));
+        widget.add(new HTML(
                 "Changes to permissions will take effect when the user "
                         + "logs out and then logs back in again. If you "
                         + "need to revoke a permission immediately because "
@@ -202,7 +204,7 @@ public class RolesScreen extends VerticalScreen
                 select();
             }
         });
-        widget.add(new Spacer("7px", "7px"));
+        widget.add(new Spacer("8px", "8px"));
         widget.add(backLink);
     }
     
