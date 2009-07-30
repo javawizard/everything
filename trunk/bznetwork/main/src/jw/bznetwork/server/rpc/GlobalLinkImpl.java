@@ -8,9 +8,11 @@ import javax.servlet.ServletResponse;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import jw.bznetwork.client.Perms;
 import jw.bznetwork.client.data.model.Permission;
 import jw.bznetwork.client.data.model.Role;
 import jw.bznetwork.client.rpc.GlobalLink;
+import jw.bznetwork.server.data.DataStore;
 
 import com.google.gwt.user.server.rpc.RemoteServiceServlet;
 
@@ -33,12 +35,6 @@ public class GlobalLinkImpl extends RemoteServiceServlet implements GlobalLink
         super.service(req, res);
     }
     
-    public void global(String permission)
-    {
-        
-    }
-    
-    
     @Override
     public void addRole(String name)
     {
@@ -56,15 +52,14 @@ public class GlobalLinkImpl extends RemoteServiceServlet implements GlobalLink
     @Override
     public Permission[] getPermissionsForRole(int roleid)
     {
-        // TODO Auto-generated method stub
-        return null;
+        Rerms.vglobal("manage-roles");
     }
     
     @Override
     public Role[] getRoleList()
     {
-        // TODO Auto-generated method stub
-        return null;
+        Perms.vglobal("manage-roles");
+        return DataStore.listRoles();
     }
     
     @Override
