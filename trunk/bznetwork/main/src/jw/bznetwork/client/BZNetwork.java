@@ -514,6 +514,10 @@ public class BZNetwork implements EntryPoint
             Window.alert("A permission error was encountered: "
                     + t.getMessage());
         }
+        else if (t instanceof ShowMessageException)
+        {
+            Window.alert(t.getMessage());
+        }
         else
         {
             Window.alert("An unknown error has occured: "

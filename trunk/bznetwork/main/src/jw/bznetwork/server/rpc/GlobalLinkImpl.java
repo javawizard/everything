@@ -10,6 +10,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import jw.bznetwork.client.Perms;
+import jw.bznetwork.client.ShowMessageException;
 import jw.bznetwork.client.Verify;
 import jw.bznetwork.client.data.EditPermissionsModel;
 import jw.bznetwork.client.data.GroupedServer;
@@ -154,12 +155,26 @@ public class GlobalLinkImpl extends RemoteServiceServlet implements GlobalLink
     public void addPermission(int roleid, String permission, int target)
     {
         Verify.global("manage-roles");
+        Permission p = new Permission();
+        p.setPermission(permission);
+        p.setRoleid(roleid);
+        p.setTarget(target);
+        if (DataStore.getPermission(p) == null)
+            DataStore.addPermission(p);
+        else
+            throw new ShowMessageException(
+                    "That permission/target pair already exists on this role.");
     }
     
     @Override
     public void deletePermission(int roleid, String permission, int target)
     {
         Verify.global("manage-roles");
+        Permission p = new Permission();
+        p.setPermission(permission);
+        p.setRoleid(roleid);
+        p.setTarget(target);
+        DataStore.deletePermission(p);
     }
     
 }

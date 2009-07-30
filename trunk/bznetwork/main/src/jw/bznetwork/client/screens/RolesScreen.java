@@ -238,8 +238,16 @@ public class RolesScreen extends VerticalScreen
                     return;
                 }
                 int target = Integer.parseInt(targetValue);
-                Window.alert("This would add permission " + permission
-                        + " to target " + target);
+                BZNetwork.authLink.addPermission(roleid, permission, target,
+                        new BoxCallback<Void>()
+                        {
+                            
+                            @Override
+                            public void run(Void result)
+                            {
+                                showPermissionEditor(roleid, roleName);
+                            }
+                        });
             }
         });
     }
