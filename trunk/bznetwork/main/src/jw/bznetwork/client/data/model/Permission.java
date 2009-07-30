@@ -15,6 +15,22 @@ public class Permission implements Serializable
     private int roleid;
     private String permission;
     private int target;
+    /**
+     * This isn't present in the actual permissions table, but is returned by
+     * some queries. If the target is a server, then this denotes the server's
+     * parent group.
+     */
+    private int group;
+    
+    public int getGroup()
+    {
+        return group;
+    }
+    
+    public void setGroup(int group)
+    {
+        this.group = group;
+    }
     
     public int getRoleid()
     {
