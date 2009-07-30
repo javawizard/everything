@@ -9,12 +9,14 @@ import com.google.gwt.user.client.ui.DialogBox;
 import com.google.gwt.user.client.ui.FlexTable;
 import com.google.gwt.user.client.ui.HorizontalPanel;
 import com.google.gwt.user.client.ui.Label;
+import com.google.gwt.user.client.ui.ListBox;
 import com.google.gwt.user.client.ui.PopupPanel;
 import com.google.gwt.user.client.ui.TextBox;
 import com.google.gwt.user.client.ui.Widget;
 
 import jw.bznetwork.client.BZNetwork;
 import jw.bznetwork.client.BoxCallback;
+import jw.bznetwork.client.Perms;
 import jw.bznetwork.client.VerticalScreen;
 import jw.bznetwork.client.data.model.EditablePermission;
 import jw.bznetwork.client.data.model.Permission;
@@ -132,6 +134,7 @@ public class RolesScreen extends VerticalScreen
                 });
     }
     
+    @SuppressWarnings("deprecation")
     protected void showPermissionEditor1(EditablePermission[] result,
             final int roleid, final String roleName)
     {
@@ -172,6 +175,44 @@ public class RolesScreen extends VerticalScreen
             Anchor deleteLink = new Anchor("delete");
             table.setWidget(i, 3, deleteLink);
         }
+        ListBox permissionBox = createPermissionListBox();
+        table.setWidget(result.length, 0, permissionBox);
+        table.setHTML(result.length, 1, "&nbsp;on&nbsp;");
+        table.getFlexCellFormatter().addStyleName(result.length, 1,
+                "bznetwork-PermsTableOn");
+        Button addPermissionButton = new Button("Add");
+        table.setWidget(result.length, 3, addPermissionButton);
+        widget.add(table);
+        widget.add(new Label(
+                "Changes to permissions will take effect when the user "
+                        + "logs out and then logs back in again. If you "
+                        + "need to revoke a permission immediately because "
+                        + "a user is abusing it, revoke it here, then go "
+                        + "to the <b>Sessions</b> page, find the user in "
+                        + "the list, and click <b>Force logout</b>."));
+        Anchor backLink = new Anchor("<< Back to the list of roles");
+        backLink.addClickListener(new ClickListener()
+        {
+            
+            @Override
+            public void onClick(Widget sender)
+            {
+                select();
+            }
+        });
+        widget.add(backLink);
+    }
+    
+    private ListBox createPermissionListBox()
+    {
+        ListBox box = new ListBox();
+        box.setVisibleItemCount(1);
+        box.addItem("");
+        for (String s : Perms.getSortedPermissionsList())
+        {
+            box.addItem(s);
+        }
+        return box;
     }
     
     @Override
