@@ -134,7 +134,7 @@ public class AuthgroupsScreen extends VerticalScreen implements Screen
                 String roleIdString = ((SelectElement) roleBox.getElement()
                         .cast()).getOptions().getItem(roleIndex).getValue();
                 int roleid = Integer.parseInt(roleIdString);
-                BZNetwork.authLink.addAuthgroup(groupNameBox.getName(), roleid,
+                BZNetwork.authLink.addAuthgroup(groupNameBox.getText(), roleid,
                         new BoxCallback<Void>()
                         {
                             
