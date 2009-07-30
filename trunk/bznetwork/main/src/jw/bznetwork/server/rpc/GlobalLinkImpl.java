@@ -42,6 +42,8 @@ public class GlobalLinkImpl extends RemoteServiceServlet implements GlobalLink
         Verify.global("manage-roles");
         Role role = new Role();
         role.setRoleid(DataStore.createId());
+        role.setName(name);
+        DataStore.addRole(role);
     }
     
     @Override
