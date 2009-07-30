@@ -40,7 +40,8 @@ public class GlobalLinkImpl extends RemoteServiceServlet implements GlobalLink
     public void addRole(String name)
     {
         Verify.global("manage-roles");
-        
+        Role role = new Role();
+        role.setRoleid(DataStore.createId());
     }
     
     @Override

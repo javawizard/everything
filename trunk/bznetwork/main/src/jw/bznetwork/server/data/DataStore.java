@@ -72,7 +72,7 @@ public class DataStore
         }
     }
     
-    public static synchronized int getNextId()
+    public static synchronized int createId()
     {
         int nextId = getNextIdDb();
         setNextId(nextId + 1);
