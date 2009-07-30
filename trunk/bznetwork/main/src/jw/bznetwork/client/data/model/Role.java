@@ -1,7 +1,14 @@
 package jw.bznetwork.client.data.model;
 
-public class Role
+import java.io.Serializable;
+
+public class Role implements Serializable
 {
+    public Role()
+    {
+        super();
+    }
+    
     private int roleid;
     private String name;
     
