@@ -74,12 +74,12 @@ public class Perms
         return result;
     }
     
-    public boolean isPermissionValid(String permission)
+    public static boolean isPermissionValid(String permission)
     {
         return allPermissions.contains(permission);
     }
     
-    public int getPermissionLevel(String permission)
+    public static int getPermissionLevel(String permission)
     {
         return allPermissionLevels.get(permission);
     }

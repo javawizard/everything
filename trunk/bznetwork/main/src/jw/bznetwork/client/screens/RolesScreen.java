@@ -256,7 +256,15 @@ public class RolesScreen extends VerticalScreen
                             .alert("You need to select a target for this permission.");
                     return;
                 }
-                int target = Integer.parseInt(targetValue);
+                String[] targetSplit = targetValue.split("\\/");
+                int target = Integer.parseInt(targetSplit[1]);
+                int level = Integer.parseInt(targetSplit[0]);
+                if (level > Perms.getPermissionLevel(permission))
+                {
+                    Window.alert("You can't apply that permission to "
+                            + (level == 1 ? "Global" : (level == 2 ? "a group"
+                                    : "a server")) + ".");
+                }
                 BZNetwork.authLink.addPermission(roleid, permission, target,
                         new BoxCallback<Void>()
                         {
@@ -275,16 +283,16 @@ public class RolesScreen extends VerticalScreen
     {
         ListBox box = new ListBox();
         box.addItem("", "");
-        box.addItem("Global", "-1");
+        box.addItem("Global", "1/-1");
         ((SelectElement) box.getElement().cast()).getOptions().getItem(1)
                 .setClassName("bznetwork-PermsTableNewGlobal");
         for (Group g : model.getGroups())
         {
-            box.addItem(g.getName(), "" + g.getGroupid());
+            box.addItem(g.getName(), "2/" + g.getGroupid());
         }
         for (GroupedServer s : model.getServers())
         {
-            box.addItem(s.getParent().getName() + "/" + s.getName(), ""
+            box.addItem(s.getParent().getName() + "/" + s.getName(), "3/"
                     + s.getServerid());
         }
         return box;
@@ -329,7 +337,6 @@ public class RolesScreen extends VerticalScreen
     @Override
     public void select()
     {
-        widget.clear();
         final PopupPanel box = BZNetwork.showLoadingBox();
         BZNetwork.authLink.getRoleList(new AsyncCallback<Role[]>()
         {

@@ -156,6 +156,16 @@ public class GlobalLinkImpl extends RemoteServiceServlet implements GlobalLink
             throws ShowMessageException
     {
         Verify.global("manage-roles");
+        if (!Perms.isPermissionValid(permission))
+            throw new RuntimeException("Invalid permission");
+        /*
+         * In the future, we might want to validate that the permission is being
+         * applied to the appropriate level. For now, though, it's not that big
+         * of a deal, since the client performs this validation, and a client
+         * modded not to perform that validation wouldn't cause any problems
+         * because the server ends up acting like the permission doesn't even
+         * exist anyway.
+         */
         Permission p = new Permission();
         p.setPermission(permission);
         p.setRoleid(roleid);
