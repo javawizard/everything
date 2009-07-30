@@ -1,5 +1,6 @@
 package jw.bznetwork.client.screens;
 
+import com.google.gwt.dom.client.SelectElement;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.Anchor;
@@ -20,7 +21,9 @@ import jw.bznetwork.client.BoxCallback;
 import jw.bznetwork.client.Perms;
 import jw.bznetwork.client.VerticalScreen;
 import jw.bznetwork.client.data.EditPermissionsModel;
+import jw.bznetwork.client.data.GroupedServer;
 import jw.bznetwork.client.data.model.EditablePermission;
+import jw.bznetwork.client.data.model.Group;
 import jw.bznetwork.client.data.model.Permission;
 import jw.bznetwork.client.data.model.Role;
 import jw.bznetwork.client.ui.Header2;
@@ -183,6 +186,7 @@ public class RolesScreen extends VerticalScreen
         table.setHTML(result.length, 1, "&nbsp;on&nbsp;");
         table.getFlexCellFormatter().addStyleName(result.length, 1,
                 "bznetwork-PermsTableOn");
+        ListBox targetBox = createTargetListBox(model);
         Button addPermissionButton = new Button("Add");
         table.setWidget(result.length, 3, addPermissionButton);
         widget.add(table);
@@ -193,7 +197,11 @@ public class RolesScreen extends VerticalScreen
                         + "need to revoke a permission immediately because "
                         + "a user is abusing it, revoke it here, then go "
                         + "to the <b>Sessions</b> page, find the user in "
-                        + "the list, and click <b>Force logout</b>."));
+                        + "the list, and click <b>Force logout</b>. A list of "
+                        + "permissions and what they mean is available "
+                        + "<a href='http://code.google.com/p/bzsound/wiki"
+                        + "/BZNetworkPermissions#Available_permissions' "
+                        + "target='_blank'>here</a>."));
         Anchor backLink = new Anchor("<< Back to the list of roles");
         backLink.addClickListener(new ClickListener()
         {
@@ -206,6 +214,22 @@ public class RolesScreen extends VerticalScreen
         });
         widget.add(new Spacer("8px", "8px"));
         widget.add(backLink);
+    }
+    
+    private ListBox createTargetListBox(EditPermissionsModel model)
+    {
+        ListBox box = new ListBox();
+        box.addItem("");
+        box.addItem("Global", "-1");
+        for (Group g : model.getGroups())
+        {
+            box.addItem(g.getName(), "" + g.getGroupid());
+        }
+        for (GroupedServer s : model.getServers())
+        {
+            box.addItem(s.getParent().getName() + "/" + s.getName(), ""
+                    + s.getServerid());
+        }
     }
     
     private ListBox createPermissionListBox()
