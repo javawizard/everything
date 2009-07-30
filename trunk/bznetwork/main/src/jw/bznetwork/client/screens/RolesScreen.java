@@ -181,12 +181,13 @@ public class RolesScreen extends VerticalScreen
             Anchor deleteLink = new Anchor("delete");
             table.setWidget(i, 3, deleteLink);
         }
-        ListBox permissionBox = createPermissionListBox();
+        final ListBox permissionBox = createPermissionListBox();
         table.setWidget(result.length, 0, permissionBox);
         table.setHTML(result.length, 1, "&nbsp;on&nbsp;");
         table.getFlexCellFormatter().addStyleName(result.length, 1,
                 "bznetwork-PermsTableOn");
-        ListBox targetBox = createTargetListBox(model);
+        final ListBox targetBox = createTargetListBox(model);
+        table.setWidget(result.length, 2, targetBox);
         Button addPermissionButton = new Button("Add");
         table.setWidget(result.length, 3, addPermissionButton);
         widget.add(table);
@@ -214,13 +215,42 @@ public class RolesScreen extends VerticalScreen
         });
         widget.add(new Spacer("8px", "8px"));
         widget.add(backLink);
+        addPermissionButton.addClickListener(new ClickListener()
+        {
+            
+            @Override
+            public void onClick(Widget sender)
+            {
+                String permission = permissionBox.getItemText(permissionBox
+                        .getSelectedIndex());
+                if (permission.equals(""))
+                {
+                    Window.alert("You need to select a permission to add.");
+                    return;
+                }
+                int targetIndex = targetBox.getSelectedIndex();
+                String targetValue = ((SelectElement) targetBox.getElement()
+                        .cast()).getOptions().getItem(targetIndex).getValue();
+                if (targetValue.equals(""))
+                {
+                    Window
+                            .alert("You need to select a target for this permission.");
+                    return;
+                }
+                int target = Integer.parseInt(targetValue);
+                Window.alert("This would add permission " + permission
+                        + " to target " + target);
+            }
+        });
     }
     
     private ListBox createTargetListBox(EditPermissionsModel model)
     {
         ListBox box = new ListBox();
-        box.addItem("");
+        box.addItem("", "");
         box.addItem("Global", "-1");
+        ((SelectElement) box.getElement().cast()).getOptions().getItem(1)
+                .setClassName("bznetwork-PermsTableNewGlobal");
         for (Group g : model.getGroups())
         {
             box.addItem(g.getName(), "" + g.getGroupid());
@@ -230,6 +260,7 @@ public class RolesScreen extends VerticalScreen
             box.addItem(s.getParent().getName() + "/" + s.getName(), ""
                     + s.getServerid());
         }
+        return box;
     }
     
     private ListBox createPermissionListBox()
