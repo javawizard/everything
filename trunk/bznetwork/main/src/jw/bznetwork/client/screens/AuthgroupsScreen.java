@@ -3,7 +3,7 @@
 import jw.bznetwork.client.Screen;
 import jw.bznetwork.client.VerticalScreen;
 
-public class CallsignsScreen extends VerticalScreen implements Screen
+public class AuthgroupsScreen extends VerticalScreen implements Screen
 {
     
     @Override

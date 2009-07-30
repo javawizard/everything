@@ -8,7 +8,7 @@ import jw.bznetwork.client.rpc.GlobalLink;
 import jw.bznetwork.client.rpc.GlobalLinkAsync;
 import jw.bznetwork.client.rpc.GlobalUnauthLink;
 import jw.bznetwork.client.rpc.GlobalUnauthLinkAsync;
-import jw.bznetwork.client.screens.CallsignsScreen;
+import jw.bznetwork.client.screens.AuthgroupsScreen;
 import jw.bznetwork.client.screens.ConfigurationScreen;
 import jw.bznetwork.client.screens.HelpScreen;
 import jw.bznetwork.client.screens.RolesScreen;
@@ -157,7 +157,7 @@ public class BZNetwork implements EntryPoint
         if (Perms.global("manage-roles"))
             defaultScreenList.add(new RolesScreen());
         if (Perms.global("manage-callsign-auth"))
-            defaultScreenList.add(new CallsignsScreen());
+            defaultScreenList.add(new AuthgroupsScreen());
         /*
          * This one is dependent on some perms, but since the rules are
          * complicated, we'll just add the screen anyway and let the server
