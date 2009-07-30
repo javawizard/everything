@@ -67,7 +67,11 @@ public class RolesScreen extends VerticalScreen
         @Override
         public void onClick(Widget sender)
         {
-            Window.alert("Permissions editing is not supported yet.");
+            /*
+             * We'll get the list of permissions from the server. When it's
+             * returned, we'll clear the screen, build the permissions table,
+             * and add it to the screen.
+             */
         }
         
     }

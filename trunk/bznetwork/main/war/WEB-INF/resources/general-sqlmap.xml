@@ -111,7 +111,9 @@
     <select id="getPermissionsByRole" 
          parameterClass="java.lang.Integer" 
          resultClass="jw.bznetwork.client.data.model.Permission" >
-        select * from permissions where roleid = #value#
+        select p.roleid, p.permission, p.target, s.groupid
+        from permissions p left outer join servers s on s.serverid = p.target
+        where p.roleid = #value#
     </select>
 
     <select id="getRoleById" 
