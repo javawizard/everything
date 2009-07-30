@@ -25,7 +25,7 @@ public void addRole(String name, AsyncCallback<Void> callback);
 
 public void deleteRole(int id, AsyncCallback<Void> callback);
 
-public void renameRole(int id, int newName, AsyncCallback<Void> callback);
+public void renameRole(int id, String newName, AsyncCallback<Void> callback);
 
 public void getPermissionsForRole(int roleid, AsyncCallback<Permission[]> callback);
 

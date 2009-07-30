@@ -8,6 +8,16 @@
 
 	<!-- !ADDTOSQL -->
 
+    <update id="setNextId" 
+         parameterClass="java.lang.Integer" >
+        update idsequence set nextvalue = #value#
+    </update>
+
+    <select id="getNextId" 
+         resultClass="java.lang.Integer" >
+        select * from idsequence
+    </select>
+
     <update id="updateConfiguration" 
          parameterClass="jw.bznetwork.client.data.model.Configuration" >
         update configuration set

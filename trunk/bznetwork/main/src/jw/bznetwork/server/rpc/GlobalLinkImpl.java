@@ -9,6 +9,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import jw.bznetwork.client.Perms;
+import jw.bznetwork.client.Verify;
 import jw.bznetwork.client.data.model.Permission;
 import jw.bznetwork.client.data.model.Role;
 import jw.bznetwork.client.rpc.GlobalLink;
@@ -38,35 +39,38 @@ public class GlobalLinkImpl extends RemoteServiceServlet implements GlobalLink
     @Override
     public void addRole(String name)
     {
-        // TODO Auto-generated method stub
+        Verify.global("manage-roles");
         
     }
     
     @Override
     public void deleteRole(int id)
     {
-        // TODO Auto-generated method stub
-        
+        Verify.global("manage-roles");
+        DataStore.deleteRole(id);
     }
     
     @Override
     public Permission[] getPermissionsForRole(int roleid)
     {
-        Rerms.vglobal("manage-roles");
+        Verify.global("manage-roles");
+        return DataStore.getPermissionsByRole(roleid);
     }
     
     @Override
     public Role[] getRoleList()
     {
-        Perms.vglobal("manage-roles");
+        Verify.global("manage-roles");
         return DataStore.listRoles();
     }
     
     @Override
-    public void renameRole(int id, int newName)
+    public void renameRole(int id, String newName)
     {
-        // TODO Auto-generated method stub
-        
+        Verify.global("manage-roles");
+        Role role = DataStore.getRoleById(id);
+        role.setName(newName);
+        DataStore.updateRole(role);
     }
     
 }

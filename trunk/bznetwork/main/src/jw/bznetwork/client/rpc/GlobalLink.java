@@ -19,7 +19,7 @@ public interface GlobalLink extends RemoteService
     
     public void deleteRole(int id);
     
-    public void renameRole(int id, int newName);
+    public void renameRole(int id, String newName);
     
     public Permission[] getPermissionsForRole(int roleid);
 }
