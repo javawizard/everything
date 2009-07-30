@@ -1,6 +1,6 @@
 package jw.bznetwork.client;
 
-public class ShowMessageException extends RuntimeException
+public class ShowMessageException extends Exception
 {
 
     public ShowMessageException()

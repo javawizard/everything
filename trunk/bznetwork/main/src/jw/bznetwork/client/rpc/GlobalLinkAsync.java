@@ -33,7 +33,7 @@ public void renameRole(int id, String newName, AsyncCallback<Void> callback);
 
 public void getPermissionsForRole(int roleid, AsyncCallback<EditPermissionsModel> callback);
 
-public void addPermission(int roleid, String permission, int target, AsyncCallback<Void> callback) throws ShowMessageException;
+public void addPermission(int roleid, String permission, int target, AsyncCallback<Void> callback);
 
 public void deletePermission(int roleid, String permission, int target, AsyncCallback<Void> callback);
 

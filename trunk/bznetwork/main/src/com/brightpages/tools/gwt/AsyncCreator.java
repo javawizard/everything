@@ -202,6 +202,7 @@ public class AsyncCreator
                             }
                             String throwsExpr = "";
                             boolean hasthrows = false;
+                            /*
                             for (ExpressionTree tree : method.getThrows())
                             {
                                 if (!hasthrows)
@@ -210,7 +211,7 @@ public class AsyncCreator
                                     hasthrows = true;
                                 }
                                 throwsExpr += " " + tree.toString();
-                            }
+                            }*/
                             // add async method
                             asyncVersion.append("AsyncCallback<"
                                     + methodReturnString + "> callback)"

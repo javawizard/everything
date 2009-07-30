@@ -149,7 +149,7 @@ public class RolesScreen extends VerticalScreen
         FlexTable table = new FlexTable();
         for (int i = 0; i < result.length; i++)
         {
-            EditablePermission permission = result[i];
+            final EditablePermission permission = result[i];
             table.setText(i, 0, permission.getPermission());
             table.setHTML(i, 1, "&nbsp;on&nbsp;");
             table.getFlexCellFormatter().addStyleName(i, 1,
@@ -180,6 +180,25 @@ public class RolesScreen extends VerticalScreen
             table.setWidget(i, 2, targetPanel);
             Anchor deleteLink = new Anchor("delete");
             table.setWidget(i, 3, deleteLink);
+            deleteLink.addClickListener(new ClickListener()
+            {
+                
+                @Override
+                public void onClick(Widget sender)
+                {
+                    BZNetwork.authLink.deletePermission(roleid, permission
+                            .getPermission(), permission.getTarget(),
+                            new BoxCallback<Void>()
+                            {
+                                
+                                @Override
+                                public void run(Void result)
+                                {
+                                    showPermissionEditor(roleid, roleName);
+                                }
+                            });
+                }
+            });
         }
         final ListBox permissionBox = createPermissionListBox();
         table.setWidget(result.length, 0, permissionBox);
