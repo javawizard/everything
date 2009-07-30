@@ -1,5 +1,6 @@
 package jw.bznetwork.client.rpc;
 
+import jw.bznetwork.client.data.EditPermissionsModel;
 import jw.bznetwork.client.data.model.Permission;
 import jw.bznetwork.client.data.model.Role;
 
@@ -21,5 +22,5 @@ public interface GlobalLink extends RemoteService
     
     public void renameRole(int id, String newName);
     
-    public Permission[] getPermissionsForRole(int roleid);
+    public EditPermissionsModel getPermissionsForRole(int roleid);
 }

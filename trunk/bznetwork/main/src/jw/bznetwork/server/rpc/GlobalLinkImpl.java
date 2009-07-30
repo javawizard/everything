@@ -1,6 +1,7 @@
 package jw.bznetwork.server.rpc;
 
 import java.io.IOException;
+import java.util.HashMap;
 
 import javax.servlet.ServletException;
 import javax.servlet.ServletRequest;
@@ -10,6 +11,8 @@ import javax.servlet.http.HttpServletResponse;
 
 import jw.bznetwork.client.Perms;
 import jw.bznetwork.client.Verify;
+import jw.bznetwork.client.data.EditPermissionsModel;
+import jw.bznetwork.client.data.GroupedServer;
 import jw.bznetwork.client.data.model.EditablePermission;
 import jw.bznetwork.client.data.model.Group;
 import jw.bznetwork.client.data.model.Permission;
@@ -57,7 +60,7 @@ public class GlobalLinkImpl extends RemoteServiceServlet implements GlobalLink
     }
     
     @Override
-    public Permission[] getPermissionsForRole(int roleid)
+    public EditPermissionsModel getPermissionsForRole(int roleid)
     {
         Verify.global("manage-roles");
         Permission[] perms = DataStore.getPermissionsByRole(roleid);
@@ -107,7 +110,28 @@ public class GlobalLinkImpl extends RemoteServiceServlet implements GlobalLink
                     result[i].setGroupName(group.getName());
             }
         }
-        return result;
+        EditPermissionsModel model = new EditPermissionsModel();
+        model.setPermissions(result);
+        Group[] groups = DataStore.listGroups();
+        HashMap<Integer, Group> idsToGroups = new HashMap<Integer, Group>();
+        for (Group group : groups)
+        {
+            idsToGroups.put(group.getGroupid(), group);
+        }
+        Server[] servers = DataStore.listServers();
+        GroupedServer[] resultServers = new GroupedServer[servers.length];
+        for (int i = 0; i < servers.length; i++)
+        {
+            GroupedServer r = new GroupedServer();
+            resultServers[i] = r;
+            r.setServerid(servers[i].getServerid());
+            r.setName(servers[i].getName());
+            r.setGroupid(servers[i].getGroupid());
+            r.setParent(idsToGroups.get(r.getGroupid()));
+        }
+        model.setGroups(groups);
+        model.setServers(resultServers);
+        return model;
     }
     
     @Override

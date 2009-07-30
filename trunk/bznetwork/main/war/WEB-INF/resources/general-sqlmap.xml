@@ -8,6 +8,16 @@
 
 	<!-- !ADDTOSQL -->
 
+    <select id="listServers" 
+         resultClass="jw.bznetwork.client.data.model.Server" >
+        select * from servers
+    </select>
+
+    <select id="listGroups" 
+         resultClass="jw.bznetwork.client.data.model.Group" >
+        select * from groups
+    </select>
+
     <select id="getServerById" 
          parameterClass="java.lang.Integer" 
          resultClass="jw.bznetwork.client.data.model.Server" >

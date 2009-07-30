@@ -49,6 +49,34 @@ public class DataStore
     
     // !ADDTOSQL
     
+    public static synchronized Server[] listServers()
+    {
+        try
+        {
+            return (Server[]) getGdbClient().queryForList("listServers")
+                    .toArray(new Server[0]);
+        }
+        catch (Exception e)
+        {
+            throw new RuntimeException(
+                    "Exception in database statement listServers", e);
+        }
+    }
+    
+    public static synchronized Group[] listGroups()
+    {
+        try
+        {
+            return (Group[]) getGdbClient().queryForList("listGroups").toArray(
+                    new Group[0]);
+        }
+        catch (Exception e)
+        {
+            throw new RuntimeException(
+                    "Exception in database statement listGroups", e);
+        }
+    }
+    
     public static synchronized Server getServerById(Integer v)
     {
         try

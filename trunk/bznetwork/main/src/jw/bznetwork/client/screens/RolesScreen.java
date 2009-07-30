@@ -18,6 +18,7 @@ import jw.bznetwork.client.BZNetwork;
 import jw.bznetwork.client.BoxCallback;
 import jw.bznetwork.client.Perms;
 import jw.bznetwork.client.VerticalScreen;
+import jw.bznetwork.client.data.EditPermissionsModel;
 import jw.bznetwork.client.data.model.EditablePermission;
 import jw.bznetwork.client.data.model.Permission;
 import jw.bznetwork.client.data.model.Role;
@@ -123,22 +124,22 @@ public class RolesScreen extends VerticalScreen
     public void showPermissionEditor(final int roleid, final String name)
     {
         BZNetwork.authLink.getPermissionsForRole(roleid,
-                new BoxCallback<Permission[]>()
+                new BoxCallback<EditPermissionsModel>()
                 {
                     
                     @Override
-                    public void run(Permission[] result)
+                    public void run(EditPermissionsModel result)
                     {
-                        showPermissionEditor1((EditablePermission[]) result,
-                                roleid, name);
+                        showPermissionEditor1(result, roleid, name);
                     }
                 });
     }
     
     @SuppressWarnings("deprecation")
-    protected void showPermissionEditor1(EditablePermission[] result,
+    protected void showPermissionEditor1(EditPermissionsModel model,
             final int roleid, final String roleName)
     {
+        EditablePermission[] result = model.getPermissions();
         widget.clear();
         widget.add(new Header2("Permissions for " + roleName));
         FlexTable table = new FlexTable();
