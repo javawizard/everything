@@ -1,5 +1,7 @@
 package jw.bznetwork.client.screens;
 
+import com.google.gwt.user.client.ui.Label;
+
 import jw.bznetwork.client.VerticalScreen;
 
 public class RolesScreen extends VerticalScreen
@@ -8,41 +10,37 @@ public class RolesScreen extends VerticalScreen
     @Override
     public void deselect()
     {
-        // TODO Auto-generated method stub
-        
     }
     
     @Override
     public String getName()
     {
-        return "Roles";
+        return "roles";
     }
     
     @Override
     public String getTitle()
     {
-        // TODO Auto-generated method stub
-        return null;
+        return "Roles";
     }
     
     @Override
     public void init()
     {
-        // TODO Auto-generated method stub
-        
     }
     
     @Override
     public void reselect()
     {
-        // TODO Auto-generated method stub
-        
+        deselect();
+        select();
     }
     
     @Override
     public void select()
     {
-        // TODO Auto-generated method stub
+        widget.clear();
+        widget.add(new Label("Loading..."));
         
     }
     
