@@ -18,9 +18,12 @@ public class Permission implements Serializable
     /**
      * This isn't present in the actual permissions table, but is returned by
      * some queries. If the target is a server, then this denotes the server's
-     * parent group.
+     * parent group.<br/><br/>
+     * 
+     * The field is an Integer instead of an int because the database returns
+     * null if the outer join indicates that there is no such server.
      */
-    private int group;
+    private Integer group;
     
     public int getGroup()
     {

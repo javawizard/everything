@@ -15,6 +15,7 @@ import com.google.gwt.user.client.ui.Widget;
 import jw.bznetwork.client.BZNetwork;
 import jw.bznetwork.client.BoxCallback;
 import jw.bznetwork.client.VerticalScreen;
+import jw.bznetwork.client.data.model.Permission;
 import jw.bznetwork.client.data.model.Role;
 import jw.bznetwork.client.ui.Header2;
 
@@ -57,11 +58,13 @@ public class RolesScreen extends VerticalScreen
     public class PermissionsListener implements ClickListener
     {
         private int roleid;
+        private String name;
         
-        public PermissionsListener(int roleid)
+        public PermissionsListener(int roleid, String name)
         {
             super();
             this.roleid = roleid;
+            this.name = name;
         }
         
         @Override
@@ -72,6 +75,7 @@ public class RolesScreen extends VerticalScreen
              * returned, we'll clear the screen, build the permissions table,
              * and add it to the screen.
              */
+            showPermissionEditor(roleid, name);
         }
         
     }
@@ -109,6 +113,28 @@ public class RolesScreen extends VerticalScreen
     @Override
     public void deselect()
     {
+    }
+    
+    public void showPermissionEditor(final int roleid, final String name)
+    {
+        BZNetwork.authLink.getPermissionsForRole(roleid,
+                new BoxCallback<Permission[]>()
+                {
+                    
+                    @Override
+                    public void run(Permission[] result)
+                    {
+                        showPermissionEditor1(result, roleid, name);
+                    }
+                });
+    }
+    
+    protected void showPermissionEditor1(Permission[] result, int roleid,
+            String roleName)
+    {
+        widget.clear();
+        widget.add(new Header2("Permissions for " + roleName));
+        FlexTable table = new FlexTable();
     }
     
     @Override
@@ -179,7 +205,7 @@ public class RolesScreen extends VerticalScreen
             deleteLink.addClickListener(new DeleteRoleListener(result[i]
                     .getRoleid()));
             permissionsLink.addClickListener(new PermissionsListener(result[i]
-                    .getRoleid()));
+                    .getRoleid(), result[i].getName()));
             renameLink.addClickListener(new RenameListener(result[i]
                     .getRoleid(), result[i].getName()));
         }
