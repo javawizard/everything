@@ -51,8 +51,7 @@ public class AuthgroupsScreen extends VerticalScreen implements Screen
     @Override
     public void reselect()
     {
-        // TODO Auto-generated method stub
-        
+        select();
     }
     
     @Override

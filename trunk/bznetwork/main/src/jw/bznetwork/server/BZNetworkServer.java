@@ -3,6 +3,7 @@ package jw.bznetwork.server;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileOutputStream;
 import java.io.InputStreamReader;
 import java.io.StringReader;
 import java.io.StringWriter;
@@ -143,7 +144,7 @@ public class BZNetworkServer implements ServletContextListener
         return null;
     }
     
-    private static Properties loadEnabledAuthProps()
+    public static synchronized Properties loadEnabledAuthProps()
     {
         Properties props = new Properties();
         if (!isInstalled())
@@ -157,7 +158,27 @@ public class BZNetworkServer implements ServletContextListener
         {
             throw new RuntimeException(e);
         }
+        for (String provider : authProviders.keySet())
+        {
+            if (props.getProperty(provider) == null)
+                props.setProperty(provider, "disabled");
+        }
         return props;
+    }
+    
+    public static synchronized void saveEnabledAuthProps(Properties props)
+    {
+        try
+        {
+            props.store(new FileOutputStream(new File(storeFolder,
+                    "enabled-auth-providers.props")),
+                    "Props updated by BZNetworkServer."
+                            + "saveEnabledAuthProps(Properties)");
+        }
+        catch (Exception e)
+        {
+            throw new RuntimeException(e);
+        }
     }
     
     public static AuthProvider[] getEnabledAuthProviders()
@@ -492,6 +513,11 @@ public class BZNetworkServer implements ServletContextListener
     public static String getAccessLockMessage()
     {
         return accessLockMessage;
+    }
+    
+    public static AuthProvider[] getAuthProviders()
+    {
+        return authProviders.values().toArray(new AuthProvider[0]);
     }
     
 }

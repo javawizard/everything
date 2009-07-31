@@ -2,6 +2,7 @@ package jw.bznetwork.server.rpc;
 
 import java.io.IOException;
 import java.util.HashMap;
+import java.util.Properties;
 
 import javax.servlet.ServletException;
 import javax.servlet.ServletRequest;
@@ -12,6 +13,7 @@ import javax.servlet.http.HttpServletResponse;
 import jw.bznetwork.client.Perms;
 import jw.bznetwork.client.ShowMessageException;
 import jw.bznetwork.client.Verify;
+import jw.bznetwork.client.data.EditAuthenticationModel;
 import jw.bznetwork.client.data.EditAuthgroupsModel;
 import jw.bznetwork.client.data.EditPermissionsModel;
 import jw.bznetwork.client.data.GroupedServer;
@@ -22,6 +24,7 @@ import jw.bznetwork.client.data.model.Permission;
 import jw.bznetwork.client.data.model.Role;
 import jw.bznetwork.client.data.model.Server;
 import jw.bznetwork.client.rpc.GlobalLink;
+import jw.bznetwork.server.BZNetworkServer;
 import jw.bznetwork.server.data.DataStore;
 
 import com.google.gwt.user.server.rpc.RemoteServiceServlet;
@@ -234,4 +237,20 @@ public class GlobalLinkImpl extends RemoteServiceServlet implements GlobalLink
         return model;
     }
     
+    @Override
+    public EditAuthenticationModel getEditAuthenticationModel()
+    {
+        Verify.global("manage-auth");
+        EditAuthenticationModel model = new EditAuthenticationModel();
+        model.setProviders(BZNetworkServer.getAuthProviders());
+        model.setEnabledProps(BZNetworkServer.loadEnabledAuthProps());
+        return model;
+    }
+    
+    @Override
+    public void updateAuthentication(Properties enabledProps)
+    {
+        Verify.global("manage-auth");
+        BZNetworkServer.saveEnabledAuthProps(enabledProps);
+    }
 }

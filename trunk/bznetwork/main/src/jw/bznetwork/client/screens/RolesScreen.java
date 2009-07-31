@@ -330,7 +330,6 @@ public class RolesScreen extends VerticalScreen
     @Override
     public void reselect()
     {
-        deselect();
         select();
     }
     

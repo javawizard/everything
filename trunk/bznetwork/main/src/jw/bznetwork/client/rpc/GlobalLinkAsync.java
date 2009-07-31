@@ -1,6 +1,10 @@
 package jw.bznetwork.client.rpc;
 
+import java.util.Properties;
+
 import jw.bznetwork.client.ShowMessageException;
+
+import jw.bznetwork.client.data.EditAuthenticationModel;
 
 import jw.bznetwork.client.data.EditAuthgroupsModel;
 
@@ -44,5 +48,9 @@ public void getEditAuthgroupsModel(AsyncCallback<EditAuthgroupsModel> callback);
 public void addAuthgroup(String name, int roleid, AsyncCallback<Void> callback);
 
 public void deleteAuthgroup(String name, AsyncCallback<Void> callback);
+
+public void getEditAuthenticationModel(AsyncCallback<EditAuthenticationModel> callback);
+
+public void updateAuthentication(Properties enabledProps, AsyncCallback<Void> callback);
 
 }
