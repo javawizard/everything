@@ -1,5 +1,6 @@
 package jw.bznetwork.client.screens;
 
+import jw.bznetwork.client.BZNetwork;
 import jw.bznetwork.client.Screen;
 import jw.bznetwork.client.rt.RichTextToolbar;
 
@@ -44,11 +45,13 @@ public class ConfigurationScreen implements Screen
     @Override
     public void reselect()
     {
+        select();
     }
     
     @Override
     public void select()
     {
+        BZNetwork.authLink.getEditConfigurationModel();
     }
     /*
      * Code to add a rich text editor:

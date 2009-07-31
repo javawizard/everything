@@ -10,7 +10,11 @@ import jw.bznetwork.client.data.EditAuthenticationModel;
 
 import jw.bznetwork.client.data.EditAuthgroupsModel;
 
+import jw.bznetwork.client.data.EditConfigurationModel;
+
 import jw.bznetwork.client.data.EditPermissionsModel;
+
+import jw.bznetwork.client.data.model.Configuration;
 
 import jw.bznetwork.client.data.model.Permission;
 
@@ -54,5 +58,11 @@ public void deleteAuthgroup(String name, AsyncCallback<Void> callback);
 public void getEditAuthenticationModel(AsyncCallback<EditAuthenticationModel> callback);
 
 public void updateAuthentication(HashMap<String, String> enabledProps, AsyncCallback<Void> callback);
+
+public void getEditConfigurationModel(AsyncCallback<EditConfigurationModel> callback);
+
+public void updateConfiguration(Configuration config, AsyncCallback<Void> callback);
+
+public void disableEc(AsyncCallback<Void> callback);
 
 }

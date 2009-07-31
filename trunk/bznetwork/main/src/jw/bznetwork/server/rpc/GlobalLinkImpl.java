@@ -1,5 +1,6 @@
 package jw.bznetwork.server.rpc;
 
+import java.io.File;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
@@ -16,9 +17,11 @@ import jw.bznetwork.client.ShowMessageException;
 import jw.bznetwork.client.Verify;
 import jw.bznetwork.client.data.EditAuthenticationModel;
 import jw.bznetwork.client.data.EditAuthgroupsModel;
+import jw.bznetwork.client.data.EditConfigurationModel;
 import jw.bznetwork.client.data.EditPermissionsModel;
 import jw.bznetwork.client.data.GroupedServer;
 import jw.bznetwork.client.data.model.Authgroup;
+import jw.bznetwork.client.data.model.Configuration;
 import jw.bznetwork.client.data.model.EditablePermission;
 import jw.bznetwork.client.data.model.Group;
 import jw.bznetwork.client.data.model.Permission;
@@ -256,5 +259,55 @@ public class GlobalLinkImpl extends RemoteServiceServlet implements GlobalLink
         Properties props = new Properties();
         props.putAll(enabledProps);
         BZNetworkServer.saveEnabledAuthProps(props);
+    }
+    
+    @Override
+    public void disableEc()
+    {
+        Verify.global("edit-configuration");
+        File file = getEcDisableFile();
+        if (!file.exists())
+        {
+            try
+            {
+                file.createNewFile();
+            }
+            catch (IOException e)
+            {
+                throw new RuntimeException(e);
+            }
+        }
+    }
+    
+    private File getEcDisableFile()
+    {
+        return new File(BZNetworkServer.getServletContext().getRealPath(
+                "/WEB-INF/disable-ec"));
+    }
+    
+    @Override
+    public EditConfigurationModel getEditConfigurationModel()
+    {
+        Verify.global("edit-configuration");
+        EditConfigurationModel model = new EditConfigurationModel();
+        model.setConfiguration(DataStore.getConfiguration());
+        model.setEcDisabled(getEcDisableFile().exists());
+        return model;
+    }
+    
+    @Override
+    public void updateConfiguration(Configuration config)
+    {
+        Verify.global("edit-configuration");
+        boolean ecDisabled = getEcDisableFile().exists();
+        if (ecDisabled)
+        {
+            /*
+             * If we're not allowed to change the executable, then set it to
+             * what it currently is in the db
+             */
+            config.setExecutable(DataStore.getConfiguration().getExecutable());
+        }
+        DataStore.updateConfiguration(config);
     }
 }

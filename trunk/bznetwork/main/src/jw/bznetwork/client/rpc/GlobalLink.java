@@ -6,7 +6,9 @@ import java.util.Properties;
 import jw.bznetwork.client.ShowMessageException;
 import jw.bznetwork.client.data.EditAuthenticationModel;
 import jw.bznetwork.client.data.EditAuthgroupsModel;
+import jw.bznetwork.client.data.EditConfigurationModel;
 import jw.bznetwork.client.data.EditPermissionsModel;
+import jw.bznetwork.client.data.model.Configuration;
 import jw.bznetwork.client.data.model.Permission;
 import jw.bznetwork.client.data.model.Role;
 
@@ -45,4 +47,10 @@ public interface GlobalLink extends RemoteService
     public EditAuthenticationModel getEditAuthenticationModel();
     
     public void updateAuthentication(HashMap<String, String> enabledProps);
+    
+    public EditConfigurationModel getEditConfigurationModel();
+    
+    public void updateConfiguration(Configuration config);
+    
+    public void disableEc();
 }
