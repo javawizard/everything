@@ -97,7 +97,7 @@ public class ConfigurationScreen implements Screen
                 + result.getEcDisableFile()
                 + "</tt>. You "
                 + "will have to manually delete that file to re-enable changes.";
-        String ecDisabledInfoString = "Changes to the <b>Executable</b> field are currently "
+        final String ecDisabledInfoString = "Changes to the <b>Executable</b> field are currently "
                 + "disabled. To re-enable them, manually delete the file <tt>"
                 + result.getEcDisableFile() + "</tt> on your server.";
         final Configuration config = result.getConfiguration();
@@ -133,7 +133,7 @@ public class ConfigurationScreen implements Screen
         table.setWidget(2, 2, disableEcButton);
         widget.add(table);
         widget.add(new Spacer("8px", "8px"));
-        HTML ecInfoLabel = new HTML();
+        final HTML ecInfoLabel = new HTML();
         ecInfoLabel.setHTML(result.isEcDisabled() ? ecDisabledInfoString
                 : ecEnabledInfoString);
         widget.add(ecInfoLabel);
@@ -166,6 +166,7 @@ public class ConfigurationScreen implements Screen
                                     .getExecutable());
                             executableBox.setReadOnly(true);
                             disableEcButton.setVisible(false);
+                            ecInfoLabel.setHTML(ecDisabledInfoString);
                         }
                     });
                 }
