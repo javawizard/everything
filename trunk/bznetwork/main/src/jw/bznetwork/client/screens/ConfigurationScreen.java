@@ -127,6 +127,7 @@ public class ConfigurationScreen implements Screen
             executableBox.setReadOnly(true);
         HorizontalPanel executablePanel = new HorizontalPanel();
         executablePanel.add(executableBox);
+        executablePanel.add(new Spacer("3px", "3px"));
         table.setWidget(2, 1, executablePanel);
         SimpleCheckBox menuLeftCheckbox = new SimpleCheckBox();
         menuLeftCheckbox.setChecked(config.isMenuleft());
@@ -153,9 +154,8 @@ public class ConfigurationScreen implements Screen
         widget.add(new HTML(
                 "The <b>Welcome message</b> field can contain HTML."));
         widget.add(new Spacer("8px", "8px"));
-        widget
-                .add(new HTML(
-                        "Most of these won't take effect until you refresh this page."));
+        widget.add(new HTML("Most of these settings won't take effect until "
+                + "you log out and then log back in."));
         saveButton.addClickListener(new ClickListener()
         {
             
