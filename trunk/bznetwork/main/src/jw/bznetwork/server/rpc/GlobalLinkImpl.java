@@ -292,6 +292,7 @@ public class GlobalLinkImpl extends RemoteServiceServlet implements GlobalLink
         EditConfigurationModel model = new EditConfigurationModel();
         model.setConfiguration(DataStore.getConfiguration());
         model.setEcDisabled(getEcDisableFile().exists());
+        model.setEcDisableFile(getEcDisableFile().getAbsolutePath());
         return model;
     }
     

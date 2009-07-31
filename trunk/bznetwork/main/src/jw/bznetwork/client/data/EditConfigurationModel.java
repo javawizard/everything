@@ -8,6 +8,17 @@ public class EditConfigurationModel implements Serializable
 {
     private Configuration configuration;
     private boolean ecDisabled;
+    private String ecDisableFile;
+    
+    public String getEcDisableFile()
+    {
+        return ecDisableFile;
+    }
+    
+    public void setEcDisableFile(String ecDisableFile)
+    {
+        this.ecDisableFile = ecDisableFile;
+    }
     
     public Configuration getConfiguration()
     {
