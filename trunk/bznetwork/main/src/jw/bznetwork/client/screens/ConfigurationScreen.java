@@ -115,10 +115,10 @@ public class ConfigurationScreen implements Screen
         table.setText(5, 0, "Welcome message: ");
         table.getFlexCellFormatter().setVerticalAlignment(5, 0,
                 VerticalPanel.ALIGN_TOP);
-        TextBox siteNameBox = new TextBox();
+        final TextBox siteNameBox = new TextBox();
         siteNameBox.setText(config.getSitename());
         table.setWidget(0, 1, siteNameBox);
-        TextBox contactBox = new TextBox();
+        final TextBox contactBox = new TextBox();
         contactBox.setText(config.getContact());
         table.setWidget(1, 1, contactBox);
         final TextBox executableBox = new TextBox();
@@ -129,15 +129,15 @@ public class ConfigurationScreen implements Screen
         executablePanel.add(executableBox);
         executablePanel.add(new Spacer("5px", "5px"));
         table.setWidget(2, 1, executablePanel);
-        SimpleCheckBox menuLeftCheckbox = new SimpleCheckBox();
+        final SimpleCheckBox menuLeftCheckbox = new SimpleCheckBox();
         menuLeftCheckbox.setChecked(config.isMenuleft());
         table.setWidget(3, 1, menuLeftCheckbox);
-        SimpleCheckBox currentNameCheckbox = new SimpleCheckBox();
+        final SimpleCheckBox currentNameCheckbox = new SimpleCheckBox();
         currentNameCheckbox.setChecked(config.isCurrentname());
         table.setWidget(4, 1, currentNameCheckbox);
-        TextArea welcomeField = new TextArea();
+        final TextArea welcomeField = new TextArea();
         welcomeField.setText(config.getWelcome());
-        welcomeField.setCharacterWidth(40);
+        welcomeField.setCharacterWidth(65);
         welcomeField.setVisibleLines(7);
         table.setWidget(5, 1, welcomeField);
         table.getFlexCellFormatter().setColSpan(5, 1, 2);
@@ -163,7 +163,40 @@ public class ConfigurationScreen implements Screen
             @Override
             public void onClick(Widget sender)
             {
-                
+                if (siteNameBox.getText().trim().equals(""))
+                {
+                    Window.alert("The site has to have a name.");
+                    return;
+                }
+                if (contactBox.getText().trim().equals(""))
+                {
+                    Window
+                            .alert("The site has to have a contact. If you "
+                                    + "don't want to give any contact information,"
+                                    + " use something like \"No contact information\".");
+                }
+                if (executableBox.getText().trim().equals("")
+                        && !result.isEcDisabled())
+                {
+                    Window.alert("The site has to have an executable. Use "
+                            + "\"bzfs\" if you're unsure what to put here.");
+                }
+                config.setContact(contactBox.getText());
+                config.setCurrentname(currentNameCheckbox.isChecked());
+                config.setExecutable(executableBox.getText());
+                config.setMenuleft(menuLeftCheckbox.isChecked());
+                config.setSitename(siteNameBox.getText());
+                config.setWelcome(welcomeField.getText());
+                BZNetwork.authLink.updateConfiguration(config,
+                        new BoxCallback<Void>()
+                        {
+                            
+                            @Override
+                            public void run(Void result)
+                            {
+                                select();
+                            }
+                        });
             }
         });
         disableEcButton.setVisible(!result.isEcDisabled());

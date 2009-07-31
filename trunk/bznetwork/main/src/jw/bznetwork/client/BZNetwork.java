@@ -333,6 +333,7 @@ public class BZNetwork implements EntryPoint
         panel.add(dp);
         dp.add(vp, DockPanel.WEST);
         dp.add(loginButton, DockPanel.EAST);
+        dp.setCellHorizontalAlignment(loginButton, dp.ALIGN_RIGHT);
         dp.setVerticalAlignment(dp.ALIGN_MIDDLE);
         rootPanel.add(wrapCentered(panel));
         differentProviderLink.addClickListener(new ClickListener()

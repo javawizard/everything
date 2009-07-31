@@ -74,7 +74,7 @@ create table configuration (
 
 -- Now for some initial table rows.
 insert into configuration values ('Congratulations! You''ve successfully installed BZNetwork onto your server. Head on over to the Configuration page to change this message. Then check out the Getting Started link on the Help page to get started.', 
-'MyBZNetworkSiteName', 'mybznetworksite@example.com', 'bzfs', true, false);
+'MySiteName', 'mybznetworksite@example.com', 'bzfs', true, false);
 insert into idsequence values (10);
 insert into roles values (1, 'Administrator');
 insert into permissions values (1, 'all', -1);
