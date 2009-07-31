@@ -9,6 +9,7 @@ import jw.bznetwork.client.rpc.GlobalLink;
 import jw.bznetwork.client.rpc.GlobalLinkAsync;
 import jw.bznetwork.client.rpc.GlobalUnauthLink;
 import jw.bznetwork.client.rpc.GlobalUnauthLinkAsync;
+import jw.bznetwork.client.screens.AuthenticationScreen;
 import jw.bznetwork.client.screens.AuthgroupsScreen;
 import jw.bznetwork.client.screens.ConfigurationScreen;
 import jw.bznetwork.client.screens.HelpScreen;
@@ -166,6 +167,8 @@ public class BZNetwork implements EntryPoint
          * decide the perms when it sends the server list back to the client.
          */
         defaultScreenList.add(new ServersScreen());
+        if (Perms.global("manage-auth"))
+            defaultScreenList.add(new AuthenticationScreen());
         defaultScreenList.add(new HelpScreen());
         defaultScreens = defaultScreenList.toArray(new Screen[0]);
         mainScreen = new MainScreen(publicConfiguration.getSitename(),

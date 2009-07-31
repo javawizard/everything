@@ -75,3 +75,7 @@
 .bznetwork-PermsTableGroupServerSlash {
 	color: #888888
 }
+
+.bznetwork-AuthEditorProviderName {
+	font-weight: bold;
+}
