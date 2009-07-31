@@ -113,6 +113,8 @@ public class ConfigurationScreen implements Screen
         table.setText(3, 0, "Show menu to the left: ");
         table.setText(4, 0, "Show current page name in header: ");
         table.setText(5, 0, "Welcome message: ");
+        table.getFlexCellFormatter().setVerticalAlignment(5, 0,
+                VerticalPanel.ALIGN_TOP);
         TextBox siteNameBox = new TextBox();
         siteNameBox.setText(config.getSitename());
         table.setWidget(0, 1, siteNameBox);
@@ -132,15 +134,10 @@ public class ConfigurationScreen implements Screen
         SimpleCheckBox currentNameCheckbox = new SimpleCheckBox();
         currentNameCheckbox.setChecked(config.isCurrentname());
         table.setWidget(4, 1, currentNameCheckbox);
-        Grid panel = new Grid(2, 1);
-        panel.setStylePrimaryName("epc-StaticTextBuilder-editorgrid");
-        RichTextArea welcomeTextArea = new RichTextArea();
-        RichTextToolbar welcomeToolbar = new RichTextToolbar(welcomeTextArea,
-                true);
-        panel.setWidget(0, 0, welcomeToolbar);
-        panel.setWidget(1, 0, welcomeTextArea);
-        welcomeTextArea.setWidth("100%");
-        table.setWidget(5, 1, panel);
+        TextArea welcomeField = new TextArea();
+        welcomeField.setCharacterWidth(40);
+        welcomeField.setVisibleLines(7);
+        table.setWidget(5, 1, welcomeField);
         table.getFlexCellFormatter().setColSpan(5, 1, 2);
         Button saveButton = new Button("Save");
         table.setWidget(6, 1, saveButton);
@@ -153,7 +150,12 @@ public class ConfigurationScreen implements Screen
                 : ecEnabledInfoString);
         widget.add(ecInfoLabel);
         widget.add(new Spacer("8px", "8px"));
-        widget.add(new HTML("Most of these won't take effect until you refresh this page."));
+        widget.add(new HTML(
+                "The <b>Welcome message</b> field can contain HTML."));
+        widget.add(new Spacer("8px", "8px"));
+        widget
+                .add(new HTML(
+                        "Most of these won't take effect until you refresh this page."));
         saveButton.addClickListener(new ClickListener()
         {
             
