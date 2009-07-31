@@ -1,5 +1,6 @@
 package jw.bznetwork.client.data;
 
+import java.util.HashMap;
 import java.util.Properties;
 
 import jw.bznetwork.client.AuthProvider;
@@ -23,15 +24,15 @@ public class EditAuthenticationModel
         this.providers = providers;
     }
     
-    public Properties getEnabledProps()
+    public HashMap<String, String> getEnabledProps()
     {
         return enabledProps;
     }
     
-    public void setEnabledProps(Properties enabledProps)
+    public void setEnabledProps(HashMap<String, String> enabledProps)
     {
         this.enabledProps = enabledProps;
     }
     
-    private Properties enabledProps;
+    private HashMap<String, String> enabledProps;
 }

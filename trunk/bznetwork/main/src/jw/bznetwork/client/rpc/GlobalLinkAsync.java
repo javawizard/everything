@@ -1,5 +1,7 @@
 package jw.bznetwork.client.rpc;
 
+import java.util.HashMap;
+
 import java.util.Properties;
 
 import jw.bznetwork.client.ShowMessageException;
@@ -51,6 +53,6 @@ public void deleteAuthgroup(String name, AsyncCallback<Void> callback);
 
 public void getEditAuthenticationModel(AsyncCallback<EditAuthenticationModel> callback);
 
-public void updateAuthentication(Properties enabledProps, AsyncCallback<Void> callback);
+public void updateAuthentication(HashMap<String, String> enabledProps, AsyncCallback<Void> callback);
 
 }

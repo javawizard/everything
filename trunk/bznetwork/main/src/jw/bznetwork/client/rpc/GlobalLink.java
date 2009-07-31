@@ -1,5 +1,6 @@
 package jw.bznetwork.client.rpc;
 
+import java.util.HashMap;
 import java.util.Properties;
 
 import jw.bznetwork.client.ShowMessageException;
@@ -43,5 +44,5 @@ public interface GlobalLink extends RemoteService
     
     public EditAuthenticationModel getEditAuthenticationModel();
     
-    public void updateAuthentication(Properties enabledProps);
+    public void updateAuthentication(HashMap<String, String> enabledProps);
 }

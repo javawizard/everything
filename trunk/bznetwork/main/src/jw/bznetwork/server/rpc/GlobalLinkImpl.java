@@ -2,6 +2,7 @@ package jw.bznetwork.server.rpc;
 
 import java.io.IOException;
 import java.util.HashMap;
+import java.util.Map;
 import java.util.Properties;
 
 import javax.servlet.ServletException;
@@ -243,14 +244,17 @@ public class GlobalLinkImpl extends RemoteServiceServlet implements GlobalLink
         Verify.global("manage-auth");
         EditAuthenticationModel model = new EditAuthenticationModel();
         model.setProviders(BZNetworkServer.getAuthProviders());
-        model.setEnabledProps(BZNetworkServer.loadEnabledAuthProps());
+        model.setEnabledProps(new HashMap<String, String>((Map) BZNetworkServer
+                .loadEnabledAuthProps()));
         return model;
     }
     
     @Override
-    public void updateAuthentication(Properties enabledProps)
+    public void updateAuthentication(HashMap<String, String> enabledProps)
     {
         Verify.global("manage-auth");
-        BZNetworkServer.saveEnabledAuthProps(enabledProps);
+        Properties props = new Properties();
+        props.putAll(enabledProps);
+        BZNetworkServer.saveEnabledAuthProps(props);
     }
 }
