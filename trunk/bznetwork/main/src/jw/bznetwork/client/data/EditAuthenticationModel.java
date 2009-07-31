@@ -1,11 +1,12 @@
 package jw.bznetwork.client.data;
 
+import java.io.Serializable;
 import java.util.HashMap;
 import java.util.Properties;
 
 import jw.bznetwork.client.AuthProvider;
 
-public class EditAuthenticationModel
+public class EditAuthenticationModel implements Serializable
 {
     public EditAuthenticationModel()
     {

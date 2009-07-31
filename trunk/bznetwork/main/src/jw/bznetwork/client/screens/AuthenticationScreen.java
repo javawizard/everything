@@ -4,6 +4,7 @@ import com.google.gwt.user.client.ui.ChangeListener;
 import com.google.gwt.user.client.ui.HorizontalPanel;
 import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.ListBox;
+import com.google.gwt.user.client.ui.VerticalPanel;
 import com.google.gwt.user.client.ui.Widget;
 
 import jw.bznetwork.client.AuthProvider;
@@ -73,6 +74,9 @@ public class AuthenticationScreen extends VerticalScreen
             widget.add(nameLabel);
             HorizontalPanel providerPanel = new HorizontalPanel();
             providerPanel.add(new jw.bznetwork.client.ui.Spacer("20px", "1px"));
+            VerticalPanel panel = new VerticalPanel();
+            providerPanel.add(panel);
+            panel.add(new Label(provider.getDescription()));
             final ListBox box = new ListBox();
             box.addItem("default");
             box.addItem("enabled");
@@ -104,7 +108,7 @@ public class AuthenticationScreen extends VerticalScreen
                     });
                 }
             });
-            providerPanel.add(box);
+            panel.add(box);
             widget.add(providerPanel);
         }
     }
