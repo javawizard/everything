@@ -79,3 +79,8 @@
 .bznetwork-AuthEditorProviderName {
 	font-weight: bold;
 }
+
+.epc-StaticTextBuilder-editorgrid {
+	border: 1px solid #BBBBBB;
+	border-spacing: 0px;
+}

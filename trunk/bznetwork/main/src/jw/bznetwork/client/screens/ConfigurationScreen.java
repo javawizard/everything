@@ -15,8 +15,11 @@ import com.google.gwt.user.client.ui.ClickListener;
 import com.google.gwt.user.client.ui.FlexTable;
 import com.google.gwt.user.client.ui.Grid;
 import com.google.gwt.user.client.ui.HTML;
+import com.google.gwt.user.client.ui.HorizontalPanel;
 import com.google.gwt.user.client.ui.Label;
+import com.google.gwt.user.client.ui.RichTextArea;
 import com.google.gwt.user.client.ui.SimpleCheckBox;
+import com.google.gwt.user.client.ui.TextArea;
 import com.google.gwt.user.client.ui.TextBox;
 import com.google.gwt.user.client.ui.VerticalPanel;
 import com.google.gwt.user.client.ui.Widget;
@@ -120,23 +123,37 @@ public class ConfigurationScreen implements Screen
         executableBox.setText(config.getExecutable());
         if (result.isEcDisabled())
             executableBox.setReadOnly(true);
-        table.setWidget(2, 1, executableBox);
+        HorizontalPanel executablePanel = new HorizontalPanel();
+        executablePanel.add(executableBox);
+        table.setWidget(2, 1, executablePanel);
         SimpleCheckBox menuLeftCheckbox = new SimpleCheckBox();
         menuLeftCheckbox.setChecked(config.isMenuleft());
         table.setWidget(3, 1, menuLeftCheckbox);
         SimpleCheckBox currentNameCheckbox = new SimpleCheckBox();
         currentNameCheckbox.setChecked(config.isCurrentname());
         table.setWidget(4, 1, currentNameCheckbox);
+        Grid panel = new Grid(2, 1);
+        panel.setStylePrimaryName("epc-StaticTextBuilder-editorgrid");
+        RichTextArea welcomeTextArea = new RichTextArea();
+        RichTextToolbar welcomeToolbar = new RichTextToolbar(welcomeTextArea,
+                true);
+        panel.setWidget(0, 0, welcomeToolbar);
+        panel.setWidget(1, 0, welcomeTextArea);
+        welcomeTextArea.setWidth("100%");
+        table.setWidget(5, 1, panel);
+        table.getFlexCellFormatter().setColSpan(5, 1, 2);
         Button saveButton = new Button("Save");
         table.setWidget(6, 1, saveButton);
         final Button disableEcButton = new Button("Disable Changes");
-        table.setWidget(2, 2, disableEcButton);
+        executablePanel.add(disableEcButton);
         widget.add(table);
         widget.add(new Spacer("8px", "8px"));
         final HTML ecInfoLabel = new HTML();
         ecInfoLabel.setHTML(result.isEcDisabled() ? ecDisabledInfoString
                 : ecEnabledInfoString);
         widget.add(ecInfoLabel);
+        widget.add(new Spacer("8px", "8px"));
+        widget.add(new HTML("Most of these won't take effect until you refresh this page."));
         saveButton.addClickListener(new ClickListener()
         {
             
