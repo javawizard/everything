@@ -73,7 +73,7 @@ public class AuthenticationScreen extends VerticalScreen
             nameLabel.addStyleName("bznetwork-AuthEditorProviderName");
             widget.add(nameLabel);
             HorizontalPanel providerPanel = new HorizontalPanel();
-            providerPanel.add(new jw.bznetwork.client.ui.Spacer("20px", "1px"));
+            providerPanel.add(new jw.bznetwork.client.ui.Spacer("12px", "1px"));
             VerticalPanel panel = new VerticalPanel();
             providerPanel.add(panel);
             panel.add(new Label(provider.getDescription()));
@@ -96,6 +96,19 @@ public class AuthenticationScreen extends VerticalScreen
                 {
                     result.getEnabledProps().put(provider.getId(),
                             box.getItemText(box.getSelectedIndex()));
+                    if (result.getEnabledProps().get(provider.getId()).equals(
+                            "default"))
+                    {
+                        for (String key : result.getEnabledProps().keySet())
+                        {
+                            if ((!key.equals(provider.getId()))
+                                    && result.getEnabledProps().get(key)
+                                            .equals("default"))
+                            {
+                                result.getEnabledProps().put(key, "enabled");
+                            }
+                        }
+                    }
                     BZNetwork.authLink.updateAuthentication(result
                             .getEnabledProps(), new BoxCallback<Void>()
                     {
