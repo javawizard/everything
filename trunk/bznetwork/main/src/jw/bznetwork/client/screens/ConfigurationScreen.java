@@ -127,7 +127,7 @@ public class ConfigurationScreen implements Screen
             executableBox.setReadOnly(true);
         HorizontalPanel executablePanel = new HorizontalPanel();
         executablePanel.add(executableBox);
-        executablePanel.add(new Spacer("3px", "3px"));
+        executablePanel.add(new Spacer("5px", "5px"));
         table.setWidget(2, 1, executablePanel);
         SimpleCheckBox menuLeftCheckbox = new SimpleCheckBox();
         menuLeftCheckbox.setChecked(config.isMenuleft());
@@ -136,6 +136,7 @@ public class ConfigurationScreen implements Screen
         currentNameCheckbox.setChecked(config.isCurrentname());
         table.setWidget(4, 1, currentNameCheckbox);
         TextArea welcomeField = new TextArea();
+        welcomeField.setText(config.getWelcome());
         welcomeField.setCharacterWidth(40);
         welcomeField.setVisibleLines(7);
         table.setWidget(5, 1, welcomeField);
