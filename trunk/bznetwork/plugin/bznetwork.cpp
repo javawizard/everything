@@ -1,5 +1,7 @@
-// genobait.cpp : Defines the entry point for the DLL application.
-//
+/*
+ * This is the BZNetwork plugin. See desc.txt for information on this
+ * plugin, or visit http://code.google.com/p/bzsound/wiki/BZNetwork for info.
+ */
 
 #include "bzfsAPI.h"
 #include "plugin_utils.h"
