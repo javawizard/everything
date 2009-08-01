@@ -217,7 +217,7 @@ void* threadedStdinReadLoop(void* bogus);
 
 BZNetworkEventHandler singleEventHandler;
 
-BZF_PLUGIN_CALL int bz_Load(const char* /*commandLine*/)
+BZF_PLUGIN_CALL int bz_Load(const char* commandLine)
 {
 	bz_registerCustomSlashCommand("bzn", &singleEventHandler);
 	bz_registerEvent(bz_eTickEvent, &singleEventHandler);
@@ -225,7 +225,7 @@ BZF_PLUGIN_CALL int bz_Load(const char* /*commandLine*/)
 	bz_registerEvent(bz_ePlayerPartEvent, &singleEventHandler);
 	// Perhaps allow this to be configured via an argument, and
 	// then have this value be a BZNetwork configuration setting
-	bz_setMaxWaitTime(1.0);
+	bz_setMaxWaitTime(2.0);
 	if (pthread_create(&stdinReadThread, NULL, &threadedStdinReadLoop, NULL))
 	{
 		bzn_outputData(
@@ -251,7 +251,7 @@ int bz_Unload(void)
 
 void bzn_outputData(std::string value)
 {
-	if (value.length() > 65523)
+	if (value.length() > 32743)
 	{
 		bzn_outputData(
 				"bznerror excessiveoutput The output length was too long.");
