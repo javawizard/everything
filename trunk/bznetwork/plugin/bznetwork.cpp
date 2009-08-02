@@ -205,6 +205,34 @@ class BZNetworkEventHandler: public bz_EventHandler,
 					playerIdsByCallsign.erase(iter);
 				}
 			}
+			else if (eventData->eventType == bz_eChatMessageEvent)
+			{
+				bz_ChatEventData* event = (bz_ChatEventData*) eventData;
+				std::string output;
+				output += "chatmessage ";
+				output += intToString(event->from);
+				output += "|";
+				output += intToString(event->to);
+				output += "|";
+				output += colorDefToName(event->team);
+				output += "|";
+				output += event->message.c_str();
+				bzn_outputData(output);
+			}
+			else if (eventData->eventType == bz_eMessageFilteredEvent)
+			{
+				bz_MessageFilteredEventData* event =
+						(bz_MessageFilteredEventData*) eventData;
+				std::string output;
+				output += "messagefiltered ";
+				output += intToString(event->rawMessage.size());
+				output += "|";
+				output += intToString(event->filteredMessage.size());
+				output += "|";
+				output += event->rawMessage.c_str();
+				output += event->filteredMessage.c_str();
+				bzn_outputData(output);
+			}
 		}
 		virtual bool handle(int playerID, bzApiString command,
 				bzApiString message, bzAPIStringList *params)
@@ -229,6 +257,8 @@ BZF_PLUGIN_CALL int bz_Load(const char* commandLine)
 	bz_registerEvent(bz_eTickEvent, &singleEventHandler);
 	bz_registerEvent(bz_ePlayerJoinEvent, &singleEventHandler);
 	bz_registerEvent(bz_ePlayerPartEvent, &singleEventHandler);
+	bz_registerEvent(bz_eChatMessageEvent, &singleEventHandler);
+	bz_registerEvent(bz_eMessageFilteredEvent, &singleEventHandler);
 	// Perhaps allow this to be configured via an argument, and
 	// then have this value be a BZNetwork configuration setting
 	bz_setMaxWaitTime(2.0);
@@ -250,6 +280,8 @@ int bz_Unload(void)
 	bz_removeEvent(bz_eTickEvent, &singleEventHandler);
 	bz_removeEvent(bz_ePlayerJoinEvent, &singleEventHandler);
 	bz_removeEvent(bz_ePlayerPartEvent, &singleEventHandler);
+	bz_removeEvent(bz_eChatMessageEvent, &singleEventHandler);
+	bz_removeEvent(bz_eMessageFilteredEvent, &singleEventHandler);
 	bzn_outputData("bznunload");
 	playerIdsByCallsign.clear();
 	return 0;
