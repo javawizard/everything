@@ -9,6 +9,7 @@
 #include <stdio.h>
 #include <assert.h>
 #include <pthread.h>
+#include <sstream>
 
 BZ_GET_PLUGIN_VERSION
 
@@ -27,6 +28,7 @@ void bzn_outputData(std::string value);
 void stringSplit(std::string string, std::vector<std::string>* vector,
 		std::string search, int maxItems);
 int getPlayerByCallsign(std::string callsign);
+std::string intToString(int value);
 
 void processStdinString(std::string* currentString)
 {
@@ -159,6 +161,8 @@ class BZNetworkEventHandler: public bz_EventHandler,
 						playerCallsign, event->playerID));
 				std::string output;
 				output += "playerjoin ";
+				output += intToString(event->playerID);
+				output += "|";
 				output += event->ipAddress.c_str();
 				output += "|";
 				output += colorDefToName(event->team);
@@ -182,6 +186,8 @@ class BZNetworkEventHandler: public bz_EventHandler,
 				{
 					std::string output;
 					output += "playerpart ";
+					output += intToString(event->playerID);
+					output += "|";
 					output += event->ipAddress.c_str();
 					output += "|";
 					output += colorDefToName(event->team);
@@ -378,3 +384,13 @@ int getPlayerByCallsign(std::string callsign)
 		return BZ_NULLUSER;
 	return iter->second;
 }
+
+std::string intToString(int value)
+{
+	std::string s;
+	std::stringstream out;
+	out << value;
+	s = out.str();
+	return s;
+}
+
