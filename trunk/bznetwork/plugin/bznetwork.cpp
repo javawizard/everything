@@ -233,6 +233,45 @@ class BZNetworkEventHandler: public bz_EventHandler,
 				output += event->filteredMessage.c_str();
 				bzn_outputData(output);
 			}
+			else if (eventData->eventType == bz_eKillEvent)
+			{
+				bz_KillEventData* event = (bz_KillEventData*) eventData;
+				bz_PlayerRecord* killerInfo = bz_getPlayerByIndex(
+						event->killerID);
+				bz_eTeamType killerTeam = killerInfo->team;
+				bz_freePlayerRecord(killerInfo);
+				bz_PlayerRecord* killedInfo = bz_getPlayerRecordByIndex(
+						event->killedID);
+				bz_eTeamType killedTeam = killedInfo->team;
+				bz_freePlayerRecord(killedInfo);
+				if (killerTeam == killedTeam && !(killerTeam == eRogueTeam))
+				{
+					std::string output;
+					output += "teamkill ";
+					output += event->killerID;
+					output += "|";
+					output += event->killedID;
+					output += "|";
+					output += colorDefToName(killerTeam);
+					bzn_outputData(output);
+				}
+			}
+			else if(eventData->eventType == bz_eBanEvent)
+			{
+				bz_BanEventData* event = (bz_BanEventData*) eventData;
+				std::string output;
+				output += "ban ";
+				output += event->bannerID;
+				output += "|";
+				output += event->banneeID;
+				output += "|";
+				output += event->duration;
+				output += "|";
+				output += event->ipAddress;
+				output += "|";
+				output += event->reason;
+				bzn_outputData(output);
+			}
 		}
 		virtual bool handle(int playerID, bzApiString command,
 				bzApiString message, bzAPIStringList *params)

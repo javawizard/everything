@@ -1,7 +1,7 @@
 The events that are going to be implemented by the plugin are:
 
 ban
-filteredChatMessage
+filteredChatMessage (done)
 capture
 playerDie**
 playerSpawn**
@@ -13,6 +13,7 @@ hostBanModify
 idBan
 kick
 kill** (compare with playerDie, maybe only have one of them)
+teamkill
 playerPaused** (can be used to detect F5ing)
 messageFiltered (compare with filteredChatMessage)
 gameStart
