@@ -42,14 +42,15 @@ create table groups (
 -- Holds the list of servers on the administration site. The server's map, groupdb, and config are stored in actual files, not in here.
 -- Whether the server is public, however, is stored here instead of in the config.
 create table servers (
-    serverid        int,           -- The id of the server
-    name            varchar(64),   -- The name of the server, which is used as the server's public name if the server is public
-    groupid         int,           -- The id of the server's parent group
-    listed          boolean,       -- True if this server is public, false if it is not. If it is public, the public name is the name column.
-    running         boolean,       -- True if this server is running, false if it is not. This is used to allow a server to remain shut down across bznetwork restart.
-    dirty           boolean,       -- True if this server is dirty, false if it is not. A dirty server is one that has had changes made to its configuration that is currently running, and that has not been restarted since the changes were made. A dirty server is, in essence, one that is running on an old configuration and needs a restart for new configuration changes to be applied. When a server is started or shut down, the dirty flag is cleared, and it is never set when the server is not running.
-    notes           varchar(4096), -- Some notes on the server. This can be any text, and serves simply to note what the server is for.
-    inheritgroupdb  boolean        -- True if the server should inherit its parent group's groupdb. The parent group's groupdb always comes before the server's own groupdb when handing the groupdb to the server, so the server's groupdb can use bzflag groups defined in the parent group's groupdb.
+    serverid         int,           -- The id of the server
+    name             varchar(64),   -- The name of the server, which is used as the server's public name if the server is public
+    groupid          int,           -- The id of the server's parent group
+    listed           boolean,       -- True if this server is public, false if it is not. If it is public, the public name is the name column.
+    running          boolean,       -- True if this server is running, false if it is not. This is used to allow a server to remain shut down across bznetwork restart.
+    dirty            boolean,       -- True if this server is dirty, false if it is not. A dirty server is one that has had changes made to its configuration that is currently running, and that has not been restarted since the changes were made. A dirty server is, in essence, one that is running on an old configuration and needs a restart for new configuration changes to be applied. When a server is started or shut down, the dirty flag is cleared, and it is never set when the server is not running.
+    notes            varchar(4096), -- Some notes on the server. This can be any text, and serves simply to note what the server is for.
+    inheritgroupdb   boolean,       -- True if the server should inherit its parent group's groupdb. The parent group's groupdb always comes before the server's own groupdb when handing the groupdb to the server, so the server's groupdb can use bzflag groups defined in the parent group's groupdb.
+    loglevel         int
 );
 -- Holds the actions performed on the server. This is simply a log that users with appropriate permissions can use to view what other users have done on the server. This is similar to other services (such as SourceForge)'s concept of auditing.
 create table actions (
@@ -68,6 +69,16 @@ create table configuration (
     executable  varchar(512),  -- The executable that should be run to start the bzflag server. This is, by default, "bzfs".
     menuleft    boolean,       -- See the menuLeft parameter to the MainScreen constructor
     currentname boolean        -- See the headerScreenName parameter to the MainScreen constructor
+);
+-- Holds the server logs.
+create table logevents (
+    serverid  int,            -- The id of the server that this event occured on
+    event     varchar(64),    -- The name of the event
+    when      timestamp,      -- The time at which the event occured
+    source    varchar(64),    -- The player that caused the event, if applicable. +server represents the server, and +<team> represents a team by that name.
+    target    varchar(64),    -- The target player/team of the event, if applicable. Follows the same naming rules as source. For example, the teamkill event logs the target as the player killed.
+    metadata  varchar(512),   -- Specific to the event type, but generally contains information that is not human-readable
+    data      varchar(1024)   -- A human-readable string representing the event's data 
 );
 
 

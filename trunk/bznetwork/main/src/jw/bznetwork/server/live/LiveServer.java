@@ -2,7 +2,6 @@ package jw.bznetwork.server.live;
 
 import java.util.ArrayList;
 
-
 /**
  * This class represents a bzfs server that is currently running. It holds
  * information about the server's in-database id, the server's cached combined
@@ -20,4 +19,19 @@ public class LiveServer
     private Process process;
     
     private ArrayList<LivePlayer> players = new ArrayList<LivePlayer>();
+    
+    public Process getProcess()
+    {
+        return process;
+    }
+    
+    public void setProcess(Process process)
+    {
+        this.process = process;
+    }
+    
+    public ArrayList<LivePlayer> getPlayers()
+    {
+        return players;
+    }
 }
