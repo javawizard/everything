@@ -44,7 +44,7 @@ public class Perms
             "delete-self-group-ban,2", "view-reports,3", "say,3",
             "hidden-say,3", "view-in-server-list,3", "edit-server-notes,3",
             "edit-group-notes,2", "view-in-group-list,2", "view-action-log,1",
-            "clear-action-log,1", "edit-configuration,1", "all,3"
+            "clear-action-log,1", "edit-configuration,1", "all,3", "view-sessions,1"
     
     };
     
