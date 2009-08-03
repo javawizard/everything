@@ -1,6 +1,7 @@
 package jw.bznetwork.server.live;
 
 import java.io.BufferedInputStream;
+import java.io.DataInputStream;
 import java.io.InputStream;
 
 /**
@@ -19,13 +20,17 @@ public class ReadThread extends Thread
     
     private InputStream serverUnbufferedIn;
     
-    private BufferedInputStream in;
+    private BufferedInputStream bufferedIn;
+    
+    private DataInputStream in;
     
     public ReadThread(LiveServer server)
     {
         this.server = server;
         this.serverUnbufferedIn = server.getProcess().getInputStream();
-        this.in = new BufferedInputStream(serverUnbufferedIn, BUFFER_SIZE);
+        this.bufferedIn = new BufferedInputStream(serverUnbufferedIn,
+                BUFFER_SIZE);
+        this.in = new DataInputStream(bufferedIn);
     }
     
     public void run()
@@ -42,13 +47,18 @@ public class ReadThread extends Thread
             while (true)
             {
                 i = in.read();
-                if(i == '|')
+                if (i == '|')
                 {
-                    StringBuffer lengthBuffer = new StringBuffer();
-                    for(int j = 0; j < 5; j++)
-                    {
-                        
-                    }
+                    byte[] lengthBytes = new byte[5];
+                    in.readFully(lengthBytes);
+                    int length = Integer.parseInt(new String(lengthBytes));
+                    byte[] data = new byte[length];
+                    in.readFully(data);
+                    /*
+                     * At this point we've read all the data that we need to.
+                     * We'll go ahead and process it.
+                     */
+                    processData(data);
                 }
             }
         }
@@ -57,5 +67,30 @@ public class ReadThread extends Thread
             // FIXME: implement this to shut down the server and log an error
             // message about the exception
         }
+    }
+    
+    private void processData(byte[] dataBytes)
+    {
+        /*
+         * Currently, all data output from the server will contain only visible
+         * characters, so we'll just put it into a string.
+         */
+        String data = new String(dataBytes);
+        if (data.startsWith("playerjoin "))
+            processPlayerJoin(data.substring("playerjoin ".length()));
+        else if (data.startsWith("playerpart "))
+            processPlayerPart(data.substring("playerpart ".length()));
+    }
+    
+    private void processPlayerPart(String substring)
+    {
+        // TODO Auto-generated method stub
+        
+    }
+    
+    private void processPlayerJoin(String substring)
+    {
+        // TODO Auto-generated method stub
+        
     }
 }
