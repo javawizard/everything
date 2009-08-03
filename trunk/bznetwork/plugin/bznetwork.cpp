@@ -256,7 +256,7 @@ class BZNetworkEventHandler: public bz_EventHandler,
 					bzn_outputData(output);
 				}
 			}
-			else if(eventData->eventType == bz_eBanEvent)
+			else if (eventData->eventType == bz_eBanEvent)
 			{
 				bz_BanEventData* event = (bz_BanEventData*) eventData;
 				std::string output;
@@ -298,6 +298,8 @@ BZF_PLUGIN_CALL int bz_Load(const char* commandLine)
 	bz_registerEvent(bz_ePlayerPartEvent, &singleEventHandler);
 	bz_registerEvent(bz_eChatMessageEvent, &singleEventHandler);
 	bz_registerEvent(bz_eMessageFilteredEvent, &singleEventHandler);
+	bz_registerEvent(bz_eKillEvent, &singleEventHandler);
+	bz_registerEvent(bz_eBanEvent, &singleEventHandler);
 	// Perhaps allow this to be configured via an argument, and
 	// then have this value be a BZNetwork configuration setting
 	bz_setMaxWaitTime(2.0);
@@ -321,6 +323,8 @@ int bz_Unload(void)
 	bz_removeEvent(bz_ePlayerPartEvent, &singleEventHandler);
 	bz_removeEvent(bz_eChatMessageEvent, &singleEventHandler);
 	bz_removeEvent(bz_eMessageFilteredEvent, &singleEventHandler);
+	bz_removeEvent(bz_eKillEvent, &singleEventHandler);
+	bz_removeEvent(bz_eBanEvent, &singleEventHandler);
 	bzn_outputData("bznunload");
 	playerIdsByCallsign.clear();
 	return 0;
