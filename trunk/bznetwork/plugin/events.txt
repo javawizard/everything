@@ -13,7 +13,7 @@ hostBanModify
 idBan
 kick
 kill** (compare with playerDie, maybe only have one of them)
-teamkill
+teamkill (done)
 playerPaused** (can be used to detect F5ing)
 messageFiltered (compare with filteredChatMessage)
 gameStart
