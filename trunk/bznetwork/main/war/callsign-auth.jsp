@@ -35,7 +35,9 @@
         String grouplist = grouplistBuffer.toString();
         if (grouplist.length() > 0)
             grouplist = grouplist.substring(0, grouplist.length() - 2);
-        String checkTokens = URLEncoder.encode(callsign) + "="
+        if(callsign.contains("="))
+            throw new RuntimeException("Callsigns with = in them are not allowed.");
+        String checkTokens = callsign + "="
                 + URLEncoder.encode(token);
         URL url = new URL(
                 "http://my.bzflag.org/db/?action=CHECKTOKENS&checktokens="
