@@ -4,4 +4,6 @@ Each currently-running servers is represented by a LiveServer object. These are 
 
 The live server object holds a reference to the Process object used to spawn the bzfs instance. This can be used to forcibly terminate bzfs if normal shutdown (which involves telling the bznetwork plugin to shut down the server) does not work.
 
-BZNetworkServer maintains a global queue of log events that are to be sent to the database. A thread is started by BZNetworkServer that reads all events off of the queue every 30 seconds and inserts them into the database. This causes the logs screen to lag about 30 seconds behind
+BZNetworkServer maintains a global queue of log events that are to be sent to the database. A thread is started by BZNetworkServer that reads all events off of the queue every 30 seconds and inserts them into the database. This causes the logs screen to lag about 30 seconds behind the live screen (which only lags about 1-2 seconds behind the actual server), something that will be documented in BZNetwork's help pages. I'm also thinking that I might have a page (probably the same page I'm thinking will allow the user to view memory and shut down the server, maybe "maintenance") that lets the user flush the log queue.
+
+Each server object also maintains a list of the last 300 or so events that have occurred on the server, in the same format as the events are sent to the log queue in. This allows the live view to quickly get an update on what events have occurred.
