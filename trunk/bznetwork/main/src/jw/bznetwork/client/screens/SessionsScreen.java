@@ -88,7 +88,6 @@ public class SessionsScreen extends VerticalScreen
     
     protected void select1(UserSession[] result)
     {
-        Window.alert("session count: " + result.length);
         widget.clear();
         FlexTable table = new FlexTable();
         table.setHTML(0, 0, "<b>IP Address</b>");
