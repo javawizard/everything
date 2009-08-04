@@ -307,6 +307,7 @@ BZF_PLUGIN_CALL int bz_Load(const char* commandLine)
 	{
 		bzn_outputData(
 				"bznfail readthread The stdin read thread could not be created.");
+		bz_shutdown();
 		return 1;
 	}
 	playerIdsByCallsign.insert(pair<std::string, int> ("+server", BZ_SERVER));
