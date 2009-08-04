@@ -72,13 +72,19 @@ create table configuration (
 );
 -- Holds the server logs.
 create table logevents (
-    serverid  int,            -- The id of the server that this event occured on
-    event     varchar(64),    -- The name of the event
-    when      timestamp,      -- The time at which the event occured
-    source    varchar(64),    -- The player that caused the event, if applicable. +server represents the server, and +<team> represents a team by that name.
-    target    varchar(64),    -- The target player/team of the event, if applicable. Follows the same naming rules as source. For example, the teamkill event logs the target as the player killed.
-    metadata  varchar(512),   -- Specific to the event type, but generally contains information that is not human-readable, and pipe-separated.
-    data      varchar(1024)   -- A human-readable string representing the event's data 
+    serverid    int,            -- The id of the server that this event occured on
+    event       varchar(64),    -- The name of the event
+    when        timestamp,      -- The time at which the event occured
+    source      varchar(64),    -- The player that caused the event, if applicable. +server represents the server, and +<team> represents a team by that name.
+    target      varchar(64),    -- The target player/team of the event, if applicable. Follows the same naming rules as source. For example, the teamkill event logs the target as the player killed.
+    sourceid    int,            -- The bzfs slot id of the source player, if applicable
+    targetid    int,            -- The bzfs slot id of the target player, if applicable
+    sourceteam  varchar(64),    -- The source team, if applicable to the event. This is only present where it has a direct bearing on the event itself.
+    targetteam  varchar(64),    -- The target team, if applicable to the event. This is only present where it has a direct bearing on the event itself.
+    ipaddress   varchar(64),    -- The ip address, if relevant. This currently is only used for bans, playerjoins, and playerparts.
+    bzid        varchar(64),    -- The bzid of the player, if relevant.
+    metadata    varchar(512),   -- Specific to the event type, but generally contains information that is not human-readable, and pipe-separated.
+    data        varchar(1024)   -- A human-readable string representing the event's data 
 );
 
 
