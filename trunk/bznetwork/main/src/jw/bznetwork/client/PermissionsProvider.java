@@ -17,4 +17,6 @@ public interface PermissionsProvider
             int server);
     
     public boolean hasGlobalPermission(String permission);
+    
+    public boolean hasPermissionOnBanfile(String name, int id);
 }

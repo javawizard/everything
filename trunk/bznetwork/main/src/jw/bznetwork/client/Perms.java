@@ -34,31 +34,47 @@ public class Perms
      */
     private static String[] allPermissionsArray = new String[]
     {
-            "manage-users,1", "manage-roles,1", "manage-auth,1", "view-logs,3",
-            "view-user,1", "cross-reference-user,1", "edit-map,3",
-            "edit-groupdb,3", "inherit-parent-groupdb,3",
-            "edit-group-groupdb,2", "edit-server-settings,3",
-            "manage-callsign-auth,1", "start-stop-server,3", "create-server,2",
-            "delete-server,2", "add-group-ipban,2", "add-group-idban,2",
-            "add-group-hostban,2", "add-long-ban,2", "delete-group-ban,2",
-            "delete-self-group-ban,2", "view-reports,3", "say,3",
-            "hidden-say,3", "view-in-server-list,3", "edit-server-notes,3",
-            "edit-group-notes,2", "view-in-group-list,2", "view-action-log,1",
-            "clear-action-log,1", "edit-configuration,1", "all,3", "view-sessions,1"
+            "manage-users,global", "manage-roles,global", "manage-auth,global",
+            "view-logs,server", "view-user,global",
+            "cross-reference-user,global", "edit-map,server",
+            "edit-groupdb,server", "inherit-parent-groupdb,server",
+            "edit-group-groupdb,server", "edit-server-settings,server",
+            "manage-callsign-auth,global", "start-stop-server,server",
+            "create-server,server", "delete-server,server",
+            "add-group-ipban,server", "add-group-idban,server",
+            "add-group-hostban,server", "add-long-ban,server",
+            "delete-group-ban,server", "delete-self-group-ban,server",
+            "view-reports,server", "say,server", "hidden-say,server",
+            "view-in-server-list,server", "edit-server-notes,server",
+            "edit-group-notes,group", "view-in-group-list,group",
+            "view-action-log,global", "clear-action-log,global",
+            "edit-configuration,global", "all,server", "view-sessions,global"
     
+    };
+    
+    private static String[] levelInheritance = new String[]
+    {
+            "global", "group,global", "server,group,global", "banfile,global"
     };
     
     private static HashSet<String> allPermissions = new HashSet<String>();
     
-    private static HashMap<String, Integer> allPermissionLevels = new HashMap<String, Integer>();
+    private static HashMap<String, String[]> allPermissionLevels = new HashMap<String, String[]>();
     
     static
     {
+        HashMap<String, String[]> levelInheritanceMap = new HashMap<String, String[]>();
+        for (String s : levelInheritance)
+        {
+            String[] tokens = s.split("\\,");
+            levelInheritanceMap.put(tokens[0], tokens);
+        }
         for (String s : allPermissionsArray)
         {
             String[] tokens = s.split("\\,");
             allPermissions.add(tokens[0]);
-            allPermissionLevels.put(tokens[0], Integer.parseInt(tokens[1]));
+            allPermissionLevels.put(tokens[0], levelInheritanceMap
+                    .get(tokens[1]));
         }
     }
     
@@ -79,9 +95,20 @@ public class Perms
         return allPermissions.contains(permission);
     }
     
-    public static int getPermissionLevel(String permission)
+    public static String[] getPermissionLevels(String permission)
     {
         return allPermissionLevels.get(permission);
+    }
+    
+    public static boolean isPermissionLevelValid(String permission, String level)
+    {
+        String[] levels = getPermissionLevels(permission);
+        for (String l : levels)
+        {
+            if (l.equals(level))
+                return true;
+        }
+        return false;
     }
     
     private static PermissionsProvider provider;
@@ -108,6 +135,13 @@ public class Perms
     public static boolean server(String name, Server server)
     {
         return server(name, server.getServerid(), server.getGroupid());
+    }
+    
+    public static boolean banfile(String name, int id)
+    {
+        if (provider == null)
+            throw new IllegalStateException();
+        return provider.hasPermissionOnBanfile(name, id);
     }
     
     public static boolean server(String name, int serverid, int groupid)
