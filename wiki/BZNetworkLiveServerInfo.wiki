@@ -3,3 +3,5 @@ This page is about how BZNetwork internally keeps track of servers that are curr
 Each currently-running servers is represented by a LiveServer object. These are stored in a HashMap in the BZNetworkServer class that maps server ids to their live server instances. The live server object stores this id as well.
 
 The live server object holds a reference to the Process object used to spawn the bzfs instance. This can be used to forcibly terminate bzfs if normal shutdown (which involves telling the bznetwork plugin to shut down the server) does not work.
+
+BZNetworkServer maintains a global queue of log events that are to be sent to the database. A thread is started by BZNetworkServer that reads all events off of the queue every 30 seconds and inserts them into the database. This causes the logs screen to lag about 30 seconds behind
