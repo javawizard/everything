@@ -54,6 +54,10 @@ public class RequestTrackerFilter implements Filter
             res.setHeader("Cache-control", "no-cache, must-revalidate");
             res.setHeader("Expires", "Fri, 01 Jan 1990 00:00:00 GMT");
         }
+        if (req.getSession(false) != null)
+        {
+            req.getSession().setAttribute("ip-address", req.getRemoteAddr());
+        }
         HttpServletRequest oldReq = threadLocalRequest.get();
         threadLocalRequest.set(req);
         chain.doFilter(request, response);

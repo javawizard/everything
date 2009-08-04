@@ -14,6 +14,8 @@ import jw.bznetwork.client.data.EditConfigurationModel;
 
 import jw.bznetwork.client.data.EditPermissionsModel;
 
+import jw.bznetwork.client.data.UserSession;
+
 import jw.bznetwork.client.data.model.Configuration;
 
 import jw.bznetwork.client.data.model.Permission;
@@ -64,5 +66,9 @@ public void getEditConfigurationModel(AsyncCallback<EditConfigurationModel> call
 public void updateConfiguration(Configuration config, AsyncCallback<Void> callback);
 
 public void disableEc(AsyncCallback<Void> callback);
+
+public void getUserSessions(AsyncCallback<UserSession[]> callback);
+
+public void invalidateUserSession(String id, AsyncCallback<Void> callback);
 
 }

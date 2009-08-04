@@ -22,6 +22,9 @@ import javax.servlet.ServletContext;
 import javax.servlet.ServletContextEvent;
 import javax.servlet.ServletContextListener;
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpSession;
+import javax.servlet.http.HttpSessionEvent;
+import javax.servlet.http.HttpSessionListener;
 
 import net.sf.opengroove.common.utils.DataUtils;
 
@@ -44,13 +47,20 @@ import com.ibatis.sqlmap.client.SqlMapClientBuilder;
  * @author Alexander Boyd
  * 
  */
-public class BZNetworkServer implements ServletContextListener
+public class BZNetworkServer implements ServletContextListener,
+        HttpSessionListener
 {
     private static HashMap<String, AuthProvider> authProviders = new HashMap<String, AuthProvider>();
+    private static HashMap<String, HttpSession> sessions = new HashMap<String, HttpSession>();
     private static boolean isInstalled;
     private static File cacheFolder;
     private static File storeFolder;
     private static String accessLockMessage;
+    
+    public static HashMap<String, HttpSession> getSessionList()
+    {
+        return sessions;
+    }
     
     /**
      * Sticks information on to the request indicating that the user has just
@@ -518,6 +528,21 @@ public class BZNetworkServer implements ServletContextListener
     public static AuthProvider[] getAuthProviders()
     {
         return authProviders.values().toArray(new AuthProvider[0]);
+    }
+    
+    @Override
+    public void sessionCreated(HttpSessionEvent se)
+    {
+        System.out.println("CREATED SESSION: " + se.getSession().getId());
+        sessions.put(se.getSession().getId(), se.getSession());
+        se.getSession().setAttribute("not-serializable-object",
+        new NotSerializableObject());
+    }
+    
+    @Override
+    public void sessionDestroyed(HttpSessionEvent se)
+    {
+        sessions.remove(se.getSession().getId());
     }
     
 }

@@ -11,15 +11,18 @@ import javax.servlet.ServletRequest;
 import javax.servlet.ServletResponse;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
 
 import jw.bznetwork.client.Perms;
 import jw.bznetwork.client.ShowMessageException;
 import jw.bznetwork.client.Verify;
+import jw.bznetwork.client.data.AuthUser;
 import jw.bznetwork.client.data.EditAuthenticationModel;
 import jw.bznetwork.client.data.EditAuthgroupsModel;
 import jw.bznetwork.client.data.EditConfigurationModel;
 import jw.bznetwork.client.data.EditPermissionsModel;
 import jw.bznetwork.client.data.GroupedServer;
+import jw.bznetwork.client.data.UserSession;
 import jw.bznetwork.client.data.model.Authgroup;
 import jw.bznetwork.client.data.model.Configuration;
 import jw.bznetwork.client.data.model.EditablePermission;
@@ -310,5 +313,33 @@ public class GlobalLinkImpl extends RemoteServiceServlet implements GlobalLink
             config.setExecutable(DataStore.getConfiguration().getExecutable());
         }
         DataStore.updateConfiguration(config);
+    }
+    
+    @Override
+    public UserSession[] getUserSessions()
+    {
+        Verify.global("view-sessions");
+        HttpSession[] sessions = BZNetworkServer.getSessionList().values()
+                .toArray(new HttpSession[0]);
+        UserSession[] userSessions = new UserSession[sessions.length];
+        for (int i = 0; i < sessions.length; i++)
+        {
+            UserSession us = new UserSession();
+            HttpSession s = sessions[i];
+            us.setId(s.getId());
+            us.setUser((AuthUser) s.getAttribute("user"));
+            us.setIp((String) s.getAttribute("ip-address"));
+            userSessions[i] = us;
+        }
+        return userSessions;
+    }
+    
+    @Override
+    public void invalidateUserSession(String id)
+    {
+        Verify.global("view-sessions");
+        HttpSession session = BZNetworkServer.getSessionList().get(id);
+        if(session != null)
+            session.invalidate();
     }
 }

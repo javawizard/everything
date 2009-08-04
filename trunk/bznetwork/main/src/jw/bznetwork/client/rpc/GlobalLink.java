@@ -8,6 +8,7 @@ import jw.bznetwork.client.data.EditAuthenticationModel;
 import jw.bznetwork.client.data.EditAuthgroupsModel;
 import jw.bznetwork.client.data.EditConfigurationModel;
 import jw.bznetwork.client.data.EditPermissionsModel;
+import jw.bznetwork.client.data.UserSession;
 import jw.bznetwork.client.data.model.Configuration;
 import jw.bznetwork.client.data.model.Permission;
 import jw.bznetwork.client.data.model.Role;
@@ -53,4 +54,8 @@ public interface GlobalLink extends RemoteService
     public void updateConfiguration(Configuration config);
     
     public void disableEc();
+    
+    public UserSession[] getUserSessions();
+    
+    public void invalidateUserSession(String id);
 }

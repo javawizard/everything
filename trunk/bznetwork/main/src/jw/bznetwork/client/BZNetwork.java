@@ -15,6 +15,7 @@ import jw.bznetwork.client.screens.ConfigurationScreen;
 import jw.bznetwork.client.screens.HelpScreen;
 import jw.bznetwork.client.screens.RolesScreen;
 import jw.bznetwork.client.screens.ServersScreen;
+import jw.bznetwork.client.screens.SessionsScreen;
 import jw.bznetwork.client.screens.WelcomeScreen;
 import jw.bznetwork.client.ui.HorizontalRule;
 import jw.bznetwork.client.ui.Spacer;
@@ -24,6 +25,7 @@ import com.google.gwt.core.client.GWT;
 import com.google.gwt.http.client.URL;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
+import com.google.gwt.user.client.rpc.StatusCodeException;
 import com.google.gwt.user.client.ui.Anchor;
 import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.ClickListener;
@@ -169,6 +171,8 @@ public class BZNetwork implements EntryPoint
         defaultScreenList.add(new ServersScreen());
         if (Perms.global("manage-auth"))
             defaultScreenList.add(new AuthenticationScreen());
+        if (Perms.global("view-sessions"))
+            defaultScreenList.add(new SessionsScreen());
         defaultScreenList.add(new HelpScreen());
         defaultScreens = defaultScreenList.toArray(new Screen[0]);
         mainScreen = new MainScreen(publicConfiguration.getSitename(),
@@ -523,6 +527,16 @@ public class BZNetwork implements EntryPoint
         else if (t instanceof ShowMessageException)
         {
             Window.alert(t.getMessage());
+        }
+        else if (t instanceof StatusCodeException)
+        {
+            StatusCodeException e = (StatusCodeException) t;
+            if (e.getStatusCode() == 401)
+            {
+                Window.alert("You have been logged out, probably because "
+                        + "your session timed out. Refresh the page "
+                        + "to log back in.");
+            }
         }
         else
         {
