@@ -77,7 +77,7 @@ create table logevents (
     when      timestamp,      -- The time at which the event occured
     source    varchar(64),    -- The player that caused the event, if applicable. +server represents the server, and +<team> represents a team by that name.
     target    varchar(64),    -- The target player/team of the event, if applicable. Follows the same naming rules as source. For example, the teamkill event logs the target as the player killed.
-    metadata  varchar(512),   -- Specific to the event type, but generally contains information that is not human-readable
+    metadata  varchar(512),   -- Specific to the event type, but generally contains information that is not human-readable, and pipe-separated.
     data      varchar(1024)   -- A human-readable string representing the event's data 
 );
 
