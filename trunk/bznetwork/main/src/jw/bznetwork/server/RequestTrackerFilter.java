@@ -57,6 +57,17 @@ public class RequestTrackerFilter implements Filter
         if (req.getSession(false) != null)
         {
             req.getSession().setAttribute("ip-address", req.getRemoteAddr());
+            req.getSession().setMaxInactiveInterval(60 * 120);
+            if (BZNetworkServer.getSessionList().get(req.getSession().getId()) == null)
+            {
+                /*
+                 * This fixes a problem where when tomcat serializes sessions
+                 * when it's restarting it causes BZNetworkServer to lose track
+                 * of those sessions.
+                 */
+                BZNetworkServer.getSessionList().put(req.getSession().getId(),
+                        req.getSession());
+            }
         }
         HttpServletRequest oldReq = threadLocalRequest.get();
         threadLocalRequest.set(req);

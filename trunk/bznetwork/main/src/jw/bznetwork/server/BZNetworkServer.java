@@ -533,9 +533,8 @@ public class BZNetworkServer implements ServletContextListener,
     @Override
     public void sessionCreated(HttpSessionEvent se)
     {
-        System.out.println("CREATED SESSION: " + se.getSession().getId());
         sessions.put(se.getSession().getId(), se.getSession());
-        se.getSession().setMaxInactiveInterval(60 * 20);
+        se.getSession().setMaxInactiveInterval(60 * 120);
     }
     
     @Override
