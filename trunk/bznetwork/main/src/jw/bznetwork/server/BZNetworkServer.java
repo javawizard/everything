@@ -536,7 +536,8 @@ public class BZNetworkServer implements ServletContextListener,
         System.out.println("CREATED SESSION: " + se.getSession().getId());
         sessions.put(se.getSession().getId(), se.getSession());
         se.getSession().setAttribute("not-serializable-object",
-        new NotSerializableObject());
+                new NotSerializableObject());
+        se.getSession().setMaxInactiveInterval(60 * 20);
     }
     
     @Override
