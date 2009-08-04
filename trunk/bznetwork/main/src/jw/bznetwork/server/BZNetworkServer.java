@@ -35,7 +35,9 @@ import jw.bznetwork.client.data.AuthUser;
 import jw.bznetwork.client.data.CheckPermission;
 import jw.bznetwork.client.data.model.Permission;
 import jw.bznetwork.client.data.model.Role;
+import jw.bznetwork.client.data.model.Server;
 import jw.bznetwork.server.data.DataStore;
+import jw.bznetwork.server.live.LiveServer;
 import jw.bznetwork.utils.StringUtils;
 
 import com.ibatis.sqlmap.client.SqlMapClient;
@@ -50,8 +52,19 @@ import com.ibatis.sqlmap.client.SqlMapClientBuilder;
 public class BZNetworkServer implements ServletContextListener,
         HttpSessionListener
 {
+    public static HashMap<Integer, LiveServer> getLiveServers()
+    {
+        return liveServers;
+    }
+    
+    public LiveServer getLiveServer(int id)
+    {
+        return liveServers.get(id);
+    }
+    
     private static HashMap<String, AuthProvider> authProviders = new HashMap<String, AuthProvider>();
     private static HashMap<String, HttpSession> sessions = new HashMap<String, HttpSession>();
+    private static HashMap<Integer, LiveServer> liveServers = new HashMap<Integer, LiveServer>();
     private static boolean isInstalled;
     private static File cacheFolder;
     private static File storeFolder;
@@ -541,6 +554,24 @@ public class BZNetworkServer implements ServletContextListener,
     public void sessionDestroyed(HttpSessionEvent se)
     {
         sessions.remove(se.getSession().getId());
+    }
+    
+    /**
+     * Starts the specified server.
+     * 
+     * @return
+     */
+    public static String startServer(int id, boolean synchronous)
+    {
+        synchronized (BZNetworkServer.class)
+        {
+            Server server = DataStore.getServerById(id);
+            if (server == null)
+                throw new IllegalArgumentException(
+                        "There is no server with the id " + id);
+            LiveServer liveServer = new LiveServer();
+            liveServer.setId(server.getServerid());
+        }
     }
     
 }

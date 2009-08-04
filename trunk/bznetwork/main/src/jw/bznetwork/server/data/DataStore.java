@@ -3,6 +3,7 @@ package jw.bznetwork.server.data;
 import jw.bznetwork.client.data.model.Authgroup;
 import jw.bznetwork.client.data.model.Configuration;
 import jw.bznetwork.client.data.model.Group;
+import jw.bznetwork.client.data.model.LogEvent;
 import jw.bznetwork.client.data.model.Permission;
 import jw.bznetwork.client.data.model.Role;
 import jw.bznetwork.client.data.model.Server;
@@ -48,8 +49,33 @@ public class DataStore
     }
     
     // !ADDTOSQL
-
-public static synchronized Permission getPermission(Permission v){try{return (Permission) getGdbClient().queryForObject("getPermission",v);}catch(Exception e){throw new RuntimeException("Exception in database statement getPermission",e);}}
+    
+    public static synchronized void addLogEvent(LogEvent v)
+    {
+        try
+        {
+            getGdbClient().insert("addLogEvent", v);
+        }
+        catch (Exception e)
+        {
+            throw new RuntimeException(
+                    "Exception in database statement addLogEvent", e);
+        }
+    }
+    
+    public static synchronized Permission getPermission(Permission v)
+    {
+        try
+        {
+            return (Permission) getGdbClient().queryForObject("getPermission",
+                    v);
+        }
+        catch (Exception e)
+        {
+            throw new RuntimeException(
+                    "Exception in database statement getPermission", e);
+        }
+    }
     
     public static synchronized Server[] listServers()
     {

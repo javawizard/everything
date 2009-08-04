@@ -20,6 +20,7 @@ public class LogEvent implements Serializable
     private String targetteam;
     private String ipaddress;
     private String bzid;
+    private String email;
     private String metadata;
     private String data;
     
@@ -151,5 +152,15 @@ public class LogEvent implements Serializable
     public void setData(String data)
     {
         this.data = data;
+    }
+    
+    public String getEmail()
+    {
+        return email;
+    }
+    
+    public void setEmail(String email)
+    {
+        this.email = email;
     }
 }

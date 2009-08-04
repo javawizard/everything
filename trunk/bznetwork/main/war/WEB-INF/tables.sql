@@ -83,6 +83,7 @@ create table logevents (
     targetteam  varchar(64),    -- The target team, if applicable to the event. This is only present where it has a direct bearing on the event itself.
     ipaddress   varchar(64),    -- The ip address, if relevant. This currently is only used for bans, playerjoins, and playerparts.
     bzid        varchar(64),    -- The bzid of the player, if relevant.
+    email       varchar(64),    -- The email address of the player, if relevant
     metadata    varchar(512),   -- Specific to the event type, but generally contains information that is not human-readable, and pipe-separated.
     data        varchar(1024)   -- A human-readable string representing the event's data 
 );

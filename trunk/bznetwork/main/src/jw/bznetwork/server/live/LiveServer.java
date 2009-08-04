@@ -1,6 +1,10 @@
 package jw.bznetwork.server.live;
 
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Queue;
+
+import jw.bznetwork.server.BZNetworkServer;
 
 /**
  * This class represents a bzfs server that is currently running. It holds
@@ -17,8 +21,55 @@ public class LiveServer
      * The process that represents the actual bzfs program.
      */
     private Process process;
+    /**
+     * This server's id, as stored in the servers database table
+     */
+    private int id;
+    /**
+     * A queue that, if present, will be notified when either the bznetwork
+     * server plugin successfully loads or the bznetwork plugin fails to load.
+     */
+    private Queue<String> loadListenerQueue;
+    
+    public Queue<String> getLoadListenerQueue()
+    {
+        return loadListenerQueue;
+    }
+    
+    public void setLoadListenerQueue(Queue<String> loadListenerQueue)
+    {
+        this.loadListenerQueue = loadListenerQueue;
+    }
+    
+    public int getId()
+    {
+        return id;
+    }
+    
+    public void setId(int id)
+    {
+        this.id = id;
+    }
     
     private ArrayList<LivePlayer> players = new ArrayList<LivePlayer>();
+    
+    public static final int ALL = -1;
+    public static final int SERVER = -2;
+    public static final int NONE = -3;
+    
+    private HashMap<String, LivePlayer> callsignsToPlayers = new HashMap<String, LivePlayer>();
+    
+    private HashMap<Integer, LivePlayer> idsToPlayers = new HashMap<Integer, LivePlayer>();
+    
+    public HashMap<String, LivePlayer> getCallsignsToPlayers()
+    {
+        return callsignsToPlayers;
+    }
+    
+    public HashMap<Integer, LivePlayer> getIdsToPlayers()
+    {
+        return idsToPlayers;
+    }
     
     public Process getProcess()
     {
@@ -33,5 +84,27 @@ public class LiveServer
     public ArrayList<LivePlayer> getPlayers()
     {
         return players;
+    }
+    
+    /**
+     * Called by the read thread to indicate that the read stream has been
+     * closed, which currently only occurs when the server shuts down. This
+     * method ensures that the process is dead, killing it if it isn't, and then
+     * removes it from the server list.
+     */
+    
+    public void completedShutdown()
+    {
+        synchronized (BZNetworkServer.class)
+        {
+            try
+            {
+                process.destroy();
+            }
+            catch (Exception e)
+            {
+            }
+            BZNetworkServer.getLiveServers().remove(id);
+        }
     }
 }
