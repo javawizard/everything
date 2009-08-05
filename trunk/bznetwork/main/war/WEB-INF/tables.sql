@@ -50,7 +50,8 @@ create table servers (
     dirty            boolean,       -- True if this server is dirty, false if it is not. A dirty server is one that has had changes made to its configuration that is currently running, and that has not been restarted since the changes were made. A dirty server is, in essence, one that is running on an old configuration and needs a restart for new configuration changes to be applied. When a server is started or shut down, the dirty flag is cleared, and it is never set when the server is not running.
     notes            varchar(4096), -- Some notes on the server. This can be any text, and serves simply to note what the server is for.
     inheritgroupdb   boolean,       -- True if the server should inherit its parent group's groupdb. The parent group's groupdb always comes before the server's own groupdb when handing the groupdb to the server, so the server's groupdb can use bzflag groups defined in the parent group's groupdb.
-    loglevel         int
+    loglevel         int,           -- TBD
+    banfile          int            -- The banfile that this server uses, or -1 to use its parent group's banfile instead
 );
 -- Holds the actions performed on the server. This is simply a log that users with appropriate permissions can use to view what other users have done on the server. This is similar to other services (such as SourceForge)'s concept of auditing.
 create table actions (
@@ -86,6 +87,11 @@ create table logevents (
     email       varchar(64),    -- The email address of the player, if relevant
     metadata    varchar(512),   -- Specific to the event type, but generally contains information that is not human-readable, and pipe-separated.
     data        varchar(1024)   -- A human-readable string representing the event's data 
+);
+-- Holds the ids and names of all of the server's banfiles.
+create table banfiles (
+    banfileid int,         -- The id of this banfile
+    name      varchar(64)  -- The name of this banfile
 );
 
 

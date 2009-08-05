@@ -8,6 +8,17 @@
 
 	<!-- !ADDTOSQL -->
 
+    <select id="getBanfileById" 
+         parameterClass="java.lang.Integer" 
+         resultClass="jw.bznetwork.client.data.model.Banfile" >
+        select * from banfiles where banfileid = #value#
+    </select>
+
+    <select id="listBanfiles" 
+         resultClass="jw.bznetwork.client.data.model.Banfile" >
+        select * from banfiles
+    </select>
+
     <insert id="addLogEvent" 
          parameterClass="jw.bznetwork.client.data.model.LogEvent" >
         insert into logevents
@@ -156,8 +167,10 @@
     <select id="getPermissionsByRole" 
          parameterClass="java.lang.Integer" 
          resultClass="jw.bznetwork.client.data.model.Permission" >
-        select p.roleid, p.permission, p.target, s.groupid
-        from permissions p left outer join servers s on s.serverid = p.target
+        select p.roleid, p.permission, p.target, s.groupid as group, b.banfileid as banfile
+        from permissions p 
+        left outer join servers s on s.serverid = p.target
+        left outer join banfiles b on b.banfileid = p.target
         where p.roleid = #value#
     </select>
 

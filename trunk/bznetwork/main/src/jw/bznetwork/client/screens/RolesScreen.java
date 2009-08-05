@@ -22,6 +22,7 @@ import jw.bznetwork.client.Perms;
 import jw.bznetwork.client.VerticalScreen;
 import jw.bznetwork.client.data.EditPermissionsModel;
 import jw.bznetwork.client.data.GroupedServer;
+import jw.bznetwork.client.data.model.Banfile;
 import jw.bznetwork.client.data.model.EditablePermission;
 import jw.bznetwork.client.data.model.Group;
 import jw.bznetwork.client.data.model.Permission;
@@ -156,15 +157,21 @@ public class RolesScreen extends VerticalScreen
                     "bznetwork-PermsTableOn");
             HorizontalPanel targetPanel = new HorizontalPanel();
             if (permission.getGroupName() == null
-                    && permission.getServerName() == null)
+                    && permission.getServerName() == null
+                    && permission.getBanfileName() == null)
             {
                 Label l = new Label("Global");
                 l.addStyleName("bznetwork-PermsTableGlobal");
                 targetPanel.add(l);
             }
+            else if (permission.getBanfileName() != null)
+            {
+                Label l = new Label("banfile: " + permission.getBanfileName());
+                targetPanel.add(l);
+            }
             else if (permission.getServerName() == null)
             {
-                Label l = new Label(permission.getGroupName());
+                Label l = new Label("group: " + permission.getGroupName());
                 targetPanel.add(l);
             }
             else
@@ -258,12 +265,11 @@ public class RolesScreen extends VerticalScreen
                 }
                 String[] targetSplit = targetValue.split("\\/");
                 int target = Integer.parseInt(targetSplit[1]);
-                int level = Integer.parseInt(targetSplit[0]);
-                if (level > Perms.getPermissionLevel(permission))
+                String level = targetSplit[0];
+                if (!Perms.isPermissionLevelValid(permission, level))
                 {
-                    Window.alert("You can't apply that permission to "
-                            + (level == 1 ? "Global" : (level == 2 ? "a group"
-                                    : "a server")) + ".");
+                    Window
+                            .alert("You can't apply that permission to a target of that level.");
                 }
                 BZNetwork.authLink.addPermission(roleid, permission, target,
                         new BoxCallback<Void>()
@@ -283,17 +289,22 @@ public class RolesScreen extends VerticalScreen
     {
         ListBox box = new ListBox();
         box.addItem("", "");
-        box.addItem("Global", "1/-1");
+        box.addItem("Global", "global/-1");
         ((SelectElement) box.getElement().cast()).getOptions().getItem(1)
                 .setClassName("bznetwork-PermsTableNewGlobal");
         for (Group g : model.getGroups())
         {
-            box.addItem(g.getName(), "2/" + g.getGroupid());
+            box.addItem("group: " + g.getName(), "group/" + g.getGroupid());
         }
         for (GroupedServer s : model.getServers())
         {
-            box.addItem(s.getParent().getName() + "/" + s.getName(), "3/"
-                    + s.getServerid());
+            box.addItem("server: " + s.getParent().getName() + "/"
+                    + s.getName(), "server/" + s.getServerid());
+        }
+        for (Banfile b : model.getBanfiles())
+        {
+            box.addItem("banfile: " + b.getName(), "banfile/"
+                    + b.getBanfileid());
         }
         return box;
     }

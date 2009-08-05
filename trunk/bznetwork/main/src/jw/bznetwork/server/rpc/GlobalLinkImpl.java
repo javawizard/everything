@@ -24,6 +24,7 @@ import jw.bznetwork.client.data.EditPermissionsModel;
 import jw.bznetwork.client.data.GroupedServer;
 import jw.bznetwork.client.data.UserSession;
 import jw.bznetwork.client.data.model.Authgroup;
+import jw.bznetwork.client.data.model.Banfile;
 import jw.bznetwork.client.data.model.Configuration;
 import jw.bznetwork.client.data.model.EditablePermission;
 import jw.bznetwork.client.data.model.Group;
@@ -92,6 +93,7 @@ public class GlobalLinkImpl extends RemoteServiceServlet implements GlobalLink
             result[i].setRoleid(perms[i].getRoleid());
             result[i].setPermission(perms[i].getPermission());
             result[i].setTarget(perms[i].getTarget());
+            result[i].setBanfile(perms[i].getBanfile());
             if (perms[i].getTarget() == -1)
             {
                 /*
@@ -99,6 +101,19 @@ public class GlobalLinkImpl extends RemoteServiceServlet implements GlobalLink
                  */
                 result[i].setGroupName(null);
                 result[i].setServerName(null);
+            }
+            else if (perms[i].getBanfile() != null)
+            {
+                /*
+                 * Banfile permission
+                 */
+                Banfile banfile = DataStore.getBanfileById(perms[i]
+                        .getBanfile());
+                if (banfile == null)
+                    result[i].setBanfileName("_missing_"
+                            + perms[i].getBanfile());
+                else
+                    result[i].setBanfileName(banfile.getName());
             }
             else if (perms[i].getGroup() == null)
             {
@@ -151,6 +166,7 @@ public class GlobalLinkImpl extends RemoteServiceServlet implements GlobalLink
         }
         model.setGroups(groups);
         model.setServers(resultServers);
+        model.setBanfiles(DataStore.listBanfiles());
         return model;
     }
     
@@ -339,7 +355,7 @@ public class GlobalLinkImpl extends RemoteServiceServlet implements GlobalLink
     {
         Verify.global("view-sessions");
         HttpSession session = BZNetworkServer.getSessionList().get(id);
-        if(session != null)
+        if (session != null)
             session.invalidate();
     }
 }

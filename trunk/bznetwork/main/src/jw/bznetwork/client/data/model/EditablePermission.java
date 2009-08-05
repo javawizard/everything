@@ -10,6 +10,17 @@ public class EditablePermission extends Permission implements Serializable
     
     private String groupName;
     private String serverName;
+    private String banfileName;
+    
+    public String getBanfileName()
+    {
+        return banfileName;
+    }
+    
+    public void setBanfileName(String banfileName)
+    {
+        this.banfileName = banfileName;
+    }
     
     public String getGroupName()
     {

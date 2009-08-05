@@ -2,6 +2,7 @@ package jw.bznetwork.client.data;
 
 import java.io.Serializable;
 
+import jw.bznetwork.client.data.model.Banfile;
 import jw.bznetwork.client.data.model.EditablePermission;
 import jw.bznetwork.client.data.model.Group;
 import jw.bznetwork.client.data.model.Server;
@@ -10,10 +11,21 @@ public class EditPermissionsModel implements Serializable
 {
     private EditablePermission[] permissions;
     private Group[] groups;
+    private Banfile[] banfiles;
     
     public EditablePermission[] getPermissions()
     {
         return permissions;
+    }
+    
+    public Banfile[] getBanfiles()
+    {
+        return banfiles;
+    }
+    
+    public void setBanfiles(Banfile[] banfiles)
+    {
+        this.banfiles = banfiles;
     }
     
     public void setPermissions(EditablePermission[] permissions)

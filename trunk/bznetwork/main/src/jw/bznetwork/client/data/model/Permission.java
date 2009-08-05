@@ -25,6 +25,17 @@ public class Permission implements Serializable
      * group to return).
      */
     private Integer group;
+    private Integer banfile;
+    
+    public Integer getBanfile()
+    {
+        return banfile;
+    }
+    
+    public void setBanfile(Integer banfile)
+    {
+        this.banfile = banfile;
+    }
     
     public Integer getGroup()
     {
