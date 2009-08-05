@@ -1,7 +1,12 @@
 package jw.bznetwork.client.screens;
 
+import com.google.gwt.event.dom.client.ClickEvent;
+import com.google.gwt.event.dom.client.ClickHandler;
+import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.Anchor;
+import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.FlexTable;
+import com.google.gwt.user.client.ui.TextBox;
 
 import jw.bznetwork.client.BZNetwork;
 import jw.bznetwork.client.BoxCallback;
@@ -62,10 +67,56 @@ public class BanfilesScreen extends VerticalScreen
         widget.add(table);
         for (int i = 0; i < result.length; i++)
         {
+            final Banfile banfile = result[i];
             table.setText(i, 0, result[i].getName());
             Anchor deleteLink = new Anchor("delete");
+            deleteLink.addClickHandler(new ClickHandler()
+            {
+                
+                @Override
+                public void onClick(ClickEvent event)
+                {
+                    BZNetwork.authLink.deleteBanfile(banfile.getBanfileid(),
+                            new BoxCallback<Void>()
+                            {
+                                
+                                @Override
+                                public void run(Void result)
+                                {
+                                    select();
+                                }
+                            });
+                }
+            });
             table.setWidget(i, 1, deleteLink);
         }
+        final TextBox nameField = new TextBox();
+        table.setWidget(result.length, 0, nameField);
+        Button addButton = new Button("Add");
+        table.setWidget(result.length, 1, addButton);
+        addButton.addClickHandler(new ClickHandler()
+        {
+            
+            @Override
+            public void onClick(ClickEvent event)
+            {
+                if (nameField.getText().trim().equals(""))
+                {
+                    Window
+                            .alert("You need to type a name for the new banfile.");
+                    return;
+                }
+                BZNetwork.authLink.addBanfile(nameField.getText(),
+                        new BoxCallback<Void>()
+                        {
+                            
+                            @Override
+                            public void run(Void result)
+                            {
+                                select();
+                            }
+                        });
+            }
+        });
     }
-    
 }
