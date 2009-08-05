@@ -82,4 +82,5 @@ public interface GlobalLink extends RemoteService
     public void addGroup(String name);
     
     public void setGroupBanfile(int group, int banfile);
+    
 }

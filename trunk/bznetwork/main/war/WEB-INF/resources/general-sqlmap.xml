@@ -8,6 +8,20 @@
 
 	<!-- !ADDTOSQL -->
 
+    <update id="updateGroup" 
+         parameterClass="jw.bznetwork.client.data.model.Group" >
+        update groups set
+        name = #name#,
+        banfile = #banfile#
+        where groupid = #groupid#
+    </update>
+
+    <insert id="addGroup" 
+         parameterClass="jw.bznetwork.client.data.model.Group" >
+        insert into groups (groupid,name,banfile)
+        values (#groupid#,#name#,#banfile#)
+    </insert>
+
     <select id="listServersByGroup" 
          parameterClass="java.lang.Integer" 
          resultClass="jw.bznetwork.client.data.model.Server" >

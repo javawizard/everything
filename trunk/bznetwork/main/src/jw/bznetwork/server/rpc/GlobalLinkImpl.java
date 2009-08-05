@@ -460,4 +460,24 @@ public class GlobalLinkImpl extends RemoteServiceServlet implements GlobalLink
         return model;
     }
     
+    @Override
+    public void addGroup(String name)
+    {
+        Verify.global("create-group");
+        Group group = new Group();
+        group.setGroupid(DataStore.createId());
+        group.setName(name);
+        group.setBanfile(-1);
+        DataStore.addGroup(group);
+    }
+    
+    @Override
+    public void setGroupBanfile(int group, int banfile)
+    {
+        Verify.group("edit-group-banfile", group);
+        Group groupObject = DataStore.getGroupById(group);
+        groupObject.setBanfile(banfile);
+        DataStore.updateGroup(groupObject);
+    }
+    
 }

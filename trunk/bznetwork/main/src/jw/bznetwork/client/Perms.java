@@ -49,7 +49,8 @@ public class Perms
             "view-in-server-list,server", "edit-server-notes,server",
             "edit-group-notes,group", "view-in-group-list,group",
             "view-action-log,global", "clear-action-log,global",
-            "edit-configuration,global", "all,server", "view-sessions,global"
+            "edit-configuration,global", "all,server", "view-sessions,global",
+            "create-group,global", "rename-group,group"
     
     };
     
