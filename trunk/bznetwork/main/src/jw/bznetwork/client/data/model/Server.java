@@ -7,6 +7,7 @@ public class Server implements Serializable
     private int serverid;
     private int groupid;
     private String name;
+    private int port;
     private boolean listed;
     private boolean running;
     private boolean dirty;
@@ -102,5 +103,15 @@ public class Server implements Serializable
     public void setInheritgroupdb(boolean inheritgroupdb)
     {
         this.inheritgroupdb = inheritgroupdb;
+    }
+    
+    public int getPort()
+    {
+        return port;
+    }
+    
+    public void setPort(int port)
+    {
+        this.port = port;
     }
 }

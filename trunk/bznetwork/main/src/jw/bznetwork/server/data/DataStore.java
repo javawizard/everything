@@ -51,6 +51,20 @@ public class DataStore
     
     // !ADDTOSQL
     
+    public static synchronized Server[] listServersByGroup(Integer v)
+    {
+        try
+        {
+            return (Server[]) getGdbClient().queryForList("listServersByGroup",
+                    v).toArray(new Server[0]);
+        }
+        catch (Exception e)
+        {
+            throw new RuntimeException(
+                    "Exception in database statement listServersByGroup", e);
+        }
+    }
+    
     public static synchronized void addBanfile(Banfile v)
     {
         try

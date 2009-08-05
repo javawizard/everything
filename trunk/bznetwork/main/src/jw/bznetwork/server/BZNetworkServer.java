@@ -690,16 +690,31 @@ public class BZNetworkServer implements ServletContextListener,
             Configuration config = DataStore.getConfiguration();
             String executable = config.getExecutable();
             Process process;
+            ArrayList<String> args = new ArrayList<String>();
+            args.add(executable);
+            args.add("-port");
+            args.add("" + server.getPort());
+            if (server.isListed())
+            {
+                args.add("-public");
+                args.add(server.getName());
+            }
+            args.add("-world");
+            args.add(mapFile.getAbsolutePath());
+            args.add("-conf");
+            args.add(configFile.getAbsolutePath());
+            args.add("-groupdb");
+            args.add(newGroupdbFile.getAbsolutePath());
+            args.add("-banfile");
+            args.add(banfileFile.getAbsolutePath());
+            args.add("-loadplugin");
+            args.add(serverControlPlugin.getAbsolutePath() + ","
+                    + serverControlConfig.getAbsolutePath());
+            args.add("-loadplugin");
+            args.add(bznetworkPlugin.getAbsolutePath());
             try
             {
-                process = new ProcessBuilder(executable, "-world", mapFile
-                        .getAbsolutePath(), "-conf", configFile
-                        .getAbsolutePath(), "-groupdb", newGroupdbFile
-                        .getAbsolutePath(), "-banfile", banfileFile
-                        .getAbsolutePath(), "-loadplugin", serverControlPlugin
-                        .getAbsolutePath()
-                        + "," + serverControlConfig.getAbsolutePath(),
-                        "-loadplugin", bznetworkPlugin.getAbsolutePath())
+                process = new ProcessBuilder(args.toArray(new String[0]))
                         .start();
             }
             catch (Exception e)

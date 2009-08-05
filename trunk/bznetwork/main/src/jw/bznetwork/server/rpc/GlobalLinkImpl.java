@@ -2,6 +2,7 @@ package jw.bznetwork.server.rpc;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Properties;
@@ -21,7 +22,10 @@ import jw.bznetwork.client.data.EditAuthenticationModel;
 import jw.bznetwork.client.data.EditAuthgroupsModel;
 import jw.bznetwork.client.data.EditConfigurationModel;
 import jw.bznetwork.client.data.EditPermissionsModel;
+import jw.bznetwork.client.data.GroupModel;
 import jw.bznetwork.client.data.GroupedServer;
+import jw.bznetwork.client.data.ServerListModel;
+import jw.bznetwork.client.data.ServerModel;
 import jw.bznetwork.client.data.UserSession;
 import jw.bznetwork.client.data.model.Authgroup;
 import jw.bznetwork.client.data.model.Banfile;
@@ -31,9 +35,11 @@ import jw.bznetwork.client.data.model.Group;
 import jw.bznetwork.client.data.model.Permission;
 import jw.bznetwork.client.data.model.Role;
 import jw.bznetwork.client.data.model.Server;
+import jw.bznetwork.client.live.LivePlayer;
 import jw.bznetwork.client.rpc.GlobalLink;
 import jw.bznetwork.server.BZNetworkServer;
 import jw.bznetwork.server.data.DataStore;
+import jw.bznetwork.server.live.LiveServer;
 
 import com.google.gwt.user.server.rpc.RemoteServiceServlet;
 
@@ -385,4 +391,73 @@ public class GlobalLinkImpl extends RemoteServiceServlet implements GlobalLink
         Verify.global("manage-banfiles");
         return DataStore.listBanfiles();
     }
+    
+    @Override
+    public ServerListModel getServerListModel()
+    {
+        ServerListModel model = new ServerListModel();
+        ArrayList<GroupModel> groupList = new ArrayList<GroupModel>();
+        Group[] groups = DataStore.listGroups();
+        Banfile[] banfiles = DataStore.listBanfiles();
+        HashMap<Integer, Banfile> banfileMap = new HashMap<Integer, Banfile>();
+        for (Banfile banfile : banfiles)
+            banfileMap.put(banfile.getBanfileid(), banfile);
+        for (Group group : groups)
+        {
+            if (!Perms.group("view-in-group-list", group.getGroupid()))
+                continue;
+            if (Perms.group("edit-group-banfile", group.getGroupid())
+                    && model.getBanfiles() == null)
+            {
+                model.setBanfiles(banfiles);
+                model.getBanfileMap().putAll(banfileMap);
+            }
+            GroupModel groupModel = new GroupModel();
+            groupModel.setGroupid(group.getGroupid());
+            groupModel.setName(group.getName());
+            groupModel.setBanfile(group.getBanfile());
+            ArrayList<ServerModel> serverList = new ArrayList<ServerModel>();
+            Server[] servers = DataStore.listServersByGroup(group.getGroupid());
+            for (Server server : servers)
+            {
+                if (!Perms.server("view-in-server-list", server))
+                    continue;
+                if (Perms.server("edit-server-banfile", server)
+                        && model.getBanfiles() == null)
+                {
+                    model.setBanfiles(banfiles);
+                    model.getBanfileMap().putAll(banfileMap);
+                }
+                ServerModel serverModel = new ServerModel();
+                serverModel.setBanfile(server.getBanfile());
+                serverModel.setDirty(server.isDirty());
+                serverModel.setGroupid(server.getGroupid());
+                serverModel.setInheritgroupdb(server.isInheritgroupdb());
+                serverModel.setListed(server.isListed());
+                serverModel.setName(server.getName());
+                serverModel.setNotes(server.getNotes());
+                serverModel.setPort(server.getPort());
+                serverModel.setRunning(server.isRunning());
+                serverModel.setServerid(server.getServerid());
+                LiveServer liveServer = BZNetworkServer.getLiveServers().get(
+                        server.getServerid());
+                if (liveServer == null)
+                {
+                    serverModel.setLive(false);
+                }
+                else
+                {
+                    serverModel.setLive(true);
+                    serverModel.setPlayers(liveServer.getPlayers().toArray(
+                            new LivePlayer[0]));
+                }
+                serverList.add(serverModel);
+            }
+            groupModel.setServers(serverList.toArray(new ServerModel[0]));
+            groupList.add(groupModel);
+        }
+        model.setGroups(groupList.toArray(new GroupModel[0]));
+        return model;
+    }
+    
 }

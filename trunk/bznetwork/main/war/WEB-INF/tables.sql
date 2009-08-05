@@ -45,6 +45,7 @@ create table groups (
 create table servers (
     serverid         int,           -- The id of the server
     name             varchar(64),   -- The name of the server, which is used as the server's public name if the server is public
+    port             int,           -- The server's port. Due to some technical issues, this has to be specified here instead of in the config.
     groupid          int,           -- The id of the server's parent group
     listed           boolean,       -- True if this server is public, false if it is not. If it is public, the public name is the name column.
     running          boolean,       -- True if this server is running, false if it is not. This is used to allow a server to remain shut down across bznetwork restart.

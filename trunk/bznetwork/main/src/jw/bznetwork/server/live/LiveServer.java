@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Queue;
 
+import jw.bznetwork.client.live.LivePlayer;
 import jw.bznetwork.server.BZNetworkServer;
 
 /**

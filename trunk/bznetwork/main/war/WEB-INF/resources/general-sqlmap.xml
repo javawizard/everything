@@ -8,6 +8,12 @@
 
 	<!-- !ADDTOSQL -->
 
+    <select id="listServersByGroup" 
+         parameterClass="java.lang.Integer" 
+         resultClass="jw.bznetwork.client.data.model.Server" >
+        select * from servers where groupid = #value#
+    </select>
+
     <insert id="addBanfile" 
          parameterClass="jw.bznetwork.client.data.model.Banfile" >
         insert into banfiles

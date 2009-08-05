@@ -5,6 +5,7 @@ import java.io.DataInputStream;
 import java.io.InputStream;
 
 import jw.bznetwork.client.data.model.LogEvent;
+import jw.bznetwork.client.live.LivePlayer;
 import jw.bznetwork.server.data.DataStore;
 
 /**
