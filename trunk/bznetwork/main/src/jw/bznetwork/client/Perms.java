@@ -41,14 +41,14 @@ public class Perms
             "edit-group-groupdb,server", "edit-server-settings,server",
             "manage-callsign-auth,global", "start-stop-server,server",
             "create-server,server", "delete-server,server",
-            "add-group-ipban,server", "add-group-idban,server",
-            "add-group-hostban,server", "add-long-ban,server",
-            "delete-group-ban,server", "delete-self-group-ban,server",
-            "view-reports,server", "say,server", "hidden-say,server",
-            "view-in-server-list,server", "edit-server-notes,server",
-            "edit-group-notes,group", "view-in-group-list,group",
-            "view-action-log,global", "clear-action-log,global",
-            "edit-configuration,global", "all,server", "view-sessions,global"
+            "view-bans,banfile", "add-ipban,banfile", "add-idban,banfile",
+            "add-hostban,banfile", "add-long-ban,banfile", "delete-ban",
+            "delete-self-ban", "view-reports,server", "say,server",
+            "hidden-say,server", "view-in-server-list,server",
+            "edit-server-notes,server", "edit-group-notes,group",
+            "view-in-group-list,group", "view-action-log,global",
+            "clear-action-log,global", "edit-configuration,global",
+            "all,server", "view-sessions,global"
     
     };
     
