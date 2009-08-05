@@ -43,13 +43,13 @@ public class Perms
             "create-server,server", "delete-server,server",
             "manage-banfiles,global", "view-bans,banfile", "add-ipban,banfile",
             "add-idban,banfile", "add-hostban,banfile", "add-long-ban,banfile",
-            "delete-ban", "delete-self-ban", "edit-server-banfile,server",
-            "edit-group-banfile,group", "view-reports,server", "say,server",
-            "hidden-say,server", "view-in-server-list,server",
-            "edit-server-notes,server", "edit-group-notes,group",
-            "view-in-group-list,group", "view-action-log,global",
-            "clear-action-log,global", "edit-configuration,global",
-            "all,server", "view-sessions,global"
+            "delete-ban,banfile", "delete-self-ban,banfile",
+            "edit-server-banfile,server", "edit-group-banfile,group",
+            "view-reports,server", "say,server", "hidden-say,server",
+            "view-in-server-list,server", "edit-server-notes,server",
+            "edit-group-notes,group", "view-in-group-list,group",
+            "view-action-log,global", "clear-action-log,global",
+            "edit-configuration,global", "all,server", "view-sessions,global"
     
     };
     
@@ -72,10 +72,18 @@ public class Perms
         }
         for (String s : allPermissionsArray)
         {
-            String[] tokens = s.split("\\,");
-            allPermissions.add(tokens[0]);
-            allPermissionLevels.put(tokens[0], levelInheritanceMap
-                    .get(tokens[1]));
+            try
+            {
+                String[] tokens = s.split("\\,");
+                allPermissions.add(tokens[0]);
+                allPermissionLevels.put(tokens[0], levelInheritanceMap
+                        .get(tokens[1]));
+            }
+            catch (Exception e)
+            {
+                throw new RuntimeException("Exception processing perm line "
+                        + s);
+            }
         }
     }
     
