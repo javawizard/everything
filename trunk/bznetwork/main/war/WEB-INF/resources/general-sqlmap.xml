@@ -8,6 +8,14 @@
 
 	<!-- !ADDTOSQL -->
 
+    <insert id="addBanfile" 
+         parameterClass="jw.bznetwork.client.data.model.Banfile" >
+        insert into banfiles
+        (banfileid,name)
+         values (
+        #banfileid#, #name#);
+    </insert>
+
     <select id="getBanfileById" 
          parameterClass="java.lang.Integer" 
          resultClass="jw.bznetwork.client.data.model.Banfile" >

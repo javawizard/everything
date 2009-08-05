@@ -358,4 +358,31 @@ public class GlobalLinkImpl extends RemoteServiceServlet implements GlobalLink
         if (session != null)
             session.invalidate();
     }
+    
+    @Override
+    public void addBanfile(String name)
+    {
+        Verify.global("manage-banfiles");
+        Banfile banfile = new Banfile();
+        banfile.setBanfileid(DataStore.createId());
+        banfile.setName(name);
+        DataStore.addBanfile(banfile);
+    }
+    
+    @Override
+    public void deleteBanfile(int id) throws ShowMessageException
+    {
+        Verify.global("manage-banfiles");
+        throw new ShowMessageException(
+                "BZNetwork doesn't yet support deleting a banfile. "
+                        + "Join irc.freenode.net/#bztraining and ask "
+                        + "jcp for more info.");
+    }
+    
+    @Override
+    public Banfile[] listBanfiles()
+    {
+        Verify.global("manage-banfiles");
+        return DataStore.listBanfiles();
+    }
 }

@@ -50,8 +50,32 @@ public class DataStore
     }
     
     // !ADDTOSQL
-
-public static synchronized Banfile getBanfileById(Integer v){try{return (Banfile) getGdbClient().queryForObject("getBanfileById",v);}catch(Exception e){throw new RuntimeException("Exception in database statement getBanfileById",e);}}
+    
+    public static synchronized void addBanfile(Banfile v)
+    {
+        try
+        {
+            getGdbClient().insert("addBanfile", v);
+        }
+        catch (Exception e)
+        {
+            throw new RuntimeException(
+                    "Exception in database statement addBanfile", e);
+        }
+    }
+    
+    public static synchronized Banfile getBanfileById(Integer v)
+    {
+        try
+        {
+            return (Banfile) getGdbClient().queryForObject("getBanfileById", v);
+        }
+        catch (Exception e)
+        {
+            throw new RuntimeException(
+                    "Exception in database statement getBanfileById", e);
+        }
+    }
     
     public static synchronized Banfile[] listBanfiles()
     {

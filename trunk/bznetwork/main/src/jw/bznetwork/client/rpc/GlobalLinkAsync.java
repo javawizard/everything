@@ -16,6 +16,8 @@ import jw.bznetwork.client.data.EditPermissionsModel;
 
 import jw.bznetwork.client.data.UserSession;
 
+import jw.bznetwork.client.data.model.Banfile;
+
 import jw.bznetwork.client.data.model.Configuration;
 
 import jw.bznetwork.client.data.model.Permission;
@@ -70,5 +72,11 @@ public void disableEc(AsyncCallback<Void> callback);
 public void getUserSessions(AsyncCallback<UserSession[]> callback);
 
 public void invalidateUserSession(String id, AsyncCallback<Void> callback);
+
+public void listBanfiles(AsyncCallback<Banfile[]> callback);
+
+public void addBanfile(String name, AsyncCallback<Void> callback);
+
+public void deleteBanfile(int id, AsyncCallback<Void> callback);
 
 }

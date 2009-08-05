@@ -37,7 +37,8 @@ create table permissions (
 -- Holds the list of groups on the administration site. The banfile and groupdb are stored in files, not in the database.
 create table groups (
     groupid int,           -- The id of the group
-    name    varchar(64)   -- The name of the group
+    name    varchar(64),   -- The name of the group
+    banfile int            -- This group's default banfile
 );
 -- Holds the list of servers on the administration site. The server's map, groupdb, and config are stored in actual files, not in here.
 -- Whether the server is public, however, is stored here instead of in the config.

@@ -9,6 +9,7 @@ import jw.bznetwork.client.data.EditAuthgroupsModel;
 import jw.bznetwork.client.data.EditConfigurationModel;
 import jw.bznetwork.client.data.EditPermissionsModel;
 import jw.bznetwork.client.data.UserSession;
+import jw.bznetwork.client.data.model.Banfile;
 import jw.bznetwork.client.data.model.Configuration;
 import jw.bznetwork.client.data.model.Permission;
 import jw.bznetwork.client.data.model.Role;
@@ -58,4 +59,10 @@ public interface GlobalLink extends RemoteService
     public UserSession[] getUserSessions();
     
     public void invalidateUserSession(String id);
+    
+    public Banfile[] listBanfiles();
+    
+    public void addBanfile(String name);
+    
+    public void deleteBanfile(int id) throws ShowMessageException;
 }
