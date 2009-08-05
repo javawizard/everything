@@ -11,6 +11,7 @@ import jw.bznetwork.client.rpc.GlobalUnauthLink;
 import jw.bznetwork.client.rpc.GlobalUnauthLinkAsync;
 import jw.bznetwork.client.screens.AuthenticationScreen;
 import jw.bznetwork.client.screens.AuthgroupsScreen;
+import jw.bznetwork.client.screens.BanfilesScreen;
 import jw.bznetwork.client.screens.ConfigurationScreen;
 import jw.bznetwork.client.screens.HelpScreen;
 import jw.bznetwork.client.screens.RolesScreen;
@@ -161,6 +162,8 @@ public class BZNetwork implements EntryPoint
             defaultScreenList.add(new ConfigurationScreen());
         if (Perms.global("manage-roles"))
             defaultScreenList.add(new RolesScreen());
+        if (Perms.global("manage-banfiles"))
+            defaultScreenList.add(new BanfilesScreen());
         if (Perms.global("manage-callsign-auth"))
             defaultScreenList.add(new AuthgroupsScreen());
         /*

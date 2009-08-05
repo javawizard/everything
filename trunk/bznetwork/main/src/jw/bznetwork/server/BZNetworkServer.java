@@ -572,6 +572,7 @@ public class BZNetworkServer implements ServletContextListener,
             LiveServer liveServer = new LiveServer();
             liveServer.setId(server.getServerid());
         }
+        return null;
     }
     
 }
