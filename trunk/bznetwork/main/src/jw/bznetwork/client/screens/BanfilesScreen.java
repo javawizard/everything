@@ -1,5 +1,6 @@
 package jw.bznetwork.client.screens;
 
+import com.google.gwt.user.client.ui.Anchor;
 import com.google.gwt.user.client.ui.FlexTable;
 
 import jw.bznetwork.client.BZNetwork;
@@ -52,13 +53,19 @@ public class BanfilesScreen extends VerticalScreen
             }
         });
     }
-
+    
     protected void select1(Banfile[] result)
     {
         widget.clear();
         FlexTable table = new FlexTable();
-        widget.add(table);
         widget.add(new Header2("Banfiles"));
+        widget.add(table);
+        for (int i = 0; i < result.length; i++)
+        {
+            table.setText(i, 0, result[i].getName());
+            Anchor deleteLink = new Anchor("delete");
+            table.setWidget(i, 1, deleteLink);
+        }
     }
     
 }
