@@ -16,7 +16,12 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Properties;
+import java.util.Random;
 import java.util.Scanner;
+import java.util.concurrent.ArrayBlockingQueue;
+import java.util.concurrent.LinkedBlockingQueue;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
 
 import javax.servlet.ServletContext;
 import javax.servlet.ServletContextEvent;
@@ -33,11 +38,15 @@ import jw.bznetwork.client.ClientPermissionsProvider;
 import jw.bznetwork.client.Perms;
 import jw.bznetwork.client.data.AuthUser;
 import jw.bznetwork.client.data.CheckPermission;
+import jw.bznetwork.client.data.model.Banfile;
+import jw.bznetwork.client.data.model.Configuration;
+import jw.bznetwork.client.data.model.Group;
 import jw.bznetwork.client.data.model.Permission;
 import jw.bznetwork.client.data.model.Role;
 import jw.bznetwork.client.data.model.Server;
 import jw.bznetwork.server.data.DataStore;
 import jw.bznetwork.server.live.LiveServer;
+import jw.bznetwork.server.live.ReadThread;
 import jw.bznetwork.utils.StringUtils;
 
 import com.ibatis.sqlmap.client.SqlMapClient;
@@ -52,10 +61,15 @@ import com.ibatis.sqlmap.client.SqlMapClientBuilder;
 public class BZNetworkServer implements ServletContextListener,
         HttpSessionListener
 {
+    public static final String newline = System.getProperty("line.separator");
+    
     public static HashMap<Integer, LiveServer> getLiveServers()
     {
         return liveServers;
     }
+    
+    private static File mapsFolder;
+    private static File configFolder;
     
     public LiveServer getLiveServer(int id)
     {
@@ -66,8 +80,13 @@ public class BZNetworkServer implements ServletContextListener,
     private static HashMap<String, HttpSession> sessions = new HashMap<String, HttpSession>();
     private static HashMap<Integer, LiveServer> liveServers = new HashMap<Integer, LiveServer>();
     private static boolean isInstalled;
-    private static File cacheFolder;
+    public static File cacheFolder;
     private static File storeFolder;
+    private static File bansFolder;
+    private static File groupdbFolder;
+    private static File includedPluginsFolder;
+    private static File serverControlPlugin;
+    private static File bznetworkPlugin;
     private static String accessLockMessage;
     
     public static HashMap<String, HttpSession> getSessionList()
@@ -276,6 +295,38 @@ public class BZNetworkServer implements ServletContextListener,
                     .buildSqlMapClient(new StringReader(generalDataConfig));
             storeFolder = new File(settingsProps.getProperty("store-folder"));
             cacheFolder = new File(settingsProps.getProperty("cache-folder"));
+            bansFolder = new File(storeFolder, "bans");
+            groupdbFolder = new File(storeFolder, "groupdb");
+            mapsFolder = new File(storeFolder, "maps");
+            configFolder = new File(storeFolder, "config");
+            bansFolder.mkdirs();
+            groupdbFolder.mkdirs();
+            mapsFolder.mkdirs();
+            configFolder.mkdirs();
+            /*
+             * The cache folder shouldn't have any files in it at system
+             * startup, and if it does, we need to delete them.
+             */
+            for (File f : cacheFolder.listFiles())
+            {
+                f.delete();
+            }
+            includedPluginsFolder = new File(context
+                    .getRealPath("/WEB-INF/bzfs-plugins"));
+            serverControlPlugin = new File(includedPluginsFolder,
+                    "serverControl.so");
+            bznetworkPlugin = new File(includedPluginsFolder,
+                    "libbz_iplugin_bznetwork.so");
+            if (!serverControlPlugin.exists())
+                throw new RuntimeException(
+                        "The server control plugin is supposed to exist at "
+                                + serverControlPlugin.getAbsolutePath()
+                                + ", but it doesn't. Please copy it to that location.");
+            if (!bznetworkPlugin.exists())
+                throw new RuntimeException(
+                        "The bznetwork plugin is supposed to exist at "
+                                + bznetworkPlugin.getAbsolutePath()
+                                + ", but it doesn't. Please copy it to that location.");
             /*
              * Now we'll load the authentication providers. We're just loading
              * the providers here, not the list of which ones are enabled, since
@@ -563,16 +614,167 @@ public class BZNetworkServer implements ServletContextListener,
      */
     public static String startServer(int id, boolean synchronous)
     {
+        LinkedBlockingQueue<String> readQueue = null;
         synchronized (BZNetworkServer.class)
         {
             Server server = DataStore.getServerById(id);
+            Group group = DataStore.getGroupById(server.getGroupid());
             if (server == null)
                 throw new IllegalArgumentException(
                         "There is no server with the id " + id);
+            if (group == null)
+                throw new IllegalStateException("Orphaned server");
             LiveServer liveServer = new LiveServer();
             liveServer.setId(server.getServerid());
+            /*
+             * Now we need to compile together this server's groupdb file and
+             * store it in the temp folder. This involves getting the server's
+             * groupdb file, checking to see if the server inherits its group's
+             * groupdb file, and, if so, getting the parent's groupdb file.
+             */
+            File serverGroupdb = new File(groupdbFolder, ""
+                    + server.getServerid());
+            String serverGroupdbContent = "";
+            if (serverGroupdb.exists())
+                serverGroupdbContent = StringUtils.readFile(serverGroupdb);
+            String groupGroupdbContent = "";
+            if (server.isInheritgroupdb())
+            {
+                File groupGroupdb = new File(groupdbFolder, ""
+                        + server.getGroupid());
+                if (groupGroupdb.exists())
+                    groupGroupdbContent = StringUtils.readFile(groupGroupdb);
+            }
+            String newGroupdbName = generateRandomName();
+            liveServer.addTempFile(newGroupdbName);
+            File newGroupdbFile = new File(cacheFolder, newGroupdbName);
+            StringUtils.writeFile(groupGroupdbContent
+                    + System.getProperty("line.separator")
+                    + serverGroupdbContent, newGroupdbFile);
+            /*
+             * The combined groupdb file has been written to a cache file. Now
+             * we'll go figure out which banfile we're supposed to use, and
+             * verify that it exists.
+             */
+            int banfileId = server.getBanfile();
+            if (banfileId == -1)
+                banfileId = group.getBanfile();
+            if (banfileId == -1)
+                throw new IllegalStateException(
+                        "Neither the group nor the server has specified "
+                                + "a banfile, so the server cannot start.");
+            Banfile banfile = DataStore.getBanfileById(banfileId);
+            if (banfile == null)
+                throw new IllegalStateException("The referenced banfile ("
+                        + banfileId + ") does not exist.");
+            File banfileFile = new File(bansFolder, "" + banfileId);
+            File mapFile = new File(mapsFolder, "" + server.getServerid());
+            if (!mapFile.exists())
+                throw new IllegalStateException(
+                        "This server doesn't yet have a map.");
+            File configFile = new File(configFolder, "" + server.getServerid());
+            if (!configFile.exists())
+                throw new IllegalStateException(
+                        "This server doesn't yet have a config.");
+            String serverControlConfigName = generateRandomName();
+            liveServer.addTempFile(serverControlConfigName);
+            File serverControlConfig = new File(cacheFolder,
+                    serverControlConfigName);
+            StringUtils.writeFile("[ServerControl]" + newline + "BanFile = "
+                    + banfileFile.getAbsolutePath() + newline
+                    + "BanReloadMessage = Bans Updated", serverControlConfig);
+            /*
+             * We now have the groupdb file, the banfile, and the world file.
+             * Now we can actually start the server.
+             */
+            Configuration config = DataStore.getConfiguration();
+            String executable = config.getExecutable();
+            Process process;
+            try
+            {
+                process = new ProcessBuilder(executable, "-world", mapFile
+                        .getAbsolutePath(), "-conf", configFile
+                        .getAbsolutePath(), "-groupdb", newGroupdbFile
+                        .getAbsolutePath(), "-banfile", banfileFile
+                        .getAbsolutePath(), "-loadplugin", serverControlPlugin
+                        .getAbsolutePath()
+                        + "," + serverControlConfig.getAbsolutePath(),
+                        "-loadplugin", bznetworkPlugin.getAbsolutePath())
+                        .start();
+            }
+            catch (Exception e)
+            {
+                throw new RuntimeException(
+                        "Exception occured while starting the bzfs executable",
+                        e);
+            }
+            /*
+             * The process is running. Now we add it to the live server,
+             * register the live server, and create a read thread.
+             */
+            liveServer.setProcess(process);
+            liveServers.put(liveServer.getId(), liveServer);
+            /*
+             * Before we add a read thread, we need to add the queue that will,
+             * if we're starting the server synchronously, wait for a response
+             * from the server.
+             */
+            readQueue = new LinkedBlockingQueue<String>(10);
+            liveServer.setLoadListenerQueue(readQueue);
+            /*
+             * Now we can start the read thread.
+             */
+            ReadThread readThread = new ReadThread(liveServer);
+            liveServer.setReadThread(readThread);
+            readThread.start();
+            /*
+             * If we started the server asynchronously, then we're done. If
+             * we're starting it synchronously, then we'll drop out of the
+             * synchronized block and wait for a response from the read queue.
+             */
+            if (!synchronous)
+                return null;
         }
-        return null;
+        /*
+         * If we get here, then we are starting the server synchronously, so
+         * we'll go ahead and wait on the read queue.
+         */
+        String response;
+        try
+        {
+            response = readQueue.poll(15, TimeUnit.SECONDS);
+        }
+        catch (InterruptedException e)
+        {
+            throw new RuntimeException(
+                    "Interrupted while waiting for a startup "
+                            + "response from the bzfs server");
+        }
+        if (response == null)
+        {
+            throw new ReadTimeoutException(
+                    "No response received from the server as to whether "
+                            + "or not it successfully started up within the "
+                            + "15 second timeout that BZNetwork waits for the response. "
+                            + "The server will continue to run, assuming it manages to start "
+                            + "up successfully.");
+        }
+        return response;
     }
     
+    private static final Random randomNumberGenerator = new Random();
+    
+    /**
+     * Generates a string of random characters that can be used as the name of a
+     * file.
+     * 
+     * @return
+     */
+    private static String generateRandomName()
+    {
+        return "" + Integer.toHexString(randomNumberGenerator.nextInt())
+                + Integer.toHexString(randomNumberGenerator.nextInt())
+                + Integer.toHexString(randomNumberGenerator.nextInt())
+                + Integer.toHexString(randomNumberGenerator.nextInt());
+    }
 }

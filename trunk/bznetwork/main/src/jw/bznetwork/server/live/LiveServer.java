@@ -1,5 +1,6 @@
 package jw.bznetwork.server.live;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Queue;
@@ -17,6 +18,18 @@ import jw.bznetwork.server.BZNetworkServer;
  */
 public class LiveServer
 {
+    private ReadThread readThread;
+    
+    public ReadThread getReadThread()
+    {
+        return readThread;
+    }
+    
+    public void setReadThread(ReadThread readThread)
+    {
+        this.readThread = readThread;
+    }
+    
     /**
      * The process that represents the actual bzfs program.
      */
@@ -25,6 +38,11 @@ public class LiveServer
      * This server's id, as stored in the servers database table
      */
     private int id;
+    /**
+     * The list of cache files associated with this server. These should be
+     * deleted when the server shuts down.
+     */
+    private ArrayList<String> tempFiles = new ArrayList<String>();
     /**
      * A queue that, if present, will be notified when either the bznetwork
      * server plugin successfully loads or the bznetwork plugin fails to load.
@@ -86,6 +104,16 @@ public class LiveServer
         return players;
     }
     
+    public ArrayList<String> getTempFiles()
+    {
+        return tempFiles;
+    }
+    
+    public void addTempFile(String file)
+    {
+        tempFiles.add(file);
+    }
+    
     /**
      * Called by the read thread to indicate that the read stream has been
      * closed, which currently only occurs when the server shuts down. This
@@ -105,6 +133,10 @@ public class LiveServer
             {
             }
             BZNetworkServer.getLiveServers().remove(id);
+            for (String file : tempFiles)
+            {
+                new File(BZNetworkServer.cacheFolder, file).delete();
+            }
         }
     }
 }
