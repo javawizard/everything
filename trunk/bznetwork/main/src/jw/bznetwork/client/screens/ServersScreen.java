@@ -66,7 +66,7 @@ public class ServersScreen extends VerticalScreen
     {
         widget.clear();
         FlexTable table = new FlexTable();
-        FlexCellFormatter format = format;
+        FlexCellFormatter format = table.getFlexCellFormatter();
         table.addStyleName("bznetwork-ServerListTable");
         table.setBorderWidth(0);
         table.setCellSpacing(1);
@@ -94,7 +94,7 @@ public class ServersScreen extends VerticalScreen
                     group.getBanfile(), true);
             if (!Perms.group("edit-group-banfile", group.getGroupid()))
                 banfileBox.setEnabled(false);
-            table.setWidget(row,2,banfileBox);
+            table.setWidget(row, 2, banfileBox);
         }
     }
     
@@ -117,8 +117,8 @@ public class ServersScreen extends VerticalScreen
      * @param group
      * @return
      */
-    private static ListBox generateBanfileBox(ServerListModel model,
-            final int itemid, int banfileid, final boolean group)
+    private ListBox generateBanfileBox(ServerListModel model, final int itemid,
+            int banfileid, final boolean group)
     {
         final ListBox box = new ListBox();
         box.addItem("", "-1");
@@ -147,8 +147,11 @@ public class ServersScreen extends VerticalScreen
                                 @Override
                                 public void run(Void result)
                                 {
-                                    // TODO Auto-generated method stub
-                                    
+                                }
+                                
+                                public void fail(Throwable caught)
+                                {
+                                    select();
                                 }
                             });
                 }
