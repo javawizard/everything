@@ -175,7 +175,7 @@
     <select id="getPermissionsByRole" 
          parameterClass="java.lang.Integer" 
          resultClass="jw.bznetwork.client.data.model.Permission" >
-        select p.roleid, p.permission, p.target, s.groupid as group, b.banfileid as banfile
+        select p.roleid, p.permission, p.target, s.groupid as `group`, b.banfileid as banfile
         from permissions p 
         left outer join servers s on s.serverid = p.target
         left outer join banfiles b on b.banfileid = p.target
