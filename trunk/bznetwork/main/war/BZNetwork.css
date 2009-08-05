@@ -84,3 +84,7 @@
 	border: 1px solid #BBBBBB;
 	border-spacing: 0px;
 }
+
+.bznetwork-ServerList-GroupName {
+	font-weight: bold
+}
