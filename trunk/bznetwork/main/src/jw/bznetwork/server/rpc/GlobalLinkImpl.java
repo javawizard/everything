@@ -402,16 +402,12 @@ public class GlobalLinkImpl extends RemoteServiceServlet implements GlobalLink
         HashMap<Integer, Banfile> banfileMap = new HashMap<Integer, Banfile>();
         for (Banfile banfile : banfiles)
             banfileMap.put(banfile.getBanfileid(), banfile);
+        model.getBanfileMap().putAll(banfileMap);
+        model.setBanfiles(banfiles);
         for (Group group : groups)
         {
             if (!Perms.group("view-in-group-list", group.getGroupid()))
                 continue;
-            if (Perms.group("edit-group-banfile", group.getGroupid())
-                    && model.getBanfiles() == null)
-            {
-                model.setBanfiles(banfiles);
-                model.getBanfileMap().putAll(banfileMap);
-            }
             GroupModel groupModel = new GroupModel();
             groupModel.setGroupid(group.getGroupid());
             groupModel.setName(group.getName());
@@ -422,12 +418,6 @@ public class GlobalLinkImpl extends RemoteServiceServlet implements GlobalLink
             {
                 if (!Perms.server("view-in-server-list", server))
                     continue;
-                if (Perms.server("edit-server-banfile", server)
-                        && model.getBanfiles() == null)
-                {
-                    model.setBanfiles(banfiles);
-                    model.getBanfileMap().putAll(banfileMap);
-                }
                 ServerModel serverModel = new ServerModel();
                 serverModel.setBanfile(server.getBanfile());
                 serverModel.setDirty(server.isDirty());
