@@ -22,12 +22,13 @@ Here is the list of available permissions and what they do. At the bottom of the
 || start-stop-server       || server  ||Allows the user to start, stop, and restart a server.||
 || create-server           || group   ||Allows the user to create a new server in a given group. They won't, however, be granted any permissions on the server, so it's recommended that people with create-server also receive other server-related permissions on the group that they have create-server on.||
 || delete-server           || group   ||Allows the user to delete servers within the group. This could technically be applied on a per-server level, but it seems somewhat pointless to do that, and there are some technical issues involved due to permission removal.||
-|| add-group-ipban         || group   ||Allows the user to add IP bans to a group banfile.||
-|| add-group-idban         || group   ||Same as add-group-ipban, but for BZID bans.||
-|| add-group-hostban       || group   ||Same as add-group-ipban, but for hostnames.||
-|| add-long-ban            || group   ||Allows the user to select a ban duration longer than 5 hours when adding bans. Users without this can only ban for up to 5 hours.||
-|| delete-group-ban        || group   ||Allows the user to delete bans from a group banfile.||
-|| delete-self-group-ban   || group   ||Allows the user to delete bans from a group banfile that they added themselves.||
+|| view-bans               || banfile ||Allows the user to view the banfile and its bans||
+|| add-ipban               || banfile ||Allows the user to add an ip ban to the banfile|
+|| add-idban               || banfile ||Allows the user to add an idban to the banfile||
+|| add-hostban             || banfile ||Allows the user to add a hostban to the banfile||
+|| add-long-ban            || banfile ||Allows the user to add bans longer than 5 hours||
+|| delete-ban              || banfile ||Allows the user to delete any ban from a banfile||
+|| delete-self-ban         || banfile ||Allows the user to delete their own bans from a banfile. Bans only store usernames as their source, so an internally-authenticated user with the same username as a callsign-authenticated user are treated as the same user.||
 || view-reports            || server  ||Allows the user to view reports made on a particular server.||
 || say                     || server  ||Allows the user to say something on the actual server. The message will appear as if coming from the server, but will be prefixed with the user's username plus a colon. The last character of the message must not be a close-parenthesis (with trailing whitespace removed), to prevent spoofing of the in-game /say command.||
 || hidden-say              || server  ||Allows the user to say something on the actual server. Unlike the say permission, the message can be anything (and it can end with a close-parenthesis), and it will not be prefixed. If the user has both say and hidden-say, there will be a dropdown box to allow them to choose which one to use, and it will, by default, be set to hidden-say.||
