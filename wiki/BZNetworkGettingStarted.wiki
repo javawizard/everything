@@ -1,3 +1,2 @@
-#summary A guide to help you get started with BZNetwork.
 #labels bznetwork
-Coming soon!
+Coming soon! Join #bztraining on irc.freenode.net for questions.
