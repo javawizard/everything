@@ -2,10 +2,10 @@
 This file documents all permissions in the BZNetwork interface.
 
 Permission levels are organized hierarchically like this:
-  * Global
-    * Group
-      * Server
-    * Banfile
+ * Global
+  * Group
+   * Server
+  * Banfile
 
 A permission of a certain level can be applied to any item of that level or any level above it in the hierarchy. For example, view-logs, which is a server level permission, could be applied to a group, which would grant access to the logs of any server within that group.
 
