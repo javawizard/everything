@@ -24,7 +24,7 @@ Here is the list of available permissions and what they do. At the bottom of the
 || delete-server           || group   ||Allows the user to delete servers within the group. This could technically be applied on a per-server level, but it seems somewhat pointless to do that, and there are some technical issues involved due to permission removal.||
 || manage-banfiles         || global  ||Allows the user to create and delete banfiles. This permission doesn't, however, grant the user any permissions to edit any banfiles.||
 || view-bans               || banfile ||Allows the user to view the banfile and its bans||
-|| add-ipban               || banfile ||Allows the user to add an ip ban to the banfile|
+|| add-ipban               || banfile ||Allows the user to add an ip ban to the banfile||
 || add-idban               || banfile ||Allows the user to add an idban to the banfile||
 || add-hostban             || banfile ||Allows the user to add a hostban to the banfile||
 || add-long-ban            || banfile ||Allows the user to add bans longer than 5 hours||
