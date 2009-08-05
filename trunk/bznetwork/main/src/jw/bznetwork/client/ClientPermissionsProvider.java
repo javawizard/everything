@@ -45,6 +45,17 @@ public class ClientPermissionsProvider implements PermissionsProvider
     }
     
     @Override
+    public boolean hasPermissionOnBanfile(String permission, int banfile)
+    {
+        if (user.getPermissions().contains(
+                new CheckPermission(permission, banfile)))
+            return true;
+        if (user.getPermissions().contains(new CheckPermission("all", banfile)))
+            return true;
+        return hasGlobalPermission(permission);
+    }
+    
+    @Override
     public boolean hasPermissionOnServer(String permission, int group,
             int server)
     {

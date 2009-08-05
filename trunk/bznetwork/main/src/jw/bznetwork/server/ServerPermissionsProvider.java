@@ -43,6 +43,12 @@ public class ServerPermissionsProvider implements PermissionsProvider
         {
             return false;
         }
+        
+        @Override
+        public boolean hasPermissionOnBanfile(String name, int id)
+        {
+            return false;
+        }
     };
     
     @Override
@@ -55,6 +61,12 @@ public class ServerPermissionsProvider implements PermissionsProvider
     public boolean hasPermissionOnGroup(String permission, int group)
     {
         return getUserProvider().hasPermissionOnGroup(permission, group);
+    }
+    
+    @Override
+    public boolean hasPermissionOnBanfile(String permission, int banfile)
+    {
+        return getUserProvider().hasPermissionOnBanfile(permission, banfile);
     }
     
     @Override
