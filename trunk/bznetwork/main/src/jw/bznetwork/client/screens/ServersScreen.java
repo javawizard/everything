@@ -1,5 +1,6 @@
 package jw.bznetwork.client.screens;
 
+import jw.bznetwork.client.BZNetwork;
 import jw.bznetwork.client.VerticalScreen;
 
 public class ServersScreen extends VerticalScreen
@@ -36,7 +37,7 @@ public class ServersScreen extends VerticalScreen
     @Override
     public void select()
     {
-        
+        BZNetwork.authLink.get
     }
     
 }

@@ -14,6 +14,8 @@ import jw.bznetwork.client.data.EditConfigurationModel;
 
 import jw.bznetwork.client.data.EditPermissionsModel;
 
+import jw.bznetwork.client.data.ServerListModel;
+
 import jw.bznetwork.client.data.UserSession;
 
 import jw.bznetwork.client.data.model.Banfile;
@@ -78,5 +80,21 @@ public void listBanfiles(AsyncCallback<Banfile[]> callback);
 public void addBanfile(String name, AsyncCallback<Void> callback);
 
 public void deleteBanfile(int id, AsyncCallback<Void> callback);
+
+/**
+* Gets the list of groups available to this user, and the list of servers
+* within each of those groups available to the user. This also includes
+* information about what users are connected to those servers, and other
+* information. It's essentially enough information to show the servers
+* page, complete with expanding each server to see the list of users and
+* other server info.
+* 
+* @return
+*/
+public void getServerListModel(AsyncCallback<ServerListModel> callback);
+
+public void addGroup(String name, AsyncCallback<Void> callback);
+
+public void setGroupBanfile(int group, int banfile, AsyncCallback<Void> callback);
 
 }
