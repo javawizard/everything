@@ -6,6 +6,15 @@ public class Group implements Serializable
 {
     private int groupid;
     private String name;
+    private int banfile;
+    public int getBanfile()
+    {
+        return banfile;
+    }
+    public void setBanfile(int banfile)
+    {
+        this.banfile = banfile;
+    }
     public int getGroupid()
     {
         return groupid;

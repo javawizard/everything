@@ -91,6 +91,7 @@ public class BanfilesScreen extends VerticalScreen
             table.setWidget(i, 1, deleteLink);
         }
         final TextBox nameField = new TextBox();
+        nameField.setVisibleLength(15);
         table.setWidget(result.length, 0, nameField);
         Button addButton = new Button("Add");
         table.setWidget(result.length, 1, addButton);
