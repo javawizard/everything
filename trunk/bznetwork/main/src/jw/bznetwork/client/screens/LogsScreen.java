@@ -22,7 +22,7 @@ public class LogsScreen extends VerticalScreen
         return "Logs";
     }
     
-    @Override
+    @Override 
     public void init()
     {
     }
