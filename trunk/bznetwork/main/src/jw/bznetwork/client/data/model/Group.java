@@ -19,6 +19,11 @@ public class Group implements Serializable
     {
         return groupid;
     }
+    public Group()
+    {
+        super();
+        // TODO Auto-generated constructor stub
+    }
     public void setGroupid(int groupid)
     {
         this.groupid = groupid;

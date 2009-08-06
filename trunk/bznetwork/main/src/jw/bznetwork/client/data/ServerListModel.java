@@ -3,6 +3,8 @@ package jw.bznetwork.client.data;
 import java.io.Serializable;
 import java.util.HashMap;
 
+import com.google.gwt.user.client.rpc.IsSerializable;
+
 import jw.bznetwork.client.data.model.Banfile;
 
 /**
@@ -10,7 +12,7 @@ import jw.bznetwork.client.data.model.Banfile;
  * @author Alexander Boyd
  * 
  */
-public class ServerListModel implements Serializable
+public class ServerListModel implements Serializable, IsSerializable
 {
     public GroupModel[] getGroups()
     {

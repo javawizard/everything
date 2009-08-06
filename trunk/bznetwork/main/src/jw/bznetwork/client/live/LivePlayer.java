@@ -1,7 +1,13 @@
 package jw.bznetwork.client.live;
 
-public class LivePlayer
+import java.io.Serializable;
+
+public class LivePlayer implements Serializable
 {
+    public LivePlayer()
+    {
+    }
+    
     private int id;
     private String ipaddress;
     private String callsign;

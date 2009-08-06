@@ -7,6 +7,11 @@ public class Server implements Serializable
     private int serverid;
     private int groupid;
     private String name;
+    
+    public Server()
+    {
+    }
+    
     private int port;
     private boolean listed;
     private boolean running;

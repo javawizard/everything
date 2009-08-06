@@ -3,8 +3,14 @@ package jw.bznetwork.client.screens;
 import com.google.gwt.dom.client.SelectElement;
 import com.google.gwt.event.dom.client.ChangeEvent;
 import com.google.gwt.event.dom.client.ChangeHandler;
+import com.google.gwt.event.dom.client.ClickEvent;
+import com.google.gwt.event.dom.client.ClickHandler;
+import com.google.gwt.user.client.Window;
+import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.FlexTable;
+import com.google.gwt.user.client.ui.HorizontalPanel;
 import com.google.gwt.user.client.ui.ListBox;
+import com.google.gwt.user.client.ui.TextBox;
 import com.google.gwt.user.client.ui.Widget;
 import com.google.gwt.user.client.ui.FlexTable.FlexCellFormatter;
 
@@ -96,6 +102,39 @@ public class ServersScreen extends VerticalScreen
                 banfileBox.setEnabled(false);
             table.setWidget(row, 2, banfileBox);
         }
+        row += 1;
+        HorizontalPanel groupAddPanel = new HorizontalPanel();
+        final TextBox addGroupNameField = new TextBox();
+        addGroupNameField.setVisibleLength(15);
+        groupAddPanel.add(addGroupNameField);
+        Button addGroupButton = new Button("Add Group");
+        groupAddPanel.add(addGroupButton);
+        table.setWidget(row, 0, groupAddPanel);
+        format.setColSpan(row, 0, 2);
+        addGroupButton.addClickHandler(new ClickHandler()
+        {
+            
+            @Override
+            public void onClick(ClickEvent event)
+            {
+                if (addGroupNameField.getText().trim().equals(""))
+                {
+                    Window.alert("You must type the group name before"
+                            + " you can create a new group.");
+                    return;
+                }
+                BZNetwork.authLink.addGroup(addGroupNameField.getText(),
+                        new BoxCallback<Void>()
+                        {
+                            
+                            @Override
+                            public void run(Void result)
+                            {
+                                select();
+                            }
+                        });
+            }
+        });
     }
     
     /**
