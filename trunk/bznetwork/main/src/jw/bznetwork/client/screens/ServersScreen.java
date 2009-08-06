@@ -9,6 +9,7 @@ import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.FlexTable;
 import com.google.gwt.user.client.ui.HorizontalPanel;
+import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.ListBox;
 import com.google.gwt.user.client.ui.TextBox;
 import com.google.gwt.user.client.ui.Widget;
@@ -98,9 +99,15 @@ public class ServersScreen extends VerticalScreen
             format.setColSpan(row, 0, 2);
             ListBox banfileBox = generateBanfileBox(result, group.getGroupid(),
                     group.getBanfile(), true);
-            if (!Perms.group("edit-group-banfile", group.getGroupid()))
-                banfileBox.setEnabled(false);
-            table.setWidget(row, 1, banfileBox);
+            if (Perms.group("edit-group-banfile", group.getGroupid()))
+            {
+                table.setWidget(row, 1, banfileBox);
+            }
+            else
+            {
+                table.setWidget(row, 1, new Label(banfileBox
+                        .getItemText(banfileBox.getSelectedIndex())));
+            }
         }
         row += 1;
         HorizontalPanel groupAddPanel = new HorizontalPanel();
