@@ -100,7 +100,7 @@ public class ServersScreen extends VerticalScreen
                     group.getBanfile(), true);
             if (!Perms.group("edit-group-banfile", group.getGroupid()))
                 banfileBox.setEnabled(false);
-            table.setWidget(row, 2, banfileBox);
+            table.setWidget(row, 1, banfileBox);
         }
         row += 1;
         HorizontalPanel groupAddPanel = new HorizontalPanel();
@@ -109,8 +109,11 @@ public class ServersScreen extends VerticalScreen
         groupAddPanel.add(addGroupNameField);
         Button addGroupButton = new Button("Add Group");
         groupAddPanel.add(addGroupButton);
-        table.setWidget(row, 0, groupAddPanel);
-        format.setColSpan(row, 0, 2);
+        if (Perms.global("add-group"))
+        {
+            table.setWidget(row, 0, groupAddPanel);
+            format.setColSpan(row, 0, 2);
+        }
         addGroupButton.addClickHandler(new ClickHandler()
         {
             
