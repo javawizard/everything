@@ -538,4 +538,19 @@ public class GlobalLinkImpl extends RemoteServiceServlet implements GlobalLink
         serverObject.setName(newName);
         DataStore.updateServer(serverObject);
     }
+    
+    @Override
+    public void updateServer(Server server)
+    {
+        Verify.server("edit-server-settings", server.getServerid(),
+                getServerGroupId(server.getServerid()));
+        Server dbServer = DataStore.getServerById(server.getServerid());
+        dbServer.setPort(server.getPort());
+        dbServer.setListed(server.isListed());
+        if (Perms.server("inherit-parent-groupdb", server.getServerid(),
+                getServerGroupId(server.getServerid())))
+            dbServer.setInheritgroupdb(server.isInheritgroupdb());
+        dbServer.setNotes(server.getNotes());
+        DataStore.updateServer(dbServer);
+    }
 }

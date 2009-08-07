@@ -53,7 +53,7 @@
     <select id="listServersByGroup" 
          parameterClass="java.lang.Integer" 
          resultClass="jw.bznetwork.client.data.model.Server" >
-        select * from servers where groupid = #value#
+        select * from servers where groupid = #value# order by port asc
     </select>
 
     <insert id="addBanfile" 
@@ -98,12 +98,12 @@
 
     <select id="listServers" 
          resultClass="jw.bznetwork.client.data.model.Server" >
-        select * from servers
+        select * from servers order by port asc
     </select>
 
     <select id="listGroups" 
          resultClass="jw.bznetwork.client.data.model.Group" >
-        select * from groups
+        select * from groups order by name asc
     </select>
 
     <select id="getServerById" 

@@ -14,6 +14,7 @@ import jw.bznetwork.client.data.model.Banfile;
 import jw.bznetwork.client.data.model.Configuration;
 import jw.bznetwork.client.data.model.Permission;
 import jw.bznetwork.client.data.model.Role;
+import jw.bznetwork.client.data.model.Server;
 
 import com.google.gwt.user.client.rpc.RemoteService;
 import com.google.gwt.user.client.rpc.RemoteServiceRelativePath;
@@ -90,4 +91,6 @@ public interface GlobalLink extends RemoteService
     public void renameServer(int server, String newName);
     
     public void renameGroup(int group, String newName);
+    
+    public void updateServer(Server server);
 }

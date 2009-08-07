@@ -26,6 +26,8 @@ import jw.bznetwork.client.data.model.Permission;
 
 import jw.bznetwork.client.data.model.Role;
 
+import jw.bznetwork.client.data.model.Server;
+
 import com.google.gwt.user.client.rpc.RemoteService;
 
 import com.google.gwt.user.client.rpc.RemoteServiceRelativePath;
@@ -104,5 +106,7 @@ public void setServerBanfile(int server, int banfile, AsyncCallback<Void> callba
 public void renameServer(int server, String newName, AsyncCallback<Void> callback);
 
 public void renameGroup(int group, String newName, AsyncCallback<Void> callback);
+
+public void updateServer(Server server, AsyncCallback<Void> callback);
 
 }

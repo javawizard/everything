@@ -20,6 +20,8 @@ import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.ListBox;
 import com.google.gwt.user.client.ui.Panel;
 import com.google.gwt.user.client.ui.PopupPanel;
+import com.google.gwt.user.client.ui.SimpleCheckBox;
+import com.google.gwt.user.client.ui.TextArea;
 import com.google.gwt.user.client.ui.TextBox;
 import com.google.gwt.user.client.ui.VerticalPanel;
 import com.google.gwt.user.client.ui.Widget;
@@ -35,6 +37,7 @@ import jw.bznetwork.client.data.ServerModel;
 import jw.bznetwork.client.data.ServerModel.LiveState;
 import jw.bznetwork.client.data.model.Banfile;
 import jw.bznetwork.client.data.model.Group;
+import jw.bznetwork.client.ui.Header3;
 
 public class ServersScreen extends VerticalScreen
 {
@@ -383,24 +386,97 @@ public class ServersScreen extends VerticalScreen
     }
     
     @SuppressWarnings("deprecation")
-    protected void showSettingsBox(GroupModel group, ServerModel server)
+    protected void showSettingsBox(GroupModel group, final ServerModel server)
     {
         final PopupPanel box = new PopupPanel(false, true);
         FlexTable table = new FlexTable();
         box.setWidget(table);
-        table.setText(0, 0, "Support for settings editing is coming soon.");
-        Button closeButton = new Button("Close");
-        table.setWidget(1, 0, closeButton);
-        closeButton.addClickListener(new ClickListener()
+        FlexCellFormatter format = table.getFlexCellFormatter();
+        Header3 header = new Header3("Settings for " + server.getName());
+        header.setWidth("100%");
+        table.setWidget(0, 0, header);
+        format.setColSpan(0, 0, 2);
+        table.setText(1, 0, "Port: ");
+        table.setText(2, 0, "Public: ");
+        table.setText(3, 0, "Inherit groupdb: ");
+        table.setText(4, 0, "Log level: ");
+        table.setText(5, 0, "Notes: ");
+        format.setVerticalAlignment(5, 0, VerticalPanel.ALIGN_TOP);
+        final TextBox portField = new TextBox();
+        portField.setText("" + server.getPort());
+        table.setWidget(1, 1, portField);
+        final SimpleCheckBox publicCheckbox = new SimpleCheckBox();
+        publicCheckbox.setChecked(server.isListed());
+        table.setWidget(2, 1, publicCheckbox);
+        final SimpleCheckBox inheritCheckbox = new SimpleCheckBox();
+        inheritCheckbox.setChecked(server.isInheritgroupdb());
+        inheritCheckbox.setEnabled(Perms.server("inherit-parent-groupdb",
+                server.getServerid(), server.getGroupid()));
+        table.setWidget(3, 1, inheritCheckbox);
+        table.setHTML(4, 1,
+                "<span style='color: #888888'>Not supported yet</span>");
+        final TextArea notesField = new TextArea();
+        notesField.setCharacterWidth(65);
+        notesField.setVisibleLines(7);
+        notesField.setText(server.getNotes());
+        table.setWidget(5, 1, notesField);
+        Button saveButton = new Button("Save");
+        Button cancelButton = new Button("Cancel");
+        HorizontalPanel buttonsPanel = new HorizontalPanel();
+        buttonsPanel.add(saveButton);
+        buttonsPanel.add(cancelButton);
+        table.setWidget(6, 1, buttonsPanel);
+        box.center();
+        cancelButton.addClickListener(new ClickListener()
         {
             
             @Override
             public void onClick(Widget sender)
             {
-                box.hide();
+                if (Window
+                        .confirm("Are you sure you want to discard your changes?"))
+                    box.hide();
             }
         });
-        box.center();
+        saveButton.addClickListener(new ClickListener()
+        {
+            
+            @Override
+            public void onClick(Widget sender)
+            {
+                int portNumber;
+                try
+                {
+                    portNumber = Integer.parseInt(portField.getText());
+                }
+                catch (Exception e)
+                {
+                    Window
+                            .alert("The value you typed for the server's port isn't a number.");
+                    return;
+                }
+                if (portNumber < 0 || portNumber > 65535)
+                {
+                    Window.alert("The port number must be greater or "
+                            + "equal to 0 and less than 65536.");
+                    return;
+                }
+                server.setPort(portNumber);
+                server.setListed(publicCheckbox.isChecked());
+                server.setInheritgroupdb(inheritCheckbox.isChecked());
+                server.setNotes(notesField.getText());
+                BZNetwork.authLink.updateServer(server, new BoxCallback<Void>()
+                {
+                    
+                    @Override
+                    public void run(Void result)
+                    {
+                        box.hide();
+                        select();
+                    }
+                });
+            }
+        });
     }
     
     /**
