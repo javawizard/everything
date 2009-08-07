@@ -6,15 +6,19 @@ import com.google.gwt.event.dom.client.ChangeHandler;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.user.client.Window;
+import com.google.gwt.user.client.ui.Anchor;
 import com.google.gwt.user.client.ui.Button;
+import com.google.gwt.user.client.ui.ClickListener;
 import com.google.gwt.user.client.ui.DisclosureEvent;
 import com.google.gwt.user.client.ui.DisclosureHandler;
 import com.google.gwt.user.client.ui.DisclosurePanel;
 import com.google.gwt.user.client.ui.FlexTable;
+import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.HTML;
 import com.google.gwt.user.client.ui.HorizontalPanel;
 import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.ListBox;
+import com.google.gwt.user.client.ui.PopupPanel;
 import com.google.gwt.user.client.ui.TextBox;
 import com.google.gwt.user.client.ui.VerticalPanel;
 import com.google.gwt.user.client.ui.Widget;
@@ -27,6 +31,7 @@ import jw.bznetwork.client.VerticalScreen;
 import jw.bznetwork.client.data.GroupModel;
 import jw.bznetwork.client.data.ServerListModel;
 import jw.bznetwork.client.data.ServerModel;
+import jw.bznetwork.client.data.ServerModel.LiveState;
 import jw.bznetwork.client.data.model.Banfile;
 import jw.bznetwork.client.data.model.Group;
 
@@ -129,7 +134,7 @@ public class ServersScreen extends VerticalScreen
                 DisclosurePanel serverDropdown = new DisclosurePanel(server
                         .getName());
                 final VerticalPanel serverInfoPanel = new VerticalPanel();
-                serverInfoPanel.setVisible(false); 
+                serverInfoPanel.setVisible(false);
                 // TODO: perhaps have the panel expanded if there are any
                 // non-observer players at the server
                 serverDropdown.addEventHandler(new DisclosureHandler()
@@ -162,6 +167,14 @@ public class ServersScreen extends VerticalScreen
                     table.setWidget(row, 2, new Label(serverBanfileBox
                             .getItemText(serverBanfileBox.getSelectedIndex())));
                 }
+                FlowPanel linksPanel = new FlowPanel();
+                table.setWidget(row, 4, linksPanel);
+                /*
+                 * Now we'll add some links for this server. Links right now are
+                 * pretty much rename, settings, groupdb, map, upload, conf, and
+                 * start/stop/kill.
+                 */
+                createServerLinks(group, server, linksPanel);
                 /*
                  * We've added the actual server's row. Now we'll add a row to
                  * hold the server info widget. This widget is shown when the
@@ -253,6 +266,129 @@ public class ServersScreen extends VerticalScreen
                         });
             }
         });
+    }
+    
+    @SuppressWarnings("deprecation")
+    private void createServerLinks(final GroupModel group,
+            final ServerModel server, FlowPanel linksPanel)
+    {
+        Anchor renameLink = new Anchor("rename");
+        if (Perms.server("edit-server-settings", server))
+            linksPanel.add(renameLink);
+        renameLink.addClickListener(new ClickListener()
+        {
+            
+            @Override
+            public void onClick(Widget sender)
+            {
+                String newName = Window.prompt(
+                        "Type a new name for this server.", server.getName());
+                if (newName == null)
+                    return;
+                BZNetwork.authLink.renameServer(server.getServerid(), newName,
+                        new BoxCallback<Void>()
+                        {
+                            
+                            @Override
+                            public void run(Void result)
+                            {
+                                /*
+                                 * TODO: change this to simply update the
+                                 * server's label instead of causing the entire
+                                 * page to reload.
+                                 */
+                                select();
+                            }
+                        });
+            }
+        });
+        Anchor settingsLink = new Anchor("settings");
+        if (Perms.server("edit-server-settings", server))
+            linksPanel.add(settingsLink);
+        settingsLink.addClickListener(new ClickListener()
+        {
+            
+            @Override
+            public void onClick(Widget sender)
+            {
+                showSettingsBox(group, server);
+            }
+        });
+        Anchor groupdbLink = new Anchor("groupdb");
+        if (Perms.server("edit-groupdb", server))
+            linksPanel.add(groupdbLink);
+        Anchor mapLink = new Anchor("map");
+        /*
+         * The only permission the map link is dependent on is
+         * view-in-server-list, so we don't have to perform any checks here.
+         */
+        linksPanel.add(mapLink);
+        Anchor uploadLink = new Anchor("upload");
+        uploadLink.setTitle("Allows you to upload a new map for this "
+                + "server. The new map will take effect when the "
+                + "server is restarted.");
+        if (Perms.server("edit-map", server))
+            linksPanel.add(uploadLink);
+        Anchor confLink = new Anchor("conf");
+        confLink
+                .setTitle("Allows you to edit this server's BZFlag configuration file.");
+        if (Perms.server("edit-server-settings", server))
+            linksPanel.add(confLink);
+        if (Perms.server("start-stop-server", server))
+        {
+            /*
+             * Now we'll add the start/stop/kill link. Which of these it is
+             * depends on the server's state. If the server is starting up or
+             * shutting down, then this should be kill. If the server is
+             * running, then this should be stop. If the server is not rnning,
+             * then this should be start.
+             */
+            if (server.getState() == LiveState.LIVE)
+            {
+                /*
+                 * We need a stop link.
+                 */
+                Anchor stopLink = new Anchor("stop");
+                linksPanel.add(stopLink);
+            }
+            else if (server.getState() == LiveState.STOPPED)
+            {
+                /*
+                 * We need a start link.
+                 */
+                Anchor startLink = new Anchor("start");
+                linksPanel.add(startLink);
+            }
+            else
+            {
+                /*
+                 * We need a kill link.
+                 */
+                Anchor killLink = new Anchor("kill");
+                linksPanel.add(killLink);
+            }
+        }
+    }
+    
+    @SuppressWarnings("deprecation")
+    protected void showSettingsBox(GroupModel group, ServerModel server)
+    {
+        final PopupPanel box = new PopupPanel(false, true);
+        FlexTable table = new FlexTable();
+        box.setWidget(table);
+        table.setText(0, 0, "Support for settings editing is coming soon.");
+        Button closeButton = new Button("Close");
+        table.setWidget(1, 0, closeButton);
+        closeButton.addClickListener(new ClickListener()
+        {
+            
+            @Override
+            public void onClick(Widget sender)
+            {
+                box.hide();
+            }
+        });
+        box.center();
     }
     
     /**

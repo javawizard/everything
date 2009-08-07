@@ -86,4 +86,8 @@ public interface GlobalLink extends RemoteService
     public void addServer(String name, int group);
     
     public void setServerBanfile(int server, int banfile);
+    
+    public void renameServer(int server, String newName);
+    
+    public void renameGroup(int group, String newName);
 }
