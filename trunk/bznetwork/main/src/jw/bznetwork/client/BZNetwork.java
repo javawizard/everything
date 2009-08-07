@@ -264,7 +264,7 @@ public class BZNetwork implements EntryPoint
         {
             Button b = new Button(p.getText().replace("{site-name}",
                     publicConfiguration.getSitename()));
-            b.addStyleName("plainbutton");
+            b.setStylePrimaryName("bznetwork-None");
             b.setWidth("250px");
             b.addClickListener(new ClickListener()
             {
