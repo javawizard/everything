@@ -94,11 +94,13 @@
 	color: #008800
 }
 
-.bznetwork-ServerState-STARTING .header td {
+.bznetwork-ServerState-STARTING .header,.bznetwork-ServerState-STARTING .header a,.bznetwork-ServerState-STARTING .header td
+	{
 	color: #004488
 }
 
-.bznetwork-ServerState-STOPPING .header td {
+.bznetwork-ServerState-STOPPING .header,.bznetwork-ServerState-STOPPING .header a,.bznetwork-ServerState-STOPPING .header td
+	{
 	color: #888800
 }
 
