@@ -27,6 +27,7 @@ import jw.bznetwork.client.data.GroupedServer;
 import jw.bznetwork.client.data.ServerListModel;
 import jw.bznetwork.client.data.ServerModel;
 import jw.bznetwork.client.data.UserSession;
+import jw.bznetwork.client.data.ServerModel.LiveState;
 import jw.bznetwork.client.data.model.Authgroup;
 import jw.bznetwork.client.data.model.Banfile;
 import jw.bznetwork.client.data.model.Configuration;
@@ -433,11 +434,25 @@ public class GlobalLinkImpl extends RemoteServiceServlet implements GlobalLink
                         server.getServerid());
                 if (liveServer == null)
                 {
-                    serverModel.setLive(false);
+                    serverModel.setState(LiveState.STOPPED);
                 }
                 else
                 {
-                    serverModel.setLive(true);
+                    if (liveServer.isChangingState())
+                    {
+                        if (liveServer.isStarting())
+                        {
+                            serverModel.setState(LiveState.STARTING);
+                        }
+                        else
+                        {
+                            serverModel.setState(LiveState.STOPPING);
+                        }
+                    }
+                    else
+                    {
+                        serverModel.setState(LiveState.LIVE);
+                    }
                     serverModel.setPlayers(liveServer.getPlayers().toArray(
                             new LivePlayer[0]));
                 }

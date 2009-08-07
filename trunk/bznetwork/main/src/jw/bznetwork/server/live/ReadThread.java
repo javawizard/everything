@@ -115,6 +115,8 @@ public class ReadThread extends Thread
     {
         if (server.getLoadListenerQueue() != null)
             server.getLoadListenerQueue().offer("bznload");
+        server.setChangingState(false);
+        server.setStarting(false);
     }
     
     private void processBznUnload()

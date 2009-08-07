@@ -625,6 +625,8 @@ public class BZNetworkServer implements ServletContextListener,
             if (group == null)
                 throw new IllegalStateException("Orphaned server");
             LiveServer liveServer = new LiveServer();
+            liveServer.setChangingState(true);
+            liveServer.setStarting(true);
             liveServer.setId(server.getServerid());
             /*
              * Now we need to compile together this server's groupdb file and
@@ -728,6 +730,7 @@ public class BZNetworkServer implements ServletContextListener,
              * register the live server, and create a read thread.
              */
             liveServer.setProcess(process);
+            liveServer.setOut(process.getOutputStream());
             liveServers.put(liveServer.getId(), liveServer);
             /*
              * Before we add a read thread, we need to add the queue that will,

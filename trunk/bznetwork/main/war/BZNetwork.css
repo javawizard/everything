@@ -88,3 +88,19 @@
 .bznetwork-ServerList-GroupName {
 	font-weight: bold
 }
+
+.bznetwork-ServerStateLive {
+	color: #008800
+}
+
+.bznetwork-ServerStateStarting {
+	color: #004488
+}
+
+.bznetwork-ServerStateStopping {
+	color:#888800
+}
+
+.bznetwork-ServerStateStopped {
+	color:#880000
+}

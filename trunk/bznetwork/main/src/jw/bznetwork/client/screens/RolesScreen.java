@@ -270,6 +270,7 @@ public class RolesScreen extends VerticalScreen
                 {
                     Window
                             .alert("You can't apply that permission to a target of that level.");
+                    return;
                 }
                 BZNetwork.authLink.addPermission(roleid, permission, target,
                         new BoxCallback<Void>()

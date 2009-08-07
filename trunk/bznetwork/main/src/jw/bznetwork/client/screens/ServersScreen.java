@@ -19,7 +19,9 @@ import jw.bznetwork.client.BZNetwork;
 import jw.bznetwork.client.BoxCallback;
 import jw.bznetwork.client.Perms;
 import jw.bznetwork.client.VerticalScreen;
+import jw.bznetwork.client.data.GroupModel;
 import jw.bznetwork.client.data.ServerListModel;
+import jw.bznetwork.client.data.ServerModel;
 import jw.bznetwork.client.data.model.Banfile;
 import jw.bznetwork.client.data.model.Group;
 
@@ -91,7 +93,7 @@ public class ServersScreen extends VerticalScreen
         table.setHTML(1, 0, "<hr width='100%'/>");
         format.setColSpan(1, 0, 6);
         int row = 1;
-        for (Group group : result.getGroups())
+        for (GroupModel group : result.getGroups())
         {
             row += 1;
             table.setText(row, 0, group.getName());
@@ -108,6 +110,33 @@ public class ServersScreen extends VerticalScreen
                 table.setWidget(row, 1, new Label(banfileBox
                         .getItemText(banfileBox.getSelectedIndex())));
             }
+            /*
+             * We've added the group's widgets. Now we'll iterate over the
+             * group's servers and add their details.
+             */
+            for (ServerModel server : group.getServers())
+            {
+                row += 1;
+                table.setText(row, 0, "" + server.getPort());
+                format.setHorizontalAlignment(row, 0,
+                        HorizontalPanel.ALIGN_RIGHT);
+            }
+            /*
+             * All of the servers under this group have now been added to the
+             * table. Now we'll add controls to allow the user to add a new
+             * server to the group.
+             */
+            row += 1;
+            HorizontalPanel serverAddPanel = new HorizontalPanel();
+            final TextBox addServerNameField = new TextBox();
+            addServerNameField.setVisibleLength(15);
+            serverAddPanel.add(addServerNameField);
+            Button addServerButton = new Button("Add Server");
+            serverAddPanel.add(addServerButton);
+            if (Perms.group("create-server", group.getGroupid()))
+            {
+                table.setWidget(row, 1, serverAddPanel);
+            }
         }
         row += 1;
         HorizontalPanel groupAddPanel = new HorizontalPanel();
@@ -116,7 +145,7 @@ public class ServersScreen extends VerticalScreen
         groupAddPanel.add(addGroupNameField);
         Button addGroupButton = new Button("Add Group");
         groupAddPanel.add(addGroupButton);
-        if (Perms.global("add-group"))
+        if (Perms.global("create-group"))
         {
             table.setWidget(row, 0, groupAddPanel);
             format.setColSpan(row, 0, 2);

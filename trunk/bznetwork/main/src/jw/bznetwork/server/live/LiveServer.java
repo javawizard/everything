@@ -1,6 +1,8 @@
 package jw.bznetwork.server.live;
 
 import java.io.File;
+import java.io.IOException;
+import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Queue;
@@ -19,6 +21,44 @@ import jw.bznetwork.server.BZNetworkServer;
  */
 public class LiveServer
 {
+    /**
+     * True if a state change has been requested of the server but the server
+     * has not followed it yet, false if no such change has been requested.
+     */
+    private boolean changingState;
+    private boolean starting;
+    private OutputStream out;
+    
+    public OutputStream getOut()
+    {
+        return out;
+    }
+    
+    public void setOut(OutputStream out)
+    {
+        this.out = out;
+    }
+    
+    public boolean isStarting()
+    {
+        return starting;
+    }
+    
+    public void setStarting(boolean starting)
+    {
+        this.starting = starting;
+    }
+    
+    public boolean isChangingState()
+    {
+        return changingState;
+    }
+    
+    public void setChangingState(boolean changingState)
+    {
+        this.changingState = changingState;
+    }
+    
     private ReadThread readThread;
     
     public ReadThread getReadThread()
@@ -139,5 +179,46 @@ public class LiveServer
                 new File(BZNetworkServer.cacheFolder, file).delete();
             }
         }
+    }
+    
+    /**
+     * Requests that this server be shut down. The plugin will be sent a message
+     * telling it to shut down the server.
+     */
+    public void requestShutdown()
+    {
+        setChangingState(true);
+        send("shutdown");
+    }
+    
+    /**
+     * Sends the specified text to the plugin as a command.
+     * 
+     * @param string
+     */
+    public void send(String string)
+    {
+        if (string.contains("\r") || string.contains("\n"))
+            throw new IllegalArgumentException(
+                    "Can't send a carriage return or a newline to a server");
+        try
+        {
+            out.write((string + BZNetworkServer.newline).getBytes());
+        }
+        catch (IOException e)
+        {
+            e.printStackTrace();
+            throw new RuntimeException(e);
+        }
+    }
+    
+    /**
+     * Forces this server to shut down. This can be used when requestShutdown is
+     * not working properly. This method destroys the server process without
+     * allowing the server to perform any cleanup.
+     */
+    public void forceShutdown()
+    {
+        process.destroy();
     }
 }

@@ -48,7 +48,9 @@ import com.google.gwt.user.client.ui.VerticalPanel;
 import com.google.gwt.user.client.ui.Widget;
 
 /**
- * Entry point classes define <code>onModuleLoad()</code>.
+ * This is the main client-side class. It is the class that is run when the user
+ * loads BZNetwork in their browser. Specifically, the {@link #onModuleLoad()}
+ * is the method that is called.
  */
 public class BZNetwork implements EntryPoint
 {
@@ -58,7 +60,8 @@ public class BZNetwork implements EntryPoint
      */
     public static final String SERVER_ERROR = "An error occurred while "
             + "attempting to contact the server. Please check your network "
-            + "connection and try again.";
+            + "connection and try again.\nFailing that, join "
+            + "#bztraining on irc.freenode.net and ask jcp for help.";
     
     public static final GlobalLinkAsync authLink = GWT.create(GlobalLink.class);
     public static final GlobalUnauthLinkAsync unauthLink = GWT
@@ -79,7 +82,9 @@ public class BZNetwork implements EntryPoint
     private Screen[] defaultScreens;
     
     /**
-     * This is the entry point method.
+     * This is where everything starts. When BZNetwork loads in the client's
+     * browser, this is the method that is called. It's basically the same in
+     * purpose as C++'s "int main()".
      */
     public void onModuleLoad()
     {
