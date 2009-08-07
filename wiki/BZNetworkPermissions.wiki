@@ -21,7 +21,7 @@ Here is the list of available permissions and what they do. At the bottom of the
 || cross-reference-user    || global  ||Allows the user to cross-reference users. This shows them the list of ip address that the user has signed on, and allows them to look up an ip address and see the users that have signed on from it.||
 || edit-map                || server  ||Allows the user to manage the map of a server.||
 || edit-groupdb            || server  ||Allows the user to edit the group db of a server.||
-|| inherit-parent-groupdb  || server  ||Allows the user to select whether a server also inherits its group's groupdb.||
+|| inherit-parent-groupdb  || server  ||Allows the user to select whether a server also inherits its group's groupdb. This requires edit-server-settings to work.||
 || edit-group-groupdb      || group   ||Allows the user to edit a particular group's groupdb.||
 || edit-server-settings    || server  ||Allows the user to edit general settings about the server.||
 || manage-callsign-auth    || global  ||Allows the user to manage the mapping of a particular bzflag authentication group with the role that applies to it, and the mapping of a particular bzflag callsign with the role that applies to it (in addition to any roles applied by the callsign's groups).||
