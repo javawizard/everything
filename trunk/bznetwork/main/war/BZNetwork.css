@@ -89,18 +89,22 @@
 	font-weight: bold
 }
 
-.bznetwork-ServerStateLive {
+.bznetwork-ServerState-LIVE {
 	color: #008800
 }
 
-.bznetwork-ServerStateStarting {
+.bznetwork-ServerState-STARTING {
 	color: #004488
 }
 
-.bznetwork-ServerStateStopping {
-	color:#888800
+.bznetwork-ServerState-STOPPING {
+	color: #888800
 }
 
-.bznetwork-ServerStateStopped {
-	color:#880000
+.bznetwork-ServerState-STOPPED {
+	color: #880000
+}
+
+.bznetwork-indented {
+	padding-left: 16px
 }

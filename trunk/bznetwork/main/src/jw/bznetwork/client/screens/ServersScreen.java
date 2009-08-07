@@ -7,11 +7,16 @@ import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.Button;
+import com.google.gwt.user.client.ui.DisclosureEvent;
+import com.google.gwt.user.client.ui.DisclosureHandler;
+import com.google.gwt.user.client.ui.DisclosurePanel;
 import com.google.gwt.user.client.ui.FlexTable;
+import com.google.gwt.user.client.ui.HTML;
 import com.google.gwt.user.client.ui.HorizontalPanel;
 import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.ListBox;
 import com.google.gwt.user.client.ui.TextBox;
+import com.google.gwt.user.client.ui.VerticalPanel;
 import com.google.gwt.user.client.ui.Widget;
 import com.google.gwt.user.client.ui.FlexTable.FlexCellFormatter;
 
@@ -71,6 +76,7 @@ public class ServersScreen extends VerticalScreen
                 });
     }
     
+    @SuppressWarnings("deprecation")
     protected void select1(ServerListModel result)
     {
         widget.clear();
@@ -120,6 +126,46 @@ public class ServersScreen extends VerticalScreen
                 table.setText(row, 0, "" + server.getPort());
                 format.setHorizontalAlignment(row, 0,
                         HorizontalPanel.ALIGN_RIGHT);
+                DisclosurePanel serverDropdown = new DisclosurePanel(server
+                        .getName());
+                final VerticalPanel serverInfoPanel = new VerticalPanel();
+                serverInfoPanel.setVisible(false);
+                // TODO: perhaps have the panel expanded if there are any
+                // non-observer players at the server
+                serverDropdown.addEventHandler(new DisclosureHandler()
+                {
+                    
+                    @Override
+                    public void onClose(DisclosureEvent event)
+                    {
+                        serverInfoPanel.setVisible(false);
+                    }
+                    
+                    @Override
+                    public void onOpen(DisclosureEvent event)
+                    {
+                        serverInfoPanel.setVisible(true);
+                    }
+                });
+                table.setWidget(row, 1, serverDropdown);
+                serverDropdown.addStyleName("bznetwork-ServerState-"
+                        + server.getState().name());
+                ListBox serverBanfileBox = generateBanfileBox(result, server
+                        .getServerid(), server.getBanfile(), false);
+                if (Perms.server("edit-server-banfile", server.getServerid(),
+                        group.getGroupid()))
+                {
+                    table.setWidget(row, 2, serverBanfileBox);
+                }
+                else
+                {
+                    table.setWidget(row, 2, new Label(serverBanfileBox
+                            .getItemText(serverBanfileBox.getSelectedIndex())));
+                }
+                row += 1;
+                serverInfoPanel.add(new HTML("<b>Users:</b>"));
+                table.setWidget(row, 1, serverInfoPanel);
+                format.setColSpan(row, 1, 5);
             }
             /*
              * All of the servers under this group have now been added to the
