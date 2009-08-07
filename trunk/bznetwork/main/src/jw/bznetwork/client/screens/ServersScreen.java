@@ -129,7 +129,7 @@ public class ServersScreen extends VerticalScreen
                 DisclosurePanel serverDropdown = new DisclosurePanel(server
                         .getName());
                 final VerticalPanel serverInfoPanel = new VerticalPanel();
-                serverInfoPanel.setVisible(false);
+                serverInfoPanel.setVisible(false); 
                 // TODO: perhaps have the panel expanded if there are any
                 // non-observer players at the server
                 serverDropdown.addEventHandler(new DisclosureHandler()
