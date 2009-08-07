@@ -274,7 +274,10 @@ public class ServersScreen extends VerticalScreen
     {
         Anchor renameLink = new Anchor("rename");
         if (Perms.server("edit-server-settings", server))
+        {
             linksPanel.add(renameLink);
+            linksPanel.add(new HTML("&nbsp;&nbps;"));
+        }
         renameLink.addClickListener(new ClickListener()
         {
             
@@ -304,7 +307,10 @@ public class ServersScreen extends VerticalScreen
         });
         Anchor settingsLink = new Anchor("settings");
         if (Perms.server("edit-server-settings", server))
+        {
             linksPanel.add(settingsLink);
+            linksPanel.add(new HTML("&nbsp;&nbps;"));
+        }
         settingsLink.addClickListener(new ClickListener()
         {
             
@@ -316,24 +322,34 @@ public class ServersScreen extends VerticalScreen
         });
         Anchor groupdbLink = new Anchor("groupdb");
         if (Perms.server("edit-groupdb", server))
+        {
             linksPanel.add(groupdbLink);
+            linksPanel.add(new HTML("&nbsp;&nbps;"));
+        }
         Anchor mapLink = new Anchor("map");
         /*
          * The only permission the map link is dependent on is
          * view-in-server-list, so we don't have to perform any checks here.
          */
         linksPanel.add(mapLink);
+        linksPanel.add(new HTML("&nbsp;&nbps;"));
         Anchor uploadLink = new Anchor("upload");
         uploadLink.setTitle("Allows you to upload a new map for this "
                 + "server. The new map will take effect when the "
                 + "server is restarted.");
         if (Perms.server("edit-map", server))
+        {
             linksPanel.add(uploadLink);
+            linksPanel.add(new HTML("&nbsp;&nbps;"));
+        }
         Anchor confLink = new Anchor("conf");
         confLink
                 .setTitle("Allows you to edit this server's BZFlag configuration file.");
         if (Perms.server("edit-server-settings", server))
+        {
             linksPanel.add(confLink);
+            linksPanel.add(new HTML("&nbsp;&nbps;"));
+        }
         if (Perms.server("start-stop-server", server))
         {
             /*
@@ -367,6 +383,7 @@ public class ServersScreen extends VerticalScreen
                 Anchor killLink = new Anchor("kill");
                 linksPanel.add(killLink);
             }
+            linksPanel.add(new HTML("&nbsp;&nbps;"));
         }
     }
     
