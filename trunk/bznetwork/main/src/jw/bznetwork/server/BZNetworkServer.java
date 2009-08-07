@@ -549,9 +549,9 @@ public class BZNetworkServer implements ServletContextListener,
             e.printStackTrace();
             writeConfigWorked = false;
         }
-        lockAccess("You need to restart your server to "
+        String installedLockMessage = "You need to restart your server to "
                 + "complete the installation. Then log in with username"
-                + " 'admin' and password 'admin' to use " + "BZNetwork.");
+                + " 'admin' and password 'admin' to use " + "BZNetwork.";
         if (writeConfigWorked)
         {
             String possibleRestartMessage = "V";
@@ -559,21 +559,26 @@ public class BZNetworkServer implements ServletContextListener,
             {
                 load();
             }
-            catch(Exception e)
+            catch (Exception e)
             {
                 e.printStackTrace();
                 possibleRestartMessage = "Restart the web server, then v";
+                lockAccess(installedLockMessage);
             }
             return new InstallResponse(
                     null,
                     "<html><body><b>Congratulations.</b> BZNetwork has been successfully "
-                            + "installed. " + possibleRestartMessage + "isit <a href='"
+                            + "installed. "
+                            + possibleRestartMessage
+                            + "isit <a href='"
                             + request.getContextPath()
                             + "/'>your BZNetwork installation</a> to begin using it. "
                             + "<b>Use the username</b> <tt>admin</tt> and the password "
                             + "<tt>admin</tt> to log in.</body></html>", false);
         }
         else
+        {
+            lockAccess(installedLockMessage);
             return new InstallResponse(
                     null,
                     "<html><body><b>BZNetwork is almost installed.</b> The "
@@ -589,7 +594,7 @@ public class BZNetworkServer implements ServletContextListener,
                             + "/'>your BZNetwork installation</a> to begin using it. "
                             + "<b>Use the username</b> <tt>admin</tt> and the password "
                             + "<tt>admin</tt> to log in.</body></html>", false);
-        
+        }
     }
     
     public static void lockAccess(String message)
