@@ -324,7 +324,7 @@ public class ServersScreen extends VerticalScreen
         if (Perms.server("edit-groupdb", server))
         {
             linksPanel.add(groupdbLink);
-            linksPanel.add(new HTML("&nbsp;&nbps;"));
+            linksPanel.add(new HTML("&nbsp;"));
         }
         Anchor mapLink = new Anchor("map");
         /*
