@@ -3,7 +3,7 @@
 <module rename-to='bznetwork'>
 	 <inherits name='com.google.gwt.user.User' />
 	 <inherits name="com.google.gwt.http.HTTP" />
-	 <inherits name='com.google.gwt.user.theme.standard.Standard' />
+	 <inherits name='com.google.gwt.user.theme.standard.StandardResources' />
 	 <inherits name='org.cobogw.gwt.user.User' />
 <!-- <inherits name='com.google.gwt.user.theme.chrome.Chrome'/>         -->
 <!-- <inherits name='com.google.gwt.user.theme.dark.Dark'/>             -->
