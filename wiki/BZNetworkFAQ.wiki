@@ -1,0 +1,14 @@
+#labels bznetwork
+<h1>BZNetwork Frequently Asked Questions</h1>
+This is a list of questions that you might run into while using BZNetwork. If you have a question that isn't on the list, join #bztraining on irc.freenode.net and ask jcp.
+
+The questions are organized by the page that they are relevant to. Pages are the links that appear in the left navigation bar in BZNetwork, or in the menu accessed by clicking the <b>Menu</b> link in the upper-right corner, depending on what the BZNetwork server administrator has set their preferences to be.
+
+<wiki:toc max_depth="3"/>
+
+==Servers==
+===In the banfiles column, sometimes there's a dropdown box, sometimes the dropdown box is disabled, and sometimes it's just text. What's the difference between these?===
+Which of these three states the banfile appears as depends on what permissions you have and whether or not the server is running. If you don't have permission to edit that server's banfile, then the banfile appears as just text. If you do have permission to edit the banfile, but the server is currently running, then the banfile appears as a disabled dropdown box. If you have permission to edit the banfile, and the server is not currently running, then the banfile appears as a normal dropdown box.
+
+===Sometimes the color of a server's name is red, sometimes it's yellow, sometimes it's green, and sometimes it's blue. What do all these colors mean?===
+If the server's name is red, the server is not currently running. If the server's name is green, then the server is running. If the server's name is yellow, then a server shutdown has been requested but the server has not shut down yet. If the server's name is blue, the server has been started but the BZNetwork plugin has not yet reported that the server has finished initializing.
