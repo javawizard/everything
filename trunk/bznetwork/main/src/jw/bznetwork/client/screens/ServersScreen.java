@@ -18,6 +18,7 @@ import com.google.gwt.user.client.ui.HTML;
 import com.google.gwt.user.client.ui.HorizontalPanel;
 import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.ListBox;
+import com.google.gwt.user.client.ui.Panel;
 import com.google.gwt.user.client.ui.PopupPanel;
 import com.google.gwt.user.client.ui.TextBox;
 import com.google.gwt.user.client.ui.VerticalPanel;
@@ -167,7 +168,8 @@ public class ServersScreen extends VerticalScreen
                     table.setWidget(row, 2, new Label(serverBanfileBox
                             .getItemText(serverBanfileBox.getSelectedIndex())));
                 }
-                FlowPanel linksPanel = new FlowPanel();
+                HorizontalPanel linksPanel = new HorizontalPanel();
+                linksPanel.setSpacing(4);
                 table.setWidget(row, 4, linksPanel);
                 /*
                  * Now we'll add some links for this server. Links right now are
@@ -270,13 +272,12 @@ public class ServersScreen extends VerticalScreen
     
     @SuppressWarnings("deprecation")
     private void createServerLinks(final GroupModel group,
-            final ServerModel server, FlowPanel linksPanel)
+            final ServerModel server, Panel linksPanel)
     {
         Anchor renameLink = new Anchor("rename");
         if (Perms.server("edit-server-settings", server))
         {
             linksPanel.add(renameLink);
-            linksPanel.add(new HTML("&nbsp;&nbps;"));
         }
         renameLink.addClickListener(new ClickListener()
         {
@@ -309,7 +310,6 @@ public class ServersScreen extends VerticalScreen
         if (Perms.server("edit-server-settings", server))
         {
             linksPanel.add(settingsLink);
-            linksPanel.add(new HTML("&nbsp;&nbps;"));
         }
         settingsLink.addClickListener(new ClickListener()
         {
@@ -324,7 +324,6 @@ public class ServersScreen extends VerticalScreen
         if (Perms.server("edit-groupdb", server))
         {
             linksPanel.add(groupdbLink);
-            linksPanel.add(new HTML("&nbsp;"));
         }
         Anchor mapLink = new Anchor("map");
         /*
@@ -332,7 +331,6 @@ public class ServersScreen extends VerticalScreen
          * view-in-server-list, so we don't have to perform any checks here.
          */
         linksPanel.add(mapLink);
-        linksPanel.add(new HTML("&nbsp;&nbps;"));
         Anchor uploadLink = new Anchor("upload");
         uploadLink.setTitle("Allows you to upload a new map for this "
                 + "server. The new map will take effect when the "
@@ -340,7 +338,6 @@ public class ServersScreen extends VerticalScreen
         if (Perms.server("edit-map", server))
         {
             linksPanel.add(uploadLink);
-            linksPanel.add(new HTML("&nbsp;&nbps;"));
         }
         Anchor confLink = new Anchor("conf");
         confLink
@@ -348,7 +345,6 @@ public class ServersScreen extends VerticalScreen
         if (Perms.server("edit-server-settings", server))
         {
             linksPanel.add(confLink);
-            linksPanel.add(new HTML("&nbsp;&nbps;"));
         }
         if (Perms.server("start-stop-server", server))
         {
@@ -383,7 +379,6 @@ public class ServersScreen extends VerticalScreen
                 Anchor killLink = new Anchor("kill");
                 linksPanel.add(killLink);
             }
-            linksPanel.add(new HTML("&nbsp;&nbps;"));
         }
     }
     
