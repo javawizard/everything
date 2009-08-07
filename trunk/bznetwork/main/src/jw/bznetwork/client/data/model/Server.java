@@ -18,6 +18,18 @@ public class Server implements Serializable
     private boolean dirty;
     private String notes;
     private boolean inheritgroupdb;
+    private int loglevel;
+    
+    public int getLoglevel()
+    {
+        return loglevel;
+    }
+    
+    public void setLoglevel(int loglevel)
+    {
+        this.loglevel = loglevel;
+    }
+    
     private int banfile;
     
     public int getBanfile()

@@ -624,6 +624,8 @@ public class BZNetworkServer implements ServletContextListener,
                         "There is no server with the id " + id);
             if (group == null)
                 throw new IllegalStateException("Orphaned server");
+            if(server.getPort() == 0 || server.getPort() == -1)
+                throw new IllegalStateException("The port for this server hasn't been set yet.");
             LiveServer liveServer = new LiveServer();
             liveServer.setChangingState(true);
             liveServer.setStarting(true);

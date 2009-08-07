@@ -485,4 +485,33 @@ public class GlobalLinkImpl extends RemoteServiceServlet implements GlobalLink
         DataStore.updateGroup(groupObject);
     }
     
+    @Override
+    public void addServer(String name, int group)
+    {
+        Verify.group("create-server", group);
+        Server server = new Server();
+        server.setBanfile(-1);
+        server.setDirty(false);
+        server.setGroupid(group);
+        server.setInheritgroupdb(false);
+        server.setListed(false);
+        server.setLoglevel(0);
+        server.setName(name);
+        server.setNotes("");
+        server.setPort(0);
+        server.setRunning(false);
+        server.setServerid(DataStore.createId());
+        DataStore.addServer(server);
+    }
+    
+    @Override
+    public void setServerBanfile(int server, int banfile)
+    {
+        Server serverObject = DataStore.getServerById(server);
+        int groupid = (serverObject == null ? -1 : serverObject.getGroupid());
+        Verify.server("edit-server-banfile", server, groupid);
+        serverObject.setBanfile(banfile);
+        DataStore.updateServer(serverObject);
+    }
+    
 }

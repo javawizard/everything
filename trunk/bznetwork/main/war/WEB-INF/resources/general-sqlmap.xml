@@ -8,6 +8,34 @@
 
 	<!-- !ADDTOSQL -->
 
+    <update id="updateServer" 
+         parameterClass="jw.bznetwork.client.data.model.Server" >
+        update servers set
+        name = #name#,
+        port = #port#,
+        groupid=#groupid#,
+        listed=#listed#,
+        running=#running#,
+        dirty=#dirty#,
+        notes=#notes#,
+        inheritgroupdb=#inheritgroupdb#,
+        loglevel=#loglevel#,
+        banfile=#banfile#
+        
+        where serverid=#serverid#
+    </update>
+
+    <insert id="addServer" 
+         parameterClass="jw.bznetwork.client.data.model.Server" >
+        insert into servers
+        (serverid,name,port,groupid,listed,running,dirty,notes,
+        inheritgroupdb,loglevel,banfile)
+        values
+        (#serverid#,#name#,#port#,#groupid#,#listed#,
+        #running#,#dirty#,#notes#,#inheritgroupdb#,
+        #loglevel#,#banfile#)
+    </insert>
+
     <update id="updateGroup" 
          parameterClass="jw.bznetwork.client.data.model.Group" >
         update groups set

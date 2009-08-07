@@ -50,10 +50,58 @@ public class DataStore
     }
     
     // !ADDTOSQL
-
-public static synchronized void updateGroup(Group v){try{getGdbClient().update("updateGroup",v);}catch(Exception e){throw new RuntimeException("Exception in database statement updateGroup",e);}}
-
-public static synchronized void addGroup(Group v){try{getGdbClient().insert("addGroup",v);}catch(Exception e){throw new RuntimeException("Exception in database statement addGroup",e);}}
+    
+    public static synchronized void updateServer(Server v)
+    {
+        try
+        {
+            getGdbClient().update("updateServer", v);
+        }
+        catch (Exception e)
+        {
+            throw new RuntimeException(
+                    "Exception in database statement updateServer", e);
+        }
+    }
+    
+    public static synchronized void addServer(Server v)
+    {
+        try
+        {
+            getGdbClient().insert("addServer", v);
+        }
+        catch (Exception e)
+        {
+            throw new RuntimeException(
+                    "Exception in database statement addServer", e);
+        }
+    }
+    
+    public static synchronized void updateGroup(Group v)
+    {
+        try
+        {
+            getGdbClient().update("updateGroup", v);
+        }
+        catch (Exception e)
+        {
+            throw new RuntimeException(
+                    "Exception in database statement updateGroup", e);
+        }
+    }
+    
+    public static synchronized void addGroup(Group v)
+    {
+        try
+        {
+            getGdbClient().insert("addGroup", v);
+        }
+        catch (Exception e)
+        {
+            throw new RuntimeException(
+                    "Exception in database statement addGroup", e);
+        }
+    }
     
     public static synchronized Server[] listServersByGroup(Integer v)
     {

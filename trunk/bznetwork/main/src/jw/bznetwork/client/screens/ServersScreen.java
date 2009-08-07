@@ -99,7 +99,7 @@ public class ServersScreen extends VerticalScreen
         table.setHTML(1, 0, "<hr width='100%'/>");
         format.setColSpan(1, 0, 6);
         int row = 1;
-        for (GroupModel group : result.getGroups())
+        for (final GroupModel group : result.getGroups())
         {
             row += 1;
             table.setText(row, 0, group.getName());
@@ -162,6 +162,12 @@ public class ServersScreen extends VerticalScreen
                     table.setWidget(row, 2, new Label(serverBanfileBox
                             .getItemText(serverBanfileBox.getSelectedIndex())));
                 }
+                /*
+                 * We've added the actual server's row. Now we'll add a row to
+                 * hold the server info widget. This widget is shown when the
+                 * user clicks on the server's name, and contains stuff like the
+                 * users that are at the server.
+                 */
                 row += 1;
                 serverInfoPanel.add(new HTML("<b>Users:</b>"));
                 table.setWidget(row, 1, serverInfoPanel);
@@ -183,6 +189,33 @@ public class ServersScreen extends VerticalScreen
             {
                 table.setWidget(row, 1, serverAddPanel);
             }
+            /*
+             * Now for the listener that actually adds servers to the group.
+             */
+            addServerButton.addClickHandler(new ClickHandler()
+            {
+                
+                @Override
+                public void onClick(ClickEvent event)
+                {
+                    if (addServerNameField.getText().trim().equals(""))
+                    {
+                        Window.alert("You must type the server name before"
+                                + " you can create a new server.");
+                        return;
+                    }
+                    BZNetwork.authLink.addServer(addServerNameField.getText(),
+                            group.getGroupid(), new BoxCallback<Void>()
+                            {
+                                
+                                @Override
+                                public void run(Void result)
+                                {
+                                    select();
+                                }
+                            });
+                }
+            });
         }
         row += 1;
         HorizontalPanel groupAddPanel = new HorizontalPanel();
@@ -260,30 +293,30 @@ public class ServersScreen extends VerticalScreen
             @Override
             public void onChange(ChangeEvent event)
             {
+                BoxCallback<Void> callback = new BoxCallback<Void>()
+                {
+                    
+                    @Override
+                    public void run(Void result)
+                    {
+                    }
+                    
+                    public void fail(Throwable caught)
+                    {
+                        select();
+                    }
+                };
                 if (group)
                 {
                     BZNetwork.authLink.setGroupBanfile(itemid, Integer
                             .parseInt(getOptionValue(box, box
-                                    .getSelectedIndex())),
-                            new BoxCallback<Void>()
-                            {
-                                
-                                @Override
-                                public void run(Void result)
-                                {
-                                }
-                                
-                                public void fail(Throwable caught)
-                                {
-                                    select();
-                                }
-                            });
+                                    .getSelectedIndex())), callback);
                 }
                 else
                 {
-                    // FIXME: implement this for servers
-                    throw new RuntimeException(
-                            "Updating a banfile for a server is not implemented");
+                    BZNetwork.authLink.setServerBanfile(itemid, Integer
+                            .parseInt(getOptionValue(box, box
+                                    .getSelectedIndex())), callback);
                 }
             }
         });
