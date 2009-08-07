@@ -258,9 +258,14 @@ public class BZNetworkServer implements ServletContextListener,
     
     public void contextInitialized(ServletContextEvent sce)
     {
+        context = sce.getServletContext();
+        load();
+    }
+    
+    public static void load()
+    {
         try
         {
-            context = sce.getServletContext();
             File configFolder = new File(context.getRealPath("/WEB-INF/config"));
             if (!configFolder.exists())
             {
@@ -272,8 +277,9 @@ public class BZNetworkServer implements ServletContextListener,
             Properties settingsProps = new Properties();
             settingsProps.load(new FileInputStream(new File(configFolder,
                     "settings.props")));
-            String generalDataConfig = StringUtils.readStream(getClass()
-                    .getResourceAsStream("/general-sql.xml"));
+            String generalDataConfig = StringUtils
+                    .readStream(BZNetworkServer.class
+                            .getResourceAsStream("/general-sql.xml"));
             generalDataConfig = generalDataConfig.replace("$$driver$$",
                     settingsProps.getProperty("db-driver"));
             generalDataConfig = generalDataConfig.replace("$$url$$",
@@ -547,14 +553,26 @@ public class BZNetworkServer implements ServletContextListener,
                 + "complete the installation. Then log in with username"
                 + " 'admin' and password 'admin' to use " + "BZNetwork.");
         if (writeConfigWorked)
+        {
+            String possibleRestartMessage = "V";
+            try
+            {
+                load();
+            }
+            catch(Exception e)
+            {
+                e.printStackTrace();
+                possibleRestartMessage = "Restart the web server, then v";
+            }
             return new InstallResponse(
                     null,
                     "<html><body><b>Congratulations.</b> BZNetwork has been successfully "
-                            + "installed. Restart the web server, then visit <a href='"
+                            + "installed. " + possibleRestartMessage + "isit <a href='"
                             + request.getContextPath()
                             + "/'>your BZNetwork installation</a> to begin using it. "
                             + "<b>Use the username</b> <tt>admin</tt> and the password "
                             + "<tt>admin</tt> to log in.</body></html>", false);
+        }
         else
             return new InstallResponse(
                     null,
@@ -624,8 +642,9 @@ public class BZNetworkServer implements ServletContextListener,
                         "There is no server with the id " + id);
             if (group == null)
                 throw new IllegalStateException("Orphaned server");
-            if(server.getPort() == 0 || server.getPort() == -1)
-                throw new IllegalStateException("The port for this server hasn't been set yet.");
+            if (server.getPort() == 0 || server.getPort() == -1)
+                throw new IllegalStateException(
+                        "The port for this server hasn't been set yet.");
             LiveServer liveServer = new LiveServer();
             liveServer.setChangingState(true);
             liveServer.setStarting(true);

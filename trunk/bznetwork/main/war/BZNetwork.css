@@ -89,19 +89,21 @@
 	font-weight: bold
 }
 
-.bznetwork-ServerState-LIVE a.header td {
+.bznetwork-ServerState-LIVE .header,.bznetwork-ServerState-LIVE .header a,.bznetwork-ServerState-LIVE .header td
+	{
 	color: #008800
 }
 
-.bznetwork-ServerState-STARTING a.header td {
+.bznetwork-ServerState-STARTING .header td {
 	color: #004488
 }
 
-.bznetwork-ServerState-STOPPING a.header td {
+.bznetwork-ServerState-STOPPING .header td {
 	color: #888800
 }
 
-.bznetwork-ServerState-STOPPED a.header td {
+.bznetwork-ServerState-STOPPED .header,.bznetwork-ServerState-STOPPED .header a,.bznetwork-ServerState-STOPPED .header td
+	{
 	color: #880000
 }
 
