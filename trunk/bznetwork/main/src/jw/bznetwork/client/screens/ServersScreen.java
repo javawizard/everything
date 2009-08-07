@@ -126,9 +126,8 @@ public class ServersScreen extends VerticalScreen
                 table.setText(row, 0, "" + server.getPort());
                 format.setHorizontalAlignment(row, 0,
                         HorizontalPanel.ALIGN_RIGHT);
-                Label serverNameLabel = new Label(server.getName());
-                DisclosurePanel serverDropdown = new DisclosurePanel(
-                        serverNameLabel);
+                DisclosurePanel serverDropdown = new DisclosurePanel(server
+                        .getName());
                 final VerticalPanel serverInfoPanel = new VerticalPanel();
                 serverInfoPanel.setVisible(false);
                 // TODO: perhaps have the panel expanded if there are any
@@ -149,7 +148,7 @@ public class ServersScreen extends VerticalScreen
                     }
                 });
                 table.setWidget(row, 1, serverDropdown);
-                serverNameLabel.addStyleName("bznetwork-ServerState-"
+                serverDropdown.addStyleName("bznetwork-ServerState-"
                         + server.getState().name());
                 ListBox serverBanfileBox = generateBanfileBox(result, server
                         .getServerid(), server.getBanfile(), false);
