@@ -442,6 +442,7 @@ public class ServersScreen extends VerticalScreen
                             super.addStyleName(style);
                     }
                 });
+        uploader.setServletPath(BZNetwork.CONTEXT_URL + "/upload-map");
         uploader.setOnFinishHandler(new ValueChangeHandler<IUploader>()
         {
             

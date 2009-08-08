@@ -32,7 +32,7 @@
 	</servlet>
 	<servlet-mapping>
 		<servlet-name>mapUploadServlet</servlet-name>
-		<url-pattern>*.gwtupmap</url-pattern>
+		<url-pattern>/upload-map</url-pattern>
 	</servlet-mapping>
 	<listener>
 		<listener-class> jw.bznetwork.server.BZNetworkServer </listener-class>
