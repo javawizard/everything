@@ -6,6 +6,10 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.Vector;
 
+import javax.servlet.ServletException;
+import javax.servlet.ServletRequest;
+import javax.servlet.ServletResponse;
+
 import jw.bznetwork.client.Perms;
 import jw.bznetwork.server.rpc.GlobalLinkImpl;
 import jw.bznetwork.utils.StringUtils;
@@ -56,6 +60,14 @@ public class MapUploadServlet extends UploadAction
         out.close();
         in.close();
         return null;
+    }
+
+    @Override
+    public void service(ServletRequest req, ServletResponse res)
+            throws ServletException, IOException
+    {
+        System.out.println("Servicing upload request");
+        super.service(req, res);
     }
     
 }

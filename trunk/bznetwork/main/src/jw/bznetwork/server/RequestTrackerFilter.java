@@ -38,6 +38,7 @@ public class RequestTrackerFilter implements Filter
             return;
         }
         String url = req.getRequestURI();
+        System.out.println("servicing request for url " + url);
         if (url.contains(".cache.") || url.contains("/images/default/shared/")
                 || url.contains("/gwt/standard/images/")
                 || url.contains("ext-all.css") || url.contains("standard.css")
