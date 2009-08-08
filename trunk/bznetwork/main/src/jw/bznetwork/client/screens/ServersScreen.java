@@ -1,10 +1,18 @@
 package jw.bznetwork.client.screens;
 
-import java.net.URLEncoder;
-
 import gwtupload.client.BasicModalProgress;
 import gwtupload.client.IUploader;
 import gwtupload.client.SingleUploader;
+import jw.bznetwork.client.BZNetwork;
+import jw.bznetwork.client.BoxCallback;
+import jw.bznetwork.client.Perms;
+import jw.bznetwork.client.VerticalScreen;
+import jw.bznetwork.client.data.GroupModel;
+import jw.bznetwork.client.data.ServerListModel;
+import jw.bznetwork.client.data.ServerModel;
+import jw.bznetwork.client.data.ServerModel.LiveState;
+import jw.bznetwork.client.data.model.Banfile;
+import jw.bznetwork.client.ui.Header3;
 
 import com.google.gwt.dom.client.SelectElement;
 import com.google.gwt.event.dom.client.ChangeEvent;
@@ -22,7 +30,6 @@ import com.google.gwt.user.client.ui.DisclosureEvent;
 import com.google.gwt.user.client.ui.DisclosureHandler;
 import com.google.gwt.user.client.ui.DisclosurePanel;
 import com.google.gwt.user.client.ui.FlexTable;
-import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.HTML;
 import com.google.gwt.user.client.ui.HorizontalPanel;
 import com.google.gwt.user.client.ui.Label;
@@ -35,18 +42,6 @@ import com.google.gwt.user.client.ui.TextBox;
 import com.google.gwt.user.client.ui.VerticalPanel;
 import com.google.gwt.user.client.ui.Widget;
 import com.google.gwt.user.client.ui.FlexTable.FlexCellFormatter;
-
-import jw.bznetwork.client.BZNetwork;
-import jw.bznetwork.client.BoxCallback;
-import jw.bznetwork.client.Perms;
-import jw.bznetwork.client.VerticalScreen;
-import jw.bznetwork.client.data.GroupModel;
-import jw.bznetwork.client.data.ServerListModel;
-import jw.bznetwork.client.data.ServerModel;
-import jw.bznetwork.client.data.ServerModel.LiveState;
-import jw.bznetwork.client.data.model.Banfile;
-import jw.bznetwork.client.data.model.Group;
-import jw.bznetwork.client.ui.Header3;
 
 public class ServersScreen extends VerticalScreen
 {
