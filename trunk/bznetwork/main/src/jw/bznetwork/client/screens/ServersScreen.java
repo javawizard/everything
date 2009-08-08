@@ -481,7 +481,7 @@ public class ServersScreen extends VerticalScreen
         FlexTable table = new FlexTable();
         box.setWidget(table);
         FlexCellFormatter format = table.getFlexCellFormatter();
-        Header3 header = new Header3("Settings for " + server.getName());
+        Header3 header = new Header3("Settings for " + server.getName(), true);
         header.setWidth("100%");
         table.setWidget(0, 0, header);
         format.setColSpan(0, 0, 2);

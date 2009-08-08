@@ -58,12 +58,14 @@
 .bznetwork-Header2 {
 	font-weight: bold;
 	font-size: 20px;
-	text-align: center;
 }
 
 .bznetwork-Header3 {
 	font-weight: bold;
 	font-size: 16px;
+}
+
+.bznetwork-centered {
 	text-align: center;
 }
 
