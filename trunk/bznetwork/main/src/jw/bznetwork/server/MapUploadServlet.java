@@ -29,6 +29,7 @@ public class MapUploadServlet extends UploadAction
             return "You don't have permission to upload a new map "
                     + "for this server.";
         File mapFile = BZNetworkServer.getMapFile(serverid);
+        System.out.println("Map file: " + mapFile);
         InputStream in = null;
         for (FileItem file : sessionFiles)
         {
