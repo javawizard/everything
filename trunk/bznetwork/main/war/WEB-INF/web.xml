@@ -26,6 +26,14 @@
 		<servlet-name>unauthLink</servlet-name>
 		<url-pattern>/bznetwork/unauth-link</url-pattern>
 	</servlet-mapping>
+	<servlet>
+		<servlet-name>mapUploadServlet</servlet-name>
+		<servlet-class>jw.bznetwork.server.MapUploadServlet</servlet-class>
+	</servlet>
+	<servlet-mapping>
+		<servlet-name>mapUploadServlet</servlet-name>
+		<url-pattern>*.gwtupmap</url-pattern>
+	</servlet-mapping>
 	<listener>
 		<listener-class> jw.bznetwork.server.BZNetworkServer </listener-class>
 	</listener>

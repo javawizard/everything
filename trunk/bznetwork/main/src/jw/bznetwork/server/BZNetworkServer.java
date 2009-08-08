@@ -696,7 +696,7 @@ public class BZNetworkServer implements ServletContextListener,
                 throw new IllegalStateException("The referenced banfile ("
                         + banfileId + ") does not exist.");
             File banfileFile = new File(bansFolder, "" + banfileId);
-            File mapFile = new File(mapsFolder, "" + server.getServerid());
+            File mapFile = getMapFile(server.getServerid());
             if (!mapFile.exists())
                 throw new IllegalStateException(
                         "This server doesn't yet have a map.");
@@ -804,6 +804,11 @@ public class BZNetworkServer implements ServletContextListener,
                             + "up successfully.");
         }
         return response;
+    }
+    
+    public static File getMapFile(int serverid)
+    {
+        return new File(mapsFolder, "" + serverid);
     }
     
     private static final Random randomNumberGenerator = new Random();

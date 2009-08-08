@@ -10,8 +10,9 @@ import java.io.InputStream;
 import java.io.OutputStream;
 
 /**
- * A class of utilities related to strings. Released under the terms of the GNU
- * Lesser General Public License.
+ * A class of utilities related to strings. Originally written by Alexander Boyd
+ * for the OpenGroove project (www.opengroove.org). Released under the terms of
+ * the GNU Lesser General Public License.
  * 
  * @author Alexander Boyd
  * 
@@ -39,7 +40,7 @@ public class StringUtils
     }
     
     public static <T> String delimited(T[] items, ToString<T> generator,
-        String delimiter)
+            String delimiter)
     {
         StringBuilder sb = new StringBuilder();
         for (int i = 0; i < items.length; i++)
@@ -82,9 +83,9 @@ public class StringUtils
         {
             if (file.length() > (5 * 1000 * 1000))
                 throw new RuntimeException(
-                    "the file is "
-                        + file.length()
-                        + " bytes. that is too large. it can't be larger than 5000000 bytes.");
+                        "the file is "
+                                + file.length()
+                                + " bytes. that is too large. it can't be larger than 5000000 bytes.");
             ByteArrayOutputStream baos = new ByteArrayOutputStream();
             FileInputStream fis = new FileInputStream(file);
             copy(fis, baos);
@@ -111,8 +112,8 @@ public class StringUtils
     {
         try
         {
-            ByteArrayInputStream bais =
-                new ByteArrayInputStream(string.getBytes("UTF-8"));
+            ByteArrayInputStream bais = new ByteArrayInputStream(string
+                    .getBytes("UTF-8"));
             FileOutputStream fos = new FileOutputStream(file);
             copy(bais, fos);
             bais.close();
@@ -161,7 +162,8 @@ public class StringUtils
      * @throws IOException
      *             if an I/O error occurs
      */
-    public static void copy(InputStream in, OutputStream out) throws IOException
+    public static void copy(InputStream in, OutputStream out)
+            throws IOException
     {
         byte[] buffer = new byte[8192];
         int amount;
@@ -184,8 +186,8 @@ public class StringUtils
     public static byte[] exactLength(byte[] bytes, int length)
     {
         byte[] newBytes = new byte[length];
-        System
-            .arraycopy(bytes, 0, newBytes, 0, Math.min(bytes.length, newBytes.length));
+        System.arraycopy(bytes, 0, newBytes, 0, Math.min(bytes.length,
+                newBytes.length));
         return newBytes;
     }
     

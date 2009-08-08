@@ -523,7 +523,7 @@ public class GlobalLinkImpl extends RemoteServiceServlet implements GlobalLink
         DataStore.updateGroup(groupObject);
     }
     
-    private static int getServerGroupId(int server)
+    public static int getServerGroupId(int server)
     {
         Server serverObject = DataStore.getServerById(server);
         int groupid = (serverObject == null ? -1 : serverObject.getGroupid());

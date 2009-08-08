@@ -1,10 +1,19 @@
 package jw.bznetwork.client.screens;
 
+import java.net.URLEncoder;
+
+import gwtupload.client.BasicModalProgress;
+import gwtupload.client.IUploader;
+import gwtupload.client.SingleUploader;
+
 import com.google.gwt.dom.client.SelectElement;
 import com.google.gwt.event.dom.client.ChangeEvent;
 import com.google.gwt.event.dom.client.ChangeHandler;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
+import com.google.gwt.event.logical.shared.ValueChangeEvent;
+import com.google.gwt.event.logical.shared.ValueChangeHandler;
+import com.google.gwt.http.client.URL;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.Anchor;
 import com.google.gwt.user.client.ui.Button;
@@ -334,6 +343,17 @@ public class ServersScreen extends VerticalScreen
          * view-in-server-list, so we don't have to perform any checks here.
          */
         linksPanel.add(mapLink);
+        mapLink.addClickListener(new ClickListener()
+        {
+            
+            @Override
+            public void onClick(Widget sender)
+            {
+                Window.open(BZNetwork.CONTEXT_URL + "/download-map/"
+                        + server.getServerid() + "/"
+                        + URL.encode(server.getName()) + ".bzw", "_blank", "");
+            }
+        });
         Anchor uploadLink = new Anchor("upload");
         uploadLink.setTitle("Allows you to upload a new map for this "
                 + "server. The new map will take effect when the "
@@ -342,6 +362,15 @@ public class ServersScreen extends VerticalScreen
         {
             linksPanel.add(uploadLink);
         }
+        uploadLink.addClickListener(new ClickListener()
+        {
+            
+            @Override
+            public void onClick(Widget sender)
+            {
+                showUploadBox(group, server);
+            }
+        });
         Anchor confLink = new Anchor("conf");
         confLink
                 .setTitle("Allows you to edit this server's BZFlag configuration file.");
@@ -383,6 +412,70 @@ public class ServersScreen extends VerticalScreen
                 linksPanel.add(killLink);
             }
         }
+    }
+    
+    @SuppressWarnings("deprecation")
+    protected void showUploadBox(GroupModel group, ServerModel server)
+    {
+        final PopupPanel box = new PopupPanel(false, true);
+        FlexTable table = new FlexTable();
+        FlexCellFormatter format = table.getFlexCellFormatter();
+        box.setWidget(table);
+        table.setWidget(0, 0, new Header3("Upload new map for "
+                + server.getName()));
+        /*
+         * Now we'll create the uploader. We're creating an anonymous subclass
+         * of Button here so that we can override the addStyleName method to
+         * prevent the "changed" style from being set by the SingleUploader. It
+         * sets this style when the user selects a file, to highlight the button
+         * in red to remind the user that they still have to click it to start
+         * the upload. I don't, however, like this, so I'm filtering it out.
+         */
+        SingleUploader uploader = new SingleUploader(new BasicModalProgress(),
+                new Button("Upload")
+                {
+                    
+                    @Override
+                    public void addStyleName(String style)
+                    {
+                        if (!style.equals("changed"))
+                            super.addStyleName(style);
+                    }
+                });
+        uploader.setOnFinishHandler(new ValueChangeHandler<IUploader>()
+        {
+            
+            @Override
+            public void onValueChange(ValueChangeEvent<IUploader> event)
+            {
+                Window.alert("The map has been successfully uploaded.");
+                box.hide();
+            }
+        });
+        HorizontalPanel panel = new HorizontalPanel();
+        panel.add(uploader);
+        final Button cancelButton = new Button("Cancel");
+        panel.add(cancelButton);
+        uploader.setOnStartHandler(new ValueChangeHandler<IUploader>()
+        {
+            
+            @Override
+            public void onValueChange(ValueChangeEvent<IUploader> event)
+            {
+                cancelButton.setEnabled(false);
+            }
+        });
+        cancelButton.addClickListener(new ClickListener()
+        {
+            
+            @Override
+            public void onClick(Widget sender)
+            {
+                box.hide();
+            }
+        });
+        table.setWidget(1, 0, panel);
+        box.center();
     }
     
     @SuppressWarnings("deprecation")
