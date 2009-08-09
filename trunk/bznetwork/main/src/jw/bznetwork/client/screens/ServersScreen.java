@@ -438,7 +438,6 @@ public class ServersScreen extends VerticalScreen
                     }
                 });
         uploader.setServletPath("upload.gwtupmap");
-        uploader.set
         uploader.setOnFinishHandler(new ValueChangeHandler<IUploader>()
         {
             

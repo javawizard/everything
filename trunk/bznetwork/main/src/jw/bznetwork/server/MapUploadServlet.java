@@ -9,65 +9,39 @@ import java.util.Vector;
 import javax.servlet.ServletException;
 import javax.servlet.ServletRequest;
 import javax.servlet.ServletResponse;
+import javax.servlet.http.HttpServlet;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
 
 import jw.bznetwork.client.Perms;
+import jw.bznetwork.client.data.UploadStatus;
 import jw.bznetwork.server.rpc.GlobalLinkImpl;
 import jw.bznetwork.utils.StringUtils;
 
 import org.apache.commons.fileupload.FileItem;
+import org.apache.commons.fileupload.ProgressListener;
+import org.apache.commons.fileupload.disk.DiskFileItemFactory;
+import org.apache.commons.fileupload.servlet.ServletFileUpload;
 
 import gwtupload.server.UploadAction;
 
-public class MapUploadServlet extends UploadAction
+public class MapUploadServlet extends HttpServlet
 {
     
     private static final int MAX_MAP_SIZE = 1024 * 1024 * 15;
     
     @Override
-    public String doAction(Vector<FileItem> sessionFiles) throws IOException
-    {
-        String serveridString = getFormField(sessionFiles, "serverid");
-        int serverid = Integer.parseInt(serveridString);
-        int groupid = GlobalLinkImpl.getServerGroupId(serverid);
-        if (!Perms.server("edit-map", serverid, groupid))
-            return "You don't have permission to upload a new map "
-                    + "for this server.";
-        File mapFile = BZNetworkServer.getMapFile(serverid);
-        System.out.println("Map file: " + mapFile);
-        InputStream in = null;
-        for (FileItem file : sessionFiles)
-        {
-            if (!file.isFormField())
-            {
-                in = file.getInputStream();
-                if (file.getSize() > MAX_MAP_SIZE)
-                {
-                    return "That map file is too large. Map files cannot be larger than "
-                            + MAX_MAP_SIZE
-                            + " bytes. change MAX_MAP_SIZE in "
-                            + "jw.bznetwork.server.MapUploadServlet and then recompile "
-                            + "BZNetwork to raise this limit. This will be a config setting in"
-                            + " the future.";
-                }
-                break;
-            }
-        }
-        if (in == null)
-            return "You didn't specify a file to upload.";
-        FileOutputStream out = new FileOutputStream(mapFile);
-        StringUtils.copy(in, out);
-        out.flush();
-        out.close();
-        in.close();
-        return null;
-    }
-
-    @Override
-    public void service(ServletRequest req, ServletResponse res)
+    protected void service(HttpServletRequest req, HttpServletResponse resp)
             throws ServletException, IOException
     {
-        System.out.println("Servicing upload request");
-        super.service(req, res);
+        UploadStatus status = new UploadStatus();
+        HttpSession session = req.getSession();
+        ServletFileUpload fileUpload = new ServletFileUpload(
+                new DiskFileItemFactory());
+        session.setAttribute("map-upload-status", status);
+        fileUpload.setSizeMax(MAX_MAP_SIZE);
+        fileUpload.setProgressListener(new Prw)
     }
     
 }
