@@ -8,6 +8,11 @@
 	<welcome-file-list>
 		<welcome-file>index.jsp</welcome-file>
 	</welcome-file-list>
+	<!-- max size, in bytes, of map file uploads -->
+	<context-param>
+		<param-name>maxSize</param-name>
+		<param-value>15000000</param-value>
+	</context-param>
 
 	<!-- Servlets -->
 	<servlet>

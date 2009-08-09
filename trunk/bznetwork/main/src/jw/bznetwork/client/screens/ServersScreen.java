@@ -31,6 +31,7 @@ import com.google.gwt.user.client.ui.DisclosureHandler;
 import com.google.gwt.user.client.ui.DisclosurePanel;
 import com.google.gwt.user.client.ui.FlexTable;
 import com.google.gwt.user.client.ui.HTML;
+import com.google.gwt.user.client.ui.Hidden;
 import com.google.gwt.user.client.ui.HorizontalPanel;
 import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.ListBox;
@@ -437,6 +438,7 @@ public class ServersScreen extends VerticalScreen
                             super.addStyleName(style);
                     }
                 });
+        uploader.add(new Hidden("serverid", "" + server.getServerid()));
         uploader.setServletPath("upload.gwtupmap");
         uploader.setOnFinishHandler(new ValueChangeHandler<IUploader>()
         {
