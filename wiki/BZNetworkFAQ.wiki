@@ -13,6 +13,8 @@ Which of these three states the banfile appears as depends on what permissions y
 ===Sometimes the color of a server's name is red, sometimes it's yellow, sometimes it's green, and sometimes it's blue. What do all these colors mean?===
 If the server's name is red, the server is not currently running. If the server's name is green, then the server is running. If the server's name is yellow, then a server shutdown has been requested but the server has not shut down yet. If the server's name is blue, the server has been started but the BZNetwork plugin has not yet reported that the server has finished initializing.
 
+===When I try to upload a map, BZNetwork complains that its size exceeds the configured maximum===
+
 ==Misc==
 ===A lot of pages don't have save buttons. How do I save my changes to these pages?===
 The pages that don't have save buttons are typically those that only use multiple-choice widgets. The Authentication page is a good example of this. On these pages, changes are saved immediately as you make them.
