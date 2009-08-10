@@ -304,11 +304,11 @@ public class BZNetworkServer implements ServletContextListener,
             bansFolder = new File(storeFolder, "bans");
             groupdbFolder = new File(storeFolder, "groupdb");
             mapsFolder = new File(storeFolder, "maps");
-            configFolder = new File(storeFolder, "config");
+            BZNetworkServer.configFolder = new File(storeFolder, "config");
             bansFolder.mkdirs();
             groupdbFolder.mkdirs();
             mapsFolder.mkdirs();
-            configFolder.mkdirs();
+            BZNetworkServer.configFolder.mkdirs();
             /*
              * The cache folder shouldn't have any files in it at system
              * startup, and if it does, we need to delete them.
