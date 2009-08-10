@@ -24,6 +24,14 @@
 		<url-pattern>/bznetwork/auth-link</url-pattern>
 	</servlet-mapping>
 	<servlet>
+		<servlet-name>downloadMapServlet</servlet-name>
+		<servlet-class>jw.bznetwork.server.MapDownloadServlet</servlet-class>
+	</servlet>
+	<servlet-mapping>
+		<servlet-name>downloadMapServlet</servlet-name>
+		<url-pattern>/download-map/*</url-pattern>
+	</servlet-mapping>
+	<servlet>
 		<servlet-name>unauthLink</servlet-name>
 		<servlet-class>jw.bznetwork.server.rpc.GlobalUnauthLinkImpl</servlet-class>
 	</servlet>
