@@ -112,6 +112,10 @@ void processStdinString(std::string* currentString)
 		}
 		bz_sendTextMessage(fromInt, toTeam, messageString.c_str());
 	}
+	else if(command == "shutdown")
+	{
+		bz_shutdown();
+	}
 	else
 	{
 		bzn_outputData(
@@ -240,7 +244,7 @@ class BZNetworkEventHandler: public bz_EventHandler,
 						event->killerID);
 				bz_eTeamType killerTeam = killerInfo->team;
 				bz_freePlayerRecord(killerInfo);
-				bz_PlayerRecord* killedInfo = bz_getPlayerRecordByIndex(
+				bz_PlayerRecord* killedInfo = bz_getPlayerByIndex(
 						event->killedID);
 				bz_eTeamType killedTeam = killedInfo->team;
 				bz_freePlayerRecord(killedInfo);
@@ -267,9 +271,9 @@ class BZNetworkEventHandler: public bz_EventHandler,
 				output += "|";
 				output += event->duration;
 				output += "|";
-				output += event->ipAddress;
+				output += event->ipAddress.c_str();
 				output += "|";
-				output += event->reason;
+				output += event->reason.c_str();
 				bzn_outputData(output);
 			}
 		}
@@ -292,6 +296,7 @@ BZNetworkEventHandler singleEventHandler;
 
 BZF_PLUGIN_CALL int bz_Load(const char* commandLine)
 {
+	printf("Loading bznetwork plugin\n");
 	bz_registerCustomSlashCommand("bzn", &singleEventHandler);
 	bz_registerEvent(bz_eTickEvent, &singleEventHandler);
 	bz_registerEvent(bz_ePlayerJoinEvent, &singleEventHandler);
@@ -313,6 +318,7 @@ BZF_PLUGIN_CALL int bz_Load(const char* commandLine)
 	playerIdsByCallsign.insert(pair<std::string, int> ("+server", BZ_SERVER));
 	playerIdsByCallsign.insert(pair<std::string, int> ("+all", BZ_ALLUSERS));
 	bzn_outputData("bznload");
+	printf("Loaded bznetwork plugin successfully\n");
 	return 0;
 }
 
