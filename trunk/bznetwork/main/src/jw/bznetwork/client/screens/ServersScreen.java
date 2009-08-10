@@ -135,7 +135,7 @@ public class ServersScreen extends VerticalScreen
              */
             HorizontalPanel groupLinksPanel = new HorizontalPanel();
             groupLinksPanel.setSpacing(4);
-            table.setWidget(row, 4, groupLinksPanel);
+            table.setWidget(row, 3, groupLinksPanel);
             /*
              * Now we'll add some links for this server. Links right now are
              * pretty much rename, settings, groupdb, map, upload, conf, and
