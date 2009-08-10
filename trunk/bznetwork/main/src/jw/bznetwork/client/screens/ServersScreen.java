@@ -47,6 +47,86 @@ import com.google.gwt.user.client.ui.FlexTable.FlexCellFormatter;
 public class ServersScreen extends VerticalScreen
 {
     
+    public class StopServerClickHandler implements ClickHandler
+    {
+        private int serverid;
+        
+        @Override
+        public void onClick(ClickEvent event)
+        {
+            BZNetwork.authLink.stopServer(serverid, new BoxCallback<Void>()
+            {
+                
+                @Override
+                public void run(Void result)
+                {
+                    select();
+                }
+            });
+        }
+        
+        public StopServerClickHandler(int serverid)
+        {
+            super();
+            this.serverid = serverid;
+        }
+        
+    }
+    
+    public class StartServerClickHandler implements ClickHandler
+    {
+        private int serverid;
+        
+        @Override
+        public void onClick(ClickEvent event)
+        {
+            BZNetwork.authLink.startServer(serverid, new BoxCallback<String>()
+            {
+                
+                @Override
+                public void run(String result)
+                {
+                    if (result != null)
+                        Window.alert("Failed to start the server: " + result);
+                    select();
+                }
+            });
+        }
+        
+        public StartServerClickHandler(int serverid)
+        {
+            super();
+            this.serverid = serverid;
+        }
+        
+    }
+    
+    public class KillServerClickHandler implements ClickHandler
+    {
+        private int serverid;
+        
+        public KillServerClickHandler(int serverid)
+        {
+            super();
+            this.serverid = serverid;
+        }
+        
+        @Override
+        public void onClick(ClickEvent event)
+        {
+            BZNetwork.authLink.killServer(serverid, new BoxCallback<Void>()
+            {
+                
+                @Override
+                public void run(Void result)
+                {
+                    select();
+                }
+            });
+        }
+        
+    }
+    
     @Override
     public void deselect()
     {
@@ -435,6 +515,7 @@ public class ServersScreen extends VerticalScreen
                  */
                 Anchor stopLink = new Anchor("stop");
                 linksPanel.add(stopLink);
+                stopLink.addClickHandler(new StopServerClickHandler(server.getServerid()));
             }
             else if (server.getState() == LiveState.STOPPED)
             {
@@ -443,6 +524,7 @@ public class ServersScreen extends VerticalScreen
                  */
                 Anchor startLink = new Anchor("start");
                 linksPanel.add(startLink);
+                startLink.addClickHandler(new StartServerClickHandler(server.getServerid()));
             }
             else
             {
@@ -451,6 +533,7 @@ public class ServersScreen extends VerticalScreen
                  */
                 Anchor killLink = new Anchor("kill");
                 linksPanel.add(killLink);
+                killLink.addClickHandler(new KillServerClickHandler(server.getServerid()));
             }
         }
     }
