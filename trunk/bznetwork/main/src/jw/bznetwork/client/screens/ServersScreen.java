@@ -350,6 +350,10 @@ public class ServersScreen extends VerticalScreen
                         + URL.encode(server.getName()) + ".bzw", "_blank", "");
             }
         });
+        HTML mapLinkHtml = new HTML("<a href='" + BZNetwork.CONTEXT_URL + "/download-map/"
+                        + server.getServerid() + "/"
+                        + URL.encode(server.getName()) + ".bzw'>map</a>");
+        linksPanel.add(mapLinkHtml);
         Anchor uploadLink = new Anchor("upload");
         uploadLink.setTitle("Allows you to upload a new map for this "
                 + "server. The new map will take effect when the "
