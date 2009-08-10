@@ -97,4 +97,12 @@ public interface GlobalLink extends RemoteService
     public String getServerConfig(int serverid);
     
     public void saveServerConfig(int serverid, String config);
+    
+    public String getServerGroupdb(int serverid);
+    
+    public void saveServerGroupdb(int serverid, String groupdb);
+    
+    public String getGroupGroupdb(int groupid);
+    
+    public void saveGroupGroupdb(int groupid, String groupdb);
 }

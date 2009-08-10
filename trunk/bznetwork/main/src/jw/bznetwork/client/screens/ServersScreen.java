@@ -333,6 +333,15 @@ public class ServersScreen extends VerticalScreen
         {
             linksPanel.add(groupdbLink);
         }
+        groupdbLink.addClickHandler(new ClickHandler()
+        {
+            
+            @Override
+            public void onClick(ClickEvent event)
+            {
+                showServerGroupdbBox(group, server);
+            }
+        });
         Anchor mapLink = new Anchor("map", BZNetwork.CONTEXT_URL
                 + "/download-map/" + server.getServerid() + "/"
                 + URL.encode(server.getName()) + ".bzw", "_blank");
@@ -410,6 +419,8 @@ public class ServersScreen extends VerticalScreen
         }
     }
     
+    // CONFIG
+    
     protected void showConfigBox(GroupModel group, final ServerModel server)
     {
         BZNetwork.authLink.getServerConfig(server.getServerid(),
@@ -479,6 +490,157 @@ public class ServersScreen extends VerticalScreen
                     }
                 });
     }
+    
+    // GROUP GROUPDB
+    
+    protected void showGroupGroupdbBox(final GroupModel group)
+    {
+        BZNetwork.authLink.getGroupGroupdb(group.getGroupid(),
+                new BoxCallback<String>()
+                {
+                    
+                    @Override
+                    public void run(String result)
+                    {
+                        final PopupPanel box = new PopupPanel();
+                        int clientWidth = Window.getClientWidth();
+                        int clientHeight = Window.getClientHeight();
+                        VerticalPanel panel = new VerticalPanel();
+                        box.setWidget(panel);
+                        panel
+                                .add(new Header3("Groupdb for "
+                                        + group.getName()));
+                        final TextArea groupdbField = new TextArea();
+                        groupdbField.setText(result);
+                        groupdbField.setWidth(""
+                                + Math.max(clientWidth - 100, 200) + "px");
+                        groupdbField.setHeight(""
+                                + Math.max(clientHeight - 150, 150) + "px");
+                        panel.add(groupdbField);
+                        HorizontalPanel buttonsPanel = new HorizontalPanel();
+                        Button saveButton = new Button("Save");
+                        Button cancelButton = new Button("Cancel");
+                        buttonsPanel.add(saveButton);
+                        buttonsPanel.add(cancelButton);
+                        panel.add(buttonsPanel);
+                        cancelButton.addClickHandler(new ClickHandler()
+                        {
+                            
+                            @Override
+                            public void onClick(ClickEvent event)
+                            {
+                                if (Window
+                                        .confirm("Are you sure you want to discard your changes?"))
+                                    box.hide();
+                            }
+                        });
+                        saveButton.addClickHandler(new ClickHandler()
+                        {
+                            
+                            @Override
+                            public void onClick(ClickEvent event)
+                            {
+                                saveGroupGroupdb(groupdbField.getText(), group,
+                                        box);
+                            }
+                            
+                        });
+                        box.center();
+                    }
+                });
+    }
+    
+    private void saveGroupGroupdb(String text, GroupModel group,
+            final PopupPanel box)
+    {
+        BZNetwork.authLink.saveGroupGroupdb(group.getGroupid(), text,
+                new BoxCallback<Void>()
+                {
+                    
+                    @Override
+                    public void run(Void result)
+                    {
+                        box.hide();
+                    }
+                });
+    }
+    
+    // SERVER GROUPDB
+    
+    protected void showServerGroupdbBox(GroupModel group,
+            final ServerModel server)
+    {
+        BZNetwork.authLink.getServerGroupdb(server.getServerid(),
+                new BoxCallback<String>()
+                {
+                    
+                    @Override
+                    public void run(String result)
+                    {
+                        final PopupPanel box = new PopupPanel();
+                        int clientWidth = Window.getClientWidth();
+                        int clientHeight = Window.getClientHeight();
+                        VerticalPanel panel = new VerticalPanel();
+                        box.setWidget(panel);
+                        panel
+                                .add(new Header3("Groupdb for "
+                                        + server.getName()));
+                        final TextArea groupdbField = new TextArea();
+                        groupdbField.setText(result);
+                        groupdbField.setWidth(""
+                                + Math.max(clientWidth - 100, 200) + "px");
+                        groupdbField.setHeight(""
+                                + Math.max(clientHeight - 150, 150) + "px");
+                        panel.add(groupdbField);
+                        HorizontalPanel buttonsPanel = new HorizontalPanel();
+                        Button saveButton = new Button("Save");
+                        Button cancelButton = new Button("Cancel");
+                        buttonsPanel.add(saveButton);
+                        buttonsPanel.add(cancelButton);
+                        panel.add(buttonsPanel);
+                        cancelButton.addClickHandler(new ClickHandler()
+                        {
+                            
+                            @Override
+                            public void onClick(ClickEvent event)
+                            {
+                                if (Window
+                                        .confirm("Are you sure you want to discard your changes?"))
+                                    box.hide();
+                            }
+                        });
+                        saveButton.addClickHandler(new ClickHandler()
+                        {
+                            
+                            @Override
+                            public void onClick(ClickEvent event)
+                            {
+                                saveServerGroupdb(groupdbField.getText(),
+                                        server, box);
+                            }
+                            
+                        });
+                        box.center();
+                    }
+                });
+    }
+    
+    private void saveServerGroupdb(String text, ServerModel server,
+            final PopupPanel box)
+    {
+        BZNetwork.authLink.saveServerGroupdb(server.getServerid(), text,
+                new BoxCallback<Void>()
+                {
+                    
+                    @Override
+                    public void run(Void result)
+                    {
+                        box.hide();
+                    }
+                });
+    }
+    
+    // END
     
     @SuppressWarnings("deprecation")
     protected void showUploadBox(GroupModel group, ServerModel server)

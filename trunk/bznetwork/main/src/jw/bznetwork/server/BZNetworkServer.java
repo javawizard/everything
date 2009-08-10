@@ -831,4 +831,9 @@ public class BZNetworkServer implements ServletContextListener,
                 + Integer.toHexString(randomNumberGenerator.nextInt())
                 + Integer.toHexString(randomNumberGenerator.nextInt());
     }
+    
+    public static File getGroupdbFile(int itemid)
+    {
+        return new File(groupdbFolder, "" + itemid);
+    }
 }

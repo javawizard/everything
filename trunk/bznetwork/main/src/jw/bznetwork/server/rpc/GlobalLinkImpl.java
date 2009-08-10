@@ -562,18 +562,18 @@ public class GlobalLinkImpl extends RemoteServiceServlet implements GlobalLink
         Verify.server("edit-server-settings", serverid,
                 getServerGroupId(serverid));
         File configFile = BZNetworkServer.getConfigFile(serverid);
-        if(!configFile.exists())
-            return "# Add your server's configuration and command-line options here. " +
-            		"Don't include any of these switches, as they are automatically " +
-            		"added when the server is started:\n" +
-            		"# -public\n" +
-            		"# -port\n" +
-            		"# -world\n" +
-            		"# -conf\n" +
-            		"# -groupdb\n" +
-            		"# -banfile\n" +
-            		"# Additionally, don't load the serverControl plugin, as it will" +
-            		" be automatically loaded and configured for you. ";
+        if (!configFile.exists())
+            return "# Add your server's configuration and command-line options here. "
+                    + "Don't include any of these switches, as they are automatically "
+                    + "added when the server is started:\n"
+                    + "# -public\n"
+                    + "# -port\n"
+                    + "# -world\n"
+                    + "# -conf\n"
+                    + "# -groupdb\n"
+                    + "# -banfile\n"
+                    + "# Additionally, don't load the serverControl plugin, as it will"
+                    + " be automatically loaded and configured for you. ";
         return StringUtils.readFile(configFile);
     }
     
@@ -584,5 +584,47 @@ public class GlobalLinkImpl extends RemoteServiceServlet implements GlobalLink
                 getServerGroupId(serverid));
         File configFile = BZNetworkServer.getConfigFile(serverid);
         StringUtils.writeFile(config, configFile);
+    }
+    
+    // edit-groupdb and edit-group-groupdb
+    
+    @Override
+    public String getGroupGroupdb(int groupid)
+    {
+        Verify.group("edit-group-groupdb", groupid);
+        File groupdbFile = BZNetworkServer.getGroupdbFile(groupid);
+        if (!groupdbFile.exists())
+            return "# Add the group's groupdb here. Each server that is set to inherit "
+                    + "its parent's groupdb will have this groupdb prepended to it when "
+                    + "the server starts.";
+        return StringUtils.readFile(groupdbFile);
+    }
+    
+    @Override
+    public String getServerGroupdb(int serverid)
+    {
+        Verify.server("edit-groupdb", serverid, getServerGroupId(serverid));
+        File groupdbFile = BZNetworkServer.getGroupdbFile(serverid);
+        if (!groupdbFile.exists())
+            return "# Add the server's groupdb here. If the server is set to inherit "
+                    + "its parent's groupdb, then when the server is run it will "
+                    + "use both groupdbs. The parent group's groupdb will come first, "
+                    + "so you can reference groups added in it.";
+        return StringUtils.readFile(groupdbFile);
+    }
+    
+    @Override
+    public void saveGroupGroupdb(int groupid, String groupdb)
+    {
+        Verify.group("edit-group-groupdb", groupid);
+        StringUtils.writeFile(groupdb, BZNetworkServer.getGroupdbFile(groupid));
+    }
+    
+    @Override
+    public void saveServerGroupdb(int serverid, String groupdb)
+    {
+        Verify.server("edit-groupdb", serverid, getServerGroupId(serverid));
+        StringUtils
+                .writeFile(groupdb, BZNetworkServer.getGroupdbFile(serverid));
     }
 }
