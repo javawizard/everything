@@ -333,11 +333,11 @@ public class ServersScreen extends VerticalScreen
         {
             linksPanel.add(groupdbLink);
         }
-        Anchor mapLink = new Anchor("map", BZNetwork.CONTEXT_URL + "/download-map/"
-                + server.getServerid() + "/"
+        Anchor mapLink = new Anchor("map", BZNetwork.CONTEXT_URL
+                + "/download-map/" + server.getServerid() + "/"
                 + URL.encode(server.getName()) + ".bzw", "_blank");
         /*
-         * The only permission the map link is dependent on is
+         * / The only permission the map link is dependent on is
          * view-in-server-list, so we don't have to perform any checks here.
          */
         linksPanel.add(mapLink);
@@ -365,6 +365,44 @@ public class ServersScreen extends VerticalScreen
         {
             linksPanel.add(confLink);
         }
+        confLink.addClickHandler(new ClickHandler()
+        {
+            
+            @Override
+            public void onClick(ClickEvent event)
+            {
+                final PopupPanel box = new PopupPanel();
+                int clientWidth = Window.getClientWidth();
+                int clientHeight = Window.getClientHeight();
+                VerticalPanel panel = new VerticalPanel();
+                box.setWidget(panel);
+                panel.add(new Header3("Configuration for " + server.getName()));
+                TextArea configField = new TextArea();
+                configField.setWidth("" + Math.max(clientWidth - 100, 100)
+                        + "px");
+                configField.setHeight("" + Math.max(clientHeight - 150, 100)
+                        + "px");
+                panel.add(configField);
+                HorizontalPanel buttonsPanel = new HorizontalPanel();
+                Button saveButton = new Button("Save");
+                Button cancelButton = new Button("Cancel");
+                buttonsPanel.add(saveButton);
+                buttonsPanel.add(cancelButton);
+                panel.add(buttonsPanel);
+                cancelButton.addClickHandler(new ClickHandler()
+                {
+                    
+                    @Override
+                    public void onClick(ClickEvent event)
+                    {
+                        if (Window
+                                .confirm("Are you sure you want to discard your changes?"))
+                            box.hide();
+                    }
+                });
+                box.center();
+            }
+        });
         if (Perms.server("start-stop-server", server))
         {
             /*
