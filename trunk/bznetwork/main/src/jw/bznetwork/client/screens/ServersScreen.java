@@ -429,9 +429,9 @@ public class ServersScreen extends VerticalScreen
                         final TextArea configField = new TextArea();
                         configField.setText(result);
                         configField.setWidth(""
-                                + Math.max(clientWidth - 60, 200) + "px");
+                                + Math.max(clientWidth - 100, 200) + "px");
                         configField.setHeight(""
-                                + Math.max(clientHeight - 110, 150) + "px");
+                                + Math.max(clientHeight - 150, 150) + "px");
                         panel.add(configField);
                         HorizontalPanel buttonsPanel = new HorizontalPanel();
                         Button saveButton = new Button("Save");
