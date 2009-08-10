@@ -131,6 +131,18 @@ public class ServersScreen extends VerticalScreen
                         .getItemText(banfileBox.getSelectedIndex())));
             }
             /*
+             * Now the group links
+             */
+            HorizontalPanel groupLinksPanel = new HorizontalPanel();
+            groupLinksPanel.setSpacing(4);
+            table.setWidget(row, 4, groupLinksPanel);
+            /*
+             * Now we'll add some links for this server. Links right now are
+             * pretty much rename, settings, groupdb, map, upload, conf, and
+             * start/stop/kill.
+             */
+            createGroupLinks(group, groupLinksPanel);
+            /*
              * We've added the group's widgets. Now we'll iterate over the
              * group's servers and add their details.
              */
@@ -274,6 +286,30 @@ public class ServersScreen extends VerticalScreen
                                 select();
                             }
                         });
+            }
+        });
+    }
+    
+    private void createGroupLinks(final GroupModel group,
+            HorizontalPanel linksPanel)
+    {
+        Anchor renameLink = new Anchor("rename");
+        if (Perms.group("rename-group", group.getGroupid()))
+        {
+            linksPanel.add(renameLink);
+        }
+        Anchor groupdbLink = new Anchor("groupdb");
+        if (Perms.group("edit-group-groupdb", group.getGroupid()))
+        {
+            linksPanel.add(groupdbLink);
+        }
+        groupdbLink.addClickHandler(new ClickHandler()
+        {
+            
+            @Override
+            public void onClick(ClickEvent event)
+            {
+                showGroupGroupdbBox(group);
             }
         });
     }
