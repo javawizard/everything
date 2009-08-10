@@ -13,7 +13,17 @@ Which of these three states the banfile appears as depends on what permissions y
 ===Sometimes the color of a server's name is red, sometimes it's yellow, sometimes it's green, and sometimes it's blue. What do all these colors mean?===
 If the server's name is red, the server is not currently running. If the server's name is green, then the server is running. If the server's name is yellow, then a server shutdown has been requested but the server has not shut down yet. If the server's name is blue, the server has been started but the BZNetwork plugin has not yet reported that the server has finished initializing.
 
-===When I try to upload a map, BZNetwork complains that its size exceeds the configured maximum===
+===When I try to upload a map, BZNetwork complains that its size exceeds the configured maximum. Is there a way to raise the maximum map size? ===
+
+The default maximum map size is 15MB. To raise it, edit WEB-INF/web.xml and search for something that looks like this:
+{{{
+	<!-- max size, in bytes, of map file uploads -->
+	<context-param>
+		<param-name>maxSize</param-name>
+		<param-value>15000000</param-value>
+	</context-param>
+}}}
+Change the 15000000 to be the maximum size, in bytes, that you want to allow for uploaded maps.
 
 ==Misc==
 ===A lot of pages don't have save buttons. How do I save my changes to these pages?===
