@@ -25,6 +25,13 @@ The default maximum map size is 15MB. To raise it, edit WEB-INF/web.xml and sear
 }}}
 Change the 15000000 to be the maximum size, in bytes, that you want to allow for uploaded maps.
 
+===Is it possible to move a server to a different group than it was created under?===
+Not currently. I'm planning on adding this feature in the future, but there are a number of privilege escalation issues that this would cause that need to be resolved first.
+
+If you really want to change a server's parent group, you can manually edit the database to do so. Shut down the server, then log into the database system you're using, find the server's row in the servers table (the server's name is in the name column; you could write a query that searches this column). Then find the row in the groups table (which also has a name column) for the new group that you want to put this server under. Update the row in the servers table and set its groupid column to be the groupid column of the row in the groups table that holds the group you want to put the server under.
+
+Contact me as indicated at the top of this page if you're confused.
+
 ==Misc==
 ===A lot of pages don't have save buttons. How do I save my changes to these pages?===
 The pages that don't have save buttons are typically those that only use multiple-choice widgets. The Authentication page is a good example of this. On these pages, changes are saved immediately as you make them.
