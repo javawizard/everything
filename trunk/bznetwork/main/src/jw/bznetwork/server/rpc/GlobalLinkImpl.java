@@ -14,6 +14,8 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
+import net.sf.opengroove.common.utils.StringUtils;
+
 import jw.bznetwork.client.Perms;
 import jw.bznetwork.client.ShowMessageException;
 import jw.bznetwork.client.Verify;
@@ -526,7 +528,7 @@ public class GlobalLinkImpl extends RemoteServiceServlet implements GlobalLink
     public static int getServerGroupId(int server)
     {
         Server serverObject = DataStore.getServerById(server);
-        int groupid = (serverObject == null ? -1 : serverObject.getGroupid());
+        int groupid = (serverObject == null ? -100 : serverObject.getGroupid());
         return groupid;
     }
     
@@ -552,5 +554,35 @@ public class GlobalLinkImpl extends RemoteServiceServlet implements GlobalLink
             dbServer.setInheritgroupdb(server.isInheritgroupdb());
         dbServer.setNotes(server.getNotes());
         DataStore.updateServer(dbServer);
+    }
+    
+    @Override
+    public String getServerConfig(int serverid)
+    {
+        Verify.server("edit-server-settings", serverid,
+                getServerGroupId(serverid));
+        File configFile = BZNetworkServer.getConfigFile(serverid);
+        if(!configFile.exists())
+            return "# Add your server's configuration and command-line options here. " +
+            		"Don't include any of these switches, as they are automatically " +
+            		"added when the server is started:\n" +
+            		"# -public\n" +
+            		"# -port\n" +
+            		"# -world\n" +
+            		"# -conf\n" +
+            		"# -groupdb\n" +
+            		"# -banfile\n" +
+            		"# Additionally, don't load the serverControl plugin, as it will" +
+            		" be automatically loaded and configured for you. ";
+        return StringUtils.readFile(configFile);
+    }
+    
+    @Override
+    public void saveServerConfig(int serverid, String config)
+    {
+        Verify.server("edit-server-settings", serverid,
+                getServerGroupId(serverid));
+        File configFile = BZNetworkServer.getConfigFile(serverid);
+        StringUtils.writeFile(config, configFile);
     }
 }

@@ -700,7 +700,7 @@ public class BZNetworkServer implements ServletContextListener,
             if (!mapFile.exists())
                 throw new IllegalStateException(
                         "This server doesn't yet have a map.");
-            File configFile = new File(configFolder, "" + server.getServerid());
+            File configFile = getConfigFile(server.getServerid());
             if (!configFile.exists())
                 throw new IllegalStateException(
                         "This server doesn't yet have a config.");
@@ -804,6 +804,11 @@ public class BZNetworkServer implements ServletContextListener,
                             + "up successfully.");
         }
         return response;
+    }
+    
+    public static File getConfigFile(int serverid)
+    {
+        return new File(configFolder, "" + serverid);
     }
     
     public static File getMapFile(int serverid)

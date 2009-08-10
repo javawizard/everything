@@ -371,36 +371,7 @@ public class ServersScreen extends VerticalScreen
             @Override
             public void onClick(ClickEvent event)
             {
-                final PopupPanel box = new PopupPanel();
-                int clientWidth = Window.getClientWidth();
-                int clientHeight = Window.getClientHeight();
-                VerticalPanel panel = new VerticalPanel();
-                box.setWidget(panel);
-                panel.add(new Header3("Configuration for " + server.getName()));
-                TextArea configField = new TextArea();
-                configField.setWidth("" + Math.max(clientWidth - 100, 100)
-                        + "px");
-                configField.setHeight("" + Math.max(clientHeight - 150, 100)
-                        + "px");
-                panel.add(configField);
-                HorizontalPanel buttonsPanel = new HorizontalPanel();
-                Button saveButton = new Button("Save");
-                Button cancelButton = new Button("Cancel");
-                buttonsPanel.add(saveButton);
-                buttonsPanel.add(cancelButton);
-                panel.add(buttonsPanel);
-                cancelButton.addClickHandler(new ClickHandler()
-                {
-                    
-                    @Override
-                    public void onClick(ClickEvent event)
-                    {
-                        if (Window
-                                .confirm("Are you sure you want to discard your changes?"))
-                            box.hide();
-                    }
-                });
-                box.center();
+                showConfigBox(group, server);
             }
         });
         if (Perms.server("start-stop-server", server))
@@ -437,6 +408,76 @@ public class ServersScreen extends VerticalScreen
                 linksPanel.add(killLink);
             }
         }
+    }
+    
+    protected void showConfigBox(GroupModel group, final ServerModel server)
+    {
+        BZNetwork.authLink.getServerConfig(server.getServerid(),
+                new BoxCallback<String>()
+                {
+                    
+                    @Override
+                    public void run(String result)
+                    {
+                        final PopupPanel box = new PopupPanel();
+                        int clientWidth = Window.getClientWidth();
+                        int clientHeight = Window.getClientHeight();
+                        VerticalPanel panel = new VerticalPanel();
+                        box.setWidget(panel);
+                        panel.add(new Header3("Configuration for "
+                                + server.getName()));
+                        final TextArea configField = new TextArea();
+                        configField.setText(result);
+                        configField.setWidth(""
+                                + Math.max(clientWidth - 100, 100) + "px");
+                        configField.setHeight(""
+                                + Math.max(clientHeight - 150, 100) + "px");
+                        panel.add(configField);
+                        HorizontalPanel buttonsPanel = new HorizontalPanel();
+                        Button saveButton = new Button("Save");
+                        Button cancelButton = new Button("Cancel");
+                        buttonsPanel.add(saveButton);
+                        buttonsPanel.add(cancelButton);
+                        panel.add(buttonsPanel);
+                        cancelButton.addClickHandler(new ClickHandler()
+                        {
+                            
+                            @Override
+                            public void onClick(ClickEvent event)
+                            {
+                                if (Window
+                                        .confirm("Are you sure you want to discard your changes?"))
+                                    box.hide();
+                            }
+                        });
+                        saveButton.addClickHandler(new ClickHandler()
+                        {
+                            
+                            @Override
+                            public void onClick(ClickEvent event)
+                            {
+                                saveConfig(configField.getText(), server, box);
+                            }
+                            
+                        });
+                        box.center();
+                    }
+                });
+    }
+    
+    private void saveConfig(String text, ServerModel server,
+            final PopupPanel box)
+    {
+        BZNetwork.authLink.saveServerConfig(server.getServerid(), text,
+                new BoxCallback<Void>()
+                {
+                    
+                    @Override
+                    public void run(Void result)
+                    {
+                        box.hide();
+                    }
+                });
     }
     
     @SuppressWarnings("deprecation")

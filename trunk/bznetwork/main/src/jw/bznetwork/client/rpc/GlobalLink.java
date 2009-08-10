@@ -93,4 +93,8 @@ public interface GlobalLink extends RemoteService
     public void renameGroup(int group, String newName);
     
     public void updateServer(Server server);
+    
+    public String getServerConfig(int serverid);
+    
+    public void saveServerConfig(int serverid, String config);
 }

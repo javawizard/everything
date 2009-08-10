@@ -109,4 +109,8 @@ public void renameGroup(int group, String newName, AsyncCallback<Void> callback)
 
 public void updateServer(Server server, AsyncCallback<Void> callback);
 
+public void getServerConfig(int serverid, AsyncCallback<String> callback);
+
+public void saveServerConfig(int serverid, String config, AsyncCallback<Void> callback);
+
 }
