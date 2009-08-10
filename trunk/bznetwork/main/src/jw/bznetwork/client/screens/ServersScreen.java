@@ -333,27 +333,14 @@ public class ServersScreen extends VerticalScreen
         {
             linksPanel.add(groupdbLink);
         }
-        Anchor mapLink = new Anchor("map");
+        Anchor mapLink = new Anchor("map", BZNetwork.CONTEXT_URL + "/download-map/"
+                + server.getServerid() + "/"
+                + URL.encode(server.getName()) + ".bzw", "_blank");
         /*
          * The only permission the map link is dependent on is
          * view-in-server-list, so we don't have to perform any checks here.
          */
         linksPanel.add(mapLink);
-        mapLink.addClickListener(new ClickListener()
-        {
-            
-            @Override
-            public void onClick(Widget sender)
-            {
-                Window.open(BZNetwork.CONTEXT_URL + "/download-map/"
-                        + server.getServerid() + "/"
-                        + URL.encode(server.getName()) + ".bzw", "_blank", "");
-            }
-        });
-        HTML mapLinkHtml = new HTML("<a href='" + BZNetwork.CONTEXT_URL + "/download-map/"
-                        + server.getServerid() + "/"
-                        + URL.encode(server.getName()) + ".bzw'>map</a>");
-        linksPanel.add(mapLinkHtml);
         Anchor uploadLink = new Anchor("upload");
         uploadLink.setTitle("Allows you to upload a new map for this "
                 + "server. The new map will take effect when the "
