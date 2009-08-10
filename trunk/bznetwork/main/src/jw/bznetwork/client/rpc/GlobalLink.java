@@ -105,4 +105,10 @@ public interface GlobalLink extends RemoteService
     public String getGroupGroupdb(int groupid);
     
     public void saveGroupGroupdb(int groupid, String groupdb);
+    
+    public String startServer(int serverid);
+    
+    public void stopServer(int serverid);
+    
+    public void killServer(int serverid);
 }

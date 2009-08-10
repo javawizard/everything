@@ -627,4 +627,39 @@ public class GlobalLinkImpl extends RemoteServiceServlet implements GlobalLink
         StringUtils
                 .writeFile(groupdb, BZNetworkServer.getGroupdbFile(serverid));
     }
+    
+    @Override
+    public void killServer(int serverid)
+    {
+        Verify
+                .server("start-stop-server", serverid,
+                        getServerGroupId(serverid));
+        BZNetworkServer.killServer(serverid);
+        try
+        {
+            Thread.sleep(500);
+        }
+        catch (InterruptedException e)
+        {
+            e.printStackTrace();
+        }
+    }
+    
+    @Override
+    public String startServer(int serverid)
+    {
+        Verify
+                .server("start-stop-server", serverid,
+                        getServerGroupId(serverid));
+        return BZNetworkServer.startServer(serverid, true);
+    }
+    
+    @Override
+    public void stopServer(int serverid)
+    {
+        Verify
+                .server("start-stop-server", serverid,
+                        getServerGroupId(serverid));
+        BZNetworkServer.stopServer(serverid);
+    }
 }

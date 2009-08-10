@@ -836,4 +836,32 @@ public class BZNetworkServer implements ServletContextListener,
     {
         return new File(groupdbFolder, "" + itemid);
     }
+    
+    public static void stopServer(int serverid)
+    {
+        LiveServer server = liveServers.get(serverid);
+        if (server == null)
+        {
+            /*
+             * The server isn't running, so we don't need to do anything to shut
+             * it down.
+             */
+            return;
+        }
+        server.requestShutdown();
+    }
+    
+    public static void killServer(int serverid)
+    {
+        LiveServer server = liveServers.get(serverid);
+        if (server == null)
+        {
+            /*
+             * The server isn't running, so we don't need to do anything to shut
+             * it down.
+             */
+            return;
+        }
+        server.forceShutdown();
+    }
 }
