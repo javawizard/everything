@@ -56,7 +56,10 @@ public class RequestTrackerFilter implements Filter
         }
         if (req.getSession(false) != null)
         {
-            req.getSession().setAttribute("ip-address", req.getRemoteAddr());
+            req.getSession().setAttribute("stat-ip-address", req.getRemoteAddr());
+            req.getSession().setAttribute("stat-last-access-time",
+                    System.currentTimeMillis());
+            req.getSession().setAttribute("stat-user-agent", req.getHeader("User-Agent"));
             req.getSession().setMaxInactiveInterval(60 * 120);
             if (BZNetworkServer.getSessionList().get(req.getSession().getId()) == null)
             {

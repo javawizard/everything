@@ -98,7 +98,9 @@ public class BZNetworkServer implements ServletContextListener,
     
     /**
      * Sticks information on to the request indicating that the user has just
-     * logged in.
+     * logged in. This should be called from any authentication provider when
+     * that provider has determined that the user has successfully authenticated
+     * with the server.
      * 
      * @param request
      *            The request that is being made to log in. The login
@@ -113,6 +115,28 @@ public class BZNetworkServer implements ServletContextListener,
     public static void login(HttpServletRequest request, String provider,
             String username, int[] roles)
     {
+        /*
+         * Remove duplicate role ids
+         */
+        ArrayList<Integer> roleIdList = new ArrayList<Integer>();
+        for (int role : roles)
+        {
+            if (!roleIdList.contains(role))
+                roleIdList.add(role);
+        }
+        roles = new int[roleIdList.size()];
+        int index = 0;
+        for (int role : roleIdList)
+        {
+            roles[index++] = role;
+        }
+        /*
+         * Make sure that the user isn't already logged in
+         */
+        if (request.getSession().getAttribute("user") != null)
+        {
+            throw new LoginException("The user has already logged in.");
+        }
         /*
          * Validate that this provider is enabled
          */
@@ -166,6 +190,11 @@ public class BZNetworkServer implements ServletContextListener,
          */
         request.getSession().setAttribute("permissions-provider",
                 new ClientPermissionsProvider(authUser));
+        /*
+         * We'll also make a note of the time at which the user logged in.
+         */
+        request.getSession().setAttribute("stat-logged-in",
+                System.currentTimeMillis());
         /*
          * We're done!
          */

@@ -14,6 +14,39 @@ public class UserSession implements Serializable
      */
     private AuthUser user;
     private String ip;
+    private String userAgent;
+    private long lastAccessTime;
+    private long loggedIn;
+    
+    public String getUserAgent()
+    {
+        return userAgent;
+    }
+    
+    public void setUserAgent(String userAgent)
+    {
+        this.userAgent = userAgent;
+    }
+    
+    public long getLastAccessTime()
+    {
+        return lastAccessTime;
+    }
+    
+    public void setLastAccessTime(long lastAccessTime)
+    {
+        this.lastAccessTime = lastAccessTime;
+    }
+    
+    public long getLoggedIn()
+    {
+        return loggedIn;
+    }
+    
+    public void setLoggedIn(long loggedIn)
+    {
+        this.loggedIn = loggedIn;
+    }
     
     public String getIp()
     {

@@ -1,5 +1,7 @@
 package jw.bznetwork.client.screens;
 
+import java.util.Date;
+
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.ClickListener;
@@ -94,6 +96,9 @@ public class SessionsScreen extends VerticalScreen
         table.setHTML(0, 1, "<b>Auth Provider</b>");
         table.setHTML(0, 2, "<b>Username</b>");
         table.setHTML(0, 3, "<b>Role(s)</b>");
+        table.setHTML(0, 4, "<b>User agent</b>");
+        table.setHTML(0, 5, "<b>Authenticated</b>");
+        table.setHTML(0, 6, "<b>Last active</b>");
         for (int i = 0; i < result.length; i++)
         {
             UserSession us = result[i];
@@ -115,7 +120,11 @@ public class SessionsScreen extends VerticalScreen
                 Button forceLogoutButton = new Button("Force logout");
                 forceLogoutButton.addClickListener(new ForceLogoutListener(us
                         .getId()));
-                table.setWidget(row, 4, forceLogoutButton);
+                table.setText(row, 4, us.getUserAgent());
+                table.setText(row, 5, new Date(us.getLoggedIn()).toString());
+                table.setText(row, 6, new Date(us.getLastAccessTime())
+                        .toString());
+                table.setWidget(row, 7, forceLogoutButton);
             }
         }
         widget.add(table);

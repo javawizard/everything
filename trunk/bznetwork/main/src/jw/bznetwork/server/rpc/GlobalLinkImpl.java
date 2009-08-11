@@ -353,7 +353,17 @@ public class GlobalLinkImpl extends RemoteServiceServlet implements GlobalLink
             HttpSession s = sessions[i];
             us.setId(s.getId());
             us.setUser((AuthUser) s.getAttribute("user"));
-            us.setIp((String) s.getAttribute("ip-address"));
+            us.setIp((String) s.getAttribute("stat-ip-address"));
+            Long lastAccessTime = (Long) s
+                    .getAttribute("stat-last-access-time");
+            if (lastAccessTime == null)
+                lastAccessTime = 0l;
+            us.setLastAccessTime(lastAccessTime);
+            Long loggedInTime = (Long) s.getAttribute("stat-logged-in");
+            if (loggedInTime == null)
+                loggedInTime = 0l;
+            us.setLoggedIn(loggedInTime);
+            us.setUserAgent((String) s.getAttribute("stat-user-agent"));
             userSessions[i] = us;
         }
         return userSessions;
@@ -617,24 +627,25 @@ public class GlobalLinkImpl extends RemoteServiceServlet implements GlobalLink
     public void saveGroupGroupdb(int groupid, String groupdb)
     {
         Verify.group("edit-group-groupdb", groupid);
-        StringUtils.writeFile(forceNewline(groupdb), BZNetworkServer.getGroupdbFile(groupid));
+        StringUtils.writeFile(forceNewline(groupdb), BZNetworkServer
+                .getGroupdbFile(groupid));
     }
     
     @Override
     public void saveServerGroupdb(int serverid, String groupdb)
     {
         Verify.server("edit-groupdb", serverid, getServerGroupId(serverid));
-        StringUtils
-                .writeFile(forceNewline(groupdb), BZNetworkServer.getGroupdbFile(serverid));
+        StringUtils.writeFile(forceNewline(groupdb), BZNetworkServer
+                .getGroupdbFile(serverid));
     }
     
     private String forceNewline(String s)
     {
-        if(s.endsWith(BZNetworkServer.newline))
+        if (s.endsWith(BZNetworkServer.newline))
             return s;
         return s + BZNetworkServer.newline;
     }
-
+    
     @Override
     public void killServer(int serverid)
     {
