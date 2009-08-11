@@ -24,6 +24,7 @@ import jw.bznetwork.client.Verify;
 import jw.bznetwork.client.data.AuthUser;
 import jw.bznetwork.client.data.EditAuthenticationModel;
 import jw.bznetwork.client.data.EditAuthgroupsModel;
+import jw.bznetwork.client.data.EditCallsignsModel;
 import jw.bznetwork.client.data.EditConfigurationModel;
 import jw.bznetwork.client.data.EditPermissionsModel;
 import jw.bznetwork.client.data.GroupModel;
@@ -35,6 +36,7 @@ import jw.bznetwork.client.data.ServerModel.LiveState;
 import jw.bznetwork.client.data.model.Action;
 import jw.bznetwork.client.data.model.Authgroup;
 import jw.bznetwork.client.data.model.Banfile;
+import jw.bznetwork.client.data.model.Callsign;
 import jw.bznetwork.client.data.model.Configuration;
 import jw.bznetwork.client.data.model.EditablePermission;
 import jw.bznetwork.client.data.model.Group;
@@ -273,6 +275,44 @@ public class GlobalLinkImpl extends RemoteServiceServlet implements GlobalLink
         return model;
     }
     
+    // CALLSIGNS
+    @Override
+    public void addCallsign(String name, int roleid)
+            throws ShowMessageException
+    {
+        Verify.global("manage-callsign-auth");
+        Callsign callsign = new Callsign();
+        callsign.setCallsign(name.trim());
+        callsign.setRole(roleid);
+        if (DataStore.getCallsignByName(name.trim()) != null)
+        {
+            throw new ShowMessageException("That callsign already exists.");
+        }
+        DataStore.addCallsign(callsign);
+    }
+    
+    @Override
+    public void deleteCallsign(String name)
+    {
+        Verify.global("manage-callsign-auth");
+        DataStore.deleteCallsign(name);
+    }
+    
+    @Override
+    public EditCallsignsModel getEditCallsignsModel()
+    {
+        Verify.global("manage-callsign-auth");
+        EditCallsignsModel model = new EditCallsignsModel();
+        model.setCallsigns(DataStore.listCallsigns());
+        Role[] roles = DataStore.listRoles();
+        for (Role role : roles)
+        {
+            model.getRoleIdsToNames().put(role.getRoleid(), role.getName());
+        }
+        return model;
+    }
+    
+    // END CALLSIGNS
     @Override
     public EditAuthenticationModel getEditAuthenticationModel()
     {
@@ -695,10 +735,12 @@ public class GlobalLinkImpl extends RemoteServiceServlet implements GlobalLink
     
     public static void action(String event, String details)
     {
-        AuthUser user = (AuthUser) RequestTrackerFilter.getCurrentRequest().getSession().getAttribute("user");
-        if(user == null)
-            throw new IllegalStateException("Can't add events to the action log when the " +
-            		"user is not logged in.");
+        AuthUser user = (AuthUser) RequestTrackerFilter.getCurrentRequest()
+                .getSession().getAttribute("user");
+        if (user == null)
+            throw new IllegalStateException(
+                    "Can't add events to the action log when the "
+                            + "user is not logged in.");
         Action action = new Action();
         action.setDetails(details);
         action.setEvent(event);

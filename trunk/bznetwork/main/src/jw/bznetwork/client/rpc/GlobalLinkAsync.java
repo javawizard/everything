@@ -10,6 +10,8 @@ import jw.bznetwork.client.data.EditAuthenticationModel;
 
 import jw.bznetwork.client.data.EditAuthgroupsModel;
 
+import jw.bznetwork.client.data.EditCallsignsModel;
+
 import jw.bznetwork.client.data.EditConfigurationModel;
 
 import jw.bznetwork.client.data.EditPermissionsModel;
@@ -62,6 +64,12 @@ public void getEditAuthgroupsModel(AsyncCallback<EditAuthgroupsModel> callback);
 public void addAuthgroup(String name, int roleid, AsyncCallback<Void> callback);
 
 public void deleteAuthgroup(String name, AsyncCallback<Void> callback);
+
+public void getEditCallsignsModel(AsyncCallback<EditCallsignsModel> callback);
+
+public void addCallsign(String name, int roleid, AsyncCallback<Void> callback);
+
+public void deleteCallsign(String name, AsyncCallback<Void> callback);
 
 public void getEditAuthenticationModel(AsyncCallback<EditAuthenticationModel> callback);
 

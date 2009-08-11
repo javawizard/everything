@@ -3,6 +3,7 @@ package jw.bznetwork.server.data;
 import jw.bznetwork.client.data.model.Action;
 import jw.bznetwork.client.data.model.Authgroup;
 import jw.bznetwork.client.data.model.Banfile;
+import jw.bznetwork.client.data.model.Callsign;
 import jw.bznetwork.client.data.model.Configuration;
 import jw.bznetwork.client.data.model.Group;
 import jw.bznetwork.client.data.model.LogEvent;
@@ -51,6 +52,60 @@ public class DataStore
     }
     
     // !ADDTOSQL
+    
+    public static synchronized Callsign getCallsignByName(String v)
+    {
+        try
+        {
+            return (Callsign) getGdbClient().queryForObject(
+                    "getCallsignByName", v);
+        }
+        catch (Exception e)
+        {
+            throw new RuntimeException(
+                    "Exception in database statement getCallsignByName", e);
+        }
+    }
+    
+    public static synchronized void deleteCallsign(String v)
+    {
+        try
+        {
+            getGdbClient().delete("deleteCallsign", v);
+        }
+        catch (Exception e)
+        {
+            throw new RuntimeException(
+                    "Exception in database statement deleteCallsign", e);
+        }
+    }
+    
+    public static synchronized Callsign[] listCallsigns()
+    {
+        try
+        {
+            return (Callsign[]) getGdbClient().queryForList("listCallsigns")
+                    .toArray(new Callsign[0]);
+        }
+        catch (Exception e)
+        {
+            throw new RuntimeException(
+                    "Exception in database statement listCallsigns", e);
+        }
+    }
+    
+    public static synchronized void addCallsign(Callsign v)
+    {
+        try
+        {
+            getGdbClient().insert("addCallsign", v);
+        }
+        catch (Exception e)
+        {
+            throw new RuntimeException(
+                    "Exception in database statement addCallsign", e);
+        }
+    }
     
     public static synchronized void addActionEvent(Action v)
     {

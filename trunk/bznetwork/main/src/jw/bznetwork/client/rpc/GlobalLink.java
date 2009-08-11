@@ -6,6 +6,7 @@ import java.util.Properties;
 import jw.bznetwork.client.ShowMessageException;
 import jw.bznetwork.client.data.EditAuthenticationModel;
 import jw.bznetwork.client.data.EditAuthgroupsModel;
+import jw.bznetwork.client.data.EditCallsignsModel;
 import jw.bznetwork.client.data.EditConfigurationModel;
 import jw.bznetwork.client.data.EditPermissionsModel;
 import jw.bznetwork.client.data.ServerListModel;
@@ -47,6 +48,13 @@ public interface GlobalLink extends RemoteService
             throws ShowMessageException;
     
     public void deleteAuthgroup(String name);
+    
+    public EditCallsignsModel getEditCallsignsModel();
+    
+    public void addCallsign(String name, int roleid)
+            throws ShowMessageException;
+    
+    public void deleteCallsign(String name);
     
     public EditAuthenticationModel getEditAuthenticationModel();
     
