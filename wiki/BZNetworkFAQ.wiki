@@ -38,3 +38,6 @@ The pages that don't have save buttons are typically those that only use multipl
 
 ===I'm trying to use my own database with BZNetwork, but some of the SQL isn't quite the right syntax for my database. Is there a file I can edit that contains all of the SQL statements?===
 Yes. There are two files that contain all of the statements executed by BZNetwork, with the exception of 1 database statement that is currently generated in code (contact jcp as mentioned at the top of this FAQ if this statement is giving you syntax errors; it runs when you delete any entity that would cause another dependent entity to be deleted, such as deleting a role). The file WEB-INF/tables.sql contains the statements executed when you first install BZNetwork that create all of the tables, and the file WEB-INF/classes/general-sqlmap.xml contains the statements that are used when BZNetwork is actually running.
+
+===Are there any easter eggs in BZNetwork?===
+There are two. I'm not going to tell you what they are, though, so don't ask. I will tell you that one of them has something in common with gdm. If you're desperate, go search the BZNetwork source code for "easter egg".
