@@ -204,6 +204,7 @@ public class LiveServer
         try
         {
             out.write((string + BZNetworkServer.newline).getBytes());
+            out.flush();
         }
         catch (IOException e)
         {

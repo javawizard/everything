@@ -86,7 +86,7 @@ public class ServersScreen extends VerticalScreen
                 @Override
                 public void run(String result)
                 {
-                    if (result != null)
+                    if (result != null && !result.startsWith("bznload"))
                         Window.alert("Failed to start the server: " + result);
                     select();
                 }

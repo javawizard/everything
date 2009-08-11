@@ -651,7 +651,15 @@ public class GlobalLinkImpl extends RemoteServiceServlet implements GlobalLink
         Verify
                 .server("start-stop-server", serverid,
                         getServerGroupId(serverid));
-        return BZNetworkServer.startServer(serverid, true);
+        try
+        {
+            return BZNetworkServer.startServer(serverid, true);
+        }
+        catch (Exception e)
+        {
+            e.printStackTrace();
+            return e.getClass().getName() + ": " + e.getMessage();
+        }
     }
     
     @Override

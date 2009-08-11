@@ -4,6 +4,8 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.StringReader;
 import java.io.StringWriter;
@@ -509,19 +511,28 @@ public class BZNetworkServer implements ServletContextListener,
         /*
          * Now we'll copy enabled-auth-providers.props to the store folder.
          */
-        StringUtils.writeFile(StringUtils.readFile(new File(getServletContext()
-                .getRealPath(
-                        "/WEB-INF/config-stub/enabled-auth-providers.props"))),
-                new File(storeFolder, "enabled-auth-providers.props"));
+        if (!areTablesInstalled)
+            StringUtils
+                    .writeFile(
+                            StringUtils
+                                    .readFile(new File(
+                                            getServletContext()
+                                                    .getRealPath(
+                                                            "/WEB-INF/config-stub/enabled-auth-providers.props"))),
+                            new File(storeFolder,
+                                    "enabled-auth-providers.props"));
         /*
          * Now we'll connect to the database and insert the tables.
          */
         Connection con2 = DriverManager.getConnection(dbUrl, dbUsername,
                 dbPassword);
-        Statement st = con2.createStatement();
-        st.executeUpdate(StringUtils.readFile(new File(getServletContext()
-                .getRealPath("/WEB-INF/tables.sql"))));
-        st.close();
+        if (!areTablesInstalled)
+        {
+            Statement st = con2.createStatement();
+            st.executeUpdate(StringUtils.readFile(new File(getServletContext()
+                    .getRealPath("/WEB-INF/tables.sql"))));
+            st.close();
+        }
         con2.close();
         /*
          * Write the config file
@@ -696,6 +707,18 @@ public class BZNetworkServer implements ServletContextListener,
                 throw new IllegalStateException("The referenced banfile ("
                         + banfileId + ") does not exist.");
             File banfileFile = new File(bansFolder, "" + banfileId);
+            if (!banfileFile.exists())
+            {
+                try
+                {
+                    banfileFile.createNewFile();
+                }
+                catch (IOException e1)
+                {
+                    e1.printStackTrace();
+                    throw new RuntimeException("Unable to create the ban file.");
+                }
+            }
             File mapFile = getMapFile(server.getServerid());
             if (!mapFile.exists())
                 throw new IllegalStateException(
@@ -720,7 +743,7 @@ public class BZNetworkServer implements ServletContextListener,
             Process process;
             ArrayList<String> args = new ArrayList<String>();
             args.add(executable);
-            args.add("-port");
+            args.add("-p");
             args.add("" + server.getPort());
             if (server.isListed())
             {
@@ -740,6 +763,12 @@ public class BZNetworkServer implements ServletContextListener,
                     + serverControlConfig.getAbsolutePath());
             args.add("-loadplugin");
             args.add(bznetworkPlugin.getAbsolutePath());
+            System.out.print("Starting server with args: ");
+            for (String s : args)
+            {
+                System.out.print(s + " ");
+            }
+            System.out.println();
             try
             {
                 process = new ProcessBuilder(args.toArray(new String[0]))
@@ -757,6 +786,30 @@ public class BZNetworkServer implements ServletContextListener,
              */
             liveServer.setProcess(process);
             liveServer.setOut(process.getOutputStream());
+            /*
+             * TODO: have excess output and error output from bzfs be sent to
+             * the log
+             */
+            final InputStream errorIn = process.getErrorStream();
+            new Thread()
+            {
+                public void run()
+                {
+                    int i;
+                    try
+                    {
+                        while ((i = errorIn.read()) != -1)
+                        {
+                            System.out.write(i);
+                            System.out.flush();
+                        }
+                    }
+                    catch (IOException e)
+                    {
+                        e.printStackTrace();
+                    }
+                }
+            }.start();
             liveServers.put(liveServer.getId(), liveServer);
             /*
              * Before we add a read thread, we need to add the queue that will,

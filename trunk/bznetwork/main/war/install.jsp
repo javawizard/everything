@@ -1,7 +1,7 @@
 
 <%@page import="java.io.File"%>
 <%@page import="jw.bznetwork.server.BZNetworkServer"%><html>
-<body style="font-family: sans-serif">
+<body style="font-family: sans-serif" onload="document.theform.thesubmitbutton.disabled=false">
 <%
     request.getSession().invalidate();
     File configFolder = new File(application

@@ -100,22 +100,22 @@
 
 .bznetwork-ServerState-LIVE .header,.bznetwork-ServerState-LIVE .header a,.bznetwork-ServerState-LIVE .header td
 	{
-	color: #008800
+	color: #00aa00
 }
 
 .bznetwork-ServerState-STARTING .header,.bznetwork-ServerState-STARTING .header a,.bznetwork-ServerState-STARTING .header td
 	{
-	color: #004488
+	color: #0055aa
 }
 
 .bznetwork-ServerState-STOPPING .header,.bznetwork-ServerState-STOPPING .header a,.bznetwork-ServerState-STOPPING .header td
 	{
-	color: #888800
+	color: #aaaa00
 }
 
 .bznetwork-ServerState-STOPPED .header,.bznetwork-ServerState-STOPPED .header a,.bznetwork-ServerState-STOPPED .header td
 	{
-	color: #880000
+	color: #aa0000
 }
 
 .bznetwork-indented {

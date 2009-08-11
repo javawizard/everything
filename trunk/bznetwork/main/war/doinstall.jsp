@@ -5,7 +5,8 @@
 <%@page import="java.util.Arrays"%>
 <%@page import="org.apache.commons.lang.StringEscapeUtils"%>
 <%@page import="java.io.StringWriter"%>
-<%@page import="java.io.PrintWriter"%><html>
+<%@page import="java.io.PrintWriter"%>
+<%@page import="java.util.Collections"%><html>
 <body>
 <%
     File configFolder = new File(application
@@ -49,7 +50,7 @@ installed again. <a href="index.jsp">Log in</a> to BZNetwork.
 %>
 <form method="post" action="doinstall.jsp">
 <%
-    for (Object keyObject : Arrays.asList(request
+    for (Object keyObject : Collections.list(request
                     .getParameterNames()))
             {
                 String key = keyObject.toString();

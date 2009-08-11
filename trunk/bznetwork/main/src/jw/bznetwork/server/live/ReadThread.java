@@ -5,6 +5,7 @@ import java.io.DataInputStream;
 import java.io.InputStream;
 
 import jw.bznetwork.client.data.model.LogEvent;
+import jw.bznetwork.client.data.model.Server;
 import jw.bznetwork.client.live.LivePlayer;
 import jw.bznetwork.server.data.DataStore;
 
@@ -66,6 +67,11 @@ public class ReadThread extends Thread
                      */
                     processData(data);
                 }
+                else
+                {
+                    System.out.write(i);
+                    System.out.flush();
+                }
             }
         }
         catch (Exception e)
@@ -79,7 +85,7 @@ public class ReadThread extends Thread
          * LiveServer, which can take care of removing itself from the live
          * server list.
          */
-        if(server.getLoadListenerQueue() != null)
+        if (server.getLoadListenerQueue() != null)
             server.getLoadListenerQueue().offer("bznfail dead");
         server.completedShutdown();
     }
@@ -103,6 +109,16 @@ public class ReadThread extends Thread
             processBznFail(data.substring("bznfail ".length()));
         else if (data.equals("bznunload"))
             processBznUnload();
+        else
+        {
+            Server serverObject = DataStore.getServerById(server.getId());
+            int port = -1;
+            if (serverObject != null)
+                port = serverObject.getPort();
+            System.out.println("Unknown data received from server "
+                    + server.getId() + " which runs on port " + port + ": "
+                    + data);
+        }
     }
     
     private void processBznFail(String substring)
@@ -173,7 +189,7 @@ public class ReadThread extends Thread
         player.setVerified(tokens[3].equals("verified"));
         player.setCallsign(tokens[4]);
         player.setEmail(tokens[5]);
-        player.setBzid(tokens[6]);
+        player.setBzid(tokens.length > 6 ? tokens[6] : "");
         server.getPlayers().add(player);
         server.getCallsignsToPlayers().put(player.getCallsign(), player);
         server.getIdsToPlayers().put(player.getId(), player);
@@ -193,7 +209,7 @@ public class ReadThread extends Thread
     {
         String[] tokens = substring.split("\\|", 8);
         int id = Integer.parseInt(tokens[0]);
-        String reason = tokens[7];
+        String reason = tokens.length > 7 ? tokens[7] : "(no reason)";
         LivePlayer player = server.getIdsToPlayers().get(id);
         LogEvent event = new LogEvent();
         event.setBzid(player.getBzid());
