@@ -51,7 +51,7 @@ public class ServersScreen extends VerticalScreen
     {
         private int serverid;
         
-        @Override
+        @Override 
         public void onClick(ClickEvent event)
         {
             BZNetwork.authLink.stopServer(serverid, new BoxCallback<Void>()
