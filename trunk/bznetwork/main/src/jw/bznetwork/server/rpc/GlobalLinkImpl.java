@@ -1,8 +1,10 @@
 package jw.bznetwork.server.rpc;
 
+import java.awt.event.ActionEvent;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Properties;
@@ -30,6 +32,7 @@ import jw.bznetwork.client.data.ServerListModel;
 import jw.bznetwork.client.data.ServerModel;
 import jw.bznetwork.client.data.UserSession;
 import jw.bznetwork.client.data.ServerModel.LiveState;
+import jw.bznetwork.client.data.model.Action;
 import jw.bznetwork.client.data.model.Authgroup;
 import jw.bznetwork.client.data.model.Banfile;
 import jw.bznetwork.client.data.model.Configuration;
@@ -41,6 +44,7 @@ import jw.bznetwork.client.data.model.Server;
 import jw.bznetwork.client.live.LivePlayer;
 import jw.bznetwork.client.rpc.GlobalLink;
 import jw.bznetwork.server.BZNetworkServer;
+import jw.bznetwork.server.RequestTrackerFilter;
 import jw.bznetwork.server.data.DataStore;
 import jw.bznetwork.server.live.LiveServer;
 
@@ -687,5 +691,21 @@ public class GlobalLinkImpl extends RemoteServiceServlet implements GlobalLink
                 .server("start-stop-server", serverid,
                         getServerGroupId(serverid));
         BZNetworkServer.stopServer(serverid);
+    }
+    
+    public static void action(String event, String details)
+    {
+        AuthUser user = (AuthUser) RequestTrackerFilter.getCurrentRequest().getSession().getAttribute("user");
+        if(user == null)
+            throw new IllegalStateException("Can't add events to the action log when the " +
+            		"user is not logged in.");
+        Action action = new Action();
+        action.setDetails(details);
+        action.setEvent(event);
+        action.setProvider(user.getProvider());
+        action.setTarget(-1);
+        action.setUsername(user.getUsername());
+        action.setWhen(new Date());
+        DataStore.addActionEvent(action);
     }
 }

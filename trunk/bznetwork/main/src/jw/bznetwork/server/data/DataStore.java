@@ -1,5 +1,6 @@
 package jw.bznetwork.server.data;
 
+import jw.bznetwork.client.data.model.Action;
 import jw.bznetwork.client.data.model.Authgroup;
 import jw.bznetwork.client.data.model.Banfile;
 import jw.bznetwork.client.data.model.Configuration;
@@ -50,6 +51,19 @@ public class DataStore
     }
     
     // !ADDTOSQL
+    
+    public static synchronized void addActionEvent(Action v)
+    {
+        try
+        {
+            getGdbClient().insert("addActionEvent", v);
+        }
+        catch (Exception e)
+        {
+            throw new RuntimeException(
+                    "Exception in database statement addActionEvent", e);
+        }
+    }
     
     public static synchronized void updateServer(Server v)
     {

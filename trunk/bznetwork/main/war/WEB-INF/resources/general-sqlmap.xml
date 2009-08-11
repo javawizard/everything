@@ -8,6 +8,15 @@
 
 	<!-- !ADDTOSQL -->
 
+    <insert id="addActionEvent" 
+         parameterClass="jw.bznetwork.client.data.model.Action" >
+        insert into actions
+        (provider,username,when,event,details,target)
+        values
+        (#provider#,#username#,#when#,#event#,
+        #details#,#target#)
+    </insert>
+
     <update id="updateServer" 
          parameterClass="jw.bznetwork.client.data.model.Server" >
         update servers set
