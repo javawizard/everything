@@ -40,6 +40,12 @@ public class HelpScreen extends VerticalScreen
                         + "<span class='bznetwork-GettingStartedLink'>"
                         + "Getting Started" + "</span></a></span>");
         widget.add(gettingStartedLink);
+        widget.add(new Spacer("5px", "3px"));
+        HTML faqLink = new HTML(
+                "<span class='bznetwork-GettingStartedLink-out'><a href='http://code.google.com/p/bzsound/wiki/BZNetworkFAQ' target='_blank'>"
+                        + "<span class='bznetwork-GettingStartedLink'>"
+                        + "Frequently Asked Questions" + "</span></a></span>");
+        widget.add(faqLink);
         widget.add(new Spacer("5px", "8px"));
         widget
                 .add(new HTML(
