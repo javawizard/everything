@@ -407,6 +407,23 @@ public class RolesScreen extends VerticalScreen
                     Window.alert("You didn't type the name of the new role.");
                     return;
                 }
+                /*
+                 * This is another easter egg, based on the fact that I
+                 * (javawizard2539/jcp) hate anything whole-wheat because in my
+                 * opinion we have whole-wheat food way too much around our
+                 * house. I'm not saying that home-made whole-wheat bread (which
+                 * my mom makes weekly) is a bad thing, I just think that having
+                 * it for breakfast every day gets to be a bit much.
+                 */
+                if (addNameBox.getText().trim().equalsIgnoreCase("whole wheat")
+                        || addNameBox.getText().trim().equalsIgnoreCase(
+                                "whole-wheat"))
+                {
+                    Window
+                            .alert("Seriously, what? Whole-wheat rolls are just "
+                                    + "plain weird. White rolls are sooooo much better.");
+                    return;
+                }
                 final PopupPanel box = BZNetwork.showLoadingBox();
                 BZNetwork.authLink.addRole(addNameBox.getText(),
                         new AsyncCallback<Void>()

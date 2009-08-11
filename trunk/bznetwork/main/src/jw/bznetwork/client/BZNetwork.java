@@ -302,6 +302,20 @@ public class BZNetwork implements EntryPoint
         return panel;
     }
     
+    /**
+     * Those of you that use GNOME (or more specifically, gdm) will probably
+     * know that if you use "Require Quarter" as your username to log in (at
+     * which point it lets you enter your username again), then once you log in
+     * gdm pops up a message that says "Please insert 25 cents to log in". I
+     * thought it would be fun to add a similar easter egg to BZNetwork; this is
+     * what this field is for.<br/><br/>
+     * 
+     * I'm also considering adding "Gimme Random Cursor", but I can't remember
+     * at the moment how to change the cursor in a browser.
+     */
+    private static boolean requireQuarter = false;
+    
+    @SuppressWarnings("deprecation")
     private void showInternalAuthScreen()
     {
         rootPanel.clear();
@@ -365,6 +379,13 @@ public class BZNetwork implements EntryPoint
             @Override
             public void onClick(Widget sender)
             {
+                if (usernameField.getText().equalsIgnoreCase("require quarter")
+                        && !requireQuarter)
+                {
+                    requireQuarter = true;
+                    usernameField.setText("");
+                    return;
+                }
                 final PopupPanel box = showLoadingBox();
                 unauthLink.login(usernameField.getText(), passwordField
                         .getText(), new AsyncCallback<String>()
@@ -385,6 +406,9 @@ public class BZNetwork implements EntryPoint
                             /*
                              * We've successfully logged in.
                              */
+                            if (requireQuarter)
+                                Window
+                                        .alert("Please insert 25 cents to log in.");
                             Window.Location.assign(CONTEXT_URL
                                     + "/BZNetwork.html");
                         }
