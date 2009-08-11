@@ -583,7 +583,7 @@ public class GlobalLinkImpl extends RemoteServiceServlet implements GlobalLink
         Verify.server("edit-server-settings", serverid,
                 getServerGroupId(serverid));
         File configFile = BZNetworkServer.getConfigFile(serverid);
-        StringUtils.writeFile(config, configFile);
+        StringUtils.writeFile(forceNewline(config), configFile);
     }
     
     // edit-groupdb and edit-group-groupdb
@@ -617,7 +617,7 @@ public class GlobalLinkImpl extends RemoteServiceServlet implements GlobalLink
     public void saveGroupGroupdb(int groupid, String groupdb)
     {
         Verify.group("edit-group-groupdb", groupid);
-        StringUtils.writeFile(groupdb, BZNetworkServer.getGroupdbFile(groupid));
+        StringUtils.writeFile(forceNewline(groupdb), BZNetworkServer.getGroupdbFile(groupid));
     }
     
     @Override
@@ -625,9 +625,16 @@ public class GlobalLinkImpl extends RemoteServiceServlet implements GlobalLink
     {
         Verify.server("edit-groupdb", serverid, getServerGroupId(serverid));
         StringUtils
-                .writeFile(groupdb, BZNetworkServer.getGroupdbFile(serverid));
+                .writeFile(forceNewline(groupdb), BZNetworkServer.getGroupdbFile(serverid));
     }
     
+    private String forceNewline(String s)
+    {
+        if(s.endsWith(BZNetworkServer.newline))
+            return s;
+        return s + BZNetworkServer.newline;
+    }
+
     @Override
     public void killServer(int serverid)
     {
