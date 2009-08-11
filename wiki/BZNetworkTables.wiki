@@ -1,0 +1,3 @@
+This page has been superseded by the tables.sql file in the BZNetwork source, which contains information on the tables themselves in the form of SQL comments, along with SQL to create the tables and populate them with some initial data (like an internal admin user).
+
+Head on over to the source tab (which you should see above if you're viewing this in Google Code, see http://bzsound.googlecode.com if you're not), then browse to the trunk folder, and you should see tables.sql as a file in there. You can use that file to see what tables BZNetwork supports.

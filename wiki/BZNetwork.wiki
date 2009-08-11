@@ -1,0 +1,48 @@
+=BZNetwork=
+BZNetwork is a web administration interface for a bzflag server network. It is a Java webapp, so it must be run inside a Java Servlet Container (such as Apache Tomcat, http://tomcat.apache.org). It starts and stops all of the bzfs instances itself, and can use a custom executable other than bzfs if needed.
+
+BZNetwork was originally written for [http://bztraining.org the BZTraining server network]. Join [http://bztraining.org/?page_id=29 the BZTraining chat room] if you have questions about BZNetwork or BZTraining, or get in touch with javawizard2539 or jcp.
+
+Due to the fact that this document was written before most of BZNetwork itself was written, most of the document is in the future tense.
+
+=Authentication=
+==Providers==
+Authentication should be pluggable. Authentication providers are installed by adding an entry to WEB-INF/server/auth.txt. The file contains lines that look like id|name|text|url|description. 
+
+The url specified can contain the string {path}, which will be replaced with the full url to the webapp that bznetwork is running at, without a trailing slash. The url does not need to point to a local page, and in the case of the BZFlag Callsign provider, the url points to my.bzflag.org/webauth.php. {path-encoded} can be used as the url-encoded form of {path}, which can be used, as in the case of webauth.php, with an external page that takes a parameter specifying a return url.
+
+The id of the provider is a string that should only contain letters, numbers, and hyphens. The server page that eventually handles the login request and logs the user in should know this identifier.
+
+The name of the authentication provider can contain any character (besides the pipe character). It is shown in the administration interface where managers can choose which authentication methods to allow.
+
+The description is also shown in the management interface, and allows the administrator to see what that authentication provider does.
+
+The text is shown on the login page, asking the user which login method to use.
+
+==Server-side login==
+The url should somehow eventually result in the user's machine visiting a url under the bypass folder. This url should be specific to the authentication mechanism, and should call BZNetwork.login(), passing in the identifier of the login method used, the user's "username" (whatever that means is up to the provider, but it must remain constant for any given user when they authenticate in the future; the callsign provider uses the user's callsign and the internal provider uses the user's username), and the roles that the user has applied to them. Usually, a user only has one role, but callsign-based users can be members of multiple bzflag groups, each of which could have a role, and they will get all permissions from all roles applied to them.
+
+=Authorization=
+Roles are the primary mechanism behind authorization. Permissions can be added to a role, and if a particular user logs in with multiple roles assigned to them they will get the combined set of permissions from all roles that they are a member of. See [BZNetworkPermissions] for a list of permissions that BZNetwork currently supports.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
