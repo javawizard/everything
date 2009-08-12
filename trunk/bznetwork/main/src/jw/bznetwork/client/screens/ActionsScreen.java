@@ -129,10 +129,10 @@ public class ActionsScreen extends VerticalScreen
             navigationPanel.add(previousLink);
         }
         /*
-         * If our current offset, plus the number of results (so the number of
-         * the last result) is greater than the total number of results.
+         * If the total number of results is greater than our offset plus the
+         * length of results (in otherwords, the last result)
          */
-        if ((filterOffset + result.getActions().length) > result.getCount())
+        if ((filterOffset + result.getActions().length) < result.getCount())
         {
             navigationPanel.add(new HTML("&nbsp;"));
             navigationPanel.add(nextLink);
@@ -144,7 +144,7 @@ public class ActionsScreen extends VerticalScreen
             public void onClick(ClickEvent event)
             {
                 filterOffset = filterOffset - LENGTH;
-                if(filterOffset < 0)
+                if (filterOffset < 0)
                     filterOffset = 0;
                 select1();
             }
@@ -221,6 +221,8 @@ public class ActionsScreen extends VerticalScreen
             table.setWidget(row, 0, detailsPanel);
             format.setColSpan(row, 0, 7);
         }
+        widget.setWidth("100%");
+        table.setWidth("100%");
     }
     
     private String getFilterLinkText()
