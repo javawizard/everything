@@ -86,13 +86,18 @@ public class GlobalLinkImpl extends RemoteServiceServlet implements GlobalLink
         role.setRoleid(DataStore.createId());
         role.setName(name);
         DataStore.addRole(role);
+        action("add-role", "Role id: " + role.getRoleid() + "\nRole name: "
+                + name);
     }
     
     @Override
     public void deleteRole(int id)
     {
         Verify.global("manage-roles");
+        Role role = DataStore.getRoleById(id);
         DataStore.deleteRole(id);
+        action("delete-role", "Role id: " + id + "\nRole name: "
+                + (role != null ? role.getName() : ""));
     }
     
     @Override
@@ -197,8 +202,11 @@ public class GlobalLinkImpl extends RemoteServiceServlet implements GlobalLink
     {
         Verify.global("manage-roles");
         Role role = DataStore.getRoleById(id);
+        String oldName = role.getName();
         role.setName(newName);
         DataStore.updateRole(role);
+        action("rename-role", "Role id: " + id + "\nOld name: " + oldName
+                + "\nNew name: " + newName);
     }
     
     @Override
@@ -208,6 +216,10 @@ public class GlobalLinkImpl extends RemoteServiceServlet implements GlobalLink
         Verify.global("manage-roles");
         if (!Perms.isPermissionValid(permission))
             throw new RuntimeException("Invalid permission");
+        Role role = DataStore.getRoleById(roleid);
+        if (role == null)
+            throw new ShowMessageException(
+                    "Trying to apply a permission to a nonexistent role");
         /*
          * In the future, we might want to validate that the permission is being
          * applied to the appropriate level. For now, though, it's not that big
@@ -225,6 +237,9 @@ public class GlobalLinkImpl extends RemoteServiceServlet implements GlobalLink
         else
             throw new ShowMessageException(
                     "That permission/target pair already exists on this role.");
+        action("add-permission", "Role id: " + roleid + "\nRole name: "
+                + role.getName() + "\nPermission: " + permission
+                + "\nTarget id: " + target);
     }
     
     @Override
@@ -236,6 +251,8 @@ public class GlobalLinkImpl extends RemoteServiceServlet implements GlobalLink
         p.setRoleid(roleid);
         p.setTarget(target);
         DataStore.deletePermission(p);
+        action("delete-permission", "Role id: " + roleid + "\nPermission: "
+                + permission + "\nTarget id: " + target);
     }
     
     @Override
@@ -246,12 +263,16 @@ public class GlobalLinkImpl extends RemoteServiceServlet implements GlobalLink
         Authgroup authgroup = new Authgroup();
         authgroup.setName(name.trim());
         authgroup.setRole(roleid);
+        Role role = DataStore.getRoleById(roleid);
         if (DataStore.getAuthgroupByName(name.trim()) != null)
         {
             throw new ShowMessageException(
                     "An authgroup for that group already exists.");
         }
         DataStore.addAuthgroup(authgroup);
+        action("add-authgroup", "Authgroup name: " + name.trim()
+                + "\nRole id: " + roleid + "\nRole name: "
+                + (role != null ? role.getName() : ""));
     }
     
     @Override
@@ -259,6 +280,7 @@ public class GlobalLinkImpl extends RemoteServiceServlet implements GlobalLink
     {
         Verify.global("manage-callsign-auth");
         DataStore.deleteAuthgroup(name);
+        action("delete-authgroup", "Authgroup name: " + name);
     }
     
     @Override
@@ -284,11 +306,14 @@ public class GlobalLinkImpl extends RemoteServiceServlet implements GlobalLink
         Callsign callsign = new Callsign();
         callsign.setCallsign(name.trim());
         callsign.setRole(roleid);
+        Role role = DataStore.getRoleById(roleid);
         if (DataStore.getCallsignByName(name.trim()) != null)
         {
             throw new ShowMessageException("That callsign already exists.");
         }
         DataStore.addCallsign(callsign);
+        action("add-callsign", "Callsign: " + name + "\nRole id: " + roleid
+                + "\nRole name: " + (role != null ? role.getName() : ""));
     }
     
     @Override
@@ -296,6 +321,7 @@ public class GlobalLinkImpl extends RemoteServiceServlet implements GlobalLink
     {
         Verify.global("manage-callsign-auth");
         DataStore.deleteCallsign(name);
+        action("delete-callsign", "Callsign: " + name);
     }
     
     @Override
@@ -331,6 +357,17 @@ public class GlobalLinkImpl extends RemoteServiceServlet implements GlobalLink
         Properties props = new Properties();
         props.putAll(enabledProps);
         BZNetworkServer.saveEnabledAuthProps(props);
+        StringBuffer details = new StringBuffer();
+        for (String key : enabledProps.keySet())
+        {
+            details.append(key + ": " + enabledProps.get(key) + "\n");
+        }
+        if (details.toString().endsWith("\n"))
+        {
+            details = new StringBuffer(details.substring(0,
+                    details.length() - 1));
+        }
+        action("update-authentication", details.toString());
     }
     
     @Override
@@ -343,6 +380,7 @@ public class GlobalLinkImpl extends RemoteServiceServlet implements GlobalLink
             try
             {
                 file.createNewFile();
+                
             }
             catch (IOException e)
             {
