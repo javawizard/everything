@@ -479,7 +479,6 @@ public class GlobalLinkImpl extends RemoteServiceServlet implements GlobalLink
         if (session != null)
         {
             AuthUser user = (AuthUser) session.getAttribute("user");
-            session.invalidate();
             String details = "";
             if (user != null)
                 details += "User: " + user.getProvider() + ":"
@@ -487,6 +486,7 @@ public class GlobalLinkImpl extends RemoteServiceServlet implements GlobalLink
             else
                 details += "Not logged in";
             action("invalidate-user-session", details);
+            session.invalidate();
         }
     }
     
