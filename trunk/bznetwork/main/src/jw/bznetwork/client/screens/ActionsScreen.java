@@ -1,6 +1,9 @@
 package jw.bznetwork.client.screens;
 
 import com.google.gwt.user.client.ui.Anchor;
+import com.google.gwt.user.client.ui.DisclosureEvent;
+import com.google.gwt.user.client.ui.DisclosureHandler;
+import com.google.gwt.user.client.ui.DisclosurePanel;
 import com.google.gwt.user.client.ui.FlexTable;
 import com.google.gwt.user.client.ui.HTML;
 import com.google.gwt.user.client.ui.HorizontalPanel;
@@ -12,12 +15,15 @@ import jw.bznetwork.client.BZNetwork;
 import jw.bznetwork.client.BoxCallback;
 import jw.bznetwork.client.VerticalScreen;
 import jw.bznetwork.client.data.ActionLogModel;
+import jw.bznetwork.client.data.model.Action;
 import jw.bznetwork.client.ui.Header2;
+import jw.bznetwork.client.ui.PreWidget;
 import jw.bznetwork.server.BZNetworkServer;
 
 public class ActionsScreen extends VerticalScreen
 {
     private static final int LENGTH = 25;
+    private static final int MAX_DETAILS_PREVIEW_SIZE = 80;
     private String filterEvent;
     private String filterProvider;
     private String filterUsername;
@@ -77,6 +83,7 @@ public class ActionsScreen extends VerticalScreen
                 });
     }
     
+    @SuppressWarnings("deprecation")
     protected void select2(ActionLogModel result)
     {
         widget.clear();
@@ -110,8 +117,13 @@ public class ActionsScreen extends VerticalScreen
         Label totalLabel = new Label("" + result.getCount());
         navigationPanel.add(totalLabel);
         row += 1;
+        table.setHTML(row, 0, "<b>When</b>");
+        table.setHTML(row, 1, "<b>User</b>");
+        table.setHTML(row, 2, "<b>Event</b>");
+        table.setHTML(row, 3, "<b>Details</b>");
         for (int i = 0; i < result.getActions().length; i++)
         {
+            row += 1;
             /*
              * TODO: pick up here 2009.08.12, add a header above this for
              * statement that contains "when", "user", "event", and "details",
@@ -122,6 +134,43 @@ public class ActionsScreen extends VerticalScreen
              * on the next row should be in a <pre> tag, filtering dialog box
              * changes ActionsScreen fields and select()s.
              */
+            Action action = result.getActions()[i];
+            table.setText(row, 0, action.getWhen().toString());
+            table.setText(row, 1, action.getProvider() + ":"
+                    + action.getUsername());
+            table.setText(row, 2, action.getEvent());
+            String detailsSummary = action.getDetails();
+            if (detailsSummary.length() > MAX_DETAILS_PREVIEW_SIZE)
+            {
+                detailsSummary = detailsSummary.substring(0,
+                        MAX_DETAILS_PREVIEW_SIZE);
+                detailsSummary += "...";
+            }
+            detailsSummary = detailsSummary.replace("\n", " ");
+            DisclosurePanel detailsNamePanel = new DisclosurePanel(
+                    detailsSummary, false);
+            final PreWidget detailsPanel = new PreWidget(action.getDetails());
+            detailsPanel.addStyleName("bznetwork-Actions-DetailsBox");
+            detailsPanel.setVisible(false);
+            detailsNamePanel.addEventHandler(new DisclosureHandler()
+            {
+                
+                @Override
+                public void onClose(DisclosureEvent event)
+                {
+                    detailsPanel.setVisible(false);
+                }
+                
+                @Override
+                public void onOpen(DisclosureEvent event)
+                {
+                    detailsPanel.setVisible(true);
+                }
+            });
+            table.setWidget(row, 3, detailsNamePanel);
+            row += 1;
+            table.setWidget(row, 0, detailsPanel);
+            format.setColSpan(row, 0, 4);
         }
     }
     

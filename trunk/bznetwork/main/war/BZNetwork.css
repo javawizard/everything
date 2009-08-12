@@ -125,3 +125,7 @@
 .bznetwork-None {
 	
 }
+
+.bznetwork-Actions-DetailsBox {
+	border-left: 15px solid white;
+}
