@@ -1,6 +1,7 @@
 package jw.bznetwork.server.data;
 
 import jw.bznetwork.client.data.model.Action;
+import jw.bznetwork.client.data.model.ActionRequest;
 import jw.bznetwork.client.data.model.Authgroup;
 import jw.bznetwork.client.data.model.Banfile;
 import jw.bznetwork.client.data.model.Callsign;
@@ -11,6 +12,7 @@ import jw.bznetwork.client.data.model.Permission;
 import jw.bznetwork.client.data.model.Role;
 import jw.bznetwork.client.data.model.Server;
 import jw.bznetwork.client.data.model.User;
+import jw.bznetwork.client.data.model.UserPair;
 import jw.bznetwork.client.data.model.ValueFive;
 import jw.bznetwork.server.BZNetworkServer;
 
@@ -53,13 +55,64 @@ public class DataStore
     
     // !ADDTOSQL
 
-public static synchronized UserPair[] getActionUserList(){try{return (UserPair[]) getGdbClient().queryForList("getActionUserList").toArray(new UserPair[0]);}catch(Exception e){throw new RuntimeException("Exception in database statement getActionUserList",e);}}
-
-public static synchronized String[] getActionEventNames(){try{return (String[]) getGdbClient().queryForList("getActionEventNames").toArray(new String[0]);}catch(Exception e){throw new RuntimeException("Exception in database statement getActionEventNames",e);}}
-
-public static synchronized Integer getActionCountForSearch(ActionRequest v){try{return (Integer) getGdbClient().queryForObject("getActionCountForSearch",v);}catch(Exception e){throw new RuntimeException("Exception in database statement getActionCountForSearch",e);}}
-
-public static synchronized Action[] listActionsForSearch(ActionRequest v){try{return (Action[]) getGdbClient().queryForList("listActionsForSearch",v).toArray(new Action[0]);}catch(Exception e){throw new RuntimeException("Exception in database statement listActionsForSearch",e);}}
+public static synchronized void clearActionLog(UserPair v){try{getGdbClient().delete("clearActionLog",v);}catch(Exception e){throw new RuntimeException("Exception in database statement clearActionLog",e);}}
+    
+    public static synchronized UserPair[] getActionUserList()
+    {
+        try
+        {
+            return (UserPair[]) getGdbClient()
+                    .queryForList("getActionUserList").toArray(new UserPair[0]);
+        }
+        catch (Exception e)
+        {
+            throw new RuntimeException(
+                    "Exception in database statement getActionUserList", e);
+        }
+    }
+    
+    public static synchronized String[] getActionEventNames()
+    {
+        try
+        {
+            return (String[]) getGdbClient()
+                    .queryForList("getActionEventNames").toArray(new String[0]);
+        }
+        catch (Exception e)
+        {
+            throw new RuntimeException(
+                    "Exception in database statement getActionEventNames", e);
+        }
+    }
+    
+    public static synchronized Integer getActionCountForSearch(ActionRequest v)
+    {
+        try
+        {
+            return (Integer) getGdbClient().queryForObject(
+                    "getActionCountForSearch", v);
+        }
+        catch (Exception e)
+        {
+            throw new RuntimeException(
+                    "Exception in database statement getActionCountForSearch",
+                    e);
+        }
+    }
+    
+    public static synchronized Action[] listActionsForSearch(ActionRequest v)
+    {
+        try
+        {
+            return (Action[]) getGdbClient().queryForList(
+                    "listActionsForSearch", v).toArray(new Action[0]);
+        }
+        catch (Exception e)
+        {
+            throw new RuntimeException(
+                    "Exception in database statement listActionsForSearch", e);
+        }
+    }
     
     public static synchronized Callsign getCallsignByName(String v)
     {

@@ -2,7 +2,27 @@ package jw.bznetwork.client.data.model;
 
 public class ActionRequest
 {
-    public ActionRequest(int offset, int length, int literalEvent,
+    public String getLiteralProvider()
+    {
+        return literalProvider;
+    }
+    
+    public void setLiteralProvider(String literalProvider)
+    {
+        this.literalProvider = literalProvider;
+    }
+    
+    public String getLiteralUser()
+    {
+        return literalUser;
+    }
+    
+    public void setLiteralUser(String literalUser)
+    {
+        this.literalUser = literalUser;
+    }
+    
+    public ActionRequest(int offset, int length, String literalEvent,
             String literalProvider, String literalUser)
     {
         super();
@@ -13,9 +33,15 @@ public class ActionRequest
         this.literalUser = literalUser;
     }
     
+    public ActionRequest()
+    {
+        super();
+        // TODO Auto-generated constructor stub
+    }
+    
     private int offset;
     private int length;
-    private int literalEvent;
+    private String literalEvent;
     private String literalProvider;
     private String literalUser;
     
@@ -39,12 +65,12 @@ public class ActionRequest
         this.length = length;
     }
     
-    public int getLiteralEvent()
+    public String getLiteralEvent()
     {
         return literalEvent;
     }
     
-    public void setLiteralEvent(int literalEvent)
+    public void setLiteralEvent(String literalEvent)
     {
         this.literalEvent = literalEvent;
     }

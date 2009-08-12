@@ -121,8 +121,8 @@ public interface GlobalLink extends RemoteService
     
     public void killServer(int serverid);
     
-    public ActionLogModel getActionLogModel(String event, String provider, String user, int offset,
-            int length);
+    public ActionLogModel getActionLogModel(String event, String provider,
+            String user, int offset, int length);
     
-    public void clearActionLog(int user);
+    public void clearActionLog(String provider, String user);
 }

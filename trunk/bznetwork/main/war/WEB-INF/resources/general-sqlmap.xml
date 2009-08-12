@@ -6,6 +6,13 @@
 
 	<!-- !ADDTOSQL -->
 
+    <delete id="clearActionLog" 
+         parameterClass="jw.bznetwork.client.data.model.UserPair" >
+        delete from actions 
+        where provider = #provider#
+        and username = #user#
+    </delete>
+
     <select id="getActionUserList" 
          resultClass="jw.bznetwork.client.data.model.UserPair" >
         select distinct provider, username as user from actions
@@ -32,7 +39,7 @@
         where provider = $literalProvider$
         and username = $literalUser$
         and event = $literalEvent$
-        limit #limit# offset #offset#
+        limit #length# offset #offset#
     </select>
 
     <select id="getCallsignByName" 

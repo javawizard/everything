@@ -16,6 +16,8 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
+import org.apache.commons.lang.StringEscapeUtils;
+
 import net.sf.opengroove.common.utils.StringUtils;
 
 import jw.bznetwork.client.Perms;
@@ -45,6 +47,7 @@ import jw.bznetwork.client.data.model.Group;
 import jw.bznetwork.client.data.model.Permission;
 import jw.bznetwork.client.data.model.Role;
 import jw.bznetwork.client.data.model.Server;
+import jw.bznetwork.client.data.model.UserPair;
 import jw.bznetwork.client.live.LivePlayer;
 import jw.bznetwork.client.rpc.GlobalLink;
 import jw.bznetwork.server.BZNetworkServer;
@@ -868,22 +871,59 @@ public class GlobalLinkImpl extends RemoteServiceServlet implements GlobalLink
         action.setWhen(new Date());
         DataStore.addActionEvent(action);
     }
-
+    
     @Override
-    public void clearActionLog(int user)
+    public void clearActionLog(String provider, String user)
     {
         Verify.global("clear-action-log");
+        AuthUser thisUser = (AuthUser) RequestTrackerFilter.getCurrentRequest()
+                .getSession().getAttribute("user");
         // TODO Auto-generated method stub
         // action-log-cleared, clear-action-log
+        UserPair pair = new UserPair();
+        pair.setProvider(provider);
+        pair.setUser(user);
+        DataStore.clearActionLog(pair);
+        action("clear-action-log", "User: " + provider + ":" + user);
+        Action action = new Action();
+        action.setDetails("Cleared by: " + thisUser.getProvider() + ":"
+                + thisUser.getUsername());
+        action.setEvent("action-log-cleared");
+        action.setProvider(provider);
+        action.setTarget(-1);
+        action.setUsername(user);
+        action.setWhen(new Date());
+        DataStore.addActionEvent(action);
     }
-
+    
     @Override
-    public ActionLogModel getActionLogModel(String event, String provider, String user, int offset,
-            int length)
+    public ActionLogModel getActionLogModel(String event, String provider,
+            String user, int offset, int length)
     {
-        ActionRequest request = new ActionRequest();
         Verify.global("view-action-log");
+        ActionRequest request = new ActionRequest();
+        request.setOffset(offset);
+        request.setLength(length);
+        if (event == null)
+            request.setLiteralEvent("event");
+        else
+            request.setLiteralEvent("'" + StringEscapeUtils.escapeSql(event)
+                    + "'");
+        if (user == null)
+            request.setLiteralUser("username");
+        else
+            request.setLiteralUser("'" + StringEscapeUtils.escapeSql(user)
+                    + "'");
+        if (provider == null)
+            request.setLiteralProvider("provider");
+        else
+            request.setLiteralProvider("'"
+                    + StringEscapeUtils.escapeSql(provider) + "'");
         ActionLogModel model = new ActionLogModel();
         model.setActions(DataStore.listActionsForSearch(request));
+        model.setCount(DataStore.getActionCountForSearch(request));
+        model.setEventNames(DataStore.getActionEventNames());
+        model.setUsers(DataStore.getActionUserList());
+        return model;
     }
 }
