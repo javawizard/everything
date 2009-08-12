@@ -380,7 +380,7 @@ public class GlobalLinkImpl extends RemoteServiceServlet implements GlobalLink
             try
             {
                 file.createNewFile();
-                
+                action("disable-executable", "");
             }
             catch (IOException e)
             {
@@ -411,15 +411,30 @@ public class GlobalLinkImpl extends RemoteServiceServlet implements GlobalLink
     {
         Verify.global("edit-configuration");
         boolean ecDisabled = getEcDisableFile().exists();
+        Configuration oldConfig = DataStore.getConfiguration();
         if (ecDisabled)
         {
             /*
              * If we're not allowed to change the executable, then set it to
              * what it currently is in the db
              */
-            config.setExecutable(DataStore.getConfiguration().getExecutable());
+            config.setExecutable(oldConfig.getExecutable());
         }
         DataStore.updateConfiguration(config);
+        String details = "";
+        if (!config.getContact().equals(oldConfig.getContact()))
+            details += "Contact: " + config.getContact() + "\n";
+        if (!config.getExecutable().equals(oldConfig.getExecutable()))
+            details += "Executable: " + config.getExecutable() + "\n";
+        if (!config.getSitename().equals(oldConfig.getSitename()))
+            details += "Site name: " + config.getSitename() + "\n";
+        if (!config.getWelcome().equals(oldConfig.getWelcome()))
+            details += "Welcome: " + config.getWelcome() + "\n";
+        if (details.endsWith("\n"))
+            details = details.substring(0, details.length() - 1);
+        if (details.equals(""))
+            details = "No changes";
+        action("update-configuration", details);
     }
     
     @Override
@@ -457,7 +472,17 @@ public class GlobalLinkImpl extends RemoteServiceServlet implements GlobalLink
         Verify.global("view-sessions");
         HttpSession session = BZNetworkServer.getSessionList().get(id);
         if (session != null)
+        {
+            AuthUser user = (AuthUser) session.getAttribute("user");
             session.invalidate();
+            String details = "";
+            if (user != null)
+                details += "User: " + user.getProvider() + ":"
+                        + user.getUsername();
+            else
+                details += "Not logged in";
+            action("invalidate-user-session", details);
+        }
     }
     
     @Override
@@ -468,6 +493,8 @@ public class GlobalLinkImpl extends RemoteServiceServlet implements GlobalLink
         banfile.setBanfileid(DataStore.createId());
         banfile.setName(name);
         DataStore.addBanfile(banfile);
+        action("add-banfile", "Banfile id: " + banfile.getBanfileid()
+                + "\nBanfile name: " + banfile.getName());
     }
     
     @Override
@@ -568,6 +595,8 @@ public class GlobalLinkImpl extends RemoteServiceServlet implements GlobalLink
         group.setName(name);
         group.setBanfile(-1);
         DataStore.addGroup(group);
+        action("add-group", "Group id: " + group.getGroupid()
+                + "\nGroup name: " + group.getName());
     }
     
     @Override
@@ -577,12 +606,18 @@ public class GlobalLinkImpl extends RemoteServiceServlet implements GlobalLink
         Group groupObject = DataStore.getGroupById(group);
         groupObject.setBanfile(banfile);
         DataStore.updateGroup(groupObject);
+        Banfile banfileObject = DataStore.getBanfileById(banfile);
+        action("set-group-banfile", "Group id: " + group + "\nGroup name: "
+                + groupObject.getName() + "\nBanfile id: " + banfile
+                + "\nBanfile name: "
+                + (banfileObject != null ? banfileObject.getName() : ""));
     }
     
     @Override
     public void addServer(String name, int group)
     {
         Verify.group("create-server", group);
+        Group groupObject = DataStore.getGroupById(group);
         Server server = new Server();
         server.setBanfile(-1);
         server.setDirty(false);
@@ -596,16 +631,21 @@ public class GlobalLinkImpl extends RemoteServiceServlet implements GlobalLink
         server.setRunning(false);
         server.setServerid(DataStore.createId());
         DataStore.addServer(server);
+        action("add-server", "Server id: " + server.getServerid()
+                + "\nServer name: " + name + "\nGroup id: " + group
+                + "\nGroup name: " + groupObject.getName());
     }
     
     @Override
     public void setServerBanfile(int server, int banfile)
     {
         Server serverObject = DataStore.getServerById(server);
-        int groupid = (serverObject == null ? -1 : serverObject.getGroupid());
+        int groupid = (serverObject == null ? -100 : serverObject.getGroupid());
         Verify.server("edit-server-banfile", server, groupid);
         serverObject.setBanfile(banfile);
         DataStore.updateServer(serverObject);
+        action("set-server-banfile", "Server id: " + server + "\nServer name: "
+                + serverObject.getName() + "\nBanfile id: " + banfile);
     }
     
     @Override
@@ -613,8 +653,11 @@ public class GlobalLinkImpl extends RemoteServiceServlet implements GlobalLink
     {
         Verify.group("rename-group", group);
         Group groupObject = DataStore.getGroupById(group);
+        String oldName = groupObject.getName();
         groupObject.setName(newName);
         DataStore.updateGroup(groupObject);
+        action("rename-group", "Group id: " + group + "\nOld name: " + oldName
+                + "\nNew name: " + newName);
     }
     
     public static int getServerGroupId(int server)
@@ -629,8 +672,11 @@ public class GlobalLinkImpl extends RemoteServiceServlet implements GlobalLink
     {
         Verify.server("edit-server-settings", server, getServerGroupId(server));
         Server serverObject = DataStore.getServerById(server);
+        String oldName = serverObject.getName();
         serverObject.setName(newName);
         DataStore.updateServer(serverObject);
+        action("rename-server", "Server id: " + server + "\nOld name: "
+                + oldName + "\nNew name: " + newName);
     }
     
     @Override
@@ -638,6 +684,7 @@ public class GlobalLinkImpl extends RemoteServiceServlet implements GlobalLink
     {
         Verify.server("edit-server-settings", server.getServerid(),
                 getServerGroupId(server.getServerid()));
+        Server oldServer = DataStore.getServerById(server.getServerid());
         Server dbServer = DataStore.getServerById(server.getServerid());
         dbServer.setPort(server.getPort());
         dbServer.setListed(server.isListed());
@@ -646,6 +693,20 @@ public class GlobalLinkImpl extends RemoteServiceServlet implements GlobalLink
             dbServer.setInheritgroupdb(server.isInheritgroupdb());
         dbServer.setNotes(server.getNotes());
         DataStore.updateServer(dbServer);
+        String details = "";
+        if (oldServer.getPort() != dbServer.getPort())
+            details += "Port: " + dbServer.getPort() + "\n";
+        if (oldServer.isListed() != dbServer.isListed())
+            details += "Public: " + dbServer.isListed();
+        if (oldServer.isInheritgroupdb() != dbServer.isInheritgroupdb())
+            details += "Inherit groupdb: " + dbServer.isInheritgroupdb();
+        if (!oldServer.getNotes().equals(dbServer.getNotes()))
+            details += "Notes: " + dbServer.getNotes();
+        if (details.endsWith("\n"))
+            details = details.substring(0, details.length() - 1);
+        if (details.equals(""))
+            details = "No changes";
+        action("update-server", details);
     }
     
     @Override
@@ -676,6 +737,14 @@ public class GlobalLinkImpl extends RemoteServiceServlet implements GlobalLink
                 getServerGroupId(serverid));
         File configFile = BZNetworkServer.getConfigFile(serverid);
         StringUtils.writeFile(forceNewline(config), configFile);
+        /*
+         * TODO: consider adding in a diff of the old config and the new config,
+         * if it wouldn't take up too much space (maybe have it as a
+         * configuration setting whether or not diffs get saved like this).
+         * Possibly find a java diff library, like the one Eclipse uses, to do
+         * the actual diffing, or rely on the command-line diff.
+         */
+        action("edit-server-config", "");
     }
     
     // edit-groupdb and edit-group-groupdb
@@ -711,6 +780,7 @@ public class GlobalLinkImpl extends RemoteServiceServlet implements GlobalLink
         Verify.group("edit-group-groupdb", groupid);
         StringUtils.writeFile(forceNewline(groupdb), BZNetworkServer
                 .getGroupdbFile(groupid));
+        action("edit-group-groupdb", "");
     }
     
     @Override
@@ -719,6 +789,7 @@ public class GlobalLinkImpl extends RemoteServiceServlet implements GlobalLink
         Verify.server("edit-groupdb", serverid, getServerGroupId(serverid));
         StringUtils.writeFile(forceNewline(groupdb), BZNetworkServer
                 .getGroupdbFile(serverid));
+        action("edit-server-groupdb", "");
     }
     
     private String forceNewline(String s)
@@ -735,6 +806,7 @@ public class GlobalLinkImpl extends RemoteServiceServlet implements GlobalLink
                 .server("start-stop-server", serverid,
                         getServerGroupId(serverid));
         BZNetworkServer.killServer(serverid);
+        action("kill-server", "Server id: " + serverid);
         try
         {
             Thread.sleep(500);
@@ -753,11 +825,16 @@ public class GlobalLinkImpl extends RemoteServiceServlet implements GlobalLink
                         getServerGroupId(serverid));
         try
         {
-            return BZNetworkServer.startServer(serverid, true);
+            String s = BZNetworkServer.startServer(serverid, true);
+            action("start-server", "Server id: " + serverid + "\nResult: " + s);
+            return s;
         }
         catch (Exception e)
         {
             e.printStackTrace();
+            action("start-server", "Server id: " + serverid
+                    + "\nResult: exception " + e.getClass().getName() + ": "
+                    + e.getMessage());
             return e.getClass().getName() + ": " + e.getMessage();
         }
     }
@@ -769,6 +846,7 @@ public class GlobalLinkImpl extends RemoteServiceServlet implements GlobalLink
                 .server("start-stop-server", serverid,
                         getServerGroupId(serverid));
         BZNetworkServer.stopServer(serverid);
+        action("stop-server", "Server id: " + serverid);
     }
     
     public static void action(String event, String details)
