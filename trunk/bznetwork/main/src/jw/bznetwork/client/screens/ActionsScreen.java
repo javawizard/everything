@@ -89,7 +89,8 @@ public class ActionsScreen extends VerticalScreen
         widget.clear();
         widget.add(new Header2("Actions"));
         FlexTable table = new FlexTable();
-        table.setCellPadding(2);
+        table.setCellPadding(0);
+        table.setCellSpacing(0);
         widget.add(table);
         FlexCellFormatter format = table.getFlexCellFormatter();
         FlexTable headerTable = new FlexTable();
@@ -103,7 +104,7 @@ public class ActionsScreen extends VerticalScreen
         headerFormat.setHorizontalAlignment(0, 1, HorizontalPanel.ALIGN_RIGHT);
         int row = 0;
         table.setWidget(row, 0, headerTable);
-        format.setColSpan(row, 0, 4);
+        format.setColSpan(row, 0, 7);
         /*
          * TODO: this really should be Math.max'd with the count received in the
          * result so that it won't appear messed up if action messages have been
@@ -120,9 +121,12 @@ public class ActionsScreen extends VerticalScreen
         navigationPanel.add(totalLabel);
         row += 1;
         table.setHTML(row, 0, "<b>When</b>");
-        table.setHTML(row, 1, "<b>User</b>");
-        table.setHTML(row, 2, "<b>Event</b>");
-        table.setHTML(row, 3, "<b>Details</b>");
+        table.setHTML(row, 1, "&nbsp;&nbsp;");
+        table.setHTML(row, 2, "<b>User</b>");
+        table.setHTML(row, 3, "&nbsp;&nbsp;");
+        table.setHTML(row, 4, "<b>Event</b>");
+        table.setHTML(row, 5, "&nbsp;&nbsp;");
+        table.setHTML(row, 6, "<b>Details</b>");
         for (int i = 0; i < result.getActions().length; i++)
         {
             row += 1;
@@ -138,9 +142,9 @@ public class ActionsScreen extends VerticalScreen
              */
             Action action = result.getActions()[i];
             table.setText(row, 0, BZNetwork.format(action.getWhen()));
-            table.setText(row, 1, action.getProvider() + ":"
+            table.setText(row, 2, action.getProvider() + ":"
                     + action.getUsername());
-            table.setText(row, 2, action.getEvent());
+            table.setText(row, 4, action.getEvent());
             String detailsSummary = action.getDetails();
             if (detailsSummary.length() > MAX_DETAILS_PREVIEW_SIZE)
             {
@@ -169,10 +173,10 @@ public class ActionsScreen extends VerticalScreen
                     detailsPanel.setVisible(true);
                 }
             });
-            table.setWidget(row, 3, detailsNamePanel);
+            table.setWidget(row, 6, detailsNamePanel);
             row += 1;
             table.setWidget(row, 0, detailsPanel);
-            format.setColSpan(row, 0, 4);
+            format.setColSpan(row, 0, 7);
         }
     }
     
