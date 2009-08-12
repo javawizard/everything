@@ -69,6 +69,7 @@ public class BanfilesScreen extends VerticalScreen
         {
             final Banfile banfile = result[i];
             table.setText(i, 0, result[i].getName());
+            BZNetwork.setCellTitle(table, i, 0, "Id: " + banfile.getBanfileid());
             Anchor deleteLink = new Anchor("delete");
             deleteLink.addClickHandler(new ClickHandler()
             {

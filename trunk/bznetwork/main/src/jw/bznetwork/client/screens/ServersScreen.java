@@ -51,7 +51,7 @@ public class ServersScreen extends VerticalScreen
     {
         private int serverid;
         
-        @Override 
+        @Override
         public void onClick(ClickEvent event)
         {
             BZNetwork.authLink.stopServer(serverid, new BoxCallback<Void>()
@@ -193,10 +193,15 @@ public class ServersScreen extends VerticalScreen
         table.setHTML(1, 0, "<hr width='100%'/>");
         format.setColSpan(1, 0, 6);
         int row = 1;
+        /*
+         * The header is now in place. Now we add all of the groups, and their
+         * child servers.
+         */
         for (final GroupModel group : result.getGroups())
         {
             row += 1;
             table.setText(row, 0, group.getName());
+            BZNetwork.setCellTitle(table, row, 0, "Id: " + group.getGroupid());
             format.addStyleName(row, 0, "bznetwork-ServerList-GroupName");
             format.setColSpan(row, 0, 2);
             ListBox banfileBox = generateBanfileBox(result, group.getGroupid(),
@@ -217,9 +222,7 @@ public class ServersScreen extends VerticalScreen
             groupLinksPanel.setSpacing(4);
             table.setWidget(row, 3, groupLinksPanel);
             /*
-             * Now we'll add some links for this server. Links right now are
-             * pretty much rename, settings, groupdb, map, upload, conf, and
-             * start/stop/kill.
+             * Now we'll add some links for this group.
              */
             createGroupLinks(group, groupLinksPanel);
             /*
@@ -254,6 +257,7 @@ public class ServersScreen extends VerticalScreen
                     }
                 });
                 table.setWidget(row, 1, serverDropdown);
+                serverDropdown.setTitle("Id: " + server.getServerid());
                 serverDropdown.addStyleName("bznetwork-ServerState-"
                         + server.getState().name());
                 ListBox serverBanfileBox = generateBanfileBox(result, server
@@ -515,7 +519,8 @@ public class ServersScreen extends VerticalScreen
                  */
                 Anchor stopLink = new Anchor("stop");
                 linksPanel.add(stopLink);
-                stopLink.addClickHandler(new StopServerClickHandler(server.getServerid()));
+                stopLink.addClickHandler(new StopServerClickHandler(server
+                        .getServerid()));
             }
             else if (server.getState() == LiveState.STOPPED)
             {
@@ -524,7 +529,8 @@ public class ServersScreen extends VerticalScreen
                  */
                 Anchor startLink = new Anchor("start");
                 linksPanel.add(startLink);
-                startLink.addClickHandler(new StartServerClickHandler(server.getServerid()));
+                startLink.addClickHandler(new StartServerClickHandler(server
+                        .getServerid()));
             }
             else
             {
@@ -533,7 +539,8 @@ public class ServersScreen extends VerticalScreen
                  */
                 Anchor killLink = new Anchor("kill");
                 linksPanel.add(killLink);
-                killLink.addClickHandler(new KillServerClickHandler(server.getServerid()));
+                killLink.addClickHandler(new KillServerClickHandler(server
+                        .getServerid()));
             }
         }
     }

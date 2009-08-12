@@ -162,16 +162,19 @@ public class RolesScreen extends VerticalScreen
             {
                 Label l = new Label("Global");
                 l.addStyleName("bznetwork-PermsTableGlobal");
+                l.setTitle("Id: -1");
                 targetPanel.add(l);
             }
             else if (permission.getBanfileName() != null)
             {
                 Label l = new Label("banfile: " + permission.getBanfileName());
+                l.setTitle("Id: " + permission.getTarget());
                 targetPanel.add(l);
             }
             else if (permission.getServerName() == null)
             {
                 Label l = new Label("group: " + permission.getGroupName());
+                l.setTitle("Id: " + permission.getTarget());
                 targetPanel.add(l);
             }
             else
@@ -183,6 +186,7 @@ public class RolesScreen extends VerticalScreen
                 targetPanel.add(l2);
                 Label l3 = new Label(permission.getServerName());
                 targetPanel.add(l3);
+                targetPanel.setTitle("Id: " + permission.getTarget());
             }
             table.setWidget(i, 2, targetPanel);
             Anchor deleteLink = new Anchor("delete");
@@ -377,6 +381,7 @@ public class RolesScreen extends VerticalScreen
         for (int i = 0; i < result.length; i++)
         {
             table.setText(i, 0, result[i].getName());
+            BZNetwork.setCellTitle(table, i, 0, "Id: " + result[i].getRoleid());
             // Anchor viewUsersLink = new Anchor("View users");
             // table.setWidget(i,1,viewUsersLink);
             Anchor renameLink = new Anchor("rename");

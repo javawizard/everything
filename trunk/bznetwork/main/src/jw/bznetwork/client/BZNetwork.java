@@ -28,6 +28,7 @@ import com.google.gwt.core.client.EntryPoint;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.http.client.URL;
 import com.google.gwt.i18n.client.DateTimeFormat;
+import com.google.gwt.user.client.DOM;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.rpc.StatusCodeException;
@@ -641,5 +642,12 @@ public class BZNetwork implements EntryPoint
     public static String format(Date date)
     {
         return dateFormat.format(date);
+    }
+    
+    public static void setCellTitle(FlexTable table, int row, int column,
+            String title)
+    {
+        DOM.setElementAttribute(table.getFlexCellFormatter().getElement(row,
+                column), "title", title);
     }
 }
