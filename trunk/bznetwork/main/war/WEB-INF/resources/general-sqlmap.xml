@@ -6,6 +6,35 @@
 
 	<!-- !ADDTOSQL -->
 
+    <select id="getActionUserList" 
+         resultClass="jw.bznetwork.client.data.model.UserPair" >
+        select distinct provider, username as user from actions
+    </select>
+
+    <select id="getActionEventNames" 
+         resultClass="java.lang.String" >
+        select distinct event from actions
+    </select>
+
+    <select id="getActionCountForSearch" 
+         parameterClass="jw.bznetwork.client.data.model.ActionRequest" 
+         resultClass="java.lang.Integer" >
+        select count(*) from actions
+        where provider = $literalProvider$
+        and username = $literalUser$
+        and event = $literalEvent$
+    </select>
+
+    <select id="listActionsForSearch" 
+         parameterClass="jw.bznetwork.client.data.model.ActionRequest" 
+         resultClass="jw.bznetwork.client.data.model.Action" >
+        select * from actions
+        where provider = $literalProvider$
+        and username = $literalUser$
+        and event = $literalEvent$
+        limit #limit# offset #offset#
+    </select>
+
     <select id="getCallsignByName" 
          parameterClass="java.lang.String" 
          resultClass="jw.bznetwork.client.data.model.Callsign" >

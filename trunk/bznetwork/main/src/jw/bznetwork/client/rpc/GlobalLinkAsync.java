@@ -6,6 +6,8 @@ import java.util.Properties;
 
 import jw.bznetwork.client.ShowMessageException;
 
+import jw.bznetwork.client.data.ActionLogModel;
+
 import jw.bznetwork.client.data.EditAuthenticationModel;
 
 import jw.bznetwork.client.data.EditAuthgroupsModel;
@@ -134,5 +136,9 @@ public void startServer(int serverid, AsyncCallback<String> callback);
 public void stopServer(int serverid, AsyncCallback<Void> callback);
 
 public void killServer(int serverid, AsyncCallback<Void> callback);
+
+public void getActionLogModel(String event, int user, int offset, int length, AsyncCallback<ActionLogModel> callback);
+
+public void clearActionLog(int user, AsyncCallback<Void> callback);
 
 }

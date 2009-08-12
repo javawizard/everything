@@ -21,6 +21,7 @@ import net.sf.opengroove.common.utils.StringUtils;
 import jw.bznetwork.client.Perms;
 import jw.bznetwork.client.ShowMessageException;
 import jw.bznetwork.client.Verify;
+import jw.bznetwork.client.data.ActionLogModel;
 import jw.bznetwork.client.data.AuthUser;
 import jw.bznetwork.client.data.EditAuthenticationModel;
 import jw.bznetwork.client.data.EditAuthgroupsModel;
@@ -865,5 +866,20 @@ public class GlobalLinkImpl extends RemoteServiceServlet implements GlobalLink
         action.setUsername(user.getUsername());
         action.setWhen(new Date());
         DataStore.addActionEvent(action);
+    }
+
+    @Override
+    public void clearActionLog(int user)
+    {
+        // TODO Auto-generated method stub
+        
+    }
+
+    @Override
+    public ActionLogModel getActionLogModel(String event, String provider, String user, int offset,
+            int length)
+    {
+        // TODO Auto-generated method stub
+        return null;
     }
 }
