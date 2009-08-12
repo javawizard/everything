@@ -4,6 +4,7 @@ import java.util.HashMap;
 import java.util.Properties;
 
 import jw.bznetwork.client.ShowMessageException;
+import jw.bznetwork.client.data.ActionLogModel;
 import jw.bznetwork.client.data.EditAuthenticationModel;
 import jw.bznetwork.client.data.EditAuthgroupsModel;
 import jw.bznetwork.client.data.EditCallsignsModel;
@@ -119,4 +120,6 @@ public interface GlobalLink extends RemoteService
     public void stopServer(int serverid);
     
     public void killServer(int serverid);
+    
+    public ActionLogModel getActionLogModel(String event, int user, int offset);
 }
