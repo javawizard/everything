@@ -1,6 +1,7 @@
 package jw.bznetwork.client;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 
 import jw.bznetwork.client.data.AuthUser;
@@ -26,6 +27,7 @@ import jw.bznetwork.client.ui.Spacer;
 import com.google.gwt.core.client.EntryPoint;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.http.client.URL;
+import com.google.gwt.i18n.client.DateTimeFormat;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.rpc.StatusCodeException;
@@ -631,5 +633,13 @@ public class BZNetwork implements EntryPoint
             box.addItem(roleIdsToNames.get(roleid), "" + roleid);
         }
         return box;
+    }
+    
+    private static final DateTimeFormat dateFormat = DateTimeFormat
+            .getFormat("yyyy/MM/dd hh:mm.ss aa");
+    
+    public static String format(Date date)
+    {
+        return dateFormat.format(date);
     }
 }

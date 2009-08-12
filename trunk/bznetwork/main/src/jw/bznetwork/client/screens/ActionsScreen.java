@@ -112,8 +112,8 @@ public class ActionsScreen extends VerticalScreen
         Label currentPageLabel = new Label("" + (filterOffset + 1));
         navigationPanel.add(currentPageLabel);
         navigationPanel.add(new Label("-"));
-        Label nextPageLabel = new Label("" + (filterOffset
-                + result.getActions().length));
+        Label nextPageLabel = new Label(""
+                + (filterOffset + result.getActions().length));
         navigationPanel.add(nextPageLabel);
         navigationPanel.add(new HTML("&nbsp;of&nbsp;"));
         Label totalLabel = new Label("" + result.getCount());
@@ -137,7 +137,7 @@ public class ActionsScreen extends VerticalScreen
              * changes ActionsScreen fields and select()s.
              */
             Action action = result.getActions()[i];
-            table.setText(row, 0, action.getWhen().toString());
+            table.setText(row, 0, BZNetwork.format(action.getWhen()));
             table.setText(row, 1, action.getProvider() + ":"
                     + action.getUsername());
             table.setText(row, 2, action.getEvent());
