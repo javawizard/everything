@@ -174,6 +174,9 @@ public class ActionsScreen extends VerticalScreen
                 }
             });
             table.setWidget(row, 6, detailsNamePanel);
+            table.setHTML(row, 1, "&nbsp;&nbsp;");
+            table.setHTML(row, 3, "&nbsp;&nbsp;");
+            table.setHTML(row, 5, "&nbsp;&nbsp;");
             row += 1;
             table.setWidget(row, 0, detailsPanel);
             format.setColSpan(row, 0, 7);
