@@ -35,6 +35,7 @@ import jw.bznetwork.client.data.ServerModel;
 import jw.bznetwork.client.data.UserSession;
 import jw.bznetwork.client.data.ServerModel.LiveState;
 import jw.bznetwork.client.data.model.Action;
+import jw.bznetwork.client.data.model.ActionRequest;
 import jw.bznetwork.client.data.model.Authgroup;
 import jw.bznetwork.client.data.model.Banfile;
 import jw.bznetwork.client.data.model.Callsign;
@@ -871,15 +872,18 @@ public class GlobalLinkImpl extends RemoteServiceServlet implements GlobalLink
     @Override
     public void clearActionLog(int user)
     {
+        Verify.global("clear-action-log");
         // TODO Auto-generated method stub
-        
+        // action-log-cleared, clear-action-log
     }
 
     @Override
     public ActionLogModel getActionLogModel(String event, String provider, String user, int offset,
             int length)
     {
-        // TODO Auto-generated method stub
-        return null;
+        ActionRequest request = new ActionRequest();
+        Verify.global("view-action-log");
+        ActionLogModel model = new ActionLogModel();
+        model.setActions(DataStore.listActionsForSearch(request));
     }
 }
