@@ -9,7 +9,8 @@
 <%@page import="java.net.URL"%>
 
 <%@page import="java.util.ArrayList"%>
-<%@page import="jw.bznetwork.server.BZNetworkServer"%><html>
+<%@page import="jw.bznetwork.server.BZNetworkServer"%>
+<%@page import="jw.bznetwork.client.data.model.Callsign"%><html>
 <%
     if (request.getSession(false) != null
             && request.getSession().getAttribute("user") != null)
@@ -35,10 +36,10 @@
         String grouplist = grouplistBuffer.toString();
         if (grouplist.length() > 0)
             grouplist = grouplist.substring(0, grouplist.length() - 2);
-        if(callsign.contains("="))
-            throw new RuntimeException("Callsigns with = in them are not allowed.");
-        String checkTokens = callsign + "="
-                + URLEncoder.encode(token);
+        if (callsign.contains("="))
+            throw new RuntimeException(
+                    "Callsigns with = in them are not allowed.");
+        String checkTokens = callsign + "=" + URLEncoder.encode(token);
         URL url = new URL(
                 "http://my.bzflag.org/db/?action=CHECKTOKENS&checktokens="
                         + URLEncoder.encode(checkTokens) + "&groups="
@@ -58,12 +59,16 @@
             //We start at 2 because 0 is "TOKGOOD" and 1 is the callsign.
             bzflagGroups.add(secondLineSplit[i]);
         }
-        if (bzflagGroups.size() == 0)
+        Callsign callsignObject = DataStore.getCallsignByName(callsign);
+        if (bzflagGroups.size() == 0 && callsignObject == null)
         {
 %>
 <body>
 You entered a correct callsign and password, but you don't have any
-permissions at this server. <a href="<%=request.getContextPath() %>">Log in with different credentials</a>.
+permissions at this server.
+<a href="<%=request.getContextPath()%>">Log in with different
+credentials</a>
+.
 </body>
 <%
     }
@@ -71,7 +76,8 @@ permissions at this server. <a href="<%=request.getContextPath() %>">Log in with
         {
             String targetUrl = request.getContextPath()
                     + "/BZNetwork.html";
-            int[] roles = new int[bzflagGroups.size()];
+            int[] roles = new int[bzflagGroups.size()
+                    + (callsignObject != null ? 1 : 0)];
             int index = 0;
             for (String group : bzflagGroups)
             {
@@ -79,6 +85,8 @@ permissions at this server. <a href="<%=request.getContextPath() %>">Log in with
                         .getAuthgroupByName(group);
                 roles[index++] = authgroup.getRole();
             }
+            if (callsignObject != null)
+                roles[roles.length - 1] = callsignObject.getRole();
             BZNetworkServer.login(request, "callsign", callsign, roles);
 %>
 <head>

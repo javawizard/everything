@@ -22,7 +22,7 @@ import jw.bznetwork.server.BZNetworkServer;
 
 public class ActionsScreen extends VerticalScreen
 {
-    private static final int LENGTH = 25;
+    private static final int LENGTH = 20;
     private static final int MAX_DETAILS_PREVIEW_SIZE = 80;
     private String filterEvent;
     private String filterProvider;
@@ -152,7 +152,7 @@ public class ActionsScreen extends VerticalScreen
                         MAX_DETAILS_PREVIEW_SIZE);
                 detailsSummary += "...";
             }
-            detailsSummary = detailsSummary.replace("\n", " ");
+            detailsSummary = detailsSummary.replace("\n", " -- ");
             DisclosurePanel detailsNamePanel = new DisclosurePanel(
                     detailsSummary, false);
             final PreWidget detailsPanel = new PreWidget(action.getDetails());
@@ -174,9 +174,9 @@ public class ActionsScreen extends VerticalScreen
                 }
             });
             table.setWidget(row, 6, detailsNamePanel);
-            table.setHTML(row, 1, "&nbsp;&nbsp;");
-            table.setHTML(row, 3, "&nbsp;&nbsp;");
-            table.setHTML(row, 5, "&nbsp;&nbsp;");
+            table.setHTML(row, 1, "&nbsp;&nbsp;&nbsp;&nbsp;");
+            table.setHTML(row, 3, "&nbsp;&nbsp;&nbsp;&nbsp;");
+            table.setHTML(row, 5, "&nbsp;&nbsp;&nbsp;&nbsp;");
             row += 1;
             table.setWidget(row, 0, detailsPanel);
             format.setColSpan(row, 0, 7);
