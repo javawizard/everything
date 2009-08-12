@@ -89,9 +89,11 @@ public class ActionsScreen extends VerticalScreen
         widget.clear();
         widget.add(new Header2("Actions"));
         FlexTable table = new FlexTable();
+        table.setCellPadding(2);
         widget.add(table);
         FlexCellFormatter format = table.getFlexCellFormatter();
         FlexTable headerTable = new FlexTable();
+        headerTable.setWidth("100%");
         FlexCellFormatter headerFormat = headerTable.getFlexCellFormatter();
         Anchor filterLink = new Anchor(getFilterLinkText());
         headerTable.setWidget(0, 0, filterLink);
@@ -110,8 +112,8 @@ public class ActionsScreen extends VerticalScreen
         Label currentPageLabel = new Label("" + (filterOffset + 1));
         navigationPanel.add(currentPageLabel);
         navigationPanel.add(new Label("-"));
-        Label nextPageLabel = new Label("" + filterOffset
-                + result.getActions().length);
+        Label nextPageLabel = new Label("" + (filterOffset
+                + result.getActions().length));
         navigationPanel.add(nextPageLabel);
         navigationPanel.add(new HTML("&nbsp;of&nbsp;"));
         Label totalLabel = new Label("" + result.getCount());
