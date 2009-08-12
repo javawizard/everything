@@ -2,6 +2,7 @@ package jw.bznetwork.client.screens;
 
 import com.google.gwt.user.client.ui.Anchor;
 import com.google.gwt.user.client.ui.FlexTable;
+import com.google.gwt.user.client.ui.HTML;
 import com.google.gwt.user.client.ui.HorizontalPanel;
 import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.PopupPanel;
@@ -81,6 +82,7 @@ public class ActionsScreen extends VerticalScreen
         widget.clear();
         widget.add(new Header2("Actions"));
         FlexTable table = new FlexTable();
+        widget.add(table);
         FlexCellFormatter format = table.getFlexCellFormatter();
         FlexTable headerTable = new FlexTable();
         FlexCellFormatter headerFormat = headerTable.getFlexCellFormatter();
@@ -98,8 +100,29 @@ public class ActionsScreen extends VerticalScreen
          * result so that it won't appear messed up if action messages have been
          * deleted since we loaded the page
          */
-        Label currentPageLabel = new Label("" + filterOffset);
+        Label currentPageLabel = new Label("" + (filterOffset + 1));
         navigationPanel.add(currentPageLabel);
+        navigationPanel.add(new Label("-"));
+        Label nextPageLabel = new Label("" + filterOffset
+                + result.getActions().length);
+        navigationPanel.add(nextPageLabel);
+        navigationPanel.add(new HTML("&nbsp;of&nbsp;"));
+        Label totalLabel = new Label("" + result.getCount());
+        navigationPanel.add(totalLabel);
+        row += 1;
+        for (int i = 0; i < result.getActions().length; i++)
+        {
+            /*
+             * TODO: pick up here 2009.08.12, add a header above this for
+             * statement that contains "when", "user", "event", and "details",
+             * add a row for each event, details should be a disclosurepanel,
+             * row after that has full colspan that contains the real details,
+             * trim details in details column to like 64 or 18 chars or
+             * something and replace newlines with spaces, details in dropdown
+             * on the next row should be in a <pre> tag, filtering dialog box
+             * changes ActionsScreen fields and select()s.
+             */
+        }
     }
     
     private String getFilterLinkText()

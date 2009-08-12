@@ -9,6 +9,7 @@ import jw.bznetwork.client.rpc.GlobalLink;
 import jw.bznetwork.client.rpc.GlobalLinkAsync;
 import jw.bznetwork.client.rpc.GlobalUnauthLink;
 import jw.bznetwork.client.rpc.GlobalUnauthLinkAsync;
+import jw.bznetwork.client.screens.ActionsScreen;
 import jw.bznetwork.client.screens.AuthenticationScreen;
 import jw.bznetwork.client.screens.AuthgroupsScreen;
 import jw.bznetwork.client.screens.BanfilesScreen;
@@ -133,6 +134,7 @@ public class BZNetwork implements EntryPoint
      */
     private void init1()
     {
+        Window.setTitle(publicConfiguration.getSitename());
         unauthLink.getThisUser(new AsyncCallback<AuthUser>()
         {
             
@@ -183,6 +185,8 @@ public class BZNetwork implements EntryPoint
         defaultScreenList.add(new ServersScreen());
         if (Perms.global("manage-auth"))
             defaultScreenList.add(new AuthenticationScreen());
+        if (Perms.global("view-action-log"))
+            defaultScreenList.add(new ActionsScreen());
         if (Perms.global("view-sessions"))
             defaultScreenList.add(new SessionsScreen());
         defaultScreenList.add(new HelpScreen());
