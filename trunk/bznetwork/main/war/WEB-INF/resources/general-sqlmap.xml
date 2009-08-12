@@ -46,7 +46,7 @@
     <select id="getCallsignByName" 
          parameterClass="java.lang.String" 
          resultClass="jw.bznetwork.client.data.model.Callsign" >
-        select * from callsigns where callsign = #value#
+        select * from callsigns where LOWER(callsign) = LOWER(#value#)
     </select>
 
     <delete id="deleteCallsign" 
