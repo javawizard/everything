@@ -1,5 +1,7 @@
 package jw.bznetwork.client.screens;
 
+import com.google.gwt.event.dom.client.ClickEvent;
+import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.user.client.ui.Anchor;
 import com.google.gwt.user.client.ui.DisclosureEvent;
 import com.google.gwt.user.client.ui.DisclosureHandler;
@@ -55,7 +57,7 @@ public class ActionsScreen extends VerticalScreen
     @Override
     public void reselect()
     {
-        select();
+        select1();
     }
     
     @Override
@@ -119,6 +121,44 @@ public class ActionsScreen extends VerticalScreen
         navigationPanel.add(new HTML("&nbsp;of&nbsp;"));
         Label totalLabel = new Label("" + result.getCount());
         navigationPanel.add(totalLabel);
+        Anchor previousLink = new Anchor("<<");
+        Anchor nextLink = new Anchor(">>");
+        if (filterOffset > 0)
+        {
+            navigationPanel.add(new HTML("&nbsp;"));
+            navigationPanel.add(previousLink);
+        }
+        /*
+         * If our current offset, plus the number of results (so the number of
+         * the last result) is greater than the total number of results.
+         */
+        if ((filterOffset + result.getActions().length) > result.getCount())
+        {
+            navigationPanel.add(new HTML("&nbsp;"));
+            navigationPanel.add(nextLink);
+        }
+        previousLink.addClickHandler(new ClickHandler()
+        {
+            
+            @Override
+            public void onClick(ClickEvent event)
+            {
+                filterOffset = filterOffset - LENGTH;
+                if(filterOffset < 0)
+                    filterOffset = 0;
+                select1();
+            }
+        });
+        nextLink.addClickHandler(new ClickHandler()
+        {
+            
+            @Override
+            public void onClick(ClickEvent event)
+            {
+                filterOffset = filterOffset + 20;
+                select1();
+            }
+        });
         row += 1;
         table.setHTML(row, 0, "<b>When</b>");
         table.setHTML(row, 1, "&nbsp;&nbsp;");
