@@ -137,8 +137,8 @@ public void stopServer(int serverid, AsyncCallback<Void> callback);
 
 public void killServer(int serverid, AsyncCallback<Void> callback);
 
-public void getActionLogModel(String event, int user, int offset, int length, AsyncCallback<ActionLogModel> callback);
+public void getActionLogModel(String event, String provider, String user, int offset, int length, AsyncCallback<ActionLogModel> callback);
 
-public void clearActionLog(int user, AsyncCallback<Void> callback);
+public void clearActionLog(String provider, String user, AsyncCallback<Void> callback);
 
 }

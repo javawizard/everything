@@ -39,6 +39,7 @@
         where provider = $literalProvider$
         and username = $literalUser$
         and event = $literalEvent$
+        order by when desc
         limit #length# offset #offset#
     </select>
 
