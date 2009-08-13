@@ -290,6 +290,13 @@ public class ServersScreen extends VerticalScreen
                  * users that are at the server.
                  */
                 row += 1;
+                /*
+                 * TODO: consider having this lazily loaded (IE it loads the
+                 * first time a server's player list is expanded) to make the
+                 * page load faster. It would still be downloaded from the
+                 * server as-is, but the grid wouldn't be built until the user
+                 * expands the disclosure panel for the first time.
+                 */
                 loadServerInfoPanel(server, serverInfoPanel);
                 table.setWidget(row, 1, serverInfoPanel);
                 format.setColSpan(row, 1, 5);
@@ -398,7 +405,23 @@ public class ServersScreen extends VerticalScreen
                 usersTable.getCellFormatter().addStyleName(row, 1,
                         "bznetwork-ServerPlayerList-Admin");
             }
-            usersTable.setText(row,2,player.getCallsign());
+            else if (player.isVerified())
+            {
+                usersTable.setText(row, 2, "+");
+                usersTable.getCellFormatter().addStyleName(row, 1,
+                        "bznetwork-ServerPlayerList-Verified");
+            }
+            else if (player.getBzid() != null
+                    && !player.getBzid().trim().equals(""))
+            {
+                usersTable.setText(row, 2, "-");
+                usersTable.getCellFormatter().addStyleName(row, 1,
+                        "bznetwork-ServerPlayerList-VerifiedWrong");
+            }
+            usersTable.setText(row, 2, player.getCallsign());
+            usersTable.getCellFormatter().addStyleName(row, 2,
+                    "bznetwork-ServerPlayerList-" + player.getTeam().name());
+            usersTable.setText(row, 3, player.getEmail());
             row += 1;
         }
     }
