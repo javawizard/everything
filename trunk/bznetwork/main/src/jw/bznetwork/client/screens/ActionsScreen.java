@@ -3,6 +3,8 @@ package jw.bznetwork.client.screens;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.user.client.ui.Anchor;
+import com.google.gwt.user.client.ui.Button;
+import com.google.gwt.user.client.ui.ClickListener;
 import com.google.gwt.user.client.ui.DisclosureEvent;
 import com.google.gwt.user.client.ui.DisclosureHandler;
 import com.google.gwt.user.client.ui.DisclosurePanel;
@@ -10,7 +12,10 @@ import com.google.gwt.user.client.ui.FlexTable;
 import com.google.gwt.user.client.ui.HTML;
 import com.google.gwt.user.client.ui.HorizontalPanel;
 import com.google.gwt.user.client.ui.Label;
+import com.google.gwt.user.client.ui.ListBox;
 import com.google.gwt.user.client.ui.PopupPanel;
+import com.google.gwt.user.client.ui.VerticalPanel;
+import com.google.gwt.user.client.ui.Widget;
 import com.google.gwt.user.client.ui.FlexTable.FlexCellFormatter;
 
 import jw.bznetwork.client.BZNetwork;
@@ -18,12 +23,103 @@ import jw.bznetwork.client.BoxCallback;
 import jw.bznetwork.client.VerticalScreen;
 import jw.bznetwork.client.data.ActionLogModel;
 import jw.bznetwork.client.data.model.Action;
+import jw.bznetwork.client.data.model.UserPair;
 import jw.bznetwork.client.ui.Header2;
+import jw.bznetwork.client.ui.Header3;
 import jw.bznetwork.client.ui.PreWidget;
 import jw.bznetwork.server.BZNetworkServer;
 
 public class ActionsScreen extends VerticalScreen
 {
+    public class FilterLinkClickListener implements ClickListener
+    {
+        private ActionLogModel model;
+        
+        public FilterLinkClickListener(ActionLogModel model)
+        {
+            super();
+            this.model = model;
+        }
+        
+        @Override
+        public void onClick(Widget sender)
+        {
+            final PopupPanel box = new PopupPanel();
+            VerticalPanel panel = new VerticalPanel();
+            box.setWidget(panel);
+            box.add(new Header3("Filter on..."));
+            box.add(new HTML("<b>User:</b>"));
+            final ListBox userBox = new ListBox();
+            userBox.setVisibleItemCount(8);
+            userBox.addItem("All users");
+            for (UserPair user : model.getUsers())
+            {
+                userBox.addItem(user.getProvider() + ":" + user.getUser());
+                if (user.getProvider().equalsIgnoreCase(filterProvider)
+                        && user.getUser().equalsIgnoreCase(filterUsername))
+                    userBox.setSelectedIndex(userBox.getItemCount() - 1);
+            }
+            panel.add(userBox);
+            panel.add(new HTML("<b>Event:</b>"));
+            final ListBox eventBox = new ListBox();
+            eventBox.setVisibleItemCount(1);
+            panel.add(eventBox);
+            eventBox.addItem("");
+            for (String event : model.getEventNames())
+            {
+                eventBox.addItem(event);
+                if (event.equalsIgnoreCase(filterEvent))
+                    eventBox.setSelectedIndex(eventBox.getItemCount() - 1);
+            }
+            HorizontalPanel buttonPanel = new HorizontalPanel();
+            buttonPanel.setSpacing(3);
+            panel.add(buttonPanel);
+            Button filterButton = new Button("Filter");
+            Button cancelButton = new Button("Cancel");
+            buttonPanel.add(filterButton);
+            buttonPanel.add(cancelButton);
+            filterButton.addClickHandler(new ClickHandler()
+            {
+                
+                @Override
+                public void onClick(ClickEvent event)
+                {
+                    box.hide();
+                    int selectedUserIndex = userBox.getSelectedIndex();
+                    if (selectedUserIndex == -1)
+                        selectedUserIndex = 0;
+                    String filterUser = userBox.getItemText(selectedUserIndex);
+                    if(filterUser.contains(":"))
+                    {
+                        String[] tokens = filterUser.split(":", 2);
+                        filterProvider = tokens[0];
+                        filterUsername = tokens[1];
+                    }
+                    else
+                    {
+                        filterProvider = null;
+                        filterUsername = null;
+                    }
+                    filterEvent = eventBox.getItemText(eventBox.getSelectedIndex());
+                    if(filterEvent.trim().equals(""))
+                        filterEvent = null;
+                    select1();
+                }
+            });
+            cancelButton.addClickHandler(new ClickHandler()
+            {
+                
+                @Override
+                public void onClick(ClickEvent event)
+                {
+                    box.hide();
+                }
+            });
+            box.center();
+        }
+        
+    }
+    
     private static final int LENGTH = 20;
     private static final int MAX_DETAILS_PREVIEW_SIZE = 80;
     private String filterEvent;
@@ -99,6 +195,7 @@ public class ActionsScreen extends VerticalScreen
         headerTable.setWidth("100%");
         FlexCellFormatter headerFormat = headerTable.getFlexCellFormatter();
         Anchor filterLink = new Anchor(getFilterLinkText());
+        filterLink.addClickListener(new FilterLinkClickListener(result));
         headerTable.setWidget(0, 0, filterLink);
         headerFormat.setHorizontalAlignment(0, 1, HorizontalPanel.ALIGN_LEFT);
         HorizontalPanel navigationPanel = new HorizontalPanel();
