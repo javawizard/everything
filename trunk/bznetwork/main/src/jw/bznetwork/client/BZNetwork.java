@@ -26,6 +26,7 @@ import jw.bznetwork.client.ui.Spacer;
 
 import com.google.gwt.core.client.EntryPoint;
 import com.google.gwt.core.client.GWT;
+import com.google.gwt.core.client.GWT.UncaughtExceptionHandler;
 import com.google.gwt.http.client.URL;
 import com.google.gwt.i18n.client.DateTimeFormat;
 import com.google.gwt.user.client.DOM;
@@ -93,6 +94,17 @@ public class BZNetwork implements EntryPoint
      */
     public void onModuleLoad()
     {
+        GWT.setUncaughtExceptionHandler(new UncaughtExceptionHandler()
+        {
+            
+            @Override
+            public void onUncaughtException(Throwable e)
+            {
+                Window
+                        .alert("An internal error has occured as a result of an uncaught exception.");
+                fail(e);
+            }
+        });
         rootPanel = RootPanel.get("mainContentPanel");
         rootPanel.add(new Label("Loading..."));
         CONTEXT_URL = GWT.getHostPageBaseURL();
