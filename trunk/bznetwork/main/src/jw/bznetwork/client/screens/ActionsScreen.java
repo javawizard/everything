@@ -47,8 +47,8 @@ public class ActionsScreen extends VerticalScreen
             final PopupPanel box = new PopupPanel();
             VerticalPanel panel = new VerticalPanel();
             box.setWidget(panel);
-            box.add(new Header3("Filter on..."));
-            box.add(new HTML("<b>User:</b>"));
+            panel.add(new Header3("Filter on..."));
+            panel.add(new HTML("<b>User:</b>"));
             final ListBox userBox = new ListBox();
             userBox.setVisibleItemCount(8);
             userBox.addItem("All users");
