@@ -385,7 +385,7 @@ public class ServersScreen extends VerticalScreen
     
     private void loadServerInfoPanel(ServerModel server, VerticalPanel panel)
     {
-        if (server.getPlayers().length == 0)
+        if (server.getPlayers() == null || server.getPlayers().length == 0)
         {
             Label noPlayersLabel = new Label("No players");
             noPlayersLabel.addStyleName("bznetwork-ServerList-DetailsNoUsers");
