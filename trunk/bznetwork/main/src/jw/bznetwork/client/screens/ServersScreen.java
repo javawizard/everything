@@ -12,6 +12,7 @@ import jw.bznetwork.client.data.ServerListModel;
 import jw.bznetwork.client.data.ServerModel;
 import jw.bznetwork.client.data.ServerModel.LiveState;
 import jw.bznetwork.client.data.model.Banfile;
+import jw.bznetwork.client.live.LivePlayer;
 import jw.bznetwork.client.ui.Header3;
 
 import com.google.gwt.dom.client.SelectElement;
@@ -30,6 +31,7 @@ import com.google.gwt.user.client.ui.DisclosureEvent;
 import com.google.gwt.user.client.ui.DisclosureHandler;
 import com.google.gwt.user.client.ui.DisclosurePanel;
 import com.google.gwt.user.client.ui.FlexTable;
+import com.google.gwt.user.client.ui.Grid;
 import com.google.gwt.user.client.ui.HTML;
 import com.google.gwt.user.client.ui.Hidden;
 import com.google.gwt.user.client.ui.HorizontalPanel;
@@ -288,7 +290,7 @@ public class ServersScreen extends VerticalScreen
                  * users that are at the server.
                  */
                 row += 1;
-                serverInfoPanel.add(new HTML("<b>Users:</b>"));
+                loadServerInfoPanel(server, serverInfoPanel);
                 table.setWidget(row, 1, serverInfoPanel);
                 format.setColSpan(row, 1, 5);
             }
@@ -372,6 +374,33 @@ public class ServersScreen extends VerticalScreen
                         });
             }
         });
+    }
+    
+    private void loadServerInfoPanel(ServerModel server, VerticalPanel panel)
+    {
+        if (server.getPlayers().length == 0)
+        {
+            Label noPlayersLabel = new Label("No players");
+            noPlayersLabel.addStyleName("bznetwork-ServerList-DetailsNoUsers");
+            panel.add(noPlayersLabel);
+            return;
+        }
+        panel.add(new HTML("<b>Users:</b>"));
+        Grid usersTable = new Grid(server.getPlayers().length, 5);
+        panel.add(usersTable);
+        int row = 0;
+        for (LivePlayer player : server.getPlayers())
+        {
+            usersTable.setHTML(row, 0, "&nbsp;&nbsp;");
+            if (player.isAdmin())
+            {
+                usersTable.setText(row, 1, "@");
+                usersTable.getCellFormatter().addStyleName(row, 1,
+                        "bznetwork-ServerPlayerList-Admin");
+            }
+            usersTable.setText(row,2,player.getCallsign());
+            row += 1;
+        }
     }
     
     private void createGroupLinks(final GroupModel group,

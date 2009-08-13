@@ -98,6 +98,10 @@
 	font-weight: bold
 }
 
+.bznetwork-ServerList-DetailsNoUsers {
+	color: #888888;
+}
+
 .bznetwork-ServerState-LIVE .header,.bznetwork-ServerState-LIVE .header a,.bznetwork-ServerState-LIVE .header td
 	{
 	color: #00aa00
@@ -128,4 +132,45 @@
 
 .bznetwork-Actions-DetailsBox {
 	border-left: 15px solid white;
+}
+
+.bznetwork-ServerPlayerList-Admin {
+	color: #00aaaa
+}
+
+.bznetwork-ServerPlayerList-red {
+	color: #aa0000
+}
+
+.bznetwork-ServerPlayerList-rogue {
+	color: #aaaa00
+}
+
+.bznetwork-ServerPlayerList-green {
+	color: #00aa00
+}
+
+.bznetwork-ServerPlayerList-blue {
+	color: #0000aa
+}
+
+.bznetwork-ServerPlayerList-purple {
+	color: #aa00aa
+}
+
+.bznetwork-ServerPlayerList-hunters {
+	color: #aa5500
+}
+
+.bznetwork-ServerPlayerList-rabbit {
+	color: #999999
+}
+
+.bznetwork-ServerPlayerList-observer {
+	color: #000000
+}
+
+.bznetwork-ServerPlayerList-noteam {
+	color: #000000;
+	font-style: italic
 }

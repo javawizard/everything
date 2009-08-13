@@ -202,6 +202,7 @@ public class AsyncCreator
                             }
                             String throwsExpr = "";
                             boolean hasthrows = false;
+                            //Async methods don't themselves throw exceptions; this is therefore commented out
                             /*
                             for (ExpressionTree tree : method.getThrows())
                             {
