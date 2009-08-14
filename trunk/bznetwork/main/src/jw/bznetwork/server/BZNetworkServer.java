@@ -202,7 +202,11 @@ public class BZNetworkServer implements ServletContextListener,
          * to consider logging the ip address of the user, if that's enabled in
          * the configuration.
          */
-        GlobalLinkImpl.action("logged-in", "");
+        String details = "User agent: " + request.getHeader("User-Agent")
+                + "\nRoles: "
+                + StringUtils.delimited(roleNames.toArray(new String[0]), ", ")
+                + "\nIP address: " + request.getRemoteAddr();
+        GlobalLinkImpl.action("logged-in", details);
         /*
          * We're done!
          */
