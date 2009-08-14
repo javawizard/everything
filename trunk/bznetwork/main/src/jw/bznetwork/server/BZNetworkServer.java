@@ -49,6 +49,7 @@ import jw.bznetwork.client.data.model.Server;
 import jw.bznetwork.server.data.DataStore;
 import jw.bznetwork.server.live.LiveServer;
 import jw.bznetwork.server.live.ReadThread;
+import jw.bznetwork.server.rpc.GlobalLinkImpl;
 import jw.bznetwork.utils.StringUtils;
 
 import com.ibatis.sqlmap.client.SqlMapClient;
@@ -195,6 +196,13 @@ public class BZNetworkServer implements ServletContextListener,
          */
         request.getSession().setAttribute("stat-logged-in",
                 System.currentTimeMillis());
+        /*
+         * And we'll add to the action log that the user logged in. This should
+         * probably be a configuration option in the future. We might also want
+         * to consider logging the ip address of the user, if that's enabled in
+         * the configuration.
+         */
+        GlobalLinkImpl.action("logged-in", "");
         /*
          * We're done!
          */
