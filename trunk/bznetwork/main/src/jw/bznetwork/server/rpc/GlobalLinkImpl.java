@@ -55,6 +55,7 @@ import jw.bznetwork.server.RequestTrackerFilter;
 import jw.bznetwork.server.data.DataStore;
 import jw.bznetwork.server.live.LiveServer;
 
+import com.google.gwt.http.client.RequestBuilder;
 import com.google.gwt.user.server.rpc.RemoteServiceServlet;
 
 /**

@@ -26,10 +26,13 @@ import jw.bznetwork.client.ui.Spacer;
 
 import com.google.gwt.core.client.EntryPoint;
 import com.google.gwt.core.client.GWT;
+import com.google.gwt.core.client.JavaScriptObject;
 import com.google.gwt.core.client.GWT.UncaughtExceptionHandler;
+import com.google.gwt.http.client.Request;
 import com.google.gwt.http.client.URL;
 import com.google.gwt.i18n.client.DateTimeFormat;
 import com.google.gwt.user.client.DOM;
+import com.google.gwt.user.client.Element;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.rpc.StatusCodeException;
@@ -94,6 +97,7 @@ public class BZNetwork implements EntryPoint
      */
     public void onModuleLoad()
     {
+        
         GWT.setUncaughtExceptionHandler(new UncaughtExceptionHandler()
         {
             
@@ -662,4 +666,18 @@ public class BZNetwork implements EntryPoint
         DOM.setElementAttribute(table.getFlexCellFormatter().getElement(row,
                 column), "title", title);
     }
+    
+    /**
+     * Returns the responseXML of the XMLHttpRequest object associated with the
+     * specified request, or null if the request does not have such an object or
+     * if the request has not yet receive a response.
+     * 
+     * @param request
+     *            The request object
+     * @return The response xml of the request
+     */
+    public static native Element getResponseXml(Request request) /*-{
+        return request.@com.google.gwt.http.client.Request::xmlHttpRequest.responseXML;
+    }-*/;
 }
+
