@@ -15,6 +15,7 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.Statement;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Properties;
@@ -40,6 +41,7 @@ import jw.bznetwork.client.ClientPermissionsProvider;
 import jw.bznetwork.client.Perms;
 import jw.bznetwork.client.data.AuthUser;
 import jw.bznetwork.client.data.CheckPermission;
+import jw.bznetwork.client.data.model.Action;
 import jw.bznetwork.client.data.model.Banfile;
 import jw.bznetwork.client.data.model.Configuration;
 import jw.bznetwork.client.data.model.Group;
@@ -600,6 +602,23 @@ public class BZNetworkServer implements ServletContextListener,
         {
             e.printStackTrace();
             writeConfigWorked = false;
+        }
+        if (areTablesInstalled)
+        {
+            /*
+             * If the tables are already installed, add an action event. If
+             * they're not, tables.sql will add an event for us, so we don't
+             * need to worry about that here.
+             */
+            Action action = new Action();
+            action
+                    .setDetails("BZNetwork has been installed from an already-existing database.");
+            action.setEvent("setup-existing");
+            action.setProvider("internal");
+            action.setTarget(-1);
+            action.setUsername("admin");
+            action.setWhen(new Date());
+            DataStore.addActionEvent(action);
         }
         String installedLockMessage = "You need to restart your server to "
                 + "complete the installation. Then log in with username"
