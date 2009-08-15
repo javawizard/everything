@@ -2,6 +2,7 @@ package jw.bznetwork.client.screens;
 
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
+import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.Anchor;
 import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.ClickListener;
@@ -89,7 +90,7 @@ public class ActionsScreen extends VerticalScreen
                     if (selectedUserIndex == -1)
                         selectedUserIndex = 0;
                     String filterUser = userBox.getItemText(selectedUserIndex);
-                    if(filterUser.contains(":"))
+                    if (filterUser.contains(":"))
                     {
                         String[] tokens = filterUser.split(":", 2);
                         filterProvider = tokens[0];
@@ -100,8 +101,9 @@ public class ActionsScreen extends VerticalScreen
                         filterProvider = null;
                         filterUsername = null;
                     }
-                    filterEvent = eventBox.getItemText(eventBox.getSelectedIndex());
-                    if(filterEvent.trim().equals(""))
+                    filterEvent = eventBox.getItemText(eventBox
+                            .getSelectedIndex());
+                    if (filterEvent.trim().equals(""))
                         filterEvent = null;
                     select1();
                 }
@@ -195,8 +197,22 @@ public class ActionsScreen extends VerticalScreen
         headerTable.setWidth("100%");
         FlexCellFormatter headerFormat = headerTable.getFlexCellFormatter();
         Anchor filterLink = new Anchor(getFilterLinkText());
+        Anchor clearLink = new Anchor("Clear action log");
         filterLink.addClickListener(new FilterLinkClickListener(result));
-        headerTable.setWidget(0, 0, filterLink);
+        clearLink.addClickListener(new ClickListener()
+        {
+            
+            @Override
+            public void onClick(Widget sender)
+            {
+                doClear();
+            }
+        });
+        HorizontalPanel filterClearPanel = new HorizontalPanel();
+        filterClearPanel.setSpacing(3);
+        filterClearPanel.add(filterLink);
+        filterClearPanel.add(clearLink);
+        headerTable.setWidget(0, 0, filterClearPanel);
         headerFormat.setHorizontalAlignment(0, 1, HorizontalPanel.ALIGN_LEFT);
         HorizontalPanel navigationPanel = new HorizontalPanel();
         headerTable.setWidget(0, 1, navigationPanel);
@@ -320,6 +336,37 @@ public class ActionsScreen extends VerticalScreen
         }
         widget.setWidth("100%");
         table.setWidth("100%");
+    }
+    
+    protected void doClear()
+    {
+        if (filterProvider != null && filterUsername != null)
+        {
+            if (!Window
+                    .confirm("Are you sure you want to clear the action log for the user "
+                            + filterProvider + ":" + filterUsername + "?"))
+                return;
+            BZNetwork.authLink.clearActionLog(filterProvider, filterUsername,
+                    new BoxCallback<Void>()
+                    {
+                        
+                        @Override
+                        public void run(Void result)
+                        {
+                            select1();
+                        }
+                    });
+        }
+        else
+        {
+            /*
+             * TODO: consider adding support for clearing the log for all users
+             * in the future.
+             */
+            Window.alert("You're not filtering by a user. Use the filter link "
+                    + "to filter on a particular user, then use the clear "
+                    + "link to clear that user's action log.");
+        }
     }
     
     private String getFilterLinkText()
