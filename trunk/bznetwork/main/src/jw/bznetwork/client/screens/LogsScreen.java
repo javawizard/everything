@@ -1,5 +1,7 @@
 package jw.bznetwork.client.screens;
 
+import com.google.gwt.user.client.ui.Label;
+
 import jw.bznetwork.client.VerticalScreen;
 
 public class LogsScreen extends VerticalScreen
@@ -36,6 +38,7 @@ public class LogsScreen extends VerticalScreen
     @Override
     public void select()
     {
+        widget.add(new Label("The logs screen is coming soon!"));
     }
     
 }

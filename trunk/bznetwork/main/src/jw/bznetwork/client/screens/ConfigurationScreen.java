@@ -116,12 +116,23 @@ public class ConfigurationScreen implements Screen
         table.getFlexCellFormatter().setVerticalAlignment(5, 0,
                 VerticalPanel.ALIGN_TOP);
         final TextBox siteNameBox = new TextBox();
+        siteNameBox
+                .setTitle("This is the name of your site. It appears in various "
+                        + "locations, such as at the top of this page.");
         siteNameBox.setText(config.getSitename());
         table.setWidget(0, 1, siteNameBox);
         final TextBox contactBox = new TextBox();
+        contactBox
+                .setTitle("This is some information that users of your site can "
+                        + "use to get in touch with you. It can be an email address, "
+                        + "a nickname, an IRC channel, or whatever you want it to be.");
         contactBox.setText(config.getContact());
         table.setWidget(1, 1, contactBox);
         final TextBox executableBox = new TextBox();
+        executableBox
+                .setTitle("The Executable field is the executable that "
+                        + "should be run to start bzfs. Normally this is exactly that: \"bzfs\". "
+                        + "This can contain command arguments as well.");
         executableBox.setText(config.getExecutable());
         if (result.isEcDisabled())
             executableBox.setReadOnly(true);
@@ -130,20 +141,42 @@ public class ConfigurationScreen implements Screen
         executablePanel.add(new Spacer("5px", "5px"));
         table.setWidget(2, 1, executablePanel);
         final SimpleCheckBox menuLeftCheckbox = new SimpleCheckBox();
+        menuLeftCheckbox
+                .setTitle("If this is checked, the list of pages shows up to the left. If "
+                        + "this is not checked, the list of pages can be accessed in a dropdown "
+                        + "menu by clicking on the Menu link in the upper-right corner.");
         menuLeftCheckbox.setChecked(config.isMenuleft());
         table.setWidget(3, 1, menuLeftCheckbox);
         final SimpleCheckBox currentNameCheckbox = new SimpleCheckBox();
+        currentNameCheckbox
+                .setTitle("If this is checked, the name of the current page will "
+                        + "be shown at the top of the page, next to the site name.");
         currentNameCheckbox.setChecked(config.isCurrentname());
         table.setWidget(4, 1, currentNameCheckbox);
         final TextArea welcomeField = new TextArea();
+        welcomeField
+                .setTitle("This is the text that shows up when the user initially "
+                        + "logs into your site. This can contain HTML. Right now, you can't "
+                        + "have links to other pages (such as the servers page or the roles page) "
+                        + "in this field, but I'm planning on adding that in the future.");
         welcomeField.setText(config.getWelcome());
         welcomeField.setCharacterWidth(65);
         welcomeField.setVisibleLines(7);
         table.setWidget(5, 1, welcomeField);
         table.getFlexCellFormatter().setColSpan(5, 1, 2);
         Button saveButton = new Button("Save");
+        saveButton
+                .setTitle("Once you've made your changes, click this button to save them. "
+                        + "Note that disabling changes to the executable field gets saved "
+                        + "immediately, so you don't need to click this button if all "
+                        + "you did was disable changes to the executable field.");
         table.setWidget(6, 1, saveButton);
         final Button disableEcButton = new Button("Disable Changes");
+        disableEcButton
+                .setTitle("Since allowing the executable to be edited from the web "
+                        + "poses a security risk, you can click this button to disable changes. "
+                        + "See the message below the configuration settings for more information "
+                        + "on what this button does.");
         executablePanel.add(disableEcButton);
         widget.add(table);
         widget.add(new Spacer("8px", "8px"));
@@ -151,9 +184,6 @@ public class ConfigurationScreen implements Screen
         ecInfoLabel.setHTML(result.isEcDisabled() ? ecDisabledInfoString
                 : ecEnabledInfoString);
         widget.add(ecInfoLabel);
-        widget.add(new Spacer("8px", "8px"));
-        widget.add(new HTML(
-                "The <b>Welcome message</b> field can contain HTML."));
         widget.add(new Spacer("8px", "8px"));
         widget.add(new HTML("Most of these settings won't take effect until "
                 + "you log out and then log back in."));

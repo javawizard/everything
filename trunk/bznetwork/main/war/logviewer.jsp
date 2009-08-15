@@ -14,6 +14,9 @@ String startString = request.getParameter("start");
 String endString = request.getParameter("end");
 String textSearchString = request.getParameter("search");
 String ignoreCaseString = request.getParameter("caseignore");
+String[] filterServerStrings = request.getParameterValues("server");
+String[] filterEvents = request.getParameterValues("event");
+// FIXME: add some sort of parameter for which server to view the logs of
 %>
 <% %>
 <% %>

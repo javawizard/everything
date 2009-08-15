@@ -118,6 +118,11 @@ public class SessionsScreen extends VerticalScreen
                 }
                 table.setText(row, 3, rolesBuffer.toString());
                 Button forceLogoutButton = new Button("Force logout");
+                forceLogoutButton
+                        .setTitle("Forces this user to log out. To the user,"
+                                + " it appears as if their "
+                                + "session has timed out, and they can refresh "
+                                + "their page to log back in.");
                 forceLogoutButton.addClickListener(new ForceLogoutListener(us
                         .getId()));
                 table.setText(row, 4, us.getUserAgent());

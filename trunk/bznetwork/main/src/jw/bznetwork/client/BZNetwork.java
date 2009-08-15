@@ -17,6 +17,7 @@ import jw.bznetwork.client.screens.BanfilesScreen;
 import jw.bznetwork.client.screens.CallsignsScreen;
 import jw.bznetwork.client.screens.ConfigurationScreen;
 import jw.bznetwork.client.screens.HelpScreen;
+import jw.bznetwork.client.screens.LogsScreen;
 import jw.bznetwork.client.screens.RolesScreen;
 import jw.bznetwork.client.screens.ServersScreen;
 import jw.bznetwork.client.screens.SessionsScreen;
@@ -197,6 +198,7 @@ public class BZNetwork implements EntryPoint
             defaultScreenList.add(new AuthgroupsScreen());
             defaultScreenList.add(new CallsignsScreen());
         }
+        defaultScreenList.add(new LogsScreen());
         /*
          * This one is dependent on some perms, but since the rules are
          * complicated, we'll just add the screen anyway and let the server
@@ -361,6 +363,9 @@ public class BZNetwork implements EntryPoint
         final PasswordTextBox passwordField = new PasswordTextBox();
         usernameField.setVisibleLength(17);
         passwordField.setVisibleLength(17);
+        usernameField.setTitle("Type your " + publicConfiguration.getSitename()
+                + " username here.");
+        passwordField.setTitle("Type your password here.");
         table.setHTML(0, 0, "Username:");
         table.setHTML(1, 0, "Password:");
         table.setWidget(0, 1, usernameField);
@@ -371,6 +376,8 @@ public class BZNetwork implements EntryPoint
         table.getFlexCellFormatter().setHorizontalAlignment(1, 1,
                 HorizontalPanel.ALIGN_RIGHT);
         Button loginButton = new Button("<b>Log in</b>");
+        loginButton.setTitle("When you've entered your information, "
+                + "click this button to log in.");
         Anchor differentProviderLink = new Anchor(
                 "<small>Log in with different credentials</small>", true);
         VerticalPanel vp = new VerticalPanel();
@@ -681,4 +688,3 @@ public class BZNetwork implements EntryPoint
         return request.@com.google.gwt.http.client.Request::xmlHttpRequest.responseXML;
     }-*/;
 }
-

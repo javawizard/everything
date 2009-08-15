@@ -190,6 +190,10 @@ public class RolesScreen extends VerticalScreen
             }
             table.setWidget(i, 2, targetPanel);
             Anchor deleteLink = new Anchor("delete");
+            deleteLink
+                    .setTitle("Use this to delete this permission. This will take "
+                            + "effect when users that use this role log out "
+                            + "and then log back in.");
             table.setWidget(i, 3, deleteLink);
             deleteLink.addClickListener(new ClickListener()
             {
@@ -212,13 +216,18 @@ public class RolesScreen extends VerticalScreen
             });
         }
         final ListBox permissionBox = createPermissionListBox();
+        permissionBox.setTitle("Select a permission to add here.");
         table.setWidget(result.length, 0, permissionBox);
         table.setHTML(result.length, 1, "&nbsp;on&nbsp;");
         table.getFlexCellFormatter().addStyleName(result.length, 1,
                 "bznetwork-PermsTableOn");
         final ListBox targetBox = createTargetListBox(model);
+        targetBox.setTitle("Select what target the permission should be applied to here.");
         table.setWidget(result.length, 2, targetBox);
         Button addPermissionButton = new Button("Add");
+        addPermissionButton.setTitle("Once you've selected a permission and a target, click " +
+        		"this button. If the permission you selected can't be applied to " +
+        		"the specified target, an error message will be shown.");
         table.setWidget(result.length, 3, addPermissionButton);
         widget.add(table);
         widget.add(new Spacer("8px", "8px"));
@@ -385,10 +394,23 @@ public class RolesScreen extends VerticalScreen
             // Anchor viewUsersLink = new Anchor("View users");
             // table.setWidget(i,1,viewUsersLink);
             Anchor renameLink = new Anchor("rename");
+            renameLink
+                    .setTitle("Use this link to rename the role. This will work correctly "
+                            + "even if the role is already in use, since roles are referenced "
+                            + "internally by their unique id.");
             table.setWidget(i, 1, renameLink);
             Anchor permissionsLink = new Anchor("permissions");
+            permissionsLink
+                    .setTitle("This link allows you to edit the permissions for "
+                            + "this role.");
             table.setWidget(i, 2, permissionsLink);
             Anchor deleteLink = new Anchor("delete");
+            deleteLink
+                    .setTitle("You can use this to delete the role. Anything that depends "
+                            + "on the role, such as callsigns and authgroups that use it, will "
+                            + "also be deleted, so you should make sure that you're not "
+                            + "going to inadvertently delete something you didn't want "
+                            + "to before you use this link.");
             table.setWidget(i, 3, deleteLink);
             deleteLink.addClickListener(new DeleteRoleListener(result[i]
                     .getRoleid()));
@@ -398,6 +420,8 @@ public class RolesScreen extends VerticalScreen
                     .getRoleid(), result[i].getName()));
         }
         final TextBox addNameBox = new TextBox();
+        addNameBox
+                .setTitle("Type the name you'd like for your new role, then click Add.");
         addNameBox.setVisibleLength(15);
         table.setWidget(result.length, 0, addNameBox);
         Button addButton = new Button("Add");
