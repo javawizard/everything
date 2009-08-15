@@ -276,6 +276,14 @@ class BZNetworkEventHandler: public bz_EventHandler,
 				output += event->reason.c_str();
 				bzn_outputData(output);
 			}
+			else if(eventData->eventType == bz_eSlashCommandEvent)
+			{
+				bz_SlashCommandEventData* event = (bz_SlashCommandEventData*) eventData;
+				std::string output;
+				output += "slashcommand ";
+				output += event->message.c_str();
+				bzn_outputData(output);
+			}
 		}
 		virtual bool handle(int playerID, bzApiString command,
 				bzApiString message, bzAPIStringList *params)
@@ -305,6 +313,7 @@ BZF_PLUGIN_CALL int bz_Load(const char* commandLine)
 	bz_registerEvent(bz_eMessageFilteredEvent, &singleEventHandler);
 	bz_registerEvent(bz_eKillEvent, &singleEventHandler);
 	bz_registerEvent(bz_eBanEvent, &singleEventHandler);
+	bz_registerEvent(bz_eSlashCommandEvent, &singleEventHandler);
 	// Perhaps allow this to be configured via an argument, and
 	// then have this value be a BZNetwork configuration setting
 	bz_setMaxWaitTime(2.0);
@@ -332,6 +341,7 @@ int bz_Unload(void)
 	bz_removeEvent(bz_eMessageFilteredEvent, &singleEventHandler);
 	bz_removeEvent(bz_eKillEvent, &singleEventHandler);
 	bz_removeEvent(bz_eBanEvent, &singleEventHandler);
+	bz_removeEvent(bz_eSlashCommandEvent, &singleEventHandler);
 	bzn_outputData("bznunload");
 	playerIdsByCallsign.clear();
 	return 0;
@@ -419,9 +429,6 @@ int parseInt(std::string value)
 void stringSplit(std::string string, std::vector<std::string>* vector,
 		std::string search, int maxItems)
 {
-	/*
-	 * If the vector is not empty, we clear it. Then, while...
-	 */
 	vector->clear();
 	int attempts = 1;
 	int afterLastMatchedIndex = 0;
