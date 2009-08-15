@@ -21,6 +21,7 @@ import com.google.gwt.user.client.ui.FlexTable.FlexCellFormatter;
 
 import jw.bznetwork.client.BZNetwork;
 import jw.bznetwork.client.BoxCallback;
+import jw.bznetwork.client.Perms;
 import jw.bznetwork.client.VerticalScreen;
 import jw.bznetwork.client.data.ActionLogModel;
 import jw.bznetwork.client.data.model.Action;
@@ -211,7 +212,8 @@ public class ActionsScreen extends VerticalScreen
         HorizontalPanel filterClearPanel = new HorizontalPanel();
         filterClearPanel.setSpacing(3);
         filterClearPanel.add(filterLink);
-        filterClearPanel.add(clearLink);
+        if (Perms.global("clear-action-log"))
+            filterClearPanel.add(clearLink);
         headerTable.setWidget(0, 0, filterClearPanel);
         headerFormat.setHorizontalAlignment(0, 1, HorizontalPanel.ALIGN_LEFT);
         HorizontalPanel navigationPanel = new HorizontalPanel();
