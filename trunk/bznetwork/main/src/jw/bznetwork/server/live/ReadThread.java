@@ -109,6 +109,8 @@ public class ReadThread extends Thread
             processBznFail(data.substring("bznfail ".length()));
         else if (data.equals("bznunload"))
             processBznUnload();
+        else if (data.startsWith("slashcommand "))
+            processSlashCommand(data.substring("slashcommand ".length()));
         else
         {
             Server serverObject = DataStore.getServerById(server.getId());
@@ -119,6 +121,32 @@ public class ReadThread extends Thread
                     + server.getId() + " which runs on port " + port + ": "
                     + data);
         }
+    }
+    
+    private void processSlashCommand(String substring)
+    {
+        String[] tokens = substring.split("\\|", 2);
+        int playerId = Integer.parseInt(tokens[0]);
+        String message = tokens[1];
+        LogEvent event = new LogEvent();
+        event.setServerid(server.getId());
+        if (message.toLowerCase().startsWith("/report "))
+            event.setEvent("report");
+        else
+            event.setEvent("slashcommand");
+        event.setSourceid(playerId);
+        LivePlayer player = server.getIdsToPlayers().get(playerId);
+        if (playerId == LiveServer.SERVER)
+            event.setSource("+server");
+        else if (player != null)
+            event.setSource(player.getCallsign());
+        else
+            event.setSource("+unknown");
+        if (event.getEvent().equals("report"))
+            event.setData(message.substring("/report ".length()));
+        else
+            event.setData(message);
+        DataStore.addLogEvent(event);
     }
     
     private void processBznFail(String substring)
