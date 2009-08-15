@@ -281,6 +281,8 @@ class BZNetworkEventHandler: public bz_EventHandler,
 				bz_SlashCommandEventData* event = (bz_SlashCommandEventData*) eventData;
 				std::string output;
 				output += "slashcommand ";
+				output += intToString(event->from);
+				output += "|";
 				output += event->message.c_str();
 				bzn_outputData(output);
 			}
