@@ -10,6 +10,9 @@ The questions are organized by the page that they are relevant to. Pages are the
 ===In the banfiles column, sometimes there's a dropdown box, sometimes the dropdown box is disabled, and sometimes it's just text. What's the difference between these?===
 Which of these three states the banfile appears as depends on what permissions you have and whether or not the server is running. If you don't have permission to edit that server's banfile, then the banfile appears as just text. If you do have permission to edit the banfile, but the server is currently running, then the banfile appears as a disabled dropdown box. If you have permission to edit the banfile, and the server is not currently running, then the banfile appears as a normal dropdown box.
 
+===Why not have the banfile editable while the server is running, and then just not have changes take effect until the server is restarted, like settings on the '''settings''' page do?===
+The reason for this is that banfiles can be deleted. When you try to delete a banfile, it checks to make sure that all servers that use it are shut down, so that deleting the actual ban file doesn't mess up the servers. If you could change a server's banfile while the server is running, BZNetwork wouldn't know that the actual server was still using that banfile.
+
 ===Sometimes the color of a server's name is red, sometimes it's yellow, sometimes it's green, and sometimes it's blue. What do all these colors mean?===
 If the server's name is red, the server is not currently running. If the server's name is green, then the server is running. If the server's name is yellow, then a server shutdown has been requested but the server has not shut down yet. If the server's name is blue, the server has been started but the BZNetwork plugin has not yet reported that the server has finished initializing.
 
