@@ -29,8 +29,8 @@ public class Perms
 {
     /**
      * A string array of all supported permissions. After each permission's name
-     * is a comma and then a number. The number represents what the permission
-     * can be applied to. 1 is global, 2 is group, and 3 is server.
+     * is a comma and then the lowest level that the permission can be applied
+     * to. Permission level inheritance is specified in levelInheritance
      */
     private static String[] allPermissionsArray = new String[]
     {
@@ -45,12 +45,12 @@ public class Perms
             "add-idban,banfile", "add-hostban,banfile", "add-long-ban,banfile",
             "delete-ban,banfile", "delete-self-ban,banfile",
             "edit-server-banfile,server", "edit-group-banfile,group",
-            "view-reports,server", "say,server", "hidden-say,server",
-            "view-in-server-list,server", "edit-server-notes,server",
-            "edit-group-notes,group", "view-in-group-list,group",
-            "view-action-log,global", "clear-action-log,global",
-            "edit-configuration,global", "all,server", "view-sessions,global",
-            "create-group,global", "rename-group,group"
+            "say,server", "hidden-say,server", "view-in-server-list,server",
+            "edit-server-notes,server", "edit-group-notes,group",
+            "view-in-group-list,group", "view-action-log,global",
+            "clear-action-log,global", "edit-configuration,global",
+            "all,server", "view-sessions,global", "create-group,global",
+            "rename-group,group"
     
     };
     
