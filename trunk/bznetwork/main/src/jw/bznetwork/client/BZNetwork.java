@@ -28,6 +28,7 @@ import com.google.gwt.core.client.EntryPoint;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.core.client.JavaScriptObject;
 import com.google.gwt.core.client.GWT.UncaughtExceptionHandler;
+import com.google.gwt.dom.client.Document;
 import com.google.gwt.http.client.Request;
 import com.google.gwt.http.client.URL;
 import com.google.gwt.i18n.client.DateTimeFormat;
@@ -676,7 +677,7 @@ public class BZNetwork implements EntryPoint
      *            The request object
      * @return The response xml of the request
      */
-    public static native Element getResponseXml(Request request) /*-{
+    public static native Document getResponseXml(Request request) /*-{
         return request.@com.google.gwt.http.client.Request::xmlHttpRequest.responseXML;
     }-*/;
 }
