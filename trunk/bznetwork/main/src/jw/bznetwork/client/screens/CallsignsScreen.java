@@ -83,6 +83,9 @@ public class CallsignsScreen extends VerticalScreen implements Screen
             table.setText(i, 1, result.getRoleIdsToNames().get(
                     callsign.getRole()));
             Anchor deleteLink = new Anchor("delete");
+            deleteLink.setTitle("Use this to delete this callsign. If the user is " +
+            		"logged in, they will still be able to make changes until " +
+            		"they log out or you force them to log out on the Sessions page.");
             table.setWidget(i, 2, deleteLink);
             deleteLink.addClickListener(new ClickListener()
             {
@@ -109,8 +112,13 @@ public class CallsignsScreen extends VerticalScreen implements Screen
         table.setWidget(result.getCallsigns().length, 0, callsignBox);
         final ListBox roleBox = BZNetwork.createRoleBox(result
                 .getRoleIdsToNames());
+        roleBox
+                .setTitle("Select a role to apply to this BZFlag callsign user.");
         table.setWidget(result.getCallsigns().length, 1, roleBox);
         Button addCallsignButton = new Button("Add");
+        addCallsignButton
+                .setTitle("Once you've selected a callsign and a role, click "
+                        + "this button.");
         table.setWidget(result.getCallsigns().length, 2, addCallsignButton);
         widget.add(table);
         addCallsignButton.addClickListener(new ClickListener()

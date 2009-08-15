@@ -108,8 +108,13 @@ public class AuthgroupsScreen extends VerticalScreen implements Screen
         table.setWidget(result.getAuthgroups().length, 0, groupNameBox);
         final ListBox roleBox = BZNetwork.createRoleBox(result
                 .getRoleIdsToNames());
+        roleBox
+                .setTitle("Select a role to be applied to all members of the group "
+                        + "you typed in the box at left.");
         table.setWidget(result.getAuthgroups().length, 1, roleBox);
         Button addGroupButton = new Button("Add");
+        addGroupButton
+                .setTitle("Click this button once you've chosen a group and a role.");
         table.setWidget(result.getAuthgroups().length, 2, addGroupButton);
         widget.add(table);
         addGroupButton.addClickListener(new ClickListener()

@@ -222,12 +222,14 @@ public class RolesScreen extends VerticalScreen
         table.getFlexCellFormatter().addStyleName(result.length, 1,
                 "bznetwork-PermsTableOn");
         final ListBox targetBox = createTargetListBox(model);
-        targetBox.setTitle("Select what target the permission should be applied to here.");
+        targetBox
+                .setTitle("Select what target the permission should be applied to here.");
         table.setWidget(result.length, 2, targetBox);
         Button addPermissionButton = new Button("Add");
-        addPermissionButton.setTitle("Once you've selected a permission and a target, click " +
-        		"this button. If the permission you selected can't be applied to " +
-        		"the specified target, an error message will be shown.");
+        addPermissionButton
+                .setTitle("Once you've selected a permission and a target, click "
+                        + "this button. If the permission you selected can't be applied to "
+                        + "the specified target, an error message will be shown.");
         table.setWidget(result.length, 3, addPermissionButton);
         widget.add(table);
         widget.add(new Spacer("8px", "8px"));
@@ -425,6 +427,9 @@ public class RolesScreen extends VerticalScreen
         addNameBox.setVisibleLength(15);
         table.setWidget(result.length, 0, addNameBox);
         Button addButton = new Button("Add");
+        addButton
+                .setTitle("Once you've typed a name for the new role, click this button "
+                        + "to add it.");
         addButton.addClickListener(new ClickListener()
         {
             

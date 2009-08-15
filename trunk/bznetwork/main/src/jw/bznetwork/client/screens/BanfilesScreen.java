@@ -69,8 +69,14 @@ public class BanfilesScreen extends VerticalScreen
         {
             final Banfile banfile = result[i];
             table.setText(i, 0, result[i].getName());
-            BZNetwork.setCellTitle(table, i, 0, "Id: " + banfile.getBanfileid());
+            BZNetwork
+                    .setCellTitle(table, i, 0, "Id: " + banfile.getBanfileid());
             Anchor deleteLink = new Anchor("delete");
+            deleteLink
+                    .setTitle("Deletes this banfile. All of the bans in this banfile will be "
+                            + "discarded, and any servers that are using this banfile will be set "
+                            + "not to use a banfile. All servers that currently use this banfile "
+                            + "must be shut down before you can delete it.");
             deleteLink.addClickHandler(new ClickHandler()
             {
                 
@@ -92,9 +98,13 @@ public class BanfilesScreen extends VerticalScreen
             table.setWidget(i, 1, deleteLink);
         }
         final TextBox nameField = new TextBox();
+        nameField.setTitle("Type a name for the new banfile here.");
         nameField.setVisibleLength(15);
         table.setWidget(result.length, 0, nameField);
         Button addButton = new Button("Add");
+        addButton
+                .setTitle("Once you've typed a name for the new banfile, click this "
+                        + "button to add it.");
         table.setWidget(result.length, 1, addButton);
         addButton.addClickHandler(new ClickHandler()
         {
