@@ -6,6 +6,14 @@
 
 	<!-- !ADDTOSQL -->
 
+    <select id="searchLogs" 
+         parameterClass="jw.bznetwork.client.data.model.LogRequest" 
+         resultClass="jw.bznetwork.client.data.model.LogEvent" >
+        select * from logevents
+        where when > #start# and when < #end#
+        $filter$
+    </select>
+
     <delete id="clearActionLog" 
          parameterClass="jw.bznetwork.client.data.model.UserPair" >
         delete from actions 

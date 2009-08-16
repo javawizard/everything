@@ -6,6 +6,11 @@ import jw.bznetwork.client.VerticalScreen;
 
 public class LogsScreen extends VerticalScreen
 {
+    public static final String[] SEARCH_IN = new String[]
+    {
+            "event", "source", "target", "sourceteam", "targetteam",
+            "ipaddress", "bzid", "email", "metadata", "data"
+    };
     
     @Override
     public void deselect()
@@ -24,7 +29,7 @@ public class LogsScreen extends VerticalScreen
         return "Logs";
     }
     
-    @Override 
+    @Override
     public void init()
     {
     }

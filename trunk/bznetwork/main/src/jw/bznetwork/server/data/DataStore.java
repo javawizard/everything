@@ -8,6 +8,7 @@ import jw.bznetwork.client.data.model.Callsign;
 import jw.bznetwork.client.data.model.Configuration;
 import jw.bznetwork.client.data.model.Group;
 import jw.bznetwork.client.data.model.LogEvent;
+import jw.bznetwork.client.data.model.LogRequest;
 import jw.bznetwork.client.data.model.Permission;
 import jw.bznetwork.client.data.model.Role;
 import jw.bznetwork.client.data.model.Server;
@@ -54,8 +55,33 @@ public class DataStore
     }
     
     // !ADDTOSQL
-
-public static synchronized void clearActionLog(UserPair v){try{getGdbClient().delete("clearActionLog",v);}catch(Exception e){throw new RuntimeException("Exception in database statement clearActionLog",e);}}
+    
+    public static synchronized LogEvent[] searchLogs(LogRequest v)
+    {
+        try
+        {
+            return (LogEvent[]) getGdbClient().queryForList("searchLogs", v)
+                    .toArray(new LogEvent[0]);
+        }
+        catch (Exception e)
+        {
+            throw new RuntimeException(
+                    "Exception in database statement searchLogs", e);
+        }
+    }
+    
+    public static synchronized void clearActionLog(UserPair v)
+    {
+        try
+        {
+            getGdbClient().delete("clearActionLog", v);
+        }
+        catch (Exception e)
+        {
+            throw new RuntimeException(
+                    "Exception in database statement clearActionLog", e);
+        }
+    }
     
     public static synchronized UserPair[] getActionUserList()
     {
