@@ -3,12 +3,17 @@ package jw.bznetwork.server;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.io.OutputStream;
+import java.io.PrintWriter;
 import java.io.StringReader;
 import java.io.StringWriter;
+import java.io.UnsupportedEncodingException;
+import java.io.Writer;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
@@ -33,10 +38,16 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 import javax.servlet.http.HttpSessionEvent;
 import javax.servlet.http.HttpSessionListener;
+import javax.servlet.jsp.JspWriter;
+
+import org.apache.commons.lang.StringEscapeUtils;
+
+import sun.tools.tree.StringExpression;
 
 import net.sf.opengroove.common.utils.DataUtils;
 
 import jw.bznetwork.client.AuthProvider;
+import jw.bznetwork.client.BZNetwork;
 import jw.bznetwork.client.ClientPermissionsProvider;
 import jw.bznetwork.client.Perms;
 import jw.bznetwork.client.data.AuthUser;
@@ -45,9 +56,12 @@ import jw.bznetwork.client.data.model.Action;
 import jw.bznetwork.client.data.model.Banfile;
 import jw.bznetwork.client.data.model.Configuration;
 import jw.bznetwork.client.data.model.Group;
+import jw.bznetwork.client.data.model.LogEvent;
+import jw.bznetwork.client.data.model.LogRequest;
 import jw.bznetwork.client.data.model.Permission;
 import jw.bznetwork.client.data.model.Role;
 import jw.bznetwork.client.data.model.Server;
+import jw.bznetwork.client.screens.LogsScreen;
 import jw.bznetwork.server.data.DataStore;
 import jw.bznetwork.server.live.LiveServer;
 import jw.bznetwork.server.live.ReadThread;
@@ -978,5 +992,206 @@ public class BZNetworkServer implements ServletContextListener,
             return;
         }
         server.forceShutdown();
+    }
+    
+    public static void doLogViewer(HttpServletRequest request, JspWriter out)
+            throws IOException
+    {
+        String startString = request.getParameter("start");
+        String endString = request.getParameter("end");
+        String textSearchString = request.getParameter("search");
+        String textSearch = StringEscapeUtils.escapeSql(textSearchString);
+        String textSearchLower = textSearch.toLowerCase();
+        String ignoreCaseString = request.getParameter("caseignore");
+        String[] textSearchInStrings = request.getParameterValues("searchin");
+        String[] filterServerStrings = request.getParameterValues("server");
+        // if filterServerStrings is null, then we'll show the logs of all
+        // servers that this user has view-in-server-list on.
+        String[] filterEvents = request.getParameterValues("event");
+        // if filterEvents is null, then we'll show all events.
+        int maxResults = 5000;
+        // the maximum results number is pretty much hard-coded right now. It's
+        // not intended for practical use, as restricting the interval is a much
+        // more logical solution; it's simply to prevent a mis-formed request
+        // from
+        // tying up the server while it does something such as try to get all of
+        // the logs for all time periods out of the database. The client then
+        // warns
+        // the user if the result count is 5000 that some results were truncated
+        // and
+        // that they should decrease the time interval.
+        LogRequest filterObject = new LogRequest();
+        filterObject.setStart(new Date(Long.parseLong(startString)));
+        filterObject.setEnd(new Date(Long.parseLong(endString)));
+        String filter = "";
+        // filter by search string
+        if (textSearchInStrings != null)
+            filter += " and ('1' == '2' ";
+        for (String s : textSearchInStrings)
+        {
+            if (!StringUtils.isMemberOf(s, LogsScreen.SEARCH_IN))
+            {
+                throw new RuntimeException("Invalid searchin: " + s);
+            }
+            String filterColumn = s;
+            String textSearchToUse = textSearch;
+            if ("true".equalsIgnoreCase(ignoreCaseString))
+            {
+                filterColumn = " lower(" + filterColumn + ") ";
+                textSearchToUse = textSearchLower;
+            }
+            filter += " or " + filterColumn + " like '" + textSearchToUse + "'";
+        }
+        if (textSearchInStrings != null)
+            filter += " ) ";
+        // filter by servers
+        ArrayList<Integer> serverIds = new ArrayList<Integer>();
+        if (filterServerStrings == null)
+        {
+            // no servers specified by the user, add them all
+        }
+        else
+        {
+            // parse the server ids specified by the user
+            for (String s : filterServerStrings)
+            {
+                serverIds.add(Integer.parseInt(s));
+            }
+        }
+        // remove servers the user doesn't have perms to view the logs of
+        for (int server : new ArrayList<Integer>(serverIds))
+        {
+            if (!Perms.server("view-logs", server, GlobalLinkImpl
+                    .getServerGroupId(server)))
+                serverIds.remove(server);
+        }
+        // add the servers
+        filter += " and ( '1' == '2' ";
+        for (int server : serverIds)
+        {
+            filter += " or serverid = " + server + " ";
+        }
+        filter += " ) ";
+        // filter by events
+        filter += " and ( '1' == '2' ";
+        for (String s : filterEvents)
+        {
+            filter += " or event == '" + StringEscapeUtils.escapeSql(s) + "' ";
+        }
+        filter += " ) ";
+        // filter by max results
+        filter += " limit " + maxResults;
+        // add the filter
+        filterObject.setFilter(filter);
+        // We're done with the filtering. Now we run the query.
+        LogEvent[] results = DataStore.searchLogs(filterObject);
+        // Now we'll do the actual rendering.
+    }
+    
+    public static enum LogEventColumn
+    {
+        when("When")
+        {
+            
+            @Override
+            public String format(LogEvent event)
+            {
+                return BZNetwork.format(event.getWhen());
+            }
+        },
+        from("From")
+        {
+            
+            @Override
+            public String format(LogEvent event)
+            {
+                return null;
+            }
+        },
+        to("To")
+        {
+            
+            @Override
+            public String format(LogEvent event)
+            {
+                // TODO Auto-generated method stub
+                return null;
+            }
+        },
+        event("Event")
+        {
+            
+            @Override
+            public String format(LogEvent event)
+            {
+                // TODO Auto-generated method stub
+                return null;
+            }
+        },
+        detail("Detail")
+        {
+            
+            @Override
+            public String format(LogEvent event)
+            {
+                // TODO Auto-generated method stub
+                return null;
+            }
+        };
+        private String name;
+        
+        private LogEventColumn(String name)
+        {
+            this.name = name;
+        }
+        
+        public String getColumnName()
+        {
+            return name;
+        }
+        
+        public abstract String format(LogEvent event);
+    }
+    
+    public static class LogEventFormatter
+    {
+        private HashMap<Integer, Server> serverCache = new HashMap<Integer, Server>();
+        private ArrayList<LogEventColumn> columns = new ArrayList<LogEventColumn>();
+        
+        public void addColumn(LogEventColumn column)
+        {
+            if (!columns.contains(column))
+                columns.add(column);
+        }
+        
+        public void format(LogEvent[] events, JspWriter writer)
+                throws IOException
+        {
+            writer.println("<table border='0' cellspacing='1' cellpadding='1' "
+                    + "class='bznetwork-LogViewerTable'>");
+            writer.println("<tr class='bznetwork-LogViewerTable-header>");
+            for (LogEventColumn column : columns)
+            {
+                writer.println("<td>"
+                        + StringEscapeUtils.escapeHtml(column.getColumnName())
+                        + "</td>");
+            }
+            writer.println("</tr>");
+            for (LogEvent event : events)
+            {
+                writer.println("<tr class='lvtr-" + event.getEvent() + "'>");
+                for (LogEventColumn column : columns)
+                {
+                    writer
+                            .println("<td class='lvtr-"
+                                    + event.getEvent()
+                                    + "'>"
+                                    + StringEscapeUtils.escapeHtml(column
+                                            .format(event)) + "</td>");
+                }
+                writer.println("</tr>");
+            }
+            writer.println("</table>");
+        }
     }
 }
