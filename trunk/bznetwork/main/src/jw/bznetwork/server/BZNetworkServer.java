@@ -1090,59 +1090,96 @@ public class BZNetworkServer implements ServletContextListener,
     
     public static enum LogEventColumn
     {
-        when("When")
+        when("When", true)
         {
             
             @Override
-            public String format(LogEvent event)
+            public String format(LogEvent event, LogEventFormatter formatter)
             {
                 return BZNetwork.format(event.getWhen());
             }
         },
-        from("From")
+        from("From", false)
         {
             
             @Override
-            public String format(LogEvent event)
+            public String format(LogEvent event, LogEventFormatter formatter)
             {
-                return null;
+                String callsign = event.getSource();
+                if (callsign == null)
+                    return "";
+                return "#" + event.getSourceid() + "&nbsp;<span class='lvtp-"
+                        + event.getSourceteam() + "'>"
+                        + StringEscapeUtils.escapeHtml(callsign) + "</span>";
             }
         },
-        to("To")
+        to("To", false)
         {
             
             @Override
-            public String format(LogEvent event)
+            public String format(LogEvent event, LogEventFormatter formatter)
             {
-                // TODO Auto-generated method stub
-                return null;
+                String callsign = event.getTarget();
+                if (callsign == null)
+                {
+                    if (event.getTargetteam() != null)
+                        return event.getTargetteam();
+                    return "";
+                }
+                return "#" + event.getTargetid() + "&nbsp;<span class='lvtp-"
+                        + event.getTargetteam() + "'>"
+                        + StringEscapeUtils.escapeHtml(callsign) + "</span>";
             }
         },
-        event("Event")
+        event("Event", true)
         {
             
             @Override
-            public String format(LogEvent event)
+            public String format(LogEvent event, LogEventFormatter formatter)
             {
-                // TODO Auto-generated method stub
-                return null;
+                return event.getEvent();
             }
         },
-        detail("Detail")
+        detail("Detail", true)
         {
             
             @Override
-            public String format(LogEvent event)
+            public String format(LogEvent event, LogEventFormatter formatter)
             {
-                // TODO Auto-generated method stub
-                return null;
+                String name = event.getEvent();
+                if (name.startsWith("chat-"))
+                {
+                    return event.getData();
+                }
+                else if (name.equalsIgnoreCase("join"))
+                {
+                    return event.getData() + " BZID:" + event.getBzid()
+                            + " IP:" + event.getIpaddress() + " Email:"
+                            + event.getEmail();
+                }
+                else if (name.equalsIgnoreCase("part"))
+                {
+                    return "BZID:" + event.getBzid() + " IP:"
+                            + event.getIpaddress() + " Reason:"
+                            + event.getData();
+                }
+                else if (name.equalsIgnoreCase("report"))
+                {
+                    return event.getData();
+                }
+                else if (name.equalsIgnoreCase("slashcommand"))
+                {
+                    return event.getData();
+                }
             }
         };
         private String name;
+        private boolean escaped;
         
-        private LogEventColumn(String name)
+        private LogEventColumn(String name, boolean escaped)
         {
             this.name = name;
+            this.escaped = escaped;
         }
         
         public String getColumnName()
@@ -1150,7 +1187,13 @@ public class BZNetworkServer implements ServletContextListener,
             return name;
         }
         
-        public abstract String format(LogEvent event);
+        public boolean isEscaped()
+        {
+            return escaped;
+        }
+        
+        public abstract String format(LogEvent event,
+                LogEventFormatter formatter);
     }
     
     public static class LogEventFormatter
@@ -1182,16 +1225,26 @@ public class BZNetworkServer implements ServletContextListener,
                 writer.println("<tr class='lvtr-" + event.getEvent() + "'>");
                 for (LogEventColumn column : columns)
                 {
-                    writer
-                            .println("<td class='lvtr-"
-                                    + event.getEvent()
-                                    + "'>"
-                                    + StringEscapeUtils.escapeHtml(column
-                                            .format(event)) + "</td>");
+                    String columnValue = column.format(event, this);
+                    if (column.isEscaped())
+                        columnValue = StringEscapeUtils.escapeHtml(columnValue);
+                    writer.println("<td class='lvtr-" + event.getEvent() + "'>"
+                            + columnValue + "</td>");
                 }
                 writer.println("</tr>");
             }
             writer.println("</table>");
+        }
+        
+        public String getServerName(int serverid)
+        {
+            Server server = serverCache.get(serverid);
+            if (server == null)
+                server = DataStore.getServerById(serverid);
+            if (server == null)
+                return "+unknown";
+            serverCache.put(serverid, server);
+            return server.getName();
         }
     }
 }

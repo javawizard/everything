@@ -230,6 +230,8 @@ public class ReadThread extends Thread
         event.setSource(player.getCallsign());
         event.setSourceid(player.getId());
         event.setSourceteam(player.getTeam().name());
+        event.setData((player.isVerified() ? "verified" : "notverified") + " "
+                + (player.isAdmin() ? "admin" : "notadmin"));
         DataStore.addLogEvent(event);
     }
     
