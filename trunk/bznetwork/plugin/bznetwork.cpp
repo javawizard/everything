@@ -229,11 +229,8 @@ class BZNetworkEventHandler: public bz_EventHandler,
 						(bz_MessageFilteredEventData*) eventData;
 				std::string output;
 				output += "messagefiltered ";
-				output += intToString(event->rawMessage.size());
+				output += intToString(event->player);
 				output += "|";
-				output += intToString(event->filteredMessage.size());
-				output += "|";
-				output += event->rawMessage.c_str();
 				output += event->filteredMessage.c_str();
 				bzn_outputData(output);
 			}
