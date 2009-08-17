@@ -7,6 +7,7 @@ import java.io.InputStream;
 import jw.bznetwork.client.data.model.LogEvent;
 import jw.bznetwork.client.data.model.Server;
 import jw.bznetwork.client.live.LivePlayer;
+import jw.bznetwork.client.live.LivePlayer.TeamType;
 import jw.bznetwork.server.data.DataStore;
 
 /**
@@ -28,6 +29,8 @@ public class ReadThread extends Thread
     private BufferedInputStream bufferedIn;
     
     private DataInputStream in;
+    
+    private StringBuffer stdoutBuffer;
     
     public ReadThread(LiveServer server)
     {
@@ -70,6 +73,20 @@ public class ReadThread extends Thread
                 else
                 {
                     System.out.write(i);
+                    if (stdoutBuffer == null)
+                    {
+                        stdoutBuffer = new StringBuffer();
+                    }
+                    stdoutBuffer.append((char) i);
+                    if (i == '\n')
+                    {
+                        String outString = stdoutBuffer.toString();
+                        if (!outString.trim().equals(""))
+                        {
+                            logStdout(outString);
+                        }
+                        stdoutBuffer = null;
+                    }
                     System.out.flush();
                 }
             }
@@ -88,6 +105,15 @@ public class ReadThread extends Thread
         if (server.getLoadListenerQueue() != null)
             server.getLoadListenerQueue().offer("bznfail dead");
         server.completedShutdown();
+    }
+    
+    public synchronized void logStdout(String outString)
+    {
+        LogEvent event = new LogEvent();
+        event.setServerid(server.getId());
+        event.setEvent("stdout");
+        event.setData(outString);
+        DataStore.addLogEvent(event);
     }
     
     private void processData(byte[] dataBytes)
@@ -111,6 +137,8 @@ public class ReadThread extends Thread
             processBznUnload();
         else if (data.startsWith("slashcommand "))
             processSlashCommand(data.substring("slashcommand ".length()));
+        else if (data.startsWith("messagefiltered"))
+            processMessageFiltered(data.substring("messagefiltered ".length()));
         else
         {
             Server serverObject = DataStore.getServerById(server.getId());
@@ -121,6 +149,26 @@ public class ReadThread extends Thread
                     + server.getId() + " which runs on port " + port + ": "
                     + data);
         }
+    }
+    
+    private void processMessageFiltered(String substring)
+    {
+        String[] tokens = substring.split("\\|", 2);
+        int playerId = Integer.parseInt(tokens[0]);
+        String message = tokens[1];
+        LogEvent event = new LogEvent();
+        event.setServerid(server.getId());
+        event.setEvent("filtered");
+        event.setSourceid(playerId);
+        LivePlayer player = server.getIdsToPlayers().get(playerId);
+        if (playerId == LiveServer.SERVER)
+            event.setSource("+server");
+        else if (player != null)
+            event.setSource(player.getCallsign());
+        else
+            event.setSource("+unknown");
+        event.setData(message);
+        DataStore.addLogEvent(event);
     }
     
     private void processSlashCommand(String substring)
@@ -185,8 +233,8 @@ public class ReadThread extends Thread
         String toTeam = tokens[2];
         String message = tokens[3];
         LogEvent event = new LogEvent();
+        String chatType = "unknown";
         event.setServerid(server.getId());
-        event.setEvent("chat");
         event.setSourceid(fromId);
         if (fromId == LiveServer.SERVER)
             event.setSource("+server");
@@ -195,15 +243,31 @@ public class ReadThread extends Thread
         else
             event.setSource("+unknown");
         if (toId == LiveServer.ALL)
+        {
             event.setTarget("+all");
+            if ("+server".equals(event.getSource()))
+                chatType = "server";
+            else
+                chatType = "broadcast";
+        }
         else if (toId == LiveServer.NONE)
+        {
             event.setTarget("+" + toTeam);
+            if (toTeam.toLowerCase().startsWith("adm"))
+                chatType = "admin";
+            else
+                chatType = "team";
+        }
         else if (toPlayer != null)
+        {
             event.setTarget(toPlayer.getCallsign());
+            chatType = "private";
+        }
         event.setTargetid(toId);
         if (toId == LiveServer.NONE)
             event.setTargetteam(toTeam);
         event.setData(message);
+        event.setEvent("chat-" + chatType);
         DataStore.addLogEvent(event);
     }
     

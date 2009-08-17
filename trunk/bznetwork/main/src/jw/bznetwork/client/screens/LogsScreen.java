@@ -11,6 +11,13 @@ public class LogsScreen extends VerticalScreen
             "event", "source", "target", "sourceteam", "targetteam",
             "ipaddress", "bzid", "email", "metadata", "data"
     };
+    /**
+     * When the logs screen is selected, if this is true, then the filter
+     * settings set in the fields will be loaded into the UI, and this will be
+     * set to false. If this is false, the filter settings in the fields will be
+     * reset to their defaults and loaded into the UI.
+     */
+    public boolean preserveSettingsOnce = false;
     
     @Override
     public void deselect()

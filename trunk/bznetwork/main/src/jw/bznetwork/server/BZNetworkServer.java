@@ -997,6 +997,9 @@ public class BZNetworkServer implements ServletContextListener,
     public static void doLogViewer(HttpServletRequest request, JspWriter out)
             throws IOException
     {
+        if (request.getSession(false) == null
+                || request.getSession().getAttribute("user") == null)
+            throw new RuntimeException("You need to be logged in to view logs");
         String startString = request.getParameter("start");
         String endString = request.getParameter("end");
         String textSearchString = request.getParameter("search");
@@ -1086,6 +1089,14 @@ public class BZNetworkServer implements ServletContextListener,
         // We're done with the filtering. Now we run the query.
         LogEvent[] results = DataStore.searchLogs(filterObject);
         // Now we'll do the actual rendering.
+        LogEventFormatter formatter = new LogEventFormatter();
+        formatter.addColumn(LogEventColumn.when);
+        formatter.addColumn(LogEventColumn.event);
+        formatter.addColumn(LogEventColumn.from);
+        formatter.addColumn(LogEventColumn.to);
+        formatter.addColumn(LogEventColumn.detail);
+        formatter.format(results, out);
+        // We're done!
     }
     
     public static enum LogEventColumn
@@ -1106,8 +1117,12 @@ public class BZNetworkServer implements ServletContextListener,
             public String format(LogEvent event, LogEventFormatter formatter)
             {
                 String callsign = event.getSource();
-                if (callsign == null)
+                if (callsign == null || callsign.startsWith("+"))
+                {
+                    if (callsign != null && callsign.startsWith("+"))
+                        return callsign.substring(1);
                     return "";
+                }
                 return "#" + event.getSourceid() + "&nbsp;<span class='lvtp-"
                         + event.getSourceteam() + "'>"
                         + StringEscapeUtils.escapeHtml(callsign) + "</span>";
@@ -1120,10 +1135,12 @@ public class BZNetworkServer implements ServletContextListener,
             public String format(LogEvent event, LogEventFormatter formatter)
             {
                 String callsign = event.getTarget();
-                if (callsign == null)
+                if (callsign == null || callsign.startsWith("+"))
                 {
                     if (event.getTargetteam() != null)
                         return event.getTargetteam();
+                    else if (callsign != null && callsign.startsWith("+"))
+                        return callsign.substring(1);
                     return "";
                 }
                 return "#" + event.getTargetid() + "&nbsp;<span class='lvtp-"
@@ -1170,6 +1187,14 @@ public class BZNetworkServer implements ServletContextListener,
                 else if (name.equalsIgnoreCase("slashcommand"))
                 {
                     return event.getData();
+                }
+                else if (name.equalsIgnoreCase("filtered"))
+                {
+                    return event.getData();
+                }
+                else
+                {
+                    return "UNKNOWN EVENT";
                 }
             }
         };
