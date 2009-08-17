@@ -668,6 +668,14 @@ public class BZNetwork implements EntryPoint
         return dateFormat.format(date);
     }
     
+    private static final DateTimeFormat dateOnlyFormat = DateTimeFormat
+            .getFormat("yyyy/MM/dd");
+    
+    public static String formatDate(Date date)
+    {
+        return dateOnlyFormat.format(date);
+    }
+    
     public static void setCellTitle(FlexTable table, int row, int column,
             String title)
     {

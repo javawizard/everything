@@ -12,7 +12,7 @@ public class LogsScreen extends VerticalScreen
     public static final String[] SEARCH_IN = new String[]
     {
             "event", "source", "target", "sourceteam", "targetteam",
-            "ipaddress", "bzid", "email", "metadata", "data"
+            "ipaddress", "bzid", "email", "data"
     };
     private static final long ONE_DAY_MILLIS = 1000 * 60 * 60 * 24;
     /**
@@ -30,10 +30,7 @@ public class LogsScreen extends VerticalScreen
     @Override
     public void deselect()
     {
-        /*
-         * FIXME: clear the vertical panel to get rid of the log event table
-         * that might be hanging around
-         */
+        widget.clear();
     }
     
     @Override
@@ -72,7 +69,7 @@ public class LogsScreen extends VerticalScreen
         }
         /*
          * TODO: pick up here, create the filter components and load the
-         * settings into them
+         * settings into them, figure out where to add a search button
          */
     }
     
