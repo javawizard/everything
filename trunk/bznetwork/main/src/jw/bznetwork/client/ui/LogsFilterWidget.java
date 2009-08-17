@@ -24,21 +24,22 @@ public class LogsFilterWidget extends Composite
     // search group
     private TextBox searchField;
     private CheckBox ignoreCaseField;
+    // search in group
     private ListBox inField;
     // events group
     private ListBox eventsField;
     // interval group
-    private Button startSelectionButton;
+    private DateButton startSelectionButton;
     private TextField startHourField;
     private TextField startMinuteField;
-    private Button startPeriodButton;
-    private Button endSelectionButton;
+    private PeriodButton startPeriodButton;
+    private DateButton endSelectionButton;
     private TextField endHourField;
     private TextField endMinuteField;
-    private Button endPeriodButton;
+    private PeriodButton endPeriodButton;
     // servers group
     private ListBox serversField;
-    // search group
+    // search button group
     private Button searchButton;
     
     public LogsFilterWidget(LogsFilterSettings settings, LogSearchModel model)
@@ -46,23 +47,48 @@ public class LogsFilterWidget extends Composite
         table.setCellPadding(2);
         initWidget(table);
         // search group
-        VerticalPanel searchPanel = wh100(new VerticalPanel());
+        VerticalPanel searchPanel = w100(new VerticalPanel());
         table.setWidget(0, 0, searchPanel);
-        format.setWidth(0, 0, "20%");
+        format.setWidth(0, 0, "16%");
         searchField = w100(new TextBox());
         searchPanel.add(new HTML("<b>Search for:</b>"));
         searchPanel.add(searchField);
         ignoreCaseField = new CheckBox("Ignore case");
         searchPanel.add(ignoreCaseField);
-        searchPanel.add(new HTML("<b>In:</b>"));
+        // search in group
+        VerticalPanel searchInPanel = w100(new VerticalPanel());
+        table.setWidget(0, 1, searchInPanel);
+        format.setWidth(0, 1, "16%");
+        searchInPanel.add(new HTML("<b>Search in:</b>"));
         inField = w100(new ListBox(true));
         populateSearchIn(inField);
-        searchPanel.add(inField);
-        inField.setVisibleItemCount(4);
-        //events group
-        VerticalPanel eventsPanel = wh100(new VerticalPanel());
-        table.setWidget(0,1,eventsPanel);
-        format.setWidth(0,1,"20%");
+        searchInPanel.add(inField);
+        inField.setVisibleItemCount(10);
+        // events group
+        VerticalPanel eventsPanel = w100(new VerticalPanel());
+        table.setWidget(0, 2, eventsPanel);
+        format.setWidth(0, 2, "16%");
+        eventsPanel.add(new HTML("<b>Events:</b>"));
+        eventsField = w100(new ListBox(true));
+        populateEvents(eventsField, model);
+        eventsPanel.add(eventsField);
+        eventsField.setVisibleItemCount(10);
+        // interval group
+        FlexTable intervalTable = w100(new FlexTable());
+        FlexCellFormatter intervalFormat = intervalTable.getFlexCellFormatter();
+        table.setWidget(0,3,intervalTable);
+        format.setWidth(0,3,"16%");
+        //start interval
+        startSelectionButton = new DateButton();
+        //end interval
+        //servers group
+        //search button group
+    }
+    
+
+    private void populateEvents(ListBox eventsField2, LogSearchModel model)
+    {
+        // TODO Auto-generated method stub
         
     }
     

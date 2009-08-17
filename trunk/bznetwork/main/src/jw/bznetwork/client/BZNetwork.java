@@ -676,6 +676,11 @@ public class BZNetwork implements EntryPoint
         return dateOnlyFormat.format(date);
     }
     
+    public static Date parseDate(String string)
+    {
+        return dateOnlyFormat.parse(string);
+    }
+    
     public static void setCellTitle(FlexTable table, int row, int column,
             String title)
     {

@@ -23,6 +23,14 @@
 	color: #aaaaaa
 }
 
+.bznetwork-PeriodButton {
+	text-align: center;
+}
+
+.bznetwork-DateButton {
+	text-align: center;
+}
+
 .bznetwork-MainScreenHeaderSeparator {
 	font-weight: bold;
 	font-size: 24px;
@@ -133,14 +141,17 @@
 .bznetwork-Actions-DetailsBox {
 	border-left: 15px solid white;
 }
+
 /* The style that is applied when the user would have an "@" on the bzflag server */
 .bznetwork-ServerPlayerList-Admin {
 	color: #00aaaa
 }
+
 /* The style that is applied when the user would have a "+" on the bzflag server */
 .bznetwork-ServerPlayerList-Verified {
 	color: #00aaaa
 }
+
 /* The style that is applied when the user would have a "-" on the bzflag server */
 .bznetwork-ServerPlayerList-VerifiedWrong {
 	color: #00aaaa
