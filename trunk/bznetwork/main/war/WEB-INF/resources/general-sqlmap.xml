@@ -10,7 +10,7 @@
          parameterClass="jw.bznetwork.client.data.model.LogRequest" 
          resultClass="jw.bznetwork.client.data.model.LogEvent" >
         select * from logevents
-        where when > #start# and when < #end#
+        where when &gt; #start# and when &lt; #end#
         $filter$
     </select>
 
