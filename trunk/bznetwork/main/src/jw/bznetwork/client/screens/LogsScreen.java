@@ -212,7 +212,7 @@ public class LogsScreen extends VerticalScreen
         try
         {
             Request request = builder.send();
-            xmlHttpRequest = BZNetwork.getXMLHttpRequest(request);
+//            xmlHttpRequest = BZNetwork.getXMLHttpRequest(request);
         }
         catch (RequestException e)
         {
