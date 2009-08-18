@@ -2,13 +2,20 @@ package jw.bznetwork.client.screens;
 
 import java.util.Date;
 
+import com.google.gwt.event.dom.client.ClickEvent;
+import com.google.gwt.event.dom.client.ClickHandler;
+import com.google.gwt.http.client.URL;
+import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.Label;
+import com.google.gwt.user.client.ui.SimplePanel;
+import com.google.gwt.user.client.ui.Widget;
 
 import jw.bznetwork.client.BZNetwork;
 import jw.bznetwork.client.BoxCallback;
 import jw.bznetwork.client.VerticalScreen;
 import jw.bznetwork.client.data.LogSearchModel;
 import jw.bznetwork.client.data.LogsFilterSettings;
+import jw.bznetwork.client.ui.HorizontalRule;
 import jw.bznetwork.client.ui.LogsFilterWidget;
 
 public class LogsScreen extends VerticalScreen
@@ -34,11 +41,13 @@ public class LogsScreen extends VerticalScreen
     private LogsFilterWidget filterWidget;
     
     private LogSearchModel searchModel;
+    private SimplePanel resultsWrapper = new SimplePanel();
     
     @Override
     public void deselect()
     {
         widget.clear();
+        resultsWrapper.clear();
     }
     
     @Override
@@ -98,6 +107,57 @@ public class LogsScreen extends VerticalScreen
         filterWidget.setWidth("100%");
         widget.add(filterWidget);
         widget.setWidth("100%");
+        widget.add(new HorizontalRule("100%"));
+        widget.add(resultsWrapper);
+        filterWidget.addSearchButtonListener(new ClickHandler()
+        {
+            
+            @Override
+            public void onClick(ClickEvent event)
+            {
+                doPerformSearch();
+            }
+        });
+    }
+    
+    protected void doPerformSearch()
+    {
+        /*
+         * First we need to get the new settings from the filter widget and
+         * store them locally.
+         */
+        settings = filterWidget.getCurrentSettings();
+        /*
+         * Now we need to build those settings into a list of parameters to send
+         * to the server.
+         */
+        String url = BZNetwork.CONTEXT_URL + "/logviewer.jsp?random-var="
+                + Math.random() + "." + Math.random();
+        url += "&start=" + settings.getStart().getTime();
+        url += "&end=" + settings.getEnd().getTime();
+        if (settings.getSearch() != null
+                && !settings.getSearch().trim().equals(""))
+        {
+            url += "&search=" + URL.encodeComponent(settings.getSearch());
+            for (String s : settings.getSearchIn())
+            {
+                url += "&searchin=" + URL.encodeComponent(s);
+            }
+            url += "&caseignore="
+                    + (settings.isIgnoreCase() ? "true" : "false");
+        }
+        for (String s : settings.getEvents())
+        {
+            url += "&event=" + URL.encodeComponent(s);
+        }
+        for (int i : settings.getServers())
+        {
+            url += "&server=" + i;
+        }
+        Window.alert("Constructed url: " + url);
+        /*
+         * We have our query. Now we'll execute it.
+         */
     }
     
     private LogsFilterSettings createDefaultSettings()

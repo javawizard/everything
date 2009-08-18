@@ -30,6 +30,7 @@ import com.google.gwt.core.client.GWT;
 import com.google.gwt.core.client.JavaScriptObject;
 import com.google.gwt.core.client.GWT.UncaughtExceptionHandler;
 import com.google.gwt.dom.client.Document;
+import com.google.gwt.dom.client.SelectElement;
 import com.google.gwt.http.client.Request;
 import com.google.gwt.http.client.URL;
 import com.google.gwt.i18n.client.DateTimeFormat;
@@ -700,4 +701,10 @@ public class BZNetwork implements EntryPoint
     public static native Document getResponseXml(Request request) /*-{
         return request.@com.google.gwt.http.client.Request::xmlHttpRequest.responseXML;
     }-*/;
+    
+    public static String getSelectionValue(ListBox box, int index)
+    {
+        return ((SelectElement) box.getElement().cast()).getOptions().getItem(
+                index).getValue();
+    }
 }

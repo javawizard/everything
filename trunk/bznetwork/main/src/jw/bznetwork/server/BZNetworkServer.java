@@ -1009,10 +1009,14 @@ public class BZNetworkServer implements ServletContextListener,
         String startString = request.getParameter("start");
         String endString = request.getParameter("end");
         String textSearchString = request.getParameter("search");
+        if(textSearchString == null)
+            textSearchString = "";
         String textSearch = StringEscapeUtils.escapeSql(textSearchString);
         String textSearchLower = textSearch.toLowerCase();
         String ignoreCaseString = request.getParameter("caseignore");
         String[] textSearchInStrings = request.getParameterValues("searchin");
+        if(textSearchString.equals(""))
+            textSearchInStrings = null;
         String[] filterServerStrings = request.getParameterValues("server");
         // if filterServerStrings is null, then we'll show the logs of all
         // servers that this user has view-in-server-list on.
@@ -1035,21 +1039,24 @@ public class BZNetworkServer implements ServletContextListener,
         String filter = "";
         // filter by search string
         if (textSearchInStrings != null)
-            filter += " and ('1' == '2' ";
-        for (String s : textSearchInStrings)
         {
-            if (!StringUtils.isMemberOf(s, LogsScreen.SEARCH_IN))
+            filter += " and ('1' == '2' ";
+            for (String s : textSearchInStrings)
             {
-                throw new RuntimeException("Invalid searchin: " + s);
+                if (!StringUtils.isMemberOf(s, LogsScreen.SEARCH_IN))
+                {
+                    throw new RuntimeException("Invalid searchin: " + s);
+                }
+                String filterColumn = s;
+                String textSearchToUse = textSearch;
+                if ("true".equalsIgnoreCase(ignoreCaseString))
+                {
+                    filterColumn = " lower(" + filterColumn + ") ";
+                    textSearchToUse = textSearchLower;
+                }
+                filter += " or " + filterColumn + " like '" + textSearchToUse
+                        + "'";
             }
-            String filterColumn = s;
-            String textSearchToUse = textSearch;
-            if ("true".equalsIgnoreCase(ignoreCaseString))
-            {
-                filterColumn = " lower(" + filterColumn + ") ";
-                textSearchToUse = textSearchLower;
-            }
-            filter += " or " + filterColumn + " like '" + textSearchToUse + "'";
         }
         if (textSearchInStrings != null)
             filter += " ) ";

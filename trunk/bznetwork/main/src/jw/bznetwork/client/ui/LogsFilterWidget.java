@@ -2,6 +2,7 @@ package jw.bznetwork.client.ui;
 
 import java.util.Date;
 
+import jw.bznetwork.client.BZNetwork;
 import jw.bznetwork.client.data.LogSearchModel;
 import jw.bznetwork.client.data.LogsFilterSettings;
 import jw.bznetwork.client.data.model.Server;
@@ -170,7 +171,66 @@ public class LogsFilterWidget extends Composite
      */
     public LogsFilterSettings getCurrentSettings()
     {
-        return null;
+        LogsFilterSettings settings = new LogsFilterSettings();
+        settings.setStart(getSelectedStart());
+        settings.setEnd(getSelectedEnd());
+        settings.setSearch(searchField.getText());
+        settings.setIgnoreCase(ignoreCaseField.isChecked());
+        for (int i = 0; i < eventsField.getItemCount(); i++)
+        {
+            if (eventsField.isItemSelected(i))
+                settings.getEvents().add(eventsField.getItemText(i));
+        }
+        for (int i = 0; i < inField.getItemCount(); i++)
+        {
+            if (inField.isItemSelected(i))
+                settings.getSearchIn().add(inField.getItemText(i));
+        }
+        for (int i = 0; i < serversField.getItemCount(); i++)
+        {
+            if (serversField.isItemSelected(i))
+                settings.getServers().add(
+                        Integer.parseInt(BZNetwork.getSelectionValue(
+                                serversField, i)));
+        }
+        return settings;
+    }
+    
+    public Date getSelectedStart()
+    {
+        return getSelectedDate(startSelectionButton, startHourField,
+                startMinuteField, startPeriodButton);
+    }
+    
+    private Date getSelectedDate(DateButton dateButton, TextBox hourBox,
+            TextBox minuteBox, PeriodButton periodButton)
+    {
+        Date date = dateButton.getValue();
+        int hours = Integer.parseInt(hourBox.getText());
+        if (hours == 0)
+            throw new NumberFormatException(
+                    "Hours is not between 1 and 12, inclusive");
+        if (hours == 12)
+            hours = 0;
+        if (hours < 0 || hours > 11)
+            throw new NumberFormatException(
+                    "Hours is not between 1 and 12, inclusive");
+        int minutes = Integer.parseInt(minuteBox.getText());
+        boolean pm = periodButton.isPm();
+        if (pm)
+            hours = hours + 12;
+        if (minutes < 0 || minutes > 59)
+            throw new NumberFormatException(
+                    "Minutes is not between 0 and 59, inclusive");
+        date.setHours(hours);
+        date.setMinutes(minutes);
+        return date;
+    }
+    
+    public Date getSelectedEnd()
+    {
+        return getSelectedDate(endSelectionButton, endHourField,
+                endMinuteField, endPeriodButton);
     }
     
     private void populateServers(ListBox box, LogSearchModel model,

@@ -131,4 +131,14 @@ public class Server implements Serializable
     {
         this.port = port;
     }
+    
+    public boolean equals(Object o)
+    {
+        return (o instanceof Server) && ((Server) o).serverid == this.serverid;
+    }
+    
+    public int hashCode()
+    {
+        return serverid;
+    }
 }
