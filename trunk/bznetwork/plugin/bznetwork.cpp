@@ -303,7 +303,6 @@ BZNetworkEventHandler singleEventHandler;
 
 BZF_PLUGIN_CALL int bz_Load(const char* commandLine)
 {
-	printf("Loading bznetwork plugin\n");
 	bz_registerCustomSlashCommand("bzn", &singleEventHandler);
 	bz_registerEvent(bz_eTickEvent, &singleEventHandler);
 	bz_registerEvent(bz_ePlayerJoinEvent, &singleEventHandler);
@@ -326,12 +325,12 @@ BZF_PLUGIN_CALL int bz_Load(const char* commandLine)
 	playerIdsByCallsign.insert(pair<std::string, int> ("+server", BZ_SERVER));
 	playerIdsByCallsign.insert(pair<std::string, int> ("+all", BZ_ALLUSERS));
 	bzn_outputData("bznload");
-	printf("Loaded bznetwork plugin successfully\n");
 	return 0;
 }
 
 int bz_Unload(void)
 {
+	printf("Unloading the bznetwork plugin");
 	bz_removeCustomSlashCommand("bzn");
 	bz_removeEvent(bz_eTickEvent, &singleEventHandler);
 	bz_removeEvent(bz_ePlayerJoinEvent, &singleEventHandler);
