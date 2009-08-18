@@ -97,6 +97,7 @@ public class LogsScreen extends VerticalScreen
         filterWidget = new LogsFilterWidget(settings, model);
         filterWidget.setWidth("100%");
         widget.add(filterWidget);
+        widget.setWidth("100%");
     }
     
     private LogsFilterSettings createDefaultSettings()
