@@ -581,8 +581,14 @@ public class BZNetworkServer implements ServletContextListener,
         if (!areTablesInstalled)
         {
             Statement st = con2.createStatement();
-            st.executeUpdate(StringUtils.readFile(new File(getServletContext()
-                    .getRealPath("/WEB-INF/tables.sql"))));
+            String createTablesStatement = StringUtils.readFile(new File(
+                    getServletContext().getRealPath("/WEB-INF/tables.sql")));
+            /*
+             * MySQL apparently doesn't like SQL comments, so we'll manually
+             * remove them.
+             */
+            createTablesStatement.replaceAll("--[^\\n]*\\n", "");
+            st.executeUpdate(createTablesStatement);
             st.close();
         }
         con2.close();
@@ -1116,6 +1122,18 @@ public class BZNetworkServer implements ServletContextListener,
         formatter.addColumn(LogEventColumn.to);
         formatter.addColumn(LogEventColumn.detail);
         out.println("Right now it's " + formatDateTime(new Date()) + "<br/>");
+        out.println("<table border='0' cellspacing='1' cellpadding='1' "
+                + "class='bznetwork-LogViewerTableKey'><tr>");
+        /*
+         * TODO: add the key for the table here, add a menu link at the bottom
+         * of the search group in the logs viewer widget, action for it provided
+         * by the user of the logs viewer widget
+         */
+        for (String event : LOG_EVENTS)
+        {
+            out.println("<td class='lvtr-" + event + "'>" + event + "</td>");
+        }
+        out.println("</tr></table><br/>");
         formatter.format(results, out);
         // We're done!
     }
