@@ -1138,7 +1138,7 @@ public class BZNetworkServer implements ServletContextListener,
                         return callsign.substring(1);
                     return "";
                 }
-                return "#" + event.getSourceid() + "&nbsp;<span class='lvtp-"
+                return "#" + event.getSourceid() + "&#160;<span class='lvtp-"
                         + event.getSourceteam() + "'>"
                         + StringEscapeUtils.escapeHtml(callsign) + "</span>";
             }
@@ -1158,7 +1158,7 @@ public class BZNetworkServer implements ServletContextListener,
                         return callsign.substring(1);
                     return "";
                 }
-                return "#" + event.getTargetid() + "&nbsp;<span class='lvtp-"
+                return "#" + event.getTargetid() + "&#160;<span class='lvtp-"
                         + event.getTargetteam() + "'>"
                         + StringEscapeUtils.escapeHtml(callsign) + "</span>";
             }
