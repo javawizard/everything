@@ -834,6 +834,13 @@ public class BZNetworkServer implements ServletContextListener,
             args.add(newGroupdbFile.getAbsolutePath());
             args.add("-banfile");
             args.add(banfileFile.getAbsolutePath());
+            /*
+             * We'll instruct the server to send all reports to /dev/null, since
+             * the plugin gets them by listening in on slash commands so we
+             * don't need to do anything with the report file output.
+             */
+            args.add("-reportfile");
+            args.add("/dev/null");
             args.add("-loadplugin");
             args.add(serverControlPlugin.getAbsolutePath() + ","
                     + serverControlConfig.getAbsolutePath());

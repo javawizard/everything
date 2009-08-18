@@ -727,11 +727,12 @@ public class GlobalLinkImpl extends RemoteServiceServlet implements GlobalLink
                     + "Don't include any of these switches, as they are automatically "
                     + "added when the server is started:\n"
                     + "# -public\n"
-                    + "# -port\n"
+                    + "# -p\n"
                     + "# -world\n"
                     + "# -conf\n"
                     + "# -groupdb\n"
                     + "# -banfile\n"
+                    + "# -reportfile\n"
                     + "# Additionally, don't load the serverControl plugin, as it will"
                     + " be automatically loaded and configured for you. ";
         return StringUtils.readFile(configFile);
