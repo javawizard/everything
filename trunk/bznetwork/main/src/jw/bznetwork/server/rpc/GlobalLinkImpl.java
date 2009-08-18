@@ -32,6 +32,7 @@ import jw.bznetwork.client.data.EditConfigurationModel;
 import jw.bznetwork.client.data.EditPermissionsModel;
 import jw.bznetwork.client.data.GroupModel;
 import jw.bznetwork.client.data.GroupedServer;
+import jw.bznetwork.client.data.LogSearchModel;
 import jw.bznetwork.client.data.ServerListModel;
 import jw.bznetwork.client.data.ServerModel;
 import jw.bznetwork.client.data.UserSession;
@@ -879,7 +880,6 @@ public class GlobalLinkImpl extends RemoteServiceServlet implements GlobalLink
         Verify.global("clear-action-log");
         AuthUser thisUser = (AuthUser) RequestTrackerFilter.getCurrentRequest()
                 .getSession().getAttribute("user");
-        // TODO Auto-generated method stub
         // action-log-cleared, clear-action-log
         UserPair pair = new UserPair();
         pair.setProvider(provider);
@@ -925,6 +925,23 @@ public class GlobalLinkImpl extends RemoteServiceServlet implements GlobalLink
         model.setCount(DataStore.getActionCountForSearch(request));
         model.setEventNames(DataStore.getActionEventNames());
         model.setUsers(DataStore.getActionUserList());
+        return model;
+    }
+    
+    @Override
+    public LogSearchModel getLogSearchModel()
+    {
+        LogSearchModel model = new LogSearchModel();
+        Server[] servers = DataStore.listServers();
+        ArrayList<Server> okServers = new ArrayList<Server>();
+        for (Server s : servers)
+        {
+            if (Perms.server("view-logs", s.getServerid(), getServerGroupId(s
+                    .getServerid())))
+                okServers.add(s);
+        }
+        model.setServers(okServers.toArray(new Server[0]));
+        model.setEvents(BZNetworkServer.LOG_EVENTS);
         return model;
     }
 }

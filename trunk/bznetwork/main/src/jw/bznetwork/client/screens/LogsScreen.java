@@ -4,8 +4,12 @@ import java.util.Date;
 
 import com.google.gwt.user.client.ui.Label;
 
+import jw.bznetwork.client.BZNetwork;
+import jw.bznetwork.client.BoxCallback;
 import jw.bznetwork.client.VerticalScreen;
+import jw.bznetwork.client.data.LogSearchModel;
 import jw.bznetwork.client.data.LogsFilterSettings;
+import jw.bznetwork.client.ui.LogsFilterWidget;
 
 public class LogsScreen extends VerticalScreen
 {
@@ -26,6 +30,10 @@ public class LogsScreen extends VerticalScreen
     public boolean preserveSettingsOnce = false;
     
     public LogsFilterSettings settings;
+    
+    private LogsFilterWidget filterWidget;
+    
+    private LogSearchModel searchModel;
     
     @Override
     public void deselect()
@@ -71,6 +79,24 @@ public class LogsScreen extends VerticalScreen
          * TODO: pick up here, create the filter components and load the
          * settings into them, figure out where to add a search button
          */
+        BZNetwork.authLink.getLogSearchModel(new BoxCallback<LogSearchModel>()
+        {
+            
+            @Override
+            public void run(LogSearchModel result)
+            {
+                select1(result);
+            }
+        });
+    }
+    
+    protected void select1(LogSearchModel model)
+    {
+        this.searchModel = model;
+        widget.clear();
+        filterWidget = new LogsFilterWidget(settings, model);
+        filterWidget.setWidth("100%");
+        widget.add(filterWidget);
     }
     
     private LogsFilterSettings createDefaultSettings()

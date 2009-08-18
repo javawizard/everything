@@ -946,6 +946,12 @@ public class BZNetworkServer implements ServletContextListener,
     }
     
     private static final Random randomNumberGenerator = new Random();
+    public static final String[] LOG_EVENTS = new String[]
+    {
+            "stdout", "filtered", "report", "slashcommand", "chat-unknown",
+            "chat-server", "chat-broadcast", "chat-admin", "chat-team",
+            "chat-private", "join", "part"
+    };
     
     /**
      * Generates a string of random characters that can be used as the name of a

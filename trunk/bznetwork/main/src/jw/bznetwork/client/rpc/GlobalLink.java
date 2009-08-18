@@ -10,6 +10,7 @@ import jw.bznetwork.client.data.EditAuthgroupsModel;
 import jw.bznetwork.client.data.EditCallsignsModel;
 import jw.bznetwork.client.data.EditConfigurationModel;
 import jw.bznetwork.client.data.EditPermissionsModel;
+import jw.bznetwork.client.data.LogSearchModel;
 import jw.bznetwork.client.data.ServerListModel;
 import jw.bznetwork.client.data.UserSession;
 import jw.bznetwork.client.data.model.Banfile;
@@ -125,4 +126,6 @@ public interface GlobalLink extends RemoteService
             String user, int offset, int length);
     
     public void clearActionLog(String provider, String user);
+    
+    public LogSearchModel getLogSearchModel();
 }

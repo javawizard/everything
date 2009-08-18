@@ -1,16 +1,19 @@
 package jw.bznetwork.client.ui;
 
-import java.awt.TextField;
+import java.util.Date;
 
 import jw.bznetwork.client.data.LogSearchModel;
 import jw.bznetwork.client.data.LogsFilterSettings;
+import jw.bznetwork.client.data.model.Server;
 import jw.bznetwork.client.screens.LogsScreen;
 
+import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.CheckBox;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.FlexTable;
 import com.google.gwt.user.client.ui.HTML;
+import com.google.gwt.user.client.ui.HorizontalPanel;
 import com.google.gwt.user.client.ui.ListBox;
 import com.google.gwt.user.client.ui.TextBox;
 import com.google.gwt.user.client.ui.VerticalPanel;
@@ -30,12 +33,12 @@ public class LogsFilterWidget extends Composite
     private ListBox eventsField;
     // interval group
     private DateButton startSelectionButton;
-    private TextField startHourField;
-    private TextField startMinuteField;
+    private TextBox startHourField;
+    private TextBox startMinuteField;
     private PeriodButton startPeriodButton;
     private DateButton endSelectionButton;
-    private TextField endHourField;
-    private TextField endMinuteField;
+    private TextBox endHourField;
+    private TextBox endMinuteField;
     private PeriodButton endPeriodButton;
     // servers group
     private ListBox serversField;
@@ -76,20 +79,99 @@ public class LogsFilterWidget extends Composite
         // interval group
         FlexTable intervalTable = w100(new FlexTable());
         FlexCellFormatter intervalFormat = intervalTable.getFlexCellFormatter();
-        table.setWidget(0,3,intervalTable);
-        format.setWidth(0,3,"16%");
-        //start interval
-        startSelectionButton = new DateButton();
-        //end interval
-        //servers group
-        //search button group
+        table.setWidget(0, 3, intervalTable);
+        format.setWidth(0, 3, "16%");
+        intervalTable.setHTML(0, 0, "<b>Interval:</b>");
+        intervalFormat.setColSpan(0, 0, 3);
+        // start interval
+        startSelectionButton = new DateButton(settings.getStart());
+        intervalTable.setWidget(1, 0, startSelectionButton);
+        intervalFormat.setColSpan(1, 0, 3);
+        startHourField = new TextBox();
+        startHourField.addStyleName("bznetwork-TimeBox");
+        intervalTable.setWidget(2, 0, startHourField);
+        intervalTable.setText(2, 1, ":");
+        intervalFormat.setWidth(2, 1, "8px");
+        intervalFormat.setHorizontalAlignment(2, 1,
+                HorizontalPanel.ALIGN_CENTER);
+        startMinuteField = new TextBox();
+        startMinuteField.addStyleName("bznetwork-TimeBox");
+        intervalTable.setWidget(2, 2, startMinuteField);
+        populateTimeWidgets(startHourField, startMinuteField, settings
+                .getStart());
+        startPeriodButton = new PeriodButton(isPm(settings.getStart()));
+        intervalTable.setWidget(3, 0, startPeriodButton);
+        intervalFormat.setColSpan(3, 0, 3);
+        // mid interval marker
+        intervalTable.setText(4, 0, "to");
+        intervalFormat.setColSpan(4, 0, 3);
+        intervalFormat.setHorizontalAlignment(4, 0,
+                HorizontalPanel.ALIGN_CENTER);
+        // end interval
+        endSelectionButton = new DateButton(settings.getEnd());
+        intervalTable.setWidget(5, 0, endSelectionButton);
+        intervalFormat.setColSpan(5, 0, 3);
+        endHourField = new TextBox();
+        endHourField.addStyleName("bznetwork-TimeBox");
+        intervalTable.setWidget(6, 0, endHourField);
+        intervalTable.setText(6, 1, ":");
+        intervalFormat.setWidth(6, 1, "8px");
+        intervalFormat.setHorizontalAlignment(2, 1,
+                HorizontalPanel.ALIGN_CENTER);
+        endMinuteField = new TextBox();
+        endMinuteField.addStyleName("bznetwork-TimeBox");
+        intervalTable.setWidget(6, 2, endMinuteField);
+        populateTimeWidgets(endHourField, endMinuteField, settings.getEnd());
+        endPeriodButton = new PeriodButton(isPm(settings.getEnd()));
+        intervalTable.setWidget(7, 0, endPeriodButton);
+        intervalFormat.setColSpan(7, 0, 3);
+        // servers group
+        VerticalPanel serversPanel = w100(new VerticalPanel());
+        table.setWidget(0, 4, serversPanel);
+        format.setWidth(0, 4, "16%");
+        serversPanel.add(new HTML("<b>Servers:</b>"));
+        serversField = w100(new ListBox(true));
+        populateServers(serversField, model);
+        serversPanel.add(serversField);
+        serversField.setVisibleItemCount(10);
+        // search button group
+        searchButton = new Button("Search");
+        searchButton.addStyleName("bznetwork-LogFilterWidget-SearchButton");
+        table.setWidget(0, 5, searchButton);
+        format.setWidth(0, 5, "16%");
+        // We're done!
     }
     
-
-    private void populateEvents(ListBox eventsField2, LogSearchModel model)
+    public void addSearchButtonListener(ClickHandler listener)
     {
-        // TODO Auto-generated method stub
-        
+        searchButton.addClickHandler(listener);
+    }
+    
+    /**
+     * Creates a settings object that holds the settings reflected by the
+     * current widget selections and returns it.
+     * 
+     * @return
+     */
+    public LogsFilterSettings getCurrentSettings()
+    {
+       return null; 
+    }
+    
+    private void populateServers(ListBox box, LogSearchModel model)
+    {
+        for (Server s : model.getServers())
+        {
+            box.addItem(s.getName(), "" + s.getServerid());
+        }
+    }
+    
+    private void populateEvents(ListBox box, LogSearchModel model)
+    {
+        for (String s : model.getEvents())
+        {
+            box.addItem(s);
+        }
     }
     
     private void populateSearchIn(ListBox box)
@@ -115,6 +197,29 @@ public class LogsFilterWidget extends Composite
     private static <T extends Widget> T wh100(T widget)
     {
         return w100(h100(widget));
+    }
+    
+    public static boolean isPm(Date date)
+    {
+        return date.getHours() >= 12;
+    }
+    
+    public static void populateTimeWidgets(TextBox hour, TextBox minute,
+            Date date)
+    {
+        int hourNumber = date.getHours();
+        hourNumber = hourNumber % 12;
+        if (hourNumber == 0)
+            hourNumber = 12;
+        hour.setText(padZeros(2, "" + hourNumber));
+        minute.setText(padZeros(2, "" + date.getMinutes()));
+    }
+    
+    public static String padZeros(int length, String s)
+    {
+        while (s.length() < length)
+            s = "0" + s;
+        return s;
     }
     
 }

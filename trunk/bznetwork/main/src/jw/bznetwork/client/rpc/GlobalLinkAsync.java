@@ -18,6 +18,8 @@ import jw.bznetwork.client.data.EditConfigurationModel;
 
 import jw.bznetwork.client.data.EditPermissionsModel;
 
+import jw.bznetwork.client.data.LogSearchModel;
+
 import jw.bznetwork.client.data.ServerListModel;
 
 import jw.bznetwork.client.data.UserSession;
@@ -140,5 +142,7 @@ public void killServer(int serverid, AsyncCallback<Void> callback);
 public void getActionLogModel(String event, String provider, String user, int offset, int length, AsyncCallback<ActionLogModel> callback);
 
 public void clearActionLog(String provider, String user, AsyncCallback<Void> callback);
+
+public void getLogSearchModel(AsyncCallback<LogSearchModel> callback);
 
 }
