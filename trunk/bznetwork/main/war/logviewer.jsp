@@ -1,6 +1,6 @@
 
 <%
-    response.setContentType("text/xml");
+    response.setContentType("text/plain");
 %>
 <%-- The root element of the log viewer document should be a div tag. 
 The gwt app requests the log viewer page in an XHR and then extracts 
