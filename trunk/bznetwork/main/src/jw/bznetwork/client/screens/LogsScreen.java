@@ -4,9 +4,16 @@ import java.util.Date;
 
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
+import com.google.gwt.http.client.Request;
+import com.google.gwt.http.client.RequestBuilder;
+import com.google.gwt.http.client.RequestCallback;
+import com.google.gwt.http.client.RequestException;
+import com.google.gwt.http.client.RequestTimeoutException;
+import com.google.gwt.http.client.Response;
 import com.google.gwt.http.client.URL;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.Label;
+import com.google.gwt.user.client.ui.PopupPanel;
 import com.google.gwt.user.client.ui.SimplePanel;
 import com.google.gwt.user.client.ui.Widget;
 
@@ -17,6 +24,7 @@ import jw.bznetwork.client.data.LogSearchModel;
 import jw.bznetwork.client.data.LogsFilterSettings;
 import jw.bznetwork.client.ui.HorizontalRule;
 import jw.bznetwork.client.ui.LogsFilterWidget;
+import jw.bznetwork.client.ui.ServerResponseWidget;
 
 public class LogsScreen extends VerticalScreen
 {
@@ -158,6 +166,51 @@ public class LogsScreen extends VerticalScreen
         /*
          * We have our query. Now we'll execute it.
          */
+        RequestBuilder builder = new RequestBuilder(RequestBuilder.GET, url);
+        builder.setTimeoutMillis(30 * 1000);
+        final PopupPanel box = BZNetwork.showLoadingBox();
+        builder.setCallback(new RequestCallback()
+        {
+            
+            @Override
+            public void onError(Request request, Throwable exception)
+            {
+                box.hide();
+                if (exception instanceof RequestTimeoutException)
+                {
+                    Window
+                            .alert("The server didn't send the logs within 30 seconds. Try "
+                                    + "searching again, and maybe select a smaller interval.");
+                }
+                else
+                {
+                    BZNetwork.fail(exception);
+                }
+            }
+            
+            @Override
+            public void onResponseReceived(Request request, Response response)
+            {
+                try
+                {
+                    resultsWrapper.clear();
+                    resultsWrapper.setWidget(new ServerResponseWidget(request));
+                }
+                finally
+                {
+                    box.hide();
+                }
+            }
+        });
+        try
+        {
+            builder.send();
+        }
+        catch (RequestException e)
+        {
+            box.hide();
+            BZNetwork.fail(e);
+        }
     }
     
     private LogsFilterSettings createDefaultSettings()
