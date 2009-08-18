@@ -1209,6 +1209,10 @@ public class BZNetworkServer implements ServletContextListener,
                 {
                     return event.getData();
                 }
+                else if(name.equalsIgnoreCase("stdout"))
+                {
+                    return event.getData();
+                }
                 else
                 {
                     return "UNKNOWN EVENT";

@@ -208,3 +208,44 @@
 .bznetwork-LogViewerTable {
 	width: 100%
 }
+
+/*These styles are for the log viewer table rows and such*/
+.lvtp-red {
+	color: #aa0000
+}
+
+.lvtp-green {
+	color: #00aa00
+}
+
+.lvtp-blue {
+	color: #0055aa
+}
+
+.lvtp-purple {
+	color: #aa00aa
+}
+
+.lvtp-hunters {
+	color: #aa5500
+}
+
+.lvtp-rabbit {
+	color: #888888
+}
+/*END styles for the log viewer table*/ /*
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+*/
