@@ -19,6 +19,7 @@ import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.Statement;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
@@ -47,7 +48,6 @@ import sun.tools.tree.StringExpression;
 import net.sf.opengroove.common.utils.DataUtils;
 
 import jw.bznetwork.client.AuthProvider;
-import jw.bznetwork.client.BZNetwork;
 import jw.bznetwork.client.ClientPermissionsProvider;
 import jw.bznetwork.client.Perms;
 import jw.bznetwork.client.data.AuthUser;
@@ -1009,19 +1009,19 @@ public class BZNetworkServer implements ServletContextListener,
         String startString = request.getParameter("start");
         String endString = request.getParameter("end");
         String textSearchString = request.getParameter("search");
-        if(textSearchString == null)
+        if (textSearchString == null)
             textSearchString = "";
         String textSearch = StringEscapeUtils.escapeSql(textSearchString);
         String textSearchLower = textSearch.toLowerCase();
         String ignoreCaseString = request.getParameter("caseignore");
         String[] textSearchInStrings = request.getParameterValues("searchin");
-        if(textSearchString.equals(""))
+        if (textSearchString.equals(""))
             textSearchInStrings = null;
         String[] filterServerStrings = request.getParameterValues("server");
         // if filterServerStrings is null, then we'll show the logs of all
         // servers that this user has view-in-server-list on.
         String[] filterEvents = request.getParameterValues("event");
-        if(filterEvents == null)
+        if (filterEvents == null)
             filterEvents = LOG_EVENTS;
         // if filterEvents is null, then we'll show all events.
         int maxResults = 5000;
@@ -1122,7 +1122,7 @@ public class BZNetworkServer implements ServletContextListener,
             @Override
             public String format(LogEvent event, LogEventFormatter formatter)
             {
-                return BZNetwork.format(event.getWhen());
+                return formatDateTime(event.getWhen());
             }
         },
         from("From", false)
@@ -1286,5 +1286,13 @@ public class BZNetworkServer implements ServletContextListener,
             serverCache.put(serverid, server);
             return server.getName();
         }
+    }
+    
+    private static SimpleDateFormat dateFormat = new SimpleDateFormat(
+            "yyyy/MM/dd hh:mm.ss aa");
+    
+    public static String formatDateTime(Date when)
+    {
+        return dateFormat.format(when);
     }
 }
