@@ -1097,6 +1097,8 @@ public class BZNetworkServer implements ServletContextListener,
             filter += " or event = '" + StringEscapeUtils.escapeSql(s) + "' ";
         }
         filter += " ) ";
+        // order by the date
+        filter += " order by when asc ";
         // filter by max results
         filter += " limit " + maxResults;
         // add the filter

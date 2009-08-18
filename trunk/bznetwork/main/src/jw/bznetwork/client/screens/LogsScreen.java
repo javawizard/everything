@@ -165,7 +165,7 @@ public class LogsScreen extends VerticalScreen
         {
             url += "&server=" + i;
         }
-        Window.alert("Constructed url: " + url);
+        // Window.alert("Constructed url: " + url);
         /*
          * We have our query. Now we'll execute it.
          */
@@ -212,7 +212,7 @@ public class LogsScreen extends VerticalScreen
         try
         {
             Request request = builder.send();
-//            xmlHttpRequest = BZNetwork.getXMLHttpRequest(request);
+            // xmlHttpRequest = BZNetwork.getXMLHttpRequest(request);
         }
         catch (RequestException e)
         {

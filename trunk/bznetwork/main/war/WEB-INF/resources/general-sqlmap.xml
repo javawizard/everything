@@ -11,7 +11,7 @@
          resultClass="jw.bznetwork.client.data.model.LogEvent" >
         select * from logevents
         where when &gt; #start# and when &lt; #end#
-        $filter$
+        $filter$ 
     </select>
 
     <delete id="clearActionLog" 
