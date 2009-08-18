@@ -68,7 +68,7 @@ public class LogsFilterWidget extends Composite
         inField = w100(new ListBox(true));
         populateSearchIn(inField);
         searchInPanel.add(inField);
-        inField.setVisibleItemCount(17);
+        inField.setVisibleItemCount(14);
         // events group
         VerticalPanel eventsPanel = w100(new VerticalPanel());
         table.setWidget(0, 2, eventsPanel);
@@ -78,7 +78,7 @@ public class LogsFilterWidget extends Composite
         eventsField = w100(new ListBox(true));
         populateEvents(eventsField, model);
         eventsPanel.add(eventsField);
-        eventsField.setVisibleItemCount(17);
+        eventsField.setVisibleItemCount(14);
         // interval group
         FlexTable intervalTable = w100(new FlexTable());
         FlexCellFormatter intervalFormat = intervalTable.getFlexCellFormatter();
@@ -142,7 +142,7 @@ public class LogsFilterWidget extends Composite
         serversField = w100(new ListBox(true));
         populateServers(serversField, model);
         serversPanel.add(serversField);
-        serversField.setVisibleItemCount(17);
+        serversField.setVisibleItemCount(14);
         // search button group
         searchButton = new Button("Search");
         searchButton.addStyleName("bznetwork-LogFilterWidget-SearchButton");
@@ -150,6 +150,7 @@ public class LogsFilterWidget extends Composite
         searchButton.setHeight("100%");
         table.setWidget(0, 5, searchButton);
         format.setWidth(0, 5, "16%");
+        format.setHeight(0, 5, "100%");
         format.setVerticalAlignment(0, 5, VerticalPanel.ALIGN_TOP);
         // We're done!
     }
