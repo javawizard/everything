@@ -1021,6 +1021,8 @@ public class BZNetworkServer implements ServletContextListener,
         // if filterServerStrings is null, then we'll show the logs of all
         // servers that this user has view-in-server-list on.
         String[] filterEvents = request.getParameterValues("event");
+        if(filterEvents == null)
+            filterEvents = LOG_EVENTS;
         // if filterEvents is null, then we'll show all events.
         int maxResults = 5000;
         // the maximum results number is pretty much hard-coded right now. It's
@@ -1040,7 +1042,7 @@ public class BZNetworkServer implements ServletContextListener,
         // filter by search string
         if (textSearchInStrings != null)
         {
-            filter += " and ('1' == '2' ";
+            filter += " and ('1' = '2' ";
             for (String s : textSearchInStrings)
             {
                 if (!StringUtils.isMemberOf(s, LogsScreen.SEARCH_IN))
@@ -1082,17 +1084,17 @@ public class BZNetworkServer implements ServletContextListener,
                 serverIds.remove(server);
         }
         // add the servers
-        filter += " and ( '1' == '2' ";
+        filter += " and ( '1' = '2' ";
         for (int server : serverIds)
         {
             filter += " or serverid = " + server + " ";
         }
         filter += " ) ";
         // filter by events
-        filter += " and ( '1' == '2' ";
+        filter += " and ( '1' = '2' ";
         for (String s : filterEvents)
         {
-            filter += " or event == '" + StringEscapeUtils.escapeSql(s) + "' ";
+            filter += " or event = '" + StringEscapeUtils.escapeSql(s) + "' ";
         }
         filter += " ) ";
         // filter by max results
