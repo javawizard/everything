@@ -1,12 +1,1 @@
-This is a list of BZNetwork tasks I want to complete. Once I get bznetwork moved to its own googlecode project, I'll add these to the issue tracker.
-
-=High priority=
-No tasks of this priority yet.
-
-=Low priority=
-==Add support for a public site==
-Allow users to visit a bznetwork installation and see a welcome message. There would be a welcome message for anonymous users and a welcome message for authenticated users. The welcome page would update to show the appropriate message for the user's status. The upper-right corner would have a login link which would show the login method chooser if there is no default provider, a popup with the username/password field if internal is default, and redirect to bzflag weblogin if the default is callsign auth. When the user logs in, the page would reload.
-
-In this case, there would be a special role, "anonymous", that can't be deleted. Probably it would have an id less than 10, and the server wouldn't allow roles with ids less than 10 to be deleted. Users that haven't logged in would receive all permissions on the anonymous role. When the user logs in, they get all anonymous permissions plus those of the role that they've logged in as.
-
-Actually, instead of a login link, what I could do is have a login screen that shows the login options. This screen would only be visible if the user has not logged in yet.
+This has been replaced by the issue tracker. See the '''Issues''' tab above.
