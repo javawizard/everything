@@ -2,6 +2,7 @@ package jw.bznetwork.client.screens;
 
 import java.util.Date;
 
+import com.google.gwt.core.client.JavaScriptObject;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.http.client.Request;
@@ -50,6 +51,7 @@ public class LogsScreen extends VerticalScreen
     
     private LogSearchModel searchModel;
     private SimplePanel resultsWrapper = new SimplePanel();
+    private JavaScriptObject xmlHttpRequest;
     
     @Override
     public void deselect()
@@ -169,6 +171,7 @@ public class LogsScreen extends VerticalScreen
         RequestBuilder builder = new RequestBuilder(RequestBuilder.GET, url);
         builder.setTimeoutMillis(30 * 1000);
         final PopupPanel box = BZNetwork.showLoadingBox();
+        xmlHttpRequest = null;
         builder.setCallback(new RequestCallback()
         {
             
@@ -194,7 +197,8 @@ public class LogsScreen extends VerticalScreen
                 try
                 {
                     resultsWrapper.clear();
-                    resultsWrapper.setWidget(new ServerResponseWidget(request));
+                    resultsWrapper.setWidget(new ServerResponseWidget(
+                            xmlHttpRequest));
                 }
                 finally
                 {
@@ -204,7 +208,8 @@ public class LogsScreen extends VerticalScreen
         });
         try
         {
-            builder.send();
+            Request request = builder.send();
+            xmlHttpRequest = BZNetwork.getXMLHttpRequest(request);
         }
         catch (RequestException e)
         {

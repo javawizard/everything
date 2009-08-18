@@ -688,18 +688,13 @@ public class BZNetwork implements EntryPoint
         DOM.setElementAttribute(table.getFlexCellFormatter().getElement(row,
                 column), "title", title);
     }
+
+    public static native Document getResponseXml(JavaScriptObject request) /*-{
+        return request.responseXML;
+    }-*/;
     
-    /**
-     * Returns the responseXML of the XMLHttpRequest object associated with the
-     * specified request, or null if the request does not have such an object or
-     * if the request has not yet receive a response.
-     * 
-     * @param request
-     *            The request object
-     * @return The response xml of the request
-     */
-    public static native Document getResponseXml(Request request) /*-{
-        return request.@com.google.gwt.http.client.Request::xmlHttpRequest.responseXML;
+    public static native JavaScriptObject getXMLHttpRequest(Request request) /*-{
+        return request.@com.google.gwt.http.client.Request::xmlHttpRequest;
     }-*/;
     
     public static String getSelectionValue(ListBox box, int index)

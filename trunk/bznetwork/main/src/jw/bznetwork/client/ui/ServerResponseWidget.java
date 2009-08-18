@@ -2,6 +2,7 @@ package jw.bznetwork.client.ui;
 
 import jw.bznetwork.client.BZNetwork;
 
+import com.google.gwt.core.client.JavaScriptObject;
 import com.google.gwt.dom.client.Document;
 import com.google.gwt.http.client.Request;
 import com.google.gwt.user.client.ui.Widget;
@@ -16,9 +17,9 @@ import com.google.gwt.user.client.ui.Widget;
  */
 public class ServerResponseWidget extends Widget
 {
-    public ServerResponseWidget(Request request)
+    public ServerResponseWidget(JavaScriptObject xmlHttpRequest)
     {
-        Document doc = BZNetwork.getResponseXml(request);
+        Document doc = BZNetwork.getResponseXml(xmlHttpRequest);
         if (doc == null)
             throw new IllegalArgumentException(
                     "An XML document could not be obtained from the request. "
