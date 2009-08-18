@@ -1188,15 +1188,22 @@ public class BZNetworkServer implements ServletContextListener,
                 }
                 else if (name.equalsIgnoreCase("join"))
                 {
-                    return event.getData() + " BZID:" + event.getBzid()
-                            + " IP:" + event.getIpaddress() + " Email:"
+                    String conditionalBzid = " BZID:" + event.getBzid();
+                    if (event.getBzid() == null
+                            || event.getBzid().trim().equals(""))
+                        conditionalBzid = "";
+                    return event.getData() + conditionalBzid + " IP:"
+                            + event.getIpaddress() + " Email:"
                             + event.getEmail();
                 }
                 else if (name.equalsIgnoreCase("part"))
                 {
-                    return "BZID:" + event.getBzid() + " IP:"
-                            + event.getIpaddress() + " Reason:"
-                            + event.getData();
+                    String conditionalBzid = "BZID:" + event.getBzid() + " ";
+                    if (event.getBzid() == null
+                            || event.getBzid().trim().equals(""))
+                        conditionalBzid = "";
+                    return conditionalBzid + "IP:" + event.getIpaddress()
+                            + " Reason:" + event.getData();
                 }
                 else if (name.equalsIgnoreCase("report"))
                 {
@@ -1210,7 +1217,7 @@ public class BZNetworkServer implements ServletContextListener,
                 {
                     return event.getData();
                 }
-                else if(name.equalsIgnoreCase("stdout"))
+                else if (name.equalsIgnoreCase("stdout"))
                 {
                     return event.getData();
                 }
