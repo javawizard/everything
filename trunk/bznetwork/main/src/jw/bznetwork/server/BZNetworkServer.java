@@ -1112,6 +1112,7 @@ public class BZNetworkServer implements ServletContextListener,
         formatter.addColumn(LogEventColumn.from);
         formatter.addColumn(LogEventColumn.to);
         formatter.addColumn(LogEventColumn.detail);
+        out.println("Right now it's " + formatDateTime(new Date()) + "<br/>");
         formatter.format(results, out);
         // We're done!
     }
