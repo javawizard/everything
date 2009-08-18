@@ -13,6 +13,7 @@ import com.google.gwt.http.client.RequestTimeoutException;
 import com.google.gwt.http.client.Response;
 import com.google.gwt.http.client.URL;
 import com.google.gwt.user.client.Window;
+import com.google.gwt.user.client.ui.HTML;
 import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.PopupPanel;
 import com.google.gwt.user.client.ui.SimplePanel;
@@ -197,8 +198,10 @@ public class LogsScreen extends VerticalScreen
                 try
                 {
                     resultsWrapper.clear();
-                    resultsWrapper.setWidget(new ServerResponseWidget(
-                            xmlHttpRequest));
+                    HTML html = new HTML(response.getText());
+                    html.setWidth("100%");
+                    resultsWrapper.setWidth("100%");
+                    resultsWrapper.setWidget(html);
                 }
                 finally
                 {
