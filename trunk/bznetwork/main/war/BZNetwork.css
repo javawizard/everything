@@ -212,23 +212,23 @@
 
 /*These styles are for the log viewer table rows and such*/
 .lvtp-red {
-	color: #aa0000
+	color: #770000
 }
 
 .lvtp-green {
-	color: #00aa00
+	color: #007700
 }
 
 .lvtp-blue {
-	color: #0055aa
+	color: #003377
 }
 
 .lvtp-purple {
-	color: #aa00aa
+	color: #770077
 }
 
 .lvtp-hunters {
-	color: #aa5500
+	color: #367700
 }
 
 .lvtp-rabbit {

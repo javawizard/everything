@@ -167,6 +167,8 @@ public class ReadThread extends Thread
             event.setSource(player.getCallsign());
         else
             event.setSource("+unknown");
+        if(player != null && player.getTeam() != null)
+            event.setSourceteam(player.getTeam().name());
         event.setData(message);
         DataStore.addLogEvent(event);
     }
@@ -190,6 +192,8 @@ public class ReadThread extends Thread
             event.setSource(player.getCallsign());
         else
             event.setSource("+unknown");
+        if(player != null && player.getTeam() != null)
+            event.setSourceteam(player.getTeam().name());
         if (event.getEvent().equals("report"))
             event.setData(message.substring("/report ".length()));
         else
@@ -242,6 +246,8 @@ public class ReadThread extends Thread
             event.setSource(fromPlayer.getCallsign());
         else
             event.setSource("+unknown");
+        if(fromPlayer != null && fromPlayer.getTeam() != null)
+            event.setSourceteam(fromPlayer.getTeam().name());
         if (toId == LiveServer.ALL)
         {
             event.setTarget("+all");
@@ -263,6 +269,8 @@ public class ReadThread extends Thread
             event.setTarget(toPlayer.getCallsign());
             chatType = "private";
         }
+        if(toPlayer != null && toPlayer.getTeam() != null)
+            event.setSourceteam(toPlayer.getTeam().name());
         event.setTargetid(toId);
         if (toId == LiveServer.NONE)
             event.setTargetteam(toTeam);
