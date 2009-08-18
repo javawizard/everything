@@ -57,8 +57,10 @@ public class LogsFilterWidget extends Composite
         searchField = w100(new TextBox());
         searchPanel.add(new HTML("<b>Search for:</b>"));
         searchPanel.add(searchField);
+        searchField.setText(settings.getSearch());
         ignoreCaseField = new CheckBox("Ignore case");
         searchPanel.add(ignoreCaseField);
+        ignoreCaseField.setValue(settings.isIgnoreCase());
         // search in group
         VerticalPanel searchInPanel = w100(new VerticalPanel());
         table.setWidget(0, 1, searchInPanel);
@@ -66,7 +68,7 @@ public class LogsFilterWidget extends Composite
         format.setVerticalAlignment(0, 1, VerticalPanel.ALIGN_TOP);
         searchInPanel.add(new HTML("<b>Search in:</b>"));
         inField = w100(new ListBox(true));
-        populateSearchIn(inField);
+        populateSearchIn(inField, settings);
         searchInPanel.add(inField);
         inField.setVisibleItemCount(14);
         // events group
@@ -76,7 +78,7 @@ public class LogsFilterWidget extends Composite
         format.setVerticalAlignment(0, 2, VerticalPanel.ALIGN_TOP);
         eventsPanel.add(new HTML("<b>Events:</b>"));
         eventsField = w100(new ListBox(true));
-        populateEvents(eventsField, model);
+        populateEvents(eventsField, model, settings);
         eventsPanel.add(eventsField);
         eventsField.setVisibleItemCount(14);
         // interval group
@@ -140,7 +142,7 @@ public class LogsFilterWidget extends Composite
         format.setVerticalAlignment(0, 4, VerticalPanel.ALIGN_TOP);
         serversPanel.add(new HTML("<b>Servers:</b>"));
         serversField = w100(new ListBox(true));
-        populateServers(serversField, model);
+        populateServers(serversField, model, settings);
         serversPanel.add(serversField);
         serversField.setVisibleItemCount(14);
         // search button group
@@ -171,27 +173,35 @@ public class LogsFilterWidget extends Composite
         return null;
     }
     
-    private void populateServers(ListBox box, LogSearchModel model)
+    private void populateServers(ListBox box, LogSearchModel model,
+            LogsFilterSettings settings)
     {
         for (Server s : model.getServers())
         {
             box.addItem(s.getName(), "" + s.getServerid());
+            if (settings.getServers().contains(s.getServerid()))
+                box.setItemSelected(box.getItemCount() - 1, true);
         }
     }
     
-    private void populateEvents(ListBox box, LogSearchModel model)
+    private void populateEvents(ListBox box, LogSearchModel model,
+            LogsFilterSettings settings)
     {
         for (String s : model.getEvents())
         {
             box.addItem(s);
+            if (settings.getEvents().contains(s))
+                box.setItemSelected(box.getItemCount() - 1, true);
         }
     }
     
-    private void populateSearchIn(ListBox box)
+    private void populateSearchIn(ListBox box, LogsFilterSettings settings)
     {
         for (String s : LogsScreen.SEARCH_IN)
         {
             box.addItem(s);
+            if (settings.getSearchIn().contains(s))
+                box.setItemSelected(box.getItemCount() - 1, true);
         }
     }
     
