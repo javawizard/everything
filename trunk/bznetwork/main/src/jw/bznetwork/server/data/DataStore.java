@@ -1,5 +1,7 @@
 package jw.bznetwork.server.data;
 
+import java.util.Date;
+
 import jw.bznetwork.client.data.model.Action;
 import jw.bznetwork.client.data.model.ActionRequest;
 import jw.bznetwork.client.data.model.Authgroup;
@@ -315,6 +317,8 @@ public class DataStore
     
     public static synchronized void addLogEvent(LogEvent v)
     {
+        if (v.getWhen() == null)
+            v.setWhen(new Date());
         try
         {
             getGdbClient().insert("addLogEvent", v);
