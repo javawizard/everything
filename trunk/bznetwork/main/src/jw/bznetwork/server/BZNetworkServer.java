@@ -1110,6 +1110,7 @@ public class BZNetworkServer implements ServletContextListener,
         // Now we'll do the actual rendering.
         LogEventFormatter formatter = new LogEventFormatter();
         formatter.addColumn(LogEventColumn.when);
+        formatter.addColumn(LogEventColumn.server);
         formatter.addColumn(LogEventColumn.event);
         formatter.addColumn(LogEventColumn.from);
         formatter.addColumn(LogEventColumn.to);
@@ -1227,6 +1228,15 @@ public class BZNetworkServer implements ServletContextListener,
                 {
                     return "UNKNOWN EVENT";
                 }
+            }
+        },
+        server("Server", true)
+        {
+            
+            @Override
+            public String format(LogEvent event, LogEventFormatter formatter)
+            {
+                return formatter.getServerName(event.getServerid());
             }
         };
         private String name;
