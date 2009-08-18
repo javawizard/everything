@@ -30,6 +30,11 @@ import jw.bznetwork.client.ui.ServerResponseWidget;
 
 public class LogsScreen extends VerticalScreen
 {
+    /**
+     * Mirrored on BZNetworkServer.SEARCH_IN
+     * 
+     * FIXME: move this to a shared constants class
+     */
     public static final String[] SEARCH_IN = new String[]
     {
             "event", "source", "target", "sourceteam", "targetteam",

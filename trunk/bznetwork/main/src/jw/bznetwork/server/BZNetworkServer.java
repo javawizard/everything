@@ -3,17 +3,12 @@ package jw.bznetwork.server;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.io.OutputStream;
-import java.io.PrintWriter;
 import java.io.StringReader;
 import java.io.StringWriter;
-import java.io.UnsupportedEncodingException;
-import java.io.Writer;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
@@ -23,14 +18,10 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.Properties;
 import java.util.Random;
-import java.util.Scanner;
-import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.TimeUnit;
-import java.util.concurrent.TimeoutException;
 
 import javax.servlet.ServletContext;
 import javax.servlet.ServletContextEvent;
@@ -42,10 +33,6 @@ import javax.servlet.http.HttpSessionListener;
 import javax.servlet.jsp.JspWriter;
 
 import org.apache.commons.lang.StringEscapeUtils;
-
-import sun.tools.tree.StringExpression;
-
-import net.sf.opengroove.common.utils.DataUtils;
 
 import jw.bznetwork.client.AuthProvider;
 import jw.bznetwork.client.ClientPermissionsProvider;
@@ -80,6 +67,14 @@ import com.ibatis.sqlmap.client.SqlMapClientBuilder;
 public class BZNetworkServer implements ServletContextListener,
         HttpSessionListener
 {
+    /**
+     * Mirrored on LogsScreen.SEARCH_IN
+     */
+    public static final String[] SEARCH_IN = new String[]
+    {
+            "event", "source", "target", "sourceteam", "targetteam",
+            "ipaddress", "bzid", "email", "data"
+    };
     public static final String newline = System.getProperty("line.separator");
     
     public static HashMap<Integer, LiveServer> getLiveServers()
@@ -1052,7 +1047,7 @@ public class BZNetworkServer implements ServletContextListener,
             filter += " and ('1' = '2' ";
             for (String s : textSearchInStrings)
             {
-                if (!StringUtils.isMemberOf(s, LogsScreen.SEARCH_IN))
+                if (!StringUtils.isMemberOf(s, SEARCH_IN))
                 {
                     throw new RuntimeException("Invalid searchin: " + s);
                 }
