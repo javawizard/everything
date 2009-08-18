@@ -1252,7 +1252,7 @@ public class BZNetworkServer implements ServletContextListener,
         {
             writer.println("<table border='0' cellspacing='1' cellpadding='1' "
                     + "class='bznetwork-LogViewerTable'>");
-            writer.println("<tr class='bznetwork-LogViewerTable-header>");
+            writer.println("<tr class='bznetwork-LogViewerTable-header'>");
             for (LogEventColumn column : columns)
             {
                 writer.println("<td>"

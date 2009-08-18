@@ -34,11 +34,10 @@ much faster than constructing it on the client-side. --%>
 <%
     StringWriter sw = new StringWriter();
         e.printStackTrace(new PrintWriter(sw));
-%><%=StringEscapeUtils.escapeHtml(sw.toString())%>
-<%
-    }
-%>
-</pre></div>
+%><%=StringEscapeUtils.escapeHtml(sw.toString())%></pre> <%
+     }
+ %>
+</div>
 
 
 
