@@ -1118,7 +1118,7 @@ public class BZNetworkServer implements ServletContextListener,
         }
         filter += " ) ";
         // order by the date
-        filter += " order by when asc ";
+        filter += " order by `when` asc ";
         // filter by max results
         filter += " limit " + maxResults;
         // add the filter
@@ -1145,7 +1145,7 @@ public class BZNetworkServer implements ServletContextListener,
         {
             out.println("<td class='lvtr-" + event + "'>" + event + "</td>");
         }
-        out.println("</tr></table><br/>");
+        out.println("</tr></table>");
         formatter.format(results, out);
         // We're done!
     }
