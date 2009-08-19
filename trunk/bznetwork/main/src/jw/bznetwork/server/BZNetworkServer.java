@@ -869,7 +869,7 @@ public class BZNetworkServer implements ServletContextListener,
             try
             {
                 process = new ProcessBuilder(args.toArray(new String[0]))
-                        .start();
+                        .redirectErrorStream(true).start();
             }
             catch (Exception e)
             {
