@@ -1133,7 +1133,9 @@ public class BZNetworkServer implements ServletContextListener,
         formatter.addColumn(LogEventColumn.from);
         formatter.addColumn(LogEventColumn.to);
         formatter.addColumn(LogEventColumn.detail);
-        out.println("Right now it's " + formatDateTime(new Date()) + "<br/>");
+        out.println("Right now it's " + formatDateTime(new Date())
+                + " &mdash; " + new Date().getTime() + " &mdash; "
+                + new Date().getTimezoneOffset() + " <br/>");
         out.println("<table border='0' cellspacing='1' cellpadding='1' "
                 + "class='bznetwork-LogViewerTableKey'><tr>");
         /*
@@ -1143,7 +1145,8 @@ public class BZNetworkServer implements ServletContextListener,
          */
         for (String event : LOG_EVENTS)
         {
-            out.println("<td class='lvtr-" + event + "'>" + event + "</td>");
+            out.println("<td style='text-align:center'" + " class='lvtr-"
+                    + event + "'>" + event + "</td>");
         }
         out.println("</tr></table>");
         formatter.format(results, out);

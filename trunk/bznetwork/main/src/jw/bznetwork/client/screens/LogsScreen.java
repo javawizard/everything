@@ -124,6 +124,9 @@ public class LogsScreen extends VerticalScreen
         widget.add(filterWidget);
         widget.setWidth("100%");
         widget.add(new HorizontalRule("100%"));
+        widget.add(new Label("Local machine time is "
+                + BZNetwork.format(new Date()) + " -- " + new Date().getTime()
+                + " -- " + new Date().getTimezoneOffset()));
         widget.add(resultsWrapper);
         filterWidget.addSearchButtonListener(new ClickHandler()
         {
