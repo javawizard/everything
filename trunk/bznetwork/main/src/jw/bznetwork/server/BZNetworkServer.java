@@ -1143,8 +1143,7 @@ public class BZNetworkServer implements ServletContextListener,
         formatter.addColumn(LogEventColumn.to);
         formatter.addColumn(LogEventColumn.detail);
         out.println("Right now it's " + dateFormat.format(new Date())
-                + " &mdash; " + new Date().getTime() + " &mdash; "
-                + new Date().getTimezoneOffset() + " <br/>");
+                + " <br/>");
         out.println("<table border='0' cellspacing='1' cellpadding='1' "
                 + "class='bznetwork-LogViewerTableKey'><tr>");
         /*
