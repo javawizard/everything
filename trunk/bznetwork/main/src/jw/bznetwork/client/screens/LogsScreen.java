@@ -124,9 +124,9 @@ public class LogsScreen extends VerticalScreen
         widget.add(filterWidget);
         widget.setWidth("100%");
         widget.add(new HorizontalRule("100%"));
-        widget.add(new Label("Local machine time is "
-                + BZNetwork.format(new Date()) + " -- " + new Date().getTime()
-                + " -- " + new Date().getTimezoneOffset()));
+        // widget.add(new Label("Local machine time is "
+        // + BZNetwork.format(new Date()) + " -- " + new Date().getTime()
+        // + " -- " + new Date().getTimezoneOffset()));
         widget.add(resultsWrapper);
         filterWidget.addSearchButtonListener(new ClickHandler()
         {
@@ -173,6 +173,19 @@ public class LogsScreen extends VerticalScreen
         {
             url += "&server=" + i;
         }
+        /*
+         * We'll also add our timezone offset to the query so that the server
+         * can output dates in our timezone.
+         */
+        int reversedTimezoneOffset = (new Date().getTimezoneOffset() * -1);
+        int absoluteTimezoneOffset = Math.abs(reversedTimezoneOffset);
+        int hours = absoluteTimezoneOffset / 60;
+        int minutes = absoluteTimezoneOffset % 60;
+        boolean negative = reversedTimezoneOffset < 0;
+        String timezoneSpecifier = "GMT" + (negative ? "-" : "+")
+                + LogsFilterWidget.padZeros(2, "" + hours)
+                + LogsFilterWidget.padZeros(2, "" + minutes);
+        url += "&timezone=" + timezoneSpecifier;
         // Window.alert("Constructed url: " + url);
         /*
          * We have our query. Now we'll execute it.

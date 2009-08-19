@@ -20,6 +20,7 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.Properties;
 import java.util.Random;
+import java.util.TimeZone;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.TimeUnit;
 
@@ -1026,6 +1027,14 @@ public class BZNetworkServer implements ServletContextListener,
         if (request.getSession(false) == null
                 || request.getSession().getAttribute("user") == null)
             throw new RuntimeException("You need to be logged in to view logs");
+        String timezoneName = request.getParameter("timezone");
+        TimeZone timezone;
+        if (timezoneName == null)
+            timezone = TimeZone.getDefault();
+        else
+            timezone = TimeZone.getTimeZone(timezoneName);
+        SimpleDateFormat dateFormat = new SimpleDateFormat(DATE_FORMAT_STRING);
+        dateFormat.setTimeZone(timezone);
         String startString = request.getParameter("start");
         String endString = request.getParameter("end");
         String textSearchString = request.getParameter("search");
@@ -1126,14 +1135,14 @@ public class BZNetworkServer implements ServletContextListener,
         // We're done with the filtering. Now we run the query.
         LogEvent[] results = DataStore.searchLogs(filterObject);
         // Now we'll do the actual rendering.
-        LogEventFormatter formatter = new LogEventFormatter();
+        LogEventFormatter formatter = new LogEventFormatter(dateFormat);
         formatter.addColumn(LogEventColumn.when);
         formatter.addColumn(LogEventColumn.server);
         formatter.addColumn(LogEventColumn.event);
         formatter.addColumn(LogEventColumn.from);
         formatter.addColumn(LogEventColumn.to);
         formatter.addColumn(LogEventColumn.detail);
-        out.println("Right now it's " + formatDateTime(new Date())
+        out.println("Right now it's " + dateFormat.format(new Date())
                 + " &mdash; " + new Date().getTime() + " &mdash; "
                 + new Date().getTimezoneOffset() + " <br/>");
         out.println("<table border='0' cellspacing='1' cellpadding='1' "
@@ -1161,7 +1170,7 @@ public class BZNetworkServer implements ServletContextListener,
             @Override
             public String format(LogEvent event, LogEventFormatter formatter)
             {
-                return formatDateTime(event.getWhen());
+                return formatter.formatDateTime(event.getWhen());
             }
         },
         from("From", false)
@@ -1299,11 +1308,22 @@ public class BZNetworkServer implements ServletContextListener,
     {
         private HashMap<Integer, Server> serverCache = new HashMap<Integer, Server>();
         private ArrayList<LogEventColumn> columns = new ArrayList<LogEventColumn>();
+        private SimpleDateFormat format;
+        
+        public LogEventFormatter(SimpleDateFormat format)
+        {
+            this.format = format;
+        }
         
         public void addColumn(LogEventColumn column)
         {
             if (!columns.contains(column))
                 columns.add(column);
+        }
+        
+        public String formatDateTime(Date when)
+        {
+            return format.format(when);
         }
         
         public void format(LogEvent[] events, JspWriter writer)
@@ -1347,8 +1367,10 @@ public class BZNetworkServer implements ServletContextListener,
         }
     }
     
+    public static String DATE_FORMAT_STRING = "yyyy/MM/dd hh:mm.ss aa";
+    
     private static SimpleDateFormat dateFormat = new SimpleDateFormat(
-            "yyyy/MM/dd hh:mm.ss aa");
+            DATE_FORMAT_STRING);
     
     public static String formatDateTime(Date when)
     {
