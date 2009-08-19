@@ -596,15 +596,12 @@ public class BZNetwork implements EntryPoint
         {
             Window.alert(t.getMessage());
         }
-        else if (t instanceof StatusCodeException)
+        else if (t instanceof StatusCodeException
+                && ((StatusCodeException) t).getStatusCode() == 401)
         {
-            StatusCodeException e = (StatusCodeException) t;
-            if (e.getStatusCode() == 401)
-            {
-                Window.alert("You have been logged out, probably because "
-                        + "your session timed out. Refresh the page "
-                        + "to log back in.");
-            }
+            Window.alert("You have been logged out, probably because "
+                    + "your session timed out. Refresh the page "
+                    + "to log back in.");
         }
         else
         {
@@ -688,7 +685,7 @@ public class BZNetwork implements EntryPoint
         DOM.setElementAttribute(table.getFlexCellFormatter().getElement(row,
                 column), "title", title);
     }
-
+    
     public static native Document getResponseXml(JavaScriptObject request) /*-{
         return request.responseXML;
     }-*/;

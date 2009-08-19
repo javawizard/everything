@@ -580,16 +580,28 @@ public class BZNetworkServer implements ServletContextListener,
                 dbPassword);
         if (!areTablesInstalled)
         {
-            Statement st = con2.createStatement();
             String createTablesStatement = StringUtils.readFile(new File(
                     getServletContext().getRealPath("/WEB-INF/tables.sql")));
             /*
              * MySQL apparently doesn't like SQL comments, so we'll manually
              * remove them.
              */
-            createTablesStatement.replaceAll("--[^\\n]*\\n", "");
-            st.executeUpdate(createTablesStatement);
-            st.close();
+            createTablesStatement = createTablesStatement.replaceAll(
+                    "--[^\\n]*\\n", "");
+            /*
+             * MySQL also doesn't like multiple statements within the same JDBC
+             * statement object, so we'll split up the statement for it.
+             */
+            String[] statements = createTablesStatement.split("\\;");
+            for (String s : statements)
+            {
+                if (!s.trim().equals(""))
+                {
+                    Statement st = con2.createStatement();
+                    st.executeUpdate(s);
+                    st.close();
+                }
+            }
         }
         con2.close();
         /*

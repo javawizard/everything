@@ -59,7 +59,7 @@ create table servers (
 create table actions (
     provider varchar(64),    -- The name of the authentication provider that the user that triggered this event is using
     username varchar(64),    -- The username, which is specific to the authentication provider specified, of the user that caused this event
-    when     timestamp,      -- The time at which the event occured 
+    `when`     timestamp,      -- The time at which the event occured 
     event    varchar(64),    -- The event itself. This is the name of the action that occured, and does not include any other details of the action. This should also not include any spaces. For example, "change-auth-provider", "change-server-groupdb", "create-internal-user", "delete-internal-user", and so on. When the action log for a user is deleted (by someone with such permissions), then their log is cleared, and a "action-log-cleared" event is added for that user.
     details  varchar(8192),  -- Additional details as to what the event is about. For example, the event "create-internal-user" might use this to specify information about the user that was created. Or "change-auth-provider" might specify what change actually happened (enabling a provider, disabling it, or changing the default provider).
     target   int             -- If this event had to do with a particular server or group, then this is its id. If not, this is -1 (including events on other objects that have ids, such as roles; -1 is used in that case also, although I might change that in the future)
@@ -82,7 +82,7 @@ create table settings (
 create table logevents (
     serverid    int,            -- The id of the server that this event occured on
     event       varchar(64),    -- The name of the event
-    when        timestamp,      -- The time at which the event occured
+    `when`        timestamp,      -- The time at which the event occured
     source      varchar(64),    -- The player that caused the event, if applicable. +server represents the server, and +<team> represents a team by that name.
     target      varchar(64),    -- The target player/team of the event, if applicable. Follows the same naming rules as source. For example, the teamkill event logs the target as the player killed.
     sourceid    int,            -- The bzfs slot id of the source player, if applicable
