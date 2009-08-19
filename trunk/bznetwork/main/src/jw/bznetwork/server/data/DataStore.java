@@ -541,11 +541,11 @@ public class DataStore
     {
         try
         {
-            executeSql("         delete from users where role = " + v
-                    + ";        delete from authgroups where role = " + v
-                    + ";        delete from callsigns where role = " + v
-                    + ";        delete from permissions where roleid = " + v
-                    + ";        delete from roles where roleid = " + v);
+            executeSql("        delete from users where role = " + v);
+            executeSql("        delete from authgroups where role = " + v);
+            executeSql("        delete from callsigns where role = " + v);
+            executeSql("        delete from permissions where roleid = " + v);
+            executeSql("        delete from roles where roleid = " + v);
         }
         catch (Exception e)
         {
