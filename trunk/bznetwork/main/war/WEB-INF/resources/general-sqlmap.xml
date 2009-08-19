@@ -10,7 +10,7 @@
          parameterClass="jw.bznetwork.client.data.model.LogRequest" 
          resultClass="jw.bznetwork.client.data.model.LogEvent" >
         select * from logevents
-        where when &gt; #start# and when &lt; #end#
+        where `when` &gt; #start# and `when` &lt; #end#
         $filter$ 
     </select>
 
@@ -47,7 +47,7 @@
         where provider = $literalProvider$
         and username = $literalUser$
         and event = $literalEvent$
-        order by when desc
+        order by `when` desc
         limit #length# offset #offset#
     </select>
 
@@ -68,7 +68,7 @@
 		insert into callsigns (callsign,role) values (#callsign#,#role#)
 	</insert>
 	<insert id="addActionEvent" parameterClass="jw.bznetwork.client.data.model.Action">
-		insert into actions (provider,username,when,event,details,target)
+		insert into actions (provider,username,`when`,event,details,target)
 		values (#provider#,#username#,#when#,#event#, #details#,#target#)
 	</insert>
 	<update id="updateServer" parameterClass="jw.bznetwork.client.data.model.Server">
@@ -102,7 +102,7 @@
 		select * from banfiles</select>
 	<insert id="addLogEvent" parameterClass="jw.bznetwork.client.data.model.LogEvent">
 		insert into logevents
-		(serverid,event,when,source,target,sourceid,targetid,
+		(serverid,event,`when`,source,target,sourceid,targetid,
 		sourceteam,targetteam,ipaddress,bzid,email, metadata,data) values
 		(#serverid#, #event#, #when#, #source#, #target#, #sourceid#,
 		#targetid#, #sourceteam#, #targetteam#, #ipaddress#, #bzid#, #email#,
