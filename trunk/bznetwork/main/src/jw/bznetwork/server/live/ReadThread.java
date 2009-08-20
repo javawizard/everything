@@ -43,6 +43,7 @@ public class ReadThread extends Thread
     
     public void run()
     {
+        logStatus("The server process has started up.");
         /*
          * Any output relevant to us will begin with a single pipe character
          * followed by 5 characters which represents a number. That number is
@@ -94,14 +95,35 @@ public class ReadThread extends Thread
         catch (Exception e)
         {
             e.printStackTrace();
-            // FIXME: implement this to shut down the server and log an error
-            // message about the exception
+            logStatus("Read thread exception: " + e.getClass().getName() + ": "
+                    + e.getMessage());
+            try
+            {
+                server.getProcess().destroy();
+            }
+            catch (Exception e1)
+            {
+                e1.printStackTrace();
+            }
         }
         /*
          * The server has shut down when we get to here. We'll notify the
          * LiveServer, which can take care of removing itself from the live
          * server list.
          */
+        String statusMessage = "The server process has terminated";
+        int exitCode = Integer.MIN_VALUE;
+        try
+        {
+            exitCode = server.getProcess().exitValue();
+        }
+        catch (Exception e)
+        {
+        }
+        if (exitCode != Integer.MIN_VALUE)
+            statusMessage += " with exit code " + exitCode;
+        statusMessage += ".";
+        logStatus(statusMessage);
         if (server.getLoadListenerQueue() != null)
             server.getLoadListenerQueue().offer("bznfail dead");
         server.completedShutdown();
@@ -112,6 +134,15 @@ public class ReadThread extends Thread
         LogEvent event = new LogEvent();
         event.setServerid(server.getId());
         event.setEvent("stdout");
+        event.setData(outString);
+        DataStore.addLogEvent(event);
+    }
+    
+    public synchronized void logStatus(String outString)
+    {
+        LogEvent event = new LogEvent();
+        event.setServerid(server.getId());
+        event.setEvent("status");
         event.setData(outString);
         DataStore.addLogEvent(event);
     }
@@ -167,7 +198,7 @@ public class ReadThread extends Thread
             event.setSource(player.getCallsign());
         else
             event.setSource("+unknown");
-        if(player != null && player.getTeam() != null)
+        if (player != null && player.getTeam() != null)
             event.setSourceteam(player.getTeam().name());
         event.setData(message);
         DataStore.addLogEvent(event);
@@ -192,7 +223,7 @@ public class ReadThread extends Thread
             event.setSource(player.getCallsign());
         else
             event.setSource("+unknown");
-        if(player != null && player.getTeam() != null)
+        if (player != null && player.getTeam() != null)
             event.setSourceteam(player.getTeam().name());
         if (event.getEvent().equals("report"))
             event.setData(message.substring("/report ".length()));
@@ -246,7 +277,7 @@ public class ReadThread extends Thread
             event.setSource(fromPlayer.getCallsign());
         else
             event.setSource("+unknown");
-        if(fromPlayer != null && fromPlayer.getTeam() != null)
+        if (fromPlayer != null && fromPlayer.getTeam() != null)
             event.setSourceteam(fromPlayer.getTeam().name());
         if (toId == LiveServer.ALL)
         {
@@ -269,7 +300,7 @@ public class ReadThread extends Thread
             event.setTarget(toPlayer.getCallsign());
             chatType = "private";
         }
-        if(toPlayer != null && toPlayer.getTeam() != null)
+        if (toPlayer != null && toPlayer.getTeam() != null)
             event.setSourceteam(toPlayer.getTeam().name());
         event.setTargetid(toId);
         if (toId == LiveServer.NONE)

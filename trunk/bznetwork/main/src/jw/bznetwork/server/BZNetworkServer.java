@@ -971,7 +971,23 @@ public class BZNetworkServer implements ServletContextListener,
     {
             "stdout", "filtered", "report", "slashcommand", "chat-unknown",
             "chat-server", "chat-broadcast", "chat-admin", "chat-team",
-            "chat-private", "join", "part"
+            "chat-private", "join", "part", "status"
+    };
+    
+    public static final String[] LOG_EVENT_DESCRIPTIONS = new String[]
+    {
+            "A message was printed to stdout or stderr by the bzflag server.",
+            "A player sent a message containing bad words, and they were filtered.",
+            "A player used the /report command.",
+            "A player used a slash command other than /report.",
+            "A chat message with an unknown type was sent by a player.",
+            "A chat message was sent by the server.",
+            "A chat message was sent to all players.",
+            "A chat message was sent to the server administrators.",
+            "A chat message was sent just to a particular team.",
+            "A chat message was sent directly from one player to another.",
+            "A player joined the server.", "A player left the server.",
+            "The server's status (whether it is running or not) changed."
     };
     
     /**
@@ -1151,10 +1167,13 @@ public class BZNetworkServer implements ServletContextListener,
          * of the search group in the logs viewer widget, action for it provided
          * by the user of the logs viewer widget
          */
-        for (String event : LOG_EVENTS)
+        for (int i = 0; i < LOG_EVENTS.length; i++)
         {
+            String event = LOG_EVENTS[i];
             out.println("<td style='text-align:center'" + " class='lvtr-"
-                    + event + "'>" + event + "</td>");
+                    + event + "' title=\""
+                    + StringEscapeUtils.escapeHtml(LOG_EVENT_DESCRIPTIONS[i])
+                    + "\">" + event + "</td>");
         }
         out.println("</tr></table>");
         formatter.format(results, out);
