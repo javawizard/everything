@@ -1158,8 +1158,13 @@ public class BZNetworkServer implements ServletContextListener,
         formatter.addColumn(LogEventColumn.from);
         formatter.addColumn(LogEventColumn.to);
         formatter.addColumn(LogEventColumn.detail);
-        out.println("Right now it's " + dateFormat.format(new Date())
-                + " <br/>");
+        out.println("<table border='0' cellspacing='0' cellpadding='0' ");
+        out.println("style='width:100%'><tr><td>");
+        out.println("Right now it's "
+                + dateFormat.format(new Date()).replace(" ", "&nbsp;"));
+        out.println("</td><td align='right'>");
+        out.println("Hover over an event in the color key below to see a description of it.");
+        out.println("</td></tr></table>");
         out.println("<table border='0' cellspacing='1' cellpadding='1' "
                 + "class='bznetwork-LogViewerTableKey'><tr>");
         /*
@@ -1284,6 +1289,10 @@ public class BZNetworkServer implements ServletContextListener,
                 {
                     return event.getData();
                 }
+                else if (name.equalsIgnoreCase("status"))
+                {
+                    return event.getData();
+                }
                 else
                 {
                     return "UNKNOWN EVENT";
@@ -1385,7 +1394,10 @@ public class BZNetworkServer implements ServletContextListener,
         }
     }
     
-    public static String DATE_FORMAT_STRING = "yyyy/MM/dd hh:mm.ss aa";
+    /**
+     * The triple space between the date and time is intentional.
+     */
+    public static String DATE_FORMAT_STRING = "yyyy/MM/dd   hh:mm.ss aa";
     
     private static SimpleDateFormat dateFormat = new SimpleDateFormat(
             DATE_FORMAT_STRING);
