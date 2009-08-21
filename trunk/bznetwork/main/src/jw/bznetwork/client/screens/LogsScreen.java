@@ -251,8 +251,6 @@ public class LogsScreen extends VerticalScreen
         theSettings.setIgnoreCase(false);
         for (String s : SEARCH_IN)
             theSettings.getSearchIn().add(s);
-        // leave the server list empty for all servers
-        // leave the event list empty for all events
         return theSettings;
     }
     

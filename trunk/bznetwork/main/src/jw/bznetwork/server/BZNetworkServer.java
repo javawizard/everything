@@ -1112,6 +1112,16 @@ public class BZNetworkServer implements ServletContextListener,
         if (filterServerStrings == null)
         {
             // no servers specified by the user, add them all
+            Server[] allServers = DataStore.listServers();
+            for (Server s : allServers)
+            {
+                /*
+                 * We'll add all servers, including ones that this user doesn't
+                 * have permission to view, since those servers will be removed
+                 * further down in this method
+                 */
+                serverIds.add(s.getServerid());
+            }
         }
         else
         {
@@ -1160,10 +1170,10 @@ public class BZNetworkServer implements ServletContextListener,
         formatter.addColumn(LogEventColumn.detail);
         out.println("<table border='0' cellspacing='0' cellpadding='0' ");
         out.println("style='width:100%'><tr><td>");
-        out.println("Right now it's "
-                + dateFormat.format(new Date()).replace(" ", "&nbsp;"));
+        out.println("Right now it's " + dateFormat.format(new Date()));
         out.println("</td><td align='right'>");
-        out.println("Hover over an event in the color key below to see a description of it.");
+        out
+                .println("Hover over an event in the color key below to see a description of it.");
         out.println("</td></tr></table>");
         out.println("<table border='0' cellspacing='1' cellpadding='1' "
                 + "class='bznetwork-LogViewerTableKey'><tr>");
@@ -1187,13 +1197,14 @@ public class BZNetworkServer implements ServletContextListener,
     
     public static enum LogEventColumn
     {
-        when("When", true)
+        when("When", false)
         {
             
             @Override
             public String format(LogEvent event, LogEventFormatter formatter)
             {
-                return formatter.formatDateTime(event.getWhen());
+                return formatter.formatDateTime(event.getWhen()).replace(" ",
+                        "&nbsp;");
             }
         },
         from("From", false)
@@ -1395,9 +1406,9 @@ public class BZNetworkServer implements ServletContextListener,
     }
     
     /**
-     * The triple space between the date and time is intentional.
+     * The double space between the date and time is intentional.
      */
-    public static String DATE_FORMAT_STRING = "yyyy/MM/dd   hh:mm.ss aa";
+    public static String DATE_FORMAT_STRING = "yyyy/MM/dd  hh:mm.ss aa";
     
     private static SimpleDateFormat dateFormat = new SimpleDateFormat(
             DATE_FORMAT_STRING);
