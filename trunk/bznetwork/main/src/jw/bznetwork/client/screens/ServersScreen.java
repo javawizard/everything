@@ -431,6 +431,7 @@ public class ServersScreen extends VerticalScreen
             HorizontalPanel linksPanel)
     {
         Anchor logsLink = new Anchor("logs");
+        linksPanel.add(logsLink);
         logsLink
                 .setTitle("Shows the logs for the servers in this group that have occurred today.");
         logsLink.addClickHandler(new ClickHandler()
