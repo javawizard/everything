@@ -7,6 +7,7 @@ import java.io.InputStream;
 import jw.bznetwork.client.data.model.LogEvent;
 import jw.bznetwork.client.data.model.Server;
 import jw.bznetwork.client.live.LivePlayer;
+import jw.bznetwork.client.live.LivePlayer.GameType;
 import jw.bznetwork.client.live.LivePlayer.TeamType;
 import jw.bznetwork.server.data.DataStore;
 
@@ -169,8 +170,8 @@ public class ReadThread extends Thread
             processPlayerPart(data.substring("playerpart ".length()));
         else if (data.startsWith("chatmessage "))
             processChatMessage(data.substring("chatmessage ".length()));
-        else if (data.equals("bznload"))
-            processBznLoad();
+        else if (data.startsWith("bznload "))
+            processBznLoad(data.substring("bznload ".length()));
         else if (data.startsWith("bznfail "))
             processBznFail(data.substring("bznfail ".length()));
         else if (data.equals("bznunload"))
@@ -251,8 +252,23 @@ public class ReadThread extends Thread
             server.getLoadListenerQueue().offer("bznfail " + substring);
     }
     
-    private void processBznLoad()
+    private void processBznLoad(String substring)
     {
+        String[] tokens = substring.split("\\|");
+        int red = Integer.parseInt(tokens[0]);
+        int green = Integer.parseInt(tokens[1]);
+        int blue = Integer.parseInt(tokens[2]);
+        int purple = Integer.parseInt(tokens[3]);
+        int rogue = Integer.parseInt(tokens[4]);
+        int observers = Integer.parseInt(tokens[5]);
+        server.getTeamLimits().put(TeamType.red, red);
+        server.getTeamLimits().put(TeamType.green, green);
+        server.getTeamLimits().put(TeamType.blue, blue);
+        server.getTeamLimits().put(TeamType.purple, purple);
+        server.getTeamLimits().put(TeamType.rogue, rogue);
+        server.getTeamLimits().put(TeamType.observer, observers);
+        GameType gameType = GameType.valueOf(tokens[6]);
+        server.setGameType(gameType);
         if (server.getLoadListenerQueue() != null)
             server.getLoadListenerQueue().offer("bznload");
         server.setChangingState(false);

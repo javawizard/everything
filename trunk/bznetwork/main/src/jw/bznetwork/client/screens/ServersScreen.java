@@ -285,6 +285,9 @@ public class ServersScreen extends VerticalScreen
                  */
                 createServerLinks(group, server, linksPanel);
                 /*
+                 * Last is the list of players on the server. This shows 
+                 */
+                /*
                  * We've added the actual server's row. Now we'll add a row to
                  * hold the server info widget. This widget is shown when the
                  * user clicks on the server's name, and contains stuff like the

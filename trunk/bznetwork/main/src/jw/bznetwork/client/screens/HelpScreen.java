@@ -53,13 +53,13 @@ public class HelpScreen extends VerticalScreen
                 .add(new HTML(
                         "<span class='bznetwork-GettingStartedLink-out'><a href='http://code.google.com/p/bznetwork/issues/entry?template=Feature+Request' target='_blank'>"
                                 + "<span class='bznetwork-GettingStartedLink'>"
-                                + "Request a Feature" + "</span></a>*</span>"));
+                                + "Request a Feature" + "</span></a></span>"));
         widget.add(new Spacer("5px", "8px"));
         widget
                 .add(new HTML(
                         "More help pages can be found <a href='http://code.google.com/p/bznetwork/w/list?can=2&q=label%3Ahelp' target='_blank'>here</a>."));
         widget.add(new Spacer("5px", "2px"));
-        widget.add(new HTML("* A Google account is required for these links."));
+        widget.add(new HTML("Request a Feature requires a Google account."));
     }
     
     @Override

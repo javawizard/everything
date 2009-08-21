@@ -4,10 +4,12 @@ import java.io.File;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.util.ArrayList;
+import java.util.EnumMap;
 import java.util.HashMap;
 import java.util.Queue;
 
 import jw.bznetwork.client.live.LivePlayer;
+import jw.bznetwork.client.live.LivePlayer.GameType;
 import jw.bznetwork.server.BZNetworkServer;
 
 /**
@@ -28,10 +30,19 @@ public class LiveServer
     private boolean changingState;
     private boolean starting;
     private OutputStream out;
+    private GameType gameType;
+    
+    private EnumMap<LivePlayer.TeamType, Integer> teamLimits = new EnumMap<LivePlayer.TeamType, Integer>(
+            LivePlayer.TeamType.class);
     
     public OutputStream getOut()
     {
         return out;
+    }
+    
+    public EnumMap<LivePlayer.TeamType, Integer> getTeamLimits()
+    {
+        return teamLimits;
     }
     
     public void setOut(OutputStream out)
@@ -221,5 +232,15 @@ public class LiveServer
     public void forceShutdown()
     {
         process.destroy();
+    }
+    
+    public GameType getGameType()
+    {
+        return gameType;
+    }
+    
+    public void setGameType(GameType gameType)
+    {
+        this.gameType = gameType;
     }
 }

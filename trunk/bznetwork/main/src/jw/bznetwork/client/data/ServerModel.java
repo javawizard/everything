@@ -1,6 +1,7 @@
 package jw.bznetwork.client.data;
 
 import java.io.Serializable;
+import java.util.EnumMap;
 
 import com.google.gwt.user.client.rpc.IsSerializable;
 
@@ -9,6 +10,14 @@ import jw.bznetwork.client.live.LivePlayer;
 
 public class ServerModel extends Server implements Serializable, IsSerializable
 {
+    private EnumMap<LivePlayer.TeamType, Integer> teamLimits = new EnumMap<LivePlayer.TeamType, Integer>(
+            LivePlayer.TeamType.class);
+    
+    public EnumMap<LivePlayer.TeamType, Integer> getTeamLimits()
+    {
+        return teamLimits;
+    }
+
     public static enum LiveState
     {
         LIVE, STARTING, STOPPING, STOPPED
