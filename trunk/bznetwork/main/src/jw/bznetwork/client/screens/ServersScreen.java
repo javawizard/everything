@@ -456,6 +456,8 @@ public class ServersScreen extends VerticalScreen
             final ServerModel server, Panel linksPanel)
     {
         Anchor logsLink = new Anchor("logs");
+        logsLink
+                .setTitle("Shows the logs for this server that have occurred today.");
         if (Perms.server("view-logs", server))
         {
             linksPanel.add(logsLink);

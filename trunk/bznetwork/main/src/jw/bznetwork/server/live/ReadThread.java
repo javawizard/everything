@@ -280,7 +280,7 @@ public class ReadThread extends Thread
          * fromPlayer and toPlayer can be null at this point if the message was
          * from the server or to all or a team
          */
-        String toTeam = tokens[2];
+        String toTeam = tokens.length > 2 ? tokens[2] : "";
         String message = "";
         if (tokens.length > 3)
             message = tokens[3];
@@ -335,8 +335,8 @@ public class ReadThread extends Thread
         player.setIpaddress(tokens[1]);
         player.setTeam(LivePlayer.colorToTeam(tokens[2]));
         player.setVerified(tokens[3].equals("verified"));
-        player.setCallsign(tokens[4]);
-        player.setEmail(tokens[5]);
+        player.setCallsign(tokens.length > 4 ? tokens[4] : "");
+        player.setEmail(tokens.length > 5 ? tokens[5] : "");
         player.setBzid(tokens.length > 6 ? tokens[6] : "");
         server.getPlayers().add(player);
         server.getCallsignsToPlayers().put(player.getCallsign(), player);
