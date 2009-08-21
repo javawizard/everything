@@ -112,7 +112,7 @@ void processStdinString(std::string* currentString)
 		}
 		bz_sendTextMessage(fromInt, toTeam, messageString.c_str());
 	}
-	else if(command == "shutdown")
+	else if (command == "shutdown")
 	{
 		bz_shutdown();
 	}
@@ -273,9 +273,10 @@ class BZNetworkEventHandler: public bz_EventHandler,
 				output += event->reason.c_str();
 				bzn_outputData(output);
 			}
-			else if(eventData->eventType == bz_eSlashCommandEvent)
+			else if (eventData->eventType == bz_eSlashCommandEvent)
 			{
-				bz_SlashCommandEventData* event = (bz_SlashCommandEventData*) eventData;
+				bz_SlashCommandEventData* event =
+						(bz_SlashCommandEventData*) eventData;
 				std::string output;
 				output += "slashcommand ";
 				output += intToString(event->from);
@@ -324,7 +325,21 @@ BZF_PLUGIN_CALL int bz_Load(const char* commandLine)
 	}
 	playerIdsByCallsign.insert(pair<std::string, int> ("+server", BZ_SERVER));
 	playerIdsByCallsign.insert(pair<std::string, int> ("+all", BZ_ALLUSERS));
-	bzn_outputData("bznload");
+	std::string loadOutput;
+	loadOutput += "bznload ";
+	loadOutput += intToString(bz_getTeamPlayerLimit(eRedTeam));
+	loadOutput += "|";
+	loadOutput += intToString(bz_getTeamPlayerLimit(eGreenTeam));
+	loadOutput += "|";
+	loadOutput += intToString(bz_getTeamPlayerLimit(eBlueTeam));
+	loadOutput += "|";
+	loadOutput += intToString(bz_getTeamPlayerLimit(ePurpleTeam));
+	loadOutput += "|";
+	loadOutput += intToString(bz_getTeamPlayerLimit(eRogueTeam));
+	loadOutput += "|";
+	loadOutput += intToString(bz_getTeamPlayerLimit(eObservers));
+	loadOutput += "|";
+	bzn_outputData(loadOutput);
 	return 0;
 }
 
