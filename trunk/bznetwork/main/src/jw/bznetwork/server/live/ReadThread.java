@@ -69,7 +69,16 @@ public class ReadThread extends Thread
                      * At this point we've read all the data that we need to.
                      * We'll go ahead and process it.
                      */
-                    processData(data);
+                    try
+                    {
+                        processData(data);
+                    }
+                    catch (Exception e)
+                    {
+                        logStatus("Data processing error: "
+                                + e.getClass().getName() + ": "
+                                + e.getMessage());
+                    }
                 }
                 else
                 {
@@ -186,7 +195,9 @@ public class ReadThread extends Thread
     {
         String[] tokens = substring.split("\\|", 2);
         int playerId = Integer.parseInt(tokens[0]);
-        String message = tokens[1];
+        String message = "";
+        if (tokens.length > 1)
+            message = tokens[1];
         LogEvent event = new LogEvent();
         event.setServerid(server.getId());
         event.setEvent("filtered");
@@ -208,7 +219,9 @@ public class ReadThread extends Thread
     {
         String[] tokens = substring.split("\\|", 2);
         int playerId = Integer.parseInt(tokens[0]);
-        String message = tokens[1];
+        String message = "";
+        if (tokens.length > 1)
+            message = tokens[1];
         LogEvent event = new LogEvent();
         event.setServerid(server.getId());
         if (message.toLowerCase().startsWith("/report "))
@@ -252,6 +265,8 @@ public class ReadThread extends Thread
          * TODO: forcibly terminate the server's process here, since we can't
          * really keep running if the bznetwork plugin unloads.
          */
+        logStatus("The bznetwork plugin was unloaded. No events will be "
+                + "logged until it is reloaded or the server is restarted.");
     }
     
     private void processChatMessage(String substring)
@@ -266,7 +281,9 @@ public class ReadThread extends Thread
          * from the server or to all or a team
          */
         String toTeam = tokens[2];
-        String message = tokens[3];
+        String message = "";
+        if (tokens.length > 3)
+            message = tokens[3];
         LogEvent event = new LogEvent();
         String chatType = "unknown";
         event.setServerid(server.getId());
