@@ -430,6 +430,30 @@ public class ServersScreen extends VerticalScreen
     private void createGroupLinks(final GroupModel group,
             HorizontalPanel linksPanel)
     {
+        Anchor logsLink = new Anchor("logs");
+        logsLink
+                .setTitle("Shows the logs for the servers in this group that have occurred today.");
+        logsLink.addClickHandler(new ClickHandler()
+        {
+            
+            @Override
+            public void onClick(ClickEvent event)
+            {
+                LogsScreen logsScreen = (LogsScreen) BZNetwork.mainScreen
+                        .get("logs");
+                LogsFilterSettings filterSettings = logsScreen
+                        .createDefaultSettings();
+                filterSettings.getServers().clear();
+                for (ServerModel server : group.getServers())
+                {
+                    filterSettings.getServers().add(server.getServerid());
+                }
+                logsScreen.preserveSettingsOnce = true;
+                logsScreen.settings = filterSettings;
+                logsScreen.performSearchOnce = true;
+                BZNetwork.mainScreen.selectScreen("logs");
+            }
+        });
         Anchor renameLink = new Anchor("rename");
         if (Perms.group("rename-group", group.getGroupid()))
         {
