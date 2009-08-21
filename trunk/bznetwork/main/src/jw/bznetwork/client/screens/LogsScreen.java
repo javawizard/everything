@@ -51,6 +51,8 @@ public class LogsScreen extends VerticalScreen
      */
     public boolean preserveSettingsOnce = false;
     
+    public boolean performSearchOnce = false;
+    
     public LogsFilterSettings settings;
     
     private LogsFilterWidget filterWidget;
@@ -86,6 +88,7 @@ public class LogsScreen extends VerticalScreen
     @Override
     public void reselect()
     {
+        deselect();
         select();
     }
     
@@ -137,6 +140,11 @@ public class LogsScreen extends VerticalScreen
                 doPerformSearch();
             }
         });
+        if(performSearchOnce)
+        {
+            performSearchOnce = false;
+            doPerformSearch();
+        }
     }
     
     protected void doPerformSearch()
@@ -242,7 +250,7 @@ public class LogsScreen extends VerticalScreen
         }
     }
     
-    private LogsFilterSettings createDefaultSettings()
+    LogsFilterSettings createDefaultSettings()
     {
         LogsFilterSettings theSettings = new LogsFilterSettings();
         theSettings.setStart(getStartOfDay(new Date()));

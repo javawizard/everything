@@ -8,6 +8,7 @@ import jw.bznetwork.client.BoxCallback;
 import jw.bznetwork.client.Perms;
 import jw.bznetwork.client.VerticalScreen;
 import jw.bznetwork.client.data.GroupModel;
+import jw.bznetwork.client.data.LogsFilterSettings;
 import jw.bznetwork.client.data.ServerListModel;
 import jw.bznetwork.client.data.ServerModel;
 import jw.bznetwork.client.data.ServerModel.LiveState;
@@ -454,6 +455,29 @@ public class ServersScreen extends VerticalScreen
     private void createServerLinks(final GroupModel group,
             final ServerModel server, Panel linksPanel)
     {
+        Anchor logsLink = new Anchor("logs");
+        if (Perms.server("view-logs", server))
+        {
+            linksPanel.add(logsLink);
+        }
+        logsLink.addClickHandler(new ClickHandler()
+        {
+            
+            @Override
+            public void onClick(ClickEvent event)
+            {
+                LogsScreen logsScreen = (LogsScreen) BZNetwork.mainScreen
+                        .get("logs");
+                LogsFilterSettings filterSettings = logsScreen
+                        .createDefaultSettings();
+                filterSettings.getServers().clear();
+                filterSettings.getServers().add(server.getServerid());
+                logsScreen.preserveSettingsOnce = true;
+                logsScreen.settings = filterSettings;
+                logsScreen.performSearchOnce = true;
+                BZNetwork.mainScreen.selectScreen("logs");
+            }
+        });
         Anchor renameLink = new Anchor("rename");
         if (Perms.server("edit-server-settings", server))
         {
