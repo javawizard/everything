@@ -91,7 +91,7 @@ full path does not contain any HTML special characters (&gt;, &lt;,
 	<tr>
 		<td><b>Database Password:</b></td>
 		<td><input type="password" name="db-password"
-			value=<%=defaultDbPassword%> /></td>
+			value="<%=defaultDbPassword%>" /></td>
 	</tr>
 	<tr>
 		<td><b>Store Folder:</b></td>

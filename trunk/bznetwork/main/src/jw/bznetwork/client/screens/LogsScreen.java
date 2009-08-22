@@ -101,6 +101,7 @@ public class LogsScreen extends VerticalScreen
             }
         });
         lowerPanelWrapper = new FlexTable();
+        lowerPanelWrapper.setWidth("100%");
         lowerPanel = new HorizontalPanel();
         lowerPanelWrapper.setWidget(0, 0, lowerPanel);
         lowerPanelWrapper.getFlexCellFormatter().setHorizontalAlignment(0, 0,

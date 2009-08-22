@@ -1069,7 +1069,7 @@ public class BZNetworkServer implements ServletContextListener,
         if (filterEvents == null)
             filterEvents = LOG_EVENTS;
         // if filterEvents is null, then we'll show all events.
-        int maxResults = 5000;
+        int maxResults = 3000;
         // the maximum results number is pretty much hard-coded right now. It's
         // not intended for practical use, as restricting the interval is a much
         // more logical solution; it's simply to prevent a mis-formed request
@@ -1192,6 +1192,16 @@ public class BZNetworkServer implements ServletContextListener,
                     + "\">" + event + "</td>");
         }
         out.println("</tr></table>");
+        /*
+         * We'll issue a warning if the user went over limit.
+         */
+        if (results.length >= maxResults)
+        {
+            out.println("<span style='color:#dd0000'>Event list truncated at "
+                    + maxResults
+                    + " events. Use a smaller interval to see the rest "
+                    + "of the events.</span><br/>");
+        }
         formatter.format(results, out);
         // We're done!
     }
