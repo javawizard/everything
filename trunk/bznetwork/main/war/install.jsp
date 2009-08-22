@@ -1,7 +1,8 @@
 
 <%@page import="java.io.File"%>
 <%@page import="jw.bznetwork.server.BZNetworkServer"%><html>
-<body style="font-family: sans-serif" onload="document.theform.thesubmitbutton.disabled=false">
+<body style="font-family: sans-serif"
+	onload="document.theform.thesubmitbutton.disabled=false">
 <%
     request.getSession().invalidate();
     File configFolder = new File(application
@@ -22,6 +23,30 @@ you'll need to provide some information that BZNetwork can use to set
 everything up. Make sure that you've placed BZNetwork in a folder whose
 full path does not contain any HTML special characters (&gt;, &lt;,
 &quot;, and &amp; specifically).
+<%
+    String defaultDbDriver = "org.h2.Driver";
+        if (System.getenv("BZN_DEV_DB_DRIVER") != null)
+            defaultDbDriver = System.getenv("BZN_DEV_DB_DRIVER");
+        String defaultDbUrl = "jdbc:h2:"
+                + application
+                        .getRealPath("/WEB-INF/config/db/bznetwork");
+        if (System.getenv("BZN_DEV_DB_URL") != null)
+            defaultDbUrl = System.getenv("BZN_DEV_DB_URL");
+        String defaultDbUsername = "sa";
+        if (System.getenv("BZN_DEV_DB_USERNAME") != null)
+            defaultDbUsername = System.getenv("BZN_DEV_DB_USERNAME");
+        String defaultDbPassword = "";
+        if (System.getenv("BZN_DEV_DB_PASSWORD") != null)
+            defaultDbPassword = System.getenv("BZN_DEV_DB_PASSWORD");
+        String defaultStoreFolder = application
+                .getRealPath("/WEB-INF/config/store");
+        if (System.getenv("BZN_DEV_STORE_FOLDER") != null)
+            defaultStoreFolder = System.getenv("BZN_DEV_STORE_FOLDER");
+        String defaultCacheFolder = application
+                .getRealPath("/WEB-INF/config/cache");
+        if (System.getenv("BZN_DEV_CACHE_FOLDER") != null)
+            defaultCacheFolder = System.getenv("BZN_DEV_CACHE_FOLDER");
+%>
 <br />
 <form name="theform" method="post" action="doinstall.jsp"
 	onsubmit="document.theform.thesubmitbutton.disabled=true;return true;">
@@ -33,7 +58,8 @@ full path does not contain any HTML special characters (&gt;, &lt;,
 	</tr>
 	<tr>
 		<td width="250px"><b>Database Driver:</b></td>
-		<td><input type="text" name="db-driver" value="org.h2.Driver" /></td>
+		<td><input type="text" name="db-driver"
+			value="<%=defaultDbDriver%>" /></td>
 	</tr>
 	<tr>
 		<td>&nbsp;</td>
@@ -48,9 +74,7 @@ full path does not contain any HTML special characters (&gt;, &lt;,
 	</tr>
 	<tr>
 		<td><b>Database URL:</b></td>
-		<td><input type="text" name="db-url"
-			value="jdbc:h2:<%=application
-                                .getRealPath("/WEB-INF/config/db/bznetwork")%>" /></td>
+		<td><input type="text" name="db-url" value="<%=defaultDbUrl%>" /></td>
 	</tr>
 	<tr>
 		<td>&nbsp;</td>
@@ -61,17 +85,18 @@ full path does not contain any HTML special characters (&gt;, &lt;,
 	</tr>
 	<tr>
 		<td><b>Database Username:</b></td>
-		<td><input type="text" name="db-username" value="sa" /></td>
+		<td><input type="text" name="db-username"
+			value="<%=defaultDbUsername%>" /></td>
 	</tr>
 	<tr>
 		<td><b>Database Password:</b></td>
-		<td><input type="password" name="db-password" /></td>
+		<td><input type="password" name="db-password"
+			value=<%=defaultDbPassword%> /></td>
 	</tr>
 	<tr>
 		<td><b>Store Folder:</b></td>
 		<td><input type="text" name="store-folder"
-			value="<%=application
-                                        .getRealPath("/WEB-INF/config/store")%>" /></td>
+			value="<%=defaultStoreFolder%>" /></td>
 	<tr>
 		<td>&nbsp;</td>
 		<td><small>This folder stores groupdb files, maps, bans,
@@ -81,8 +106,7 @@ full path does not contain any HTML special characters (&gt;, &lt;,
 	<tr>
 		<td><b>Cache Folder:</b></td>
 		<td><input type="text" name="cache-folder"
-			value="<%=application
-                                        .getRealPath("/WEB-INF/config/cache")%>" /></td>
+			value="<%=defaultCacheFolder%>" /></td>
 	</tr>
 	<tr>
 		<td>&nbsp;</td>

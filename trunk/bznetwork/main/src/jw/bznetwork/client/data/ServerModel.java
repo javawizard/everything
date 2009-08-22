@@ -1,7 +1,7 @@
 package jw.bznetwork.client.data;
 
 import java.io.Serializable;
-import java.util.EnumMap;
+import java.util.HashMap;
 
 import com.google.gwt.user.client.rpc.IsSerializable;
 
@@ -10,14 +10,26 @@ import jw.bznetwork.client.live.LivePlayer;
 
 public class ServerModel extends Server implements Serializable, IsSerializable
 {
-    private EnumMap<LivePlayer.TeamType, Integer> teamLimits = new EnumMap<LivePlayer.TeamType, Integer>(
-            LivePlayer.TeamType.class);
     
-    public EnumMap<LivePlayer.TeamType, Integer> getTeamLimits()
+    private String detailString = "";
+    
+    /**
+     * The text that should show up in the detail column for a server. This is
+     * generated on the server-side instead of the client-side to improve
+     * performance.
+     * 
+     * @return
+     */
+    public String getDetailString()
     {
-        return teamLimits;
+        return detailString;
     }
-
+    
+    public void setDetailString(String detailString)
+    {
+        this.detailString = detailString;
+    }
+    
     public static enum LiveState
     {
         LIVE, STARTING, STOPPING, STOPPED

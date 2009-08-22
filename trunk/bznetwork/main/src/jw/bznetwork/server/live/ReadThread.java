@@ -161,34 +161,47 @@ public class ReadThread extends Thread
     {
         /*
          * Currently, all data output from the server will contain only visible
-         * characters, so we'll just put it into a string.
+         * characters, so we'll just put it into a string. We'll also
+         * synchronize all messages except for bznload, bznfail, and bznunload,
+         * which will cause a deadlock if we synchronize (since the server
+         * starting thread synchronizes on the server too, and doesn't unlock
+         * until one of these three commands are received from the server)
          */
         String data = new String(dataBytes);
-        if (data.startsWith("playerjoin "))
-            processPlayerJoin(data.substring("playerjoin ".length()));
-        else if (data.startsWith("playerpart "))
-            processPlayerPart(data.substring("playerpart ".length()));
-        else if (data.startsWith("chatmessage "))
-            processChatMessage(data.substring("chatmessage ".length()));
-        else if (data.startsWith("bznload "))
+        if (data.startsWith("bznload "))
             processBznLoad(data.substring("bznload ".length()));
         else if (data.startsWith("bznfail "))
             processBznFail(data.substring("bznfail ".length()));
         else if (data.equals("bznunload"))
             processBznUnload();
-        else if (data.startsWith("slashcommand "))
-            processSlashCommand(data.substring("slashcommand ".length()));
-        else if (data.startsWith("messagefiltered"))
-            processMessageFiltered(data.substring("messagefiltered ".length()));
         else
         {
-            Server serverObject = DataStore.getServerById(server.getId());
-            int port = -1;
-            if (serverObject != null)
-                port = serverObject.getPort();
-            System.out.println("Unknown data received from server "
-                    + server.getId() + " which runs on port " + port + ": "
-                    + data);
+            synchronized (server)
+            {
+                if (data.startsWith("playerjoin "))
+                    processPlayerJoin(data.substring("playerjoin ".length()));
+                else if (data.startsWith("playerpart "))
+                    processPlayerPart(data.substring("playerpart ".length()));
+                else if (data.startsWith("chatmessage "))
+                    processChatMessage(data.substring("chatmessage ".length()));
+                else if (data.startsWith("slashcommand "))
+                    processSlashCommand(data
+                            .substring("slashcommand ".length()));
+                else if (data.startsWith("messagefiltered"))
+                    processMessageFiltered(data.substring("messagefiltered "
+                            .length()));
+                else
+                {
+                    Server serverObject = DataStore.getServerById(server
+                            .getId());
+                    int port = -1;
+                    if (serverObject != null)
+                        port = serverObject.getPort();
+                    System.out.println("Unknown data received from server "
+                            + server.getId() + " which runs on port " + port
+                            + ": " + data);
+                }
+            }
         }
     }
     

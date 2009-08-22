@@ -13,7 +13,10 @@ import com.google.gwt.http.client.RequestTimeoutException;
 import com.google.gwt.http.client.Response;
 import com.google.gwt.http.client.URL;
 import com.google.gwt.user.client.Window;
+import com.google.gwt.user.client.ui.Button;
+import com.google.gwt.user.client.ui.FlexTable;
 import com.google.gwt.user.client.ui.HTML;
+import com.google.gwt.user.client.ui.HorizontalPanel;
 import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.PopupPanel;
 import com.google.gwt.user.client.ui.SimplePanel;
@@ -57,6 +60,10 @@ public class LogsScreen extends VerticalScreen
     
     private LogsFilterWidget filterWidget;
     
+    private Button lowerSearchButton;
+    private FlexTable lowerPanelWrapper;
+    private HorizontalPanel lowerPanel;
+    
     private LogSearchModel searchModel;
     private SimplePanel resultsWrapper = new SimplePanel();
     private JavaScriptObject xmlHttpRequest;
@@ -83,6 +90,22 @@ public class LogsScreen extends VerticalScreen
     @Override
     public void init()
     {
+        lowerSearchButton = new Button("Search");
+        lowerSearchButton.addClickHandler(new ClickHandler()
+        {
+            
+            @Override
+            public void onClick(ClickEvent event)
+            {
+                doPerformSearch();
+            }
+        });
+        lowerPanelWrapper = new FlexTable();
+        lowerPanel = new HorizontalPanel();
+        lowerPanelWrapper.setWidget(0, 0, lowerPanel);
+        lowerPanelWrapper.getFlexCellFormatter().setHorizontalAlignment(0, 0,
+                HorizontalPanel.ALIGN_RIGHT);
+        lowerPanel.add(lowerSearchButton);
     }
     
     @Override
@@ -103,10 +126,6 @@ public class LogsScreen extends VerticalScreen
         {
             settings = createDefaultSettings();
         }
-        /*
-         * TODO: pick up here, create the filter components and load the
-         * settings into them, figure out where to add a search button
-         */
         BZNetwork.authLink.getLogSearchModel(new BoxCallback<LogSearchModel>()
         {
             
@@ -131,6 +150,8 @@ public class LogsScreen extends VerticalScreen
         // + BZNetwork.format(new Date()) + " -- " + new Date().getTime()
         // + " -- " + new Date().getTimezoneOffset()));
         widget.add(resultsWrapper);
+        widget.add(lowerPanelWrapper);
+        lowerPanelWrapper.setVisible(false);
         filterWidget.addSearchButtonListener(new ClickHandler()
         {
             
@@ -140,7 +161,7 @@ public class LogsScreen extends VerticalScreen
                 doPerformSearch();
             }
         });
-        if(performSearchOnce)
+        if (performSearchOnce)
         {
             performSearchOnce = false;
             doPerformSearch();
@@ -231,6 +252,7 @@ public class LogsScreen extends VerticalScreen
                     html.setWidth("100%");
                     resultsWrapper.setWidth("100%");
                     resultsWrapper.setWidget(html);
+                    lowerPanelWrapper.setVisible(true);
                 }
                 finally
                 {

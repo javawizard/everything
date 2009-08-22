@@ -1101,8 +1101,8 @@ public class BZNetworkServer implements ServletContextListener,
                     filterColumn = " lower(" + filterColumn + ") ";
                     textSearchToUse = textSearchLower;
                 }
-                filter += " or " + filterColumn + " like '" + textSearchToUse
-                        + "'";
+                filter += " or " + filterColumn + " like '%" + textSearchToUse
+                        + "%'";
             }
         }
         if (textSearchInStrings != null)
@@ -1158,6 +1158,7 @@ public class BZNetworkServer implements ServletContextListener,
         filter += " limit " + maxResults;
         // add the filter
         filterObject.setFilter(filter);
+        System.out.println("filter: " + filter);
         // We're done with the filtering. Now we run the query.
         LogEvent[] results = DataStore.searchLogs(filterObject);
         // Now we'll do the actual rendering.

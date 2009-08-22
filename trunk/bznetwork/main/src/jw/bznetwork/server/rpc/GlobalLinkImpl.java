@@ -50,6 +50,8 @@ import jw.bznetwork.client.data.model.Role;
 import jw.bznetwork.client.data.model.Server;
 import jw.bznetwork.client.data.model.UserPair;
 import jw.bznetwork.client.live.LivePlayer;
+import jw.bznetwork.client.live.LivePlayer.GameType;
+import jw.bznetwork.client.live.LivePlayer.TeamType;
 import jw.bznetwork.client.rpc.GlobalLink;
 import jw.bznetwork.server.BZNetworkServer;
 import jw.bznetwork.server.RequestTrackerFilter;
@@ -583,7 +585,9 @@ public class GlobalLinkImpl extends RemoteServiceServlet implements GlobalLink
                     }
                     serverModel.setPlayers(liveServer.getPlayers().toArray(
                             new LivePlayer[0]));
+                    
                 }
+                buildServerDetails(serverModel, liveServer);
                 serverList.add(serverModel);
             }
             groupModel.setServers(serverList.toArray(new ServerModel[0]));
@@ -591,6 +595,64 @@ public class GlobalLinkImpl extends RemoteServiceServlet implements GlobalLink
         }
         model.setGroups(groupList.toArray(new GroupModel[0]));
         return model;
+    }
+    
+    private void buildServerDetails(ServerModel serverModel,
+            LiveServer liveServer)
+    {
+        if (liveServer == null)
+            return;
+        LivePlayer[] players = serverModel.getPlayers();
+        if (players == null)
+        {
+            return;
+        }
+        if (serverModel.getState() != LiveState.LIVE)
+            return;
+        /*
+         * We have a list of players, and the server is running. Now we'll get
+         * the map of team limits. Due to a race condition that I haven't been
+         * able to track down, we need to create a new map off of the existing
+         * team limits map to prevent a ConcurrentModificationException from
+         * being thrown later on.
+         */
+        Map<TeamType, Integer> limits = new HashMap<TeamType, Integer>(
+                liveServer.getTeamLimits());
+        /*
+         * We'll also use a StringBuffer instead of string concatentation to
+         * improve performance.
+         */
+        StringBuffer details = new StringBuffer();
+        /*
+         * For rabbit mode servers, we only show the list of rogues (and we
+         * count the rabbit as a rogue) and observers, and we show the rogues as
+         * orange instead of yellow. For all other modes, we show red, green,
+         * blue, purple, rogue, and observer teams. In the future, there should
+         * probably be some sort of configuration setting for whether or not
+         * teams with a limit of 0 should be shown at all in the details column.
+         */
+        if (liveServer.getGameType() == GameType.RabbitHunt)
+        {
+            
+        }
+        else if (liveServer.getGameType() == GameType.FreeForAll
+                || liveServer.getGameType() == GameType.CaptureTheFlag)
+        {
+            
+        }
+        serverModel.setDetailString(details.toString());
+    }
+    
+    private String buildServerPlayerCountString(String team, int current,
+            int total)
+    {
+        /*
+         * We use a StringBuffer instead of string concatentation to improve the
+         * performance of this method.
+         */
+        StringBuffer buffer = new StringBuffer();
+        //use css rules sldt-teamtype (for ServerListDetailsTeam)
+        return "";
     }
     
     @Override
