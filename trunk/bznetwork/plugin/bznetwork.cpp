@@ -339,6 +339,15 @@ BZF_PLUGIN_CALL int bz_Load(const char* commandLine)
 	loadOutput += "|";
 	loadOutput += intToString(bz_getTeamPlayerLimit(eObservers));
 	loadOutput += "|";
+	bz_eGameType gameType = bz_getGameType();
+	if (gameType == eFFAGame)
+		loadOutput += "FreeForAll";
+	else if (gameType == eCTFGame)
+		loadOutput += "CaptureTheFlag";
+	else if (gameType == eRabbitGame)
+		loadOutput += "RabbitHunt";
+	else
+		loadOutput += "UnknownGameType";
 	bzn_outputData(loadOutput);
 	return 0;
 }
