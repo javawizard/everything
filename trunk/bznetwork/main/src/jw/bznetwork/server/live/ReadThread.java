@@ -347,7 +347,7 @@ public class ReadThread extends Thread
             chatType = "private";
         }
         if (toPlayer != null && toPlayer.getTeam() != null)
-            event.setSourceteam(toPlayer.getTeam().name());
+            event.setTargetteam(toPlayer.getTeam().name());
         event.setTargetid(toId);
         if (toId == LiveServer.NONE)
             event.setTargetteam(toTeam);

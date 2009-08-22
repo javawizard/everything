@@ -1077,7 +1077,7 @@ public class BZNetworkServer implements ServletContextListener,
         // tying up the server while it does something such as try to get all of
         // the logs for all time periods out of the database. The client then
         // warns
-        // the user if the result count is 5000 that some results were truncated
+        // the user if the result count is 3000 that some results were truncated
         // and
         // that they should decrease the time interval.
         LogRequest filterObject = new LogRequest();
