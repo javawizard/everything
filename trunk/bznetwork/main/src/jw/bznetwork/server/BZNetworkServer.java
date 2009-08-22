@@ -1232,7 +1232,7 @@ public class BZNetworkServer implements ServletContextListener,
                     return "";
                 }
                 return "#" + event.getSourceid() + "&#160;<span class='lvtp-"
-                        + event.getSourceteam() + "'>"
+                        + event.getSourceteam() + "' title='Team: " + event.getSourceteam() + "'>"
                         + StringEscapeUtils.escapeHtml(callsign) + "</span>";
             }
         },
@@ -1252,7 +1252,7 @@ public class BZNetworkServer implements ServletContextListener,
                     return "";
                 }
                 return "#" + event.getTargetid() + "&#160;<span class='lvtp-"
-                        + event.getTargetteam() + "'>"
+                        + event.getTargetteam() + "' title='Team: " + event.getTargetteam() + "'>"
                         + StringEscapeUtils.escapeHtml(callsign) + "</span>";
             }
         },
