@@ -1,0 +1,13 @@
+Content-Type: text/x-zim-wiki
+Wiki-Format: zim 0.26
+Creation-Date: Sat, 22 Aug 2009 01:40:00 -0600
+Modification-Date: Sat, 22 Aug 2009 01:58:39 -0600
+
+====== 1. The Banfiles Page ======
+Created Saturday 22 August 2009
+
+The banfiles page is where you can create banfiles, delete banfiles, and manage the bans in those banfiles.
+
+When this page first loads, it contains a list of existing banfiles, with //ban// and //delete// links next to each banfile. At the end of the page is a text field that you can use to create new banfiles.
+
+A banfile cannot be deleted if any servers use that banfile. You will have to set those servers to use another banfile in the Servers screen before you can delete a banfile.

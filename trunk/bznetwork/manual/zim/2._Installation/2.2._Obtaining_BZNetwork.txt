@@ -1,0 +1,10 @@
+Content-Type: text/x-zim-wiki
+Wiki-Format: zim 0.26
+Creation-Date: Sat, 22 Aug 2009 01:18:36 -0600
+Modification-Date: Sat, 22 Aug 2009 01:25:04 -0600
+
+====== 2. Obtaining BZNetwork ======
+Created Saturday 22 August 2009
+
+As of the writing of this manual, there are not currently any BZNetwork downloads available. I hope to make a download available soon. In the mean time, you will have to check out BZNetwork yourself and build it from source. I'm not going to cover that here, since I intend to have a download available shortly; if a download is not available yet, contact me as described in the introduction.
+

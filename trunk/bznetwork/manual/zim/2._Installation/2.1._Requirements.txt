@@ -1,0 +1,13 @@
+Content-Type: text/x-zim-wiki
+Wiki-Format: zim 0.26
+Creation-Date: Sat, 22 Aug 2009 01:17:37 -0600
+Modification-Date: Sat, 22 Aug 2009 01:22:39 -0600
+
+====== 1. Requirements ======
+Created Saturday 22 August 2009
+
+BZNetwork is a Java web application. This means that it requires a servlet container to run in. This manual assumes you know what a servlet container is and how to deploy a web application to a servlet container. If you don't, I suggest you read the Getting Started guide, mentioned in the introduction, as it includes directions for getting BZNetwork set up under the Apache Tomcat web server.
+
+**BZNetwork will only run on linux.** BZNetwork's java code is platform-independent, but it uses some native code that is specific to linux. I have not tried compiling this native code under Cygwin, so I don't know how well it would work out.
+
+BZNetwork stores its data in a relational database. You can use the embedded database it comes with, but for high-performance applications I recommend you set up your own relational database. BZNetwork has been tested successfully with MySQL, and it includes a driver for connecting to MySQL.

@@ -1,0 +1,17 @@
+Content-Type: text/x-zim-wiki
+Wiki-Format: zim 0.26
+Creation-Date: Sat, 22 Aug 2009 01:25:19 -0600
+Modification-Date: Sat, 22 Aug 2009 01:33:47 -0600
+
+====== 3. The Install Page ======
+Created Saturday 22 August 2009
+
+Once you have obtained BZNetwork, deploy it as a web application to your servlet container. Then, visit the location in your web browser. You should be presented with an installation screen that starts out with "Welcome to a new installation of BZNetwork". 
+
+The installation page itself is documented, in my opinion, fairly comprehensively, to the point that I feel it unnecessary to document it further in this manual. There are, however, a couple of things that can happen that you might not be expecting.
+
+If BZNetwork is already installed, you will receive a warning. Read through this warning carefully, and make sure that you have followed all of the directions contained within it. You should make sure that the database schema in your database is not different than the one that would be created by BZNetwork's current table creation script. 
+
+If BZNetwork cannot write to the folder to which it was deployed, it will give you some text that you must save to a configuration file.
+
+Once installation has completed, you can log in to BZNetwork by using the username **admin** and the password **admin**.
