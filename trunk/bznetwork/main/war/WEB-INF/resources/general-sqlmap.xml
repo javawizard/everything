@@ -5,57 +5,23 @@
 <sqlMap>
 
 	<!-- !ADDTOSQL -->
-
-    <select id="getConfigSetting" 
-         parameterClass="java.lang.String" 
-         resultClass="jw.bznetwork.client.data.model.ConfigSetting" >
-        select * from configsettings
-        where name = #name#
-    </select>
-
-    <update id="updateConfigSetting" 
-         parameterClass="jw.bznetwork.client.data.model.ConfigSetting" >
-        update configsettings
-        set value = #value#
-        where name = #name#
-    </update>
-
-    <insert id="addConfigSetting" 
-         parameterClass="jw.bznetwork.client.data.model.ConfigSetting" >
-        insert into configsettings
-        (name,value)
-        values
-        (#name#,#value#)
-    </insert>
-
-    <delete id="deleteConfigSetting" 
-         parameterClass="jw.bznetwork.client.data.model.ConfigSetting" >
-        delete from configsettings where
-        name = #name#
-        and value = #value#
-    </delete>
-
-    <select id="listConfigSettingNames" 
-         resultClass="java.lang.String" >
-        select name from configsettings
-    </select>
-
-    <select id="listConfigSettings" 
-         resultClass="jw.bznetwork.client.data.model.ConfigSetting" >
-        select * from configsettings
-    </select>
-
-    <select id="getConfigSettingValue" 
-         parameterClass="java.lang.String" 
-         resultClass="java.lang.String" >
-        select value from configsettings where name = #value#
-    </select>
-
-    <select id="searchLogs" 
-         parameterClass="jw.bznetwork.client.data.model.LogRequest" 
-         resultClass="jw.bznetwork.client.data.model.LogEvent" >
-        select * from logevents
-        where `when` &gt; #start# and `when` &lt; #end#
+	<select id="getConfigSetting" parameterClass="java.lang.String"
+		resultClass="jw.bznetwork.client.data.model.ConfigSetting"> select * from configsettings where name = #name#</select>
+	<update id="updateConfigSetting" parameterClass="jw.bznetwork.client.data.model.ConfigSetting"> update
+		configsettings set value = #value# where name = #name#</update>
+	<insert id="addConfigSetting" parameterClass="jw.bznetwork.client.data.model.ConfigSetting"> insert into
+		configsettings (name,value) values (#name#,#value#)</insert>
+	<delete id="deleteConfigSetting" parameterClass="jw.bznetwork.client.data.model.ConfigSetting"> delete from
+		configsettings where name = #name# and value = #value#</delete>
+	<select id="listConfigSettingNames" resultClass="java.lang.String"> select name
+		from configsettings</select>
+	<select id="listConfigSettings" resultClass="jw.bznetwork.client.data.model.ConfigSetting"> select * from
+		configsettings</select>
+	<select id="getConfigSettingValue" parameterClass="java.lang.String"
+		resultClass="java.lang.String"> select value from configsettings where name = #value#
+	</select>
+	<select id="searchLogs" parameterClass="jw.bznetwork.client.data.model.LogRequest"
+		resultClass="jw.bznetwork.client.data.model.LogEvent"> select * from logevents where `when` &gt; #start# and `when` &lt; #end#
         $filter$ 
     </select>
 
@@ -172,10 +138,10 @@
 		update idsequence set nextvalue = #value#</update>
 	<select id="getNextId" resultClass="java.lang.Integer"> select *
 		from idsequence</select>
-	<update id="updateConfiguration" parameterClass="jw.bznetwork.client.data.model.Configuration">
+<!-- 	<update id="updateConfiguration" parameterClass="jw.bznetwork.client.data.model.Configuration">
 		update configuration set welcome = #welcome#, sitename = #sitename#,
 		contact = #contact#, executable = #executable#, menuleft = #menuleft#,
-		currentname = #currentname#</update>
+		currentname = #currentname#</update> -->
 	<insert id="addAuthgroup" parameterClass="jw.bznetwork.client.data.model.Authgroup">
 		insert into authgroups values (#name#,#role#)</insert>
 	<delete id="deleteAuthgroup" parameterClass="java.lang.String">
@@ -218,6 +184,6 @@
 	<select id="getUserByUsername" parameterClass="java.lang.String"
 		resultClass="jw.bznetwork.client.data.model.User"> select * from users
 		where username = #value#</select>
-	<select id="getConfiguration" resultClass="jw.bznetwork.client.data.model.Configuration">
-		select * from configuration</select>
+<!--	<select id="getConfiguration" resultClass="jw.bznetwork.client.data.model.Configuration">
+		select * from configuration</select> -->
 </sqlMap>
