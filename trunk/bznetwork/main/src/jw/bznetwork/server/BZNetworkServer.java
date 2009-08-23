@@ -50,6 +50,7 @@ import jw.bznetwork.client.data.model.Permission;
 import jw.bznetwork.client.data.model.Role;
 import jw.bznetwork.client.data.model.Server;
 import jw.bznetwork.client.screens.LogsScreen;
+import jw.bznetwork.server.SettingsManager.Settings;
 import jw.bznetwork.server.data.DataStore;
 import jw.bznetwork.server.live.LiveServer;
 import jw.bznetwork.server.live.ReadThread;
@@ -828,8 +829,7 @@ public class BZNetworkServer implements ServletContextListener,
              * We now have the groupdb file, the banfile, and the world file.
              * Now we can actually start the server.
              */
-            Configuration config = DataStore.getConfiguration();
-            String executable = config.getExecutable();
+            String executable = Settings.executable.getString();
             Process process;
             ArrayList<String> args = new ArrayList<String>();
             args.add(executable);
@@ -1232,7 +1232,8 @@ public class BZNetworkServer implements ServletContextListener,
                     return "";
                 }
                 return "#" + event.getSourceid() + "&#160;<span class='lvtp-"
-                        + event.getSourceteam() + "' title='Team: " + event.getSourceteam() + "'>"
+                        + event.getSourceteam() + "' title='Team: "
+                        + event.getSourceteam() + "'>"
                         + StringEscapeUtils.escapeHtml(callsign) + "</span>";
             }
         },
@@ -1252,7 +1253,8 @@ public class BZNetworkServer implements ServletContextListener,
                     return "";
                 }
                 return "#" + event.getTargetid() + "&#160;<span class='lvtp-"
-                        + event.getTargetteam() + "' title='Team: " + event.getTargetteam() + "'>"
+                        + event.getTargetteam() + "' title='Team: "
+                        + event.getTargetteam() + "'>"
                         + StringEscapeUtils.escapeHtml(callsign) + "</span>";
             }
         },

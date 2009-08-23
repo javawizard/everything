@@ -6,6 +6,13 @@
 
 	<!-- !ADDTOSQL -->
 
+    <select id="getConfigSetting" 
+         parameterClass="java.lang.String" 
+         resultClass="jw.bznetwork.client.data.model.ConfigSetting" >
+        select * from configsettings
+        where name = #name#
+    </select>
+
     <update id="updateConfigSetting" 
          parameterClass="jw.bznetwork.client.data.model.ConfigSetting" >
         update configsettings

@@ -7,6 +7,7 @@ import jw.bznetwork.client.data.model.ActionRequest;
 import jw.bznetwork.client.data.model.Authgroup;
 import jw.bznetwork.client.data.model.Banfile;
 import jw.bznetwork.client.data.model.Callsign;
+import jw.bznetwork.client.data.model.ConfigSetting;
 import jw.bznetwork.client.data.model.Configuration;
 import jw.bznetwork.client.data.model.Group;
 import jw.bznetwork.client.data.model.LogEvent;
@@ -57,18 +58,101 @@ public class DataStore
     }
     
     // !ADDTOSQL
-
-public static synchronized void updateConfigSetting(ConfigSetting v){try{getGdbClient().update("updateConfigSetting",v);}catch(Exception e){throw new RuntimeException("Exception in database statement updateConfigSetting",e);}}
-
-public static synchronized void addConfigSetting(ConfigSetting v){try{getGdbClient().insert("addConfigSetting",v);}catch(Exception e){throw new RuntimeException("Exception in database statement addConfigSetting",e);}}
-
-public static synchronized void deleteConfigSetting(ConfigSetting v){try{getGdbClient().delete("deleteConfigSetting",v);}catch(Exception e){throw new RuntimeException("Exception in database statement deleteConfigSetting",e);}}
-
-public static synchronized String[] listConfigSettingNames(){try{return (String[]) getGdbClient().queryForList("listConfigSettingNames").toArray(new String[0]);}catch(Exception e){throw new RuntimeException("Exception in database statement listConfigSettingNames",e);}}
-
-public static synchronized ConfigSetting[] listConfigSettings(){try{return (ConfigSetting[]) getGdbClient().queryForList("listConfigSettings").toArray(new ConfigSetting[0]);}catch(Exception e){throw new RuntimeException("Exception in database statement listConfigSettings",e);}}
-
-public static synchronized String getConfigSettingValue(String v){try{return (String) getGdbClient().queryForObject("getConfigSettingValue",v);}catch(Exception e){throw new RuntimeException("Exception in database statement getConfigSettingValue",e);}}
+    
+    public static synchronized ConfigSetting getConfigSetting(String v)
+    {
+        try
+        {
+            return (ConfigSetting) getGdbClient().queryForObject(
+                    "getConfigSetting", v);
+        }
+        catch (Exception e)
+        {
+            throw new RuntimeException(
+                    "Exception in database statement getConfigSetting", e);
+        }
+    }
+    
+    public static synchronized void updateConfigSetting(ConfigSetting v)
+    {
+        try
+        {
+            getGdbClient().update("updateConfigSetting", v);
+        }
+        catch (Exception e)
+        {
+            throw new RuntimeException(
+                    "Exception in database statement updateConfigSetting", e);
+        }
+    }
+    
+    public static synchronized void addConfigSetting(ConfigSetting v)
+    {
+        try
+        {
+            getGdbClient().insert("addConfigSetting", v);
+        }
+        catch (Exception e)
+        {
+            throw new RuntimeException(
+                    "Exception in database statement addConfigSetting", e);
+        }
+    }
+    
+    public static synchronized void deleteConfigSetting(ConfigSetting v)
+    {
+        try
+        {
+            getGdbClient().delete("deleteConfigSetting", v);
+        }
+        catch (Exception e)
+        {
+            throw new RuntimeException(
+                    "Exception in database statement deleteConfigSetting", e);
+        }
+    }
+    
+    public static synchronized String[] listConfigSettingNames()
+    {
+        try
+        {
+            return (String[]) getGdbClient().queryForList(
+                    "listConfigSettingNames").toArray(new String[0]);
+        }
+        catch (Exception e)
+        {
+            throw new RuntimeException(
+                    "Exception in database statement listConfigSettingNames", e);
+        }
+    }
+    
+    public static synchronized ConfigSetting[] listConfigSettings()
+    {
+        try
+        {
+            return (ConfigSetting[]) getGdbClient().queryForList(
+                    "listConfigSettings").toArray(new ConfigSetting[0]);
+        }
+        catch (Exception e)
+        {
+            throw new RuntimeException(
+                    "Exception in database statement listConfigSettings", e);
+        }
+    }
+    
+    public static synchronized String getConfigSettingValue(String v)
+    {
+        try
+        {
+            return (String) getGdbClient().queryForObject(
+                    "getConfigSettingValue", v);
+        }
+        catch (Exception e)
+        {
+            throw new RuntimeException(
+                    "Exception in database statement getConfigSettingValue", e);
+        }
+    }
     
     public static synchronized LogEvent[] searchLogs(LogRequest v)
     {
