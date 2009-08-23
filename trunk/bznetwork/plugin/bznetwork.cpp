@@ -223,6 +223,19 @@ class BZNetworkEventHandler: public bz_EventHandler,
 				output += event->message.c_str();
 				bzn_outputData(output);
 			}
+			else if (eventData->eventType == bz_eServerMsgEvent)
+			{
+				bz_ServerMsgEventData* event =
+						(bz_ServerMsgEventData*) eventData;
+				std::string output;
+				output += "chatmessage +server|";
+				output += intToString(event->to);
+				output += "|";
+				output += colorDefToName(event->team);
+				output += "|";
+				output += event->message.c_str();
+				bzn_outputData(output);
+			}
 			else if (eventData->eventType == bz_eMessageFilteredEvent)
 			{
 				bz_MessageFilteredEventData* event =
@@ -309,6 +322,7 @@ BZF_PLUGIN_CALL int bz_Load(const char* commandLine)
 	bz_registerEvent(bz_ePlayerJoinEvent, &singleEventHandler);
 	bz_registerEvent(bz_ePlayerPartEvent, &singleEventHandler);
 	bz_registerEvent(bz_eChatMessageEvent, &singleEventHandler);
+	bz_registerEvent(bz_eServerMsgEvent, &singleEventHandler);
 	bz_registerEvent(bz_eMessageFilteredEvent, &singleEventHandler);
 	bz_registerEvent(bz_eKillEvent, &singleEventHandler);
 	bz_registerEvent(bz_eBanEvent, &singleEventHandler);
@@ -360,6 +374,7 @@ int bz_Unload(void)
 	bz_removeEvent(bz_ePlayerJoinEvent, &singleEventHandler);
 	bz_removeEvent(bz_ePlayerPartEvent, &singleEventHandler);
 	bz_removeEvent(bz_eChatMessageEvent, &singleEventHandler);
+	bz_removeEvent(bz_eServerMsgEvent, &singleEventHandler);
 	bz_removeEvent(bz_eMessageFilteredEvent, &singleEventHandler);
 	bz_removeEvent(bz_eKillEvent, &singleEventHandler);
 	bz_removeEvent(bz_eBanEvent, &singleEventHandler);
