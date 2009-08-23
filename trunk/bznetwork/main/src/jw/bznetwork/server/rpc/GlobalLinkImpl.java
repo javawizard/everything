@@ -1021,8 +1021,11 @@ public class GlobalLinkImpl extends RemoteServiceServlet implements GlobalLink
                 servers.add(s.getServerid());
             }
         }
+        AuthUser user = (AuthUser) RequestTrackerFilter.getCurrentRequest()
+                .getSession().getAttribute("user");
+        String username = user.getUsername();
         /*
-         * First, we need to filter the servers to thsoe that the user has the
+         * First, we need to filter the servers to those that the user has the
          * say permission on.
          */
         ArrayList<Integer> okServers = new ArrayList<Integer>();
@@ -1046,7 +1049,8 @@ public class GlobalLinkImpl extends RemoteServiceServlet implements GlobalLink
                 continue;
             try
             {
-                server.sayToFromPlayer("+server", "+all", message);
+                server.sayToFromPlayer("+server", "+all", username + ": "
+                        + message);
                 saidToServer = true;
             }
             catch (Exception e)
