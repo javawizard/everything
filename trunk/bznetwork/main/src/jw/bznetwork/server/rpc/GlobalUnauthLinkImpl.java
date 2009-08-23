@@ -3,6 +3,7 @@ package jw.bznetwork.server.rpc;
 import javax.servlet.http.HttpSession;
 
 import jw.bznetwork.client.AuthProvider;
+import jw.bznetwork.client.Settings;
 import jw.bznetwork.client.data.AuthUser;
 import jw.bznetwork.client.data.model.Configuration;
 import jw.bznetwork.client.data.model.User;
@@ -33,15 +34,19 @@ public class GlobalUnauthLinkImpl extends RemoteServiceServlet implements
     {
         if (!BZNetworkServer.isInstalled())
             return null;
-        Configuration allConfig = DataStore.getConfiguration();
         Configuration publicConfig = new Configuration();
-        publicConfig.setSitename(allConfig.getSitename());
+        publicConfig
+                .setString(Settings.sitename, Settings.sitename.getString());
         if (getThisUser() != null)
         {
-            publicConfig.setContact(allConfig.getContact());
-            publicConfig.setWelcome(allConfig.getWelcome());
-            publicConfig.setMenuleft(allConfig.isMenuleft());
-            publicConfig.setCurrentname(allConfig.isCurrentname());
+            publicConfig.setString(Settings.contact, Settings.contact
+                    .getString());
+            publicConfig.setString(Settings.welcome, Settings.welcome
+                    .getString());
+            publicConfig.setBoolean(Settings.menuleft, Settings.menuleft
+                    .getBoolean());
+            publicConfig.setBoolean(Settings.currentname, Settings.currentname
+                    .getBoolean());
         }
         return publicConfig;
     }

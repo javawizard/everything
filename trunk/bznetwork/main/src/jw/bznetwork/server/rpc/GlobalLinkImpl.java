@@ -22,6 +22,7 @@ import org.apache.commons.lang.StringEscapeUtils;
 import net.sf.opengroove.common.utils.StringUtils;
 
 import jw.bznetwork.client.Perms;
+import jw.bznetwork.client.Settings;
 import jw.bznetwork.client.ShowMessageException;
 import jw.bznetwork.client.Verify;
 import jw.bznetwork.client.data.ActionLogModel;
@@ -410,7 +411,7 @@ public class GlobalLinkImpl extends RemoteServiceServlet implements GlobalLink
     {
         Verify.global("edit-configuration");
         EditConfigurationModel model = new EditConfigurationModel();
-        model.setConfiguration(DataStore.getConfiguration());
+        model.setConfiguration(Configuration.loadFromDatabase());
         model.setEcDisabled(getEcDisableFile().exists());
         model.setEcDisableFile(getEcDisableFile().getAbsolutePath());
         return model;
@@ -421,25 +422,26 @@ public class GlobalLinkImpl extends RemoteServiceServlet implements GlobalLink
     {
         Verify.global("edit-configuration");
         boolean ecDisabled = getEcDisableFile().exists();
-        Configuration oldConfig = DataStore.getConfiguration();
-        if (ecDisabled)
+        Configuration oldConfig = Configuration.loadFromDatabase();
+        for (Settings s : config.getSettings().keySet())
         {
-            /*
-             * If we're not allowed to change the executable, then set it to
-             * what it currently is in the db
-             */
-            config.setExecutable(oldConfig.getExecutable());
+            String value = config.getSettings().get(s);
+            if (ecDisabled)
+            {
+                if (s == Settings.executable)
+                {
+                    continue;
+                }
+            }
+            s.setString(value);
         }
-        DataStore.updateConfiguration(config);
         String details = "";
-        if (!config.getContact().equals(oldConfig.getContact()))
-            details += "Contact: " + config.getContact() + "\n";
-        if (!config.getExecutable().equals(oldConfig.getExecutable()))
-            details += "Executable: " + config.getExecutable() + "\n";
-        if (!config.getSitename().equals(oldConfig.getSitename()))
-            details += "Site name: " + config.getSitename() + "\n";
-        if (!config.getWelcome().equals(oldConfig.getWelcome()))
-            details += "Welcome: " + config.getWelcome() + "\n";
+        for (Settings s : Settings.values())
+        {
+            if (!config.getSettings().get(s).equals(
+                    oldConfig.getSettings().get(s)))
+                details += s.name() + ": " + config.getSettings().get(s) + "\n";
+        }
         if (details.endsWith("\n"))
             details = details.substring(0, details.length() - 1);
         if (details.equals(""))

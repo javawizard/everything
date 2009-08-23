@@ -156,7 +156,7 @@ public class BZNetwork implements EntryPoint
      */
     private void init1()
     {
-        Window.setTitle(publicConfiguration.getSitename());
+        Window.setTitle(publicConfiguration.getString(Settings.sitename));
         unauthLink.getThisUser(new AsyncCallback<AuthUser>()
         {
             
@@ -214,24 +214,25 @@ public class BZNetwork implements EntryPoint
             defaultScreenList.add(new SessionsScreen());
         defaultScreenList.add(new HelpScreen());
         defaultScreens = defaultScreenList.toArray(new Screen[0]);
-        mainScreen = new MainScreen(publicConfiguration.getSitename(),
-                publicConfiguration.isCurrentname(), publicConfiguration
-                        .isMenuleft(), new String[]
+        mainScreen = new MainScreen(publicConfiguration
+                .getString(Settings.sitename), publicConfiguration
+                .getBoolean(Settings.currentname), publicConfiguration
+                .getBoolean(Settings.menuleft), new String[]
+        {
+            "Log out"
+        }, new ClickListener[]
+        {
+            new ClickListener()
+            {
+                
+                @Override
+                public void onClick(Widget sender)
                 {
-                    "Log out"
-                }, new ClickListener[]
-                {
-                    new ClickListener()
-                    {
-                        
-                        @Override
-                        public void onClick(Widget sender)
-                        {
-                            showLoadingBox();
-                            Window.Location.assign(CONTEXT_URL + "/logout.jsp");
-                        }
-                    }
-                }, defaultScreens);
+                    showLoadingBox();
+                    Window.Location.assign(CONTEXT_URL + "/logout.jsp");
+                }
+            }
+        }, defaultScreens);
         mainScreen.selectScreen("welcome");
         mainScreen.setWidth("100%");
         rootPanel.add(mainScreen);
@@ -285,7 +286,8 @@ public class BZNetwork implements EntryPoint
         VerticalPanel panel = new VerticalPanel();
         panel.setHorizontalAlignment(panel.ALIGN_CENTER);
         panel.add(new HTML("<span style='font-size:20px'><b>"
-                + publicConfiguration.getSitename() + "</b></span>"));
+                + publicConfiguration.getString(Settings.sitename)
+                + "</b></span>"));
         panel.add(new HorizontalRule("100%"));
         panel
                 .add(new HTML(
@@ -294,7 +296,7 @@ public class BZNetwork implements EntryPoint
         for (final AuthProvider p : providers)
         {
             Button b = new Button(p.getText().replace("{site-name}",
-                    publicConfiguration.getSitename()));
+                    publicConfiguration.getString(Settings.sitename)));
             b.setStylePrimaryName("bznetwork-None");
             b.setWidth("250px");
             b.addClickListener(new ClickListener()
@@ -353,7 +355,8 @@ public class BZNetwork implements EntryPoint
         VerticalPanel panel = new VerticalPanel();
         panel.setHorizontalAlignment(panel.ALIGN_CENTER);
         panel.add(new HTML("<span style='font-size:20px'><b>"
-                + publicConfiguration.getSitename() + "</b></span>"));
+                + publicConfiguration.getString(Settings.sitename)
+                + "</b></span>"));
         panel.add(new HorizontalRule("100%"));
         panel
                 .add(new HTML(
@@ -364,7 +367,8 @@ public class BZNetwork implements EntryPoint
         final PasswordTextBox passwordField = new PasswordTextBox();
         usernameField.setVisibleLength(17);
         passwordField.setVisibleLength(17);
-        usernameField.setTitle("Type your " + publicConfiguration.getSitename()
+        usernameField.setTitle("Type your "
+                + publicConfiguration.getString(Settings.sitename)
                 + " username here.");
         passwordField.setTitle("Type your password here.");
         table.setHTML(0, 0, "Username:");

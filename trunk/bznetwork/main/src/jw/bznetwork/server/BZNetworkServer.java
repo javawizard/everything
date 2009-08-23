@@ -38,6 +38,7 @@ import org.apache.commons.lang.StringEscapeUtils;
 import jw.bznetwork.client.AuthProvider;
 import jw.bznetwork.client.ClientPermissionsProvider;
 import jw.bznetwork.client.Perms;
+import jw.bznetwork.client.Settings;
 import jw.bznetwork.client.data.AuthUser;
 import jw.bznetwork.client.data.CheckPermission;
 import jw.bznetwork.client.data.model.Action;
@@ -50,7 +51,6 @@ import jw.bznetwork.client.data.model.Permission;
 import jw.bznetwork.client.data.model.Role;
 import jw.bznetwork.client.data.model.Server;
 import jw.bznetwork.client.screens.LogsScreen;
-import jw.bznetwork.server.SettingsManager.Settings;
 import jw.bznetwork.server.data.DataStore;
 import jw.bznetwork.server.live.LiveServer;
 import jw.bznetwork.server.live.ReadThread;
@@ -314,6 +314,10 @@ public class BZNetworkServer implements ServletContextListener,
     
     public void contextInitialized(ServletContextEvent sce)
     {
+        for (Settings s : Settings.values())
+        {
+            s.setAdapter(SettingsManager.singleton);
+        }
         context = sce.getServletContext();
         load();
     }

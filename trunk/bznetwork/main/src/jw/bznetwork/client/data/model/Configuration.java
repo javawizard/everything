@@ -1,74 +1,60 @@
 package jw.bznetwork.client.data.model;
 
 import java.io.Serializable;
+import java.util.HashMap;
+
+import jw.bznetwork.client.Settings;
 
 public class Configuration implements Serializable
 {
-    private String welcome;
-    private String sitename;
-    private String contact;
-    private boolean menuleft;
-    private boolean currentname;
-    
-    public boolean isMenuleft()
+    public Configuration()
     {
-        return menuleft;
-    }
-
-    public void setMenuleft(boolean menuleft)
-    {
-        this.menuleft = menuleft;
-    }
-
-    public boolean isCurrentname()
-    {
-        return currentname;
-    }
-
-    public void setCurrentname(boolean currentname)
-    {
-        this.currentname = currentname;
-    }
-
-    public String getWelcome()
-    {
-        return welcome;
     }
     
-    public void setWelcome(String welcome)
+    private HashMap<Settings, String> settings = new HashMap<Settings, String>();
+    
+    public static Configuration loadFromDatabase()
     {
-        this.welcome = welcome;
+        Configuration config = new Configuration();
+        for (Settings s : Settings.values())
+        {
+            config.getSettings().put(s, s.getString());
+        }
+        return config;
     }
     
-    public String getSitename()
+    public HashMap<Settings, String> getSettings()
     {
-        return sitename;
+        return settings;
     }
     
-    public void setSitename(String sitename)
+    public String getString(Settings name)
     {
-        this.sitename = sitename;
+        return (String) settings.get(name);
     }
     
-    public String getContact()
+    public Integer getInteger(Settings name)
     {
-        return contact;
+        return Integer.parseInt(settings.get(name));
     }
     
-    public void setContact(String contact)
+    public Boolean getBoolean(Settings name)
     {
-        this.contact = contact;
+        return Boolean.parseBoolean(settings.get(name));
     }
     
-    public String getExecutable()
+    public void setString(Settings name, String value)
     {
-        return executable;
+        settings.put(name, value);
     }
     
-    public void setExecutable(String executable)
+    public void setInteger(Settings name, Integer value)
     {
-        this.executable = executable;
+        settings.put(name, "" + value);
     }
     
-    private String executable;
+    public void setBoolean(Settings name, Boolean value)
+    {
+        settings.put(name, "" + value);
+    }
 }

@@ -3,6 +3,7 @@ package jw.bznetwork.client.screens;
 import jw.bznetwork.client.BZNetwork;
 import jw.bznetwork.client.BoxCallback;
 import jw.bznetwork.client.Screen;
+import jw.bznetwork.client.Settings;
 import jw.bznetwork.client.data.EditConfigurationModel;
 import jw.bznetwork.client.data.model.Configuration;
 import jw.bznetwork.client.rt.RichTextToolbar;
@@ -119,21 +120,21 @@ public class ConfigurationScreen implements Screen
         siteNameBox
                 .setTitle("This is the name of your site. It appears in various "
                         + "locations, such as at the top of this page.");
-        siteNameBox.setText(config.getSitename());
+        siteNameBox.setText(config.getString(Settings.sitename));
         table.setWidget(0, 1, siteNameBox);
         final TextBox contactBox = new TextBox();
         contactBox
                 .setTitle("This is some information that users of your site can "
                         + "use to get in touch with you. It can be an email address, "
                         + "a nickname, an IRC channel, or whatever you want it to be.");
-        contactBox.setText(config.getContact());
+        contactBox.setText(config.getString(Settings.contact));
         table.setWidget(1, 1, contactBox);
         final TextBox executableBox = new TextBox();
         executableBox
                 .setTitle("The Executable field is the executable that "
                         + "should be run to start bzfs. Normally this is exactly that: \"bzfs\". "
                         + "This can contain command arguments as well.");
-        executableBox.setText(config.getExecutable());
+        executableBox.setText(config.getString(Settings.executable));
         if (result.isEcDisabled())
             executableBox.setReadOnly(true);
         HorizontalPanel executablePanel = new HorizontalPanel();
@@ -145,13 +146,13 @@ public class ConfigurationScreen implements Screen
                 .setTitle("If this is checked, the list of pages shows up to the left. If "
                         + "this is not checked, the list of pages can be accessed in a dropdown "
                         + "menu by clicking on the Menu link in the upper-right corner.");
-        menuLeftCheckbox.setChecked(config.isMenuleft());
+        menuLeftCheckbox.setChecked(config.getBoolean(Settings.menuleft));
         table.setWidget(3, 1, menuLeftCheckbox);
         final SimpleCheckBox currentNameCheckbox = new SimpleCheckBox();
         currentNameCheckbox
                 .setTitle("If this is checked, the name of the current page will "
                         + "be shown at the top of the page, next to the site name.");
-        currentNameCheckbox.setChecked(config.isCurrentname());
+        currentNameCheckbox.setChecked(config.getBoolean(Settings.currentname));
         table.setWidget(4, 1, currentNameCheckbox);
         final TextArea welcomeField = new TextArea();
         welcomeField
@@ -159,7 +160,7 @@ public class ConfigurationScreen implements Screen
                         + "logs into your site. This can contain HTML. Right now, you can't "
                         + "have links to other pages (such as the servers page or the roles page) "
                         + "in this field, but I'm planning on adding that in the future.");
-        welcomeField.setText(config.getWelcome());
+        welcomeField.setText(config.getString(Settings.welcome));
         welcomeField.setCharacterWidth(65);
         welcomeField.setVisibleLines(7);
         table.setWidget(5, 1, welcomeField);
@@ -211,12 +212,14 @@ public class ConfigurationScreen implements Screen
                     Window.alert("The site has to have an executable. Use "
                             + "\"bzfs\" if you're unsure what to put here.");
                 }
-                config.setContact(contactBox.getText());
-                config.setCurrentname(currentNameCheckbox.isChecked());
-                config.setExecutable(executableBox.getText());
-                config.setMenuleft(menuLeftCheckbox.isChecked());
-                config.setSitename(siteNameBox.getText());
-                config.setWelcome(welcomeField.getText());
+                config.setString(Settings.contact, contactBox.getText());
+                config.setBoolean(Settings.currentname, currentNameCheckbox
+                        .isChecked());
+                config.setString(Settings.executable, executableBox.getText());
+                config.setBoolean(Settings.menuleft, menuLeftCheckbox
+                        .isChecked());
+                config.setString(Settings.sitename, siteNameBox.getText());
+                config.setString(Settings.welcome, welcomeField.getText());
                 BZNetwork.authLink.updateConfiguration(config,
                         new BoxCallback<Void>()
                         {
@@ -246,7 +249,7 @@ public class ConfigurationScreen implements Screen
                         public void run(Void result2)
                         {
                             executableBox.setText(result.getConfiguration()
-                                    .getExecutable());
+                                    .getString(Settings.executable));
                             executableBox.setReadOnly(true);
                             disableEcButton.setVisible(false);
                             ecInfoLabel.setHTML(ecDisabledInfoString);
