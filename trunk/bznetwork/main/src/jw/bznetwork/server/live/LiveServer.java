@@ -10,6 +10,7 @@ import java.util.Queue;
 
 import jw.bznetwork.client.live.LivePlayer;
 import jw.bznetwork.client.live.LivePlayer.GameType;
+import jw.bznetwork.client.live.LivePlayer.TeamType;
 import jw.bznetwork.server.BZNetworkServer;
 
 /**
@@ -249,6 +250,6 @@ public class LiveServer
         send("saytofromplayer " + from + "|" + to + "|" + message);
         if (readThread != null)
             readThread.processChatMessage("" + SERVER + "|" + ALL + "|"
-                    + message);
+                    + TeamType.noteam.name() + "|" + message);
     }
 }
