@@ -236,7 +236,8 @@ class BZNetworkEventHandler: public bz_EventHandler,
 				output += colorDefToName(event->team);
 				output += "|";
 				output += event->message.c_str();
-				bzn_outputData(output);
+				//commented out because server logs are a bit excessive right now.
+				//bzn_outputData(output);
 			}
 			else if (eventData->eventType == bz_eMessageFilteredEvent)
 			{
