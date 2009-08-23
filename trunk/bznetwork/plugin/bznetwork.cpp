@@ -228,7 +228,9 @@ class BZNetworkEventHandler: public bz_EventHandler,
 				bz_ServerMsgEventData* event =
 						(bz_ServerMsgEventData*) eventData;
 				std::string output;
-				output += "chatmessage +server|";
+				output += "chatmessage ";
+				output += intToString(BZ_SERVER);
+				output += "|";
 				output += intToString(event->to);
 				output += "|";
 				output += colorDefToName(event->team);
