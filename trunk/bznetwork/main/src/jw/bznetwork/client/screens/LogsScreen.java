@@ -63,7 +63,6 @@ public class LogsScreen extends VerticalScreen
                 @Override
                 public void run(Void result)
                 {
-                    Window.alert("The message has been sent.");
                     doPerformSearch();
                 }
             });
