@@ -243,10 +243,9 @@ public class LiveServer
     {
         this.gameType = gameType;
     }
-
-    public void sayToFromPlayer(String string, String string2, String message)
+    
+    public void sayToFromPlayer(String from, String to, String message)
     {
-        // TODO Auto-generated method stub
-        
+        send("saytofromplayer " + from + "|" + to + "|" + message);
     }
 }
