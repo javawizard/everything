@@ -73,6 +73,11 @@ create table configuration (
     menuleft    boolean,       -- See the menuLeft parameter to the MainScreen constructor
     currentname boolean        -- See the headerScreenName parameter to the MainScreen constructor
 );
+-- Holds general server configuration.
+create table configsettings (
+    name   varchar(128),  -- The name of this particular setting
+    value  varchar(8192)  -- This particular setting's value
+);
 -- Holds settings about the server. I'm thinking I'll merge the configuration table into this one.
 create table settings (
     name    varchar(64),   -- The name of this configuration setting
