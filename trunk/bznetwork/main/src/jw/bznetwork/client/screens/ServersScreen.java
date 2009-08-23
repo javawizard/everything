@@ -452,7 +452,9 @@ public class ServersScreen extends VerticalScreen
                 filterSettings.getServers().clear();
                 for (ServerModel server : group.getServers())
                 {
-                    filterSettings.getServers().add(server.getServerid());
+                    if (Perms.server("view-logs", server.getServerid(), group
+                            .getGroupid()))
+                        filterSettings.getServers().add(server.getServerid());
                 }
                 logsScreen.preserveSettingsOnce = true;
                 logsScreen.settings = filterSettings;

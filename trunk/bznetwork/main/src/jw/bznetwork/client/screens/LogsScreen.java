@@ -14,12 +14,15 @@ import com.google.gwt.http.client.Response;
 import com.google.gwt.http.client.URL;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.Button;
+import com.google.gwt.user.client.ui.CheckBox;
 import com.google.gwt.user.client.ui.FlexTable;
 import com.google.gwt.user.client.ui.HTML;
 import com.google.gwt.user.client.ui.HorizontalPanel;
 import com.google.gwt.user.client.ui.Label;
+import com.google.gwt.user.client.ui.ListBox;
 import com.google.gwt.user.client.ui.PopupPanel;
 import com.google.gwt.user.client.ui.SimplePanel;
+import com.google.gwt.user.client.ui.TextBox;
 import com.google.gwt.user.client.ui.Widget;
 
 import jw.bznetwork.client.BZNetwork;
@@ -30,6 +33,7 @@ import jw.bznetwork.client.data.LogsFilterSettings;
 import jw.bznetwork.client.ui.HorizontalRule;
 import jw.bznetwork.client.ui.LogsFilterWidget;
 import jw.bznetwork.client.ui.ServerResponseWidget;
+import jw.bznetwork.client.ui.VerticalBar;
 
 public class LogsScreen extends VerticalScreen
 {
@@ -58,12 +62,21 @@ public class LogsScreen extends VerticalScreen
     
     public LogsFilterSettings settings;
     
-    private LogsFilterWidget filterWidget;
-    
-    private Button lowerSearchButton;
     private FlexTable lowerPanelWrapper;
     private HorizontalPanel lowerPanel;
-    
+    private LogsFilterWidget filterWidget;
+    /*
+     * Start of lower panel widgets
+     */
+    private Button lowerSearchButton;
+    private TextBox lowerSayField;
+    private Button lowerSayButton;
+    private ListBox lowerAutoRefreshBox;
+    private CheckBox lowerScrollDownBox;
+    /*
+     * End of lower panel widgets
+     */
+
     private LogSearchModel searchModel;
     private SimplePanel resultsWrapper = new SimplePanel();
     private JavaScriptObject xmlHttpRequest;
@@ -90,6 +103,37 @@ public class LogsScreen extends VerticalScreen
     @Override
     public void init()
     {
+        /*
+         * Load the lower panel
+         */
+        lowerPanelWrapper = new FlexTable();
+        lowerPanelWrapper.setWidth("100%");
+        lowerPanel = new HorizontalPanel();
+        lowerPanelWrapper.setWidget(0, 0, lowerPanel);
+        lowerPanelWrapper.getFlexCellFormatter().setHorizontalAlignment(0, 0,
+                HorizontalPanel.ALIGN_RIGHT);
+        /*
+         * Say box
+         */
+        lowerSayField = new TextBox();
+        lowerSayField.setVisibleLength(30);
+        lowerPanel.add(lowerSayField);
+        /*
+         * Say button
+         */
+        lowerSayButton = new Button("Say");
+        lowerPanel.add(lowerSayButton);
+        lowerPanel.add(new VerticalBar());
+        
+        /*
+         * Auto refresh box
+         */
+        lowerAutoRefreshBox = buildAutoRefreshBox();
+        lowerPanel.add(lowerAutoRefreshBox);
+        lowerPanel.add(new VerticalBar());
+        /*
+         * Lower search button
+         */
         lowerSearchButton = new Button("Search");
         lowerSearchButton.addClickHandler(new ClickHandler()
         {
@@ -100,13 +144,22 @@ public class LogsScreen extends VerticalScreen
                 doPerformSearch();
             }
         });
-        lowerPanelWrapper = new FlexTable();
-        lowerPanelWrapper.setWidth("100%");
-        lowerPanel = new HorizontalPanel();
-        lowerPanelWrapper.setWidget(0, 0, lowerPanel);
-        lowerPanelWrapper.getFlexCellFormatter().setHorizontalAlignment(0, 0,
-                HorizontalPanel.ALIGN_RIGHT);
         lowerPanel.add(lowerSearchButton);
+    }
+    
+    private ListBox buildAutoRefreshBox()
+    {
+        ListBox box = new ListBox();
+        box.setTitle("Select an interval to refresh that often. For example, "
+                + "selecting \"30 seconds\" will cause the logs to be "
+                + "automatically reloaded every 30 seconds.");
+        box.addItem("No refresh", "");
+        box.addItem("15 seconds", "15");
+        box.addItem("30 seconds", "30");
+        box.addItem("1 minutes", "60");
+        box.addItem("2 minutes", "120");
+        box.addItem("5 minutes", "300");
+        return box;
     }
     
     @Override
