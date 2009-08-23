@@ -298,7 +298,7 @@ public class ReadThread extends Thread
                 + "logged until it is reloaded or the server is restarted.");
     }
     
-    private void processChatMessage(String substring)
+    void processChatMessage(String substring)
     {
         String[] tokens = substring.split("\\|", 4);
         int fromId = Integer.parseInt(tokens[0]);

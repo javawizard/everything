@@ -247,5 +247,8 @@ public class LiveServer
     public void sayToFromPlayer(String from, String to, String message)
     {
         send("saytofromplayer " + from + "|" + to + "|" + message);
+        if (readThread != null)
+            readThread.processChatMessage("" + SERVER + "|" + ALL + "|"
+                    + message);
     }
 }
