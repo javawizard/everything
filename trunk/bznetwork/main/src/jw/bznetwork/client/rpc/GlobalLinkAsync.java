@@ -1,5 +1,7 @@
 package jw.bznetwork.client.rpc;
 
+import java.util.ArrayList;
+
 import java.util.HashMap;
 
 import java.util.Properties;
@@ -144,5 +146,7 @@ public void getActionLogModel(String event, String provider, String user, int of
 public void clearActionLog(String provider, String user, AsyncCallback<Void> callback);
 
 public void getLogSearchModel(AsyncCallback<LogSearchModel> callback);
+
+public void say(ArrayList<Integer> servers, String message, AsyncCallback<Void> callback);
 
 }

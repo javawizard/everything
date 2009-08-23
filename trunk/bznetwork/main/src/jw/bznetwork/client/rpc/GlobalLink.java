@@ -1,5 +1,6 @@
 package jw.bznetwork.client.rpc;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Properties;
 
@@ -129,5 +130,6 @@ public interface GlobalLink extends RemoteService
     
     public LogSearchModel getLogSearchModel();
     
-    public void say(int[] servers, String message);
+    public void say(ArrayList<Integer> servers, String message)
+            throws ShowMessageException;
 }

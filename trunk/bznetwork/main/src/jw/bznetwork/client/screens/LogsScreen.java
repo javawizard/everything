@@ -37,6 +37,39 @@ import jw.bznetwork.client.ui.VerticalBar;
 
 public class LogsScreen extends VerticalScreen
 {
+    public class SayClickHandler implements ClickHandler
+    {
+        
+        @Override
+        public void onClick(ClickEvent event)
+        {
+            if (lowerSayField.getText().trim().equals(""))
+            {
+                Window.alert("You need to type some text to say first");
+                return;
+            }
+            if (settings.getServers().size() != 1)
+            {
+                if (!Window
+                        .confirm("You're searching on more than one server. The "
+                                + "message will be sent to all of the servers you "
+                                + "are searching on. Continue?"))
+                    return;
+            }
+            BZNetwork.authLink.say(settings.getServers(), lowerSayField
+                    .getText(), new BoxCallback<Void>()
+            {
+                
+                @Override
+                public void run(Void result)
+                {
+                    Window.alert("The message has been sent.");
+                    doPerformSearch();
+                }
+            });
+        }
+    }
+    
     /**
      * Mirrored on BZNetworkServer.SEARCH_IN
      * 
@@ -123,6 +156,7 @@ public class LogsScreen extends VerticalScreen
          * Say button
          */
         lowerSayButton = new Button("Say");
+        lowerSayButton.addClickHandler(new SayClickHandler());
         lowerPanel.add(lowerSayButton);
         lowerPanel.add(new VerticalBar());
         

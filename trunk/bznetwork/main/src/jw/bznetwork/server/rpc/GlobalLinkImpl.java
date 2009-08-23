@@ -4,6 +4,7 @@ import java.awt.event.ActionEvent;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
@@ -651,7 +652,7 @@ public class GlobalLinkImpl extends RemoteServiceServlet implements GlobalLink
          * performance of this method.
          */
         StringBuffer buffer = new StringBuffer();
-        //use css rules sldt-teamtype (for ServerListDetailsTeam)
+        // use css rules sldt-teamtype (for ServerListDetailsTeam)
         return "";
     }
     
@@ -1006,5 +1007,55 @@ public class GlobalLinkImpl extends RemoteServiceServlet implements GlobalLink
         model.setServers(okServers.toArray(new Server[0]));
         model.setEvents(BZNetworkServer.LOG_EVENTS);
         return model;
+    }
+    
+    @Override
+    public void say(ArrayList<Integer> servers, String message)
+            throws ShowMessageException
+    {
+        if (servers.size() < 1)
+        {
+            Server[] serverArray = DataStore.listServers();
+            for (Server s : serverArray)
+            {
+                servers.add(s.getServerid());
+            }
+        }
+        /*
+         * First, we need to filter the servers to thsoe that the user has the
+         * say permission on.
+         */
+        ArrayList<Integer> okServers = new ArrayList<Integer>();
+        for (int s : servers)
+        {
+            if (Perms.server("say", s, getServerGroupId(s)))
+                okServers.add(s);
+        }
+        if (okServers.size() < 1)
+            throw new ShowMessageException(
+                    "None of the servers you're searching on have granted "
+                            + "you permission to say messages on them.");
+        /*
+         * Now we do the actual saying.
+         */
+        boolean saidToServer = false;
+        for (int s : servers)
+        {
+            LiveServer server = BZNetworkServer.getLiveServers().get(s);
+            if (server == null)
+                continue;
+            try
+            {
+                server.sayToFromPlayer("+server", "+all", message);
+                saidToServer = true;
+            }
+            catch (Exception e)
+            {
+                e.printStackTrace();
+            }
+        }
+        if (!saidToServer)
+            throw new ShowMessageException(
+                    "None of the servers you're searching on are running.");
     }
 }
