@@ -9,5 +9,7 @@ public class VerticalBar extends HTML
     public VerticalBar()
     {
         super("&nbsp;|&nbsp;");
+        setHeight("100%");
+        addStyleName("bznetwork-VerticalBar");
     }
 }

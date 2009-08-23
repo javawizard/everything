@@ -283,7 +283,7 @@
 }
 
 .lvtr-chat-admin {
-	background-color: #f37351
+	background-color: #f39551
 }
 
 .lvtr-chat-team {
@@ -309,7 +309,12 @@
 .bznetwork-LogViewerTable-header {
 	font-weight: bold
 }
-/*END styles for the log viewer table*/ /*
+
+/*END styles for the log viewer table*/
+.bznetwork-VerticalBar {
+	vertical-align: middle;
+}
+/*
 
 
 

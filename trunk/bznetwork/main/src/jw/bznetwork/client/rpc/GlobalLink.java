@@ -128,4 +128,6 @@ public interface GlobalLink extends RemoteService
     public void clearActionLog(String provider, String user);
     
     public LogSearchModel getLogSearchModel();
+    
+    public void say(int[] servers, String message);
 }
