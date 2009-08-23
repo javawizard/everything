@@ -6,6 +6,44 @@
 
 	<!-- !ADDTOSQL -->
 
+    <update id="updateConfigSetting" 
+         parameterClass="jw.bznetwork.client.data.model.ConfigSetting" >
+        update configsettings
+        set value = #value#
+        where name = #name#
+    </update>
+
+    <insert id="addConfigSetting" 
+         parameterClass="jw.bznetwork.client.data.model.ConfigSetting" >
+        insert into configsettings
+        (name,value)
+        values
+        (#name#,#value#)
+    </insert>
+
+    <delete id="deleteConfigSetting" 
+         parameterClass="jw.bznetwork.client.data.model.ConfigSetting" >
+        delete from configsettings where
+        name = #name#
+        and value = #value#
+    </delete>
+
+    <select id="listConfigSettingNames" 
+         resultClass="java.lang.String" >
+        select name from configsettings
+    </select>
+
+    <select id="listConfigSettings" 
+         resultClass="jw.bznetwork.client.data.model.ConfigSetting" >
+        select * from configsettings
+    </select>
+
+    <select id="getConfigSettingValue" 
+         parameterClass="java.lang.String" 
+         resultClass="java.lang.String" >
+        select value from configsettings where name = #value#
+    </select>
+
     <select id="searchLogs" 
          parameterClass="jw.bznetwork.client.data.model.LogRequest" 
          resultClass="jw.bznetwork.client.data.model.LogEvent" >
