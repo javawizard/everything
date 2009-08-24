@@ -8,6 +8,9 @@ import com.google.gwt.user.client.ui.Widget;
 import jw.bznetwork.client.BZNetwork;
 import jw.bznetwork.client.Screen;
 import jw.bznetwork.client.Settings;
+import jw.bznetwork.client.x.TextScripter;
+import jw.bznetwork.client.x.VXProvider;
+import jw.bznetwork.client.x.VXUser;
 
 /**
  * The welcome screen shows the default welcome message.
@@ -51,13 +54,14 @@ public class WelcomeScreen implements Screen
     @Override
     public void select()
     {
+        widget.clear();
+        widget.add(new HTML(TextScripter.run(BZNetwork.publicConfiguration
+                .getString(Settings.welcome), new VXProvider(), new VXUser())));
     }
     
     @Override
     public void init()
     {
-        widget.add(new HTML(BZNetwork.publicConfiguration
-                .getString(Settings.welcome)));
     }
     
 }

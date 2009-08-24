@@ -89,7 +89,8 @@ public class XInterpreter
         if (commands.get(command.getName().toLowerCase()) != null)
             throw new XException(
                     "The BZNetwork version of XInterpreter does not allow "
-                            + "command re-assignment for security reasons.");
+                            + "command re-assignment for security reasons. Re-assignment of "
+                            + command.getName());
         commands.put(command.getName().toLowerCase(), command);
     }
     

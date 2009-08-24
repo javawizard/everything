@@ -83,6 +83,13 @@ public class TextScripter
         command = null;
         interpreter.executeChildren(rootElement, null);
         /*
+         * Now we remove the commands we installed.
+         */
+        for (XCommand c : commands)
+        {
+            interpreter.remove(c.getName().toLowerCase());
+        }
+        /*
          * Now we build and return the output.
          */
         String output = currentBuffer.toString();
@@ -107,6 +114,7 @@ public class TextScripter
                     currentBuffer.append(" ");
             }
         });
+        
     }
     
     private static String escapeXml(String input)
