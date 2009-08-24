@@ -4,7 +4,6 @@ import java.util.HashMap;
 
 import jw.bznetwork.client.x.lang.i.*;
 
-
 public class XInterpreter
 {
     private HashMap<String, XCommand> commands = new HashMap<String, XCommand>();
@@ -81,21 +80,30 @@ public class XInterpreter
             if (display != null)
             {
                 display.print("XInterpreter warning: null command for class "
-                    + command.getClass().getName()
-                    + ". The interpreter will continue, but "
-                    + "without support for this command.", true);
+                        + command.getClass().getName()
+                        + ". The interpreter will continue, but "
+                        + "without support for this command.", true);
             }
             return;
         }
+        if (commands.get(command.getName().toLowerCase()) != null)
+            throw new XException(
+                    "The BZNetwork version of XInterpreter does not allow "
+                            + "command re-assignment for security reasons.");
         commands.put(command.getName().toLowerCase(), command);
+    }
+    
+    public void remove(String commandName)
+    {
+        commands.remove(commandName);
     }
     
     public XData execute(XElement element, XInterpreterContext context)
     {
         if (element == null)
             throw new XException("Trying to run a null element. This usually "
-                + "means a command was expecting "
-                + "more tags as input than you gave to it.");
+                    + "means a command was expecting "
+                    + "more tags as input than you gave to it.");
         instructionCount += 1;
         if ((instructionCount % 10) == 0)
             validateInstructionCount();
@@ -111,9 +119,9 @@ public class XInterpreter
             catch (ClassCastException e)
             {
                 throw new XException(
-                    "Cast error. This usually means you tried to pass "
-                        + "some data of the wrong type to a function. "
-                        + "Java exception message: " + e.getMessage());
+                        "Cast error. This usually means you tried to pass "
+                                + "some data of the wrong type to a function. "
+                                + "Java exception message: " + e.getMessage());
             }
         }
         catch (XException e)
@@ -131,7 +139,7 @@ public class XInterpreter
     }
     
     public void executeChildren(XElement element, XInterpreterContext context,
-        int startIndex)
+            int startIndex)
     {
         if (context == null)
             context = new XInterpreterContext(this, true);
