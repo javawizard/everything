@@ -3,6 +3,7 @@ package jw.bznetwork.client.screens;
 import jw.bznetwork.client.BZNetwork;
 import jw.bznetwork.client.BoxCallback;
 import jw.bznetwork.client.Screen;
+import jw.bznetwork.client.SettingType;
 import jw.bznetwork.client.Settings;
 import jw.bznetwork.client.data.EditConfigurationModel;
 import jw.bznetwork.client.data.model.Configuration;
@@ -24,6 +25,7 @@ import com.google.gwt.user.client.ui.TextArea;
 import com.google.gwt.user.client.ui.TextBox;
 import com.google.gwt.user.client.ui.VerticalPanel;
 import com.google.gwt.user.client.ui.Widget;
+import com.google.gwt.user.client.ui.FlexTable.FlexCellFormatter;
 
 @SuppressWarnings("deprecation")
 public class ConfigurationScreen implements Screen
@@ -89,82 +91,66 @@ public class ConfigurationScreen implements Screen
      * panel.setWidget(0, 0, toolbar); panel.setWidget(1, 0, textArea);
      * textArea.setWidth("100%");
      */
-
+    // textareas are 65x7
     protected void select1(final EditConfigurationModel result)
     {
-        String ecEnabledInfoString = "The <b>Executable</b> field is the executable that "
-                + "should be run to start bzfs. Normally this is exactly that: &quot;bzfs&quot;. "
-                + "This can contain command arguments as well. Since allowing this to be edited "
-                + "via the web poses a security risk (imagine someone changing this to &quot;"
-                + "rm -rf /*&quot;), you can disable it by clicking <b>Disable Changes</b>. This "
-                + "will create a file called <tt>"
-                + result.getEcDisableFile()
-                + "</tt>. You "
-                + "will have to manually delete that file to re-enable changes.";
-        final String ecDisabledInfoString = "Changes to the <b>Executable</b> field are currently "
-                + "disabled. To re-enable them, manually delete the file <tt>"
-                + result.getEcDisableFile() + "</tt> on your server.";
         final Configuration config = result.getConfiguration();
         widget.clear();
         widget.add(new Header2("Configuration"));
         FlexTable table = new FlexTable();
-        table.setText(0, 0, "Site name: ");
-        table.setText(1, 0, "Contact: ");
-        table.setText(2, 0, "Executable: ");
-        table.setText(3, 0, "Show menu to the left: ");
-        table.setText(4, 0, "Show current page name in header: ");
-        table.setText(5, 0, "Welcome message: ");
-        table.getFlexCellFormatter().setVerticalAlignment(5, 0,
-                VerticalPanel.ALIGN_TOP);
-        final TextBox siteNameBox = new TextBox();
-        siteNameBox
-                .setTitle("This is the name of your site. It appears in various "
-                        + "locations, such as at the top of this page.");
-        siteNameBox.setText(config.getString(Settings.sitename));
-        table.setWidget(0, 1, siteNameBox);
-        final TextBox contactBox = new TextBox();
-        contactBox
-                .setTitle("This is some information that users of your site can "
-                        + "use to get in touch with you. It can be an email address, "
-                        + "a nickname, an IRC channel, or whatever you want it to be.");
-        contactBox.setText(config.getString(Settings.contact));
-        table.setWidget(1, 1, contactBox);
-        final TextBox executableBox = new TextBox();
-        executableBox
-                .setTitle("The Executable field is the executable that "
-                        + "should be run to start bzfs. Normally this is exactly that: \"bzfs\". "
-                        + "This can contain command arguments as well.");
-        executableBox.setText(config.getString(Settings.executable));
-        if (result.isEcDisabled())
-            executableBox.setReadOnly(true);
-        HorizontalPanel executablePanel = new HorizontalPanel();
-        executablePanel.add(executableBox);
-        executablePanel.add(new Spacer("5px", "5px"));
-        table.setWidget(2, 1, executablePanel);
-        final SimpleCheckBox menuLeftCheckbox = new SimpleCheckBox();
-        menuLeftCheckbox
-                .setTitle("If this is checked, the list of pages shows up to the left. If "
-                        + "this is not checked, the list of pages can be accessed in a dropdown "
-                        + "menu by clicking on the Menu link in the upper-right corner.");
-        menuLeftCheckbox.setChecked(config.getBoolean(Settings.menuleft));
-        table.setWidget(3, 1, menuLeftCheckbox);
-        final SimpleCheckBox currentNameCheckbox = new SimpleCheckBox();
-        currentNameCheckbox
-                .setTitle("If this is checked, the name of the current page will "
-                        + "be shown at the top of the page, next to the site name.");
-        currentNameCheckbox.setChecked(config.getBoolean(Settings.currentname));
-        table.setWidget(4, 1, currentNameCheckbox);
-        final TextArea welcomeField = new TextArea();
-        welcomeField
-                .setTitle("This is the text that shows up when the user initially "
-                        + "logs into your site. This can contain HTML. Right now, you can't "
-                        + "have links to other pages (such as the servers page or the roles page) "
-                        + "in this field, but I'm planning on adding that in the future.");
-        welcomeField.setText(config.getString(Settings.welcome));
-        welcomeField.setCharacterWidth(65);
-        welcomeField.setVisibleLines(7);
-        table.setWidget(5, 1, welcomeField);
-        table.getFlexCellFormatter().setColSpan(5, 1, 2);
+        FlexCellFormatter format = table.getFlexCellFormatter();
+        Object[] fields = new Object[Settings.values().length];
+        boolean usedExecGroup = false;
+        boolean isMidExec = false;
+        int startExecRow = -1;
+        int execRowCount = 0;
+        int row = 0;
+        for (Settings setting : Settings.values())
+        {
+            if (setting.getType() == SettingType.sensitive && usedExecGroup)
+                throw new RuntimeException(
+                        "All sensitive settings must be next to each other, but "
+                                + setting.name() + " isn't.");
+            if (isMidExec && setting.getType() != SettingType.sensitive)
+            {
+                isMidExec = false;
+                usedExecGroup = true;
+                format.setRowSpan(startExecRow, 2, execRowCount);
+            }
+            table.setWidget(row, 0, new Label(setting.getLabel()));
+            format.setVerticalAlignment(row, 0, HorizontalPanel.ALIGN_TOP);
+            BZNetwork.setCellTitle(table, row, 0, setting.getDesc());
+            if (setting.getType() == SettingType.sensitive)
+            {
+                
+            }
+            else if (setting.getType() == SettingType.area)
+            {
+                TextArea field = new TextArea();
+                field.setVisibleLines(7);
+                field.setCharacterWidth(65);
+                table.setWidget(row, 1, field);
+                format.setColSpan(row, 1, 2);
+                fields[row] = field;
+                field.setText(config.getString(setting));
+            }
+            else if (setting.getType() == SettingType.checkbox)
+            {
+                SimpleCheckBox field = new SimpleCheckBox();
+                table.setWidget(row, 1, field);
+                fields[row] = field;
+                field.setChecked(config.getBoolean(setting));
+            }
+            else if (setting.getType() == SettingType.text)
+            {
+                TextBox field = new TextBox();
+                table.setWidget(row, 1, field);
+                fields[row] = field;
+                field.setText(config.getString(setting));
+            }
+            BZNetwork.setCellTitle(table, row, 1, setting.getDesc());
+            row += 1;
+        }
         Button saveButton = new Button("Save");
         saveButton
                 .setTitle("Once you've made your changes, click this button to save them. "

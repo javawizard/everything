@@ -3,6 +3,17 @@
  */
 package jw.bznetwork.client;
 
+/**
+ * All of the settings that show up on the configuration page.<br/><br/>
+ * 
+ * Settings must appear in a specific order in order for everything to work.
+ * Specifically, all settings with a type of {@link SettingType#sensitive} must
+ * appear together (IE they must all be next to each other), and there must be
+ * at least one setting after them.
+ * 
+ * @author Alexander Boyd
+ * 
+ */
 public enum Settings
 {
     sitename(SettingType.text, "Site name",
@@ -23,7 +34,9 @@ public enum Settings
             "Startup trigger",
             "This command will be run after any given server has "
                     + "started up. The first argument will be the server's id and the second "
-                    + "argument will be the server's port.", ""), menuleft(
+                    + "argument will be the server's port. This command will not be terminated "
+                    + "when a server shuts down, even if the server is killed.",
+            ""), menuleft(
             SettingType.checkbox,
             "Show menu to the left",
             "If this is checked, the list of pages shows up to the left. If "
@@ -43,6 +56,16 @@ public enum Settings
                     + "your server. Head on over to the Configuration page to change "
                     + "this message. Then check out the Getting Started link on the "
                     + "Help page to get started.");
+    public String getLabel()
+    {
+        return label;
+    }
+    
+    public String getDesc()
+    {
+        return desc;
+    }
+    
     private String def;
     private SettingsManagerAdapter adapter;
     private SettingType type;
