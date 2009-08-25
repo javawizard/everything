@@ -1,2 +1,1 @@
-#labels bznetwork
 This page has moved to [FrequentlyAskedQuestions].
