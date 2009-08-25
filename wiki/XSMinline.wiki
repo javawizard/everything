@@ -1,7 +1,7 @@
 #labels Help
 XSM-inline is a slight variant of [http://code.google.com/p/opengroove/wiki/XSM XSM] used in various places within BZNetwork as a sand-boxed scripting language. It allows for easy embedding of XSM code within other text, where the XSM code can dynamically contribute to that text.
 
-Within text that supports XSM-inline, such as the Welcome page (you can edit its contents on the Configuration page in BZNetwork), you can include pairs of the text "[xsm]". Between matching pairs should be XSM code, and everywhere else is literal text. The XSM code can use the `<print>` command to include dynamic text in the output.
+Within text that supports XSM-inline, such as the Welcome page (you can edit its contents on the Configuration page in BZNetwork), you can include pairs of the text "`[`xsm`]`". Between matching pairs should be XSM code, and everywhere else is literal text. The XSM code can use the `<print>` command to include dynamic text in the output.
 
 For example, If you set BZNetwork's welcome message to be:
 {{{
