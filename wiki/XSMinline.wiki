@@ -5,7 +5,7 @@ Within text that supports XSM-inline, such as the Welcome page (you can edit its
 
 For example, If you set BZNetwork's welcome message to be:
 {{{
-Hey&nbsp; [xsm]<print newline="false"><user/></print>[xsm]. Welcome to the BZTraining administration site
+Hey&amp;nbsp; [xsm]<print newline="false"><user/></print>[xsm]. Welcome to the BZTraining administration site
 }}}
 and the user logged in with the username or callsign "javawizard2539", then the welcome page would show:
 {{{
