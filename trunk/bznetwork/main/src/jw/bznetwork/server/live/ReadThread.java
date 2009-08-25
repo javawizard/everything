@@ -310,10 +310,13 @@ public class ReadThread extends Thread
         {
             String command = Settings.startuptrigger.getString();
             Server serverObject = DataStore.getServerById(server.getId());
-            Runtime.getRuntime().exec(new String[]
-            {
-                    command, "" + server.getId(), "" + serverObject.getPort()
-            });
+            if (!command.trim().equals(""))
+                Runtime.getRuntime().exec(
+                        new String[]
+                        {
+                                command, "" + server.getId(),
+                                "" + serverObject.getPort()
+                        });
         }
         catch (Exception e)
         {
