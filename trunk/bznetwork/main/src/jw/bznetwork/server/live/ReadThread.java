@@ -4,6 +4,7 @@ import java.io.BufferedInputStream;
 import java.io.DataInputStream;
 import java.io.InputStream;
 
+import jw.bznetwork.client.Settings;
 import jw.bznetwork.client.data.model.LogEvent;
 import jw.bznetwork.client.data.model.Server;
 import jw.bznetwork.client.live.LivePlayer;
@@ -300,6 +301,26 @@ public class ReadThread extends Thread
             server.getLoadListenerQueue().offer("bznload");
         server.setChangingState(false);
         server.setStarting(false);
+        runStartupTrigger();
+    }
+    
+    private void runStartupTrigger()
+    {
+        try
+        {
+            String command = Settings.startuptrigger.getString();
+            Server serverObject = DataStore.getServerById(server.getId());
+            Runtime.getRuntime().exec(new String[]
+            {
+                    command, "" + server.getId(), "" + serverObject.getPort()
+            });
+        }
+        catch (Exception e)
+        {
+            e.printStackTrace();
+            logStatus("Startup trigger threw an exception: "
+                    + e.getClass().getName() + ": " + e.getMessage());
+        }
     }
     
     private void processBznUnload()

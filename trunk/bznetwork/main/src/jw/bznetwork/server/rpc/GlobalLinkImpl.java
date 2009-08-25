@@ -22,6 +22,7 @@ import org.apache.commons.lang.StringEscapeUtils;
 import net.sf.opengroove.common.utils.StringUtils;
 
 import jw.bznetwork.client.Perms;
+import jw.bznetwork.client.SettingType;
 import jw.bznetwork.client.Settings;
 import jw.bznetwork.client.ShowMessageException;
 import jw.bznetwork.client.Verify;
@@ -428,7 +429,7 @@ public class GlobalLinkImpl extends RemoteServiceServlet implements GlobalLink
             String value = config.getSettings().get(s);
             if (ecDisabled)
             {
-                if (s == Settings.executable)
+                if (s.getType() == SettingType.sensitive)
                 {
                     continue;
                 }

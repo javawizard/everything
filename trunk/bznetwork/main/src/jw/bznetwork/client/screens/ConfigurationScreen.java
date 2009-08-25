@@ -96,11 +96,11 @@ public class ConfigurationScreen implements Screen
     // textareas are 65x7
     protected void select1(final EditConfigurationModel result)
     {
-        String ecDisabledInfoString = "You can disable changes to some of the fields by clicking"
+        String ecEnabledInfoString = "You can disable changes to some of the fields by clicking"
                 + " <b>Disable Changes</b>. To re-enable changes, you "
                 + "will have to delete the file <tt>"
                 + result.getEcDisableFile() + "</tt> on your server.";
-        String ecEnabledInfoString = "Changes to some of the fields are disabled. To re-enable "
+        String ecDisabledInfoString = "Changes to some of the fields are disabled. To re-enable "
                 + "them, manually delete the file <tt>"
                 + result.getEcDisableFile() + "</tt> on the server.";
         final Configuration config = result.getConfiguration();
@@ -147,21 +147,22 @@ public class ConfigurationScreen implements Screen
                 {
                     startExecRow = row;
                     execRowCount = 1;
-                    HorizontalPanel disablePanel = new HorizontalPanel();
+                    FlexTable disablePanel = new FlexTable();
+                    FlexCellFormatter disableFormat = disablePanel
+                            .getFlexCellFormatter();
                     disablePanel.setHeight("100%");
                     table.setWidget(row, 2, disablePanel);
-                    disablePanel
-                            .setVerticalAlignment(disablePanel.ALIGN_MIDDLE);
-                    disablePanel.setSpacing(3);
-                    disablePanel.add(new LeftToRightGroup());
+                    format.setHeight(row, 2, "100%");
+                    disablePanel.setWidget(0, 0, new LeftToRightGroup("100%"));
+                    disableFormat.setHeight(0, 0, "100%");
                     if (result.isEcDisabled())
                     {
-                        disablePanel.add(new Label(
+                        disablePanel.setWidget(0, 1, new Label(
                                 "Changes to these fields are disabled"));
                     }
                     else
                     {
-                        disablePanel.add(disableEcButton);
+                        disablePanel.setWidget(0, 1, disableEcButton);
                     }
                 }
                 else
