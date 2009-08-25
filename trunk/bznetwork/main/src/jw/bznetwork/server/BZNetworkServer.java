@@ -838,10 +838,21 @@ public class BZNetworkServer implements ServletContextListener,
             args.add(executable);
             args.add("-p");
             args.add("" + server.getPort());
-            if (server.isListed())
+            if (server.isListed() || Settings.hiddenglobal.getBoolean())
             {
                 args.add("-public");
                 args.add(server.getName());
+                String publicHost = Settings.publichostname.getString();
+                if (!publicHost.trim().equals(""))
+                {
+                    args.add("-publicaddr");
+                    args.add(publicHost + ":" + server.getPort());
+                }
+            }
+            if (Settings.hiddenglobal.getBoolean() && !server.isListed())
+            {
+                args.add("-advertise");
+                args.add("NONE");
             }
             args.add("-world");
             args.add(mapFile.getAbsolutePath());

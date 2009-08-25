@@ -36,7 +36,12 @@ public enum Settings
                     + "started up. The first argument will be the server's id and the second "
                     + "argument will be the server's port. This command will not be terminated "
                     + "when a server shuts down, even if the server is killed.",
-            ""), menuleft(
+            ""), publichostname(
+            SettingType.text,
+            "Public hostname",
+            "This is the hostname that will be used in the -publicaddr switch "
+                    + "added to each server. Leave this blank if you don't want BZNetwork"
+                    + " to automatically add -publicaddr to your servers.", ""), menuleft(
             SettingType.checkbox,
             "Show menu to the left",
             "If this is checked, the list of pages shows up to the left. If "
@@ -47,7 +52,13 @@ public enum Settings
             "Show current page name in header",
             "If this is checked, the name of the current page will "
                     + "be shown at the top of the page, next to the site name.",
-            "" + false), welcome(
+            "" + false), hiddenglobal(
+            SettingType.checkbox,
+            "Global auth on non-public servers",
+            "If this is checked, then servers that are not public will still use the "
+                    + "-public switch along with -advertise NONE so that the server can still use "
+                    + "global auth. If this is not checked, servers that are not public "
+                    + "will not use the -public switch at all.", "true"), welcome(
             SettingType.area,
             "Welcome message",
             "This is the text that shows up when the user initially "
