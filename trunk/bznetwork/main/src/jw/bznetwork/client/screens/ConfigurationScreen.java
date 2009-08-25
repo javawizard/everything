@@ -145,6 +145,8 @@ public class ConfigurationScreen implements Screen
                  */
                 if (isFirst)
                 {
+                    startExecRow = row;
+                    execRowCount = 1;
                     HorizontalPanel disablePanel = new HorizontalPanel();
                     disablePanel.setHeight("100%");
                     table.setWidget(row, 2, disablePanel);
@@ -161,6 +163,10 @@ public class ConfigurationScreen implements Screen
                     {
                         disablePanel.add(disableEcButton);
                     }
+                }
+                else
+                {
+                    execRowCount += 1;
                 }
             }
             else if (setting.getType() == SettingType.area)
@@ -196,7 +202,7 @@ public class ConfigurationScreen implements Screen
                         + "Note that disabling changes to the executable field gets saved "
                         + "immediately, so you don't need to click this button if all "
                         + "you did was disable changes to the executable field.");
-        table.setWidget(6, 1, saveButton);
+        table.setWidget(row++, 1, saveButton);
         disableEcButton
                 .setTitle("Since allowing the executable to be edited from the web "
                         + "poses a security risk, you can click this button to disable changes. "

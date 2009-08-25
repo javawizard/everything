@@ -17,7 +17,7 @@ public class LeftToRightGroup extends HTML
                 "<table cellspacing=\"0\" cellpadding=\"0\" border=\"0\" style=\"height: 100%;\">\n"
                         + "                <tbody>\n"
                         + "                    <tr>\n"
-                        + "                        <td style=\"border-style: solid solid solid none; border-color: black black black -moz-use-text-color; border-width: 1px; width: 8px;\"> </td>\n"
+                        + "                        <td style=\"border: 1px solid black; border-left: 1px none; width: 8px;\">&nbsp;</td>\n"
                         + "                        <td valign=\"middle\">\n"
                         + "                        <table width=\"12\" height=\"100%\" cellspacing=\"0\" cellpadding=\"0\" border=\"0\">\n"
                         + "                            <tbody>\n"
