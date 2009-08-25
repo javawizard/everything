@@ -9,6 +9,7 @@ import jw.bznetwork.client.data.EditConfigurationModel;
 import jw.bznetwork.client.data.model.Configuration;
 import jw.bznetwork.client.rt.RichTextToolbar;
 import jw.bznetwork.client.ui.Header2;
+import jw.bznetwork.client.ui.LeftToRightGroup;
 import jw.bznetwork.client.ui.Spacer;
 
 import com.google.gwt.user.client.Window;
@@ -23,6 +24,7 @@ import com.google.gwt.user.client.ui.RichTextArea;
 import com.google.gwt.user.client.ui.SimpleCheckBox;
 import com.google.gwt.user.client.ui.TextArea;
 import com.google.gwt.user.client.ui.TextBox;
+import com.google.gwt.user.client.ui.TextBoxBase;
 import com.google.gwt.user.client.ui.VerticalPanel;
 import com.google.gwt.user.client.ui.Widget;
 import com.google.gwt.user.client.ui.FlexTable.FlexCellFormatter;
@@ -94,12 +96,20 @@ public class ConfigurationScreen implements Screen
     // textareas are 65x7
     protected void select1(final EditConfigurationModel result)
     {
+        String ecDisabledInfoString = "You can disable changes to some of the fields by clicking"
+                + " <b>Disable Changes</b>. To re-enable changes, you "
+                + "will have to delete the file <tt>"
+                + result.getEcDisableFile() + "</tt> on your server.";
+        String ecEnabledInfoString = "Changes to some of the fields are disabled. To re-enable "
+                + "them, manually delete the file <tt>"
+                + result.getEcDisableFile() + "</tt> on the server.";
         final Configuration config = result.getConfiguration();
         widget.clear();
         widget.add(new Header2("Configuration"));
         FlexTable table = new FlexTable();
         FlexCellFormatter format = table.getFlexCellFormatter();
-        Object[] fields = new Object[Settings.values().length];
+        final Object[] fields = new Object[Settings.values().length];
+        final Button disableEcButton = new Button("Disable Changes");
         boolean usedExecGroup = false;
         boolean isMidExec = false;
         int startExecRow = -1;
@@ -122,7 +132,36 @@ public class ConfigurationScreen implements Screen
             BZNetwork.setCellTitle(table, row, 0, setting.getDesc());
             if (setting.getType() == SettingType.sensitive)
             {
-                
+                boolean isFirst = !isMidExec;
+                isMidExec = true;
+                TextBox field = new TextBox();
+                field.setEnabled(!result.isEcDisabled());
+                table.setWidget(row, 1, field);
+                format.setWidth(row, 1, "1px");
+                fields[row] = field;
+                field.setText(config.getString(setting));
+                /*
+                 * Now we need to add either the button or the disabled label.
+                 */
+                if (isFirst)
+                {
+                    HorizontalPanel disablePanel = new HorizontalPanel();
+                    disablePanel.setHeight("100%");
+                    table.setWidget(row, 2, disablePanel);
+                    disablePanel
+                            .setVerticalAlignment(disablePanel.ALIGN_MIDDLE);
+                    disablePanel.setSpacing(3);
+                    disablePanel.add(new LeftToRightGroup());
+                    if (result.isEcDisabled())
+                    {
+                        disablePanel.add(new Label(
+                                "Changes to these fields are disabled"));
+                    }
+                    else
+                    {
+                        disablePanel.add(disableEcButton);
+                    }
+                }
             }
             else if (setting.getType() == SettingType.area)
             {
@@ -158,13 +197,11 @@ public class ConfigurationScreen implements Screen
                         + "immediately, so you don't need to click this button if all "
                         + "you did was disable changes to the executable field.");
         table.setWidget(6, 1, saveButton);
-        final Button disableEcButton = new Button("Disable Changes");
         disableEcButton
                 .setTitle("Since allowing the executable to be edited from the web "
                         + "poses a security risk, you can click this button to disable changes. "
                         + "See the message below the configuration settings for more information "
                         + "on what this button does.");
-        executablePanel.add(disableEcButton);
         widget.add(table);
         widget.add(new Spacer("8px", "8px"));
         final HTML ecInfoLabel = new HTML();
@@ -180,32 +217,35 @@ public class ConfigurationScreen implements Screen
             @Override
             public void onClick(Widget sender)
             {
-                if (siteNameBox.getText().trim().equals(""))
-                {
-                    Window.alert("The site has to have a name.");
-                    return;
-                }
-                if (contactBox.getText().trim().equals(""))
-                {
-                    Window
-                            .alert("The site has to have a contact. If you "
-                                    + "don't want to give any contact information,"
-                                    + " use something like \"No contact information\".");
-                }
+                TextBox executableBox = (TextBox) fields[Settings.executable
+                        .ordinal()];
                 if (executableBox.getText().trim().equals("")
                         && !result.isEcDisabled())
                 {
                     Window.alert("The site has to have an executable. Use "
                             + "\"bzfs\" if you're unsure what to put here.");
+                    return;
                 }
-                config.setString(Settings.contact, contactBox.getText());
-                config.setBoolean(Settings.currentname, currentNameCheckbox
-                        .isChecked());
-                config.setString(Settings.executable, executableBox.getText());
-                config.setBoolean(Settings.menuleft, menuLeftCheckbox
-                        .isChecked());
-                config.setString(Settings.sitename, siteNameBox.getText());
-                config.setString(Settings.welcome, welcomeField.getText());
+                for (Settings setting : Settings.values())
+                {
+                    Object field = fields[setting.ordinal()];
+                    if (field instanceof SimpleCheckBox)
+                    {
+                        config.setBoolean(setting, ((SimpleCheckBox) field)
+                                .isChecked());
+                    }
+                    else if (field instanceof TextBoxBase)
+                    {
+                        config.setString(setting, ((TextBoxBase) field)
+                                .getText());
+                    }
+                    else
+                    {
+                        throw new RuntimeException("Invalid field type for "
+                                + setting.name() + ": "
+                                + field.getClass().getName());
+                    }
+                }
                 BZNetwork.authLink.updateConfiguration(config,
                         new BoxCallback<Void>()
                         {
@@ -226,7 +266,9 @@ public class ConfigurationScreen implements Screen
             public void onClick(Widget sender)
             {
                 if (Window
-                        .confirm("Are you sure you want to disable changes to the executable?"))
+                        .confirm("Are you sure you want to disable changes to these "
+                                + "fields? You should save your changes to all fields "
+                                + "before you do this."))
                 {
                     BZNetwork.authLink.disableEc(new BoxCallback<Void>()
                     {
@@ -234,11 +276,7 @@ public class ConfigurationScreen implements Screen
                         @Override
                         public void run(Void result2)
                         {
-                            executableBox.setText(result.getConfiguration()
-                                    .getString(Settings.executable));
-                            executableBox.setReadOnly(true);
-                            disableEcButton.setVisible(false);
-                            ecInfoLabel.setHTML(ecDisabledInfoString);
+                            select();
                         }
                     });
                 }
