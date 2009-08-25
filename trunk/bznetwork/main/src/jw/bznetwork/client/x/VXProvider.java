@@ -14,7 +14,7 @@ public class VXProvider implements XCommand
     @Override
     public String getName()
     {
-        return "user";
+        return "provider";
     }
     
     @Override

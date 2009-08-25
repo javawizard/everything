@@ -145,7 +145,14 @@ public class ReadThread extends Thread
         event.setServerid(server.getId());
         event.setEvent("stdout");
         event.setData(outString);
-        DataStore.addLogEvent(event);
+        try
+        {
+            DataStore.addLogEvent(event);
+        }
+        catch (Exception e)
+        {
+            e.printStackTrace();
+        }
     }
     
     public synchronized void logStatus(String outString)
@@ -154,7 +161,14 @@ public class ReadThread extends Thread
         event.setServerid(server.getId());
         event.setEvent("status");
         event.setData(outString);
-        DataStore.addLogEvent(event);
+        try
+        {
+            DataStore.addLogEvent(event);
+        }
+        catch (Exception e)
+        {
+            e.printStackTrace();
+        }
     }
     
     private void processData(byte[] dataBytes)

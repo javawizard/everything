@@ -38,9 +38,7 @@ public enum Settings
             SettingType.area,
             "Welcome message",
             "This is the text that shows up when the user initially "
-                    + "logs into your site. This can contain HTML. Right now, you can't "
-                    + "have links to other pages (such as the servers page or the roles page) "
-                    + "in this field, but I'm planning on adding that in the future.",
+                    + "logs into your site. This can contain HTML and XSM-inline.",
             "Congratulations! You've successfully installed BZNetwork onto "
                     + "your server. Head on over to the Configuration page to change "
                     + "this message. Then check out the Getting Started link on the "
