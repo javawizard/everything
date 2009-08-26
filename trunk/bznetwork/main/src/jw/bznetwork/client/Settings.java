@@ -58,7 +58,14 @@ public enum Settings
             "If this is checked, then servers that are not public will still use the "
                     + "-public switch along with -advertise NONE so that the server can still use "
                     + "global auth. If this is not checked, servers that are not public "
-                    + "will not use the -public switch at all.", "true"), welcome(
+                    + "will not use the -public switch at all.", "true"), allteams(
+            SettingType.checkbox,
+            "Show team counts for restricted teams",
+            "If this is checked, then the Details column of the Servers "
+                    + "page will show a team count for teams that have a limit of "
+                    + "0 specified by the -mp switch to bzfs (IE players are not "
+                    + "allowed to join that team). If this is not checked, a team "
+                    + "count will not be shown for these teams.", "true"), welcome(
             SettingType.area,
             "Welcome message",
             "This is the text that shows up when the user initially "

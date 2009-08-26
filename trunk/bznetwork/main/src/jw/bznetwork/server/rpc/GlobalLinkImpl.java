@@ -531,6 +531,7 @@ public class GlobalLinkImpl extends RemoteServiceServlet implements GlobalLink
     @Override
     public ServerListModel getServerListModel()
     {
+        boolean allTeams = Settings.allteams.getBoolean();
         ServerListModel model = new ServerListModel();
         ArrayList<GroupModel> groupList = new ArrayList<GroupModel>();
         Group[] groups = DataStore.listGroups();
@@ -592,7 +593,7 @@ public class GlobalLinkImpl extends RemoteServiceServlet implements GlobalLink
                             new LivePlayer[0]));
                     
                 }
-                buildServerDetails(serverModel, liveServer);
+                buildServerDetails(serverModel, liveServer, allTeams);
                 serverList.add(serverModel);
             }
             groupModel.setServers(serverList.toArray(new ServerModel[0]));
@@ -603,7 +604,7 @@ public class GlobalLinkImpl extends RemoteServiceServlet implements GlobalLink
     }
     
     private void buildServerDetails(ServerModel serverModel,
-            LiveServer liveServer)
+            LiveServer liveServer, boolean allTeams)
     {
         if (liveServer == null)
             return;
@@ -668,10 +669,9 @@ public class GlobalLinkImpl extends RemoteServiceServlet implements GlobalLink
                     + counts.get(TeamType.rabbit).get();
             int observers = counts.get(TeamType.observer).get();
             details.append(buildServerPlayerCountString(TeamType.hunters,
-                    hunters, limits.get(TeamType.hunters)));
-            details.append(" ");
+                    hunters, limits.get(TeamType.hunters), allTeams));
             details.append(buildServerPlayerCountString(TeamType.observer,
-                    observers, limits.get(TeamType.observer)));
+                    observers, limits.get(TeamType.observer), allTeams));
         }
         else if (liveServer.getGameType() == GameType.FreeForAll
                 || liveServer.getGameType() == GameType.CaptureTheFlag)
@@ -683,22 +683,17 @@ public class GlobalLinkImpl extends RemoteServiceServlet implements GlobalLink
             int rogues = counts.get(TeamType.rogue).get();
             int observers = counts.get(TeamType.observer).get();
             details.append(buildServerPlayerCountString(TeamType.red, reds,
-                    limits.get(TeamType.red)));
-            details.append(" ");
+                    limits.get(TeamType.red), allTeams));
             details.append(buildServerPlayerCountString(TeamType.green, greens,
-                    limits.get(TeamType.green)));
-            details.append(" ");
+                    limits.get(TeamType.green), allTeams));
             details.append(buildServerPlayerCountString(TeamType.blue, blues,
-                    limits.get(TeamType.blue)));
-            details.append(" ");
+                    limits.get(TeamType.blue), allTeams));
             details.append(buildServerPlayerCountString(TeamType.purple,
-                    purples, limits.get(TeamType.purple)));
-            details.append(" ");
+                    purples, limits.get(TeamType.purple), allTeams));
             details.append(buildServerPlayerCountString(TeamType.rogue, rogues,
-                    limits.get(TeamType.rogue)));
-            details.append(" ");
+                    limits.get(TeamType.rogue), allTeams));
             details.append(buildServerPlayerCountString(TeamType.observer,
-                    observers, limits.get(TeamType.observer)));
+                    observers, limits.get(TeamType.observer), allTeams));
         }
         serverModel.setDetailString(details.toString());
     }
@@ -715,14 +710,32 @@ public class GlobalLinkImpl extends RemoteServiceServlet implements GlobalLink
      * @return
      */
     private String buildServerPlayerCountString(TeamType team, int current,
-            int total)
+            int total, boolean allTeams)
     {
         /*
-         * We use a StringBuffer instead of string concatentation to improve the
+         * We use a StringBuffer instead of string concatenation to improve the
          * performance of this method.
          */
         StringBuffer buffer = new StringBuffer();
-        
+        if (current == 0 && !allTeams)
+            return "";
+        if (current > 0)
+            buffer.append("<span style='font-weight: bold'>");
+        buffer.append("<span style='color:#");
+        buffer.append(team.light());
+        buffer.append("'>");
+        buffer.append(current);
+        buffer.append("</span><span style='color:#");
+        buffer.append(team.medium());
+        buffer.append("'>/</span><span style='color:#");
+        buffer.append(team.dark());
+        buffer.append("'>");
+        buffer.append(total);
+        buffer.append("</span>");
+        if (current > 0)
+            buffer.append("</span>");
+        buffer.append(" ");
+        return buffer.toString();
     }
     
     @Override
