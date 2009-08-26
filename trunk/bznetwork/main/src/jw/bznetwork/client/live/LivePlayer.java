@@ -32,7 +32,38 @@ public class LivePlayer implements Serializable
     
     public static enum TeamType
     {
-        red, green, blue, purple, observer, rogue, rabbit, hunters, admin, noteam
+        red("cc0000", "aa0000", "880000"), green("00cc00", "00aa00", "008800"), blue(
+                "0000cc", "0000aa", "000088"), purple("cc00cc", "aa00aa",
+                "880088"), observer("aaaaaa", "888888", "666666"), rogue(
+                "cccc00", "aaaa00", "888800"), rabbit(null, null, null), hunters(
+                "cc7700", "aa6600", "885500"), admin(null, null, null), noteam(
+                "000000", "000000", "000000");
+        private String light;
+        private String medium;
+        private String dark;
+        
+        private TeamType(String light, String medium, String dark)
+        {
+            this.light = light;
+            this.medium = medium;
+            this.dark = dark;
+        }
+        
+        public String light()
+        {
+            return light;
+        }
+        
+        public String medium()
+        {
+            return medium;
+        }
+        
+        public String dark()
+        {
+            return dark;
+        }
+        
     };
     
     public static enum GameType

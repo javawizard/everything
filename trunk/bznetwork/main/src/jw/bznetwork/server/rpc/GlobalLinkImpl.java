@@ -9,6 +9,7 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Properties;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import javax.servlet.ServletException;
 import javax.servlet.ServletRequest;
@@ -634,20 +635,86 @@ public class GlobalLinkImpl extends RemoteServiceServlet implements GlobalLink
          * blue, purple, rogue, and observer teams. In the future, there should
          * probably be some sort of configuration setting for whether or not
          * teams with a limit of 0 should be shown at all in the details column.
+         * 
+         * AtomicInteger is mutable, so we'll use it here.
          */
+        Map<TeamType, AtomicInteger> counts = new HashMap<TeamType, AtomicInteger>();
+        for (TeamType type : TeamType.values())
+        {
+            counts.put(type, new AtomicInteger(0));
+        }
+        for (LivePlayer player : new ArrayList<LivePlayer>(liveServer
+                .getPlayers()))
+        {
+            try
+            {
+                counts.get(player.getTeam()).incrementAndGet();
+            }
+            catch (Exception e)
+            {
+                /*
+                 * A NullPointerException can occur here if this player joins
+                 * right as we're doing this loop, but we'll just ignore it
+                 * since it's extremely rare for it to happen, and ignoring it
+                 * will just cause them not to be counted towards the total
+                 * number of players on their team.
+                 */
+                e.printStackTrace();
+            }
+        }
         if (liveServer.getGameType() == GameType.RabbitHunt)
         {
-            
+            int hunters = counts.get(TeamType.rogue).get()
+                    + counts.get(TeamType.rabbit).get();
+            int observers = counts.get(TeamType.observer).get();
+            details.append(buildServerPlayerCountString(TeamType.hunters,
+                    hunters, limits.get(TeamType.hunters)));
+            details.append(" ");
+            details.append(buildServerPlayerCountString(TeamType.observer,
+                    observers, limits.get(TeamType.observer)));
         }
         else if (liveServer.getGameType() == GameType.FreeForAll
                 || liveServer.getGameType() == GameType.CaptureTheFlag)
         {
-            
+            int reds = counts.get(TeamType.red).get();
+            int greens = counts.get(TeamType.green).get();
+            int blues = counts.get(TeamType.blue).get();
+            int purples = counts.get(TeamType.purple).get();
+            int rogues = counts.get(TeamType.rogue).get();
+            int observers = counts.get(TeamType.observer).get();
+            details.append(buildServerPlayerCountString(TeamType.red, reds,
+                    limits.get(TeamType.red)));
+            details.append(" ");
+            details.append(buildServerPlayerCountString(TeamType.green, greens,
+                    limits.get(TeamType.green)));
+            details.append(" ");
+            details.append(buildServerPlayerCountString(TeamType.blue, blues,
+                    limits.get(TeamType.blue)));
+            details.append(" ");
+            details.append(buildServerPlayerCountString(TeamType.purple,
+                    purples, limits.get(TeamType.purple)));
+            details.append(" ");
+            details.append(buildServerPlayerCountString(TeamType.rogue, rogues,
+                    limits.get(TeamType.rogue)));
+            details.append(" ");
+            details.append(buildServerPlayerCountString(TeamType.observer,
+                    observers, limits.get(TeamType.observer)));
         }
         serverModel.setDetailString(details.toString());
     }
     
-    private String buildServerPlayerCountString(String team, int current,
+    /**
+     * Builds a stylized string indicating the team counts specified.
+     * 
+     * @param team
+     *            The name of the team
+     * @param current
+     *            The number of people currently on the team
+     * @param total
+     *            The maximum number of people allowed on the team
+     * @return
+     */
+    private String buildServerPlayerCountString(TeamType team, int current,
             int total)
     {
         /*
@@ -655,8 +722,7 @@ public class GlobalLinkImpl extends RemoteServiceServlet implements GlobalLink
          * performance of this method.
          */
         StringBuffer buffer = new StringBuffer();
-        // use css rules sldt-teamtype (for ServerListDetailsTeam)
-        return "";
+        
     }
     
     @Override

@@ -464,6 +464,12 @@ public class BZNetwork implements EntryPoint
         usernameField.setFocus(true);
     }
     
+    /**
+     * This method is no longer used. It was used to mock up the servers page
+     * before I actually started working on BZNetwork at all, and I'm only
+     * keeping it around so that I can consult various portions of how it
+     * rendered the servers page mockup.
+     */
     @SuppressWarnings("deprecation")
     public static void start()
     {
