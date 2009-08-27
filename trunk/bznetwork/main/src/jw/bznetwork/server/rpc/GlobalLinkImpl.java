@@ -532,6 +532,7 @@ public class GlobalLinkImpl extends RemoteServiceServlet implements GlobalLink
     public ServerListModel getServerListModel()
     {
         boolean allTeams = Settings.allteams.getBoolean();
+        boolean autoExpand = Settings.expandservers.getBoolean();
         ServerListModel model = new ServerListModel();
         ArrayList<GroupModel> groupList = new ArrayList<GroupModel>();
         Group[] groups = DataStore.listGroups();
@@ -593,7 +594,7 @@ public class GlobalLinkImpl extends RemoteServiceServlet implements GlobalLink
                             new LivePlayer[0]));
                     
                 }
-                buildServerDetails(serverModel, liveServer, allTeams);
+                buildServerDetails(serverModel, liveServer, allTeams, autoExpand);
                 serverList.add(serverModel);
             }
             groupModel.setServers(serverList.toArray(new ServerModel[0]));
@@ -603,8 +604,15 @@ public class GlobalLinkImpl extends RemoteServiceServlet implements GlobalLink
         return model;
     }
     
+    /**
+     * Builds the details for the specified server.
+     * 
+     * @param serverModel
+     * @param liveServer
+     * @param allTeams
+     */
     private void buildServerDetails(ServerModel serverModel,
-            LiveServer liveServer, boolean allTeams)
+            LiveServer liveServer, boolean allTeams, boolean autoExpand)
     {
         if (liveServer == null)
             return;
@@ -640,6 +648,7 @@ public class GlobalLinkImpl extends RemoteServiceServlet implements GlobalLink
          * AtomicInteger is mutable, so we'll use it here.
          */
         Map<TeamType, AtomicInteger> counts = new HashMap<TeamType, AtomicInteger>();
+        int totalNonObservers = 0;
         for (TeamType type : TeamType.values())
         {
             counts.put(type, new AtomicInteger(0));
@@ -650,6 +659,8 @@ public class GlobalLinkImpl extends RemoteServiceServlet implements GlobalLink
             try
             {
                 counts.get(player.getTeam()).incrementAndGet();
+                if (player.getTeam() != TeamType.observer)
+                    totalNonObservers += 1;
             }
             catch (Exception e)
             {
@@ -663,6 +674,7 @@ public class GlobalLinkImpl extends RemoteServiceServlet implements GlobalLink
                 e.printStackTrace();
             }
         }
+        serverModel.setAutoExpand(totalNonObservers > 0 && autoExpand);
         if (liveServer.getGameType() == GameType.RabbitHunt)
         {
             int hunters = counts.get(TeamType.rogue).get()
@@ -717,10 +729,10 @@ public class GlobalLinkImpl extends RemoteServiceServlet implements GlobalLink
          * performance of this method.
          */
         StringBuffer buffer = new StringBuffer();
-        if (current == 0 && !allTeams)
+        if (total == 0 && !allTeams)
             return "";
-        if (current > 0)
-            buffer.append("<span style='font-weight: bold'>");
+        // if (current > 0)
+        // buffer.append("<span style='font-weight: bold'>");
         buffer.append("<span style='color:#");
         buffer.append(team.light());
         buffer.append("'>");
@@ -732,8 +744,8 @@ public class GlobalLinkImpl extends RemoteServiceServlet implements GlobalLink
         buffer.append("'>");
         buffer.append(total);
         buffer.append("</span>");
-        if (current > 0)
-            buffer.append("</span>");
+        // if (current > 0)
+        // buffer.append("</span>");
         buffer.append(" ");
         return buffer.toString();
     }

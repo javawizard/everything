@@ -12,6 +12,17 @@ public class ServerModel extends Server implements Serializable, IsSerializable
 {
     
     private String detailString = "";
+    private boolean autoExpand;
+    
+    public boolean isAutoExpand()
+    {
+        return autoExpand;
+    }
+    
+    public void setAutoExpand(boolean autoExpand)
+    {
+        this.autoExpand = autoExpand;
+    }
     
     /**
      * The text that should show up in the detail column for a server. This is

@@ -65,7 +65,14 @@ public enum Settings
                     + "page will show a team count for teams that have a limit of "
                     + "0 specified by the -mp switch to bzfs (IE players are not "
                     + "allowed to join that team). If this is not checked, a team "
-                    + "count will not be shown for these teams.", "true"), welcome(
+                    + "count will not be shown for these teams.", "true"), expandservers(
+            SettingType.checkbox,
+            "Auto-expand active servers",
+            "If this is checked, servers on the Servers page will automatically "
+                    + "be expanded to show all users on that server if the server has any "
+                    + "non-observer users. If not, you will have to maually expand a server"
+                    + " by clicking on its name to see the list of users that are on that server.",
+            "true"), welcome(
             SettingType.area,
             "Welcome message",
             "This is the text that shows up when the user initially "

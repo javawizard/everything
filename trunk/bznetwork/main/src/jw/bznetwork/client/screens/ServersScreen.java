@@ -304,6 +304,12 @@ public class ServersScreen extends VerticalScreen
                  * expands the disclosure panel for the first time.
                  */
                 loadServerInfoPanel(server, serverInfoPanel);
+                /*
+                 * If the server is supposed to auto-expand, as determined by
+                 * the BZNetwork server, then we'll expand it.
+                 */
+                if(server.isAutoExpand())
+                    serverDropdown.setOpen(true);
                 table.setWidget(row, 1, serverInfoPanel);
                 format.setColSpan(row, 1, 5);
             }
@@ -398,7 +404,7 @@ public class ServersScreen extends VerticalScreen
             panel.add(noPlayersLabel);
             return;
         }
-        panel.add(new HTML("<b>Users:</b>"));
+//        panel.add(new HTML("<b>Users:</b>"));
         Grid usersTable = new Grid(server.getPlayers().length, 5);
         panel.add(usersTable);
         int row = 0;
