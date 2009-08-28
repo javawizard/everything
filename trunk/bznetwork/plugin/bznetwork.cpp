@@ -400,7 +400,7 @@ BZF_PLUGIN_CALL int bz_Load(const char* commandLine)
 
 int bz_Unload(void)
 {
-	printf("Unloading the bznetwork plugin");
+	printf("Unloading the bznetwork plugin\n");
 	bz_removeCustomSlashCommand("bzn");
 	bz_removeEvent(bz_eTickEvent, &singleEventHandler);
 	bz_removeEvent(bz_ePlayerJoinEvent, &singleEventHandler);
@@ -411,8 +411,8 @@ int bz_Unload(void)
 	bz_removeEvent(bz_eKillEvent, &singleEventHandler);
 	bz_removeEvent(bz_eBanEvent, &singleEventHandler);
 	bz_removeEvent(bz_eSlashCommandEvent, &singleEventHandler);
-	bzn_outputData("bznunload");
 	playerIdsByCallsign.clear();
+	bzn_outputData("bznunload");
 	return 0;
 }
 
