@@ -10,9 +10,15 @@
 #include <assert.h>
 #ifdef WIN32
 #include <windows.h>
+#define BZN_MUTEX_INIT CreateMutex(NULL,FALSE,NULL)
+#define bzn_mutex_t HANDLE
+#define bzn_thread_t HANDLE
+#define bzn_mutex_lock(mutexvalue) WaitForSingleObject(mutexvalue, INFINITE)
+#define bzn_mutex_unlock(mutexvalue) ReleaseMutex(mutexvalue)
+#define strncasecmp strnicmp
 #elif
 #include <pthread.h> 
-#define BZN_MUTEX_INIT PPTHREAD_MUTEX_INITIALIZER
+#define BZN_MUTEX_INIT PTHREAD_MUTEX_INITIALIZER
 #define bzn_mutex_t pthread_mutex_t
 #define bzn_thread_t pthread_t
 #define bzn_mutex_lock(mutexvalue) pthread_mutex_lock(& mutexvalue)
