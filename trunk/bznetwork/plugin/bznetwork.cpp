@@ -16,8 +16,8 @@
 #define bzn_mutex_lock(mutexvalue) WaitForSingleObject(mutexvalue, INFINITE)
 #define bzn_mutex_unlock(mutexvalue) ReleaseMutex(mutexvalue)
 #define strncasecmp strnicmp
-#elif
-#include <pthread.h> 
+#else
+#include <pthread.h>
 #define BZN_MUTEX_INIT PTHREAD_MUTEX_INITIALIZER
 #define bzn_mutex_t pthread_mutex_t
 #define bzn_thread_t pthread_t
