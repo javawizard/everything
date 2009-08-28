@@ -105,7 +105,23 @@ create table banfiles (
     banfileid int,         -- The id of this banfile
     name      varchar(64)  -- The name of this banfile
 );
-
+-- Holds the list of IRC bots.  All IRC bots will be automatically connected when everything starts up, and BZNetwork will try to reconnect them every TBD (I'm thinking 30) seconds if they get disconnected.
+create table ircbots (
+    botid     int,          -- The id of this bot
+    nick      varchar(64),  -- The nick that this bot should use
+    server    varchar(64),  -- The server that this bot should connect to
+    port      int,          -- The port that this bot should connect to
+    password  varchar(64)   -- The password that this bot should authenticate to services with, or null or the empty string to not authenticate
+);
+-- Holds the list of messages for the IRC bots. BZNetwork stores all of the data in this table in memory so that it doesn't have to ask the server for the table's content wheneter an event occurs.
+create table ircmessages (
+    botid     int,          -- The id of the bot that this message is for
+    messageid int           -- The id of this message
+    event     varchar(64),  -- The name of the log event that triggers this message
+    target    int,          -- The target that triggering events should occur on. This is either a server id, a group id, or -1 for global
+    channel   varchar(64),  -- The channel that the message will be sent to
+    message   varchar(512)  -- The message to send. This can include various %something% strings, depending on the event.
+);
 
 
 -- Now for some initial table rows.

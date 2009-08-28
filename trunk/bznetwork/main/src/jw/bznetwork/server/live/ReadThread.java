@@ -299,6 +299,8 @@ public class ReadThread extends Thread
         server.setGameType(gameType);
         if (server.getLoadListenerQueue() != null)
             server.getLoadListenerQueue().offer("bznload");
+        String pluginVersion = tokens.length > 7 ? tokens[7] : "(no version available)";
+        server.setPluginVersion(pluginVersion);
         server.setChangingState(false);
         server.setStarting(false);
         runStartupTrigger();

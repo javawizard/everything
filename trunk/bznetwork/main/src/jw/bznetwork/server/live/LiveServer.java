@@ -32,6 +32,20 @@ public class LiveServer
     private boolean starting;
     private OutputStream out;
     private GameType gameType;
+    /**
+     * The version of the bznetwork plugin that is being used by this server.
+     */
+    private String pluginVersion;
+    
+    public String getPluginVersion()
+    {
+        return pluginVersion;
+    }
+    
+    public void setPluginVersion(String pluginVersion)
+    {
+        this.pluginVersion = pluginVersion;
+    }
     
     private EnumMap<LivePlayer.TeamType, Integer> teamLimits = new EnumMap<LivePlayer.TeamType, Integer>(
             LivePlayer.TeamType.class);
