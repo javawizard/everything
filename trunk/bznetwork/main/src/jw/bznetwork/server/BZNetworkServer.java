@@ -69,6 +69,8 @@ import com.ibatis.sqlmap.client.SqlMapClientBuilder;
 public class BZNetworkServer implements ServletContextListener,
         HttpSessionListener
 {
+    public static boolean isWindows = System.getProperty("os.name")
+            .toLowerCase().contains("windows");
     /**
      * Mirrored on LogsScreen.SEARCH_IN
      */
@@ -78,6 +80,10 @@ public class BZNetworkServer implements ServletContextListener,
             "ipaddress", "bzid", "email", "data"
     };
     public static final String newline = System.getProperty("line.separator");
+    private static final String serverControlPluginName = isWindows ? "serverControl.dll"
+            : "serverControl.so";
+    private static final String bznetworkPluginName = isWindows ? "bz_iplugin_bznetwork.dll"
+            : "libbz_iplugin_bznetwork.so";
     
     public static HashMap<Integer, LiveServer> getLiveServers()
     {
@@ -379,9 +385,9 @@ public class BZNetworkServer implements ServletContextListener,
             includedPluginsFolder = new File(context
                     .getRealPath("/WEB-INF/bzfs-plugins"));
             serverControlPlugin = new File(includedPluginsFolder,
-                    "serverControl.so");
+                    serverControlPluginName);
             bznetworkPlugin = new File(includedPluginsFolder,
-                    "libbz_iplugin_bznetwork.so");
+                    bznetworkPluginName);
             if (!serverControlPlugin.exists())
                 throw new RuntimeException(
                         "The server control plugin is supposed to exist at "

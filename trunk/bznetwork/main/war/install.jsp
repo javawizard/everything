@@ -17,7 +17,21 @@ installed again.
     else
     {
 %>
-<!-- We haven't installed BZNetwork yet. In that case, we'll show the form that allows the user to enter their install information. -->
+<!-- We haven't installed BZNetwork yet. In that case, we'll show the 
+form that allows the user to enter their install information. -->
+<%
+    if (BZNetworkServer.isWindows)
+        {
+%>
+<b>This BZNetwork server appears to be running on Windows.</b>
+Windows is not an officially supported platform. You may encounter some
+issues when using BZNetwork. If you do encounter such issues, go to
+<a href="http://bznetwork.googlecode.com">bznetwork.googlecode.com</a>
+, go to the Issues tab, and file an issue report on the error. 
+<hr />
+<%
+    }
+%>
 Welcome to a new installation of BZNetwork. Before you can log in,
 you'll need to provide some information that BZNetwork can use to set
 everything up. Make sure that you've placed BZNetwork in a folder whose

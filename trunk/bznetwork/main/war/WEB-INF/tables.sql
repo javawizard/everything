@@ -116,7 +116,7 @@ create table ircbots (
 -- Holds the list of messages for the IRC bots. BZNetwork stores all of the data in this table in memory so that it doesn't have to ask the server for the table's content wheneter an event occurs.
 create table ircmessages (
     botid     int,          -- The id of the bot that this message is for
-    messageid int           -- The id of this message
+    messageid int,          -- The id of this message
     event     varchar(64),  -- The name of the log event that triggers this message
     target    int,          -- The target that triggering events should occur on. This is either a server id, a group id, or -1 for global
     channel   varchar(64),  -- The channel that the message will be sent to
