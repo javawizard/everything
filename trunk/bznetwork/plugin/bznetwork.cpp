@@ -28,6 +28,8 @@
 
 BZ_GET_PLUGIN_VERSION
 
+const char* bzn_build_date = __DATE__ " " __TIME__;
+
 std::vector<std::string*> stdinList;
 bzn_mutex_t stdinListLock =
 BZN_MUTEX_INIT;
@@ -390,6 +392,8 @@ BZF_PLUGIN_CALL int bz_Load(const char* commandLine)
 		loadOutput += "RabbitHunt";
 	else
 		loadOutput += "UnknownGameType";
+	loadOutput += "|";
+	loadOutput += bzn_build_date;
 	bzn_outputData(loadOutput);
 	return 0;
 }
