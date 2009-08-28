@@ -8,15 +8,24 @@
 #include <iostream>
 #include <stdio.h>
 #include <assert.h>
-#include <pthread.h>
+#ifdef WIN32
+#include <windows.h>
+#elif
+#include <pthread.h> 
+#define BZN_MUTEX_INIT PPTHREAD_MUTEX_INITIALIZER
+#define bzn_mutex_t pthread_mutex_t
+#define bzn_thread_t pthread_t
+#define bzn_mutex_lock(mutexvalue) pthread_mutex_lock(& mutexvalue)
+#define bzn_mutex_unlock(mutexvalue) pthread_mutex_unlock(& mutexvalue)
+#endif
 #include <sstream>
 
 BZ_GET_PLUGIN_VERSION
 
 std::vector<std::string*> stdinList;
-pthread_mutex_t stdinListLock =
-PTHREAD_MUTEX_INITIALIZER;
-pthread_t stdinReadThread;
+bzn_mutex_t stdinListLock =
+BZN_MUTEX_INIT;
+bzn_thread_t stdinReadThread;
 std::string currentStdinString;
 typedef std::map<std::string, int> stringIntMap;
 stringIntMap playerIdsByCallsign;
@@ -132,7 +141,7 @@ class BZNetworkEventHandler: public bz_EventHandler,
 			if (eventData->eventType == bz_eTickEvent)
 			{
 				bz_TickEventData* event = (bz_TickEventData*) eventData;
-				pthread_mutex_lock(&stdinListLock);
+				bzn_mutex_lock(stdinListLock);
 				while (stdinList.size() > 0)
 				{
 					std::string* currentString = stdinList.at(0);
@@ -140,7 +149,7 @@ class BZNetworkEventHandler: public bz_EventHandler,
 					stdinList.erase(stdinList.begin());
 					delete currentString;
 				}
-				pthread_mutex_unlock(&stdinListLock);
+				bzn_mutex_unlock(stdinListLock);
 			}
 			else if (eventData->eventType == bz_ePlayerJoinEvent)
 			{
@@ -314,7 +323,11 @@ class BZNetworkEventHandler: public bz_EventHandler,
 		}
 };
 
+#ifdef WIN32
+DWORD WINAPI threadedStdinReadLoop( LPVOID );
+#else
 void* threadedStdinReadLoop(void* bogus);
+#endif
 
 BZNetworkEventHandler singleEventHandler;
 
@@ -333,7 +346,13 @@ BZF_PLUGIN_CALL int bz_Load(const char* commandLine)
 	// Perhaps allow this to be configured via an argument, and
 	// then have this value be a BZNetwork configuration setting
 	bz_setMaxWaitTime(2.0);
+#ifdef WIN32
+	DWORD windowsThreadId;
+	stdinReadThread = CreateThread(NULL, 0, (LPTHREAD_START_ROUTINE) threadedStdinReadLoop, NULL, 0, &windowsThreadId);
+	if(stdinReadThread == NULL)
+#else
 	if (pthread_create(&stdinReadThread, NULL, &threadedStdinReadLoop, NULL))
+#endif
 	{
 		bzn_outputData(
 				"bznfail readthread The stdin read thread could not be created.");
@@ -398,17 +417,24 @@ void bzn_outputData(std::string value)
 	printf("|%.5d%s\n", value.length(), value.c_str());
 }
 
+#ifdef WIN32
+DWORD WINAPI threadedStdinReadLoop ( LPVOID bogus )
+#else
 void* threadedStdinReadLoop(void* bogus)
+#endif
 {
 	while (true)
 	{
 		getline(cin, currentStdinString);
 		std::string* newReadString =
 				new std::string(currentStdinString.c_str());
-		pthread_mutex_lock(&stdinListLock);
+		bzn_mutex_lock(stdinListLock);
 		stdinList.push_back(newReadString);
-		pthread_mutex_unlock(&stdinListLock);
+		bzn_mutex_unlock(stdinListLock);
 	}
+#ifdef WIN32
+	return TRUE;
+#endif
 }
 
 bz_eTeamType colorNameToDef(const char* color)
