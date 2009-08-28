@@ -59,7 +59,7 @@ The following permissions are sensitive:
  * *manage-callsign-auth:* TODO
  * *edit-configuration:* The user could set the bzfs executable to some other executable such as vsftpd, and then use this to connect to the server and do whatever they want. 
  * *view-sessions:* Session ids are sent when the user views the list of sessions. A user can use this id to appear to the server as if they are another, logged-in user, so a user could use this to gain the privileges of any user currently logged in. I plan on changing this in the future so that a hash of the session's id is what gets sent to the client, and the server maintains a map of session id hashes to the actual session, which would remove this permission from the list of sensitive permissions.
- * *edit-server-settings:* This is due to a bug with BZNetwork that I'm working on fixing.
+ * *edit-server-settings:* This is due to a bug with BZNetwork that I'm working on fixing. Contact jcp on irc.freenode.net if you want the details.
 
 In particlar, *edit-configuration* allows a user to grant themselves access to the physical server on which BZNetwork is running, so it should be used with extreme caution.
  
