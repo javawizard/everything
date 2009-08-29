@@ -874,7 +874,10 @@ public class BZNetworkServer implements ServletContextListener,
              * don't need to do anything with the report file output.
              */
             args.add("-reportfile");
-            args.add("/dev/null");
+            if (isWindows)
+                args.add("nul");
+            else
+                args.add("/dev/null");
             args.add("-loadplugin");
             args.add(serverControlPlugin.getAbsolutePath() + ","
                     + serverControlConfig.getAbsolutePath());
