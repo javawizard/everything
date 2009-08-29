@@ -58,6 +58,8 @@ public class ReadThread extends Thread
             while (true)
             {
                 i = in.read();
+                System.out.println("Byte from server: " + i + ", hex: "
+                        + Integer.toHexString(i));
                 if (i == -1)
                     break;
                 if (i == '|')
@@ -299,7 +301,8 @@ public class ReadThread extends Thread
         server.setGameType(gameType);
         if (server.getLoadListenerQueue() != null)
             server.getLoadListenerQueue().offer("bznload");
-        String pluginVersion = tokens.length > 7 ? tokens[7] : "(no version available)";
+        String pluginVersion = tokens.length > 7 ? tokens[7]
+                : "(no version available)";
         server.setPluginVersion(pluginVersion);
         server.setChangingState(false);
         server.setStarting(false);
