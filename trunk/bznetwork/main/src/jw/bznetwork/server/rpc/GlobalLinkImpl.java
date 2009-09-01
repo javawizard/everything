@@ -1143,7 +1143,7 @@ public class GlobalLinkImpl extends RemoteServiceServlet implements GlobalLink
                 continue;
             try
             {
-                server.sayToFromPlayer("+server", "+all", username + ": "
+                server.sayToFromPlayer("+server", "+all", "[" + username + "] "
                         + message);
                 saidToServer = true;
             }
