@@ -50,7 +50,8 @@ Here is the list of available permissions and what they do. At the bottom of the
 || all                     ||         ||A special permission that grants all other applicable permissions to whatever level it is applied.||
 || view-sessions           || global  ||Allows the user to use the sessions page, which lets them view the users that are currently logged into the web interface and selectively kick them off of the server||
 || create-group            || global  ||Allows the user to create groups.||
-|| rename-group            || group  ||Allows the user to rename a group.||
+|| rename-group            || group   ||Allows the user to rename a group.||
+|| manage-irc              || global  ||Allows the user to manage the list of IRC bots.||
 
 The following permissions are sensitive:
  * *manage-users:* The user can apply any role to their own account, allowing them to gain the highest possible level of access of anyone on the server.
