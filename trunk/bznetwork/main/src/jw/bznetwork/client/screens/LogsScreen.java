@@ -63,6 +63,7 @@ public class LogsScreen extends VerticalScreen
                 @Override
                 public void run(Void result)
                 {
+                    scrollDownOnce = true;
                     doPerformSearch();
                 }
             });
@@ -89,8 +90,17 @@ public class LogsScreen extends VerticalScreen
      * configure the settings for viewing logs for that particular element.
      */
     public boolean preserveSettingsOnce = false;
-    
+    /**
+     * If this is true, then when the filter widgets load, a search will be
+     * performed immediately. This is used when clicking on the logs links in
+     * the servers screen.
+     */
     public boolean performSearchOnce = false;
+    /**
+     * If this is true, then the page will be scrolled to the bottom the next
+     * time the results page loads.
+     */
+    public boolean scrollDownOnce = false;
     
     public LogsFilterSettings settings;
     
@@ -164,6 +174,8 @@ public class LogsScreen extends VerticalScreen
          */
         lowerAutoRefreshBox = buildAutoRefreshBox();
         lowerPanel.add(lowerAutoRefreshBox);
+        lowerScrollDownBox = new CheckBox("Scroll down");
+        lowerPanel.add(lowerScrollDownBox);
         lowerPanel.add(new VerticalBar());
         /*
          * Lower search button
@@ -175,6 +187,7 @@ public class LogsScreen extends VerticalScreen
             @Override
             public void onClick(ClickEvent event)
             {
+                scrollDownOnce = lowerScrollDownBox.isChecked();
                 doPerformSearch();
             }
         });
@@ -185,14 +198,14 @@ public class LogsScreen extends VerticalScreen
     {
         ListBox box = new ListBox();
         box.setTitle("Select an interval to refresh that often. For example, "
-                + "selecting \"30 seconds\" will cause the logs to be "
-                + "automatically reloaded every 30 seconds.");
+                + "selecting \"1 minute\" will cause the logs to be "
+                + "automatically reloaded every minute.");
         box.addItem("No refresh", "");
-        box.addItem("15 seconds", "15");
-        box.addItem("30 seconds", "30");
-        box.addItem("1 minutes", "60");
-        box.addItem("2 minutes", "120");
-        box.addItem("5 minutes", "300");
+        box.addItem("20 seconds", "2");
+        box.addItem("40 seconds", "4");
+        box.addItem("1 minute", "6");
+        box.addItem("2 minutes", "12");
+        box.addItem("5 minutes", "30");
         return box;
     }
     
@@ -341,6 +354,11 @@ public class LogsScreen extends VerticalScreen
                     resultsWrapper.setWidth("100%");
                     resultsWrapper.setWidget(html);
                     lowerPanelWrapper.setVisible(true);
+                    if (scrollDownOnce)
+                    {
+                        scrollDownOnce = false;
+                        Window.scrollTo(0, 2000000);
+                    }
                 }
                 finally
                 {
@@ -394,6 +412,20 @@ public class LogsScreen extends VerticalScreen
         created.setMinutes(0);
         created.setSeconds(0);
         return created;
+    }
+    
+    public void tick(int number)
+    {
+        String refreshFrequency = BZNetwork.getSelectionValue(
+                lowerAutoRefreshBox, lowerAutoRefreshBox.getSelectedIndex());
+        if (refreshFrequency.equals(""))
+            return;
+        int interval = Integer.parseInt(refreshFrequency);
+        if ((number % interval) == 0)
+        {
+            scrollDownOnce = lowerScrollDownBox.isChecked();
+            doPerformSearch();
+        }
     }
     
 }
