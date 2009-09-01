@@ -126,7 +126,7 @@ public class LogsFilterWidget extends Composite
         intervalTable.setWidget(6, 0, endHourField);
         intervalTable.setText(6, 1, ":");
         intervalFormat.setWidth(6, 1, "8px");
-        intervalFormat.setHorizontalAlignment(2, 1,
+        intervalFormat.setHorizontalAlignment(6, 1,
                 HorizontalPanel.ALIGN_CENTER);
         endMinuteField = new TextBox();
         endMinuteField.addStyleName("bznetwork-TimeBox");
