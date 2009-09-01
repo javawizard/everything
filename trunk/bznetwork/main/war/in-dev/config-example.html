@@ -27,7 +27,17 @@ Also make sure that certain options are disabled when not applicable. For
 example, -c and -cr can't both be used at the same time.
  -->
 <!--
-Switches: (* at the beginning means that it's been completed)
+ groups:
+   Flags: +f -f +s -s -fl -sb -sa -st -sw
+   Style: -mp -j +r -c -cr
+   
+   Maybe it would be worth it to figure out how to add controls in a way that 
+   you just change a simple string to change what group a control is in and 
+   what order within the group the control falls under. Maybe that would also 
+   allow bznetwork server owners to specify what groups these all appear under.
+  -->
+<!--
+Switches: (* at the beginning means that it's been completed, # means it's been grouped)
 
   -a <linear> <angular>
   -adminlagannounce <min-lag-to-announce>
@@ -40,9 +50,9 @@ Switches: (* at the beginning means that it's been completed)
   -cr
   -density <random-building-density>
   -disableBots
-  +f FLAGID{number-of-flags}
-  -f FLAGID
-  -fb
+# +f FLAGID{number-of-flags}
+# -f FLAGID
+# -fb
   -filterCallsigns
   -filterChat
   -filterSimple
@@ -73,18 +83,18 @@ Switches: (* at the beginning means that it's been completed)
   -recdir
   -replay (probably in a dropdown of server types, "Free-for-all", "CTF", "Rabbit hunt", and "Replay"
   -requireudp
-  +s
-  -s
-  -sa
+# +s
+# -s
+# -sa
   -sb
   -set (would also be nice if /set on the server could somehow persist over to this config file, maybe on demand, like /savevars or something)
-  -sl
+# -sl
   -spamtime
   -spamwarn
   -speedtol
   -srvmsg
-  -st
-  -sw
+# -st
+# -sw
   -synctime
   -t
   -tftimeout
