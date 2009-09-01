@@ -62,4 +62,21 @@ public interface Screen
      * @return
      */
     public Widget getWidget();
+    
+    /**
+     * Called every 10 seconds by bznetwork. Screens can use this to perform
+     * periodic actions. The tick number is a number that increases by one every
+     * time this method is called. This can be used to achieve delays that are
+     * multiple of 10. For example, executing a particular action every 30
+     * seconds could be done by dividing this number by 3, and if the resulting
+     * number is a whole number (or, equivalently, the remainder is 0), then the
+     * action would be executed.<br/><br/>
+     * 
+     * Right now, this method is only called on the screen that is currently the
+     * active screen.
+     * 
+     * @param number
+     *            The tick number. The first tick is 0.
+     */
+    public void tick(int number);
 }

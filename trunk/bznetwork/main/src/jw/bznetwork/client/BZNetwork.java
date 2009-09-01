@@ -236,6 +236,8 @@ public class BZNetwork implements EntryPoint
         mainScreen.selectScreen("welcome");
         mainScreen.setWidth("100%");
         rootPanel.add(mainScreen);
+        TickTimer tickTimer = new TickTimer(mainScreen);
+        tickTimer.start();
     }
     
     protected void initUnauth2()

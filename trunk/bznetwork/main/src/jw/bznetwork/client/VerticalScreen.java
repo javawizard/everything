@@ -30,4 +30,13 @@ public abstract class VerticalScreen implements Screen
     {
         spacer.setWidth(spacing);
     }
+    
+    /**
+     * Does nothing. Subclasses can override this method if they need to get
+     * tick information from BZNetwork.
+     */
+    public void tick(int number)
+    {
+        
+    }
 }

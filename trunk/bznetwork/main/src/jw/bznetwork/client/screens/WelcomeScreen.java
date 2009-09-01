@@ -8,6 +8,7 @@ import com.google.gwt.user.client.ui.Widget;
 import jw.bznetwork.client.BZNetwork;
 import jw.bznetwork.client.Screen;
 import jw.bznetwork.client.Settings;
+import jw.bznetwork.client.VerticalScreen;
 import jw.bznetwork.client.x.TextScripter;
 import jw.bznetwork.client.x.VXProvider;
 import jw.bznetwork.client.x.VXUser;
@@ -18,9 +19,8 @@ import jw.bznetwork.client.x.VXUser;
  * @author Alexander Boyd
  * 
  */
-public class WelcomeScreen implements Screen
+public class WelcomeScreen extends VerticalScreen
 {
-    private VerticalPanel widget = new VerticalPanel();
     
     @Override
     public void deselect()
@@ -39,11 +39,6 @@ public class WelcomeScreen implements Screen
         return "Welcome";
     }
     
-    @Override
-    public Widget getWidget()
-    {
-        return widget;
-    }
     
     @Override
     public void reselect()

@@ -229,4 +229,26 @@ public class MainScreen extends Composite implements ClickListener
     {
         return screensByName.get(screenName);
     }
+    
+    /**
+     * Returns a list of all of the screens in this MainScreen. This list must
+     * not be modified by the caller.
+     * 
+     * @return
+     */
+    public ArrayList<Screen> getScreenList()
+    {
+        return screens;
+    }
+    
+    public boolean isSelected(Screen screen)
+    {
+        return screen.equals(selectedScreen);
+    }
+    
+    public Screen getSelectedScreen()
+    {
+        return selectedScreen;
+    }
+    
 }

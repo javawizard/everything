@@ -5,6 +5,7 @@ import jw.bznetwork.client.BoxCallback;
 import jw.bznetwork.client.Screen;
 import jw.bznetwork.client.SettingType;
 import jw.bznetwork.client.Settings;
+import jw.bznetwork.client.VerticalScreen;
 import jw.bznetwork.client.data.EditConfigurationModel;
 import jw.bznetwork.client.data.model.Configuration;
 import jw.bznetwork.client.rt.RichTextToolbar;
@@ -30,9 +31,8 @@ import com.google.gwt.user.client.ui.Widget;
 import com.google.gwt.user.client.ui.FlexTable.FlexCellFormatter;
 
 @SuppressWarnings("deprecation")
-public class ConfigurationScreen implements Screen
+public class ConfigurationScreen extends VerticalScreen
 {
-    private VerticalPanel widget = new VerticalPanel();
     
     @Override
     public void deselect()
@@ -49,18 +49,6 @@ public class ConfigurationScreen implements Screen
     public String getTitle()
     {
         return "Configuration";
-    }
-    
-    @Override
-    public Widget getWidget()
-    {
-        return widget;
-    }
-    
-    @Override
-    public void init()
-    {
-        widget.add(new Label("Configuration screen coming soon!"));
     }
     
     @Override
@@ -289,5 +277,10 @@ public class ConfigurationScreen implements Screen
                 }
             }
         });
+    }
+    
+    @Override
+    public void init()
+    {
     }
 }
