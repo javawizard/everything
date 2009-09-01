@@ -398,7 +398,7 @@ BZF_PLUGIN_CALL int bz_Load(const char* commandLine)
 	return 0;
 }
 
-int bz_Unload(void)
+BZF_PLUGIN_CALL int bz_Unload(void)
 {
 	printf("Unloading the bznetwork plugin\n");
 	bz_removeCustomSlashCommand("bzn");
