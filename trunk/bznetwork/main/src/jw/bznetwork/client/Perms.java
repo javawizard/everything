@@ -50,7 +50,7 @@ public class Perms
             "view-in-group-list,group", "view-action-log,global",
             "clear-action-log,global", "edit-configuration,global",
             "all,server", "view-sessions,global", "create-group,global",
-            "rename-group,group"
+            "rename-group,group","manage-irc,global"
     
     };
     

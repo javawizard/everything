@@ -111,15 +111,15 @@ create table ircbots (
     nick      varchar(64),  -- The nick that this bot should use
     server    varchar(64),  -- The server that this bot should connect to
     port      int,          -- The port that this bot should connect to
-    password  varchar(64)   -- The password that this bot should authenticate to services with, or null or the empty string to not authenticate
+    password  varchar(64),  -- The password that this bot should authenticate to services with, or null or the empty string to not authenticate
+    channel   varchar(64)   -- The channel that the bot should join. Only one channel is supported for now, although support for more may be added in the future.
 );
 -- Holds the list of messages for the IRC bots. BZNetwork stores all of the data in this table in memory so that it doesn't have to ask the server for the table's content wheneter an event occurs.
 create table ircmessages (
     botid     int,          -- The id of the bot that this message is for
     messageid int,          -- The id of this message
-    event     varchar(64),  -- The name of the log event that triggers this message
+    event     varchar(64),  -- The name of the log event that triggers this message, or the name of an internal event (which are all prefixed with "_") that triggers this message
     target    int,          -- The target that triggering events should occur on. This is either a server id, a group id, or -1 for global
-    channel   varchar(64),  -- The channel that the message will be sent to
     message   varchar(512)  -- The message to send. This can include various %something% strings, depending on the event.
 );
 

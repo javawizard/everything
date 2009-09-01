@@ -17,6 +17,7 @@ import jw.bznetwork.client.screens.BanfilesScreen;
 import jw.bznetwork.client.screens.CallsignsScreen;
 import jw.bznetwork.client.screens.ConfigurationScreen;
 import jw.bznetwork.client.screens.HelpScreen;
+import jw.bznetwork.client.screens.IRCScreen;
 import jw.bznetwork.client.screens.LogsScreen;
 import jw.bznetwork.client.screens.RolesScreen;
 import jw.bznetwork.client.screens.ServersScreen;
@@ -199,13 +200,15 @@ public class BZNetwork implements EntryPoint
             defaultScreenList.add(new AuthgroupsScreen());
             defaultScreenList.add(new CallsignsScreen());
         }
-        defaultScreenList.add(new LogsScreen());
         /*
          * This one is dependent on some perms, but since the rules are
          * complicated, we'll just add the screen anyway and let the server
          * decide the perms when it sends the server list back to the client.
          */
         defaultScreenList.add(new ServersScreen());
+        defaultScreenList.add(new LogsScreen());
+        if (Perms.global("manage-irc"))
+            defaultScreenList.add(new IRCScreen());
         if (Perms.global("manage-auth"))
             defaultScreenList.add(new AuthenticationScreen());
         if (Perms.global("view-action-log"))

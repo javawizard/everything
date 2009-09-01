@@ -175,6 +175,7 @@ public class LogsScreen extends VerticalScreen
         lowerAutoRefreshBox = buildAutoRefreshBox();
         lowerPanel.add(lowerAutoRefreshBox);
         lowerScrollDownBox = new CheckBox("Scroll down");
+        lowerScrollDownBox.addStyleName("bznetwork-vertical-center");
         lowerPanel.add(lowerScrollDownBox);
         lowerPanel.add(new VerticalBar());
         /*
