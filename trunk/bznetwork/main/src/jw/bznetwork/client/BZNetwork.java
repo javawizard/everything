@@ -113,6 +113,23 @@ public class BZNetwork implements EntryPoint
                 fail(e);
             }
         });
+        /*
+         * First things first. We need to remove the "loading" text that's
+         * placed in the page by default.
+         */
+        com.google.gwt.dom.client.Element element = Document.get()
+                .getElementById("loadingInformationBox");
+        if (element != null)
+        {
+            com.google.gwt.dom.client.Element parentElement = element
+                    .getParentElement();
+            if (parentElement != null)
+                parentElement.removeChild(element);
+        }
+        /*
+         * Now that the loading text is removed, we can get on to adding our own
+         * custom loading text.
+         */
         rootPanel = RootPanel.get("mainContentPanel");
         rootPanel.add(new Label("Loading..."));
         CONTEXT_URL = GWT.getHostPageBaseURL();

@@ -1159,7 +1159,7 @@ public class BZNetworkServer implements ServletContextListener,
         {
             if (!Perms.server("view-logs", server, GlobalLinkImpl
                     .getServerGroupId(server)))
-                serverIds.remove(server);
+                serverIds.remove((Integer)server);
         }
         // add the servers
         filter += " and ( '1' = '2' ";
