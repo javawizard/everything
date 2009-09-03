@@ -237,22 +237,9 @@ public class BZNetwork implements EntryPoint
         defaultScreens = defaultScreenList.toArray(new Screen[0]);
         ArrayList<String> linkNames = new ArrayList<String>();
         ArrayList<ClickListener> linkListeners = new ArrayList<ClickListener>();
-        // Log out link
-        linkNames.add("Log out");
-        linkListeners.add(new ClickListener()
-        {
-            
-            @Override
-            public void onClick(Widget sender)
-            {
-                showLoadingBox();
-                Window.Location.assign(CONTEXT_URL + "/logout.jsp");
-            }
-        });
         // Help link if applicable
         if (publicConfiguration.getBoolean(Settings.singlehelplink))
         {
-            Window.alert("adding single help link");
             linkNames.add("Help");
             linkListeners.add(new ClickListener()
             {
@@ -267,10 +254,18 @@ public class BZNetwork implements EntryPoint
                 }
             });
         }
-        else
+        // Log out link
+        linkNames.add("Log out");
+        linkListeners.add(new ClickListener()
         {
-            Window.alert("not adding single help link");
-        }
+            
+            @Override
+            public void onClick(Widget sender)
+            {
+                showLoadingBox();
+                Window.Location.assign(CONTEXT_URL + "/logout.jsp");
+            }
+        });
         mainScreen = new MainScreen(publicConfiguration
                 .getString(Settings.sitename), publicConfiguration
                 .getBoolean(Settings.currentname), publicConfiguration
