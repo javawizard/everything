@@ -252,7 +252,7 @@ public class BZNetwork implements EntryPoint
                     Window.Location.assign(CONTEXT_URL + "/logout.jsp");
                 }
             }
-        }, defaultScreens);
+        }, defaultScreens, true, CONTEXT_URL + "/screen-help/");
         mainScreen.selectScreen("welcome");
         mainScreen.setWidth("100%");
         rootPanel.add(mainScreen);
@@ -612,9 +612,15 @@ public class BZNetwork implements EntryPoint
     }
     
     /**
-     * Pops up a message indicating that an error has occurred.
+     * Pops up a message indicating that an error has occurred. The user will
+     * still be able to use BZNetwork after dismissing the error message. If the
+     * error is a fatal one that should prevent further use of BZNetwork until
+     * it is reloaded in the user's browser, consider using
+     * {@link #epicFail(Throwable)} instead.
      * 
      * @param t
+     *            The throwable whose information will be shown in the error
+     *            box. This must not be null.
      */
     public static void fail(Throwable t)
     {
@@ -635,6 +641,14 @@ public class BZNetwork implements EntryPoint
                     + "your session timed out. Refresh the page "
                     + "to log back in.");
         }
+        else if (t instanceof StatusCodeException)
+        {
+            Window
+                    .alert("A status code other than 200 was received from the server: "
+                            + ((StatusCodeException) t).getStatusCode()
+                            + " "
+                            + t.getClass().getName() + ": " + t.getMessage());
+        }
         else
         {
             Window.alert("An unknown error has occured: "
@@ -650,7 +664,7 @@ public class BZNetwork implements EntryPoint
      * 
      * @param t
      */
-    public void epicFail(Throwable t)
+    public static void epicFail(Throwable t)
     {
         rootPanel.clear();
         rootPanel.add(new Label(

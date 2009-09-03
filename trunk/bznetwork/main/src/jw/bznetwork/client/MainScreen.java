@@ -4,20 +4,32 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 
+import jw.bznetwork.client.ui.Header3;
 import jw.bznetwork.client.ui.HorizontalRule;
 import jw.bznetwork.client.ui.Spacer;
 
+import com.google.gwt.event.dom.client.ClickEvent;
+import com.google.gwt.event.dom.client.ClickHandler;
+import com.google.gwt.http.client.Request;
+import com.google.gwt.http.client.RequestBuilder;
+import com.google.gwt.http.client.RequestCallback;
+import com.google.gwt.http.client.RequestException;
+import com.google.gwt.http.client.Response;
+import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.Anchor;
+import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.ClickListener;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.DockPanel;
 import com.google.gwt.user.client.ui.FlexTable;
+import com.google.gwt.user.client.ui.Frame;
 import com.google.gwt.user.client.ui.HTML;
 import com.google.gwt.user.client.ui.HTMLPanel;
 import com.google.gwt.user.client.ui.HorizontalPanel;
 import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.PopupPanel;
 import com.google.gwt.user.client.ui.SimplePanel;
+import com.google.gwt.user.client.ui.TextArea;
 import com.google.gwt.user.client.ui.VerticalPanel;
 import com.google.gwt.user.client.ui.Widget;
 
@@ -46,6 +58,45 @@ import com.google.gwt.user.client.ui.Widget;
 @SuppressWarnings("deprecation")
 public class MainScreen extends Composite implements ClickListener
 {
+    public class HelpLinkClickListener implements ClickListener
+    {
+        private String name;
+        private String title;
+        
+        public HelpLinkClickListener(String name, String title)
+        {
+            super();
+            this.name = name;
+            this.title = title;
+        }
+        
+        @Override
+        public void onClick(Widget sender)
+        {
+            final PopupPanel box = new PopupPanel();
+            int clientWidth = Window.getClientWidth();
+            int clientHeight = Window.getClientHeight();
+            VerticalPanel panel = new VerticalPanel();
+            box.setWidget(panel);
+            Frame frame = new Frame(screenHelpPrefix + name + ".html");
+            frame.setWidth("" + Math.max(clientWidth - 100, 280) + "px");
+            frame.setHeight("" + Math.max(clientHeight - 120, 200) + "px");
+            panel.add(frame);
+            Button closeButton = new Button("Close");
+            panel.add(closeButton);
+            closeButton.addClickHandler(new ClickHandler()
+            {
+                
+                @Override
+                public void onClick(ClickEvent event)
+                {
+                    box.hide();
+                }
+            });
+            box.center();
+        }
+    }
+    
     private Label headerLabel;
     private Label headerScreenLabel;
     private ArrayList<Screen> screens = new ArrayList<Screen>();
@@ -54,6 +105,8 @@ public class MainScreen extends Composite implements ClickListener
     private PopupPanel menuBox = new PopupPanel(true, false);
     private SimplePanel mainContentWrapper = new SimplePanel();
     private HashMap<String, Screen> screensByName = new HashMap<String, Screen>();
+    private String screenHelpPrefix;
+    private boolean showScreenHelp;
     
     /**
      * Creates a new MainScreen.
@@ -78,8 +131,10 @@ public class MainScreen extends Composite implements ClickListener
     @SuppressWarnings("deprecation")
     public MainScreen(String header, boolean headerScreenName,
             boolean menuLeft, String[] links, ClickListener[] listeners,
-            Screen[] screens)
+            Screen[] screens, boolean showScreenHelp, String screenHelpPrefix)
     {
+        this.showScreenHelp = showScreenHelp;
+        this.screenHelpPrefix = screenHelpPrefix;
         this.headerLabel = new Label(header);
         this.headerScreenLabel = new Label("");
         String wrapperDivId = HTMLPanel.createUniqueId();
@@ -115,7 +170,18 @@ public class MainScreen extends Composite implements ClickListener
             Anchor anchor = new Anchor(screen.getTitle());
             anchor.addClickListener(this);
             anchor.addStyleName("bznetwork-MenuScreenItem");
-            menuBoxPanel.add(anchor);
+            Anchor helpLink = new Anchor("?");
+            anchor.addClickListener(new HelpLinkClickListener(screen.getName(),
+                    screen.getTitle()));
+            FlexTable anchorTable = new FlexTable();
+            anchorTable.setWidget(0, 0, anchor);
+            anchorTable.setWidget(0, 1, helpLink);
+            anchorTable.getFlexCellFormatter().setHorizontalAlignment(0, 0,
+                    HorizontalPanel.ALIGN_LEFT);
+            anchorTable.getFlexCellFormatter().setHorizontalAlignment(0, 1,
+                    HorizontalPanel.ALIGN_RIGHT);
+            anchorTable.setWidth("100%");
+            menuBoxPanel.add(anchorTable);
             screenMenuLinks.add(anchor);
         }
         if (!menuLeft)
