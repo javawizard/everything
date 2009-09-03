@@ -72,6 +72,17 @@ public enum Settings
                     + "be expanded to show all users on that server if the server has any "
                     + "non-observer users. If not, you will have to maually expand a server"
                     + " by clicking on its name to see the list of users that are on that server.",
+            "true"), pagehelp(
+            SettingType.checkbox,
+            "Show page help links",
+            "Checking this causes a \"?\" link to appear next to the name of each "
+                    + "help page. When this is clicked, some help that is specific to that "
+                    + "page pops up.", "false"), singlehelplink(
+            SettingType.checkbox,
+            "Show upper-right help link",
+            "Same as \"Show page help links\", but instead of a help link next to each "
+                    + "page name, a single help link titled \"Help\" is placed in the upper-right "
+                    + "corner. This link opens some help for whichever page is currently selected.",
             "true"), welcome(
             SettingType.area,
             "Welcome message",

@@ -39,14 +39,10 @@ public class GlobalUnauthLinkImpl extends RemoteServiceServlet implements
                 .setString(Settings.sitename, Settings.sitename.getString());
         if (getThisUser() != null)
         {
-            publicConfig.setString(Settings.contact, Settings.contact
-                    .getString());
-            publicConfig.setString(Settings.welcome, Settings.welcome
-                    .getString());
-            publicConfig.setBoolean(Settings.menuleft, Settings.menuleft
-                    .getBoolean());
-            publicConfig.setBoolean(Settings.currentname, Settings.currentname
-                    .getBoolean());
+            for (Settings s : Settings.values())
+            {
+                publicConfig.setString(s, s.getString());
+            }
         }
         return publicConfig;
     }

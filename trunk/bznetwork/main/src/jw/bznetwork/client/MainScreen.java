@@ -171,9 +171,12 @@ public class MainScreen extends Composite implements ClickListener
             anchor.addClickListener(this);
             anchor.addStyleName("bznetwork-MenuScreenItem");
             Anchor helpLink = new Anchor("?");
-            anchor.addClickListener(new HelpLinkClickListener(screen.getName(),
+            helpLink.addClickListener(new HelpLinkClickListener(screen.getName(),
                     screen.getTitle()));
             FlexTable anchorTable = new FlexTable();
+            anchorTable.setBorderWidth(0);
+            anchorTable.setCellSpacing(0);
+            anchorTable.setCellPadding(0);
             anchorTable.setWidget(0, 0, anchor);
             anchorTable.setWidget(0, 1, helpLink);
             anchorTable.getFlexCellFormatter().setHorizontalAlignment(0, 0,

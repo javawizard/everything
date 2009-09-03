@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 
+import jw.bznetwork.client.MainScreen.HelpLinkClickListener;
 import jw.bznetwork.client.data.AuthUser;
 import jw.bznetwork.client.data.model.Configuration;
 import jw.bznetwork.client.rpc.GlobalLink;
@@ -234,25 +235,50 @@ public class BZNetwork implements EntryPoint
             defaultScreenList.add(new SessionsScreen());
         defaultScreenList.add(new HelpScreen());
         defaultScreens = defaultScreenList.toArray(new Screen[0]);
-        mainScreen = new MainScreen(publicConfiguration
-                .getString(Settings.sitename), publicConfiguration
-                .getBoolean(Settings.currentname), publicConfiguration
-                .getBoolean(Settings.menuleft), new String[]
+        ArrayList<String> linkNames = new ArrayList<String>();
+        ArrayList<ClickListener> linkListeners = new ArrayList<ClickListener>();
+        // Log out link
+        linkNames.add("Log out");
+        linkListeners.add(new ClickListener()
         {
-            "Log out"
-        }, new ClickListener[]
+            
+            @Override
+            public void onClick(Widget sender)
+            {
+                showLoadingBox();
+                Window.Location.assign(CONTEXT_URL + "/logout.jsp");
+            }
+        });
+        // Help link if applicable
+        if (publicConfiguration.getBoolean(Settings.singlehelplink))
         {
-            new ClickListener()
+            Window.alert("adding single help link");
+            linkNames.add("Help");
+            linkListeners.add(new ClickListener()
             {
                 
                 @Override
                 public void onClick(Widget sender)
                 {
-                    showLoadingBox();
-                    Window.Location.assign(CONTEXT_URL + "/logout.jsp");
+                    HelpLinkClickListener targetListener = mainScreen.new HelpLinkClickListener(
+                            mainScreen.getSelectedScreen().getName(),
+                            mainScreen.getSelectedScreen().getTitle());
+                    targetListener.onClick(sender);
                 }
-            }
-        }, defaultScreens, true, CONTEXT_URL + "/screen-help/");
+            });
+        }
+        else
+        {
+            Window.alert("not adding single help link");
+        }
+        mainScreen = new MainScreen(publicConfiguration
+                .getString(Settings.sitename), publicConfiguration
+                .getBoolean(Settings.currentname), publicConfiguration
+                .getBoolean(Settings.menuleft), linkNames
+                .toArray(new String[0]), linkListeners
+                .toArray(new ClickListener[0]), defaultScreens,
+                publicConfiguration.getBoolean(Settings.pagehelp), CONTEXT_URL
+                        + "/screen-help/");
         mainScreen.selectScreen("welcome");
         mainScreen.setWidth("100%");
         rootPanel.add(mainScreen);
@@ -319,7 +345,7 @@ public class BZNetwork implements EntryPoint
         {
             Button b = new Button(p.getText().replace("{site-name}",
                     publicConfiguration.getString(Settings.sitename)));
-            b.setStylePrimaryName("bznetwork-None");
+            b.setStylePrimaryName("bznetwork-ChooseAuthProviderButton");
             b.setWidth("250px");
             b.addClickListener(new ClickListener()
             {

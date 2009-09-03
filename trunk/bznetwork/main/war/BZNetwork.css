@@ -314,6 +314,10 @@
 .bznetwork-VerticalBar {
 	vertical-align: middle;
 }
+
+.bznetwork-ChooseAuthProviderButton {
+	white-space: pre-line
+}
 /*
 
 
