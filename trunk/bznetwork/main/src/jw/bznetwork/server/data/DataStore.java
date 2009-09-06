@@ -63,6 +63,21 @@ public class DataStore
     
     // !ADDTOSQL
     
+    public static synchronized Trigger[] listTriggersByRecipient(Integer v)
+    {
+        try
+        {
+            return (Trigger[]) getGdbClient().queryForList(
+                    "listTriggersByRecipient", v).toArray(new Trigger[0]);
+        }
+        catch (Exception e)
+        {
+            throw new RuntimeException(
+                    "Exception in database statement listTriggersByRecipient",
+                    e);
+        }
+    }
+    
     public static synchronized EmailGroup getEmailGroupById(Integer v)
     {
         try

@@ -51,9 +51,11 @@ import jw.bznetwork.client.data.model.Callsign;
 import jw.bznetwork.client.data.model.Configuration;
 import jw.bznetwork.client.data.model.EditablePermission;
 import jw.bznetwork.client.data.model.Group;
+import jw.bznetwork.client.data.model.IrcBot;
 import jw.bznetwork.client.data.model.Permission;
 import jw.bznetwork.client.data.model.Role;
 import jw.bznetwork.client.data.model.Server;
+import jw.bznetwork.client.data.model.Trigger;
 import jw.bznetwork.client.data.model.UserPair;
 import jw.bznetwork.client.live.LivePlayer;
 import jw.bznetwork.client.live.LivePlayer.GameType;
@@ -373,7 +375,7 @@ public class GlobalLinkImpl extends RemoteServiceServlet implements GlobalLink
         props.putAll(enabledProps);
         BZNetworkServer.saveEnabledAuthProps(props);
         StringBuffer details = new StringBuffer();
-        for (Entry<String,String> entry : enabledProps.entrySet())
+        for (Entry<String, String> entry : enabledProps.entrySet())
         {
             details.append(entry.getKey() + ": " + entry.getValue() + "\n");
         }
@@ -596,7 +598,8 @@ public class GlobalLinkImpl extends RemoteServiceServlet implements GlobalLink
                             new LivePlayer[0]));
                     
                 }
-                buildServerDetails(serverModel, liveServer, allTeams, autoExpand);
+                buildServerDetails(serverModel, liveServer, allTeams,
+                        autoExpand);
                 serverList.add(serverModel);
             }
             groupModel.setServers(serverList.toArray(new ServerModel[0]));
@@ -1157,5 +1160,64 @@ public class GlobalLinkImpl extends RemoteServiceServlet implements GlobalLink
         if (!saidToServer)
             throw new ShowMessageException(
                     "None of the servers you're searching on are running.");
+    }
+    
+    @Override
+    public void deleteIrcBot(int botid)
+    {
+        Verify.global("manage-irc");
+        Trigger[] triggers = DataStore.listTriggersByRecipient(botid);
+        for (Trigger trigger : triggers)
+        {
+            DataStore.deleteTrigger(trigger.getTriggerid());
+        }
+        DataStore.deleteIrcBot(botid);
+        BZNetworkServer.notifyIrcBotDeleted(botid);
+    }
+    
+    @Override
+    public IrcBot[] listIrcBots()
+    {
+        Verify.global("manage-irc");
+        return DataStore.listIrcBots();
+    }
+    
+    @Override
+    public void reconnectIrcBots()
+    {
+        Verify.global("manage-irc");
+        BZNetworkServer.notifyIrcReconnectRequested();
+    }
+    
+    @Override
+    public void updateIrcBot(int botid, String nick, String server, int port,
+            String password, String channel) throws ShowMessageException
+    {
+        IrcBot bot;
+        if (botid == -1)
+        {
+            bot = new IrcBot();
+            bot.setBotid(DataStore.createId());
+        }
+        else
+        {
+            bot = DataStore.getIrcBotById(botid);
+        }
+        bot.setChannel(channel);
+        bot.setNick(nick);
+        bot.setPassword(password);
+        bot.setPort(port);
+        bot.setServer(server);
+        if (botid == -1)
+        {
+            DataStore.addIrcBot(bot);
+            BZNetworkServer.notifyIrcBotAdded(bot);
+        }
+        else
+        {
+            IrcBot oldBot = DataStore.getIrcBotById(botid);
+            DataStore.updateIrcBot(bot);
+            BZNetworkServer.notifyIrcBotUpdated(oldBot, bot);
+        }
     }
 }

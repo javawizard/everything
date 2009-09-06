@@ -21,6 +21,7 @@ import java.util.HashMap;
 import java.util.Properties;
 import java.util.Random;
 import java.util.TimeZone;
+import java.util.Map.Entry;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.TimeUnit;
 
@@ -46,6 +47,7 @@ import jw.bznetwork.client.data.model.Action;
 import jw.bznetwork.client.data.model.Banfile;
 import jw.bznetwork.client.data.model.Configuration;
 import jw.bznetwork.client.data.model.Group;
+import jw.bznetwork.client.data.model.IrcBot;
 import jw.bznetwork.client.data.model.LogEvent;
 import jw.bznetwork.client.data.model.LogRequest;
 import jw.bznetwork.client.data.model.Permission;
@@ -70,6 +72,7 @@ import com.ibatis.sqlmap.client.SqlMapClientBuilder;
 public class BZNetworkServer implements ServletContextListener,
         HttpSessionListener
 {
+    private static HashMap<Integer, IrcServerBot> ircServerBotMap = new HashMap<Integer, IrcServerBot>();
     public static boolean isWindows = System.getProperty("os.name")
             .toLowerCase().contains("windows");
     /**
@@ -1450,5 +1453,90 @@ public class BZNetworkServer implements ServletContextListener,
     public static void logAction(Action action)
     {
         DataStore.addActionEvent(action);
+    }
+    
+    public static void notifyIrcBotDeleted(int botid)
+    {
+        synchronized (ircServerBotMap)
+        {
+            IrcServerBot bot = ircServerBotMap.get(botid);
+            if (bot != null)
+            {
+                bot.bznDestroy();
+                ircServerBotMap.remove(botid);
+            }
+        }
+    }
+    
+    public static void notifyIrcReconnectRequested()
+    {
+        synchronized (ircServerBotMap)
+        {
+            /*
+             * We'll iterate over a newly-constructed list here to avoid getting
+             * a ConcurrentModificationException since we're going to modify the
+             * list during iteration
+             */
+            for (Entry<Integer, IrcServerBot> entry : new ArrayList<Entry<Integer, IrcServerBot>>(
+                    ircServerBotMap.entrySet()))
+            {
+                int botid = entry.getKey();
+                IrcServerBot bot = entry.getValue();
+                bot.bznDestroy();
+                ircServerBotMap.remove(botid);
+            }
+            /*
+             * Now we'll get the list of bots from the database and create new
+             * bot objects for them.
+             */
+            IrcBot[] botList = DataStore.listIrcBots();
+            for (IrcBot bot : botList)
+            {
+                IrcServerBot serverBot = new IrcServerBot(bot);
+                ircServerBotMap.put(bot.getBotid(), serverBot);
+            }
+            /*
+             * ...and we're done!
+             */
+        }
+    }
+    
+    public static void notifyIrcBotAdded(IrcBot bot)
+    {
+        synchronized (ircServerBotMap)
+        {
+            IrcServerBot serverBot = new IrcServerBot(bot);
+            ircServerBotMap.put(bot.getBotid(), serverBot);
+        }
+    }
+    
+    public static void notifyIrcBotUpdated(IrcBot oldBot, IrcBot newBot)
+    {
+        synchronized (ircServerBotMap)
+        {
+            IrcServerBot bot = ircServerBotMap.get(newBot.getBotid());
+            if (bot != null)
+            {
+                bot.bznDestroy();
+                ircServerBotMap.remove(newBot.getBotid());
+            }
+            bot = new IrcServerBot(newBot);
+            ircServerBotMap.put(newBot.getBotid(), bot);
+        }
+    }
+    
+    public static IrcServerBot getServerBot(int botid)
+    {
+        synchronized (ircServerBotMap)
+        {
+            return ircServerBotMap.get(botid);
+        }
+    }
+    
+    public static void sendIrcBotMessage(int botid, String message)
+    {
+        IrcServerBot bot = getServerBot(botid);
+        if (bot != null)
+            bot.sendMessage(bot.getBot().getChannel(), message);
     }
 }

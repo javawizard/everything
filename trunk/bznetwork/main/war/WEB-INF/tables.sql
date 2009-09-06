@@ -10,7 +10,7 @@ create table idsequence (
 -- Holds the list of bznetwork-internal users.
 create table users (
     username varchar(64),  -- The username of this user. This can't be changed for now.
-    password varchar(512), -- The hexcoded SHA-512 hash of the user's password. Yes, I know that only 128 characters are needed to hold this.
+    password varchar(512), -- The hexcoded SHA-512 hash of the user's password. Yes, I know that only 129 (128 plus a possible minus sign) characters are needed to hold this.
     role     int           -- The role that has been assigned to this user
 );
 -- Holds the list of bzflag callsign groups and the role associated with them.

@@ -19,5 +19,6 @@
 	<classpathentry kind="lib" path="war/WEB-INF/lib/commons-fileupload-1.2.1.jar" sourcepath="/old-files/libraries/fileupload/commons-fileupload-1.2.1/lib/commons-fileupload-1.2.1-sources.jar"/>
 	<classpathentry kind="lib" path="war/WEB-INF/lib/gwtupload-0.3.0.jar"/>
 	<classpathentry kind="lib" path="war/WEB-INF/lib/log4j-1.2.15.jar"/>
+	<classpathentry kind="lib" path="war/WEB-INF/lib/pircbot.jar"/>
 	<classpathentry kind="output" path="war/WEB-INF/classes"/>
 </classpath>

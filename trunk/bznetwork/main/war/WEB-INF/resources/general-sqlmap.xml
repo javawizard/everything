@@ -6,6 +6,12 @@
 
 	<!-- !ADDTOSQL -->
 
+    <select id="listTriggersByRecipient" 
+         parameterClass="java.lang.Integer" 
+         resultClass="jw.bznetwork.client.data.model.Trigger" >
+        select * from triggers where recipient = #value#
+    </select>
+
     <select id="getEmailGroupById" 
          parameterClass="java.lang.Integer" 
          resultClass="jw.bznetwork.client.data.model.EmailGroup" >
