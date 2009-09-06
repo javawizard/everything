@@ -16,6 +16,7 @@ import jw.bznetwork.client.data.ServerListModel;
 import jw.bznetwork.client.data.UserSession;
 import jw.bznetwork.client.data.model.Banfile;
 import jw.bznetwork.client.data.model.Configuration;
+import jw.bznetwork.client.data.model.IrcBot;
 import jw.bznetwork.client.data.model.Permission;
 import jw.bznetwork.client.data.model.Role;
 import jw.bznetwork.client.data.model.Server;
@@ -132,4 +133,47 @@ public interface GlobalLink extends RemoteService
     
     public void say(ArrayList<Integer> servers, String message)
             throws ShowMessageException;
+    
+    public IrcBot[] listIrcBots();
+    
+    /**
+     * Updates the specified IRC bot to have these settings, or adds a new IRC
+     * bot if the bot id is -1.
+     * 
+     * @param botid
+     *            The id of the bot to update or -1 to create a new bot
+     * @param nick
+     *            The nickname that the bot should use
+     * @param server
+     *            The server that the bot should connect to
+     * @param port
+     *            The port that the bot should connect to (typically 6667)
+     * @param password
+     *            The password that the bot should use to authenticate to
+     *            services, or the empty string if the bot shouldn't
+     *            authenticate to services
+     * @param channel
+     *            The channel that the bot should join
+     * @throws ShowMessageException
+     */
+    public void updateIrcBot(int botid, String nick, String server, int port,
+            String password, String channel) throws ShowMessageException;
+    
+    /**
+     * Disconnects and then reconnects all of the IRC bots on the server. This
+     * can be used when the connected bots get out of sync with the actual bot
+     * list, which can occur if some actions are done too quickly. Right now,
+     * this is also required after making changes to an already-existing bot for
+     * those changes to take effect.
+     */
+    public void reconnectIrcBots();
+    
+    /**
+     * Deletes the irc bot with the specified id. If there are any triggers that
+     * use this bot as their target, they will be deleted as well.
+     * 
+     * @param botid
+     *            The id of the bot to delete
+     */
+    public void deleteIrcBot(int botid);
 }
