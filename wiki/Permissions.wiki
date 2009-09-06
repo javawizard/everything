@@ -52,6 +52,8 @@ Here is the list of available permissions and what they do. At the bottom of the
 || create-group            || global  ||Allows the user to create groups.||
 || rename-group            || group   ||Allows the user to rename a group.||
 || manage-irc              || global  ||Allows the user to manage the list of IRC bots.||
+|| manage-triggers         || global  ||Allows the user to manage triggers on the server.||
+|| manage-email-groups     || global  ||Allows the user to manage the email groups on the server. In the future, there will be permissions that can be used to grant access to the email addresses of email groups on an individual basis.||
 
 The following permissions are sensitive:
  * *manage-users:* The user can apply any role to their own account, allowing them to gain the highest possible level of access of anyone on the server.
