@@ -14,6 +14,8 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Comparator;
 
 import javax.swing.*;
 
@@ -236,8 +238,7 @@ public class AddToSql
     private static void loadClasses() throws Exception
     {
         classes.add(new ClassChoice());
-        File[] files = new File(
-                "src/jw/bznetwork/client/data/model")
+        File[] files = new File("src/jw/bznetwork/client/data/model")
                 .listFiles(new FileFilter()
                 {
                     
@@ -246,6 +247,15 @@ public class AddToSql
                         return pathname.getName().endsWith(".java");
                     }
                 });
+        Arrays.sort(files, new Comparator<File>()
+        {
+
+            @Override
+            public int compare(File o1, File o2)
+            {
+                return o1.getName().compareTo(o2.getName());
+            }
+        });
         for (File file : files)
         {
             String name = file.getName().substring(0,

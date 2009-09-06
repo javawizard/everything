@@ -9,12 +9,16 @@ import jw.bznetwork.client.data.model.Banfile;
 import jw.bznetwork.client.data.model.Callsign;
 import jw.bznetwork.client.data.model.ConfigSetting;
 import jw.bznetwork.client.data.model.Configuration;
+import jw.bznetwork.client.data.model.EmailGroup;
 import jw.bznetwork.client.data.model.Group;
+import jw.bznetwork.client.data.model.IrcBot;
 import jw.bznetwork.client.data.model.LogEvent;
 import jw.bznetwork.client.data.model.LogRequest;
 import jw.bznetwork.client.data.model.Permission;
 import jw.bznetwork.client.data.model.Role;
 import jw.bznetwork.client.data.model.Server;
+import jw.bznetwork.client.data.model.TargetEventPair;
+import jw.bznetwork.client.data.model.Trigger;
 import jw.bznetwork.client.data.model.User;
 import jw.bznetwork.client.data.model.UserPair;
 import jw.bznetwork.client.data.model.ValueFive;
@@ -58,6 +62,221 @@ public class DataStore
     }
     
     // !ADDTOSQL
+    
+    public static synchronized EmailGroup getEmailGroupById(Integer v)
+    {
+        try
+        {
+            return (EmailGroup) getGdbClient().queryForObject(
+                    "getEmailGroupById", v);
+        }
+        catch (Exception e)
+        {
+            throw new RuntimeException(
+                    "Exception in database statement getEmailGroupById", e);
+        }
+    }
+    
+    public static synchronized IrcBot getIrcBotById(Integer v)
+    {
+        try
+        {
+            return (IrcBot) getGdbClient().queryForObject("getIrcBotById", v);
+        }
+        catch (Exception e)
+        {
+            throw new RuntimeException(
+                    "Exception in database statement getIrcBotById", e);
+        }
+    }
+    
+    public static synchronized Trigger getTriggerById(Integer v)
+    {
+        try
+        {
+            return (Trigger) getGdbClient().queryForObject("getTriggerById", v);
+        }
+        catch (Exception e)
+        {
+            throw new RuntimeException(
+                    "Exception in database statement getTriggerById", e);
+        }
+    }
+    
+    public static synchronized Trigger[] listTriggersByTargetAndEvent(
+            TargetEventPair v)
+    {
+        try
+        {
+            return (Trigger[]) getGdbClient().queryForList(
+                    "listTriggersByTargetAndEvent", v).toArray(new Trigger[0]);
+        }
+        catch (Exception e)
+        {
+            throw new RuntimeException(
+                    "Exception in database statement listTriggersByTargetAndEvent",
+                    e);
+        }
+    }
+    
+    public static synchronized IrcBot[] listIrcBots()
+    {
+        try
+        {
+            return (IrcBot[]) getGdbClient().queryForList("listIrcBots")
+                    .toArray(new IrcBot[0]);
+        }
+        catch (Exception e)
+        {
+            throw new RuntimeException(
+                    "Exception in database statement listIrcBots", e);
+        }
+    }
+    
+    public static synchronized EmailGroup[] listEmailGroups()
+    {
+        try
+        {
+            return (EmailGroup[]) getGdbClient()
+                    .queryForList("listEmailGroups").toArray(new EmailGroup[0]);
+        }
+        catch (Exception e)
+        {
+            throw new RuntimeException(
+                    "Exception in database statement listEmailGroups", e);
+        }
+    }
+    
+    public static synchronized Trigger[] listTriggers()
+    {
+        try
+        {
+            return (Trigger[]) getGdbClient().queryForList("listTriggers")
+                    .toArray(new Trigger[0]);
+        }
+        catch (Exception e)
+        {
+            throw new RuntimeException(
+                    "Exception in database statement listTriggers", e);
+        }
+    }
+    
+    public static synchronized void updateTrigger(Trigger v)
+    {
+        try
+        {
+            getGdbClient().update("updateTrigger", v);
+        }
+        catch (Exception e)
+        {
+            throw new RuntimeException(
+                    "Exception in database statement updateTrigger", e);
+        }
+    }
+    
+    public static synchronized void deleteTrigger(Integer v)
+    {
+        try
+        {
+            getGdbClient().delete("deleteTrigger", v);
+        }
+        catch (Exception e)
+        {
+            throw new RuntimeException(
+                    "Exception in database statement deleteTrigger", e);
+        }
+    }
+    
+    public static synchronized void addTrigger(Trigger v)
+    {
+        try
+        {
+            getGdbClient().insert("addTrigger", v);
+        }
+        catch (Exception e)
+        {
+            throw new RuntimeException(
+                    "Exception in database statement addTrigger", e);
+        }
+    }
+    
+    public static synchronized void updateIrcBot(IrcBot v)
+    {
+        try
+        {
+            getGdbClient().update("updateIrcBot", v);
+        }
+        catch (Exception e)
+        {
+            throw new RuntimeException(
+                    "Exception in database statement updateIrcBot", e);
+        }
+    }
+    
+    public static synchronized void updateEmailGroup(EmailGroup v)
+    {
+        try
+        {
+            getGdbClient().update("updateEmailGroup", v);
+        }
+        catch (Exception e)
+        {
+            throw new RuntimeException(
+                    "Exception in database statement updateEmailGroup", e);
+        }
+    }
+    
+    public static synchronized void deleteEmailGroup(Integer v)
+    {
+        try
+        {
+            getGdbClient().delete("deleteEmailGroup", v);
+        }
+        catch (Exception e)
+        {
+            throw new RuntimeException(
+                    "Exception in database statement deleteEmailGroup", e);
+        }
+    }
+    
+    public static synchronized void addEmailGroup(EmailGroup v)
+    {
+        try
+        {
+            getGdbClient().insert("addEmailGroup", v);
+        }
+        catch (Exception e)
+        {
+            throw new RuntimeException(
+                    "Exception in database statement addEmailGroup", e);
+        }
+    }
+    
+    public static synchronized void deleteIrcBot(Integer v)
+    {
+        try
+        {
+            getGdbClient().delete("deleteIrcBot", v);
+        }
+        catch (Exception e)
+        {
+            throw new RuntimeException(
+                    "Exception in database statement deleteIrcBot", e);
+        }
+    }
+    
+    public static synchronized void addIrcBot(IrcBot v)
+    {
+        try
+        {
+            getGdbClient().insert("addIrcBot", v);
+        }
+        catch (Exception e)
+        {
+            throw new RuntimeException(
+                    "Exception in database statement addIrcBot", e);
+        }
+    }
     
     public static synchronized ConfigSetting getConfigSetting(String v)
     {

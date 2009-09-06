@@ -112,18 +112,24 @@ create table ircbots (
     server    varchar(64),  -- The server that this bot should connect to
     port      int,          -- The port that this bot should connect to
     password  varchar(64),  -- The password that this bot should authenticate to services with, or null or the empty string to not authenticate
-    channel   varchar(64)   -- The channel that the bot should join. Only one channel is supported for now, although support for more may be added in the future.
+    channel   varchar(64)   -- The channel that the bot should join. Only one channel is supported for now, although support for more may be added in the future (which would probably involve creating multiple bots with the same nick and server; only one of them would be required to have the password, and its password would be used when the conglomerate bot is connected)
 );
--- Holds the list of messages for the IRC bots. BZNetwork stores all of the data in this table in memory so that it doesn't have to ask the server for the table's content wheneter an event occurs.
-create table ircmessages (
-    botid     int,          -- The id of the bot that this message is for
-    messageid int,          -- The id of this message
-    event     varchar(64),  -- The name of the log event that triggers this message, or the name of an internal event (which are all prefixed with "_") that triggers this message
-    target    int,          -- The target that triggering events should occur on. This is either a server id, a group id, or -1 for global
-    message   varchar(512)  -- The message to send. This can include various %something% strings, depending on the event.
+-- Holds the list of email groups. These are lists of email addresses that can be used as the target for a trigger, resulting in an email being sent to the users listed here when the trigger is triggered.
+create table emailgroups (
+    emailgroupid  int,           -- The id of this email group
+    name          varchar(64),   -- The name of this email group
+    addresses     varchar(2048)  -- A pipe-separated list of the email addresses that are in this email group
 );
-
-
+-- Holds the list of triggers present on the server. A trigger consists of an event and 
+create table `triggers` (
+    triggerid   int,           -- The id of this trigger
+    event       varchar(64),   -- The name of the log event that triggers this message, or the name of an internal event (which are all prefixed with "_") that triggers this message
+    target      int,           -- The target that triggering events should occur on. This is either a server id, a group id, or -1 for global
+    sendtype    varchar(64),   -- The type of recipient. This can be either "ircbot" or "emailgroup".
+    recipient   int,           -- The recipient to send to
+    subject     varchar(512),  -- The subject of the message. This is only relevant for messages with an email recipient; messages with an irc recipient do not use this.      
+    message     varchar(8192)  -- The message to send. This can include various %something% strings, depending on the event. For irc targets, individual lines will be sent as separate messages, and leading and trailing blank messages will be removed.
+);
 -- Now for some initial table rows.
 insert into configuration values ('Congratulations! You''ve successfully installed BZNetwork onto your server. Head on over to the Configuration page to change this message. Then check out the Getting Started link on the Help page to get started.', 
 'MySiteName', 'mybznetworksite@example.com', 'bzfs', true, false);

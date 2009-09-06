@@ -47,6 +47,14 @@
 		<servlet-name>mapUploadServlet</servlet-name>
 		<url-pattern>*.gwtupmap</url-pattern>
 	</servlet-mapping>
+	<servlet>
+		<servlet-name>redirectToRoot</servlet-name>
+		<servlet-class>jw.bznetwork.server.RootRedirectServlet</servlet-class>
+	</servlet>
+	<servlet-mapping>
+		<servlet-name>redirectToRoot</servlet-name>
+		<url-pattern>/,</url-pattern>
+	</servlet-mapping>
 	<listener>
 		<listener-class> jw.bznetwork.server.BZNetworkServer </listener-class>
 	</listener>

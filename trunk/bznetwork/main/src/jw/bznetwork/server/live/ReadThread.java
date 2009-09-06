@@ -10,6 +10,7 @@ import jw.bznetwork.client.data.model.Server;
 import jw.bznetwork.client.live.LivePlayer;
 import jw.bznetwork.client.live.LivePlayer.GameType;
 import jw.bznetwork.client.live.LivePlayer.TeamType;
+import jw.bznetwork.server.BZNetworkServer;
 import jw.bznetwork.server.data.DataStore;
 
 /**
@@ -150,7 +151,7 @@ public class ReadThread extends Thread
         event.setData(outString);
         try
         {
-            DataStore.addLogEvent(event);
+            BZNetworkServer.logEvent(event);
         }
         catch (Exception e)
         {
@@ -166,7 +167,7 @@ public class ReadThread extends Thread
         event.setData(outString);
         try
         {
-            DataStore.addLogEvent(event);
+            BZNetworkServer.logEvent(event);
         }
         catch (Exception e)
         {
@@ -243,7 +244,7 @@ public class ReadThread extends Thread
         if (player != null && player.getTeam() != null)
             event.setSourceteam(player.getTeam().name());
         event.setData(message);
-        DataStore.addLogEvent(event);
+        BZNetworkServer.logEvent(event);
     }
     
     private void processSlashCommand(String substring)
@@ -273,7 +274,7 @@ public class ReadThread extends Thread
             event.setData(message.substring("/report ".length()));
         else
             event.setData(message);
-        DataStore.addLogEvent(event);
+        BZNetworkServer.logEvent(event);
     }
     
     private void processBznFail(String substring)
@@ -396,7 +397,7 @@ public class ReadThread extends Thread
             event.setTargetteam(toTeam);
         event.setData(message);
         event.setEvent("chat-" + chatType);
-        DataStore.addLogEvent(event);
+        BZNetworkServer.logEvent(event);
     }
     
     private void processPlayerJoin(String substring)
@@ -424,7 +425,7 @@ public class ReadThread extends Thread
         event.setSourceteam(player.getTeam().name());
         event.setData((player.isVerified() ? "verified" : "notverified") + " "
                 + (player.isAdmin() ? "admin" : "notadmin"));
-        DataStore.addLogEvent(event);
+        BZNetworkServer.logEvent(event);
     }
     
     private void processPlayerPart(String substring)
@@ -443,7 +444,7 @@ public class ReadThread extends Thread
         event.setSourceid(player.getId());
         event.setSourceteam(player.getTeam().name());
         event.setData(reason);
-        DataStore.addLogEvent(event);
+        BZNetworkServer.logEvent(event);
         server.getPlayers().remove(player);
         server.getCallsignsToPlayers().remove(player.getCallsign());
         server.getIdsToPlayers().remove(player.getId());

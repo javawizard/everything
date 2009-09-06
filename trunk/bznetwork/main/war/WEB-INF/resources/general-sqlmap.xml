@@ -5,6 +5,120 @@
 <sqlMap>
 
 	<!-- !ADDTOSQL -->
+
+    <select id="getEmailGroupById" 
+         parameterClass="java.lang.Integer" 
+         resultClass="jw.bznetwork.client.data.model.EmailGroup" >
+        select * from emailgroups where emailgroupid=#value#
+    </select>
+
+    <select id="getIrcBotById" 
+         parameterClass="java.lang.Integer" 
+         resultClass="jw.bznetwork.client.data.model.IrcBot" >
+        select * from ircbots where botid = #value#
+    </select>
+
+    <select id="getTriggerById" 
+         parameterClass="java.lang.Integer" 
+         resultClass="jw.bznetwork.client.data.model.Trigger" >
+        select * from `triggers` where triggerid = #value#
+    </select>
+
+    <select id="listTriggersByTargetAndEvent" 
+         parameterClass="jw.bznetwork.client.data.model.TargetEventPair" 
+         resultClass="jw.bznetwork.client.data.model.Trigger" >
+        select * from triggers
+        where event=#event#
+        and target=#target#
+    </select>
+
+    <select id="listIrcBots" 
+         resultClass="jw.bznetwork.client.data.model.IrcBot" >
+        select * from ircbots
+    </select>
+
+    <select id="listEmailGroups" 
+         resultClass="jw.bznetwork.client.data.model.EmailGroup" >
+        select * from emailgroups
+    </select>
+
+    <select id="listTriggers" 
+         resultClass="jw.bznetwork.client.data.model.Trigger" >
+        select * from triggers
+    </select>
+
+    <update id="updateTrigger" 
+         parameterClass="jw.bznetwork.client.data.model.Trigger" >
+        update `triggers` set
+        event=#event#,
+        target=#target#,
+        sendtype=#sendtype#,
+        recipient=#recipient#,
+        subject=#subject#,
+        message=#message#
+        where triggerid=#triggerid#
+    </update>
+
+    <delete id="deleteTrigger" 
+         parameterClass="java.lang.Integer" >
+        delete from `triggers`
+        where triggerid = #value#
+    </delete>
+
+    <insert id="addTrigger" 
+         parameterClass="jw.bznetwork.client.data.model.Trigger" >
+        insert into `triggers`
+        (triggerid,event,target,sendtype,recipient,subject,message)
+        values
+        (#triggerid#,#event#,#target#,#sendtype#,#recipient#,
+        #subject#,#message#)
+    </insert>
+
+    <update id="updateIrcBot" 
+         parameterClass="jw.bznetwork.client.data.model.IrcBot" >
+        update ircbots set
+        nick=#nick#,
+        server=#server#,
+        port=#port#,
+        password=#password#,
+        channel=#channel#
+        where botid = #botid#
+    </update>
+
+    <update id="updateEmailGroup" 
+         parameterClass="jw.bznetwork.client.data.model.EmailGroup" >
+        update emailgroups set
+        name=#name#,
+        addresses=#addresses#
+        where emailgroupid = #emailgroupid#
+    </update>
+
+    <delete id="deleteEmailGroup" 
+         parameterClass="java.lang.Integer" >
+        delete from emailgroups where emailgroupid = #value#
+    </delete>
+
+    <insert id="addEmailGroup" 
+         parameterClass="jw.bznetwork.client.data.model.EmailGroup" >
+        insert into emailgroups
+        (emailgroupid,name,addresses)
+        values
+        (#emailgroupid#,#name#,#addresses#)
+    </insert>
+
+    <delete id="deleteIrcBot" 
+         parameterClass="java.lang.Integer" >
+        delete from ircbots where botid = #value#
+    </delete>
+
+    <insert id="addIrcBot" 
+         parameterClass="jw.bznetwork.client.data.model.IrcBot" >
+        insert into ircbots
+        (botid,nick,server,port,password,channel)
+        values
+        (#botid#,#nick#,#server#,#port#,#password#,#channel#
+        )
+    </insert>
 	<select id="getConfigSetting" parameterClass="java.lang.String"
 		resultClass="jw.bznetwork.client.data.model.ConfigSetting"> select * from configsettings where name = #name#</select>
 	<update id="updateConfigSetting" parameterClass="jw.bznetwork.client.data.model.ConfigSetting"> update

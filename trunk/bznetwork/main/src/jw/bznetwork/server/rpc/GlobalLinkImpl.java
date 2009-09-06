@@ -22,6 +22,7 @@ import org.apache.commons.lang.StringEscapeUtils;
 
 import net.sf.opengroove.common.utils.StringUtils;
 
+import jw.bznetwork.client.Constants;
 import jw.bznetwork.client.Perms;
 import jw.bznetwork.client.SettingType;
 import jw.bznetwork.client.Settings;
@@ -1029,7 +1030,7 @@ public class GlobalLinkImpl extends RemoteServiceServlet implements GlobalLink
         action.setTarget(-1);
         action.setUsername(user.getUsername());
         action.setWhen(new Date());
-        DataStore.addActionEvent(action);
+        BZNetworkServer.logAction(action);
     }
     
     @Override
@@ -1052,7 +1053,7 @@ public class GlobalLinkImpl extends RemoteServiceServlet implements GlobalLink
         action.setTarget(-1);
         action.setUsername(user);
         action.setWhen(new Date());
-        DataStore.addActionEvent(action);
+        BZNetworkServer.logAction(action);
     }
     
     @Override
@@ -1099,7 +1100,7 @@ public class GlobalLinkImpl extends RemoteServiceServlet implements GlobalLink
                 okServers.add(s);
         }
         model.setServers(okServers.toArray(new Server[0]));
-        model.setEvents(BZNetworkServer.LOG_EVENTS);
+        model.setEvents(Constants.LOG_EVENTS);
         return model;
     }
     

@@ -74,7 +74,7 @@ public class BZNetwork implements EntryPoint
      */
     public static final String SERVER_ERROR = "An error occurred while "
             + "attempting to contact the server. Please check your network "
-            + "connection and try again.\nFailing that, join "
+            + "connection and try again. \nFailing that, join "
             + "#bztraining on irc.freenode.net and ask jcp for help.";
     
     public static final GlobalLinkAsync authLink = GWT.create(GlobalLink.class);
