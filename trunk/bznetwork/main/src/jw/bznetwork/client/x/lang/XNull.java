@@ -11,4 +11,9 @@ public class XNull extends XData
     {
         return obj != null && obj instanceof XNull;
     }
+    
+    public int hashCode()
+    {
+        return 0;
+    }
 }

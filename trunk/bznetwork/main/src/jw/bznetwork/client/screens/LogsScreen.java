@@ -324,7 +324,6 @@ public class LogsScreen extends VerticalScreen
         RequestBuilder builder = new RequestBuilder(RequestBuilder.GET, url);
         builder.setTimeoutMillis(30 * 1000);
         final PopupPanel box = BZNetwork.showLoadingBox();
-        xmlHttpRequest = null;
         builder.setCallback(new RequestCallback()
         {
             
@@ -369,7 +368,7 @@ public class LogsScreen extends VerticalScreen
         });
         try
         {
-            Request request = builder.send();
+            builder.send();
             // xmlHttpRequest = BZNetwork.getXMLHttpRequest(request);
         }
         catch (RequestException e)

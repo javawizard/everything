@@ -889,7 +889,7 @@ public class ServersScreen extends VerticalScreen
     {
         final PopupPanel box = new PopupPanel(false, true);
         FlexTable table = new FlexTable();
-        FlexCellFormatter format = table.getFlexCellFormatter();
+//        FlexCellFormatter format = table.getFlexCellFormatter();
         box.setWidget(table);
         table.setWidget(0, 0, new Header3("Upload new map for "
                 + server.getName()));

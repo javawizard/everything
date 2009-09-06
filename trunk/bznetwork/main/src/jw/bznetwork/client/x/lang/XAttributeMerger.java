@@ -16,15 +16,13 @@ import java.util.HashSet;
  * It then returns the number of tags that were consumed (so that those tags can
  * be skipped when the content is executed, if the command is a code function),
  * the value of each attribute/tag, and whether the attribute/tag was an
- * attribute or a tag.<br/>
- * <br/>
+ * attribute or a tag.<br/> <br/>
  * 
  * Normally, all attributes are required, and if neither an attribute nor a tag
  * is present, an exception will be thrown. This can be overridden by specifying
  * an extra array to the constructor, which is a list of booleans representing
  * whether or not a particular attribute is required. A missing attribute
- * evaluates to null, not XNull.<br/>
- * <br/>
+ * evaluates to null, not XNull.<br/> <br/>
  * 
  * Additionally, an XInterpreterContext can be specified, as well as a boolean
  * list. When this is the case, any values that have their respective boolean
@@ -60,8 +58,9 @@ public class XAttributeMerger
      * @param context
      * @param resolveToVar
      */
-    public XAttributeMerger(XElement element, String[] attributes, boolean[] asNumbers,
-        boolean[] optional, XInterpreterContext context, boolean[] resolveToVar)
+    public XAttributeMerger(XElement element, String[] attributes,
+            boolean[] asNumbers, boolean[] optional,
+            XInterpreterContext context, boolean[] resolveToVar)
     {
         if (asNumbers == null)
             asNumbers = new boolean[attributes.length];
@@ -113,7 +112,7 @@ public class XAttributeMerger
             XElement ce = (XElement) child;
             String tag = ce.getTag();
             if (allowedAttributes.containsKey(tag.toLowerCase())
-                && !fromAttributeList.contains(tag.toLowerCase()))
+                    && !fromAttributeList.contains(tag.toLowerCase()))
             {
                 /*
                  * This tag is valid. We'll interpret the single element and set
@@ -142,7 +141,7 @@ public class XAttributeMerger
             {
                 if (!optional[i] && resultData[i] == null)
                     throw new XException("Required attribute " + attributes[i]
-                        + " was not present as a tag or as an attribute");
+                            + " was not present as a tag or as an attribute");
             }
         }
         /*
@@ -167,7 +166,8 @@ public class XAttributeMerger
     
     public boolean fromAttribute(int index)
     {
-        return fromAttribute(index);
+        // return fromAttribute(index);
+        throw new RuntimeException("Something's wrong with this method...");
     }
     
     /**

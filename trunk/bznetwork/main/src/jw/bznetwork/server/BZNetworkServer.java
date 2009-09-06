@@ -480,7 +480,13 @@ public class BZNetworkServer implements ServletContextListener,
                     .prepareStatement("select * from configuration");
             ResultSet rs = st.executeQuery();
             if (!rs.next())
+            {
+                rs.close();
+                st.close();
                 throw new RuntimeException();
+            }
+            rs.close();
+            st.close();
         }
         catch (Exception e)
         {
@@ -753,10 +759,10 @@ public class BZNetworkServer implements ServletContextListener,
         synchronized (BZNetworkServer.class)
         {
             Server server = DataStore.getServerById(id);
-            Group group = DataStore.getGroupById(server.getGroupid());
             if (server == null)
                 throw new IllegalArgumentException(
                         "There is no server with the id " + id);
+            Group group = DataStore.getGroupById(server.getGroupid());
             if (group == null)
                 throw new IllegalStateException("Orphaned server");
             if (server.getPort() == 0 || server.getPort() == -1)

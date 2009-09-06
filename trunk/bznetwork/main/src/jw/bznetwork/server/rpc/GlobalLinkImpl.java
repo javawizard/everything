@@ -9,6 +9,7 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Properties;
+import java.util.Map.Entry;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import javax.servlet.ServletException;
@@ -372,9 +373,9 @@ public class GlobalLinkImpl extends RemoteServiceServlet implements GlobalLink
         props.putAll(enabledProps);
         BZNetworkServer.saveEnabledAuthProps(props);
         StringBuffer details = new StringBuffer();
-        for (String key : enabledProps.keySet())
+        for (Entry<String,String> entry : enabledProps.entrySet())
         {
-            details.append(key + ": " + enabledProps.get(key) + "\n");
+            details.append(entry.getKey() + ": " + entry.getValue() + "\n");
         }
         if (details.toString().endsWith("\n"))
         {

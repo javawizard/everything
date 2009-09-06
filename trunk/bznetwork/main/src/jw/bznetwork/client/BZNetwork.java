@@ -662,6 +662,15 @@ public class BZNetwork implements EntryPoint
                     + "your session timed out. Refresh the page "
                     + "to log back in.");
         }
+        else if (t instanceof StatusCodeException
+                && ((StatusCodeException) t).getStatusCode() == 0)
+        {
+            Window
+                    .alert("You aren't connected to the internet. Connect to the "
+                            + "internet, then try again. If you're sure you're connected,"
+                            + " our servers might be down for maintenance, so wait a few "
+                            + "minutes and try again.");
+        }
         else if (t instanceof StatusCodeException)
         {
             Window

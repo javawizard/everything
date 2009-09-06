@@ -98,7 +98,7 @@ public class XInterpreterContext
      */
     public void setVariable(String var, XData value)
     {
-        if (var == null)
+        if (value == null)
             variables.remove(var);
         else
             variables.put(var, value);
