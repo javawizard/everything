@@ -1,12 +1,13 @@
 package jw.bznetwork.server;
 
+import jw.bznetwork.client.Settings;
 import jw.bznetwork.client.data.model.IrcBot;
 
 import org.jibble.pircbot.PircBot;
 
 public class IrcServerBot extends PircBot
 {
-    private boolean isLive;
+    private boolean isLive = true;
     
     private int botid;
     private IrcBot bot;
@@ -29,10 +30,11 @@ public class IrcServerBot extends PircBot
         setAutoNickChange(true);
         super.setLogin(bot.getNick());
         super.setName(bot.getNick());
-        super.setVersion("BZNetwork IRC bot");
+        super.setVersion(Settings.sitename.getString() + " IRC bot");
         super
                 .setFinger("BZNetwork totally owns everyone else. And I don't much "
                         + "like PircBot's built-in finger response so I'm overriding it.");
+        System.out.println("calling startConnect() on irc bot");
         startConnect();
     }
     
@@ -42,6 +44,7 @@ public class IrcServerBot extends PircBot
         {
             public void run()
             {
+                System.out.println("about to run startConnect1()");
                 startConnect1();
             }
         }.start();
@@ -51,11 +54,15 @@ public class IrcServerBot extends PircBot
     {
         try
         {
+            System.out.println("about to attempt initial connection");
             connect(bot.getServer(), bot.getPort(), ("".equals(bot
                     .getPassword()) ? null : bot.getPassword()));
+            System.out.println("initial connection successful");
         }
         catch (Exception e)
         {
+            System.out.println("initial connection failed");
+            e.printStackTrace();
             onDisconnect();
         }
     }

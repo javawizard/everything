@@ -420,6 +420,7 @@ public class BZNetworkServer implements ServletContextListener,
                 }
             }
             Perms.installProvider(new ServerPermissionsProvider());
+            notifyIrcReconnectRequested();
         }
         catch (Exception e)
         {

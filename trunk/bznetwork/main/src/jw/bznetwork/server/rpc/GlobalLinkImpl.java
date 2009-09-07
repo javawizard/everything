@@ -1193,6 +1193,7 @@ public class GlobalLinkImpl extends RemoteServiceServlet implements GlobalLink
     public void updateIrcBot(int botid, String nick, String server, int port,
             String password, String channel) throws ShowMessageException
     {
+        Verify.global("manage-irc");
         IrcBot bot;
         if (botid == -1)
         {

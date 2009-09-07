@@ -59,8 +59,8 @@ public class ReadThread extends Thread
             while (true)
             {
                 i = in.read();
-                System.out.println("Byte from server: " + i + ", hex: "
-                        + Integer.toHexString(i));
+//                System.out.println("Byte from server: " + i + ", hex: "
+//                        + Integer.toHexString(i));
                 if (i == -1)
                     break;
                 if (i == '|')

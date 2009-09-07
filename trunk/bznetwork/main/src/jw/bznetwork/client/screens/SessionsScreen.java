@@ -126,9 +126,10 @@ public class SessionsScreen extends VerticalScreen
                 forceLogoutButton.addClickListener(new ForceLogoutListener(us
                         .getId()));
                 table.setText(row, 4, us.getUserAgent());
-                table.setText(row, 5, new Date(us.getLoggedIn()).toString());
-                table.setText(row, 6, new Date(us.getLastAccessTime())
-                        .toString());
+                table.setText(row, 5, BZNetwork.format(new Date(us
+                        .getLoggedIn())));
+                table.setText(row, 6, BZNetwork.format(new Date(us
+                        .getLastAccessTime())));
                 table.setWidget(row, 7, forceLogoutButton);
             }
         }
