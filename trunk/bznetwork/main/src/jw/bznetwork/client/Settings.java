@@ -41,7 +41,17 @@ public enum Settings
             "Public hostname",
             "This is the hostname that will be used in the -publicaddr switch "
                     + "added to each server. Leave this blank if you don't want BZNetwork"
-                    + " to automatically add -publicaddr to your servers.", ""), menuleft(
+                    + " to automatically add -publicaddr to your servers.", ""), datetimeformat(
+            SettingType.text, "Date/time format",
+            "This is the format that should be used to format dates, provided "
+                    + "as a Java SimpleDateFormat string.",
+            "yyyy/MM/dd  hh:mm.ss aa"), dateformat(
+            SettingType.text,
+            "Date-only format",
+            "This is the format that should be used to format dates where only the date (IE "
+                    + "not the time) is needed, provided "
+                    + "as a Java SimpleDateFormat string.",
+            "yyyy/MM/dd"), menuleft(
             SettingType.checkbox,
             "Show menu to the left",
             "If this is checked, the list of pages shows up to the left. If "

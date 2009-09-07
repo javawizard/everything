@@ -6,6 +6,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
+import java.util.Formatter;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Properties;
@@ -83,6 +84,7 @@ public class GlobalLinkImpl extends RemoteServiceServlet implements GlobalLink
     public void service(ServletRequest req, ServletResponse res)
             throws ServletException, IOException
     {
+        Formatter f;
         HttpServletRequest hReq = (HttpServletRequest) req;
         if (hReq.getSession(false) == null
                 || hReq.getSession().getAttribute("user") == null)
@@ -1220,5 +1222,26 @@ public class GlobalLinkImpl extends RemoteServiceServlet implements GlobalLink
             DataStore.updateIrcBot(bot);
             BZNetworkServer.notifyIrcBotUpdated(oldBot, bot);
         }
+    }
+
+    @Override
+    public void deleteTrigger(int triggerid)
+    {
+        // TODO Auto-generated method stub
+        
+    }
+
+    @Override
+    public Trigger[] listTriggers()
+    {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
+    @Override
+    public void updateTrigger(Trigger trigger)
+    {
+        // TODO Auto-generated method stub
+        
     }
 }

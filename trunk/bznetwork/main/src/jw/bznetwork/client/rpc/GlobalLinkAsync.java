@@ -38,6 +38,8 @@ import jw.bznetwork.client.data.model.Role;
 
 import jw.bznetwork.client.data.model.Server;
 
+import jw.bznetwork.client.data.model.Trigger;
+
 import com.google.gwt.user.client.rpc.RemoteService;
 
 import com.google.gwt.user.client.rpc.RemoteServiceRelativePath;
@@ -192,5 +194,11 @@ public void reconnectIrcBots(AsyncCallback<Void> callback);
 *            The id of the bot to delete
 */
 public void deleteIrcBot(int botid, AsyncCallback<Void> callback);
+
+public void listTriggers(AsyncCallback<Trigger[]> callback);
+
+public void updateTrigger(Trigger trigger, AsyncCallback<Void> callback);
+
+public void deleteTrigger(int triggerid, AsyncCallback<Void> callback);
 
 }

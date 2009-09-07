@@ -1061,7 +1061,8 @@ public class BZNetworkServer implements ServletContextListener,
             timezone = TimeZone.getDefault();
         else
             timezone = TimeZone.getTimeZone(timezoneName);
-        SimpleDateFormat dateFormat = new SimpleDateFormat(DATE_FORMAT_STRING);
+        SimpleDateFormat dateFormat = new SimpleDateFormat(
+                Settings.datetimeformat.getString());
         dateFormat.setTimeZone(timezone);
         String startString = request.getParameter("start");
         String endString = request.getParameter("end");
@@ -1436,10 +1437,8 @@ public class BZNetworkServer implements ServletContextListener,
     /**
      * The double space between the date and time is intentional.
      */
-    public static String DATE_FORMAT_STRING = "yyyy/MM/dd  hh:mm.ss aa";
     
-    private static SimpleDateFormat dateFormat = new SimpleDateFormat(
-            DATE_FORMAT_STRING);
+    private static SimpleDateFormat dateFormat = null;
     
     public static String formatDateTime(Date when)
     {

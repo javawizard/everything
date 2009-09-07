@@ -176,6 +176,19 @@ public class BZNetwork implements EntryPoint
     private void init1()
     {
         Window.setTitle(publicConfiguration.getString(Settings.sitename));
+        try
+        {
+            dateFormat = DateTimeFormat.getFormat(publicConfiguration
+                    .getString(Settings.datetimeformat));
+            dateOnlyFormat = DateTimeFormat.getFormat(publicConfiguration
+                    .getString(Settings.dateformat));
+        }
+        catch (Exception e)
+        {
+            dateFormat = DateTimeFormat.getFormat("'Invalid date/time format'");
+            dateOnlyFormat = DateTimeFormat
+                    .getFormat("'Invalid date-only format'");
+        }
         unauthLink.getThisUser(new AsyncCallback<AuthUser>()
         {
             
@@ -734,16 +747,14 @@ public class BZNetwork implements EntryPoint
         return box;
     }
     
-    private static final DateTimeFormat dateFormat = DateTimeFormat
-            .getFormat("yyyy/MM/dd hh:mm.ss aa");
+    private static DateTimeFormat dateFormat;
     
     public static String format(Date date)
     {
         return dateFormat.format(date);
     }
     
-    private static final DateTimeFormat dateOnlyFormat = DateTimeFormat
-            .getFormat("yyyy/MM/dd");
+    private static DateTimeFormat dateOnlyFormat;
     
     public static String formatDate(Date date)
     {

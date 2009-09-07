@@ -20,6 +20,7 @@ import jw.bznetwork.client.data.model.IrcBot;
 import jw.bznetwork.client.data.model.Permission;
 import jw.bznetwork.client.data.model.Role;
 import jw.bznetwork.client.data.model.Server;
+import jw.bznetwork.client.data.model.Trigger;
 
 import com.google.gwt.user.client.rpc.RemoteService;
 import com.google.gwt.user.client.rpc.RemoteServiceRelativePath;
@@ -176,4 +177,10 @@ public interface GlobalLink extends RemoteService
      *            The id of the bot to delete
      */
     public void deleteIrcBot(int botid);
+    
+    public Trigger[] listTriggers();
+    
+    public void updateTrigger(Trigger trigger);
+    
+    public void deleteTrigger(int triggerid);
 }
