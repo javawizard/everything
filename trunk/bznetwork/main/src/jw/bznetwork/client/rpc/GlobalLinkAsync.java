@@ -20,6 +20,8 @@ import jw.bznetwork.client.data.EditConfigurationModel;
 
 import jw.bznetwork.client.data.EditPermissionsModel;
 
+import jw.bznetwork.client.data.EditTriggersModel;
+
 import jw.bznetwork.client.data.LogSearchModel;
 
 import jw.bznetwork.client.data.ServerListModel;
@@ -195,7 +197,7 @@ public void reconnectIrcBots(AsyncCallback<Void> callback);
 */
 public void deleteIrcBot(int botid, AsyncCallback<Void> callback);
 
-public void listTriggers(AsyncCallback<Trigger[]> callback);
+public void getEditTriggersModel(AsyncCallback<EditTriggersModel> callback);
 
 public void updateTrigger(Trigger trigger, AsyncCallback<Void> callback);
 

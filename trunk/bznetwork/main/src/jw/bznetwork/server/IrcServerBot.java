@@ -20,8 +20,23 @@ public class IrcServerBot extends PircBot
     public void bznDestroy()
     {
         isLive = false;
-        quitServer();
-        dispose();
+        try
+        {
+            quitServer();
+        }
+        catch (Exception e)
+        {
+            e.printStackTrace();
+        }
+        try
+        {
+            dispose();
+        }
+        catch (Exception e)
+        {
+            e.printStackTrace();
+        }
+        
     }
     
     public IrcServerBot(IrcBot bot)

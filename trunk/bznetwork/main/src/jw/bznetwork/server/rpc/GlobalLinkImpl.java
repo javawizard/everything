@@ -37,6 +37,7 @@ import jw.bznetwork.client.data.EditAuthgroupsModel;
 import jw.bznetwork.client.data.EditCallsignsModel;
 import jw.bznetwork.client.data.EditConfigurationModel;
 import jw.bznetwork.client.data.EditPermissionsModel;
+import jw.bznetwork.client.data.EditTriggersModel;
 import jw.bznetwork.client.data.GroupModel;
 import jw.bznetwork.client.data.GroupedServer;
 import jw.bznetwork.client.data.LogSearchModel;
@@ -51,6 +52,7 @@ import jw.bznetwork.client.data.model.Banfile;
 import jw.bznetwork.client.data.model.Callsign;
 import jw.bznetwork.client.data.model.Configuration;
 import jw.bznetwork.client.data.model.EditablePermission;
+import jw.bznetwork.client.data.model.EmailGroup;
 import jw.bznetwork.client.data.model.Group;
 import jw.bznetwork.client.data.model.IrcBot;
 import jw.bznetwork.client.data.model.Permission;
@@ -1223,25 +1225,61 @@ public class GlobalLinkImpl extends RemoteServiceServlet implements GlobalLink
             BZNetworkServer.notifyIrcBotUpdated(oldBot, bot);
         }
     }
-
+    
     @Override
     public void deleteTrigger(int triggerid)
     {
-        // TODO Auto-generated method stub
-        
+        Verify.global("manage-triggers");
+        DataStore.deleteTrigger(triggerid);
     }
-
+    
     @Override
-    public Trigger[] listTriggers()
+    public EditTriggersModel getEditTriggersModel()
     {
-        // TODO Auto-generated method stub
-        return null;
+        Verify.global("manage-triggers");
+        EditTriggersModel model = new EditTriggersModel();
+        Group[] groups = DataStore.listGroups();
+        Server[] servers = DataStore.listServers();
+        model.getTargets().put(-1, "Global");
+        for (Group group : groups)
+        {
+            model.getTargets().put(group.getGroupid(),
+                    "group:" + group.getName());
+        }
+        for (Server server : servers)
+        {
+            model.getTargets().put(
+                    server.getServerid(),
+                    "" + model.getTargets().get(server.getGroupid())
+                            + "/server:" + server.getName());
+        }
+        model.setTriggers(DataStore.listTriggers());
+        for (IrcBot bot : DataStore.listIrcBots())
+        {
+            model.getRecipients().put(bot.getBotid(),
+                    "irc:" + bot.getNick() + "@" + bot.getServer());
+        }
+        for (EmailGroup g : DataStore.listEmailGroups())
+        {
+            model.getRecipients().put(g.getEmailgroupid(),
+                    "email:" + g.getName());
+        }
+        return model;
     }
-
+    
     @Override
     public void updateTrigger(Trigger trigger)
     {
-        // TODO Auto-generated method stub
-        
+        Verify.global("manage-triggers");
+        boolean isAdding = false;
+        if (trigger.getTriggerid() == -1)
+        {
+            isAdding = true;
+            trigger.setTriggerid(DataStore.createId());
+        }
+        if (isAdding)
+            DataStore.addTrigger(trigger);
+        else
+            DataStore.updateTrigger(trigger);
     }
 }

@@ -1008,7 +1008,7 @@ public class BZNetworkServer implements ServletContextListener,
      * 
      * @return
      */
-    private static String generateRandomName()
+    public static String generateRandomName()
     {
         return "" + Integer.toHexString(randomNumberGenerator.nextInt())
                 + Integer.toHexString(randomNumberGenerator.nextInt())
@@ -1035,6 +1035,17 @@ public class BZNetworkServer implements ServletContextListener,
         server.requestShutdown();
     }
     
+    /**
+     * Kills the BZFlag server with the specified id. This causes the server to
+     * be forcibly terminated. Due to the fact that the server is terminated
+     * immediately, clients won't receive a "server has forced a disconnect"
+     * message; instead, they will see everyone as going nr. Because of this,
+     * this should generally only be used as a last resort when the server isn't
+     * responding to requests to shut down normally.
+     * 
+     * @param serverid
+     *            The id of the server to shut down
+     */
     public static void killServer(int serverid)
     {
         LiveServer server = liveServers.get(serverid);
@@ -1445,11 +1456,21 @@ public class BZNetworkServer implements ServletContextListener,
         return dateFormat.format(when);
     }
     
+    /**
+     * Logs a server event and runs any triggers applicable to the event.
+     * 
+     * @param event
+     */
     public static void logEvent(LogEvent event)
     {
         DataStore.addLogEvent(event);
     }
     
+    /**
+     * Logs an action and runs any triggers applicable to the action.
+     * 
+     * @param action
+     */
     public static void logAction(Action action)
     {
         DataStore.addActionEvent(action);

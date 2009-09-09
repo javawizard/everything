@@ -11,6 +11,7 @@ import jw.bznetwork.client.data.EditAuthgroupsModel;
 import jw.bznetwork.client.data.EditCallsignsModel;
 import jw.bznetwork.client.data.EditConfigurationModel;
 import jw.bznetwork.client.data.EditPermissionsModel;
+import jw.bznetwork.client.data.EditTriggersModel;
 import jw.bznetwork.client.data.LogSearchModel;
 import jw.bznetwork.client.data.ServerListModel;
 import jw.bznetwork.client.data.UserSession;
@@ -178,7 +179,7 @@ public interface GlobalLink extends RemoteService
      */
     public void deleteIrcBot(int botid);
     
-    public Trigger[] listTriggers();
+    public EditTriggersModel getEditTriggersModel();
     
     public void updateTrigger(Trigger trigger);
     

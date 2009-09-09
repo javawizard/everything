@@ -23,6 +23,7 @@ import jw.bznetwork.client.screens.LogsScreen;
 import jw.bznetwork.client.screens.RolesScreen;
 import jw.bznetwork.client.screens.ServersScreen;
 import jw.bznetwork.client.screens.SessionsScreen;
+import jw.bznetwork.client.screens.TriggersScreen;
 import jw.bznetwork.client.screens.WelcomeScreen;
 import jw.bznetwork.client.ui.HorizontalRule;
 import jw.bznetwork.client.ui.Spacer;
@@ -240,6 +241,8 @@ public class BZNetwork implements EntryPoint
         defaultScreenList.add(new LogsScreen());
         if (Perms.global("manage-irc"))
             defaultScreenList.add(new IRCScreen());
+        if (Perms.global("manage-triggers"))
+            defaultScreenList.add(new TriggersScreen());
         if (Perms.global("manage-auth"))
             defaultScreenList.add(new AuthenticationScreen());
         if (Perms.global("view-action-log"))
