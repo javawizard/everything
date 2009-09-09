@@ -16,8 +16,11 @@ import java.sql.ResultSet;
 import java.sql.Statement;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
+import java.util.Map;
 import java.util.Properties;
 import java.util.Random;
 import java.util.TimeZone;
@@ -41,6 +44,7 @@ import jw.bznetwork.client.ClientPermissionsProvider;
 import jw.bznetwork.client.Constants;
 import jw.bznetwork.client.Perms;
 import jw.bznetwork.client.Settings;
+import jw.bznetwork.client.Constants.TargetType;
 import jw.bznetwork.client.data.AuthUser;
 import jw.bznetwork.client.data.CheckPermission;
 import jw.bznetwork.client.data.model.Action;
@@ -53,11 +57,18 @@ import jw.bznetwork.client.data.model.LogRequest;
 import jw.bznetwork.client.data.model.Permission;
 import jw.bznetwork.client.data.model.Role;
 import jw.bznetwork.client.data.model.Server;
+import jw.bznetwork.client.data.model.TargetEventPair;
+import jw.bznetwork.client.data.model.Trigger;
 import jw.bznetwork.client.screens.LogsScreen;
+import jw.bznetwork.client.x.VXVars;
+import jw.bznetwork.client.x.lang.XData;
+import jw.bznetwork.client.x.lang.XNumber;
+import jw.bznetwork.client.x.lang.XString;
 import jw.bznetwork.server.data.DataStore;
 import jw.bznetwork.server.live.LiveServer;
 import jw.bznetwork.server.live.ReadThread;
 import jw.bznetwork.server.rpc.GlobalLinkImpl;
+import jw.bznetwork.server.x.ServerSideTextScripter;
 import jw.bznetwork.utils.StringUtils;
 
 import com.ibatis.sqlmap.client.SqlMapClient;
@@ -773,6 +784,7 @@ public class BZNetworkServer implements ServletContextListener,
                 throw new IllegalStateException(
                         "The port for this server hasn't been set yet.");
             LiveServer liveServer = new LiveServer();
+            liveServer.setServer(server);
             liveServer.setChangingState(true);
             liveServer.setStarting(true);
             liveServer.setId(server.getServerid());
@@ -1461,9 +1473,29 @@ public class BZNetworkServer implements ServletContextListener,
      * 
      * @param event
      */
-    public static void logEvent(LogEvent event)
+    public static void logEvent(String serverName, LogEvent event)
     {
         DataStore.addLogEvent(event);
+        LinkedHashMap<String, XData> vars = new LinkedHashMap<String, XData>();
+        // serverid,event,source,target,sourceid,targetid,sourceteam,
+        // targetteam,ipaddress,bzid,email,metadata,data
+        vars.put("serverid", new XNumber(event.getServerid()));
+        if (serverName != null)
+            vars.put("servername", new XString(serverName));
+        vars.put("event", new XString(event.getEvent()));
+        vars.put("source", new XString(event.getSource()));
+        vars.put("target", new XString(event.getTarget()));
+        vars.put("sourceid", new XNumber(event.getSourceid()));
+        vars.put("targetid", new XNumber(event.getTargetid()));
+        vars.put("sourceteam", new XString(event.getSourceteam()));
+        vars.put("targetteam", new XString(event.getTargetteam()));
+        vars.put("ipaddress", new XString(event.getIpaddress()));
+        vars.put("bzid", new XString(event.getBzid()));
+        vars.put("email", new XString(event.getEmail()));
+        vars.put("metadata", new XString(event.getMetadata()));
+        vars.put("data", new XString(event.getData()));
+        runTriggers("server:" + event.getEvent(), event.getServerid(), -1,
+                TargetType.server, vars);
     }
     
     /**
@@ -1474,6 +1506,133 @@ public class BZNetworkServer implements ServletContextListener,
     public static void logAction(Action action)
     {
         DataStore.addActionEvent(action);
+    }
+    
+    /**
+     * Runs the triggers for the specified target.
+     * 
+     * @param event
+     *            The name of the event that occured. For example, server:report
+     *            or action:logged-in.
+     * @param target
+     *            The target's id. This is either a server id, a group id, or -1
+     *            for global.
+     * @param groupcache
+     *            If the target is a server, then this can be the server's
+     *            parent group id. If the parent group's id is not known, then
+     *            this can be set to -1 and this method will ask the database
+     *            for the server's parent group id. This serves mostly to make
+     *            this method faster by requiring it to execute less queries
+     *            against the database.
+     * @param targetType
+     *            The type of target.
+     * @param vars
+     *            Variables that should be set when the trigger's subject and
+     *            message are evaluated as XSM-inline. In the future, when
+     *            printf notation is supported, the list of values returned from
+     *            this map will also be used as the inputs to printf.
+     */
+    public static void runTriggers(String event, int target, int groupcache,
+            Constants.TargetType targetType, Map<String, XData> vars)
+    {
+        try
+        {
+            ArrayList<Trigger> triggersToRun = new ArrayList<Trigger>();
+            triggersToRun.addAll(Arrays.asList(DataStore
+                    .listTriggersByTargetAndEvent(new TargetEventPair(event,
+                            target))));
+            if (targetType == TargetType.server)
+            {
+                if (groupcache == -1)
+                    groupcache = GlobalLinkImpl.getServerGroupId(target);
+                targetType = TargetType.group;
+                target = groupcache;
+                triggersToRun.addAll(Arrays.asList(DataStore
+                        .listTriggersByTargetAndEvent(new TargetEventPair(
+                                event, target))));
+            }
+            if (targetType == TargetType.banfile
+                    || targetType == TargetType.group)
+            {
+                targetType = TargetType.global;
+                target = -1;
+                triggersToRun.addAll(Arrays.asList(DataStore
+                        .listTriggersByTargetAndEvent(new TargetEventPair(
+                                event, target))));
+            }
+            ArrayList<Trigger> uniqueTriggers = new ArrayList<Trigger>();
+            for (Trigger t : new ArrayList<Trigger>(triggersToRun))
+            {
+                if (!uniqueTriggers.contains(t))
+                    uniqueTriggers.add(t);
+            }
+            /*
+             * We have our list of triggers. Now we'll run them.
+             */
+            for (Trigger trigger : uniqueTriggers)
+            {
+                /*
+                 * First, we'll evaluate the subject and the message of the
+                 * trigger.
+                 */
+                String subject = ServerSideTextScripter.run(trigger
+                        .getSubject(), vars, new VXVars());
+                String message = ServerSideTextScripter.run(trigger
+                        .getMessage(), vars, new VXVars());
+                /*
+                 * We have the subject and the message to send. Now we'll look
+                 * up the recipient and send the message.
+                 */
+                if (trigger.getSendtype().equals("ircbot"))
+                    runTriggerIrcRecipient(trigger.getRecipient(), subject,
+                            message);
+                else if (trigger.getSendtype().equals("emailgroup"))
+                    runTriggerEmailGroupRecipient(trigger.getRecipient(),
+                            subject, message);
+                else
+                    System.err.println("Unrecognized send type for trigger "
+                            + trigger.getTriggerid() + ": "
+                            + trigger.getSendtype());
+            }
+        }
+        catch (Exception e)
+        {
+            e.printStackTrace();
+        }
+    }
+    
+    private static void runTriggerEmailGroupRecipient(int recipient,
+            String subject, String message)
+    {
+        System.err.println("Email groups aren't supported yet.");
+    }
+    
+    private static void runTriggerIrcRecipient(int recipient, String subject,
+            String message)
+    {
+        IrcServerBot bot = ircServerBotMap.get(recipient);
+        if (bot == null)
+        {
+            System.err.println("Recipient bot id " + recipient
+                    + " has no matching live IRC bot.");
+            return;
+        }
+        try
+        {
+            if (bot.isConnected())
+            {
+                String[] messages = message.trim().split("\n");
+                for (String s : messages)
+                {
+                    if (!s.trim().equals(""))
+                        bot.sendMessage(bot.getBot().getChannel(), s);
+                }
+            }
+        }
+        catch (Exception e)
+        {
+            e.printStackTrace();
+        }
     }
     
     public static void notifyIrcBotDeleted(int botid)

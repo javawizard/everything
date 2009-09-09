@@ -59,8 +59,8 @@ public class ReadThread extends Thread
             while (true)
             {
                 i = in.read();
-//                System.out.println("Byte from server: " + i + ", hex: "
-//                        + Integer.toHexString(i));
+                // System.out.println("Byte from server: " + i + ", hex: "
+                // + Integer.toHexString(i));
                 if (i == -1)
                     break;
                 if (i == '|')
@@ -143,6 +143,11 @@ public class ReadThread extends Thread
         server.completedShutdown();
     }
     
+    private void logEvent(LogEvent event)
+    {
+        BZNetworkServer.logEvent(server.getServer().getName(), event);
+    }
+    
     public synchronized void logStdout(String outString)
     {
         LogEvent event = new LogEvent();
@@ -151,7 +156,7 @@ public class ReadThread extends Thread
         event.setData(outString);
         try
         {
-            BZNetworkServer.logEvent(event);
+            logEvent(event);
         }
         catch (Exception e)
         {
@@ -167,7 +172,7 @@ public class ReadThread extends Thread
         event.setData(outString);
         try
         {
-            BZNetworkServer.logEvent(event);
+            logEvent(event);
         }
         catch (Exception e)
         {
@@ -244,7 +249,7 @@ public class ReadThread extends Thread
         if (player != null && player.getTeam() != null)
             event.setSourceteam(player.getTeam().name());
         event.setData(message);
-        BZNetworkServer.logEvent(event);
+        logEvent(event);
     }
     
     private void processSlashCommand(String substring)
@@ -274,7 +279,7 @@ public class ReadThread extends Thread
             event.setData(message.substring("/report ".length()));
         else
             event.setData(message);
-        BZNetworkServer.logEvent(event);
+        logEvent(event);
     }
     
     private void processBznFail(String substring)
@@ -397,7 +402,7 @@ public class ReadThread extends Thread
             event.setTargetteam(toTeam);
         event.setData(message);
         event.setEvent("chat-" + chatType);
-        BZNetworkServer.logEvent(event);
+        logEvent(event);
     }
     
     private void processPlayerJoin(String substring)
@@ -425,7 +430,7 @@ public class ReadThread extends Thread
         event.setSourceteam(player.getTeam().name());
         event.setData((player.isVerified() ? "verified" : "notverified") + " "
                 + (player.isAdmin() ? "admin" : "notadmin"));
-        BZNetworkServer.logEvent(event);
+        logEvent(event);
     }
     
     private void processPlayerPart(String substring)
@@ -444,7 +449,7 @@ public class ReadThread extends Thread
         event.setSourceid(player.getId());
         event.setSourceteam(player.getTeam().name());
         event.setData(reason);
-        BZNetworkServer.logEvent(event);
+        logEvent(event);
         server.getPlayers().remove(player);
         server.getCallsignsToPlayers().remove(player.getCallsign());
         server.getIdsToPlayers().remove(player.getId());

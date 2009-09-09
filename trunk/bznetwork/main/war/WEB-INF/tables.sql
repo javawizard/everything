@@ -127,8 +127,8 @@ create table `triggers` (
     target      int,           -- The target that triggering events should occur on. This is either a server id, a group id, or -1 for global
     sendtype    varchar(64),   -- The type of recipient. This can be either "ircbot" or "emailgroup".
     recipient   int,           -- The recipient to send to
-    subject     varchar(512),  -- The subject of the message. This is only relevant for messages with an email recipient; messages with an irc recipient do not use this.      
-    message     varchar(8192)  -- The message to send. This can include various %something% strings, depending on the event. For irc targets, individual lines will be sent as separate messages, and leading and trailing blank messages will be removed.
+    subject     varchar(8192),  -- The subject of the message. This is only relevant for messages with an email recipient; messages with an irc recipient do not use this.      
+    message     varchar(16384)  -- The message to send. This can include various %something% strings, depending on the event. For irc targets, individual lines will be sent as separate messages, and leading and trailing blank messages will be removed.
 );
 -- Now for some initial table rows.
 insert into configuration values ('Congratulations! You''ve successfully installed BZNetwork onto your server. Head on over to the Configuration page to change this message. Then check out the Getting Started link on the Help page to get started.', 

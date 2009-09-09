@@ -2,7 +2,12 @@ package jw.bznetwork.client;
 
 public class Constants
 {
-
+    
+    public enum TargetType
+    {
+        server, group, banfile, global
+    }
+    
     public static final String[] LOG_EVENTS = new String[]
     {
             "stdout", "filtered", "report", "slashcommand", "chat-unknown",

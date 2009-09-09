@@ -1,8 +1,7 @@
-package jw.bznetwork.client.x;
+package jw.bznetwork.server.x;
 
 import java.util.Map;
 
-import jw.bznetwork.client.x.gwt.XWebParser;
 import jw.bznetwork.client.x.lang.XCommand;
 import jw.bznetwork.client.x.lang.XData;
 import jw.bznetwork.client.x.lang.XDisplayDevice;
@@ -10,7 +9,15 @@ import jw.bznetwork.client.x.lang.XElement;
 import jw.bznetwork.client.x.lang.XInterpreter;
 import jw.bznetwork.client.x.lang.XInterpreterContext;
 
-public class TextScripter
+/**
+ * TODO: merge this with TextScripter on the client-side, and have an interface
+ * that is implemented that provides support for parsing XML based on whether
+ * the scripter is running on the client side or the server side.
+ * 
+ * @author Alexander Boyd
+ * 
+ */
+public class ServerSideTextScripter
 {
     private static XInterpreter interpreter = new XInterpreter();
     private static StringBuffer currentBuffer;
@@ -42,7 +49,7 @@ public class TextScripter
      *            Extra commands to load into the interpreter
      * @return The input string after executing all XSM code
      */
-    public static String run(String input, Map<String, XData> vars,
+    public static synchronized String run(String input, Map<String, XData> vars,
             XCommand... commands)
     {
         /*
@@ -52,50 +59,58 @@ public class TextScripter
         {
             interpreter.install(command);
         }
-        /*
-         * Now we'll go through and build a command string to parse.
-         */
-        StringBuffer command = new StringBuffer();
-        String[] tokens = input.split("\\[xsm\\]");
-        /*
-         * Even strings are literal strings, and odd strings are XSM commands.
-         */
-        for (int i = 0; i < tokens.length; i++)
+        try
         {
-            if ((i % 2) == 0)
+            /*
+             * Now we'll go through and build a command string to parse.
+             */
+            StringBuffer command = new StringBuffer();
+            String[] tokens = input.split("\\[xsm\\]");
+            /*
+             * Even strings are literal strings, and odd strings are XSM
+             * commands.
+             */
+            for (int i = 0; i < tokens.length; i++)
             {
-                /*
-                 * This is a literal string.
-                 */
-                command.append("<print newline=\"false\">");
-                command.append(escapeXml(tokens[i]));
-                command.append("</print>");
+                if ((i % 2) == 0)
+                {
+                    /*
+                     * This is a literal string.
+                     */
+                    command.append("<print newline=\"false\">");
+                    command.append(escapeXml(tokens[i]));
+                    command.append("</print>");
+                }
+                else
+                {
+                    /*
+                     * This is an XSM command string.
+                     */
+                    command.append(tokens[i]);
+                }
             }
-            else
-            {
-                /*
-                 * This is an XSM command string.
-                 */
-                command.append(tokens[i]);
-            }
+            /*
+             * The command string has been built. Now we execute it.
+             */
+            currentBuffer = new StringBuffer();
+            XElement rootElement = XDomParser.parse("<xsm>"
+                    + command.toString() + "</xsm>");
+            command = null;
+            XInterpreterContext context = new XInterpreterContext(interpreter,
+                    true);
+            if (vars != null)
+                context.getVariables().putAll(vars);
+            interpreter.executeChildren(rootElement, context);
         }
-        /*
-         * The command string has been built. Now we execute it.
-         */
-        currentBuffer = new StringBuffer();
-        XElement rootElement = XWebParser.parse("<xsm>" + command.toString()
-                + "</xsm>");
-        command = null;
-        XInterpreterContext context = new XInterpreterContext(interpreter, true);
-        if (vars != null)
-            context.getVariables().putAll(vars);
-        interpreter.executeChildren(rootElement, context);
-        /*
-         * Now we remove the commands we installed.
-         */
-        for (XCommand c : commands)
+        finally
         {
-            interpreter.remove(c.getName().toLowerCase());
+            /*
+             * Now we remove the commands we installed.
+             */
+            for (XCommand c : commands)
+            {
+                interpreter.remove(c.getName().toLowerCase());
+            }
         }
         /*
          * Now we build and return the output.

@@ -39,7 +39,6 @@ public class WelcomeScreen extends VerticalScreen
         return "Welcome";
     }
     
-    
     @Override
     public void reselect()
     {
@@ -51,7 +50,8 @@ public class WelcomeScreen extends VerticalScreen
     {
         widget.clear();
         widget.add(new HTML(TextScripter.run(BZNetwork.publicConfiguration
-                .getString(Settings.welcome), new VXProvider(), new VXUser())));
+                .getString(Settings.welcome), null, new VXProvider(),
+                new VXUser())));
     }
     
     @Override

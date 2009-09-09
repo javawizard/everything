@@ -8,6 +8,7 @@ import java.util.EnumMap;
 import java.util.HashMap;
 import java.util.Queue;
 
+import jw.bznetwork.client.data.model.Server;
 import jw.bznetwork.client.live.LivePlayer;
 import jw.bznetwork.client.live.LivePlayer.GameType;
 import jw.bznetwork.client.live.LivePlayer.TeamType;
@@ -32,6 +33,20 @@ public class LiveServer
     private boolean starting;
     private OutputStream out;
     private GameType gameType;
+    /**
+     * The server as it existed when this live server was started.
+     */
+    private Server server;
+    public Server getServer()
+    {
+        return server;
+    }
+
+    public void setServer(Server server)
+    {
+        this.server = server;
+    }
+
     /**
      * The version of the bznetwork plugin that is being used by this server.
      */

@@ -4,6 +4,27 @@ import java.io.Serializable;
 
 public class Trigger implements Serializable
 {
+    @Override
+    public int hashCode()
+    {
+        return triggerid;
+    }
+    
+    @Override
+    public boolean equals(Object obj)
+    {
+        if (this == obj)
+            return true;
+        if (obj == null)
+            return false;
+        if (!(obj instanceof Trigger))
+            return false;
+        Trigger other = (Trigger) obj;
+        if (triggerid != other.triggerid)
+            return false;
+        return true;
+    }
+    
     private int triggerid;
     /*
      * TODO: perhaps have some way to differentiate types of events. Maybe

@@ -69,8 +69,11 @@ public class XDomParser
             }
             else if (child instanceof Text)
             {
+                String theText = ((Text) child).getNodeValue();
+                if(theText.trim().equals(""))
+                    continue;
                 element.getChildren().add(
-                        new XText(((Text) child).getNodeValue()));
+                        new XText(theText));
             }
         }
         return element;

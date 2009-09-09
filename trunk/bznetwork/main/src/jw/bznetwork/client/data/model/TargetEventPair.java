@@ -12,6 +12,18 @@ public class TargetEventPair implements Serializable
         return target;
     }
     
+    public TargetEventPair()
+    {
+        super();
+    }
+    
+    public TargetEventPair(String event, int target)
+    {
+        super();
+        this.event = event;
+        this.target = target;
+    }
+    
     public void setTarget(int target)
     {
         this.target = target;
