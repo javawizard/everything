@@ -36,7 +36,16 @@ public enum Settings
                     + "started up. The first argument will be the server's id and the second "
                     + "argument will be the server's port. This command will not be terminated "
                     + "when a server shuts down, even if the server is killed.",
-            ""), publichostname(
+            ""), sendmailexec(
+            SettingType.sensitive,
+            "Sendmail executable",
+            "The command that should be used to send email. This can contain arguments. The "
+                    + "from and to addresses will be sent to this program in the form "
+                    + "of Email headers.", "sendmail -t"), fromemail(
+            SettingType.text,
+            "Email sender",
+            "Emails sent by the site will show up as being sent from this email address.",
+            "My BZNetwork Site <mybznetworksite@example.com>"), publichostname(
             SettingType.text,
             "Public hostname",
             "This is the hostname that will be used in the -publicaddr switch "
@@ -50,8 +59,7 @@ public enum Settings
             "Date-only format",
             "This is the format that should be used to format dates where only the date (IE "
                     + "not the time) is needed, provided "
-                    + "as a Java SimpleDateFormat string.",
-            "yyyy/MM/dd"), menuleft(
+                    + "as a Java SimpleDateFormat string.", "yyyy/MM/dd"), menuleft(
             SettingType.checkbox,
             "Show menu to the left",
             "If this is checked, the list of pages shows up to the left. If "

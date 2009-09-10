@@ -32,6 +32,8 @@ import jw.bznetwork.client.data.model.Banfile;
 
 import jw.bznetwork.client.data.model.Configuration;
 
+import jw.bznetwork.client.data.model.EmailGroup;
+
 import jw.bznetwork.client.data.model.IrcBot;
 
 import jw.bznetwork.client.data.model.Permission;
@@ -202,5 +204,11 @@ public void getEditTriggersModel(AsyncCallback<EditTriggersModel> callback);
 public void updateTrigger(Trigger trigger, AsyncCallback<Void> callback);
 
 public void deleteTrigger(int triggerid, AsyncCallback<Void> callback);
+
+public void listEmailGroups(AsyncCallback<EmailGroup[]> callback);
+
+public void updateEmailGroup(EmailGroup group, AsyncCallback<Void> callback);
+
+public void deleteEmailGroup(int groupid, AsyncCallback<Void> callback);
 
 }

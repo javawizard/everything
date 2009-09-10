@@ -17,6 +17,7 @@ import jw.bznetwork.client.data.ServerListModel;
 import jw.bznetwork.client.data.UserSession;
 import jw.bznetwork.client.data.model.Banfile;
 import jw.bznetwork.client.data.model.Configuration;
+import jw.bznetwork.client.data.model.EmailGroup;
 import jw.bznetwork.client.data.model.IrcBot;
 import jw.bznetwork.client.data.model.Permission;
 import jw.bznetwork.client.data.model.Role;
@@ -184,4 +185,10 @@ public interface GlobalLink extends RemoteService
     public void updateTrigger(Trigger trigger);
     
     public void deleteTrigger(int triggerid);
+    
+    public EmailGroup[] listEmailGroups();
+    
+    public void updateEmailGroup(EmailGroup group);
+    
+    public void deleteEmailGroup(int groupid);
 }
