@@ -1282,4 +1282,25 @@ public class GlobalLinkImpl extends RemoteServiceServlet implements GlobalLink
         else
             DataStore.updateTrigger(trigger);
     }
+    
+    @Override
+    public void deleteEmailGroup(int groupid)
+    {
+        // TODO Auto-generated method stub
+        
+    }
+    
+    @Override
+    public EmailGroup[] listEmailGroups()
+    {
+        // TODO Auto-generated method stub
+        return null;
+    }
+    
+    @Override
+    public void updateEmailGroup(EmailGroup group)
+    {
+        // TODO Auto-generated method stub
+        
+    }
 }
