@@ -67,7 +67,16 @@ public class ReadThread extends Thread
                 {
                     byte[] lengthBytes = new byte[5];
                     in.readFully(lengthBytes);
-                    int length = Integer.parseInt(new String(lengthBytes));
+                    int length = 0;
+                    try
+                    {
+                        length = Integer.parseInt(new String(lengthBytes));
+                    }
+                    catch (NumberFormatException e)
+                    {
+                        logStatus("NumberFormatException on parsing packet length: "
+                                + e.getMessage());
+                    }
                     byte[] data = new byte[length];
                     in.readFully(data);
                     /*
@@ -182,6 +191,8 @@ public class ReadThread extends Thread
     
     private void processData(byte[] dataBytes)
     {
+        if (dataBytes.length == 0)
+            return;
         /*
          * Currently, all data output from the server will contain only visible
          * characters, so we'll just put it into a string. We'll also
