@@ -220,6 +220,7 @@ public class LogsScreen extends VerticalScreen
     @Override
     public void select()
     {
+        addToHistory(null);
         if (preserveSettingsOnce)
         {
             preserveSettingsOnce = false;

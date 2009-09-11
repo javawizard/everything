@@ -48,6 +48,7 @@ public class WelcomeScreen extends VerticalScreen
     @Override
     public void select()
     {
+        addToHistory(null);
         widget.clear();
         widget.add(new HTML(TextScripter.run(BZNetwork.publicConfiguration
                 .getString(Settings.welcome), null, new VXProvider(),

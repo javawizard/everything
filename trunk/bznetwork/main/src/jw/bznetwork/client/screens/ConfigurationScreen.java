@@ -60,6 +60,7 @@ public class ConfigurationScreen extends VerticalScreen
     @Override
     public void select()
     {
+        addToHistory(null);
         BZNetwork.authLink
                 .getEditConfigurationModel(new BoxCallback<EditConfigurationModel>()
                 {
@@ -186,12 +187,21 @@ public class ConfigurationScreen extends VerticalScreen
             row += 1;
         }
         Button saveButton = new Button("Save");
+        final Button saveAndReload = new Button("Save and Reload");
         saveButton
                 .setTitle("Once you've made your changes, click this button to save them. "
                         + "Note that disabling changes to the executable field gets saved "
                         + "immediately, so you don't need to click this button if all "
                         + "you did was disable changes to the executable field.");
-        table.setWidget(row++, 1, saveButton);
+        HorizontalPanel buttonPanel = new HorizontalPanel();
+        buttonPanel.add(saveButton);
+        buttonPanel.add(saveAndReload);
+        table.setWidget(row, 1, buttonPanel);
+        format.setColSpan(row++, 1, 2);
+        saveAndReload
+                .setTitle("Same as the Save button, but reloads your changes into your "
+                        + "local session. If you don't use this, you will have to log out and then "
+                        + "log back in for all of the settings to take effect on your session.");
         disableEcButton
                 .setTitle("Since allowing the executable to be edited from the web "
                         + "poses a security risk, you can click this button to disable changes. "
@@ -206,11 +216,11 @@ public class ConfigurationScreen extends VerticalScreen
         widget.add(new Spacer("8px", "8px"));
         widget.add(new HTML("Most of these settings won't take effect until "
                 + "you log out and then log back in."));
-        saveButton.addClickListener(new ClickListener()
+        ClickListener saveListener = new ClickListener()
         {
             
             @Override
-            public void onClick(Widget sender)
+            public void onClick(final Widget sender)
             {
                 TextBox executableBox = (TextBox) fields[Settings.executable
                         .ordinal()];
@@ -248,11 +258,16 @@ public class ConfigurationScreen extends VerticalScreen
                             @Override
                             public void run(Void result)
                             {
-                                select();
+                                if (sender == saveAndReload)
+                                    Window.Location.reload();
+                                else
+                                    select();
                             }
                         });
             }
-        });
+        };
+        saveButton.addClickListener(saveListener);
+        saveAndReload.addClickListener(saveListener);
         disableEcButton.setVisible(!result.isEcDisabled());
         disableEcButton.addClickListener(new ClickListener()
         {

@@ -66,7 +66,7 @@ public class HelpScreen extends VerticalScreen
                         "More help pages can be found <a href='http://code.google.com/p/bznetwork/w/list?can=2&q=label%3Ahelp' target='_blank'>here</a>."));
         widget.add(new Spacer("5px", "2px"));
         widget.add(new HTML("Request a Feature requires a Google account."));
-    }//http://java.sun.com/javase/6/docs/api/java/util/Formatter.html#syntax
+    }// http://java.sun.com/javase/6/docs/api/java/util/Formatter.html#syntax
     
     @Override
     public void reselect()
@@ -78,8 +78,7 @@ public class HelpScreen extends VerticalScreen
     @Override
     public void select()
     {
-        // TODO Auto-generated method stub
-        
+        addToHistory(null);
     }
     
 }

@@ -1,5 +1,8 @@
 package jw.bznetwork.client;
 
+import java.util.HashMap;
+import java.util.Map;
+
 import com.google.gwt.user.client.ui.Widget;
 
 /**
@@ -64,10 +67,10 @@ public interface Screen
     public Widget getWidget();
     
     /**
-     * Called every 10 seconds by bznetwork. Screens can use this to perform
+     * Called every 20 seconds by bznetwork. Screens can use this to perform
      * periodic actions. The tick number is a number that increases by one every
      * time this method is called. This can be used to achieve delays that are
-     * multiple of 10. For example, executing a particular action every 30
+     * multiple of 20. For example, executing a particular action every 60
      * seconds could be done by dividing this number by 3, and if the resulting
      * number is a whole number (or, equivalently, the remainder is 0), then the
      * action would be executed.<br/><br/>
@@ -79,4 +82,14 @@ public interface Screen
      *            The tick number. The first tick is 0.
      */
     public void tick(int number);
+    
+    /**
+     * Called when a history state change occurs that targets this page. The
+     * parameters specified are the parameters specified in the url.
+     * 
+     * @param parameters
+     */
+    public void historyChanged(Map<String, String> parameters);
+    
+    public void setParent(MainScreen screen);
 }

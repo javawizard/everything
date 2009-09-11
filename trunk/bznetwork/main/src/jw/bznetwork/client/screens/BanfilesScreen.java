@@ -48,6 +48,7 @@ public class BanfilesScreen extends VerticalScreen
     @Override
     public void select()
     {
+        addToHistory(null);
         BZNetwork.authLink.listBanfiles(new BoxCallback<Banfile[]>()
         {
             

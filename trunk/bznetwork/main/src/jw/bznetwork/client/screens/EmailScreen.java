@@ -39,8 +39,7 @@ public class EmailScreen extends VerticalScreen
     @Override
     public void select()
     {
-        // TODO Auto-generated method stub
-        
+        addToHistory(null);
     }
     
 }

@@ -162,6 +162,7 @@ public class ActionsScreen extends VerticalScreen
     @Override
     public void select()
     {
+        addToHistory(null);
         filterEvent = null;
         filterProvider = null;
         filterUsername = null;

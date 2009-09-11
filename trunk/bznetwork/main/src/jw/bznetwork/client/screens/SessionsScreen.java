@@ -77,6 +77,7 @@ public class SessionsScreen extends VerticalScreen
     @Override
     public void select()
     {
+        addToHistory(null);
         BZNetwork.authLink.getUserSessions(new BoxCallback<UserSession[]>()
         {
             

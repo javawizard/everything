@@ -1,5 +1,8 @@
 package jw.bznetwork.client;
 
+import java.util.HashMap;
+import java.util.Map;
+
 import jw.bznetwork.client.ui.Spacer;
 
 import com.google.gwt.user.client.ui.DockPanel;
@@ -10,9 +13,18 @@ public abstract class VerticalScreen implements Screen
 {
     protected VerticalPanel widget = new VerticalPanel();
     
+    protected MainScreen parent;
+    
     private Spacer spacer = new Spacer("1px", "1px");
     
     private DockPanel wrapper;
+    
+    /**
+     * Does nothing. Subclasses can override as needed.
+     */
+    public void historyChanged(Map<String, String> parameters)
+    {
+    }
     
     public Widget getWidget()
     {
@@ -38,5 +50,17 @@ public abstract class VerticalScreen implements Screen
     public void tick(int number)
     {
         
+    }
+    
+    protected void addToHistory(Map<String, String> params)
+    {
+        if (params == null)
+            params = new HashMap<String, String>();
+        parent.addToHistory(this, params);
+    }
+    
+    public void setParent(MainScreen screen)
+    {
+        this.parent = screen;
     }
 }

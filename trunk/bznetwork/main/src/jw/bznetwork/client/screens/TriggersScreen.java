@@ -115,6 +115,7 @@ public class TriggersScreen extends VerticalScreen
     @Override
     public void select()
     {
+        addToHistory(null);
         BZNetwork.authLink
                 .getEditTriggersModel(new BoxCallback<EditTriggersModel>()
                 {

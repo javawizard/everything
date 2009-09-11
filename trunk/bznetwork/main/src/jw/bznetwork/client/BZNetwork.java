@@ -39,6 +39,8 @@ import com.google.gwt.http.client.URL;
 import com.google.gwt.i18n.client.DateTimeFormat;
 import com.google.gwt.user.client.DOM;
 import com.google.gwt.user.client.Element;
+import com.google.gwt.user.client.History;
+import com.google.gwt.user.client.HistoryListener;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.rpc.StatusCodeException;
@@ -295,6 +297,19 @@ public class BZNetwork implements EntryPoint
         rootPanel.add(mainScreen);
         TickTimer tickTimer = new TickTimer(mainScreen);
         tickTimer.start();
+        if (History.getToken() != null && !History.getToken().equals(""))
+        {
+            mainScreen.processHistoryToken(History.getToken());
+        }
+        History.addHistoryListener(new HistoryListener()
+        {
+            
+            @Override
+            public void onHistoryChanged(String historyToken)
+            {
+                mainScreen.processHistoryToken(historyToken);
+            }
+        });
     }
     
     protected void initUnauth2()

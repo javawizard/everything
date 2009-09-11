@@ -3,6 +3,8 @@ package jw.bznetwork.client;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.Map;
+import java.util.Map.Entry;
 
 import jw.bznetwork.client.ui.Header3;
 import jw.bznetwork.client.ui.HorizontalRule;
@@ -15,6 +17,8 @@ import com.google.gwt.http.client.RequestBuilder;
 import com.google.gwt.http.client.RequestCallback;
 import com.google.gwt.http.client.RequestException;
 import com.google.gwt.http.client.Response;
+import com.google.gwt.http.client.URL;
+import com.google.gwt.user.client.History;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.Anchor;
 import com.google.gwt.user.client.ui.Button;
@@ -51,6 +55,9 @@ import com.google.gwt.user.client.ui.Widget;
  * automatically added by the main screen to the upper-right corner, as the
  * first link. Clicking on this opens a dropdown menu below the link, which
  * shows one link per screen, with the active screen shown in bold.
+ * 
+ * In addition, you can specify that the screen should show the menu in a left
+ * sidebar of the screen instead of in a menu link.
  * 
  * @author Alexander Boyd
  * 
@@ -243,6 +250,7 @@ public class MainScreen extends Composite implements ClickListener
         this.screens.addAll(Arrays.asList(screens));
         for (Screen s : screens)
         {
+            s.setParent(this);
             s.init();
             screensByName.put(s.getName(), s);
         }
@@ -292,9 +300,14 @@ public class MainScreen extends Composite implements ClickListener
         headerScreenLabel.setText(selectedScreen.getTitle());
     }
     
-    public void selectScreen(String name)
+    public void selectScreen(String name, boolean historyChange)
     {
         selectScreen(screens.indexOf(screensByName.get(name)));
+    }
+    
+    public void selectScreen(String name)
+    {
+        selectScreen(name, false);
     }
     
     public Screen get(String screenName)
@@ -323,4 +336,59 @@ public class MainScreen extends Composite implements ClickListener
         return selectedScreen;
     }
     
+    /**
+     * Adds a new history token.
+     * 
+     * @param screen
+     *            The screen that this token should target
+     * @param params
+     *            The map of properties for this screen. This map will be
+     *            modified by this method to add additional parameters specific
+     *            to the MainScreen class.
+     */
+    public void addToHistory(Screen screen, Map<String, String> params)
+    {
+        params.put("_page", screen.getName());
+        History.newItem(paramsToString(params), false);
+    }
+    
+    public static String paramsToString(Map<String, String> params)
+    {
+        if (params.size() == 0)
+            return "";
+        StringBuffer buffer = new StringBuffer();
+        for (Entry<String, String> e : params.entrySet())
+        {
+            buffer.append("&" + URL.encodeComponent(e.getKey()) + "="
+                    + URL.encodeComponent(e.getValue()));
+        }
+        return buffer.substring(1, buffer.length());
+    }
+    
+    public static Map<String, String> stringToParams(String string)
+    {
+        String[] tokens = string.split("\\&");
+        HashMap<String, String> map = new HashMap<String, String>();
+        for (String token : tokens)
+        {
+            String[] split = token.split("\\=");
+            String key = split[0];
+            String value = split.length > 1 ? split[1] : "";
+            map.put(key, value);
+        }
+        return map;
+    }
+    
+    public void processHistoryToken(String token)
+    {
+        Map<String, String> map = stringToParams(token);
+        String pageName = map.get("_page");
+        if (pageName == null)
+            return;
+        selectScreen(pageName, true);
+        Screen screen = get(pageName);
+        if (screen == null)
+            return;
+        screen.historyChanged(map);
+    }
 }

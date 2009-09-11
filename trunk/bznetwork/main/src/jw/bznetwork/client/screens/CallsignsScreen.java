@@ -59,6 +59,7 @@ public class CallsignsScreen extends VerticalScreen implements Screen
     @Override
     public void select()
     {
+        addToHistory(null);
         BZNetwork.authLink
                 .getEditCallsignsModel(new BoxCallback<EditCallsignsModel>()
                 {
@@ -83,9 +84,10 @@ public class CallsignsScreen extends VerticalScreen implements Screen
             table.setText(i, 1, result.getRoleIdsToNames().get(
                     callsign.getRole()));
             Anchor deleteLink = new Anchor("delete");
-            deleteLink.setTitle("Use this to delete this callsign. If the user is " +
-            		"logged in, they will still be able to make changes until " +
-            		"they log out or you force them to log out on the Sessions page.");
+            deleteLink
+                    .setTitle("Use this to delete this callsign. If the user is "
+                            + "logged in, they will still be able to make changes until "
+                            + "they log out or you force them to log out on the Sessions page.");
             table.setWidget(i, 2, deleteLink);
             deleteLink.addClickListener(new ClickListener()
             {

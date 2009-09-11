@@ -59,7 +59,12 @@ public enum Settings
             "Date-only format",
             "This is the format that should be used to format dates where only the date (IE "
                     + "not the time) is needed, provided "
-                    + "as a Java SimpleDateFormat string.", "yyyy/MM/dd"), menuleft(
+                    + "as a Java SimpleDateFormat string.", "yyyy/MM/dd"), customlogout(
+            SettingType.text, "Custom logout page",
+            "If this is not blank, then your site will "
+                    + "redirect users to this URL after they log out. If this "
+                    + "is blank, your site will show the user a simple \"You "
+                    + "have logged out\" message.", ""), menuleft(
             SettingType.checkbox,
             "Show menu to the left",
             "If this is checked, the list of pages shows up to the left. If "
