@@ -1,5 +1,8 @@
 package jw.bznetwork.client.screens;
 
+import java.util.HashMap;
+import java.util.Map;
+
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.user.client.Window;
@@ -106,6 +109,15 @@ public class ActionsScreen extends VerticalScreen
                             .getSelectedIndex());
                     if (filterEvent.trim().equals(""))
                         filterEvent = null;
+                    Map<String, String> params = new HashMap<String, String>();
+                    if (filterProvider != null)
+                    {
+                        params.put("provider", filterProvider);
+                        params.put("username", filterUsername);
+                    }
+                    if (filterEvent != null)
+                        params.put("event", filterEvent);
+                    addToHistory(params);
                     select1();
                 }
             });
@@ -120,7 +132,6 @@ public class ActionsScreen extends VerticalScreen
             });
             box.center();
         }
-        
     }
     
     private static final int LENGTH = 20;
@@ -154,19 +165,30 @@ public class ActionsScreen extends VerticalScreen
     }
     
     @Override
-    public void reselect()
+    public void reselect(Map<String, String> params)
     {
-        select1();
+        select(params);
     }
     
     @Override
-    public void select()
+    public void select(Map<String, String> params)
     {
-        addToHistory(null);
         filterEvent = null;
         filterProvider = null;
         filterUsername = null;
         filterOffset = 0;
+        if (params == null)
+        {
+            addToHistory(null);
+        }
+        else
+        {
+            filterEvent = params.get("event");
+            filterProvider = params.get("provider");
+            filterUsername = params.get("username");
+            filterOffset = (params.get("offset") == null ? 0 : Integer
+                    .parseInt(params.get("offset")));
+        }
         select1();
     }
     

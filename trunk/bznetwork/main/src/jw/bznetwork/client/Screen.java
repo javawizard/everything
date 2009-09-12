@@ -24,7 +24,7 @@ public interface Screen
      * Called when this screen becomes the active screen, after another screen
      * was deselected or if this is the first screen to become active.
      */
-    public void select();
+    public void select(Map<String, String> params);
     
     /**
      * Called when another screen is about to become the active screen.
@@ -36,7 +36,7 @@ public interface Screen
      * active screen. Screens may wish to reset to their default state when this
      * is called.
      */
-    public void reselect();
+    public void reselect(Map<String, String> params);
     
     /**
      * Returns the name of this screen. This is different than the title. The

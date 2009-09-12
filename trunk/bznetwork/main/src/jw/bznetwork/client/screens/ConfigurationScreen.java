@@ -60,7 +60,6 @@ public class ConfigurationScreen extends VerticalScreen
     @Override
     public void select()
     {
-        addToHistory(null);
         BZNetwork.authLink
                 .getEditConfigurationModel(new BoxCallback<EditConfigurationModel>()
                 {

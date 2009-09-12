@@ -57,7 +57,6 @@ public class AuthgroupsScreen extends VerticalScreen implements Screen
     @Override
     public void select()
     {
-        addToHistory(null);
         BZNetwork.authLink
                 .getEditAuthgroupsModel(new BoxCallback<EditAuthgroupsModel>()
                 {

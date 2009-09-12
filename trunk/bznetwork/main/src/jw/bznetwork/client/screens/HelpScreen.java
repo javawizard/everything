@@ -78,7 +78,6 @@ public class HelpScreen extends VerticalScreen
     @Override
     public void select()
     {
-        addToHistory(null);
     }
     
 }

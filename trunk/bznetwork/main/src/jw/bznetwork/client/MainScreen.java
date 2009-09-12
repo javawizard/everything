@@ -254,18 +254,18 @@ public class MainScreen extends Composite implements ClickListener
             s.init();
             screensByName.put(s.getName(), s);
         }
-        selectScreen(0);
+        selectScreen(0, null);
     }
     
     @Override
     public void onClick(Widget sender)
     {
         int anchorIndex = screenMenuLinks.indexOf(sender);
-        selectScreen(anchorIndex);
+        selectScreen(anchorIndex, null);
         menuBox.hide();
     }
     
-    public void selectScreen(int index)
+    public void selectScreen(int index, Map<String, String> params)
     {
         Screen previous = selectedScreen;
         if (previous != null)
@@ -276,7 +276,7 @@ public class MainScreen extends Composite implements ClickListener
                  * We're selecting the currently-selected screen, so we'll just
                  * reselect it.
                  */
-                previous.reselect();
+                previous.reselect(params);
                 return;
             }
             /*
@@ -294,20 +294,15 @@ public class MainScreen extends Composite implements ClickListener
          */
         selectedScreen = screens.get(index);
         mainContentWrapper.setWidget(selectedScreen.getWidget());
-        selectedScreen.select();
+        selectedScreen.select(params);
         screenMenuLinks.get(index).addStyleName(
                 "bznetwork-MenuCurrentScreenItem");
         headerScreenLabel.setText(selectedScreen.getTitle());
     }
     
-    public void selectScreen(String name, boolean historyChange)
+    public void selectScreen(String name, Map<String, String> params)
     {
-        selectScreen(screens.indexOf(screensByName.get(name)));
-    }
-    
-    public void selectScreen(String name)
-    {
-        selectScreen(name, false);
+        selectScreen(screens.indexOf(screensByName.get(name)), params);
     }
     
     public Screen get(String screenName)
@@ -385,10 +380,6 @@ public class MainScreen extends Composite implements ClickListener
         String pageName = map.get("_page");
         if (pageName == null)
             return;
-        selectScreen(pageName, true);
-        Screen screen = get(pageName);
-        if (screen == null)
-            return;
-        screen.historyChanged(map);
+        selectScreen(pageName, map);
     }
 }

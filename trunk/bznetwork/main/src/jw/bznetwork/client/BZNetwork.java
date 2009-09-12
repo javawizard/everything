@@ -292,7 +292,7 @@ public class BZNetwork implements EntryPoint
                 .toArray(new ClickListener[0]), defaultScreens,
                 publicConfiguration.getBoolean(Settings.pagehelp), CONTEXT_URL
                         + "/screen-help/");
-        mainScreen.selectScreen("welcome");
+        mainScreen.selectScreen("welcome", null);
         mainScreen.setWidth("100%");
         rootPanel.add(mainScreen);
         TickTimer tickTimer = new TickTimer(mainScreen);

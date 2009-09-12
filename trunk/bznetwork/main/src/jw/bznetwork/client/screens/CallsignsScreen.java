@@ -59,7 +59,6 @@ public class CallsignsScreen extends VerticalScreen implements Screen
     @Override
     public void select()
     {
-        addToHistory(null);
         BZNetwork.authLink
                 .getEditCallsignsModel(new BoxCallback<EditCallsignsModel>()
                 {

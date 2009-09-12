@@ -363,7 +363,6 @@ public class RolesScreen extends VerticalScreen
     @Override
     public void select()
     {
-        addToHistory(null);
         final PopupPanel box = BZNetwork.showLoadingBox();
         BZNetwork.authLink.getRoleList(new AsyncCallback<Role[]>()
         {

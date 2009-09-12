@@ -43,6 +43,30 @@ public abstract class VerticalScreen implements Screen
         spacer.setWidth(spacing);
     }
     
+    @Override
+    public void reselect(Map<String, String> params)
+    {
+        if (params == null)
+            addToHistory(null);
+        reselect();
+    }
+    
+    @Override
+    public void select(Map<String, String> params)
+    {
+        if (params == null)
+            addToHistory(null);
+        select();
+    }
+    
+    protected void select()
+    {
+    }
+    
+    protected void reselect()
+    {
+    }
+    
     /**
      * Does nothing. Subclasses can override this method if they need to get
      * tick information from BZNetwork.

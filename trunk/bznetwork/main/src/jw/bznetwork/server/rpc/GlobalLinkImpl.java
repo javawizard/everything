@@ -1303,9 +1303,18 @@ public class GlobalLinkImpl extends RemoteServiceServlet implements GlobalLink
     }
     
     @Override
-    public void updateEmailGroup(EmailGroup group)
+    public void updateEmailGroup(EmailGroup emailGroup)
     {
-        // TODO Auto-generated method stub
-        
+        Verify.global("manage-email-groups");
+        boolean isAdding = false;
+        if (emailGroup.getEmailgroupid() == -1)
+        {
+            isAdding = true;
+            emailGroup.setEmailgroupid(DataStore.createId());
+        }
+        if (isAdding)
+            DataStore.addEmailGroup(emailGroup);
+        else
+            DataStore.updateEmailGroup(emailGroup);
     }
 }

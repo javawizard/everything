@@ -51,7 +51,6 @@ public class AuthenticationScreen extends VerticalScreen
     @Override
     public void select()
     {
-        addToHistory(null);
         BZNetwork.authLink
                 .getEditAuthenticationModel(new BoxCallback<EditAuthenticationModel>()
                 {

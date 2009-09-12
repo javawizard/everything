@@ -161,7 +161,6 @@ public class ServersScreen extends VerticalScreen
     @Override
     public void select()
     {
-        addToHistory(null);
         BZNetwork.authLink
                 .getServerListModel(new BoxCallback<ServerListModel>()
                 {
@@ -466,7 +465,7 @@ public class ServersScreen extends VerticalScreen
                 logsScreen.preserveSettingsOnce = true;
                 logsScreen.settings = filterSettings;
                 logsScreen.performSearchOnce = true;
-                BZNetwork.mainScreen.selectScreen("logs");
+                BZNetwork.mainScreen.selectScreen("logs", null);
             }
         });
         Anchor renameLink = new Anchor("rename");
@@ -516,7 +515,7 @@ public class ServersScreen extends VerticalScreen
                 logsScreen.preserveSettingsOnce = true;
                 logsScreen.settings = filterSettings;
                 logsScreen.performSearchOnce = true;
-                BZNetwork.mainScreen.selectScreen("logs");
+                BZNetwork.mainScreen.selectScreen("logs", null);
             }
         });
         Anchor renameLink = new Anchor("rename");

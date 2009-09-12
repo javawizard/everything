@@ -58,7 +58,6 @@ public class IRCScreen extends VerticalScreen
     @Override
     public void select()
     {
-        addToHistory(null);
         BZNetwork.authLink.listIrcBots(new BoxCallback<IrcBot[]>()
         {
             
