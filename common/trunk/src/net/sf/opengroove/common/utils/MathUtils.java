@@ -18,7 +18,8 @@ public class MathUtils
      * or o (0).
      */
     public static final String RADIX_ALPHA_CLEAR = "0123456789ABCDEFGHJKLMNQRSTVWXYZ";
-    public static final String RADIX_ALPHANUMERIC = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+    public static final String RADIX_ALPHANUMERIC =
+        "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ";
     
     /**
      * Converts a BigInteger to a String, using the chars specified as the
@@ -27,7 +28,8 @@ public class MathUtils
      * will consist of the first character in the string only. For example,
      * calling this method with <code>chars</code> equal to "0123456789" would
      * have the same result as calling <code>number.toString()</code> (IE it
-     * results in the base 10 representation of the number).<br/><br/>
+     * results in the base 10 representation of the number).<br/>
+     * <br/>
      * 
      * The algorithm used tends to be considerably less efficient than that
      * provided by {@link BigInteger#toString()} or
@@ -38,8 +40,7 @@ public class MathUtils
      * @param chars
      * @return
      */
-    public static String toString(BigInteger number,
-        String chars)
+    public static String toString(BigInteger number, String chars)
     {
         StringBuilder buffer = new StringBuilder();
         int intRadix = chars.length();
@@ -70,11 +71,13 @@ public class MathUtils
      *            <code>chars</code>, except that it may begin with a "-"
      *            character, in which case the resulting number will be negative
      * @param chars
-     *            The digits to use when parsing
+     *            The digits to use when parsing. For example, using
+     *            "0123456789" would cause the number to be parsed as a base-10
+     *            number, and using "0123456789abcdef" would cause the number to
+     *            be parsed as a base-16 number.
      * @return The parsed number
      */
-    public static BigInteger parse(String value,
-        String chars)
+    public static BigInteger parse(String value, String chars)
     {
         int intRadix = chars.length();
         BigInteger radix = BigInteger.valueOf(intRadix);
@@ -90,21 +93,15 @@ public class MathUtils
         BigInteger number = BigInteger.valueOf(0);
         for (char c : value.toCharArray())
         {
-            BigInteger index = BigInteger.valueOf(chars
-                .indexOf(c));
+            BigInteger index = BigInteger.valueOf(chars.indexOf(c));
             if (index.signum() == -1)
-                throw new RuntimeException(
-                    "The character "
-                        + c
-                        + " in the value "
-                        + value
-                        + " is not in the radix string specified.");
+                throw new RuntimeException("The character " + c + " in the value "
+                    + value + " is not in the radix string specified.");
             number = number.add(index);
             number = number.multiply(radix);
         }
         if (isNegative)
-            number = number
-                .multiply(BigInteger.valueOf(-1));
+            number = number.multiply(BigInteger.valueOf(-1));
         return number;
     }
     

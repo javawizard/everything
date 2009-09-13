@@ -41,13 +41,11 @@ import net.sf.opengroove.common.utils.StringUtils;
  * in such a way that updating one instance of a particular persistant bean
  * causes all other instances within the JVM to immediately reflect the new
  * state. ProxyStorage is intended to be a (very simplified) replacement for
- * Java Persistence API, when JPA is just too heavyweight.<br/>
- * <br/>
+ * Java Persistence API, when JPA is just too heavyweight.<br/> <br/>
  * 
  * Each ProxyStorage instance has a root object. The root object is the single
  * object to be persisted. It should have various fields that other objects can
- * be placed on to make them persistant.<br/>
- * <br/>
+ * be placed on to make them persistant.<br/> <br/>
  * 
  * When an object is created, it is entered into the proxy storage system with
  * no parent. It can then be assigned to fields of other persistent objects as
@@ -56,13 +54,12 @@ import net.sf.opengroove.common.utils.StringUtils;
  * ProxyStorage. The vacuum method generally should only be called right after
  * the proxy storage is created but before it goes into use, as it will remove
  * any objects that are not currently in the tree of objects, which could
- * include a newly-created object that hasn't been assigned to the tree yet.<br/>
- * <br/>
+ * include a newly-created object that hasn't been assigned to the tree
+ * yet.<br/> <br/>
  * 
  * Although a file object is passed to the proxy storage instance, the
  * underlying storage is an embedded relational database. In the future, methods
- * that take a java.sql.Connection instead of a file will be added.<br/>
- * <br/>
+ * that take a java.sql.Connection instead of a file will be added.<br/> <br/>
  * 
  * ProxyStorage requires the H2 embedded database be included on the classpath.
  * You can perform a google search for "h2 database" to find it. All you have to
@@ -86,7 +83,7 @@ public class ProxyStorage<E>
         private PropertyChangeEvent event;
         
         public PropertyChanged(PropertyChangeListener listener,
-            PropertyChangeEvent event)
+                PropertyChangeEvent event)
         {
             this.listener = listener;
             this.event = event;
@@ -109,14 +106,11 @@ public class ProxyStorage<E>
      * These should be static, since there's no point creating multiple
      * instances per proxystorage instance
      */
-    protected static final Map<Class, Delegate> delegateSingletons =
-        new HashMap<Class, Delegate>();
+    protected static final Map<Class, Delegate> delegateSingletons = new HashMap<Class, Delegate>();
     
-    protected static final Map<Class, ParameterFilter> parameterFilterSingletons =
-        new HashMap<Class, ParameterFilter>();
+    protected static final Map<Class, ParameterFilter> parameterFilterSingletons = new HashMap<Class, ParameterFilter>();
     
-    protected static final Map<Class, ResultFilter> resultFilterSingletons =
-        new HashMap<Class, ResultFilter>();
+    protected static final Map<Class, ResultFilter> resultFilterSingletons = new HashMap<Class, ResultFilter>();
     /*
      * <BeanPropertyKey,Object>
      */
@@ -152,11 +146,10 @@ public class ProxyStorage<E>
      * A map that maps proxy object ids to maps that map the object's property
      * names to lists of listeners registered on those propertiews
      */
-    private final HashMap<Long, HashMap<String, ArrayList<PropertyChangeListener>>> beanListeners =
-        new HashMap<Long, HashMap<String, ArrayList<PropertyChangeListener>>>();
+    private final HashMap<Long, HashMap<String, ArrayList<PropertyChangeListener>>> beanListeners = new HashMap<Long, HashMap<String, ArrayList<PropertyChangeListener>>>();
     
-    private final ThreadPoolExecutor listenerExecutor =
-        new ThreadPoolExecutor(20, 20, 30, TimeUnit.SECONDS,
+    private final ThreadPoolExecutor listenerExecutor = new ThreadPoolExecutor(
+            20, 20, 30, TimeUnit.SECONDS,
             new ArrayBlockingQueue<Runnable>(2000));
     
     private DatabaseMetaData dbInfo;
@@ -185,12 +178,13 @@ public class ProxyStorage<E>
     }
     
     public ProxyStorage(Class<E> rootClass, File location, int objectCacheSize,
-        int propertyCacheSize, int stringCacheSize)
+            int propertyCacheSize, int stringCacheSize)
 
     {
         System.out.println("loading proxystorage on file " + location);
         objectCache = Collections.synchronizedMap(new LRUMap(objectCacheSize));
-        propertyCache = Collections.synchronizedMap(new LRUMap(propertyCacheSize));
+        propertyCache = Collections.synchronizedMap(new LRUMap(
+                propertyCacheSize));
         stringCache = Collections.synchronizedMap(new LRUMap(stringCacheSize));
         listenerExecutor.allowCoreThreadTimeOut(true);
         this.rootClass = rootClass;
@@ -205,15 +199,15 @@ public class ProxyStorage<E>
         catch (ClassNotFoundException e)
         {
             throw new IllegalStateException(
-                "The H2Database jar is not on your classpath. H2 is "
-                    + "used as the backend for ProxyStorage, " + "and so is required.",
-                e);
+                    "The H2Database jar is not on your classpath. H2 is "
+                            + "used as the backend for ProxyStorage, "
+                            + "and so is required.", e);
         }
         try
         {
             System.out.println("connecting to proxystorage db");
-            connection =
-                DriverManager.getConnection("jdbc:h2:" + location.getPath(), "sa", "");
+            connection = DriverManager.getConnection("jdbc:h2:"
+                    + location.getPath(), "sa", "");
             System.out.println("connected");
             dbInfo = connection.getMetaData();
             checkSystemTables();
@@ -222,7 +216,8 @@ public class ProxyStorage<E>
         catch (Exception e)
         {
             throw new RuntimeException(
-                "An exception occured while initializing the proxy storage", e);
+                    "An exception occured while initializing the proxy storage",
+                    e);
         }
         System.out.println("performing initial vacuum...");
         vacuum(new Progress());
@@ -245,19 +240,22 @@ public class ProxyStorage<E>
         {
             createEmptyTable("proxystorage_statics");
         }
-        setTableColumns("proxystorage_statics", new TableColumn[] {
-            new TableColumn("name", Types.VARCHAR, 256),
-            new TableColumn("value", Types.BIGINT, 0) });
+        setTableColumns("proxystorage_statics", new TableColumn[]
+        {
+                new TableColumn("name", Types.VARCHAR, 256),
+                new TableColumn("value", Types.BIGINT, 0)
+        });
         if (!tables.contains("proxystorage_collections"))
         {
             createEmptyTable("proxystorage_collections");
         }
-        setTableColumns("proxystorage_collections", new TableColumn[] {
-            new TableColumn("id", Types.BIGINT, 0),
-            new TableColumn("index", Types.INTEGER, 0),
-            new TableColumn("value", Types.BIGINT, 0) });
-        PreparedStatement st =
-            connection
+        setTableColumns("proxystorage_collections", new TableColumn[]
+        {
+                new TableColumn("id", Types.BIGINT, 0),
+                new TableColumn("index", Types.INTEGER, 0),
+                new TableColumn("value", Types.BIGINT, 0)
+        });
+        PreparedStatement st = connection
                 .prepareStatement("select name from proxystorage_statics where name = 'sequencer'");
         opcount++;
         ResultSet rs = st.executeQuery();
@@ -277,8 +275,8 @@ public class ProxyStorage<E>
      */
     private void createEmptyTable(String name) throws SQLException
     {
-        PreparedStatement statement =
-            connection.prepareStatement("create table " + name + " ()");
+        PreparedStatement statement = connection
+                .prepareStatement("create table " + name + " ()");
         opcount++;
         statement.execute();
         statement.close();
@@ -317,7 +315,7 @@ public class ProxyStorage<E>
      * @throws SQLException
      */
     private void setTableColumns(String tableName, TableColumn[] lc)
-        throws SQLException
+            throws SQLException
     {
         ArrayList<TableColumn> existing = getTableColumns(tableName);
         List<TableColumn> columns = Arrays.asList(lc);
@@ -331,9 +329,9 @@ public class ProxyStorage<E>
                 /*
                  * We need to remove the column
                  */
-                PreparedStatement st =
-                    connection.prepareStatement("alter table " + tableName
-                        + " drop column " + column.getName());
+                PreparedStatement st = connection
+                        .prepareStatement("alter table " + tableName
+                                + " drop column " + column.getName());
                 opcount++;
                 st.execute();
                 st.close();
@@ -346,10 +344,14 @@ public class ProxyStorage<E>
                 /*
                  * We need to add the column
                  */
-                PreparedStatement st =
-                    connection.prepareStatement("alter table " + tableName
-                        + " add column " + column.getName() + " "
-                        + getStringDataType(column.getType(), column.getSize()));
+                PreparedStatement st = connection
+                        .prepareStatement("alter table "
+                                + tableName
+                                + " add column "
+                                + column.getName()
+                                + " "
+                                + getStringDataType(column.getType(), column
+                                        .getSize()));
                 opcount++;
                 st.execute();
                 st.close();
@@ -389,7 +391,8 @@ public class ProxyStorage<E>
                     return typeName;
                 }
             }
-            throw new IllegalArgumentException("That type is not supported by the db");
+            throw new IllegalArgumentException(
+                    "That type is not supported by the db");
         }
         finally
         {
@@ -398,14 +401,15 @@ public class ProxyStorage<E>
     }
     
     private ArrayList<TableColumn> getTableColumns(String tableName)
-        throws SQLException
+            throws SQLException
     {
-        ResultSet rs = dbInfo.getColumns(null, null, tableName.toUpperCase(), null);
+        ResultSet rs = dbInfo.getColumns(null, null, tableName.toUpperCase(),
+                null);
         ArrayList<TableColumn> results = new ArrayList<TableColumn>();
         while (rs.next())
         {
             results.add(new TableColumn(rs.getString("COLUMN_NAME"), rs
-                .getInt("DATA_TYPE"), rs.getInt("COLUMN_SIZE")));
+                    .getInt("DATA_TYPE"), rs.getInt("COLUMN_SIZE")));
         }
         return results;
     }
@@ -500,30 +504,35 @@ public class ProxyStorage<E>
                 tableName = "proxystorage_collections";
             else
                 tableName = getTargetTableName(c);
-            final String idColumn = (c == StoredList.class) ? "id" : "proxystorage_id";
+            final String idColumn = (c == StoredList.class) ? "id"
+                    : "proxystorage_id";
             try
             {
-                PreparedStatement lst =
-                    connection.prepareStatement("delete from " + tableName
-                        + " where not " + idColumn + " in ( "
-                        + delimited(set.toArray(new Long[0]), new ToString<Long>()
-                        {
-                            
-                            @Override
-                            public String toString(Long object)
-                            {
-                                return "" + object.longValue();
-                            }
-                        }, ",") + ")");
+                PreparedStatement lst = connection
+                        .prepareStatement("delete from "
+                                + tableName
+                                + " where not "
+                                + idColumn
+                                + " in ( "
+                                + delimited(set.toArray(new Long[0]),
+                                        new ToString<Long>()
+                                        {
+                                            
+                                            @Override
+                                            public String toString(Long object)
+                                            {
+                                                return "" + object.longValue();
+                                            }
+                                        }, ",") + ")");
                 opcount++;
                 lst.execute();
                 lst.close();
             }
             catch (SQLException e)
             {
-                RuntimeException exception =
-                    new RuntimeException("An error occured while scanning class table "
-                        + tableName);
+                RuntimeException exception = new RuntimeException(
+                        "An error occured while scanning class table "
+                                + tableName);
             }
         }
     }
@@ -540,8 +549,8 @@ public class ProxyStorage<E>
      *            The target class of the storedlist. If <code>c</code> is not
      *            StoredList.class, then this is unused.
      */
-    private void buildReferenceList(HashMap<Class, HashSet<Long>> list, long id,
-        Class c, Class subtype) throws SQLException
+    private void buildReferenceList(HashMap<Class, HashSet<Long>> list,
+            long id, Class c, Class subtype) throws SQLException
     {
         Object object;
         if (c != StoredList.class)
@@ -571,7 +580,8 @@ public class ProxyStorage<E>
             for (int i = 0; i < size; i++)
             {
                 ProxyObject result = (ProxyObject) storedList.get(i);
-                buildReferenceList(list, result.getProxyStorageId(), subtype, null);
+                buildReferenceList(list, result.getProxyStorageId(), subtype,
+                        null);
             }
         }
         else
@@ -590,15 +600,16 @@ public class ProxyStorage<E>
                      */
                     try
                     {
-                        ProxyObject result =
-                            (ProxyObject) method.invoke(object, new Object[0]);
+                        ProxyObject result = (ProxyObject) method.invoke(
+                                object, new Object[0]);
                         /*
                          * result is now the subobject that we want to scan. If
                          * it's null, we'll skip over it.
                          */
                         if (result != null)
-                            buildReferenceList(list, result.getProxyStorageId(), method
-                                .getReturnType(), null);
+                            buildReferenceList(list,
+                                    result.getProxyStorageId(), method
+                                            .getReturnType(), null);
                     }
                     catch (Exception e)
                     {
@@ -615,14 +626,14 @@ public class ProxyStorage<E>
                      */
                     try
                     {
-                        StoredList result =
-                            (StoredList) method.invoke(object, new Object[0]);
+                        StoredList result = (StoredList) method.invoke(object,
+                                new Object[0]);
                         /*
                          * result is now the subobject that we want to scan.
                          */
                         buildReferenceList(list, result.getProxyStorageId(),
-                            StoredList.class, method.getAnnotation(ListType.class)
-                                .value());
+                                StoredList.class, method.getAnnotation(
+                                        ListType.class).value());
                     }
                     catch (Exception e)
                     {
@@ -646,7 +657,7 @@ public class ProxyStorage<E>
      * @throws SQLException
      */
     private void checkTables(Class checkClass, ArrayList<Class> alreadyChecked)
-        throws SQLException
+            throws SQLException
     {
         if (alreadyChecked.contains(checkClass))
             return;
@@ -670,25 +681,30 @@ public class ProxyStorage<E>
             {
                 if (!method.isAnnotationPresent(ListType.class))
                 {
-                    throw new IllegalArgumentException("The property with the getter "
-                        + method.getName() + " on the class " + checkClass.getName()
-                        + " is a StoredList, but it's parameter type "
-                        + "is not specified with a ListType annotation.");
-                }
-                ListType listTypeAnnotation = method.getAnnotation(ListType.class);
-                if (!listTypeAnnotation.value().isAnnotationPresent(ProxyBean.class))
                     throw new IllegalArgumentException(
-                        "The property with the getter "
-                            + method.getName()
-                            + " on the class "
-                            + checkClass.getName()
-                            + " is a StoredList, but it's parameter type ("
-                            + listTypeAnnotation.value().getName()
-                            + ") does "
-                            + "not carry the ProxyBean annotation. If you were trying "
-                            + "to create a list of a primitive type wrapper or "
-                            + "a list of String, consider wrapping them in ProxyBean-annotated "
-                            + "objects that have only one property.");
+                            "The property with the getter "
+                                    + method.getName()
+                                    + " on the class "
+                                    + checkClass.getName()
+                                    + " is a StoredList, but it's parameter type "
+                                    + "is not specified with a ListType annotation.");
+                }
+                ListType listTypeAnnotation = method
+                        .getAnnotation(ListType.class);
+                if (!listTypeAnnotation.value().isAnnotationPresent(
+                        ProxyBean.class))
+                    throw new IllegalArgumentException(
+                            "The property with the getter "
+                                    + method.getName()
+                                    + " on the class "
+                                    + checkClass.getName()
+                                    + " is a StoredList, but it's parameter type ("
+                                    + listTypeAnnotation.value().getName()
+                                    + ") does "
+                                    + "not carry the ProxyBean annotation. If you were trying "
+                                    + "to create a list of a primitive type wrapper or "
+                                    + "a list of String, consider wrapping them in ProxyBean-annotated "
+                                    + "objects that have only one property.");
                 checkTables(listTypeAnnotation.value(), alreadyChecked);
             }
         }
@@ -702,8 +718,8 @@ public class ProxyStorage<E>
         {
             if (!method.isAnnotationPresent(Property.class))
                 continue;
-            if (!(method.getName().startsWith("get") || method.getName().startsWith(
-                "is")))
+            if (!(method.getName().startsWith("get") || method.getName()
+                    .startsWith("is")))
                 continue;
             results.add(method);
         }
@@ -737,18 +753,23 @@ public class ProxyStorage<E>
                  * same class
                  */
                 type = Types.BIGINT;
-            else if (propertyClass == Integer.TYPE || propertyClass == Integer.class)
+            else if (propertyClass == Integer.TYPE
+                    || propertyClass == Integer.class)
                 type = Types.INTEGER;
-            else if (propertyClass == Double.TYPE || propertyClass == Double.class)
+            else if (propertyClass == Double.TYPE
+                    || propertyClass == Double.class)
                 type = Types.DOUBLE;
-            else if (propertyClass == Boolean.TYPE || propertyClass == Boolean.class)
+            else if (propertyClass == Boolean.TYPE
+                    || propertyClass == Boolean.class)
                 type = Types.BOOLEAN;
-            else if (propertyClass == String.class || propertyClass == BigInteger.class)
+            else if (propertyClass == String.class
+                    || propertyClass == BigInteger.class)
             {
                 type = Types.VARCHAR;
                 if (method.isAnnotationPresent(Length.class))
                 {
-                    size = ((Length) method.getAnnotation(Length.class)).value();
+                    size = ((Length) method.getAnnotation(Length.class))
+                            .value();
                 }
                 else
                 {
@@ -772,12 +793,15 @@ public class ProxyStorage<E>
                  * collections, instead of the user not knowing how they are
                  * supposed to use a type of list.
                  */
-                throw new IllegalArgumentException("The class "
-                    + propertyClass.getName() + " contains a property (" + propertyName
-                    + ") which "
-                    + "is a Java Collection. Java Collection implementations "
-                    + "themselves aren't supported. You can, however, " + "use a "
-                    + StoredList.class.getName());
+                throw new IllegalArgumentException(
+                        "The class "
+                                + propertyClass.getName()
+                                + " contains a property ("
+                                + propertyName
+                                + ") which "
+                                + "is a Java Collection. Java Collection implementations "
+                                + "themselves aren't supported. You can, however, "
+                                + "use a " + StoredList.class.getName());
             }
             else if (propertyClass.isAnnotationPresent(ProxyBean.class))
             {
@@ -789,9 +813,9 @@ public class ProxyStorage<E>
                 type = Types.BIGINT;
             }
             else
-                throw new RuntimeException("The class " + propertyClass.getName()
-                    + " contains a property (" + propertyName
-                    + ") which is not of a valid type.");
+                throw new RuntimeException("The class "
+                        + propertyClass.getName() + " contains a property ("
+                        + propertyName + ") which is not of a valid type.");
             columns.add(new TableColumn(propertyName, type, size));
         }
         return columns;
@@ -799,9 +823,9 @@ public class ProxyStorage<E>
     
     private String propertyNameFromAccessor(String methodName)
     {
-        String propertyName =
-            methodName.startsWith("is") ? methodName.substring("is".length())
-                : methodName.substring("get".length());
+        String propertyName = methodName.startsWith("is") ? methodName
+                .substring("is".length()) : methodName
+                .substring("get".length());
         propertyName = Introspector.decapitalize(propertyName);
         return propertyName;
     }
@@ -840,8 +864,7 @@ public class ProxyStorage<E>
      * Creates a new instance of the proxy bean interface specified. The
      * interface must be annotated with {@link ProxyBean}, and must be a type
      * that is part of the ownership tree of which <code>E</code> must be the
-     * root.<br/>
-     * <br/>
+     * root.<br/> <br/>
      * 
      * The new instance will be persisted in the database, but will not be owned
      * by anything, so a call to vacuum() would remove it until it is assigned
@@ -854,38 +877,37 @@ public class ProxyStorage<E>
     public <T> T create(Class<T> c)
     {
         if (!allClasses.contains(c))
-            throw new IllegalArgumentException("The class specified (" + c.getName()
-                + ") is not a class in the root "
-                + "tree of this proxy storage instance. " + "(the root class is "
-                + rootClass.getName() + ")");
+            throw new IllegalArgumentException("The class specified ("
+                    + c.getName() + ") is not a class in the root "
+                    + "tree of this proxy storage instance. "
+                    + "(the root class is " + rootClass.getName() + ")");
         try
         {
             ArrayList<TableColumn> columns = getTableColumns(getTargetTableName(c));
-            String statement =
-                "insert into "
+            String statement = "insert into "
                     + getTargetTableName(c)
                     + "( "
                     + delimited(columns.toArray(new TableColumn[0]),
-                        new ToString<TableColumn>()
-                        {
-                            
-                            @Override
-                            public String toString(TableColumn object)
+                            new ToString<TableColumn>()
                             {
-                                return object.getName();
-                            }
-                        }, ",")
+                                
+                                @Override
+                                public String toString(TableColumn object)
+                                {
+                                    return object.getName();
+                                }
+                            }, ",")
                     + " ) values ( "
                     + delimited(columns.toArray(new TableColumn[0]),
-                        new ToString<TableColumn>()
-                        {
-                            
-                            @Override
-                            public String toString(TableColumn object)
+                            new ToString<TableColumn>()
                             {
-                                return "?";
-                            }
-                        }, ",") + ")";
+                                
+                                @Override
+                                public String toString(TableColumn object)
+                                {
+                                    return "?";
+                                }
+                            }, ",") + ")";
             PreparedStatement st = connection.prepareStatement(statement);
             int index = 0;
             long newId = nextId();
@@ -911,7 +933,7 @@ public class ProxyStorage<E>
     }
     
     public static <T> String delimited(T[] items, ToString<T> generator,
-        String delimiter)
+            String delimiter)
     {
         StringBuilder sb = new StringBuilder();
         for (int i = 0; i < items.length; i++)
@@ -951,9 +973,11 @@ public class ProxyStorage<E>
             if (objectCache.containsKey(id))
                 return objectCache.get(id);
             ObjectHandler handler = new ObjectHandler(c, id);
-            Object proxy =
-                Proxy.newProxyInstance(getClass().getClassLoader(), new Class[] { c,
-                    ProxyObject.class }, handler);
+            Object proxy = Proxy.newProxyInstance(getClass().getClassLoader(),
+                    new Class[]
+                    {
+                            c, ProxyObject.class
+                    }, handler);
             handler.instance = proxy;
             objectCache.put(id, proxy);
             return proxy;
@@ -973,8 +997,7 @@ public class ProxyStorage<E>
     {
         synchronized (lock)
         {
-            String statement =
-                "select count(*) from " + getTargetTableName(c)
+            String statement = "select count(*) from " + getTargetTableName(c)
                     + " where proxystorage_id = ?";
             PreparedStatement st = connection.prepareStatement(statement);
             opcount++;
@@ -1014,8 +1037,7 @@ public class ProxyStorage<E>
     {
         try
         {
-            PreparedStatement rst =
-                connection
+            PreparedStatement rst = connection
                     .prepareStatement("select value from proxystorage_statics where name = ?");
             rst.setString(1, "root");
             opcount++;
@@ -1039,8 +1061,7 @@ public class ProxyStorage<E>
              */
             Object newObject = create(rootClass);
             long newId = ((ProxyObject) newObject).getProxyStorageId();
-            PreparedStatement st =
-                connection
+            PreparedStatement st = connection
                     .prepareStatement("insert into proxystorage_statics values (?,?)");
             opcount++;
             st.setString(1, "root");
@@ -1052,7 +1073,8 @@ public class ProxyStorage<E>
         catch (SQLException e)
         {
             throw new RuntimeException(
-                "An error occured while performing the requested operation.", e);
+                    "An error occured while performing the requested operation.",
+                    e);
         }
     }
     
@@ -1079,7 +1101,7 @@ public class ProxyStorage<E>
         
         @Override
         public Object invoke(Object proxy, Method method, Object[] args)
-            throws Throwable
+                throws Throwable
         {
             if (args == null)
                 args = new Object[0];
@@ -1090,28 +1112,28 @@ public class ProxyStorage<E>
                     Filter annotation = method.getAnnotation(Filter.class);
                     if (annotation.parameterFilter() != ParameterFilter.class)
                     {
-                        ParameterFilter filter =
-                            parameterFilterSingletons.get(annotation.parameterFilter());
+                        ParameterFilter filter = parameterFilterSingletons
+                                .get(annotation.parameterFilter());
                         if (filter == null)
                         {
                             filter = annotation.parameterFilter().newInstance();
-                            parameterFilterSingletons.put(annotation.parameterFilter(),
-                                filter);
+                            parameterFilterSingletons.put(annotation
+                                    .parameterFilter(), filter);
                         }
                         args = filter.filter(instance, args);
                     }
                 }
                 if (method.getName().equalsIgnoreCase("addChangeListener")
-                    || method.getName().equalsIgnoreCase("removeChangeListener"))
+                        || method.getName().equalsIgnoreCase(
+                                "removeChangeListener"))
                 {
                     String property = (String) args[0];
                     PropertyChangeListener listener = (PropertyChangeListener) args[1];
-                    HashMap<String, ArrayList<PropertyChangeListener>> beanMap =
-                        beanListeners.get(targetId);
+                    HashMap<String, ArrayList<PropertyChangeListener>> beanMap = beanListeners
+                            .get(targetId);
                     if (beanMap == null)
                     {
-                        beanMap =
-                            new HashMap<String, ArrayList<PropertyChangeListener>>();
+                        beanMap = new HashMap<String, ArrayList<PropertyChangeListener>>();
                         beanListeners.put(targetId, beanMap);
                     }
                     ArrayList listenerList = beanMap.get(property);
@@ -1121,29 +1143,31 @@ public class ProxyStorage<E>
                         beanMap.put(property, listenerList);
                     }
                     if (method.getName().equalsIgnoreCase("addChangeListener")
-                        && !listenerList.contains(listener))
+                            && !listenerList.contains(listener))
                         listenerList.add(listener);
-                    if (method.getName().equalsIgnoreCase("removeChangeListener")
-                        && listenerList.contains(listener))
+                    if (method.getName().equalsIgnoreCase(
+                            "removeChangeListener")
+                            && listenerList.contains(listener))
                         listenerList.remove(listener);
                     return null;
                 }
                 if (method.getName().equalsIgnoreCase("getProxyStorageId")
-                    && method.getReturnType() == Long.TYPE)
+                        && method.getReturnType() == Long.TYPE)
                     return targetId;
                 if (method.getName().equalsIgnoreCase("getProxyStorageClass")
-                    && method.getReturnType() == Class.class)
+                        && method.getReturnType() == Class.class)
                     return targetClass;
                 if (method.getName().equalsIgnoreCase("finalize"))
                 {
                     System.out.println("proxystorage object " + targetId
-                        + " finalized.");
+                            + " finalized.");
                     return null;
                 }
                 if (method.getName().equalsIgnoreCase("isProxyStoragePresent")
-                    && method.getReturnType() == Boolean.TYPE)
+                        && method.getReturnType() == Boolean.TYPE)
                     return isTargetIdPresent(targetId, targetClass);
-                if (method.getName().equalsIgnoreCase("equals") && args.length == 1)
+                if (method.getName().equalsIgnoreCase("equals")
+                        && args.length == 1)
                 {
                     Object compare = args[0];
                     if (!(compare instanceof ProxyObject))
@@ -1174,16 +1198,18 @@ public class ProxyStorage<E>
                      * proxystorage_collections table, using the id of the
                      * stored list obtained from the list property.
                      */
-                    PreparedStatement lst =
-                        connection.prepareStatement("select " + listProperty + " from "
-                            + getTargetTableName(targetClass)
-                            + " where proxystorage_id = ?");
+                    PreparedStatement lst = connection
+                            .prepareStatement("select " + listProperty
+                                    + " from "
+                                    + getTargetTableName(targetClass)
+                                    + " where proxystorage_id = ?");
                     opcount++;
                     lst.setLong(1, targetId);
                     ResultSet lrs = lst.executeQuery();
                     if (!lrs.next())
                         throw new RuntimeException("mismatched object with id "
-                            + targetId + " and class " + targetClass.getName());
+                                + targetId + " and class "
+                                + targetClass.getName());
                     long listId = lrs.getLong(1);
                     if (lrs.wasNull())
                     {
@@ -1191,7 +1217,7 @@ public class ProxyStorage<E>
                         lst.close();
                         if (method.getReturnType().isArray())
                             return Array.newInstance(method.getReturnType()
-                                .getComponentType(), 0);
+                                    .getComponentType(), 0);
                         else
                             return null;
                     }
@@ -1201,57 +1227,55 @@ public class ProxyStorage<E>
                      * The list is not null, and we have it's id. Now we'll put
                      * together a query to search for the actual objects.
                      */
-                    String capitalizedListProperty =
-                        listProperty.substring(0, 1).toUpperCase()
+                    String capitalizedListProperty = listProperty.substring(0,
+                            1).toUpperCase()
                             + listProperty.substring(1);
-                    String capitalizedSearchProperty =
-                        searchProperty.substring(0, 1).toUpperCase()
+                    String capitalizedSearchProperty = searchProperty
+                            .substring(0, 1).toUpperCase()
                             + searchProperty.substring(1);
-                    Method listGetterMethod =
-                        method.getDeclaringClass().getMethod(
-                            "get" + capitalizedListProperty, new Class[0]);
-                    ListType listTypeAnnotation =
-                        listGetterMethod.getAnnotation(ListType.class);
+                    Method listGetterMethod = method.getDeclaringClass()
+                            .getMethod("get" + capitalizedListProperty,
+                                    new Class[0]);
+                    ListType listTypeAnnotation = listGetterMethod
+                            .getAnnotation(ListType.class);
                     if (listTypeAnnotation == null)
                         throw new RuntimeException(
-                            "@ListType annotation is not present on stored list getter "
-                                + listGetterMethod.getName() + " for class "
-                                + listGetterMethod.getDeclaringClass().getName());
+                                "@ListType annotation is not present on stored list getter "
+                                        + listGetterMethod.getName()
+                                        + " for class "
+                                        + listGetterMethod.getDeclaringClass()
+                                                .getName());
                     Class listType = listTypeAnnotation.value();
                     Method searchGetterMethod;
                     try
                     {
-                        searchGetterMethod =
-                            listType.getMethod("get" + capitalizedSearchProperty,
-                                new Class[0]);
+                        searchGetterMethod = listType.getMethod("get"
+                                + capitalizedSearchProperty, new Class[0]);
                     }
                     catch (NoSuchMethodException ex)
                     {
-                        searchGetterMethod =
-                            listType.getMethod("is" + capitalizedSearchProperty,
-                                new Class[0]);
+                        searchGetterMethod = listType.getMethod("is"
+                                + capitalizedSearchProperty, new Class[0]);
                     }
                     /*
                      * At this point, we have method objects representing the
                      * stored list and the search property. Now we do the actual
                      * search.
                      */
-                    PreparedStatement st =
-                        connection
+                    PreparedStatement st = connection
                             .prepareStatement("select value from proxystorage_collections "
-                                + "where id = ? and value in (select proxystorage_id from "
-                                + getTargetTableName(listType)
-                                + " where "
-                                + searchProperty
-                                + " "
-                                + (annotation.exact() ? "=" : "like")
-                                + " ?) order by index asc");
+                                    + "where id = ? and value in (select proxystorage_id from "
+                                    + getTargetTableName(listType)
+                                    + " where "
+                                    + searchProperty
+                                    + " "
+                                    + (annotation.exact() ? "=" : "like")
+                                    + " ?) order by index asc");
                     st.setLong(1, listId);
                     Object searchValue = args[0];
                     if (!annotation.exact())
                     {
-                        searchValue =
-                            (annotation.anywhere() ? "%" : "")
+                        searchValue = (annotation.anywhere() ? "%" : "")
                                 + ((String) searchValue).replace("*", "%")
                                 + (annotation.anywhere() ? "%" : "");
                     }
@@ -1278,11 +1302,11 @@ public class ProxyStorage<E>
                     }
                     if (method.getReturnType().isArray())
                     {
-                        Object resultArray =
-                            Array.newInstance(
-                                method.getReturnType().getComponentType(),
+                        Object resultArray = Array.newInstance(method
+                                .getReturnType().getComponentType(),
                                 results.length);
-                        System.arraycopy(results, 0, resultArray, 0, results.length);
+                        System.arraycopy(results, 0, resultArray, 0,
+                                results.length);
                         return resultArray;
                     }
                     else
@@ -1299,20 +1323,22 @@ public class ProxyStorage<E>
                      * The method is a compound search method. We'll check the
                      * search type and perform the query.
                      */
-                    CompoundSearch annotation =
-                        method.getAnnotation(CompoundSearch.class);
+                    CompoundSearch annotation = method
+                            .getAnnotation(CompoundSearch.class);
                     String listProperty = annotation.listProperty();
                     String[] searchProperties = annotation.searchProperties();
-                    PreparedStatement lst =
-                        connection.prepareStatement("select " + listProperty + " from "
-                            + getTargetTableName(targetClass)
-                            + " where proxystorage_id = ?");
+                    PreparedStatement lst = connection
+                            .prepareStatement("select " + listProperty
+                                    + " from "
+                                    + getTargetTableName(targetClass)
+                                    + " where proxystorage_id = ?");
                     lst.setLong(1, targetId);
                     opcount++;
                     ResultSet lrs = lst.executeQuery();
                     if (!lrs.next())
                         throw new RuntimeException("mismatched object with id "
-                            + targetId + " and class " + targetClass.getName());
+                                + targetId + " and class "
+                                + targetClass.getName());
                     long listId = lrs.getLong(1);
                     if (lrs.wasNull())
                     {
@@ -1320,7 +1346,7 @@ public class ProxyStorage<E>
                         lst.close();
                         if (method.getReturnType().isArray())
                             return Array.newInstance(method.getReturnType()
-                                .getComponentType(), 0);
+                                    .getComponentType(), 0);
                         else
                             return null;
                     }
@@ -1330,61 +1356,61 @@ public class ProxyStorage<E>
                      * The list is not null, and we have it's id. Now we'll put
                      * together a query to search for the actual objects.
                      */
-                    String capitalizedListProperty =
-                        listProperty.substring(0, 1).toUpperCase()
+                    String capitalizedListProperty = listProperty.substring(0,
+                            1).toUpperCase()
                             + listProperty.substring(1);
-                    Method listGetterMethod =
-                        method.getDeclaringClass().getMethod(
-                            "get" + capitalizedListProperty, new Class[0]);
-                    ListType listTypeAnnotation =
-                        listGetterMethod.getAnnotation(ListType.class);
+                    Method listGetterMethod = method.getDeclaringClass()
+                            .getMethod("get" + capitalizedListProperty,
+                                    new Class[0]);
+                    ListType listTypeAnnotation = listGetterMethod
+                            .getAnnotation(ListType.class);
                     if (listTypeAnnotation == null)
                         throw new RuntimeException(
-                            "@ListType annotation is not present on stored list getter "
-                                + listGetterMethod.getName() + " for class "
-                                + listGetterMethod.getDeclaringClass().getName());
+                                "@ListType annotation is not present on stored list getter "
+                                        + listGetterMethod.getName()
+                                        + " for class "
+                                        + listGetterMethod.getDeclaringClass()
+                                                .getName());
                     Class listType = listTypeAnnotation.value();
                     String[] searchQueryStrings = new String[searchProperties.length];
                     Method[] searchQueryMethods = new Method[searchProperties.length];
                     for (int i = 0; i < searchProperties.length; i++)
                     {
-                        String capitalizedSearchProperty =
-                            searchProperties[i].substring(0, 1).toUpperCase()
+                        String capitalizedSearchProperty = searchProperties[i]
+                                .substring(0, 1).toUpperCase()
                                 + searchProperties[i].substring(1);
                         Method searchGetterMethod;
                         try
                         {
-                            searchGetterMethod =
-                                listType.getMethod("get" + capitalizedSearchProperty,
-                                    new Class[0]);
+                            searchGetterMethod = listType.getMethod("get"
+                                    + capitalizedSearchProperty, new Class[0]);
                         }
                         catch (NoSuchMethodException ex)
                         {
-                            searchGetterMethod =
-                                listType.getMethod("is" + capitalizedSearchProperty,
-                                    new Class[0]);
+                            searchGetterMethod = listType.getMethod("is"
+                                    + capitalizedSearchProperty, new Class[0]);
                         }
                         searchQueryMethods[i] = searchGetterMethod;
-                        searchQueryStrings[i] =
-                            searchProperties[i] + " "
+                        searchQueryStrings[i] = searchProperties[i] + " "
                                 + (annotation.exact()[i] ? "=" : "like") + " ?";
                     }
-                    String searchQuery =
-                        StringUtils.delimited(searchQueryStrings, " and ");
+                    String searchQuery = StringUtils.delimited(
+                            searchQueryStrings, " and ");
                     /*
                      * At this point, we have method objects representing the
                      * stored list and the search property. Now we do the actual
                      * search.
                      */
-                    String searchSql =
-                        "select value from proxystorage_collections "
+                    String searchSql = "select value from proxystorage_collections "
                             + "where id = ? and value in (select proxystorage_id from "
-                            + getTargetTableName(listType) + " where " + searchQuery
-                            + ") order by index asc";
+                            + getTargetTableName(listType)
+                            + " where "
+                            + searchQuery + ") order by index asc";
                     // System.out
                     // .println("performing compound search with sql: "
                     // + searchSql);
-                    PreparedStatement st = connection.prepareStatement(searchSql);
+                    PreparedStatement st = connection
+                            .prepareStatement(searchSql);
                     opcount++;
                     st.setLong(1, listId);
                     // System.out.println("parameter 1 = "
@@ -1394,8 +1420,7 @@ public class ProxyStorage<E>
                         Object searchValue = args[i];
                         if (!annotation.exact()[i])
                         {
-                            searchValue =
-                                (annotation.anywhere()[i] ? "%" : "")
+                            searchValue = (annotation.anywhere()[i] ? "%" : "")
                                     + ((String) searchValue).replace("*", "%")
                                     + (annotation.anywhere()[i] ? "%" : "");
                         }
@@ -1425,11 +1450,11 @@ public class ProxyStorage<E>
                     }
                     if (method.getReturnType().isArray())
                     {
-                        Object resultArray =
-                            Array.newInstance(
-                                method.getReturnType().getComponentType(),
+                        Object resultArray = Array.newInstance(method
+                                .getReturnType().getComponentType(),
                                 results.length);
-                        System.arraycopy(results, 0, resultArray, 0, results.length);
+                        System.arraycopy(results, 0, resultArray, 0,
+                                results.length);
                         return resultArray;
                     }
                     else
@@ -1440,7 +1465,8 @@ public class ProxyStorage<E>
                             return results[0];
                     }
                 }
-                if (method.getName().equalsIgnoreCase("hashCode") && args.length == 0)
+                if (method.getName().equalsIgnoreCase("hashCode")
+                        && args.length == 0)
                 {
                     return (int) targetId * 31;
                 }
@@ -1450,9 +1476,10 @@ public class ProxyStorage<E>
                 }
                 if (method.isAnnotationPresent(CustomProperty.class))
                 {
-                    CustomProperty annotation =
-                        method.getAnnotation(CustomProperty.class);
-                    Class<? extends Delegate> delegateClass = annotation.value();
+                    CustomProperty annotation = method
+                            .getAnnotation(CustomProperty.class);
+                    Class<? extends Delegate> delegateClass = annotation
+                            .value();
                     Delegate delegate = delegateSingletons.get(delegateClass);
                     if (delegate == null)
                     {
@@ -1460,7 +1487,7 @@ public class ProxyStorage<E>
                         delegateSingletons.put(delegateClass, delegate);
                     }
                     return delegate.get(instance, method.getReturnType(),
-                        propertyNameFromAccessor(method.getName()));
+                            propertyNameFromAccessor(method.getName()));
                 }
                 if (method.getName().equals("toString"))
                 {
@@ -1469,7 +1496,7 @@ public class ProxyStorage<E>
                 if (isPropertyMethod(method))
                 {
                     if (method.getName().startsWith("get")
-                        || method.getName().startsWith("is"))
+                            || method.getName().startsWith("is"))
                     {
                         /*
                          * This method is a getter. We'll create a query to get
@@ -1477,8 +1504,8 @@ public class ProxyStorage<E>
                          * convert the value into an object that can be returned
                          * from this method.
                          */
-                        String propertyName =
-                            propertyNameFromAccessor(method.getName());
+                        String propertyName = propertyNameFromAccessor(method
+                                .getName());
                         BeanPropertyKey cacheKey = new BeanPropertyKey();
                         cacheKey.id = targetId;
                         cacheKey.property = propertyName;
@@ -1493,10 +1520,11 @@ public class ProxyStorage<E>
                             result = cachedObject;
                         else
                         {
-                            PreparedStatement st =
-                                connection.prepareStatement("select " + propertyName
-                                    + " from " + getTargetTableName(targetClass)
-                                    + " where proxystorage_id = ?");
+                            PreparedStatement st = connection
+                                    .prepareStatement("select " + propertyName
+                                            + " from "
+                                            + getTargetTableName(targetClass)
+                                            + " where proxystorage_id = ?");
                             opcount++;
                             st.setLong(1, targetId);
                             ResultSet rs = st.executeQuery();
@@ -1506,8 +1534,8 @@ public class ProxyStorage<E>
                                 rs.close();
                                 st.close();
                                 throw new IllegalStateException(
-                                    "The object that was queried has been deleted "
-                                        + "from the database.");
+                                        "The object that was queried has been deleted "
+                                                + "from the database.");
                             }
                             result = rs.getObject(propertyName);
                             if (result != null)
@@ -1516,21 +1544,21 @@ public class ProxyStorage<E>
                             st.close();
                         }
                         if (method.getReturnType() == Integer.TYPE
-                            || method.getReturnType() == Integer.class
-                            || method.getReturnType() == Long.TYPE
-                            || method.getReturnType() == Long.class
-                            || method.getReturnType() == Double.TYPE
-                            || method.getReturnType() == Double.class
-                            || method.getReturnType() == Boolean.TYPE
-                            || method.getReturnType() == Boolean.class
-                            || method.getReturnType() == String.class)
+                                || method.getReturnType() == Integer.class
+                                || method.getReturnType() == Long.TYPE
+                                || method.getReturnType() == Long.class
+                                || method.getReturnType() == Double.TYPE
+                                || method.getReturnType() == Double.class
+                                || method.getReturnType() == Boolean.TYPE
+                                || method.getReturnType() == Boolean.class
+                                || method.getReturnType() == String.class)
                         {
                             if (result == null)
                             {
                                 if (method.isAnnotationPresent(Default.class))
                                 {
-                                    Default values =
-                                        method.getAnnotation(Default.class);
+                                    Default values = method
+                                            .getAnnotation(Default.class);
                                     if (method.getReturnType() == Integer.TYPE)
                                         result = values.intValue();
                                     if (method.getReturnType() == Long.TYPE)
@@ -1584,29 +1612,33 @@ public class ProxyStorage<E>
                                  * now.
                                  */
                                 result = new Long(nextId());
-                                PreparedStatement ist =
-                                    connection.prepareStatement("update "
-                                        + getTargetTableName(targetClass) + " set "
-                                        + propertyName
-                                        + " = ? where proxystorage_id = ?");
+                                PreparedStatement ist = connection
+                                        .prepareStatement("update "
+                                                + getTargetTableName(targetClass)
+                                                + " set "
+                                                + propertyName
+                                                + " = ? where proxystorage_id = ?");
                                 opcount++;
                                 ist.setLong(1, (Long) result);
                                 ist.setLong(2, targetId);
                                 ist.execute();
                                 ist.close();
                             }
-                            return new StoredList(ProxyStorage.this, ((ListType) method
-                                .getAnnotation(ListType.class)).value(), (Long) result);
+                            return new StoredList(ProxyStorage.this,
+                                    ((ListType) method
+                                            .getAnnotation(ListType.class))
+                                            .value(), (Long) result);
                         }
-                        if (method.getReturnType().isAnnotationPresent(ProxyBean.class))
+                        if (method.getReturnType().isAnnotationPresent(
+                                ProxyBean.class))
                         {
                             /*
                              * TODO: if @Required is present, then instead of
                              * returning null, create a new one, insert it, and
                              * return it.
                              */
-                            boolean isRequired =
-                                method.isAnnotationPresent(Required.class);
+                            boolean isRequired = method
+                                    .isAnnotationPresent(Required.class);
                             if (result == null)
                             {
                                 if (!isRequired)
@@ -1615,14 +1647,15 @@ public class ProxyStorage<E>
                                  * This property is required, but is null. We'll
                                  * create a new one and set it on this object.
                                  */
-                                ProxyObject newObject =
-                                    (ProxyObject) create(method.getReturnType());
+                                ProxyObject newObject = (ProxyObject) create(method
+                                        .getReturnType());
                                 long newId = newObject.getProxyStorageId();
-                                PreparedStatement ust =
-                                    connection.prepareStatement("update "
-                                        + getTargetTableName(targetClass) + " set "
-                                        + propertyName
-                                        + " = ? where proxystorage_id = ?");
+                                PreparedStatement ust = connection
+                                        .prepareStatement("update "
+                                                + getTargetTableName(targetClass)
+                                                + " set "
+                                                + propertyName
+                                                + " = ? where proxystorage_id = ?");
                                 opcount++;
                                 ust.setLong(1, newId);
                                 ust.setLong(2, targetId);
@@ -1630,23 +1663,25 @@ public class ProxyStorage<E>
                                 ust.close();
                                 result = newId;
                             }
-                            return getById((Long) result, method.getReturnType());
+                            return getById((Long) result, method
+                                    .getReturnType());
                         }
                         throw new IllegalArgumentException(
-                            "The method is a getter, but it's return "
-                                + "type is not a proper type.");
+                                "The method is a getter, but it's return "
+                                        + "type is not a proper type.");
                     }
                     else
                     {
                         /*
                          * The property is a setter.
                          */
-                        String propertyName =
-                            propertyNameFromAccessor(method.getName());
-                        PreparedStatement st =
-                            connection.prepareStatement("update "
-                                + getTargetTableName(targetClass) + " set "
-                                + propertyName + " = ? where proxystorage_id = ?");
+                        String propertyName = propertyNameFromAccessor(method
+                                .getName());
+                        PreparedStatement st = connection
+                                .prepareStatement("update "
+                                        + getTargetTableName(targetClass)
+                                        + " set " + propertyName
+                                        + " = ? where proxystorage_id = ?");
                         st.setLong(2, targetId);
                         Object inputObject = args[0];
                         if (inputObject != null)
@@ -1654,17 +1689,18 @@ public class ProxyStorage<E>
                             if (inputObject.getClass() == StoredList.class)
                             {
                                 throw new IllegalArgumentException(
-                                    "Setters for stored lists are not allowed.");
+                                        "Setters for stored lists are not allowed.");
                             }
                             if (inputObject.getClass() == BigInteger.class)
                             {
-                                inputObject = ((BigInteger) inputObject).toString(16);
+                                inputObject = ((BigInteger) inputObject)
+                                        .toString(16);
                             }
                             if (inputObject instanceof ProxyObject)
                             {
-                                inputObject =
-                                    new Long(((ProxyObject) inputObject)
-                                        .getProxyStorageId());
+                                inputObject = new Long(
+                                        ((ProxyObject) inputObject)
+                                                .getProxyStorageId());
                             }
                         }
                         st.setObject(1, inputObject);
@@ -1686,21 +1722,21 @@ public class ProxyStorage<E>
                             else
                                 propertyCache.put(key, inputObject);
                         }
-                        HashMap<String, ArrayList<PropertyChangeListener>> beanMap =
-                            beanListeners.get(targetId);
+                        HashMap<String, ArrayList<PropertyChangeListener>> beanMap = beanListeners
+                                .get(targetId);
                         if (beanMap != null)
                         {
-                            ArrayList<PropertyChangeListener> listenerList =
-                                beanMap.get(propertyName);
+                            ArrayList<PropertyChangeListener> listenerList = beanMap
+                                    .get(propertyName);
                             if (listenerList != null)
                             {
-                                PropertyChangeEvent event =
-                                    new PropertyChangeEvent(instance, propertyName,
-                                        null, null);
+                                PropertyChangeEvent event = new PropertyChangeEvent(
+                                        instance, propertyName, null, null);
                                 for (PropertyChangeListener listener : listenerList)
                                 {
-                                    listenerExecutor.execute(new PropertyChanged(
-                                        listener, event));
+                                    listenerExecutor
+                                            .execute(new PropertyChanged(
+                                                    listener, event));
                                 }
                             }
                         }
@@ -1725,8 +1761,9 @@ public class ProxyStorage<E>
                  * null if there wasn't a match.
                  */
                 throw new UnsupportedOperationException("The method "
-                    + method.getName() + " is not supported for the proxy type "
-                    + targetClass.getName());
+                        + method.getName()
+                        + " is not supported for the proxy type "
+                        + targetClass.getName());
             }
         }
     }
@@ -1742,15 +1779,13 @@ public class ProxyStorage<E>
     {
         synchronized (lock)
         {
-            PreparedStatement ist =
-                connection
+            PreparedStatement ist = connection
                     .prepareStatement("update proxystorage_statics set value = value + 1 where name = ?");
             ist.setString(1, "sequencer");
             opcount++;
             ist.execute();
             ist.close();
-            PreparedStatement rst =
-                connection
+            PreparedStatement rst = connection
                     .prepareStatement("select value from proxystorage_statics where name = ?");
             rst.setString(1, "sequencer");
             opcount++;
@@ -1775,25 +1810,25 @@ public class ProxyStorage<E>
     {
         if (method.isAnnotationPresent(Property.class))
             return true;
-        if (!(method.getName().startsWith("is") || method.getName().startsWith("get") || method
-            .getName().startsWith("set")))
+        if (!(method.getName().startsWith("is")
+                || method.getName().startsWith("get") || method.getName()
+                .startsWith("set")))
             return false;
         String propertyName = propertyNameFromAccessor(method.getName());
-        String capitalized =
-            propertyName.substring(0, 1).toUpperCase() + propertyName.substring(1);
+        String capitalized = propertyName.substring(0, 1).toUpperCase()
+                + propertyName.substring(1);
         Method getter;
         try
         {
-            getter =
-                method.getDeclaringClass().getMethod("get" + capitalized, new Class[0]);
+            getter = method.getDeclaringClass().getMethod("get" + capitalized,
+                    new Class[0]);
         }
         catch (NoSuchMethodException e)
         {
             try
             {
-                getter =
-                    method.getDeclaringClass().getMethod("is" + capitalized,
-                        new Class[0]);
+                getter = method.getDeclaringClass().getMethod(
+                        "is" + capitalized, new Class[0]);
             }
             catch (NoSuchMethodException e2)
             {
@@ -1805,5 +1840,17 @@ public class ProxyStorage<E>
             return false;
         }
         return true;
+    }
+    
+    public void close()
+    {
+        try
+        {
+            connection.close();
+        }
+        catch (SQLException e)
+        {
+            throw new RuntimeException(e);
+        }
     }
 }
