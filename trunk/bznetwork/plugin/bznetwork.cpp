@@ -25,6 +25,9 @@
 #define bzn_mutex_unlock(mutexvalue) pthread_mutex_unlock(& mutexvalue)
 #endif
 #include <sstream>
+#include "bz_PluginUtility.h"
+
+using namespace bz_PluginUtility;
 
 BZ_GET_PLUGIN_VERSION
 
@@ -141,9 +144,19 @@ void processStdinString(std::string* currentString)
 }
 
 class BZNetworkEventHandler: public bz_EventHandler,
+		public EventRegistrar,
 		public bz_CustomSlashCommandHandler
 {
 	public:
+		BZNetworkEventHandler() :
+			EventRegistrar(this)
+		{
+			return;
+		}
+		~BZNetworkEventHandler()
+		{
+			removeAllEvents();
+		}
 		virtual void process(bz_EventData *eventData)
 		{
 			if (eventData->eventType == bz_eTickEvent)
@@ -342,15 +355,24 @@ BZNetworkEventHandler singleEventHandler;
 BZF_PLUGIN_CALL int bz_Load(const char* commandLine)
 {
 	bz_registerCustomSlashCommand("bzn", &singleEventHandler);
-	bz_registerEvent(bz_eTickEvent, &singleEventHandler);
-	bz_registerEvent(bz_ePlayerJoinEvent, &singleEventHandler);
-	bz_registerEvent(bz_ePlayerPartEvent, &singleEventHandler);
-	bz_registerEvent(bz_eChatMessageEvent, &singleEventHandler);
-	bz_registerEvent(bz_eServerMsgEvent, &singleEventHandler);
-	bz_registerEvent(bz_eMessageFilteredEvent, &singleEventHandler);
-	bz_registerEvent(bz_eKillEvent, &singleEventHandler);
-	bz_registerEvent(bz_eBanEvent, &singleEventHandler);
-	bz_registerEvent(bz_eSlashCommandEvent, &singleEventHandler);
+	singleEventHandler.registerEvent(bz_eTickEvent);
+	singleEventHandler.registerEvent(bz_ePlayerJoinEvent);
+	singleEventHandler.registerEvent(bz_ePlayerPartEvent);
+	singleEventHandler.registerEvent(bz_eChatMessageEvent);
+	singleEventHandler.registerEvent(bz_eServerMsgEvent);
+	singleEventHandler.registerEvent(bz_eMessageFilteredEvent);
+	singleEventHandler.registerEvent(bz_eKillEvent);
+	singleEventHandler.registerEvent(bz_eBanEvent);
+	singleEventHandler.registerEvent(bz_eSlashCommandEvent);
+	//	bz_registerEvent(bz_eTickEvent, &singleEventHandler);
+	//	bz_registerEvent(bz_ePlayerJoinEvent, &singleEventHandler);
+	//	bz_registerEvent(bz_ePlayerPartEvent, &singleEventHandler);
+	//	bz_registerEvent(bz_eChatMessageEvent, &singleEventHandler);
+	//	bz_registerEvent(bz_eServerMsgEvent, &singleEventHandler);
+	//	bz_registerEvent(bz_eMessageFilteredEvent, &singleEventHandler);
+	//	bz_registerEvent(bz_eKillEvent, &singleEventHandler);
+	//	bz_registerEvent(bz_eBanEvent, &singleEventHandler);
+	//	bz_registerEvent(bz_eSlashCommandEvent, &singleEventHandler);
 	// Perhaps allow this to be configured via an argument, and
 	// then have this value be a BZNetwork configuration setting
 	bz_setMaxWaitTime(2.0);
@@ -402,15 +424,15 @@ BZF_PLUGIN_CALL int bz_Unload(void)
 {
 	printf("Unloading the bznetwork plugin\n");
 	bz_removeCustomSlashCommand("bzn");
-	bz_removeEvent(bz_eTickEvent, &singleEventHandler);
-	bz_removeEvent(bz_ePlayerJoinEvent, &singleEventHandler);
-	bz_removeEvent(bz_ePlayerPartEvent, &singleEventHandler);
-	bz_removeEvent(bz_eChatMessageEvent, &singleEventHandler);
-	bz_removeEvent(bz_eServerMsgEvent, &singleEventHandler);
-	bz_removeEvent(bz_eMessageFilteredEvent, &singleEventHandler);
-	bz_removeEvent(bz_eKillEvent, &singleEventHandler);
-	bz_removeEvent(bz_eBanEvent, &singleEventHandler);
-	bz_removeEvent(bz_eSlashCommandEvent, &singleEventHandler);
+	//	bz_removeEvent(bz_eTickEvent, &singleEventHandler);
+	//	bz_removeEvent(bz_ePlayerJoinEvent, &singleEventHandler);
+	//	bz_removeEvent(bz_ePlayerPartEvent, &singleEventHandler);
+	//	bz_removeEvent(bz_eChatMessageEvent, &singleEventHandler);
+	//	bz_removeEvent(bz_eServerMsgEvent, &singleEventHandler);
+	//	bz_removeEvent(bz_eMessageFilteredEvent, &singleEventHandler);
+	//	bz_removeEvent(bz_eKillEvent, &singleEventHandler);
+	//	bz_removeEvent(bz_eBanEvent, &singleEventHandler);
+	//	bz_removeEvent(bz_eSlashCommandEvent, &singleEventHandler);
 	playerIdsByCallsign.clear();
 	bzn_outputData("bznunload");
 	return 0;
