@@ -24,6 +24,7 @@
 #ifndef __BZFSAPI_H__
 #define __BZFSAPI_H__
 #include "bzfsAPI.h"
+#include <set>
 #endif // __BZFSAPI_H__
 namespace bz_PluginUtility
 {
