@@ -60,7 +60,7 @@ public class MapUploadServlet extends UploadAction
         in.close();
         System.out.println("copied successfully. The new map file has been uploaded.");
         //FIXME: log this as an action
-        return null;
+        return "Successfully uploaded.";
     }
 
     @Override
