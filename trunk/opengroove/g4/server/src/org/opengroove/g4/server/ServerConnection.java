@@ -38,8 +38,7 @@ import org.opengroove.g4.common.utils.ProtocolUtils;
 public class ServerConnection extends Thread
 {
     private static final int PACKET_SPOOLER_SIZE = 90 * 1000;
-    private static ThreadLocal<ServerConnection> threadLocalConnection =
-        new ThreadLocal<ServerConnection>();
+    private static ThreadLocal<ServerConnection> threadLocalConnection = new ThreadLocal<ServerConnection>();
     private static AtomicLong threadNameCounter = new AtomicLong(1);
     /**
      * The socket that the client is connecting with
@@ -166,7 +165,7 @@ public class ServerConnection extends Thread
                 command = G4Server.userCommands.get(packetClass);
             if (command == null)
                 throw new RuntimeException("Unknown command class: "
-                    + packetClass.getName());
+                        + packetClass.getName());
             command.process(packet);
         }
         catch (Exception e)
@@ -204,7 +203,8 @@ public class ServerConnection extends Thread
             /*
              * Send the user's initial roster
              */
-            RosterPacket rosterPacket = G4Server.createRosterPacket(userid, true, null);
+            RosterPacket rosterPacket = G4Server.createRosterPacket(userid,
+                    true, null);
             send(rosterPacket);
             /*
              * Send the user's current real name
@@ -221,8 +221,7 @@ public class ServerConnection extends Thread
             {
                 for (Userid contactComputer : contact.getComputers())
                 {
-                    PresencePacket computerPresence =
-                        createCurrentPresencePacket(contactComputer);
+                    PresencePacket computerPresence = createCurrentPresencePacket(contactComputer);
                     send(computerPresence);
                 }
             }
@@ -242,8 +241,8 @@ public class ServerConnection extends Thread
             File messageFolder = G4Server.getMessageFolder(userid);
             for (File messageFile : messageFolder.listFiles())
             {
-                InboundMessagePacket messageObject =
-                    (InboundMessagePacket) ObjectUtils.readObject(messageFile);
+                InboundMessagePacket messageObject = (InboundMessagePacket) ObjectUtils
+                        .readObject(messageFile);
                 messageObject.setPacketThread(ProtocolUtils.generateId());
                 send(messageObject);
             }
@@ -294,7 +293,8 @@ public class ServerConnection extends Thread
     public void dispatchProfileMessage(OutboundMessagePacket packet)
     {
         Object payload = packet.getMessage();
-        Command command = G4Server.computerCommands.get(payload.getClass());
+        Command command = G4Server.computerCommands
+                .get(payload.getClass());
         boolean wasProcessed = command != null;
         if (command != null)
             command.process((Packet) payload);
@@ -304,6 +304,6 @@ public class ServerConnection extends Thread
         send(response.respondTo(packet));
         if (!wasProcessed)
             throw new RuntimeException(
-                "This server doesn't support the profile message type specified.");
+                    "This server doesn't support the profile message type specified.");
     }
 }

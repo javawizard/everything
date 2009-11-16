@@ -36,10 +36,8 @@ import org.opengroove.g4.server.commands.types.UserCommand;
 public class G4Server
 {
     public static final Object authLock = new Object();
-    public static HashMap<Class, Command> unauthCommands =
-        new HashMap<Class, Command>();
-    public static HashMap<Class, Command> computerCommands =
-        new HashMap<Class, Command>();
+    public static HashMap<Class, Command> unauthCommands = new HashMap<Class, Command>();
+    public static HashMap<Class, Command> computerCommands = new HashMap<Class, Command>();
     public static HashMap<Class, Command> userCommands = new HashMap<Class, Command>();
     /**
      * Maps computer userids to the point in time (in server time) at which the
@@ -70,21 +68,18 @@ public class G4Server
      * All client-server connections that are active and that have both a
      * username and a computer.
      */
-    public static HashMap<Userid, ServerConnection> connections =
-        new HashMap<Userid, ServerConnection>();
+    public static HashMap<Userid, ServerConnection> connections = new HashMap<Userid, ServerConnection>();
     
-    public static ThreadPoolExecutor threadPool =
-        new ThreadPoolExecutor(5, 100, 60, TimeUnit.SECONDS,
-            new ArrayBlockingQueue<Runnable>(1000));
+    public static ThreadPoolExecutor threadPool = new ThreadPoolExecutor(5,
+            100, 60, TimeUnit.SECONDS, new ArrayBlockingQueue<Runnable>(1000));
     /**
      * A thread pool executor that has only one thread. This guarantees that
      * tasks will be executed strictly sequentially. Since there is only one
      * thread, tasks added to this queue should execute quickly to avoid holding
      * up everything else.
      */
-    public static ThreadPoolExecutor stackedThreadPool =
-        new ThreadPoolExecutor(1, 1, 30, TimeUnit.SECONDS,
-            new ArrayBlockingQueue<Runnable>(2000));
+    public static ThreadPoolExecutor stackedThreadPool = new ThreadPoolExecutor(
+            1, 1, 30, TimeUnit.SECONDS, new ArrayBlockingQueue<Runnable>(2000));
     
     /**
      * In the future, this will probably be split out into per-user variables.
@@ -106,7 +101,7 @@ public class G4Server
         messageFolder.mkdirs();
         authFolder.mkdirs();
         configProperties.load(new FileInputStream(new File(storageFolder,
-            "config.props")));
+                "config.props")));
         serverName = configProperties.getProperty("server-name");
         serverUserid = new Userid(serverName + "::");
         threadPool.allowCoreThreadTimeOut(true);
@@ -114,7 +109,8 @@ public class G4Server
         startGarbageCollectingThread();
         server = new ServerSocket(G4Defaults.CLIENT_SERVER_PORT);
         loadCommands();
-        System.out.println("G4 Server is up and running.");
+        System.out.println("G4 Server on domain \"" + serverName
+                + "\" is up and running.");
         runServer();
     }
     
@@ -162,15 +158,15 @@ public class G4Server
     {
         /*
          * Does nothing for now, but times out connections that are idle in the
-         * future.
+         * future. Consider using SO_TIMEOUT or something else in the future.F
          */
     }
     
     private static void loadCommands()
     {
         String thisPackageName = G4Server.class.getPackage().getName();
-        File commandsFolder =
-            new File("classes/" + thisPackageName.replace(".", "/") + "/commands");
+        File commandsFolder = new File("classes/"
+                + thisPackageName.replace(".", "/") + "/commands");
         File[] files = commandsFolder.listFiles(new FilenameFilter()
         {
             
@@ -186,16 +182,16 @@ public class G4Server
             Command command;
             try
             {
-                command =
-                    (Command) Class.forName(thisPackageName + "." + name).newInstance();
+                command = (Command) Class.forName(thisPackageName + "." + name)
+                        .newInstance();
             }
             catch (Exception e)
             {
-                System.out.println("Exception while instantiating command " + name
-                    + ":");
+                System.out.println("Exception while instantiating command "
+                        + name + ":");
                 e.printStackTrace();
                 throw new RuntimeException(e.getClass().getName() + ": "
-                    + e.getMessage(), e);
+                        + e.getMessage(), e);
             }
             installCommand(command);
         }
@@ -203,17 +199,20 @@ public class G4Server
     
     private static void installCommand(Command command)
     {
-        boolean isUnauth = command.getClass().isAnnotationPresent(UnauthCommand.class);
-        boolean isUser = command.getClass().isAnnotationPresent(UserCommand.class);
-        boolean isComputer =
-            command.getClass().isAnnotationPresent(ComputerCommand.class);
+        boolean isUnauth = command.getClass().isAnnotationPresent(
+                UnauthCommand.class);
+        boolean isUser = command.getClass().isAnnotationPresent(
+                UserCommand.class);
+        boolean isComputer = command.getClass().isAnnotationPresent(
+                ComputerCommand.class);
         Method[] methods = command.getClass().getMethods();
         Class argumentType = null;
         for (Method method : methods)
         {
             if (method.getName().equals("process")
-                && method.getParameterTypes().length == 1
-                && Packet.class.isAssignableFrom(method.getParameterTypes()[0]))
+                    && method.getParameterTypes().length == 1
+                    && Packet.class
+                            .isAssignableFrom(method.getParameterTypes()[0]))
             {
                 /*
                  * If the method's name is process, the method has exactly one
@@ -237,8 +236,9 @@ public class G4Server
             userCommands.put(argumentType, command);
         if (!(isUser || isUnauth || isComputer))
             System.err.println("Warning: command class "
-                + command.getClass().getSimpleName()
-                + " did not specify where it should be installed");
+                    + command.getClass().getSimpleName()
+                    + " did not specify where it should be installed. "
+                    + "This command will be silently ignored.");
     }
     
     /**
@@ -255,14 +255,14 @@ public class G4Server
         user = user.validateServer(serverName);
         if (!user.hasComputer())
             throw new RuntimeException();
-        File folder =
-            new File(messageFolder, "" + user.getUsername() + "/" + user.getComputer());
+        File folder = new File(messageFolder, "" + user.getUsername() + "/"
+                + user.getComputer());
         folder.mkdirs();
         return folder;
     }
     
     /**
-     * Lists the computers for the user specified. The user can contain a
+     * Lists the computers for the user specified. The userid can contain a
      * computer, but this will be ignored.
      * 
      * @param user
@@ -275,7 +275,10 @@ public class G4Server
             throw new RuntimeException("No username");
         String username = user.getUsername();
         if (username.equals("_profile"))
-            return new Userid[] { new Userid(user.getServer(), "_profile", "_computer") };
+            return new Userid[]
+            {
+                new Userid(user.getServer(), "_profile", "_computer")
+            };
         File userFolder = new File(authFolder, username);
         File computersFolder = new File(userFolder, "computers");
         File[] files = computersFolder.listFiles();
@@ -306,7 +309,7 @@ public class G4Server
     {
         computer = computer.validateServer(serverName);
         return new File(authFolder, computer.getUsername() + "/computers/"
-            + computer.getComputer()).exists();
+                + computer.getComputer()).exists();
     }
     
     public static void verifyUserExists(Userid user)
@@ -325,8 +328,7 @@ public class G4Server
      * Broadcasts a roster update to all users that have the specified user as a
      * contact. This is much the same as updateContainingPresence, but it
      * dynamically creates the roster packet for each user since each user's
-     * roster will be different.<br/>
-     * <br/>
+     * roster will be different.<br/> <br/>
      * 
      * This method returns immediately, executing the actual update on the stack
      * thread pool. This executed runnable is rather slow, since it has a
@@ -356,15 +358,15 @@ public class G4Server
                 {
                     try
                     {
-                        if (PropUtils.getProperty(new File(userFolder, "roster"),
-                            useridString) != null)
+                        if (PropUtils.getProperty(
+                                new File(userFolder, "roster"), useridString) != null)
                         {
                             /*
                              * This user has us on their contact list. We'll
                              * resend their roster now.
                              */
                             resendRosterSync(new Userid(serverName, userFolder
-                                .getName(), null), user);
+                                    .getName(), null), user);
                         }
                     }
                     catch (Exception exception)
@@ -388,11 +390,12 @@ public class G4Server
      */
     public static void resendRosterSync(Userid userid, Userid source)
     {
-        sendToAnyOnlineComputers(userid, createRosterPacket(userid, false, source));
+        sendToAnyOnlineComputers(userid, createRosterPacket(userid, false,
+                source));
     }
     
     /**
-     * Same as resendRosterSync, but executes on the stack thread pool.
+     * Same as resendRosterSync, but executes on the stacked thread pool.
      * 
      * @param userid
      * @param source
@@ -423,8 +426,8 @@ public class G4Server
      *            this roster packet update
      * @return A new roster packet, ready for sending to the user
      */
-    public static RosterPacket createRosterPacket(Userid user, boolean isInitial,
-        Userid source)
+    public static RosterPacket createRosterPacket(Userid user,
+            boolean isInitial, Userid source)
     {
         File userFolder = new File(authFolder, user.getUsername());
         File rosterFile = new File(userFolder, "roster");
@@ -432,7 +435,8 @@ public class G4Server
         RosterPacket packet = new RosterPacket();
         packet.setInitial(isInitial);
         packet.setSource(source);
-        String[] contactUsernameList = rosterProps.keySet().toArray(new String[0]);
+        String[] contactUsernameList = rosterProps.keySet().toArray(
+                new String[0]);
         Contact[] contacts = new Contact[contactUsernameList.length];
         packet.setContacts(contacts);
         for (int i = 0; i < contacts.length; i++)
@@ -440,14 +444,14 @@ public class G4Server
             String propValue = rosterProps.getProperty(contactUsernameList[i]);
             Contact contact = new Contact();
             contacts[i] = contact;
-            File contactUserFolder =
-                new File(authFolder, new Userid(contactUsernameList[i]).getUsername());
+            File contactUserFolder = new File(authFolder, new Userid(
+                    contactUsernameList[i]).getUsername());
             contact.setExists(contactUserFolder.exists());
             contact.setUserid(new Userid(contactUsernameList[i])
-                .relativeTo(serverUserid));
+                    .relativeTo(serverUserid));
             contact.setVisible(propValue.toLowerCase().startsWith("true"));
-            String contactLocalName =
-                propValue.contains(":") ? propValue.split("\\:", 2)[1] : null;
+            String contactLocalName = propValue.contains(":") ? propValue
+                    .split("\\:", 2)[1] : null;
             if (contactLocalName.trim().equals(""))
                 contactLocalName = null;
             contact.setName(contactLocalName);
@@ -455,18 +459,18 @@ public class G4Server
             {
                 if (new File(contactUserFolder, "realname").exists())
                     contact.setRealName(StringUtils.readFile(new File(
-                        contactUserFolder, "realname")));
+                            contactUserFolder, "realname")));
                 if (contact.getRealName() != null
-                    && contact.getRealName().trim().equals(""))
+                        && contact.getRealName().trim().equals(""))
                     contact.setRealName(null);
-                String[] contactComputerNames =
-                    new File(contactUserFolder, "computers").list();
+                String[] contactComputerNames = new File(contactUserFolder,
+                        "computers").list();
                 Userid[] computerUserids = new Userid[contactComputerNames.length];
                 contact.setComputers(computerUserids);
                 for (int c = 0; c < computerUserids.length; c++)
                 {
-                    computerUserids[c] =
-                        new Userid(":" + contactComputerNames[c]).relativeTo(contact
+                    computerUserids[c] = new Userid(":"
+                            + contactComputerNames[c]).relativeTo(contact
                             .getUserid());
                 }
             }
@@ -485,7 +489,8 @@ public class G4Server
      * 
      * @param user
      */
-    public static void updateContainingPresence(Userid user, final PresencePacket packet)
+    public static void updateContainingPresence(Userid user,
+            final PresencePacket packet)
     {
         /*
          * This is basically the user's userid without their computer but with
@@ -503,16 +508,16 @@ public class G4Server
                 {
                     try
                     {
-                        if (PropUtils.getProperty(new File(userFolder, "roster"),
-                            useridString) != null)
+                        if (PropUtils.getProperty(
+                                new File(userFolder, "roster"), useridString) != null)
                         {
                             /*
                              * This user has us on their contact list. We'll
                              * scan for any of their computers and send this
                              * presence packet to them.
                              */
-                            sendToAnyOnlineComputers(new Userid(serverName, userFolder
-                                .getName(), null), packet);
+                            sendToAnyOnlineComputers(new Userid(serverName,
+                                    userFolder.getName(), null), packet);
                         }
                     }
                     catch (Exception exception)
@@ -545,8 +550,8 @@ public class G4Server
                  * Match! We'll get the connection and send the packet.
                  */
                 ServerConnection connection = connections.get(potential);
-                if (connection != null)// could be if the user just barely
-                // signed off
+                if (connection != null)// could be null if the user just
+                // barely signed off
                 {
                     try
                     {
@@ -573,8 +578,8 @@ public class G4Server
     
     public static String rosterLineContactLocal(String propValue)
     {
-        String contactLocalName =
-            propValue.contains(":") ? propValue.split("\\:", 2)[1] : null;
+        String contactLocalName = propValue.contains(":") ? propValue.split(
+                "\\:", 2)[1] : null;
         if (contactLocalName.trim().equals(""))
             contactLocalName = null;
         return contactLocalName;
@@ -583,7 +588,7 @@ public class G4Server
     public static String createRosterLine(boolean visible, String localName)
     {
         return "" + ("" + visible).toLowerCase()
-            + (localName == null ? "" : ":" + localName);
+                + (localName == null ? "" : ":" + localName);
     }
     
     /**
@@ -611,9 +616,9 @@ public class G4Server
      *            The subject of the message that this one is in reply to, or
      *            null if this one is not in reply
      */
-    public static void sendUserMessage(ServerConnection connection, Userid from,
-        Userid[] to, String subject, String body, String inReplyId,
-        String inReplySubject)
+    public static void sendUserMessage(ServerConnection connection,
+            Userid from, Userid[] to, String subject, String body,
+            String inReplyId, String inReplySubject)
     {
         Message message = new Message();
         MessageHeader header = new MessageHeader();
@@ -621,7 +626,7 @@ public class G4Server
         header.setInReplyMessageId(inReplyId);
         header.setInReplySubject(inReplySubject);
         header.setMessageId("" + from + "$" + System.currentTimeMillis() + "."
-            + Math.random() + ".server.sendUserMessage");
+                + Math.random() + ".server.sendUserMessage");
         header.setRecipients(to);
         header.setSender(from);
         header.setSubject(subject);

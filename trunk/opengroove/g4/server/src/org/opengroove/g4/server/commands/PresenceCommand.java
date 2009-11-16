@@ -20,6 +20,7 @@ public class PresenceCommand implements Command<PresencePacket>
         if (packet.getStatus() == Status.Offline)
         {
             System.out.println("Warning: offline status packet received, ignoring");
+            return;
         }
         ServerConnection con = ServerConnection.getConnection();
         /*
