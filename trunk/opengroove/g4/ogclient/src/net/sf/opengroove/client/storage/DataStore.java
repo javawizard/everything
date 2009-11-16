@@ -24,7 +24,7 @@ public interface DataStore
     public StoredList<LocalUser> getUsers();
     
     /**
-     * Gets a user by their userid.
+     * Gets a user by their userid. This should be a computer userid, not a username userid.
      * 
      * @param userid
      *            The userid to search for

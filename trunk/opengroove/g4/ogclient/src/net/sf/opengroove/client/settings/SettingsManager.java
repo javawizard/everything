@@ -509,7 +509,7 @@ public class SettingsManager
         String subnavId, String groupId, String id,
         String name, String description, String typeId,
         SettingParameters parameters)
-    {
+    { 
         SettingType type = registeredTypes.get(typeId);
         if (type == null)
             throw new IllegalArgumentException(

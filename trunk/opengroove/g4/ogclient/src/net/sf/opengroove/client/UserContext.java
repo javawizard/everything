@@ -17,6 +17,7 @@ import java.math.BigInteger;
 import java.net.MalformedURLException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.HashMap;
 
@@ -34,34 +35,23 @@ import javax.swing.SwingConstants;
 import javax.swing.event.PopupMenuEvent;
 import javax.swing.event.PopupMenuListener;
 
-import net.sf.opengroove.client.com.CommandCommunicator;
-import net.sf.opengroove.client.com.StatusListener;
-import net.sf.opengroove.client.com.TimeoutException;
-import net.sf.opengroove.client.com.UserNotificationListener;
-import net.sf.opengroove.client.com.model.Subscription;
-import net.sf.opengroove.client.help.HelpViewer;
-import net.sf.opengroove.client.messaging.MessageHierarchy;
+import org.opengroove.g4.common.data.ByteBlock;
+import org.opengroove.g4.common.messaging.Message;
+import org.opengroove.g4.common.messaging.MessageHeader;
+import org.opengroove.g4.common.user.Userid;
+
+import net.sf.opengroove.client.com.Communicator;
 import net.sf.opengroove.client.messaging.MessageManager;
+import net.sf.opengroove.client.messaging.StoredMessageManager;
 import net.sf.opengroove.client.notification.TaskbarNotification;
-import net.sf.opengroove.client.oldplugins.PluginManager;
 import net.sf.opengroove.client.settings.SettingSpec;
 import net.sf.opengroove.client.settings.SettingsManager;
-import net.sf.opengroove.client.storage.Contact;
-import net.sf.opengroove.client.storage.ContactComputer;
-import net.sf.opengroove.client.storage.ContactStatus;
-import net.sf.opengroove.client.storage.LocalUser;
 import net.sf.opengroove.client.storage.Storage;
-import net.sf.opengroove.client.storage.UserMessage;
-import net.sf.opengroove.client.storage.UserMessageRecipient;
 import net.sf.opengroove.client.ui.frames.ComposeMessageFrame;
 import net.sf.opengroove.client.ui.frames.MessageHistoryFrame;
 import net.sf.opengroove.client.ui.frames.SearchForUsersFrame;
 import net.sf.opengroove.common.concurrent.Conditional;
 import net.sf.opengroove.common.concurrent.ConditionalTimer;
-import net.sf.opengroove.common.ui.ComponentUtils;
-import net.sf.opengroove.common.utils.StringUtils;
-import net.sf.opengroove.common.utils.Userids;
-import net.sf.opengroove.common.utils.StringUtils.ToString;
 
 import com.jidesoft.swing.JideButton;
 
@@ -86,49 +76,31 @@ public class UserContext
      * user-configurable
      */
     /**
-     * The time that a contact must not move their mouse for in order to be
-     * marked idle. This should be low enough that it doesn't take forever for
-     * the contact to be marked as idle, but high enough that a user pausing to
-     * read over some information won't be marked idle immediately.
+     * The time that the local user must hold their mouse still for before an
+     * idle presence message is broadcast.
      */
     private static final long IDLE_THRESHOLD = 1000 * 30;
     private TaskbarNotification nonexistantContactNotification;
     /**
-     * This user's userid
+     * This user's computer userid
      */
-    private String userid;
-    private UserNotificationListener userNotificationListener;
+    private Userid userid;
     /**
      * A JPanel that holds this user's contact list
      */
     private JPanel contactsPanel;
-    /**
-     * The plugin manager that manages this user's plugins
-     */
-    private PluginManager plugins;
+    
     private MessageManager messageManager;
-    private MessageHierarchy rootMessageHierarchy;
-    private MessageHierarchy internalMessageHierarchy;
-    private MessageHierarchy pluginMessageHierarchy;
-    private MessageHierarchy userMessageHierarchy;
+    
     private SettingsManager settingsManager;
-    /**
-     * A conditional that is true if there is currently a connection to the
-     * server.
-     */
-    private Conditional connectionConditional = new Conditional()
-    {
-        
-        @Override
-        public boolean query()
-        {
-            return com != null && com.getCommunicator() != null
-                && com.getCommunicator().isActive();
-        }
-    };
+    
+    private StoredMessageManager storedMessageManager;
     /**
      * A JideButton that contains the icon that represents the local user's
-     * current status
+     * current status. Clicking it just shows information on statuses in
+     * general; the user can't actuall change their status, although the ability
+     * to go offline via this button or go invisible, or even go away might be
+     * added in the future.
      */
     private JideButton localStatusButton;
     /**
@@ -137,19 +109,6 @@ public class UserContext
      * name.
      */
     private JideButton localUsernameButton;
-    /**
-     * A timer that downloads contact updates from the server, and uploads new
-     * contact updates if there are any. This timer is interrupted any time an
-     * imessage is received from another computer that indicates updates to
-     * contacts.
-     */
-    @TimerField
-    private ConditionalTimer contactTimer;
-    /**
-     * A timer that uploads the current use status of this computer (whether or
-     * not the computer is idle, how long it has been idle for, if the user is
-     * currently using OpenGroove)
-     */
     /**
      * The last X coordinate of the mouse. The mouse position is checked every
      * few seconds, and if the mouse has moved since the last check, the idle
@@ -163,12 +122,13 @@ public class UserContext
      * few seconds, and if the mouse has moved since the last check, the idle
      * time is reset. If it hasn't, the idle time is not reset, so that if the
      * mouse isn't moved for an extended period of time, the computer will end
-     * up being marked as idle.\
+     * up being marked as idle.
      */
     private int lastMouseY;
     /**
-     * The last time, in terms of server time, that the mouse was moved. This is
-     * generated and uploaded to the server by myStatusTimer.
+     * The last time, in local time, that our mouse was moved. Once this exceeds
+     * {@link #IDLE_THRESHOLD}, a presence update will be sent to the server
+     * indicating that we are idle.
      */
     private long lastIdle;
     /**
@@ -176,16 +136,11 @@ public class UserContext
      * otherwise
      */
     private boolean wasLastIdle = true;
-    /**
-     * Whether the contact status icon has been set to idle for this timeg oing
-     * idle.
-     */
-    private boolean markedIdleIcon = false;
     @TimerField
     /*
-     * checks to see if the computer is idle, and updates the idle-related
-     * fields. If the computer has just stopped being idle, then this timer will
-     * also trigger an immediate upload of user presence information.
+     * * checks to see if the computer is idle, and updates the idle-related
+     * fields. This timer also send an idle presence packet when the user goes
+     * idle, and an online presence packet when the user comes back.
      */
     private ConditionalTimer myStatusCheckTimer =
         new ConditionalTimer(2000, Conditional.True)
@@ -197,120 +152,32 @@ public class UserContext
                 PointerInfo info = MouseInfo.getPointerInfo();
                 Point location = info.getLocation();
                 boolean oldWasLastIdle = wasLastIdle;
-                wasLastIdle = true;
+                /*
+                 * After the next if statement, this variable will be true if
+                 * the user is currently idle and false if the user is not
+                 * currently idle. We can then compare that to oldWasLastIdle to
+                 * see if they are different, and if they are, then we need to
+                 * update presence information.
+                 */
                 if (location.x != lastMouseX || location.y != lastMouseY)
                 {
-                    lastIdle = getServerTime();
                     wasLastIdle = false;
-                    markedIdleIcon = false;
                 }
-                else if (!markedIdleIcon
-                    && (lastIdle + IDLE_THRESHOLD) < getServerTime())
+                else if ((lastIdle + IDLE_THRESHOLD) < System.currentTimeMillis())
                 {
-                    markedIdleIcon = true;
+                    wasLastIdle = true;
+                }
+                if (wasLastIdle != oldWasLastIdle)
+                {
+                    /*
+                     * Our presence has changed. We need to broadcast presence
+                     * and update our local presence icon.
+                     */
+                    if (wasLastIdle)
+                        lastIdle = System.currentTimeMillis();
                     updateLocalStatusIcon();
-                    uploadCurrentStatus();
+                    broadcastCurrentPresence();
                 }
-                lastMouseX = location.x;
-                lastMouseY = location.y;
-                if (oldWasLastIdle && !wasLastIdle)
-                {
-                    updateLocalStatusIcon();
-                    uploadCurrentStatus();
-                }
-            }
-        };
-    @TimerField
-    /*
-     * Uploads the current idle and active status.
-     */
-    private ConditionalTimer myStatusUploadTimer =
-        new ConditionalTimer(1000 * 30, connectionConditional)
-        {
-            /*
-             * TODO: change the upload time to be more like 3 minutes, or even
-             * longer than that (and add logic for the idle-checker to perform a
-             * single upload when the idle time passes the idle threshold)
-             */
-            @Override
-            public void execute()
-            {
-                uploadCurrentStatus();
-            }
-        };
-    /**
-     * A timer that downloads the status updates for all of the contacts (IE the
-     * status updates uploaded by those contacts' {@link #myStatusTimer}s), and
-     * updates the icons in the launchbar's contact's pane. <br/>
-     * <br/>
-     * 
-     * This timer, unlike most of the other timers, uses
-     * {@link Conditional#True} instead of {@link #connectionConditional}, so
-     * that it will run even if there is no connection to the server, so as to
-     * set all of the user's statuses to offline.<br/>
-     * <br/>
-     * 
-     * This timer runs every 3 minutes.
-     */
-    @TimerField
-    private ConditionalTimer contactStatusTimer =
-        new ConditionalTimer(1000 * 60 * 3, Conditional.True)
-        {
-            
-            @Override
-            public void execute()
-            {
-                updateContactStatus();
-            }
-        };
-    /**
-     * A timer that updates the icons for contacts in the contacts pane with the
-     * contact's current status, such as offline or idle.
-     */
-    @TimerField
-    private ConditionalTimer contactIconTimer =
-        new ConditionalTimer(1000 * 9, Conditional.True)
-        {
-            
-            @Override
-            public void execute()
-            {
-                Contact[] contacts =
-                    getStorage().getLocalUser().getContacts().toArray(new Contact[0]);
-                for (Contact contact : contacts)
-                {
-                    updateContactIcon(contact.getUserid());
-                }
-            }
-            
-        };
-    /**
-     * A timer that gets the server's time and sets the lag of this user's
-     * backing LocalUser to be the difference between the server's time and the
-     * local time. It also uploads this information to the public-lag user
-     * property.
-     */
-    @TimerField
-    private ConditionalTimer timeSyncTimer =
-        new ConditionalTimer(1000 * 60 * 3, connectionConditional)
-        {
-            
-            public void execute()
-            {
-                
-            }
-        };
-    /**
-     * A timer that checks to make sure that subscriptions are present for all
-     * of the contacts that exist.
-     */
-    @TimerField
-    private ConditionalTimer subscriptionTimer =
-        new ConditionalTimer(1000 * 60 * 5, connectionConditional)
-        {
-            public void execute()
-            {
-                updateSubscriptions();
             }
         };
     /**
@@ -339,6 +206,12 @@ public class UserContext
      */
     private JCheckBox showKnownUsersAsContacts;
     /**
+     * The user's communicator. This will never change (updates to the user's
+     * password are pushed to this communicator itself, not to a newly-created
+     * communicator like OpenGroove G3 used).
+     */
+    private Communicator com;
+    /**
      * The user's launchbar window
      */
     private JFrame launchbar;
@@ -346,13 +219,6 @@ public class UserContext
      * The user's workspace panel that holds the list of the users workspaces
      */
     private JPanel workspacePanel;
-    /**
-     * The user's communicator that is used to communicate with the server. This
-     * may change if the user decides to change something such as their
-     * password, so objects that use a communicator should store a reference to
-     * this usercontext instead of the communicator itself
-     */
-    private CommandCommunicator com;
     /**
      * This user's plain-text password
      */
@@ -391,6 +257,12 @@ public class UserContext
         {
             timer.start();
         }
+    }
+    
+    protected void broadcastCurrentPresence()
+    {
+        // TODO Auto-generated method stub
+        
     }
     
     private final Object subscriptionUpdateLock = new Object();
@@ -1518,7 +1390,7 @@ public class UserContext
     
     public void updateLocalStatusIcon()
     {
-        if (!com.getCommunicator().isActive())
+        if (!com.isConnected())
         {
             /*
              * Offline
@@ -1527,7 +1399,7 @@ public class UserContext
                 .getImage()));
             return;
         }
-        if ((lastIdle + IDLE_THRESHOLD) < getServerTime())
+        if (wasLastIdle)
         {
             /*
              * Idle
@@ -1549,54 +1421,9 @@ public class UserContext
         return messageManager;
     }
     
-    public MessageHierarchy getRootMessageHierarchy()
-    {
-        return rootMessageHierarchy;
-    }
-    
-    public MessageHierarchy getInternalMessageHierarchy()
-    {
-        return internalMessageHierarchy;
-    }
-    
-    public MessageHierarchy getPluginMessageHierarchy()
-    {
-        return pluginMessageHierarchy;
-    }
-    
-    public void setMessageManager(MessageManager messageManager)
-    {
-        this.messageManager = messageManager;
-    }
-    
-    public void setRootMessageHierarchy(MessageHierarchy rootMessageHierarchy)
-    {
-        this.rootMessageHierarchy = rootMessageHierarchy;
-    }
-    
-    public void setInternalMessageHierarchy(MessageHierarchy internalMessageHierarchy)
-    {
-        this.internalMessageHierarchy = internalMessageHierarchy;
-    }
-    
-    public void setPluginMessageHierarchy(MessageHierarchy pluginMessageHierarchy)
-    {
-        this.pluginMessageHierarchy = pluginMessageHierarchy;
-    }
-    
-    public MessageHierarchy getUserMessageHierarchy()
-    {
-        return userMessageHierarchy;
-    }
-    
-    public void setUserMessageHierarchy(MessageHierarchy userMessageHierarchy)
-    {
-        this.userMessageHierarchy = userMessageHierarchy;
-    }
-    
     public SettingsManager getSettingsManager()
     {
-        return settingsManager;
+        return this.settingsManager;
     }
     
     public void setSettingsManager(SettingsManager settingsManager)
@@ -1619,8 +1446,8 @@ public class UserContext
     
     /**
      * Opens a window for composing a message. The message's subject and message
-     * fields are initialized to the specified values. inReplyTo must not be
-     * null, but can be the empty string if this message is not in reply.
+     * fields are initialized to the specified values. inReplyTo should be null
+     * if the message is not in reply.
      * 
      * @param subject
      * @param contents
@@ -1636,55 +1463,50 @@ public class UserContext
      * @param recipients
      *            The userids of this message's initial recipients, or null or
      *            an array with length 0 if the message is to have no initial
-     *            recipients
+     *            recipients. The recipients can be relative, and this method
+     *            will resolve them relative to the local computer.
      */
     public void composeMessage(String subject, String contents, String inReplyTo,
-        String replySubject, String[] recipients)
+        String replySubject, Userid[] recipients)
     {
         /*
-         * First, we need to create the user message object.
+         * Create the message object.
          */
-        UserMessage message = Storage.getLocalUser(userid).createUserMessage();
-        message.setContentType("text/html");
-        message.setDate(System.currentTimeMillis());
+        Message message = new Message();
+        MessageHeader header = new MessageHeader();
+        header.setDate(System.currentTimeMillis());
+        header.setContentType("text/html");
         /*
          * The date will be set again when we send the message, but we need to
          * set the date right now so that, while the message is a draft, it will
          * still be sorted correctly.
+         * 
+         * We'll generate a unique id for the message now. Unlike the G3 system,
+         * the outbound and inbound versions of the message will share the same
+         * id, since they are stored in different folders. Outbound headers and
+         * inbound headers are stored in the same folder, but the header is the
+         * same for both versions anyway, and the stored message manager is
+         * smart enough to realize that and not change the header when the new
+         * message is received.
          */
-        message.setDraft(true);
+        header.setMessageId(userid + "$" + Storage.createIdentifier()
+            + ".context.composeMessage");
+        header.setBody(new ByteBlock(contents));
+        header.setInReplyMessageId(inReplyTo);
+        header.setInReplySubject(replySubject);
+        header.setSender(userid);
+        header.setSubject(subject);
         /*
-         * We'll generate a unique id for the message now. The id will be
-         * suffixed with the letter "o". This letter will be removed when we're
-         * actually going to send the message. It serves to make the outbound
-         * version of the message have a different id than the inbound version
-         * of the message, so that if a user sends a message to themselves, a
-         * conflict won't arise.
+         * Copy the recipient array, since we're going to modify it to make all
+         * userids absolute
          */
-        message.setId(userid + "-" + Storage.createIdentifier() + "o");
-        message.setMessage(contents);
-        message.setOutbound(true);
-        message.setRead(true);
-        message.setReplyId(inReplyTo);
-        message.setReplySubject(replySubject);
-        message.setSender(userid);
-        message.setSubject(subject);
-        LocalUser user = Storage.getLocalUser(userid);
-        for (String recipient : recipients)
+        recipients = Arrays.copyOf(recipients, recipients.length);
+        for (int i = 0; i < recipients.length; i++)
         {
-            Contact contact = user.getContact(recipient);
-            ContactStatus status = contact.getStatus();
-            if (status == null)
-                continue;
-            if (!status.isKnown())
-                continue;
-            if (status.isNonexistant())
-                continue;
-            UserMessageRecipient recipientObject = message.createRecipient();
-            recipientObject.setUserid(recipient);
-            message.getRecipients().add(recipientObject);
+            recipients[i] = recipients[i].relativeTo(userid);
         }
-        Storage.getLocalUser(userid).getUserMessages().add(message);
+        header.setRecipients(recipients);
+        storedMessageManager.addNewDraftMessage(message);
         messageHistoryFrame.reload();
         ComposeMessageFrame.showComposeMessageFrame(Storage.get(userid), message);
     }
@@ -1697,5 +1519,10 @@ public class UserContext
     public void setMessageHistoryFrame(MessageHistoryFrame messageHistoryFrame)
     {
         this.messageHistoryFrame = messageHistoryFrame;
+    }
+    
+    public StoredMessageManager getStoredMessageManager()
+    {
+        return this.storedMessageManager;
     }
 }

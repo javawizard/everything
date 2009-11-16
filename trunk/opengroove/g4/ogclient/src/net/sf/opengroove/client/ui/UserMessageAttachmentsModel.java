@@ -3,16 +3,15 @@ package net.sf.opengroove.client.ui;
 import javax.swing.AbstractListModel;
 
 import net.sf.opengroove.client.storage.Storage;
-import net.sf.opengroove.client.storage.UserMessage;
 
-public class UserMessageAttachmentsModel extends
-    AbstractListModel
+import org.opengroove.g4.common.messaging.Message;
+
+public class UserMessageAttachmentsModel extends AbstractListModel
 {
     private Storage storage;
-    private UserMessage message;
+    private Message message;
     
-    public UserMessageAttachmentsModel(Storage storage,
-        UserMessage message)
+    public UserMessageAttachmentsModel(Storage storage, Message message)
     {
         super();
         this.storage = storage;
@@ -23,9 +22,7 @@ public class UserMessageAttachmentsModel extends
     {
         try
         {
-            return message
-                .getAttachmentsByEmbeddedStatus(false)[index]
-                .getName();
+            return message.getAttachments()[index].getName();
         }
         catch (ArrayIndexOutOfBoundsException e)
         {
@@ -35,8 +32,7 @@ public class UserMessageAttachmentsModel extends
     
     public int getSize()
     {
-        return message
-            .getAttachmentsByEmbeddedStatus(false).length;
+        return message.getAttachments().length;
     }
     
     public Storage getStorage()
@@ -44,7 +40,7 @@ public class UserMessageAttachmentsModel extends
         return storage;
     }
     
-    public UserMessage getMessage()
+    public Message getMessage()
     {
         return message;
     }
@@ -54,7 +50,7 @@ public class UserMessageAttachmentsModel extends
         this.storage = storage;
     }
     
-    public void setMessage(UserMessage message)
+    public void setMessage(Message message)
     {
         this.message = message;
     }

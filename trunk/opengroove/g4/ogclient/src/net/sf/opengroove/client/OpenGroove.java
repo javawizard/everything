@@ -128,6 +128,8 @@ import net.sf.opengroove.common.ui.ComponentUtils;
 import net.sf.opengroove.common.utils.Userids;
 
 import org.bouncycastle.jce.provider.BouncyCastleProvider;
+import org.opengroove.g4.common.TemporaryFileStore;
+import org.opengroove.g4.common.user.Userid;
 
 import com.jidesoft.dialog.AbstractDialogPage;
 import com.jidesoft.dialog.ButtonNames;
@@ -169,8 +171,13 @@ public class OpenGroove
      * are userids and the values are user contexts that correspond to that
      * user.
      */
-    public static final Hashtable<String, UserContext> userContextMap =
-        new Hashtable<String, UserContext>();
+    public static final Hashtable<Userid, UserContext> userContextMap =
+        new Hashtable<Userid, UserContext>();
+    
+    public static UserContext getUserContext(Userid userid)
+    {
+        return userContextMap.get(userid);
+    }
     
     private static LoginFrame loginFrame;
     
@@ -425,6 +432,7 @@ public class OpenGroove
         UIManager.setLookAndFeel(UIManager.getCrossPlatformLookAndFeelClassName());
         gcThread.setDaemon(true);
         gcThread.start();
+        TemporaryFileStore.init(new File("appdata/tmp-tfs"));
         Security.addProvider(new BouncyCastleProvider());
         JFrame frame3 = new JFrame("opengroovemain");
         frame3.setSize(800, 10);

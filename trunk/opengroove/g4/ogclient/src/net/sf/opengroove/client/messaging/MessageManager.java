@@ -31,6 +31,11 @@ public class MessageManager implements StatusListener,
     private Map<Class, MessageHandler> handlerMap =
         new HashMap<Class, MessageHandler>();
     
+    public void registerMessageHandler(Class c, MessageHandler handler)
+    {
+        handlerMap.put(c, handler);
+    }
+    
     private ThreadPoolExecutor stackedThreadPool =
         new ThreadPoolExecutor(1, 1, 30, TimeUnit.SECONDS,
             new LinkedBlockingQueue<Runnable>());

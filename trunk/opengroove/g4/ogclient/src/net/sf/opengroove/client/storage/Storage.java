@@ -12,13 +12,10 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.io.OutputStream;
 import java.io.Serializable;
-import java.io.UnsupportedEncodingException;
 import java.lang.reflect.Array;
 import java.net.URLEncoder;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.Hashtable;
 import java.util.concurrent.atomic.AtomicInteger;
 
@@ -27,10 +24,9 @@ import javax.swing.JLabel;
 
 import net.sf.opengroove.common.proxystorage.ProxyStorage;
 import net.sf.opengroove.common.security.Hash;
-import net.sf.opengroove.common.utils.DataUtils;
 import net.sf.opengroove.common.utils.Userids;
 
-import base64.Base64Coder;
+import org.opengroove.g4.common.user.Userid;
 
 /**
  * This class is used for most access to persistant data.
@@ -44,11 +40,12 @@ public class Storage
     
     private static File logFolder;
     
-    private static File messageFolder;
-    private static File messageDraftsFolder;
-    private static File messageSentFolder;
-    private static File messageUnreadFolder;
-    private static File messageReadFolder;
+    private File messageFolder;
+    private File messageDraftsFolder;
+    private File messageSentFolder;
+    private File messageUnreadFolder;
+    private File messageReadFolder;
+    private File messageHeaderFolder;
     
     private static DataStore dataStore;
     
@@ -120,14 +117,19 @@ public class Storage
      * initialized.
      * 
      * @param userid
-     *            the userid of the user to create the storage object for.
-     *            Userids are of the form realm:username
+     *            the userid of the user to create the storage object for. This
+     *            should be a string representation of the computer userid for
+     *            the user (not the username userid, as technically OpenGroove
+     *            should allow the same user to have the same account twice on
+     *            the same computer, but with different computer names)
      */
-    protected Storage(String userid)
+    protected Storage(Userid userid)
     {
-        this.user = dataStore.getUser(userid);
+        this.userid = userid;
+        this.user = dataStore.getUser(userid.toString());
         File tbase =
-            new File(new File(base, "userspecific"), URLEncoder.encode(userid));
+            new File(new File(base, "userspecific"), URLEncoder.encode(userid
+                .toString()));
         if (!tbase.exists())
             tbase.mkdirs();
         pluginStore = iItem(tbase, "plugins");
@@ -143,13 +145,14 @@ public class Storage
         messageAttachmentStore = iItem(tbase, "messageattachments");
         messageFolder = iItem(tbase, "storedmessagestore");
         messageDraftsFolder = iItem(messageFolder, "drafts");
+        messageHeaderFolder = iItem(messageFolder, "headers");
         messageReadFolder = iItem(messageFolder, "read");
         messageSentFolder = iItem(messageFolder, "sent");
         messageUnreadFolder = iItem(messageFolder, "unread");
     }
     
-    private static final Hashtable<String, Storage> singletons =
-        new Hashtable<String, Storage>();
+    private static final Hashtable<Userid, Storage> singletons =
+        new Hashtable<Userid, Storage>();
     
     /**
      * Gets the singleton storage object for the specified user. Storage objects
@@ -161,7 +164,7 @@ public class Storage
      *            The user's username
      * @return A storage object for the user specified
      */
-    public static synchronized Storage get(String userid)
+    public static synchronized Storage get(Userid userid)
     {
         Storage storage = singletons.get(userid);
         if (storage == null)
@@ -212,6 +215,8 @@ public class Storage
      * the message.
      */
     private File messageAttachmentStore;
+    
+    private Userid userid;
     
     public File getMessageAttachmentStore()
     {
@@ -534,7 +539,8 @@ public class Storage
     
     public static synchronized String createIdentifier()
     {
-        return "i" + System.currentTimeMillis() + "z" + cIdVar.getAndIncrement();
+        return "i" + System.currentTimeMillis() + "z" + cIdVar.getAndIncrement() + "r"
+            + Math.random();
     }
     
     /**
@@ -777,24 +783,34 @@ public class Storage
         return outboundMessageEncryptedStore;
     }
     
-    public static void setMessageDraftsFolder(File messageDraftsFolder)
+    public File getMessageDraftsFolder()
     {
-        Storage.messageDraftsFolder = messageDraftsFolder;
+        return messageDraftsFolder;
     }
     
-    public static void setMessageSentFolder(File messageSentFolder)
+    public File getMessageSentFolder()
     {
-        Storage.messageSentFolder = messageSentFolder;
+        return messageSentFolder;
     }
     
-    public static void setMessageUnreadFolder(File messageUnreadFolder)
+    public File getMessageUnreadFolder()
     {
-        Storage.messageUnreadFolder = messageUnreadFolder;
+        return messageUnreadFolder;
     }
     
-    public static void setMessageReadFolder(File messageReadFolder)
+    public File getMessageReadFolder()
     {
-        Storage.messageReadFolder = messageReadFolder;
+        return messageReadFolder;
+    }
+    
+    public File getMessageHeaderFolder()
+    {
+        return messageHeaderFolder;
+    }
+    
+    public Userid getUserid()
+    {
+        return this.userid;
     }
     
 }

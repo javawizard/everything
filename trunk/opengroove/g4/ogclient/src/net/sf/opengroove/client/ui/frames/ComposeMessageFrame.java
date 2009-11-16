@@ -58,23 +58,11 @@ import javax.swing.text.StyledEditorKit.BoldAction;
 import javax.swing.text.html.HTMLEditorKit;
 
 import net.sf.opengroove.client.OpenGroove;
-import net.sf.opengroove.client.UserContext;
-import net.sf.opengroove.client.com.model.StoredMessageRecipient;
-import net.sf.opengroove.client.messaging.MessageHierarchy;
-import net.sf.opengroove.client.storage.LocalUser;
-import net.sf.opengroove.client.storage.OutboundMessage;
-import net.sf.opengroove.client.storage.OutboundMessageRecipient;
 import net.sf.opengroove.client.storage.Storage;
-import net.sf.opengroove.client.storage.UserMessage;
-import net.sf.opengroove.client.storage.UserMessageAttachment;
-import net.sf.opengroove.client.storage.UserMessageRecipient;
-import net.sf.opengroove.client.ui.StatusDialog;
-import net.sf.opengroove.client.ui.UserMessageAttachmentsModel;
 import net.sf.opengroove.client.ui.UserMessageRecipientsModel;
-import net.sf.opengroove.common.ui.ComponentUtils;
-import net.sf.opengroove.common.utils.DataUtils;
-import net.sf.opengroove.common.utils.StringUtils;
-import net.sf.opengroove.common.utils.StringUtils.ToString;
+
+import org.opengroove.g4.common.messaging.Message;
+import org.opengroove.g4.common.user.Userid;
 
 /**
  * This code was edited or generated using CloudGarden's Jigloo
@@ -89,11 +77,17 @@ import net.sf.opengroove.common.utils.StringUtils.ToString;
  * LEGALLY FOR ANY CORPORATE OR COMMERCIAL PURPOSE.
  */
 /**
- * This frame shows a window that allows a user to compose a message. It handles
- * loading and saving it's contents from and to a UserMessage object and it's
- * attachment folders. In fact, it has to have a UserMessage object passed in
- * when it's created, and it will use the attachment folder corresponding to
- * that message when adding attachments.
+ * This frame allows a user to compose a message. It takes care of saving the
+ * message to the user's stored message manager when they save it as a draft,
+ * and disposing of itself when that happens, it takes care of instructing the
+ * stored message manager to delete this draft when the user requests that to
+ * happen, and it takes care of telling the stored message manager to send the
+ * message and move it to the sent folder when the user chooses to send it.
+ * 
+ * It also allows attachments to be dragged out of the attachments frame, but it
+ * warns the user that they must not close the message window until the
+ * attachment has been saved, or the program saving the attachment might not be
+ * able to do so.
  * 
  * The only button who's action is handled by this frame is the "save as draft"
  * button, which simply discards this frame.
@@ -122,7 +116,8 @@ public class ComposeMessageFrame extends javax.swing.JFrame
             try
             {
                 final List<File> fileList =
-                    (List<File>) transfer.getTransferData(DataFlavor.javaFileListFlavor);
+                    (List<File>) transfer
+                        .getTransferData(DataFlavor.javaFileListFlavor);
                 new Thread()
                 {
                     public void run()
@@ -142,8 +137,8 @@ public class ComposeMessageFrame extends javax.swing.JFrame
     public class AttachmentsListCellRenderer extends JLabel implements ListCellRenderer
     {
         
-        public Component getListCellRendererComponent(JList list, Object value, int index,
-            boolean isSelected, boolean cellHasFocus)
+        public Component getListCellRendererComponent(JList list, Object value,
+            int index, boolean isSelected, boolean cellHasFocus)
         {
             if (value.equals(list.getSelectedValue()))
             {
@@ -158,7 +153,8 @@ public class ComposeMessageFrame extends javax.swing.JFrame
                 setOpaque(list.isOpaque());
             }
             String attachmentName = (String) value;
-            UserMessageAttachment attachment = message.getAttachmentByName(attachmentName);
+            UserMessageAttachment attachment =
+                message.getAttachmentByName(attachmentName);
             if (attachment == null)
             {
                 setIcon(null);
@@ -219,28 +215,41 @@ public class ComposeMessageFrame extends javax.swing.JFrame
     private JLabel jLabel1;
     private JideButton addRecipientButton;
     private UserMessageAttachmentsModel attachmentsModel;
-    private static final HashMap<UserMessage, ComposeMessageFrame> composeFrames =
-        new HashMap<UserMessage, ComposeMessageFrame>();
+    private static final HashMap<Message, ComposeMessageFrame> composeFrames =
+        new HashMap<Message, ComposeMessageFrame>();
     
     private static JFileChooser addFileChooser = new JFileChooser();
     private static JFileChooser addFolderChooser = new JFileChooser();
     private static JFileChooser saveChooser = new JFileChooser();
     private static JFileChooser saveAllChooser = new JFileChooser();
     
-    public synchronized static void showComposeMessageFrame(Storage storage,
-        UserMessage message)
+    public synchronized static void showComposeMessageFrame(Userid user,
+        String messageId)
     {
-        if (storage != null && message != null && composeFrames.get(message) != null)
+        synchronized (OpenGroove.getUserContext(user).getStoredMessageManager()
+            .getLock())
         {
-            composeFrames.get(message).show();
-            composeFrames.get(message).toFront();
-            composeFrames.get(message).show();
-        }
-        else
-        {
-            ComposeMessageFrame frame = new ComposeMessageFrame(storage, message);
-            frame.setLocationByPlatform(true);
-            frame.show();
+            Storage storage = Storage.get(user);
+            Message message =
+                OpenGroove.getUserContext(user).getStoredMessageManager()
+                    .getMessageObject(messageId);
+            boolean isMessageDraft =
+                OpenGroove.getUserContext(user).getStoredMessageManager()
+                    .isMessageDraft(messageId);
+            if (composeFrames.get(messageId) != null)
+            {
+                composeFrames.get(messageId).show();
+                composeFrames.get(messageId).toFront();
+                composeFrames.get(messageId).show();
+            }
+            else
+            {
+                ComposeMessageFrame frame =
+                    new ComposeMessageFrame(user, storage, messageId, message,
+                        isMessageDraft);
+                frame.setLocationByPlatform(true);
+                frame.show();
+            }
         }
     }
     
@@ -253,17 +262,21 @@ public class ComposeMessageFrame extends javax.swing.JFrame
         {
             public void run()
             {
-                ComposeMessageFrame inst = new ComposeMessageFrame(null, null);
-                inst.setLocationRelativeTo(null);
-                inst.setVisible(true);
+                // ComposeMessageFrame inst = new ComposeMessageFrame(null,
+                // null);
+                // inst.setLocationRelativeTo(null);
+                // inst.setVisible(true);
             }
         });
     }
     
     private Storage storage;
-    private UserMessage message;
+    private Message message;
     private boolean isEditable;
     private UserMessageRecipientsModel recipientsModel;
+    private boolean isDraft;
+    private String messageId;
+    private Userid user;
     
     /**
      * Creates a new ComposeMessageFrame. If the specified storage or user
@@ -272,38 +285,47 @@ public class ComposeMessageFrame extends javax.swing.JFrame
      * 
      * 
      */
-    public ComposeMessageFrame(Storage storage, UserMessage message)
+    public ComposeMessageFrame(Userid user, Storage storage, String messageId,
+        Message message, boolean isDraft)
     {
         this.storage = storage;
-        if (storage != null)
-            this.message = message;
+        this.user = user;
+        this.messageId = messageId;
+        this.message = message;
+        this.isDraft = isDraft;
         initGUI();
         if (storage != null)
         {
-            boolean isOutbound = message.isOutbound();
-            boolean isDraft = message.isDraft();
             addWindowListener(new WindowAdapter()
             {
                 public void windowClosing(WindowEvent e)
                 {
-                    int choice =
-                        JOptionPane.showOptionDialog(ComposeMessageFrame.this,
-                            "Would you like to save this message, or discard it?", null,
-                            JOptionPane.YES_NO_OPTION, JOptionPane.PLAIN_MESSAGE, null,
-                            new String[] { "Save", "Discard", "Cancel" }, "Save");
-                    if (choice == 0)
+                    if (isDraft)
+                    {
+                        int choice =
+                            JOptionPane.showOptionDialog(ComposeMessageFrame.this,
+                                "Would you like to save this message, or discard it?",
+                                null, JOptionPane.YES_NO_OPTION,
+                                JOptionPane.PLAIN_MESSAGE, null, new String[] { "Save",
+                                    "Discard", "Cancel" }, "Save");
+                        if (choice == 0)
+                            ComposeMessageFrame.this.dispose();
+                        else if (choice == 1)
+                            discardMessage();
+                    }
+                    else
+                    {
                         ComposeMessageFrame.this.dispose();
-                    else if (choice == 1)
-                        discardMessage();
+                    }
                 }
                 
                 public void windowClosed(WindowEvent e)
                 {
-                    saveMessage();
-                    composeFrames.remove(ComposeMessageFrame.this.message);
+                    composeFrames.remove(ComposeMessageFrame.this.messageId);
                 }
             });
-            composeFrames.put(ComposeMessageFrame.this.message, ComposeMessageFrame.this);
+            composeFrames.put(ComposeMessageFrame.this.message,
+                ComposeMessageFrame.this);
             attachmentsList.setEnabled(true);
             attachmentsList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
             isEditable = isOutbound && isDraft;
@@ -382,8 +404,9 @@ public class ComposeMessageFrame extends javax.swing.JFrame
                         { TableLayout.PREFERRED, TableLayout.FILL },
                         { TableLayout.PREFERRED, TableLayout.PREFERRED,
                             TableLayout.PREFERRED, TableLayout.PREFERRED,
-                            TableLayout.PREFERRED, TableLayout.PREFERRED, TableLayout.FILL,
-                            TableLayout.PREFERRED, 0.33, TableLayout.PREFERRED } });
+                            TableLayout.PREFERRED, TableLayout.PREFERRED,
+                            TableLayout.FILL, TableLayout.PREFERRED, 0.33,
+                            TableLayout.PREFERRED } });
                 rootPanelLayout.setHGap(5);
                 rootPanelLayout.setVGap(5);
                 getContentPane().add(rootPanel, BorderLayout.CENTER);
@@ -440,7 +463,8 @@ public class ComposeMessageFrame extends javax.swing.JFrame
                             addRecipientButton.setButtonStyle(3);
                             addRecipientButton.setAlwaysShowHyperlink(true);
                             addRecipientButton.setForeground(new Color(0, 0, 255));
-                            addRecipientButton.setFont(new java.awt.Font("Dialog", 0, 12));
+                            addRecipientButton.setFont(new java.awt.Font("Dialog", 0,
+                                12));
                             addRecipientButton.setVerticalAlignment(SwingConstants.TOP);
                             addRecipientButton.addActionListener(new ActionListener()
                             {
@@ -454,24 +478,26 @@ public class ComposeMessageFrame extends javax.swing.JFrame
                             removeRecipientButton = new JideButton();
                             jPanel2.add(removeRecipientButton);
                             removeRecipientButton.setText("Remove");
-                            removeRecipientButton
-                                .setFont(new java.awt.Font("Dialog", 0, 12));
-                            removeRecipientButton
-                                .setForeground(new java.awt.Color(0, 0, 255));
+                            removeRecipientButton.setFont(new java.awt.Font("Dialog",
+                                0, 12));
+                            removeRecipientButton.setForeground(new java.awt.Color(0,
+                                0, 255));
                             removeRecipientButton.setButtonStyle(3);
                             removeRecipientButton.setAlwaysShowHyperlink(true);
-                            removeRecipientButton.addActionListener(new ActionListener()
-                            {
-                                public void actionPerformed(ActionEvent evt)
+                            removeRecipientButton
+                                .addActionListener(new ActionListener()
                                 {
-                                    removeRecipientButtonActionPerformed(evt);
-                                }
-                            });
+                                    public void actionPerformed(ActionEvent evt)
+                                    {
+                                        removeRecipientButtonActionPerformed(evt);
+                                    }
+                                });
                         }
                     }
                     {
                         recipientsList = new JList();
-                        recipientsList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+                        recipientsList
+                            .setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
                         if (storage != null)
                         {
                             recipientsModel =
@@ -536,8 +562,10 @@ public class ComposeMessageFrame extends javax.swing.JFrame
                         removeAttachmentButton = new JideButton();
                         attachmentsToolbar.add(removeAttachmentButton);
                         removeAttachmentButton.setText("Remove");
-                        removeAttachmentButton.setFont(new java.awt.Font("Dialog", 0, 12));
-                        removeAttachmentButton.setForeground(new java.awt.Color(0, 0, 255));
+                        removeAttachmentButton.setFont(new java.awt.Font("Dialog", 0,
+                            12));
+                        removeAttachmentButton.setForeground(new java.awt.Color(0, 0,
+                            255));
                         removeAttachmentButton.setAlwaysShowHyperlink(true);
                         removeAttachmentButton.setButtonStyle(3);
                         removeAttachmentButton.addActionListener(new ActionListener()
@@ -552,8 +580,10 @@ public class ComposeMessageFrame extends javax.swing.JFrame
                         saveAttachmentButton = new JideButton();
                         attachmentsToolbar.add(saveAttachmentButton);
                         saveAttachmentButton.setText("Save");
-                        saveAttachmentButton.setFont(new java.awt.Font("Dialog", 0, 12));
-                        saveAttachmentButton.setForeground(new java.awt.Color(0, 0, 255));
+                        saveAttachmentButton
+                            .setFont(new java.awt.Font("Dialog", 0, 12));
+                        saveAttachmentButton
+                            .setForeground(new java.awt.Color(0, 0, 255));
                         saveAttachmentButton.setAlwaysShowHyperlink(true);
                         saveAttachmentButton.setButtonStyle(3);
                         saveAttachmentButton.addActionListener(new ActionListener()
@@ -586,8 +616,10 @@ public class ComposeMessageFrame extends javax.swing.JFrame
                         openAttachmentButton.setText("Open");
                         openAttachmentButton.setAlwaysShowHyperlink(true);
                         openAttachmentButton.setButtonStyle(3);
-                        openAttachmentButton.setFont(new java.awt.Font("Dialog", 0, 12));
-                        openAttachmentButton.setForeground(new java.awt.Color(0, 0, 255));
+                        openAttachmentButton
+                            .setFont(new java.awt.Font("Dialog", 0, 12));
+                        openAttachmentButton
+                            .setForeground(new java.awt.Color(0, 0, 255));
                         openAttachmentButton.addActionListener(new ActionListener()
                         {
                             public void actionPerformed(ActionEvent evt)
@@ -706,8 +738,8 @@ public class ComposeMessageFrame extends javax.swing.JFrame
                         BorderLayout jPanel4Layout = new BorderLayout();
                         attachmentScrollingPanel.setLayout(jPanel4Layout);
                         jScrollPane1.setViewportView(attachmentScrollingPanel);
-                        attachmentScrollingPanel.setBackground(new java.awt.Color(255, 255,
-                            255));
+                        attachmentScrollingPanel.setBackground(new java.awt.Color(255,
+                            255, 255));
                         {
                             attachmentUpperPanel = new JPanel();
                             BorderLayout jPanel5Layout = new BorderLayout();
@@ -717,10 +749,12 @@ public class ComposeMessageFrame extends javax.swing.JFrame
                             attachmentUpperPanel.setOpaque(false);
                             {
                                 attachmentHelpPanel = new JPanel();
-                                BorderLayout attachmentHelpPanelLayout = new BorderLayout();
+                                BorderLayout attachmentHelpPanelLayout =
+                                    new BorderLayout();
                                 attachmentUpperPanel.add(attachmentHelpPanel,
                                     BorderLayout.SOUTH);
-                                attachmentHelpPanel.setLayout(attachmentHelpPanelLayout);
+                                attachmentHelpPanel
+                                    .setLayout(attachmentHelpPanelLayout);
                                 attachmentHelpPanel.setOpaque(false);
                                 {
                                     attachmentAreaHintLabel = new JLabel();
@@ -754,13 +788,14 @@ public class ComposeMessageFrame extends javax.swing.JFrame
                                 if (storage != null)
                                 {
                                     attachmentsModel =
-                                        new UserMessageAttachmentsModel(storage, message);
+                                        new UserMessageAttachmentsModel(storage,
+                                            message);
                                     attachmentsList.setModel(attachmentsModel);
                                     attachmentsList
                                         .setCellRenderer(new AttachmentsListCellRenderer());
                                 }
-                                attachmentUpperPanel
-                                    .add(attachmentsList, BorderLayout.NORTH);
+                                attachmentUpperPanel.add(attachmentsList,
+                                    BorderLayout.NORTH);
                             }
                         }
                     }
@@ -920,7 +955,8 @@ public class ComposeMessageFrame extends javax.swing.JFrame
         OutboundMessage outboundMessage = hierarchy.createMessage();
         for (UserMessageRecipient recipient : message.getRecipients().isolate())
         {
-            OutboundMessageRecipient outboundRecipient = outboundMessage.createRecipient();
+            OutboundMessageRecipient outboundRecipient =
+                outboundMessage.createRecipient();
             outboundRecipient.setUserid(recipient.getUserid());
             outboundRecipient.setComputer("");
             outboundMessage.getRecipients().add(outboundRecipient);
@@ -1033,7 +1069,8 @@ public class ComposeMessageFrame extends javax.swing.JFrame
                  * it's length.
                  */
                 File attachmentFile =
-                    storage.getMessageAttachmentFile(message.getId(), attachment.getName());
+                    storage.getMessageAttachmentFile(message.getId(), attachment
+                        .getName());
                 out.writeInt((int) attachmentFile.length());
                 FileInputStream attIn = new FileInputStream(attachmentFile);
                 StringUtils.copy(attIn, out);
@@ -1087,7 +1124,8 @@ public class ComposeMessageFrame extends javax.swing.JFrame
     {
         String messageId = message.getId();
         storage.getLocalUser().getUserMessages().remove(message);
-        File[] attachmentFiles = storage.getMessageAttachmentFolder(messageId).listFiles();
+        File[] attachmentFiles =
+            storage.getMessageAttachmentFolder(messageId).listFiles();
         if (attachmentFiles != null)
         {
             for (File file : attachmentFiles)
@@ -1147,9 +1185,11 @@ public class ComposeMessageFrame extends javax.swing.JFrame
      * folder" link, or when the user drags files or folders into the attachment
      * pane. This method validates that the specified files or folders really do
      * exist, and then it adds them first as message attachment files and then
-     * as message attachment objects.<br/> <br/>
+     * as message attachment objects.<br/>
+     * <br/>
      * 
-     * This method blocks until the attachments have been imported.<br/> <br/>
+     * This method blocks until the attachments have been imported.<br/>
+     * <br/>
      * 
      * Right now, this method doesn't check to make sure that the message is
      * less than 2GB in size. It needs to do this in the future, to avoid the
@@ -1186,8 +1226,10 @@ public class ComposeMessageFrame extends javax.swing.JFrame
                     public void run()
                     {
                         JOptionPane
-                            .showMessageDialog(ComposeMessageFrame.this, ComponentUtils
-                                .htmlTipWrap("An attachment already exists with that name."));
+                            .showMessageDialog(
+                                ComposeMessageFrame.this,
+                                ComponentUtils
+                                    .htmlTipWrap("An attachment already exists with that name."));
                     }
                 }.start();
                 return;
@@ -1289,11 +1331,13 @@ public class ComposeMessageFrame extends javax.swing.JFrame
                 public void run()
                 {
                     JOptionPane
-                        .showMessageDialog(ComposeMessageFrame.this, ComponentUtils
-                            .htmlTipWrap("The attachment(s) could not be added, because "
-                                + "of an internal error. Contact us "
-                                + "(support@opengroove.org) for assistance, "
-                                + "or try again."));
+                        .showMessageDialog(
+                            ComposeMessageFrame.this,
+                            ComponentUtils
+                                .htmlTipWrap("The attachment(s) could not be added, because "
+                                    + "of an internal error. Contact us "
+                                    + "(support@opengroove.org) for assistance, "
+                                    + "or try again."));
                 }
             }.start();
         }
@@ -1321,8 +1365,8 @@ public class ComposeMessageFrame extends javax.swing.JFrame
      * @param currentParentPath
      * @throws IOException
      */
-    private void recursiveZipWrite(File file, ZipOutputStream out, String currentParentPath)
-        throws IOException
+    private void recursiveZipWrite(File file, ZipOutputStream out,
+        String currentParentPath) throws IOException
     {
         if (file.isFile())
         {
@@ -1338,7 +1382,8 @@ public class ComposeMessageFrame extends javax.swing.JFrame
         {
             for (File subfile : file.listFiles())
             {
-                recursiveZipWrite(subfile, out, currentParentPath + file.getName() + "/");
+                recursiveZipWrite(subfile, out, currentParentPath + file.getName()
+                    + "/");
             }
         }
     }

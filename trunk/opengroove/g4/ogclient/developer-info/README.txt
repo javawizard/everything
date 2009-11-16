@@ -9,3 +9,8 @@ Anyway, to business. The files in the developer-info folder are generally organi
 formatting.txt - Source Code Formatting
 
 This file contains information related to how source code should be formatted.
+
+
+source-format.xml - Eclipse Format Template
+
+This file contains the specifications suitable for importing into Eclipse's formatter that specify OpenGroove's formatting conventions. This specifies stuff like indentation, line wrapping, etc.

@@ -2,17 +2,16 @@ package net.sf.opengroove.client.ui;
 
 import javax.swing.AbstractListModel;
 
-import net.sf.opengroove.client.storage.Storage;
-import net.sf.opengroove.client.storage.UserMessage;
+import org.opengroove.g4.common.messaging.MessageHeader;
 
-public class UserMessageRecipientsModel extends
-    AbstractListModel
+import net.sf.opengroove.client.storage.Storage;
+
+public class UserMessageRecipientsModel extends AbstractListModel
 {
     private Storage storage;
-    private UserMessage message;
+    private MessageHeader message;
     
-    public UserMessageRecipientsModel(Storage storage,
-        UserMessage message)
+    public UserMessageRecipientsModel(Storage storage, MessageHeader message)
     {
         super();
         this.storage = storage;
@@ -21,13 +20,12 @@ public class UserMessageRecipientsModel extends
     
     public Object getElementAt(int index)
     {
-        return message.getRecipients().get(index)
-            .getUserid();
+        return message.getRecipients()[index];
     }
     
     public int getSize()
     {
-        return message.getRecipients().size();
+        return message.getRecipients().length;
     }
     
     public void reload()
