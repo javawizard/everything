@@ -6,7 +6,8 @@ The questions are organized by the page that they are relevant to. Pages are the
 <wiki:toc max_depth="3"/>
 ==Logs==
 ===Is it possible to change the format of the date and time shown in the logs?===
-Yes and no. Currently the only way to do it is to modify the source code of BZNetwork. jcp will be happy to build a modified version of bznetwork with a custom date format on request (see the top of the FAQ for info on how to contact him). Date formats should be specified as a text string formatted as described in the *Date and Time Patterns* section of [http://java.sun.com/javase/6/docs/api/java/text/SimpleDateFormat.html this page]. I'm working on making the date and time format be stored in a configuration file.
+Yes Go to the Configuration page, and change the Date-only Format and Date/Time Format configuration settings. Date formats should be specified as a text string formatted as described in the *Date and Time Patterns* section of [http://java.sun.com/javase/6/docs/api/java/text/SimpleDateFormat.html this page]. 
+
 ==Servers==
 ===In the banfiles column, sometimes there's a dropdown box, sometimes the dropdown box is disabled, and sometimes it's just text. What's the difference between these?===
 Which of these three states the banfile appears as depends on what permissions you have and whether or not the server is running. If you don't have permission to edit that server's banfile, then the banfile appears as just text. If you do have permission to edit the banfile, but the server is currently running, then the banfile appears as a disabled dropdown box. If you have permission to edit the banfile, and the server is not currently running, then the banfile appears as a normal dropdown box.
