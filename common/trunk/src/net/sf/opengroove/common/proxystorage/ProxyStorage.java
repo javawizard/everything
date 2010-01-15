@@ -200,10 +200,11 @@ public class ProxyStorage<E>
         try
         {
             System.out.println("connecting to proxystorage db");
-            connection = DriverManager.getConnection("jdbc:h2:" + location.getPath() + ";FILE_LOCK=SOCKET", "sa",
-                    "");
+            connection = DriverManager.getConnection("jdbc:h2:" + location.getPath()
+                    + ";FILE_LOCK=SOCKET", "sa", "");
             System.out.println("connected");
             dbInfo = connection.getMetaData();
+            System.out.println("Hello world");
             checkSystemTables();
             checkTables(rootClass, allClasses);
         }
