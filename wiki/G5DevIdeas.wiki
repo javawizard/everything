@@ -1,0 +1,36 @@
+#labels G5
+*Initial generation 5 ideas, copied from Alex's computer:*
+
+So, basically a list of random ideas that I'm starting off with for Generation 5.
+
+There should be a clear concept of domains. By that, I mean that, like XMPP, OpenGroove users have an account at a particular domain. This effectively decentralizes the whole OpenGroove system while (subject to server policy) allowing users to communicate between domains.
+
+The server should allow its administrators to restrict outside contact in some form or other. The specific use cases I was thinking of are where a company has their own domain that they want isolated from the outside world, or where the company has multiple domains and they want those domains to be able to interconnect but not be able to connect with the outside world. For example, a company could have sales.example.com, developers.example.com, and bigwigs.example.com that can all communicate, but they might not want anyone except bigwigs.example.com to be able to communicate with the outside world.
+
+There should be some form of directory, whereby users can look up other users. It would probably be a good idea if this could be decentralized in some fashion too. Directories could be hosted at particular domains, and the client could allow directories to be added that can be searched or registered with. The default entry in the list would be something like directory.opengroove.org.
+
+It should be possible for servers to enforce some policies on the clients that use those servers, and to manipulate some aspects of the client. For example, it should be possible for the server to somehow add directory servers into clients that use that server, which would be useful if a company is running a server and would like its company directory added to the client. The client should probably maintain a notion of directory servers specific to an account as opposed to directory servers for the whole client, the point of this being that users could have both company accounts and individual accounts within OpenGroove.
+
+I'm considering having the server and the workspace server be two separate concepts, like how in XMPP the chat server and the multi-user chat server are two separate things.
+
+Actually, that brings to mind an interesting idea: this whole thing could potentially be based on XMPP in some fashion. That would certainly make a lot of functionality easier. Workspaces and perhaps messaging could then simply be provided by use of a service, much like multi-user chat is provided as a service.
+
+That would actually solve all of the problems associated with figuring out the roster. It doesn't solve multi-computer roster synchronization issues, unless you just enforce some rules like the roster can only be changed when online or you can't delete from the roster unless online. There would be ways to deal with that problem.
+
+One thing that Google Wave has that would most likely be cool is the ability for changes to a workspace to be signed by the user that made those changes. This would provide some protection against a workspace hosted on one server being sent spoofed changes from another server.
+
+And apparently the proper name for the whole engine concept that Groove uses is Operational Transformation. There's a Wikipedia article about it.
+
+The one disadvantage, though, about building on top of XMPP is that there's no longer an option for communicating across a local network where two machines can contact each other but not the internet at large.
+
+So, let's get back to thinking about this from the perspective of a standalone server. It would be very, very good if stuff could synchronize without access to a server. And I mean like, workspace creation, deletion, adding members, removing them, etc, shoudl all be doable while offline given the user's encryption keys or whatever is used to authenticate a particular user.
+
+And a user should probably be authenticated off of their private key pair, and then if it gets compromized then the user has to create a new account.
+
+The distributed, no-internet-connection-required thing is because I'm paranoid some earthquake will happen here that will render the internet nonfunctional. People could still set up wireless networks, though, and synchronize information and stuff by syncing through those and syncing with one another.
+
+I'm thinking workspaces should maintain a complete version history back from the day they were first created. It'd also be cool if they could be viewed in some sort of mode where the user could view the history of the workspace as it looked like at any point in time, and view the workspace and "browse around it" as it looked like then.
+
+It might also be cool to keep a synchronization log of the workspace side-by-side with it. This would obviously vary from computer-to-computer, and would be more for diagnostic and informational purposes than any real purpose.
+
+Since eventually the version history of a workspace might grow large, it should be possible to create an exact copy of a particular workspace into another particular workspace. There should be an option for choosing which tools should be copied over, and which users in the workspace. This also brings up another point: names within a workspace should reflect a user's correct name even after they've been removed from the workspace.
