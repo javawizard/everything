@@ -41,7 +41,9 @@ And, given that version history will be user-visible, the view part of the MVC d
 
 Another thing that'd be cool is if workspaces could be forked. By that, I mean that an exact copy of a workspace, minus its member set, could be made from not only the latest version of a workspace but from the workspace's history at any point in time.
 
+Workspaces should exist as their own independent entity without an affiliation to a particular domain. This would make it so that workspaces can be created while a user is disconnected from the internet, and indeed shared with users on an ad-hoc network and synchronized with them without ever establishing an internet connection.
 
+Users should be able to search their local network for other users that are set to be visible to their local network. This would use UDP multicast to send out pings, and then TCP connections to actually talk. Users should be able to then add those local users to their contact list and interact with them.
 
 
 
