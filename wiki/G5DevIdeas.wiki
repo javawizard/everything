@@ -47,6 +47,10 @@ Users should be able to search their local network for other users that are set 
 
 There's one problem, though, with domains that I just got thinking about. That problem is that there no longer exists a distributed, independent, system of accounts when they are named instead of simply identified. A particular user's unique userid should be directly related to the user's public key and to nothing else. I'm thinking at this point that a user's unique userid should be the first _n_ characters of the hexcoded form of the SHA-512 hash of the user's public key and the user's signature key, perhaps concatenated or separated with some sort of delimiter so as to distinguish the two, and perhaps with some magic characters before the hash substring so as to identify it in case it needs to change laster. I was thinking of "ogs5", which stands for <b>O</b>pen<b>G</b>roove <b>S</b>HA-<b>5</b>12. This would allow for changing the hash algorithm or the public key algorithm some time in the future. That would make it trivial to verify a user's public key set given the user's userid.
 
+The one problem this leaves unresolved is how connections across the internet should work. If users only have a userid, then there's no way for a user to communicate across the internet specifically, as there's no way to just find where a user is by their userid.
+
+Perhaps, therefore, there should be a means whereby users can sign up for an account at a particular server. They then associate their userid with that account. However, if the ability to dual-register on a server is present, then this makes it difficult to decide when to stop trying to deliver a message to a user over a particular medium. If a message history is always kept, then this wouldn't be so much of a problem, but it's not generally practical to keep a complete message history given the potential size of files being sent. And even that doesn't help with what to do if a new provider is added. More thought needs to go into this part.
+
 
 
 
