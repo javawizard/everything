@@ -34,3 +34,29 @@ I'm thinking workspaces should maintain a complete version history back from the
 It might also be cool to keep a synchronization log of the workspace side-by-side with it. This would obviously vary from computer-to-computer, and would be more for diagnostic and informational purposes than any real purpose.
 
 Since eventually the version history of a workspace might grow large, it should be possible to create an exact copy of a particular workspace into another particular workspace. There should be an option for choosing which tools should be copied over, and which users in the workspace. This also brings up another point: names within a workspace should reflect a user's correct name even after they've been removed from the workspace.
+
+I've decided that workspaces definitely will keep a permanent version history of every change that occurred to them. The change log will be user-visible, and will most likely be intended for normal use (as opposed to simply "debug" use). Keeping a permanent history has the result of making synchronization redundancy-tolerant, meaning that changes delivered multiple times are OK because the operational transformation code can discard the change when it sees that it has the same id as other changes next to it.
+
+And, given that version history will be user-visible, the view part of the MVC design should definitely have a mechanism for specifying whether or not the view should be mutable. Immutable views would be used when viewing version history; mutable views would be used when actually interacting with the workspace.
+
+Another thing that'd be cool is if workspaces could be forked. By that, I mean that an exact copy of a workspace, minus its member set, could be made from not only the latest version of a workspace but from the workspace's history at any point in time.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
