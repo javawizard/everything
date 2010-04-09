@@ -45,6 +45,14 @@ Workspaces should exist as their own independent entity without an affiliation t
 
 Users should be able to search their local network for other users that are set to be visible to their local network. This would use UDP multicast to send out pings, and then TCP connections to actually talk. Users should be able to then add those local users to their contact list and interact with them.
 
+There's one problem, though, with domains that I just got thinking about. That problem is that there no longer exists a distributed, independent, system of accounts when they are named instead of simply identified. A particular user's unique userid should be directly related to the user's public key and to nothing else. I'm thinking at this point that a user's unique userid should be the first _n_ characters of the hexcoded form of the SHA-512 hash of the user's public key and the user's signature key, perhaps concatenated or separated with some sort of delimiter so as to distinguish the two, and perhaps with some magic characters before the hash substring so as to identify it in case it needs to change laster. I was thinking of "ogs5", which stands for *O*pen*G*roove *S*HA-*5*12. This would allow for changing the hash algorithm or the public key algorithm some time in the future. That would make it trivial to verify a user's public key set given the user's userid.
+
+
+
+
+
+
+
 
 
 
