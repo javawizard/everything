@@ -26,17 +26,17 @@ public class NormalDate extends Date
     
     public NormalDate(int year, int month, int date, int hrs, int min, int sec)
     {
-        super(year, month, date, hrs, min, sec);
+        super(year - 1900, month - 1, date, hrs, min, sec);
     }
     
     public NormalDate(int year, int month, int date, int hrs, int min)
     {
-        super(year, month, date, hrs, min);
+        super(year - 1900, month - 1, date, hrs, min);
     }
     
     public NormalDate(int year, int month, int date)
     {
-        super(year, month, date);
+        super(year - 1900, month - 1, date);
     }
     
     public NormalDate(String s)
