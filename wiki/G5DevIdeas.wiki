@@ -51,6 +51,38 @@ The one problem this leaves unresolved is how connections across the internet sh
 
 Perhaps, therefore, there should be a means whereby users can sign up for an account at a particular server. They then associate their userid with that account. However, if the ability to dual-register on a server is present, then this makes it difficult to decide when to stop trying to deliver a message to a user over a particular medium. If a message history is always kept, then this wouldn't be so much of a problem, but it's not generally practical to keep a complete message history given the potential size of files being sent. And even that doesn't help with what to do if a new provider is added. More thought needs to go into this part.
 
+So, a feature that definitely needs to be in workspaces: it should be possible to create workspaces even while disconnected from the internet. And it should be possible to share those workspaces with other users and synchronize them while disconnected from the internet. This would be extremely important for allowing OpenGroove to function in absence of the internet. Contacts should also be manageable, meaning a user can add and remove contacts as they want. The one problem this brings up is synchronization of contact lists, but that would be resolved if a user's contact list also kept a permanent version history and used operational transformation.
+
+Actually, viewing a history of the contact list would be sort of cool. It would then be possible to go back in time in case the user accidentally deletes a contact that they didn't want to delete.
+
+One problem that's coming up with the idea of users being identified simply by the hash of their keys is that this doesn't provide for users that have multiple computers and want to synchronize stuff between those computers.
+
+On the whole thing about how to synchronize with servers and a concept of domains when there isn't an idea of account names, a couple of thoughts. Perhaps directory servers should not only provide a directory of userids and their corresponding keys and the user's information, but they could potentially provide a username-to-userid mapping.
+
+Another important characteristic that directory servers should have: all of the information about a particular user that is stored in a directory server should be signed by the user as well. A user's entry in a directory server contains the user's public encryption and signature keys, which means that it's possible for another user to download the information about that user from the directory server and validate that the information really is the user's informationand make sure that the directory server hasn't just created random information about that user.
+
+It would also be cool if the information stored in the directory included the date at which the user set that information. This isn't critically important, but it would be useful for figuring out which data from a particular directory server is the latest data. The user information signature created by the user should include that date in some manner.
+
+So, I just made an interesting observation about Microsoft Groove: interestingly enough, a Groove workspace appears to store a permanent version history of itself too, although it doesn't make this user-visible. I found this out by adding and removing a file over and over again from a files tool in a Groove workspace and watching the size of the workspace (which Groove does report). Every time I added and removed the file, it increased by roughly the size of the file, even though it was the same file and I removed it each time. No-one else is a member of the workspace, which nullifies the possibility that it's storing data to be sent to other users. This is a good thing; if OpenGroove stores a permanent version history, it won't make it any less space-efficient than Groove.
+
+I'm thinking that communication mechanisms should be pluggable. This was an idea I had considered adding to Generation 4, and I'm thinking I'll also add it to Generation 5. I'm thinking there would essentially be four communications plugins either included with OpenGroove or available from the default update site: Standard, Ad-hoc, Loopback, and File. The standard transport would use relay servers or other servers in some manner I'm still working out (see my above thoughts on why hashed userids and usernames cause problems). The ad-hoc transport scans for computers on the local network with multicast when enabled and connects to them. The loopback transport shows the user as always online to themselves, and allows users to send messages to themselves. The file transport allows messages to be exported into a file and then imported from that same file on another machine, and all relevant messages from that file will be processed.
+
+I'm thinking now that message history, in the sense of user messages, should be permanent, IE you can't delete messages (but maybe you can delete attachments if they're taking up too much storage space). That would provide redundancy-tolerant messaging.
+
+I'm still deciding what sort of keys workspaces should have associated with them. It would be useful if clients could be instructed to change workspace keys to get rid of a rogue user, but the problem is that the rogue user could just instruct clients to change their keys before the normal user does. But then again, if only certain roles can change keys, then the clients could ignore change-key messages from clients not authorized to do that. More thought needs to go into this and how to kick people from a workspace forcibly, or if the user should just make a copy of the workspace, including its history (which should be possible from any given history revision), and invite all but the rogue user to it.
+
+Each revision in a workspace should also be signed by the workspace's creator and in some manner by the workspace's keys.
+
+
+
+
+
+
+
+
+
+
+
 
 
 
