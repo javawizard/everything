@@ -10,4 +10,9 @@ public class Response
      * The alias of the writer that wrote this response
      */
     public String alias;
+    
+    public String toString()
+    {
+        return "Response[text: " + text + ", alias: " + alias + "]";
+    }
 }

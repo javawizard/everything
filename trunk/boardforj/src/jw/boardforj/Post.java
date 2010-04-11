@@ -1,5 +1,6 @@
 package jw.boardforj;
 
+import java.util.Arrays;
 import java.util.List;
 
 /**
@@ -33,4 +34,10 @@ public class Post
      * length 0.
      */
     public Response[] responses;
+    
+    public String toString()
+    {
+        return "Post[id: " + id + ", date: " + date + ", text: " + text + ", categories: "
+            + categories + ", responses: " + Arrays.toString(responses) + "]";
+    }
 }
