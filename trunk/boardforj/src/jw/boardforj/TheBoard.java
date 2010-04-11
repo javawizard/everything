@@ -83,6 +83,49 @@ public class TheBoard
         return dates;
     }
     
+    /**
+     * Returns a list of all months within the specified year that have posts.
+     * 
+     * @return
+     */
+    public NormalDate[] getMonths(NormalDate year)
+    {
+        JSONArray list =
+                query("findDates=1&year=" + year.getNormalYear()).getJSONArray("months");
+        NormalDate[] dates = new NormalDate[list.length()];
+        for (int i = 0; i < dates.length; i++)
+        {
+            NormalDate date = new NormalDate();
+            date.setNormalYear(year.getNormalYear());
+            date.setNormalMonth(list.getInt(i));
+            dates[i] = date;
+        }
+        return dates;
+    }
+    
+    /**
+     * Returns a list of all days within the specified month that have posts.
+     * 
+     * @return
+     */
+    public NormalDate[] getDays(NormalDate month)
+    {
+        JSONArray list =
+                query(
+                        "findDates=1&year=" + month.getNormalYear() + "&month="
+                            + month.getNormalMonth()).getJSONArray("days");
+        NormalDate[] dates = new NormalDate[list.length()];
+        for (int i = 0; i < dates.length; i++)
+        {
+            NormalDate date = new NormalDate();
+            date.setNormalYear(month.getNormalYear());
+            date.setNormalMonth(month.getNormalMonth());
+            date.setDate(list.getInt(i));
+            dates[i] = date;
+        }
+        return dates;
+    }
+    
     private JSONObject query(String params)
     {
         String urlString = baseUrl + ACCESS_URL;
