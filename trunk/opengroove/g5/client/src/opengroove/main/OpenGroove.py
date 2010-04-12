@@ -2,4 +2,4 @@
 
 
 def start():
-    pass
+    print "Hello from what will be OpenGroove!"
