@@ -1,4 +1,7 @@
 #!/usr/bin/env python
 
-import opengroove.main.OpenGroove
-OpenGroove.start()
+import sys
+sys.path[0:0] = ['src']
+
+from opengroove.main.OpenGroove import start
+start()
