@@ -1,4 +1,4 @@
-#labels G4
+#labels G4, Obsolete
 *Some settings*
 {{{
 <plugin id="org.opengroove.examples.test01">

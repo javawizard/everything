@@ -1,3 +1,4 @@
+#labels G4, Obsolete
 *The settings manager on the client side.*
 
 One quick note first. When a plugin is to load its extension points, in the plugin's main class, it should create named classes for an extension by using a special method on the extension, instead of by using Class.forName. Then if the class implements PluginAware, it will be injected with various information about itself such as its supervisor.

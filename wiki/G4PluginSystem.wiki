@@ -1,3 +1,4 @@
+#labels G4, Obsolete
 The G4 plugin system and how it works.
 
 =Dependency Management=
