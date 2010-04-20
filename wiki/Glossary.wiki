@@ -14,9 +14,9 @@ A changeset is a set of changes made by a single user that should all be applied
 ...
 
 ==Database==
-The OpenGroove Database is the database used to store data from most parts of OpenGroove. Conceptually, it's a mix of relational and object database designs. It was influenced significantly by Google AppEngine's database. See OpenGrooveDatabase for a more in-depth description.
+The !OpenGroove Database is the database used to store data from most parts of !OpenGroove. Conceptually, it's a mix of relational and object database designs. It was influenced significantly by Google !AppEngine's database. See OpenGrooveDatabase for a more in-depth description.
 
-The OpenGroove Database is *not* atomic. If a crash occurs during a database write, the database will be left corrupted. As a result, for anything other than temporary data storage, the [#Datastore OpenGroove Datastore] should be used instead. The Datastore uses the Database internally, but adds atomicity on top of that.
+The !OpenGroove Database is *not* atomic. If a crash occurs during a database write, the database will be left corrupted. As a result, for anything other than temporary data storage, the [#Datastore OpenGroove Datastore] should be used instead. The Datastore uses the Database internally, but adds atomicity and versioning on top of the database.
 
 ==Tool==
 ...
