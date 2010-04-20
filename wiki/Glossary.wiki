@@ -1,3 +1,4 @@
+#labels G5
 This is a glossary of all of the terms used in !OpenGroove. Some of these are extremely technical and will most likely only be understood by !OpenGroove developers; others are the type that normal users would have no problem understanding. Feel free to ask any of the !OpenGroove developers if you don't understand one of these and would like to find out more about it.
 
 <wiki:toc max_depth="2"/>
