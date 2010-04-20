@@ -1,4 +1,6 @@
 #labels G5
+*THIS IS NOW OBSOLETE. IDEAS ARE BEING POSTED ON THE ISSUE TRACKER INSTEAD.*
+
 *Initial generation 5 ideas, copied from Alex's computer:*
 
 So, basically a list of random ideas that I'm starting off with for Generation 5.
@@ -74,8 +76,6 @@ I'm still deciding what sort of keys workspaces should have associated with them
 Each revision in a workspace should also be signed by the workspace's creator and in some manner by the workspace's keys.
 
 So now, getting back to the idea of userids and how synchronization while on the internet would work. Groove does that whole thing using relay servers, meaning that Microsoft (and formerly groove.net) runs a bunch of servers for relaying messages between people, and people sign up 
-
-
 
 
 
