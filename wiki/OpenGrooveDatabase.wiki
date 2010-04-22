@@ -4,8 +4,25 @@ The !OpenGroove Database is a database used by, and developed for, !OpenGroove.
 ==Operations==
 Operations that a single change can represent:
 
-*Insert.* This is an addition of a single object to the system. Included with this will be 
+*Insert.* This is an addition of a single object to the system. Included with this will be the type of the object, the id of the object, the id of the object's parent, and any attributes included with the initial version of the object. 
+
+If an object in the database with the specified id already exists, the insert operation does nothing.
+
+If an object with the specified parent id does not exist, the insert operation does nothing.
 
 *Delete.* This is the removal of a single object from the system. If the object has any children, those children will be recursively removed as well.
 
-*Update.* This is the update of a single property of a single object. 
+Removal is performed based on the object's id. If an object with the specified id does not exist, the delete operation does nothing.
+
+Note that the root object (whose id is the empty string) cannot be deleted. A delete operation on the root object does nothing.
+
+*Set.* This is the setting of a single attribute on an object to have a certain value. 
+
+*Update.* TODO: write this, same as set but won't create the attribute if it doesn't already exist
+
+*Delprop.* TODO: write this, deletes a property from an object 
+
+
+
+
+
