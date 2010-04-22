@@ -1,2 +1,11 @@
 #labels G5
 The !OpenGroove Database is a database used by, and developed for, !OpenGroove.
+
+==Operations==
+Operations that a single change can represent:
+
+*Insert.* This is an addition of a single object to the system. Included with this will be 
+
+*Delete.* This is the removal of a single object from the system. If the object has any children, those children will be recursively removed as well.
+
+*Update.* This is the update of a single property of a single object. 
