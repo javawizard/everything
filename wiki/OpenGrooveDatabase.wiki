@@ -13,6 +13,9 @@ If an object in the parent object with the specified id already exists, the inse
 
 If an object with the specified parent id does not exist, the insert operation does nothing.
 
+====Inverse====
+...
+
 ===Delete===
 This is the removal of a single object from the system. If the object has any children, those children will be recursively removed as well.
 
@@ -44,4 +47,3 @@ The OpenGroove DB maintains a concept of two different storage locations: the ve
 
 ==Datastore==
 Currently, the datastore is backed by an SQLite database. In the future, it will use its own custom binary format, as the way it stores data in the SQLite database is somewhat inefficient.
-
