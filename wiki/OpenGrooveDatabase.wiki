@@ -1,6 +1,8 @@
 #labels G5
 The !OpenGroove Database is a database used by, and developed for, !OpenGroove.
 
+<wiki:toc/>
+
 ==Operations==
 Operations that a single change can represent:
 
@@ -42,6 +44,4 @@ The OpenGroove DB maintains a concept of two different storage locations: the ve
 
 ==Datastore==
 Currently, the datastore is backed by an SQLite database. In the future, it will use its own custom binary format, as the way it stores data in the SQLite database is somewhat inefficient.
-
-
 
