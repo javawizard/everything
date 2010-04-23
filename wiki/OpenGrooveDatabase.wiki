@@ -70,6 +70,27 @@ The OpenGroove DB maintains a concept of two different storage locations: the ve
 ==Datastore==
 Currently, the datastore is backed by an SQLite database. In the future, it will use its own custom binary format, as the way it stores data in the SQLite database is somewhat inefficient.
 
+The following tables are present in the datastore:
+
+===objects===
+This table stores a list of all objects being managed by the system. The root object is not present in this table.
+
+Columns:
+ * *id (text):* This is the id of this object. An object's id will not change once it is created.
+ * *path (text):* This is the path of this object. An object's path is the object's parent's path followed by a forward slash followed by the object's id. The root object's id is the empty string, so objects under the root object have a path starting with "/".
+ * *parent (text):* This is the path of this object's parent. The root object's path is the empty string.
+ * *type (text):* This is the type of the object.
+
+===attributes===
+This table stores a list of all of the attributes on a particular object.
+
+
+
+
+
+
+
+
 
 
 
