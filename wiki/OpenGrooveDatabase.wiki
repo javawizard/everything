@@ -14,9 +14,9 @@ If an object in the parent object with the specified id already exists, the inse
 If an object with the specified parent id does not exist, the insert operation does nothing.
 
 ===Inverse===
-If an object with the specified parent did not exist, or there is already an object with the specified id in the specified parent, the inverse is empty.
+If the specified parent object did not exist, or there is already an object with the specified id in the specified parent, the inverse is empty.
 
-Otherwise, the inverse is a delete 
+Otherwise, the inverse is a delete of the object.
 
 ==Delete==
 This is the removal of a single object from the system. If the object has any children, those children will be recursively removed as well.
@@ -25,6 +25,11 @@ Removal is performed based on the object's path. If an object with the specified
 
 Note that the root object (whose path is the empty string) cannot be deleted. A delete operation on the root object does nothing.
 
+===Inverse===
+If the object in question didn't exist, the inverse is empty.
+
+Otherwise, the inverse is an insert of the object, followed by a sequential recursive insert of the object's children, grandchildren, and so on.
+
 ==Set==
 This is the setting of a single attribute on an object to have a certain value. Objects are referenced by path, and attributes are referenced by name.
 
@@ -32,8 +37,18 @@ If the attribute does not already exist on the object, it is created. If the att
 
 If there is no such object with the specified path, this operation does nothing.
 
+===Inverse===
+If the attribute did not exist beforehand, the inverse is an unset of the attribute.
+
+Otherwise, the inverse is an update of the attribute to the value it had before.
+
 ==Update==
 This is the updating of a single attribute on an object. This is eqivalent to the *set* operation, but if the specified attribute does not already exist on the object, it will not be created, effectively meaning that the operation does nothing if the attribute does not already exist.
+
+===Inverse===
+If the attribute did not exist beforehand, the inverse is empty.
+
+Otherwise, the inverse is an update to the value that the attribute had before.
 
 ==Unset==
 This is the deleting of a single attribute from an object. Objects are referenced by path, and attributes are referenced by name.
@@ -42,6 +57,11 @@ If an object with the specified path does not exist, this operation does nothing
 
 If the specified object does not have any attribute with the specified name, this operation does nothing.
 
+===Inverse===
+If the specified attribute did not exist beforehand, the inverse is empty.
+
+Otherwise, the inverse is a set of the attribute to the value it had before.
+
 =File Format=
 The OpenGroove DB maintains a concept of two different storage locations: the version history and the datastore. The version history stores all of the changes that have occurred since the database was created, and the datastore stores what the database's current version looks like at present.  
 
@@ -49,3 +69,18 @@ The OpenGroove DB maintains a concept of two different storage locations: the ve
 
 ==Datastore==
 Currently, the datastore is backed by an SQLite database. In the future, it will use its own custom binary format, as the way it stores data in the SQLite database is somewhat inefficient.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
