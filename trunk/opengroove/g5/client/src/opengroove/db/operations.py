@@ -68,7 +68,57 @@ class InsertOperation:
 
 
 class DeleteOperation:
-    pass
+    @staticmethod
+    def create(path):
+        op = DeleteOperation()
+        op.path = path
+        return op
+    
+    @staticmethod
+    def decode(text):
+        pass
+    
+    def encode(self):
+        pass
+    
+    def apply(self, db, invert):
+        # First we make sure the object actually exists
+        if db.execute("select path from objects where path = ?", self.path
+                      ).fetchone == None:
+            # This object doesn't exist anyway
+            return [] if invert else None
+        # Now that we know the object exists, we'll build its inverse
+        # if requested.
+        inverse = None
+        if invert:
+            inverse = []
+            self.build_inverted_list(db, self.path, inverse)
+        # Now we delete the object and its attributes
+        db.execute("delete from objects where path = ?", self.path)
+        db.execute("delete from attributes where path = ?", self.path)
+        # The object's gone. Now we return the inverse, and we're done.
+        return inverse
+    
+    def build_inverted_list(self, db, path, inverse):
+        """
+        Builds a list of insert operations that can be used to reconstruct the
+        complete tree starting at path and recursively traveling through its
+        children. The operations are populated into inverse.
+        """
+        # We'll get information on the object itself
+        parent, id, type = db.execute("select parent, id, type from objects "
+                                       + "where path = ?", path).fetchone()
+        # Now we'll list the object's attributes
+        attributes = {}
+        for attribute, value in db.execute("select name, value from attributes "
+                                            + "where path = ?", path):
+            attributes[attribute] = value
+        # Now we create the insert for this object
+        insert = InsertOperation.create(parent, id, type, **attributes);
+        inverse.append(insert);
+        # We've built the insert for this object. Now we'll get all child objects.
+        for child in db.execute("select path from objects where parent = ?", path):
+            self.build_inverted_list(db, child, inverse)
 
 
 
