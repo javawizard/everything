@@ -122,6 +122,7 @@ class DeleteOperation:
 
 
 
+operation_classes = [InsertOperation, DeleteOperation]
 
 
 
