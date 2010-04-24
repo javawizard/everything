@@ -24,7 +24,12 @@ class InsertOperation:
     @staticmethod
     def create(db_parent, db_id, db_type, **attributes):
         """
-        Creates and returns a new insert operation. 
+        Creates and returns a new insert operation. db_parent is the path of the
+        parent object to use. db_id is the id for this new object. db_type is the
+        type of this new object. (All of those are strings.)
+        
+        All remaining keyword arguments are taken to be the initial attributes
+        that the insert should create on the object when executed.
         """
         op = InsertOperation()
         op.parent = db_parent
@@ -59,7 +64,7 @@ class InsertOperation:
                        self.path, attribute, value)
         # We're done! Now we just figure out the inverse if needed, and that's it.
         if invert:
-            return [DeleteOperation()]
+            return [DeleteOperation.create(self.path)]
 
 
 class DeleteOperation:
