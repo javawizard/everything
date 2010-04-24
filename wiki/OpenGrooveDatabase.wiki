@@ -85,13 +85,7 @@ Columns:
 This table stores a list of all of the attributes on a particular object.
  * *path (text):* This is the path of the object that the attribute is present on.
  * *name (text):* This is the name of the attribute.
- * *type (int):* This is the type of the attribute, which is one of:
-  * *1:* A number, either integral or real.
-  * *2:* Text.
-  * *3:* A boolean.
  * *value (any):* This is the value of the property.
-
-
 
 
 
