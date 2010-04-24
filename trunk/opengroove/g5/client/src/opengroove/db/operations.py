@@ -23,6 +23,9 @@ class InsertOperation:
     
     @staticmethod
     def create(db_parent, db_id, db_type, **attributes):
+        """
+        Creates and returns a new insert operation. 
+        """
         op = InsertOperation()
         op.parent = db_parent
         op.id = db_id
@@ -47,9 +50,20 @@ class InsertOperation:
                       ).fetchone() == None:
             # The parent object doesn't exist.
             return [] if invert else None
-        # We're good to go with the insert.
-        
+        # We're good to go with the insert. First, we'll add the object.
+        db.execute("insert into objects values (?,?,?,?)", 
+                   self.id, self.path, self.parent, self.type)
+        # Now we'll add all of the object's attributes.
+        for attribute, value in self.attributes.items():
+            db.execute("insert into attributes values (?,?,?)", 
+                       self.path, attribute, value)
+        # We're done! Now we just figure out the inverse if needed, and that's it.
+        if invert:
+            return [DeleteOperation()]
 
+
+class DeleteOperation:
+    pass
 
 
 
