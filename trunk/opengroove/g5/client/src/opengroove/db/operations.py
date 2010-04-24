@@ -163,8 +163,22 @@ class UpdateOperation(object):
         return op
     
     def apply(self, db, invert):
-        pass
-
+        # First we make sure the object exists
+        if db.execute("select path from objects where path = ?", self.path
+                      ).fetchone() is None:
+            return [] if invert else None
+        # The object exists. Now we check to see if the attribute already exists.
+        if db.execute("select name from attributes where path = ? and name = ?",
+                      self.path, self.attribute).fetchone() is None:
+            # The attribute does not exist, which means we have nothing to do.
+            return [] if invert else None
+        else:
+            # The attribute does exist. Well update it and return
+            # an update as the inverse.
+            db.execute("update attributes set value = ? where path = ? and name = ?",
+                       self.value, self.path, self.attribute)
+            if(invert):
+                return [UpdateOperation.create(self.path, self.attribute, self.value)]
 
 class UnsetOperation(object):
     @staticmethod
@@ -174,14 +188,30 @@ class UnsetOperation(object):
         op.attribute = attribute
     
     def apply(self, db, invert):
-        pass
+        # First we make sure the object exists
+        if db.execute("select path from objects where path = ?", self.path
+                      ).fetchone() is None:
+            return [] if invert else None
+        # The object exists. Now we check to see if the attribute exists.
+        if db.execute("select name from attributes where path = ? and name = ?",
+                      self.path, self.attribute).fetchone() is None:
+            # The attribute does not exist, so we don't have anything to do.
+            return [] if invert else None
+        else:
+            # The attribute does exist. We'll get its current value, delete it, and
+            # return a set operation as the inverse.
+            if invert:
+                old_value = db.execute("select value from attributes where path = ? and "
+                                       + "name = ?", self.path, self.name).fetchone()[0]
+            db.execute("delete from attributes where path = ? and name = ?", 
+                       self.path, self.name)
+            if invert:
+                return [SetOperation.create(self.path, self.attribute, old_value)]
 
 
 
-
-
-
-operation_classes = [InsertOperation, DeleteOperation]
+operation_classes = [InsertOperation, DeleteOperation, SetOperation, 
+                     UpdateOperation, UnsetOperation]
 
 
 
