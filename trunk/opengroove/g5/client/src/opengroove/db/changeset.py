@@ -12,11 +12,6 @@ class OperationList(object):
         self.operations = []
         self.db = db
         self.metadata = {}
-        print """
-        TODO: update OperationList to contain the fields for additional metadata
-        applied to this changeset. Timestamps and signatures will be included
-        using this. And add supprt for pre-apply and post-apply events to the database.
-        """
     
     def add(self, operation):
         """
