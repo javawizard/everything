@@ -19,7 +19,7 @@ encode(...): Encodes this instance into a string that can be passed to decode().
 """
 
 
-class InsertOperation(object):
+class Insert(object):
     
     @staticmethod
     def create(db_parent, db_id, db_type, **attributes):
@@ -31,12 +31,13 @@ class InsertOperation(object):
         All remaining keyword arguments are taken to be the initial attributes
         that the insert should create on the object when executed.
         """
-        op = InsertOperation()
+        op = Insert()
         op.parent = db_parent
         op.id = db_id
         op.path = db_parent + "/" + db_id
         op.type = db_type
         op.attributes = attributes.copy()
+        return op
     
     @staticmethod
     def decode(text):
@@ -51,10 +52,13 @@ class InsertOperation(object):
                       ).fetchone() is not None:
             # An object with this id and parent already exists.
             return [] if invert else None
-        if db.execute("select path from objects where path = ?", self.parent
-                      ).fetchone() is None:
-            # The parent object doesn't exist.
-            return [] if invert else None
+        # Now we'll make sure the parent exists. If the parent is the empty
+        # string, then the parent is the root object, which always exists.
+        if not self.parent == "":
+            if db.execute("select path from objects where path = ?", self.parent
+                          ).fetchone() is None:
+                # The parent object doesn't exist.
+                return [] if invert else None
         # We're good to go with the insert. First, we'll add the object.
         db.execute("insert into objects values (?,?,?,?)",
                    self.id, self.path, self.parent, self.type)
@@ -64,13 +68,13 @@ class InsertOperation(object):
                        self.path, attribute, value)
         # We're done! Now we just figure out the inverse if needed, and that's it.
         if invert:
-            return [DeleteOperation.create(self.path)]
+            return [Delete.create(self.path)]
 
 
-class DeleteOperation(object):
+class Delete(object):
     @staticmethod
     def create(path):
-        op = DeleteOperation()
+        op = Delete()
         op.path = path
         return op
     
@@ -114,17 +118,25 @@ class DeleteOperation(object):
                                             + "where path = ?", path):
             attributes[attribute] = value
         # Now we create the insert for this object
-        insert = InsertOperation.create(parent, id, type, **attributes);
+        insert = Insert.create(parent, id, type, **attributes);
         inverse.append(insert);
         # We've built the insert for this object. Now we'll get all child objects.
         for child in db.execute("select path from objects where parent = ?", path):
             self.build_inverted_list(db, child, inverse)
+    
+    def __repr__(self):
+        return "<Delete path \"" + self.path + "\">"
 
 
-class SetOperation(object):
+class Set(object):
     @staticmethod
     def create(path, attribute, value):
-        op = SetOperation()
+        """
+        Creates and returns a new insert operation. path is the path of the object
+        to set an attribute on. attribute is the name of the attribute to set, and
+        value is the value the attribute should be set to.
+        """
+        op = Set()
         op.path = path
         op.attribute = attribute
         op.value = value
@@ -143,20 +155,24 @@ class SetOperation(object):
             db.execute("insert into attributes values (?,?,?)", self.path,
                        self.attribute, self.value)
             if(invert):
-                return [UnsetOperation.create(self.path, self.attribute)]
+                return [Unset.create(self.path, self.attribute)]
         else:
             # The attribute does exist. Well update it and return
             # an update as the inverse.
             db.execute("update attributes set value = ? where path = ? and name = ?",
                        self.value, self.path, self.attribute)
             if(invert):
-                return [UpdateOperation.create(self.path, self.attribute, self.value)]
+                return [Update.create(self.path, self.attribute, self.value)]
+    
+    def __repr__(self):
+        return ("<Set on path \"" + self.path + "\" attribute \"" + self.attribute
+                + "\" to \"" + self.value + "\">")
 
 
-class UpdateOperation(object):
+class Update(object):
     @staticmethod
     def create(path, attribute, value):
-        op = UpdateOperation()
+        op = Update()
         op.path = path
         op.attribute = attribute
         op.value = value
@@ -178,14 +194,20 @@ class UpdateOperation(object):
             db.execute("update attributes set value = ? where path = ? and name = ?",
                        self.value, self.path, self.attribute)
             if(invert):
-                return [UpdateOperation.create(self.path, self.attribute, self.value)]
+                return [Update.create(self.path, self.attribute, self.value)]
+    
+    def __repr__(self):
+        return ("<Update on path \"" + self.path + "\" attribute \"" + self.attribute
+                + "\" to \"" + self.value + "\">")
 
-class UnsetOperation(object):
+
+class Unset(object):
     @staticmethod
     def create(path, attribute):
-        op = UnsetOperation()
+        op = Unset()
         op.path = path
         op.attribute = attribute
+        return op
     
     def apply(self, db, invert):
         # First we make sure the object exists
@@ -200,18 +222,23 @@ class UnsetOperation(object):
         else:
             # The attribute does exist. We'll get its current value, delete it, and
             # return a set operation as the inverse.
+            # TODO: this statment could really be merged with the statement above
+            # it to save on number of queries that have to be run.
             if invert:
                 old_value = db.execute("select value from attributes where path = ? and "
                                        + "name = ?", self.path, self.name).fetchone()[0]
-            db.execute("delete from attributes where path = ? and name = ?", 
+            db.execute("delete from attributes where path = ? and name = ?",
                        self.path, self.name)
             if invert:
-                return [SetOperation.create(self.path, self.attribute, old_value)]
+                return [Set.create(self.path, self.attribute, old_value)]
+    
+    def __repr__(self):
+        return "<Unset on path \"" + self.path + "\" attribute \"" + self.attribute + "\">"
 
 
 
-operation_classes = [InsertOperation, DeleteOperation, SetOperation, 
-                     UpdateOperation, UnsetOperation]
+
+
 
 
 
