@@ -98,7 +98,7 @@ class Changeset(object):
     def __getitem__(self, item):
         # Enforcing that only strings can be used here, as passing an integer or a
         # slice won't cause errors until later on which might be hard to track down
-        if not isinstance(item, str):
+        if not isinstance(item, basestring):
             raise TypeError("Changesets can only be obtained for string paths, not "
                             + "objects of type " + str(type(item)))
         if(item.startswith("/") or item == ""):

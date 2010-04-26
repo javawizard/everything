@@ -31,7 +31,7 @@ class DB(object):
         # Make sure that we're looking at a string, not a slice or an int. Not
         # checking this now can cause some interesting problems later on.
         with self.lock:
-            if not isinstance(path, str):
+            if not isinstance(path, basestring):
                 raise TypeError("Objects can only be queried by path name")
             if path == "":
                 results = "", "", ""
@@ -82,7 +82,7 @@ class DataObject(object):
         raise AttributeError("No such attribute: " + name)
     
     def __getitem__(self, path):
-        if not isinstance(path, str):
+        if not isinstance(path, basestring):
             raise TypeError("Objects can only be queried by path name")
         if path.startswith("/"):
             return self.db[path]
