@@ -43,6 +43,8 @@ class DB(object):
             id, parent, type = results
             return DataObject(self, id, path, parent, type)
     
+    __div__ = __getitem__ # database/'some'/'path'
+    
     def apply(self, operation_list):
         with self.lock:
             for listener in self.pre_apply:

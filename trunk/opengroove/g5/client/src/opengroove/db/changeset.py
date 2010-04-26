@@ -107,6 +107,8 @@ class Changeset(object):
             path = self.path + "/" + item
         return Changeset(self.operation_list, path)
     
+    __div__ = __getitem__ # Changeset/'some'/'path'
+    
     def apply(self):
         """
         Applies this changeset.
