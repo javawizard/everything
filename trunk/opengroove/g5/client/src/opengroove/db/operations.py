@@ -48,24 +48,24 @@ class Insert(object):
     
     def apply(self, db, invert):
         # First we check to see if the object is already in the db
-        if db.execute("select path from objects where path = ?", self.path
+        if db.execute("select path from objects where path = ?", [self.path]
                       ).fetchone() is not None:
             # An object with this id and parent already exists.
             return [] if invert else None
         # Now we'll make sure the parent exists. If the parent is the empty
         # string, then the parent is the root object, which always exists.
         if not self.parent == "":
-            if db.execute("select path from objects where path = ?", self.parent
+            if db.execute("select path from objects where path = ?", [self.parent]
                           ).fetchone() is None:
                 # The parent object doesn't exist.
                 return [] if invert else None
         # We're good to go with the insert. First, we'll add the object.
         db.execute("insert into objects values (?,?,?,?)",
-                   self.id, self.path, self.parent, self.type)
+                   [self.id, self.path, self.parent, self.type])
         # Now we'll add all of the object's attributes.
         for attribute, value in self.attributes.items():
             db.execute("insert into attributes values (?,?,?)",
-                       self.path, attribute, value)
+                       [self.path, attribute, value])
         # We're done! Now we just figure out the inverse if needed, and that's it.
         if invert:
             return [Delete.create(self.path)]
@@ -91,7 +91,7 @@ class Delete(object):
     
     def apply(self, db, invert):
         # First we make sure the object actually exists
-        if db.execute("select path from objects where path = ?", self.path
+        if db.execute("select path from objects where path = ?", [self.path]
                       ).fetchone is None:
             # This object doesn't exist anyway
             return [] if invert else None
@@ -102,8 +102,8 @@ class Delete(object):
             inverse = []
             self.build_inverted_list(db, self.path, inverse)
         # Now we delete the object and its attributes
-        db.execute("delete from objects where path = ?", self.path)
-        db.execute("delete from attributes where path = ?", self.path)
+        db.execute("delete from objects where path = ?", [self.path])
+        db.execute("delete from attributes where path = ?", [self.path])
         # The object's gone. Now we return the inverse, and we're done.
         return inverse
     
@@ -115,17 +115,17 @@ class Delete(object):
         """
         # We'll get information on the object itself
         parent, id, type = db.execute("select parent, id, type from objects "
-                                       + "where path = ?", path).fetchone()
+                                       + "where path = ?", [path]).fetchone()
         # Now we'll list the object's attributes
         attributes = {}
         for attribute, value in db.execute("select name, value from attributes "
-                                            + "where path = ?", path):
+                                            + "where path = ?", [path]):
             attributes[attribute] = value
         # Now we create the insert for this object
         insert = Insert.create(parent, id, type, **attributes);
         inverse.append(insert);
         # We've built the insert for this object. Now we'll get all child objects.
-        for child in db.execute("select path from objects where parent = ?", path):
+        for child in db.execute("select path from objects where parent = ?", [path]):
             self.build_inverted_list(db, child, inverse)
     
     def __repr__(self):
@@ -148,23 +148,23 @@ class Set(object):
     
     def apply(self, db, invert):
         # First we make sure the object exists
-        if db.execute("select path from objects where path = ?", self.path
+        if db.execute("select path from objects where path = ?", [self.path]
                       ).fetchone() is None:
             return [] if invert else None
         # The object exists. Now we check to see if the attribute already exists.
         if db.execute("select name from attributes where path = ? and name = ?",
-                      self.path, self.attribute).fetchone() is None:
+                      [self.path, self.attribute]).fetchone() is None:
             # The attribute does not exist. We'll create it and return
             # an unset as the inverse.
-            db.execute("insert into attributes values (?,?,?)", self.path,
-                       self.attribute, self.value)
+            db.execute("insert into attributes values (?,?,?)", [self.path,
+                       self.attribute, self.value])
             if(invert):
                 return [Unset.create(self.path, self.attribute)]
         else:
             # The attribute does exist. Well update it and return
             # an update as the inverse.
             db.execute("update attributes set value = ? where path = ? and name = ?",
-                       self.value, self.path, self.attribute)
+                       [self.value, self.path, self.attribute])
             if(invert):
                 return [Update.create(self.path, self.attribute, self.value)]
     
@@ -184,19 +184,19 @@ class Update(object):
     
     def apply(self, db, invert):
         # First we make sure the object exists
-        if db.execute("select path from objects where path = ?", self.path
+        if db.execute("select path from objects where path = ?", [self.path]
                       ).fetchone() is None:
             return [] if invert else None
         # The object exists. Now we check to see if the attribute already exists.
         if db.execute("select name from attributes where path = ? and name = ?",
-                      self.path, self.attribute).fetchone() is None:
+                      [self.path, self.attribute]).fetchone() is None:
             # The attribute does not exist, which means we have nothing to do.
             return [] if invert else None
         else:
             # The attribute does exist. Well update it and return
             # an update as the inverse.
             db.execute("update attributes set value = ? where path = ? and name = ?",
-                       self.value, self.path, self.attribute)
+                       [self.value, self.path, self.attribute])
             if(invert):
                 return [Update.create(self.path, self.attribute, self.value)]
     
@@ -215,12 +215,12 @@ class Unset(object):
     
     def apply(self, db, invert):
         # First we make sure the object exists
-        if db.execute("select path from objects where path = ?", self.path
+        if db.execute("select path from objects where path = ?", [self.path]
                       ).fetchone() is None:
             return [] if invert else None
         # The object exists. Now we check to see if the attribute exists.
         if db.execute("select name from attributes where path = ? and name = ?",
-                      self.path, self.attribute).fetchone() is None:
+                      [self.path, self.attribute]).fetchone() is None:
             # The attribute does not exist, so we don't have anything to do.
             return [] if invert else None
         else:
@@ -230,9 +230,9 @@ class Unset(object):
             # it to save on number of queries that have to be run.
             if invert:
                 old_value = db.execute("select value from attributes where path = ? and "
-                                       + "name = ?", self.path, self.name).fetchone()[0]
+                                       + "name = ?", [self.path, self.name]).fetchone()[0]
             db.execute("delete from attributes where path = ? and name = ?",
-                       self.path, self.name)
+                       [self.path, self.name])
             if invert:
                 return [Set.create(self.path, self.attribute, old_value)]
     

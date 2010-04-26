@@ -37,7 +37,7 @@ class DB(object):
                 results = "", "", ""
             else:
                 results = self.sqldb.execute("select id, parent, type from objects where "
-                                             + "path = ?", path).fetchone()
+                                             + "path = ?", [path]).fetchone()
                 if results is None:
                     return None
             id, parent, type = results
@@ -86,7 +86,7 @@ class DataObject(object):
             raise TypeError("Objects can only be queried by path name")
         if path.startswith("/"):
             return self.db[path]
-        return self.db[self.path + "/" + path]
+        return self.db[self.db_path + "/" + path]
     
     def db_reload(self):
         """
