@@ -71,7 +71,8 @@ class Insert(object):
             return [Delete.create(self.path)]
     
     def __repr__(self):
-        return "<Insert path \"" + self.path + "\" with attributes " + self.attributes + ">" 
+        return ("<Insert path \"" + self.path + "\" with attributes " 
+                + repr(self.attributes) + ">")
 
 
 class Delete(object):
