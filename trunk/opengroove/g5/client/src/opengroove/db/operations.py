@@ -69,6 +69,9 @@ class Insert(object):
         # We're done! Now we just figure out the inverse if needed, and that's it.
         if invert:
             return [Delete.create(self.path)]
+    
+    def __repr__(self):
+        return "<Insert path \"" + self.path + "\" with attributes " + self.attributes + ">" 
 
 
 class Delete(object):
