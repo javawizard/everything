@@ -93,6 +93,26 @@ The changeset class tracks the operation list backing it and the path that it's 
 
 The operation list also holds the metadata that's present on the changeset. This is the dictionary whose keys and values must be strings and which will be stored alongside the changeset on the hard disk. It does nothing more than allow the database user to store additional information along with each specific change. OG will use this to store the time the changeset was created and a signature of the changeset. When creating the signature, OG will set the signature metadata attribute to the empty string, and same when validating the signature. Because the encoded changeset string needs to be consistent across multiple platforms, dictionary keys and values must be encoded in alphabetical order. Individual operations should also obey this when encoding dictionaries that they might store.
 
+Ok so now, we have changesets pretty much down. Now for how to access objects.
+
+When an object is requested, it is retrieved from the database immediately and stored in memory. Attributes are implemented using a __getattr__() method instead of just by setting attributes to allow all of the attributes to be updated at once when the db_reload() method is called. The attributes are then stored in a dictionary on the object.
+
+The db_reload() method present on an object causes it to update itself from the database. If the object no longer exists in the database, all of the object's attributes will be removed. In the future, a db_exists attribute might be present to allow for detecting whether or not the object exists.
+
+db_changeset() can be called on the object to create a new changeset. The changeset will be bound to the object's path.
+
+db_path is an attribute present on the object that represents the object's absolute path.
+
+db_parent can be used to get the parent of the specified object.
+
+db is the database object that the object came from.
+
+Now for the database. The database's storage location is a folder. In that folder it has another folder called datastore-sqlite. In there it puts the sqlite database, using a filename of "db".
+
+The database allows for pre-apply and post-apply functions to be set. These are run before and after a particular changeset gets applied to the database. They are passed the operation list representing the changes to be applied.
+
+When the database is initialized, it creates the root object and stores it in the root attribute on itself.
+
 
 
 

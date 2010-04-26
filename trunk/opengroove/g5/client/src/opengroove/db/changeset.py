@@ -11,6 +11,7 @@ class OperationList(object):
     def __init__(self, db):
         self.operations = []
         self.db = db
+        self.metadata = {}
         print """
         TODO: update OperationList to contain the fields for additional metadata
         applied to this changeset. Timestamps and signatures will be included
@@ -46,6 +47,7 @@ class Changeset(object):
         object.__setattr__(self, "parent_path", parent_path)
         object.__setattr__(self, "id", id)
         object.__setattr__(self, "db", operation_list.db)
+        object.__setattr__(self, "metadata", operation_list.metadata)
     
     def insert(self, db_type, **attributes):
         """

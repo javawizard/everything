@@ -1,1 +1,1 @@
-from core import open_database as OpenGrooveDB
+from core import open_database as open
