@@ -113,8 +113,10 @@ The database allows for pre-apply and post-apply functions to be set. These are 
 
 When the database is initialized, it creates the root object and stores it in the root attribute on itself.
 
+So now, let's get into the query interface.
 
 
+   
 
 
 

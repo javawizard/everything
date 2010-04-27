@@ -20,7 +20,7 @@ class DB(object):
         self.sqldb = sqlite3.connect(sqlite_path, check_same_thread=False,
                                      isolation_level=None)
         with no_exceptions:
-            self.sqldb.execute("create table objects(id,path,parent,type)")
+            self.sqldb.execute("create table objects(id,path,parent)")
         with no_exceptions:
             self.sqldb.execute("create table attributes(path,name,value)")
         self.root = self[""]
@@ -34,14 +34,14 @@ class DB(object):
             if not isinstance(path, basestring):
                 raise TypeError("Objects can only be queried by path name")
             if path == "":
-                results = "", "", ""
+                results = "", ""
             else:
-                results = self.sqldb.execute("select id, parent, type from objects where "
+                results = self.sqldb.execute("select id, parent from objects where "
                                              + "path = ?", [path]).fetchone()
                 if results is None:
                     return None
-            id, parent, type = results
-            return DataObject(self, id, path, parent, type)
+            id, parent = results
+            return DataObject(self, id, path, parent)
     
     __div__ = __getitem__ # database/'some'/'path'
     
@@ -67,12 +67,11 @@ def open_database(path):
 
 
 class DataObject(object):
-    def __init__(self, db, id, path, parent_path, type):
+    def __init__(self, db, id, path, parent_path):
         self.db = db
         self.db_id = id
         self.db_path = path
         self.db_parent_path = parent_path
-        self.db_type = type
         self.db_reload()
     
     def __getattr__(self, name):

@@ -44,14 +44,14 @@ class Changeset(object):
         object.__setattr__(self, "db", operation_list.db)
         object.__setattr__(self, "metadata", operation_list.metadata)
     
-    def insert(self, db_type, **attributes):
+    def insert(self, **attributes):
         """
         Creates an insert operation that would create this object in the database.
-        db_type is the type for the object. All other keyword arguments are
+        The keyword arguments are
         attributes that will be initially set on the object if it does not exist
         when the insert is executed.
         """
-        insert = operations.Insert.create(self.parent_path, self.id, db_type, **attributes)
+        insert = operations.Insert.create(self.parent_path, self.id, **attributes)
         self.operation_list.add(insert)
         return self
     

@@ -22,11 +22,11 @@ encode(...): Encodes this instance into a string that can be passed to decode().
 class Insert(object):
     
     @staticmethod
-    def create(db_parent, db_id, db_type, **attributes):
+    def create(db_parent, db_id, **attributes):
         """
         Creates and returns a new insert operation. db_parent is the path of the
-        parent object to use. db_id is the id for this new object. db_type is the
-        type of this new object. (All of those are strings.)
+        parent object to use. db_id is the id for this new object. (All of those
+        are strings.)
         
         All remaining keyword arguments are taken to be the initial attributes
         that the insert should create on the object when executed.
@@ -35,7 +35,6 @@ class Insert(object):
         op.parent = db_parent
         op.id = db_id
         op.path = db_parent + "/" + db_id
-        op.type = db_type
         op.attributes = attributes.copy()
         return op
     
@@ -60,8 +59,8 @@ class Insert(object):
                 # The parent object doesn't exist.
                 return [] if invert else None
         # We're good to go with the insert. First, we'll add the object.
-        db.execute("insert into objects values (?,?,?,?)",
-                   [self.id, self.path, self.parent, self.type])
+        db.execute("insert into objects values (?,?,?)",
+                   [self.id, self.path, self.parent])
         # Now we'll add all of the object's attributes.
         for attribute, value in self.attributes.items():
             db.execute("insert into attributes values (?,?,?)",
@@ -114,7 +113,7 @@ class Delete(object):
         children. The operations are populated into inverse.
         """
         # We'll get information on the object itself
-        parent, id, type = db.execute("select parent, id, type from objects "
+        parent, id = db.execute("select parent, id from objects "
                                        + "where path = ?", [path]).fetchone()
         # Now we'll list the object's attributes
         attributes = {}
@@ -122,7 +121,7 @@ class Delete(object):
                                             + "where path = ?", [path]):
             attributes[attribute] = value
         # Now we create the insert for this object
-        insert = Insert.create(parent, id, type, **attributes);
+        insert = Insert.create(parent, id, **attributes);
         inverse.append(insert);
         # We've built the insert for this object. Now we'll get all child objects.
         for child in db.execute("select path from objects where parent = ?", [path]):
