@@ -94,9 +94,6 @@ class SQLFilter(object):
     def sql(self):
         return self.query, self.params
 
-print "TODO: add support for limit and offset in queries, and add"
-print "support for the sort stuff, and allow users to get the"
-print "query results either by paths or by actual objects"
 
 class Query(object):
     """
