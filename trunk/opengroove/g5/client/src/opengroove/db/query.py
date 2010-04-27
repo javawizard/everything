@@ -111,6 +111,10 @@ class Query(object):
         Creates a new, blank query. Running such a blank query without further
         constraining it would select all of the objects in the database, which
         is generally costly.
+        
+        Generally, you won't actually use this. What you'll usually do is call
+        the query() method on the database or the db_query() or db_query_all()
+        methods on objects obtained from the database.
         """
         self.db = db
         self.filters = []
@@ -264,7 +268,7 @@ class Query(object):
         database after this call will not affect the attributes present
         on the objects in the returned list.
         
-        This method tends to be somewhat efficient, as it executes one
+        This method tends to be somewhat inefficient, as it executes one
         query for each selected object to get the object's attributes. If
         the objects do not need to all be retrieved from the database, the
         paths() method should be used, as it only executes one query total,
@@ -292,7 +296,7 @@ class Query(object):
     def __and__(self, other):
         """
         Returns a new query that selects objects only if they would be selected
-        by both of the filters on either side of the & operator.
+        by both of the queries on either side of the & operator.
         """
         if not isinstance(other, Query):
             return NotImplemented
@@ -305,7 +309,7 @@ class Query(object):
     def __or__(self, other):
         """
         Returns a new query that selects objects if they would be selected by
-        either of the filters on either side of the | operator.
+        either of the queries on either side of the | operator.
         """
         if not isinstance(other, Query):
             return NotImplemented
