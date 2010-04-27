@@ -90,6 +90,8 @@ class DataObject(object):
             return self.db[path]
         return self.db[self.db_path + "/" + path]
     
+    __div__ = __getitem__ # database/'some'/'path'
+    
     def db_reload(self):
         """
         Reloads all of the attributes on this database object. If the object
