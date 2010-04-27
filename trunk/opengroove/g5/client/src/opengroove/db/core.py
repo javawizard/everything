@@ -53,8 +53,8 @@ class DB(object):
     def apply(self, operation_list):
         """
         Applies the specified operation list. In general, you won't need to
-        use this method; you'll usually call the apply() method on a changeset,
-        which ends up calling this method for you.
+        use this method; you'll usually call the apply() method on a changeset
+        object, which ends up calling this method for you.
         """
         with self.lock:
             for listener in self.pre_apply:
@@ -87,6 +87,18 @@ def open_database(path):
 
 
 class DataObject(object):
+    """
+    An object obtained from the database. Applications shouldn't create
+    instances of this class directly; only the OpenGroove DB itself
+    should create instances of this class. If you need to get an object
+    from the database, you can either run a query (by calling
+    db.root.db_query(), db.query(), or some_other_db_object.db_query()),
+    retrieve the object by path (for example, database["/some/object"]),
+    or just use the root database object (db.root).
+    
+    Note that the root object cannot have attributes set on it. You
+    should use other objects for setting attributes.
+    """
     def __init__(self, db, id, path, parent_path):
         self.db = db
         self.db_id = id

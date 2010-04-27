@@ -33,7 +33,9 @@ class OperationList(object):
 
 class Changeset(object):
     """
-    This class is the main class used to modify the database. TODO: document this more
+    This class is the main class used to modify the database. You can
+    obtain instances of this class by calling the db_changeset()
+    method on an object obtained from the database.
     """
     def __init__(self, operation_list, path):
         object.__setattr__(self, "operation_list", operation_list)
@@ -96,6 +98,19 @@ class Changeset(object):
     __delattr__ = unset
     
     def __getitem__(self, item):
+        """
+        Returns a changeset that will modify the object with the path specified.
+        The path can be either absolute, or relative to this object. It's ok if
+        the path doesn't exist; indeed, you create a new object by using this
+        to create a changeset for the object to create and then calling the
+        changeset's insert method.
+        
+        If you try to modify a nonexistent object in a changeset without calling
+        the insert in that changeset first, the modifications will be ignored.
+        Once you call insert, all subsequent operations will be applied. In
+        other words, invalid operations that might otherwise cause an error are
+        simply ignored.
+        """
         # Enforcing that only strings can be used here, as passing an integer or a
         # slice won't cause errors until later on which might be hard to track down
         if not isinstance(item, basestring):
@@ -123,6 +138,9 @@ class Changeset(object):
         self.operation_list.apply()
     
     def __setattr__(self, name, value):
+        """
+        TODO: document this. Tell the OG developers to document this.
+        """
         self.set(**{name: value})
     
     def __getattr__(self, name):
