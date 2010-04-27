@@ -2,10 +2,15 @@ import os
 import sqlite3
 import threading
 import changeset as changeset_module
+import query as query_module
 from opengroove.utils import no_exceptions
 
 
 class DB(object):
+    """
+    A connection to an OpenGroove Database. OpenGroove Database is a versioned
+    object database. More info will come soon.
+    """
     def __init__(self, storage_path):
         """
         Initializes this database to read from and write to the specified
@@ -18,7 +23,7 @@ class DB(object):
         if not os.path.exists(sqlite_folder):
             os.makedirs(sqlite_folder)
         self.sqldb = sqlite3.connect(sqlite_path, check_same_thread=False,
-                                     isolation_level=None)
+                                     isolation_level=None, cached_statements=10)
         with no_exceptions:
             self.sqldb.execute("create table objects(id,path,parent)")
         with no_exceptions:
@@ -46,6 +51,11 @@ class DB(object):
     __div__ = __getitem__ # database/'some'/'path'
     
     def apply(self, operation_list):
+        """
+        Applies the specified operation list. In general, you won't need to
+        use this method; you'll usually call the apply() method on a changeset,
+        which ends up calling this method for you.
+        """
         with self.lock:
             for listener in self.pre_apply:
                 listener(operation_list)
@@ -54,6 +64,16 @@ class DB(object):
                 operation.apply(self.sqldb, True)
             for listener in self.post_apply:
                 listener(operation_list)
+    
+    def query(self):
+        """
+        Creates and returns a new, blank query that can be used to query
+        this database. Typically, instead of using this method, you'll
+        want to call db_query() or db_query_all() on an object, as those
+        method will ensure that the query only queries that particular
+        object and its children.
+        """
+        return query_module.Query(self)
 
 
 def open_database(path):
@@ -83,6 +103,13 @@ class DataObject(object):
         raise AttributeError("No such attribute: " + name)
     
     def __getitem__(self, path):
+        """
+        Gets the object with the specified path, which can be either relative
+        to this object (IE not starting with a forward slash) or absolute. If
+        it is relative, it is interpreted as a child or descendant of this
+        object. If it is absolute, it is interpreted as an absolute path in
+        the database.
+        """
         if not isinstance(path, basestring):
             raise TypeError("Objects can only be queried by path name")
         if path.startswith("/"):
@@ -102,6 +129,11 @@ class DataObject(object):
                                [self.db_path]))
     
     def db_changeset(self):
+        """
+        Creates a new, blank changeset. This is how you actually modify the
+        database; you create a new changeset, call various methods on it to
+        modify it as needed, and then call its apply method.
+        """
         operation_list = changeset_module.OperationList(self.db)
         changeset = changeset_module.Changeset(operation_list, self.db_path)
         return changeset
@@ -109,6 +141,26 @@ class DataObject(object):
     def __repr__(self):
         return ("<DataObject for path \"" + self.db_path + "\" with attributes "
                 + repr(self.attributes) + ">")
+    
+    def db_query(self):
+        """
+        Returns a newly-created query, blank except that it will only select
+        objects that are immediate children of this object. The query can be
+        further filtered as needed.
+        """
+        query = self.db.query()
+        query.parent(self.db_path)
+        return query
+    
+    def db_query_all(self):
+        """
+        Returns a newly-created query, blank except that it will only select
+        objects that are descendants of this object. The query can be further
+        filtered as needed.
+        """
+        query = self.db.query()
+        query.ancestor(self.db_path)
+        return query
 
 
 

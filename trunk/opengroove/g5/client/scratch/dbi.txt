@@ -115,8 +115,15 @@ When the database is initialized, it creates the root object and stores it in th
 
 So now, let's get into the query interface.
 
+My thinking is that queries will be fairly basic right now. They won't really be super complex. They're going to bank on the fact that combining where-expressions with the and keyword is a lot more common than combining them with the or keyword. Chained method invocation on the same query causes more and more and-filters, as I'm going to call them, to be added to the query. The or operator on two queries combines them together and returns a new query. This query does not contain any sort or limit/offset information, even if the two queries it was constructed from did.
 
-   
+Queries internally store a list representing the constraints that have been placed on them thus far. They also store the list of attributes that the query is to order by, and the directions those queries are supposed to order by.
+
+Predicates are stored as instances of several predicate classes. Each of them has an sql method that can be used to convert the predicate to a string of SQL representing it and a list of positional parameter values it requires. Compound predicates are those that merge other predicates together. "and", "or", and "not" are good examples of this.
+
+The query itself has an sql method on it 
+
+
 
 
 
