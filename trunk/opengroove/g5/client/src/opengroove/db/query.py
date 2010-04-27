@@ -65,7 +65,9 @@ class AncestorFilter(object):
         self.path = ancestor_path
     
     def sql(self):
-        return "objects.path like ? escape ?", [self.path.replace("/", "//") + "///%", "/"]
+        return "objects.path like ? escape ?", [self.path.replace("/", "//")
+                                                .replace("%", "/%")
+                                                .replace("_", "/_") + "//%", "/"]
 
 
 class ParentFilter(object):
