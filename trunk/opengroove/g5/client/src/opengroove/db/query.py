@@ -17,7 +17,7 @@ class BinaryFilter(object):
     def sql(self):
         first_sql, first_params = self.first.sql()
         second_sql, second_params = self.second.sql()
-        return ("(" + first_sql + ") " + self.modifier + " (" + second_sql + ")", 
+        return ("(" + first_sql + ") " + self.modifier + " (" + second_sql + ")",
                 first_params + second_params)
 
 
@@ -52,7 +52,7 @@ class LiteralAttributeFilter(object):
     
     def sql(self):
         return ("(select value from attributes where attributes.path = objects.path "
-                + "and attributes.name = ?) " + self.operation + " ?", 
+                + "and attributes.name = ?) " + self.operation + " ?",
                 [self.attribute, self.value])
 
 
@@ -115,8 +115,8 @@ class Query(object):
         """
         self.db = db
         self.filters = []
-        self.offset = None
-        self.limit = None
+        self.offset_value = None
+        self.limit_value = None
         self.sort_order = []
     
     def sort_up(self, attribute):
@@ -124,7 +124,7 @@ class Query(object):
         Adds a sort ordering to this query. This sort ordering will sort on the
         specified attribute. The sort will be ascending.
         """
-        self.sort_order.append((attribute, "asc"))
+        self.sort_order.append(attribute + " asc")
         return self
     
     def sort_down(self, attribute):
@@ -132,7 +132,7 @@ class Query(object):
         Adds a sort ordering to this query. This sort ordering will sort on the
         specified attribute. The sort will be descending.
         """
-        self.sort_order.append((attribute, "desc"))
+        self.sort_order.append(attribute + " desc")
         return self
     
     def ancestor(self, ancestor_path):
@@ -187,9 +187,44 @@ class Query(object):
         """
         return PrefixFilter("not", SQLFilter(*self.get_filter_sql()))
     
+    def offset(self, offset_value):
+        """
+        Sets the offset of this query to be the specified value. The query will skip
+        the specified number of matching objects at the beginning of the results when
+        running this query. For example, if this is 3, the first 3 objects that would
+        be selected by the query will be skipped.
+        
+        If you don't want an offset on the query, you can pass None to this method.
+        If this method is never called on a query, the offset defaults to None.
+        """
+        self.offset_value = offset_value
+        return self
+    
+    def limit(self, limit_value):
+        """
+        Sets the limit of this query to be the specified value. The query will only
+        return this many objects. If more objects would be selected by the query,
+        the remaining objects will be ignored.
+        
+        This can be used along with offset() to implement a sort of paging on
+        queries, to obtain blocks of objects in a particular order.
+        
+        If you don't want a limit on the query, you can pass None to this method.
+        If this method is never called on a query, the limit defaults to None.
+        """
+        self.limit_value = limit_value
+        return self
+    
     invert = inverse
     
     def get_filter_sql(self):
+        """
+        Gets the SQL that should be used for the filter part of the query. This
+        is the part that should be added to the query after the "where" clause.
+        If this query has no filters, None will be returned.
+        """
+        if not self.filters:
+            return None
         statements = []
         params = []
         for filter in self.filters:
@@ -197,6 +232,61 @@ class Query(object):
             statements.append("(" + filter_statement + ")")
             params += list(filter_params)
         return " and ".join(statements), params
+    
+    def get_sql(self):
+        statement = "select path, id, parent from objects"
+        params = []
+        if self.filters:
+            cs, new_params = self.get_filter_sql()
+            statement += " where " + cs
+            params += new_params
+        if self.sort_order:
+            # This is vulnerable to SQL injection by injecting the name of a
+            # field to set by. I'm not particularly concerned with it, however,
+            # as, the database being an embedded database, pretty much any
+            # application that has access to it would have direct file-system
+            # access to the database anyway.
+            statement += " order by " + ", ".join(self.sort_order)
+        if self.limit_value is not None:
+            statement += " limit ?"
+            params.append(self.limit_value)
+        if self.offset_value is not None:
+            statement += " offset ?"
+            params.append(self.offset_value)
+        return statement, params
+    
+    def objects(self):
+        """
+        Executes this query. All of the objects that this query selects
+        will be put into a list and returned. The objects' attributes are
+        retrieved during this method call, so future modifications to the
+        database after this call will not affect the attributes present
+        on the objects in the returned list.
+        
+        This method tends to be somewhat efficient, as it executes one
+        query for each selected object to get the object's attributes. If
+        the objects do not need to all be retrieved from the database, the
+        paths() method should be used, as it only executes one query total,
+        regardless of how many objects would be returned.
+        """
+        with self.db.lock:
+            results = self.db.sqldb.execute(*self.get_sql())
+            return [core.DataObject(self.db, id, path, parent) for
+                    path, id, parent in results]
+    
+    def paths(self):
+        """
+        Executes this query. The paths of all of the objects that this
+        query selects will be put into a list and returned.
+        
+        This method tends to be more efficient than objects() as this
+        method only results in one single query, whereas objects()
+        results in one query for each selected object to get the
+        object's attributes.
+        """
+        with self.db.lock:
+            results = self.db.sqldb.execute(*self.get_sql())
+            return [path for path, id, parent in results]
     
     def __and__(self, other):
         """
