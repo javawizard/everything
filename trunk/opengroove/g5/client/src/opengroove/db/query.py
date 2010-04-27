@@ -187,7 +187,9 @@ class Query(object):
         filtering it by the part you want to invert, inverting it, and then using the
         & operator to get a new query that only inverts the one query.
         """
-        return PrefixFilter("not", SQLFilter(*self.get_filter_sql()))
+        query = Query(self.db)
+        query.filters.append(PrefixFilter("not", SQLFilter(*self.get_filter_sql())))
+        return query
     
     def offset(self, offset_value):
         """
