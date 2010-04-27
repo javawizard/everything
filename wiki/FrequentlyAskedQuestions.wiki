@@ -25,11 +25,4 @@ Python.
 ==Why does !OpenGroove use the "%" string operator all over the place even though it's deprecated?==
 TODO: finish this, it's because % is more standard and their other formatting stuff is too python-specific
 
-
-
-
-
-
-
-
-
+TODO: add a FAQ about why javawizard keeps failing and documenting stuff with the word "throw" when he means the word "raise" because he comes from java.
