@@ -154,7 +154,7 @@ class Changeset(object):
     
     def __eq__(self, other):
         return (isinstance(other, Changeset) and self.path == other.path
-                and self.db is other.db)
+                and self.db is other.db and self.operation_list is other.operation_list)
 
 
 
