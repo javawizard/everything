@@ -139,7 +139,9 @@ class Changeset(object):
     
     def __setattr__(self, name, value):
         """
-        TODO: document this. Tell the OG developers to document this.
+        Creates a set operation that will set the specified attribute to have the
+        specified value. some_changeset.something="test" is functionally the same
+        as some_changeset.set(something="test").
         """
         self.set(**{name: value})
     
@@ -153,6 +155,11 @@ class Changeset(object):
                 + repr(self.operation_list) + ">")
     
     def __eq__(self, other):
+        """
+        Compares two changesets for equality. Two changesets are considered
+        equal if they both come from the exact same database, they both have
+        the exact same operation list, and they have the same path.
+        """
         return (isinstance(other, Changeset) and self.path == other.path
                 and self.db is other.db and self.operation_list is other.operation_list)
 
