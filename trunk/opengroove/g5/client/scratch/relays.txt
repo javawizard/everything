@@ -1,0 +1,102 @@
+Thinking about relay servers and how the protocol would work and stuff...
+
+Ok, so there needs to be a way for OpenGroove to send a message to another user reliably, meaning that the message is essentially guaranteed to make it to that user. Then there needs to be a way for OpenGroove to get information from one user to another with no guarantee of delivery but correspondingly very low latency.
+
+My thought on this was that we have messages and we have channels. Messages are these essentially blocks of data that a client can get delivered to another client, and the message will be delivered reliably. Channels are where a particular user can open a channel to another user, and that establishes a bi-directional link between the users. The entire channel session will be encrypted using a single randomly-generated AES key. This makes channels somewhat faster than messages, which are all encrypted using a single AES key generated specifically for that message.
+
+There should be some way for a user to figure out if another user is currently online. Being online is defined as being in such a state that a protocol can establish a channel with that user.
+
+Indeed, presence information is sent using channels. If Alice has Bob on her contacts, or if Bob is a known user to Alice (which means that Bob is in one of Alice's workspaces or on Alice's contacts), then Alice will watch for when Bob is available via a protocol, and open a channel to Bob. Bob will then send presence information over this channel.
+
+Bob can set in his client whether everyone can monitor his presence, only his contacts can, or no-one can. He can also see a list of people currently monitoring his presence, and he can see a list of people whose presence he is monitoring. These are simply the inbound and outbound, respectively, channels related to presence that Bob has open at the moment.
+
+Protocols should therefore provide a means for OpenGroove to request to be notified when a user's availability (whether or not a channel can currently be opened to them) changes. When a known user becomes available, OpenGroove will attempt to establish a channel to that user.
+
+The problem with this is that some users might not want their availability monitored, but OpenGroove generally needs this in order to function correctly. Then again, Groove doesn't let you deny availability information to anyone, so if OpenGroove doesn't either it wouldn't be too bad.
+
+Although maybe it would be cool if a user connecting to a relay server could specify whether or not they want to be made available for channels to be established to them, and which users they should be made available to. This needs some more thought.
+
+And then we need the ability for users to download the keys of other users. It would be useful if a workspace contains the public keys of all of its members, so that a new member can validate changes made by existing members without having to contact them all independently to receive their public keys.
+
+A workspace might also have some sort of public keys associated with it, although this would also need more thought.
+
+I'm thinking multiple computers shouldn't be supported for now, mainly because of the complexity and synchronization issues that it will cause. For example, in a workspace where each user only has one computer, a board game could easily write down that a particular user is the user whose turn it is next. When that user moves and the next user in the game receives that information, they can then move. Synchronization works because it's only blocked on one particular user at a time.
+
+Note, however, that in a game there is still one problem to take into consideration. This problem can be solved with the use of the database's hierarchical nature, but it's worth mention here to make sure that we don't code any of the game tools the wrong way. That problem is if Alice, Bob, and Carol share a workspace, and all three of them are currently playing a three-way game of pente. Alice makes a move (we'll call the corresponding changeset A). Bob then receives A, at which point he can move. He then makes a move (we'll call the corresponding changeset B). Alice receives B, and now sees that it's Carol's turn. So far Alice and Bob both have A and B, and everything works. However, for some reason or other Carol hasn't signed on recently. Now Carol signs on, but establishes connectivity with Bob first, and in so doing receives B but not A. The problem is that move B is present but move A is missing, so the game doesn't know what it's supposed to do.
+
+The solution is to use the hierarchical functionality present in the database. Any move subsequent to another must be stored as an object that is a descendant of the logically-preceding move. Under this model, B has A as an ancestor. As a result, when Carol receives B, the database will ignore the insert operation present in B because its parent, A, does not exist. Once A is received, B is re-applied, which will then succeed because A now exists. Problem solved.
+
+Based on this, though, I'm seriously considering adding changeset operations allowing for conditional operations, meaning those where a certain query or other condition has to be satisfied in order for the operation to be carried out. This would remove the requirement to have all of the objects stored hierarchically, as the insert corresponding to each move could have a condition stating that it can only be created if it has a sibling move object with a move index (the number representing which move this is in the same, IE the first move, the second move, etc) that is exactly one less than the move to be inserted.
+
+I think I'm going to hold off on the conditional query thing for now, primarily because of the added complexity it would entail. The game problem could also be solved without using object nesting: all of the objects representing moves are stored in a list. The game board is constructed from this list. Efficiency shouldn't be much of an issue; I can't see a typical board game going on for more than a couple thousand moves (and I'd expect most of them to end long before that), and given a typical algorithm for constructing the board from a list of moves, I'd expect it to easily take less than a second or two to reconstruct the entire board from the list of moves that have occurred during the game.
+
+So, there are other things we need to figure out. The mechanism clients use to communicate should definitely be extensible; I've mentioned this before in other ideas/documentation/etc for G5. I'm going to refer to these as protocols.
+
+So, my thinking is that four protocols would come with a standard installation of OpenGroove. Those four protocols would be termed the local, loopback, relay, and file protocols, respectively.
+
+The local protocol allows for communication on a local area network. It periodically broadcasts a UDP packet containing the user's userid. Other users on the local network can then connect to this user's computer and communicate. Computers will always exchange keys before communicating so that they can verify that they are both giving each other correct userids. There should be an easy way of disabling this protocol, as users might not want their presence broadcast to everyone when they go out to a public wi-fi hotspot. This protocol should also provide an easily-accessible list of other users that are currently present on the local network, and maybe even provide that even if the local user isn't currently broadcasting.
+
+The loopback protocol allows the user to establish a connection to themselves. It always shows the local user as being online, and always allows sending messages to that user. It also allows channels to be opened to the user, which get redirected into a channel request coming back out of the protocol. In that way, a user can add themselves to their contact list, and everything will work fine.
+
+The relay protocol is where we get into the idea of relay servers, which I've mentioned before. It would, in some to-be-determined manner, allow users to communicate over the internet when both of the users are firewalled from each other but not from the relay, and the relay would also have the capability to store messages and forward them between users so that if two particular users are never online at the same time, they can still communicate by using the relay.
+
+The file protocol is going to be an interesting one to try and figure out. The idea is that a computer that is never connected to the internet should be able to use OpenGroove in at least a limited fashion. My thinking behind this is that messages could be shared via storing them to disk in a file and then loading that file up elsewhere. This raises a whole ton of issues, and it's a fairly low-priority protocol anyway, so a lot more other stuff should be finished before we think about this more. Although we should leave the way we do protocol plugins open to allow this type of protocol to be written in the future.
+
+Now, let's get thinking about the relay system. One thing that we need to think about is that there's a good chance that if OG gets as big as I can foresee it getting, a single relay server is not going to be enough to keep up with demand. Multiple relay servers are going to be needed at this point, and I'm thinking it'd be cool if they could be on separate domains so they could be maintained independent of each other. But then there needs to be a way for a particular user to select which of a number of relays that user would like to use. And it'd probably be cool if that user could use multiple other relays, and routing rules could somehow determine which of those relays is used, or if multiple relays should be used.
+
+Consider some examples:
+
+First, let's say that we have Alice, Bob, and Carol. Alice and Bob work for ExampleInc. EXI runs their own relay server (and most likely a directory server, but I'll get to that later) that they'd like employees to use to communicate for added security. EXI doesn't want any messages between employees to use a relay server other than EXI's own server. However, Carol doesn't work for EXI, and uses one of the OpenGroove relays. Alice and Bob want to be able to communicate with each other under EXI's policies, but they also would like to be able to communicate with Carol.
+
+Second, let's say that we have two relays, relay.jcp.opengroove.org and ogrelay.jcs.me.uk, being run by jcp and JStoker, respectively. (Those are two real OpenGroove developers; the relay servers mentioned, however, are fictional as of the time of the writing of this text.) OpenGroove has gotten popular enough that having a single relay server in operation just isn't feasible, but having two works for now. How should Alice and Bob, two average OpenGroove users that would like to use the OpenGroove relays, communicate using these two servers while avoiding redundantly transmitting the message across both of them, which would negate the advantages of having two separate servers?
+
+Third, lets say that we have a relay server, relay.jcp.opengroove.org, that Alice and Bob are using to communicate. Alice sends Bob a message. The message gets stored on relay.jcp.opengroove.org for delivery, but some time after that, before Bob is able to sign on and receive the message, relay.jcp.opengroove.org's hard drive fails, causing a loss of all data stored on it. relay.jcp.opengroove.org is, as a result, unable to deliver the message to Bob, and most likely unaware (once jcp gets it back up and running) that it even had a message to deliver to Bob in the first place. How should Alice get this message to Bob again?
+
+In relation to the third idea, it wouldn't be altogether infeasible for servers to store a complete log of messages that have passed through them. My thought on this was that an SHA-1 hash takes up exactly 20 bytes when stored in raw form. Let's assume a user sends a message on average once every 20 seconds, which is quite excessive for most users but we'll assume that for now. Then let's say that the relay server simply logs a message's id (which I'm thinking would simply be its SHA-1 hash, or some URI based on that, similar to how userids are hashes of the user's public keys; however, most likely the hash only, and not the entire URI, would be stored by the relay server to save space). This would make it impossible for a user to send a message, legitimately coming from that user (and signed as such), with an id that conflicts with another user's message as long as the sender's userid is included in the data that the message's hash comes from. So, the relay server could store the message hashes, and Alice could, in some manner, check the relay server to see the status of a particular message (which could be stored as a single byte with bits representing the message's status) and whether or not the message exists and whether or not the recipient downloaded it successfully.
+
+So, back to our 20-messages thing. This would result in 86KB of data per user per day being added to the server. Now, let's round that up to 100KB for any additional data, such as the status byte indicated above, or messages in excess of one every 20 seconds, that might be sent (and, most notably, because it's going to make the calculations I'm about to do a lot easier to do in my head and it's 12:24AM on 2010.04.30 as I'm writing this, so I'm not exactly thinking very well tonight), and multiply it by 100 to account for 100 users using a particular relay server. That's 10MB per day. Multiplying that by 365 gives us 3.65GB per year. That's honestly not too bad; a 1TB hard drive is something like $150 if you know where to get them, which would mean a new hard drive about once every 300 years. and I'm certain enough that the Lord will come within the next 300 years that I'm not going to worry about that issue. And if He hasn't, then something far superior to OpenGroove will have no doubt replaced it by then.
+
+And even assuming 10,000 users, we're still only up to 365GB per year, or a new 1TB hard disk about once every 3 years. I can easily afford that. Problem solved.
+
+However, there is still a problem in that users constantly asking the server whether or not it delivered a message might put some strain on the system. It would probably be possible for a user to log locally when the remote server finally reports that a message was successfully delivered to the recipient.
+
+So, the server could store alongside the message whether or not it managed to get it to the recipient. The recipient would have to send back to the server itself indicating that it did, indeed, receive the message successfully. The server will keep bugging the user about downloading the message until that happens.
+
+Problem: that would also require storing the message recipient's userid. That's quite a bit more data than just the message's id, unless we come up with a binary representation of any of these URI-based things. And maybe that's a feasible alternative. At that point, I'd put the permanent overhead for a single message at 50 bytes (20 for the message id, 20 for the recipient userid so the server knows who to bug about downloading the message, and 10 for extra stuff such as flags and the particular hash function etc used by the user for their userid), which really isn't all that horrible.
+
+There should be an easy way for a relay server to validate a particular recipient's request that the message be marked as downloaded. Otherwise, rogue users could nix messages left and right without the recipient's permission. Some thought needs to go into how to do this, although it would most likely involve signing of the request by the recipient (since the recipient's userid is included alongside the message, so as long as the recipient includes their public keys or the server knows them in advance, the whole message thing would work).  
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
