@@ -1,0 +1,9 @@
+<plugin name="opengroove.wtools.games.othello" version="0.1">
+	<requirements>
+		<feature id="game_tool" name="opengroove.wtools.game_tool" />
+		<feature same_plugin_as="game_tool"
+			name="opengroove.wtools.game_tool.group_players" />
+		<feature same_plugin_as="game_tool"
+			name="opengroove.wtools.game_tool.colored_player" />
+	</requirements>
+</plugin>
