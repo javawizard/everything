@@ -1,5 +1,5 @@
-from core import open_database as open
-connect = open
+from core import open_database
+connect = open_database
 
 def browser(db):
     """
