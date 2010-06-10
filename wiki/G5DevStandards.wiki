@@ -1,3 +1,4 @@
+#labels G5
 This page outlines some practices OpenGroove G5 developers need to follow.
 
 ==Comments==

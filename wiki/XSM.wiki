@@ -1,3 +1,4 @@
+#labels G4, XSM, Obsolete
 <p align="center"><font size="5">*XSM: An XML Programming Language*</font></p>
 
 ------

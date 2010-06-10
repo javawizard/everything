@@ -1,3 +1,4 @@
+#labels G4, XSM, Obsolete
 Ideas on the implementation of the XSM interpreter.
 
 The class name, by the way, is org.opengroove.xsm.web.client.lang.XInterpreter.

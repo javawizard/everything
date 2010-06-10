@@ -1,3 +1,4 @@
+#labels G5
 Requirements for the plugin system:
 
   * Ability to properly serialize/deserialize objects provided by a plugin
