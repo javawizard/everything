@@ -26,11 +26,19 @@ class DB(object):
                                      isolation_level=None, cached_statements=10)
         with no_exceptions:
             self.sqldb.execute("create table objects(id,path,parent)")
-        with no_exceptions:
             self.sqldb.execute("create table attributes(path,name,value)")
         self.root = self[""]
         self.pre_apply = []
         self.post_apply = []
+    
+    def __del__(self):
+        """
+        Ensures the database has been closed, before the database object gets
+        deleted.
+        """
+        with self.lock:
+            self.sqldb.close()
+            del self.sqldb
     
     def __getitem__(self, path):
         # Make sure that we're looking at a string, not a slice or an int. Not
@@ -173,7 +181,6 @@ class DataObject(object):
         query = self.db.query()
         query.ancestor(self.db_path)
         return query
-
 
 
 
