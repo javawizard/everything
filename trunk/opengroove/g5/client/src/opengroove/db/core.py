@@ -31,20 +31,21 @@ class DB(object):
         self.pre_apply = []
         self.post_apply = []
     
-    def __del__(self):
+    def close(self):
         """
-        Ensures the database has been closed, before the database object gets
-        deleted.
+        Ensures the database has been closed.
         """
-        with self.lock:
+        with self.lock: # Lock the database, so no queries are performed during
+                        # the close...
             self.sqldb.close()
-            del self.sqldb
+    
+    __del__ = close
     
     def __getitem__(self, path):
         # Make sure that we're looking at a string, not a slice or an int. Not
         # checking this now can cause some interesting problems later on.
         with self.lock:
-            if not isinstance(path, basestring):
+            if not isinstance(path, basestring): 
                 raise TypeError("Objects can only be queried by path name")
             if path == "":
                 results = "", ""
