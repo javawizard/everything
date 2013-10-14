@@ -6,5 +6,6 @@ setup(
     description="A transactional variant of remote-stm",
     author="Alexander Boyd",
     author_email="alex@opengroove.org",
-    py_modules=["stm_console"]
+    py_modules=["stm_console"],
+    install_requires=["stm", "remote-console"]
 )
