@@ -1,0 +1,72 @@
+Just the part in charge of displaying history and such, nothing to do with lists of room members or sending messages back or topics or anything.
+
+(Incidentally, might be nice to store semantically in messages how they affect the room's occupants in some way, and the last known occupants of the room (so that a "server starting up" can correctly show the entire list being blanked if the previous one was, say foo joined))
+
+View objects have...
+
+attach(callback, start, limit) -> Attachment: Attaches to a view; callback called for every block of messages (including the initial set); start is exclusive start time, limit is max number to go back, or something like that. callback is something like callback(block), where block has a list of messages and a start (exclusive, possibly 0 for a block containing the historically first message in the view) and an end (id of the last message in the block).
+
+Then Attachment has...
+
+detach(): detaches the attachment; the callback will never be called (even if messages are received) after that.
+
+request(start, end, limit): requests a block from start to end, or up to limit messages (earlier ones will be trimmed). These will be passed to the callback when they arrive.
+
+Client-side View sends an attach message to the server on attach, with an id generated for the attachment. Server's response is passed to the callback.
+
+Client-side detach sends a detach to the server, then marks as detached so that extra messages received will be discarded.
+
+Client-side request sends a request to the server.
+
+Blocks sent from the server are routed to the callback.
+
+Server-side view... Good question.
+
+Some sort of function to push messages into a database stored view.
+
+Server-side attach gets messages in the specified start/limit range from the database and calls the callback with them, then adds the attachment to a list for that view. (If I use STM here, it adds the attachment to the list, then schedules an event to pull the relevant range (ending with the in-STM-memory current most recent message id to be created) from the DB and send to the client. Callbacks should be able to handle out-of-order blocks just fine, so new messages being pushed to the view before old ones are sent isn't a problem.)
+
+Server-side detach removes the attachment from the view's list.
+
+Server-side request (if this uses STM) schedules an event to query the database for the requested range, which then calls the callback with the range.
+
+Then we have a ViewServer which is the server-side part of client-side views. It's provided with a means to look up views somehow.
+
+Attach commands: gets the relevant view and attaches to it, then stores it in a dict of attachment ids (chosen by the client) to attachments. Callback is set to a function that sends the block across the wire with the relevant attachment id.
+
+Request commands: Looks up the view by attachment id and calls request on it.
+
+Detach commands: Ditto.
+
+Client disconnection: the client (which tracks its own client-specific dict of attachment ids to attachments) detaches all of its attachments.
+
+Callback on disconnected client: Tell us to mark ourselves as disconnected if we haven't noticed already, then just ignores the block.
+
+Sounds good. Maybe unify the push-to-view mechanism somehow to let clients use it to gain automatic local caching support in some way.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+ 
