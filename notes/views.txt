@@ -46,6 +46,30 @@ Sounds good. Maybe unify the push-to-view mechanism somehow to let clients use i
 
 
 
+Problem: Need a way to handle attachments that spontaneously attach.
+
+Solution:
+
+attach(callback) -> Attachment
+
+Callbacks:
+
+attached(point): Attached. Most recent message has id point. Can call attachment.request(start, point, limit) for old attach behavior.
+
+detached(): Detached.
+
+receive(block): Block received. Called after attached() and before detached().
+
+Attachments:
+
+activate(): Activate. callback.attached called some point thereafter (or synchronously).
+
+deactivate(): Deactivate. callback.detached called some point thereafter (or synchronously; maybe just synchronously).
+
+request(start, end, limit): Request. Most likely not allowed if deactivated. Ignored if detached. Pending detach may cause request to be ignored; either detached or receive therefore called in response at some point.
+
+
+
 
 
 
