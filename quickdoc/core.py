@@ -33,6 +33,14 @@ def documented(thing):
     thing.__doc__ = doc_stream.getvalue()
 
 
+def get_parameters(thing):
+    info = get_info(thing)
+    argspec = inspect.getargspec(thing)
+    # TODO: Split this out into its own function; it's quite useful by itself
+    defaults = dict(zip(argspec.args[-len(argspec.defaults):], argspec.defaults))
+    
+
+
 def generate_docstring(thing, doc, stream):
     info = get_info(thing)
     stream.write(doc)
