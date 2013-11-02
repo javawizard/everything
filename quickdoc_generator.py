@@ -7,6 +7,7 @@ from singledispatch import singledispatch
 import types
 import pydoc
 from collections import namedtuple
+from quickdoc.indentstream import IndentStream
 
 FILE = File(__file__)
 MethodWrapper = namedtuple("MethodWrapper", ["function"])
@@ -114,22 +115,6 @@ def _(prop, stream, level): #@DuplicatedSignature
     stream.write("\n\n.. attribute:: " + prop.name + "\n\n")
     prop_stream = IndentStream(stream, "   ")
     prop_stream.write(inspect.getdoc(prop.prop) or "")
-
-
-class IndentStream(object):
-    def __init__(self, stream, indent=""):
-        self.stream = stream
-        self.indent = indent
-        self.need_indent = True
-    
-    def write(self, text):
-        for char in text:
-            if self.need_indent and char != "\n":
-                self.need_indent = False
-                self.stream.write(self.indent)
-            self.stream.write(char)
-            if char == "\n":
-                self.need_indent = True
 
 
 if __name__ == "__main__":
