@@ -7,5 +7,6 @@ setup(
     description="TBD",
     author="Alexander Boyd",
     author_email="alex@opengroove.org",
-    packages=["quickdoc"]
+    packages=["quickdoc"],
+    install_requires=["fileutils", "singledispatch"]
 )
