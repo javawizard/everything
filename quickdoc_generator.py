@@ -99,6 +99,10 @@ def should_document_module_member(name, thing, module):
         return False
     if hasattr(thing, "__module__") and thing.__module__ != module.__name__:
         return False
+    # Skip aliases for now. Might want to document aliases specially in the
+    # future.
+    if hasattr(thing, "__name__") and thing.__name__ != name:
+        return False
     return True
 
 
