@@ -45,7 +45,7 @@ def main():
 
 def title(stream, level, text):
     character = "=-^%#&"[level]
-    stream.write("\n\n" + character * len(text) + "\n" + text + "\n" + character * len(text) + "\n")
+    stream.write("\n\n" + character * len(text) + "\n" + text + "\n" + character * len(text) + "\n\n")
 
 
 class IndentStream(object):
@@ -76,13 +76,13 @@ def _(module, stream, level):
     stream.write(".. module:: " + module.__name__ + "\n   :synopsis: " + synopsis + "\n\n")
     stream.write(doc or "")
     # stream.write("\n\n.. contents:: Things\n   :depth: 1\n   :local:\n\n")
-    for name in dir(module):
+    for name in sorted(dir(module)):
         thing = getattr(module, name)
         if isinstance(thing, types.FunctionType):
             continue
         if should_document_module_member(name, thing, module):
             display(thing, stream, level + 1)
-    function_names = [n for n in dir(module) if isinstance(getattr(module, n), types.FunctionType) and should_document_module_member(n, getattr(module, n), module)]
+    function_names = [n for n in sorted(dir(module)) if isinstance(getattr(module, n), types.FunctionType) and should_document_module_member(n, getattr(module, n), module)]
     if function_names:
         title(stream, level + 1, "Functions")
         for name in function_names:
@@ -120,7 +120,7 @@ def _(cls, stream, level): #@DuplicatedSignature
     stream.write("\n\n.. class:: " + cls.__name__ + spec + "\n\n")
     class_stream = IndentStream(stream, "   ")
     class_stream.write(inspect.getdoc(cls.__init__) or "")
-    for name in dir(cls):
+    for name in sorted(dir(cls)):
         print "Class member {}".format(name)
         thing = getattr(cls, name)
         if not name.startswith("__") and pydoc.visiblename(name, None, thing):
