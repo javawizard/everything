@@ -66,7 +66,7 @@ class IndentStream(object):
 
 @singledispatch
 def display(thing, stream, level):
-    pass
+    print "SKIPPING %r" % thing
 
 
 @display.register(types.ModuleType)
@@ -75,7 +75,7 @@ def _(module, stream, level):
     title(stream, level, ":mod:`" + module.__name__ + "` --- " + synopsis)
     stream.write(".. module:: " + module.__name__ + "\n   :synopsis: " + synopsis + "\n\n")
     stream.write(doc or "")
-    stream.write("\n\n.. contents:: Things\n   :depth: 1\n   :local:\n\n")
+    # stream.write("\n\n.. contents:: Things\n   :depth: 1\n   :local:\n\n")
     for name in dir(module):
         thing = getattr(module, name)
         if isinstance(thing, types.FunctionType):
