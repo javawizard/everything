@@ -7,7 +7,6 @@ from singledispatch import singledispatch
 import types
 import pydoc
 from collections import namedtuple
-from quickdoc.indentstream import IndentStream
 
 FILE = File(__file__)
 MethodWrapper = namedtuple("MethodWrapper", ["function"])
@@ -49,6 +48,22 @@ def title(stream, level, text):
     stream.write("\n\n" + character * len(text) + "\n" + text + "\n" + character * len(text) + "\n")
 
 
+class IndentStream(object):
+    def __init__(self, stream, indent="", initial=True):
+        self.stream = stream
+        self.indent = indent
+        self.need_indent = initial
+    
+    def write(self, text):
+        for char in text:
+            if self.need_indent and char != "\n":
+                self.need_indent = False
+                self.stream.write(self.indent)
+            self.stream.write(char)
+            if char == "\n":
+                self.need_indent = True
+
+
 @singledispatch
 def display(thing, stream, level):
     pass
@@ -63,8 +78,28 @@ def _(module, stream, level):
     stream.write("\n\n.. contents:: Things\n   :depth: 1\n   :local:\n\n")
     for name in dir(module):
         thing = getattr(module, name)
-        if pydoc.visiblename(name, getattr(module, "__all__", None), thing) and not isinstance(thing, types.ModuleType):
+        if isinstance(thing, types.FunctionType):
+            continue
+        if should_document_module_member(name, thing, module):
             display(thing, stream, level + 1)
+    function_names = [n for n in dir(module) if isinstance(getattr(module, n), types.FunctionType) and should_document_module_member(n, getattr(module, n), module)]
+    if function_names:
+        title(stream, level + 1, "Functions")
+        for name in function_names:
+            thing = getattr(module, name)
+            display(thing, stream, level + 2)
+
+
+def should_document_module_member(name, thing, module):
+    if not pydoc.visiblename(name, getattr(module, "__all__", None), thing):
+        return False
+    if hasattr(module, "__all__"):
+        return True
+    if isinstance(thing, types.ModuleType):
+        return False
+    if hasattr(thing, "__module__") and thing.__module__ != module.__name__:
+        return False
+    return True
 
 
 @display.register(type)
@@ -115,6 +150,13 @@ def _(prop, stream, level): #@DuplicatedSignature
     stream.write("\n\n.. attribute:: " + prop.name + "\n\n")
     prop_stream = IndentStream(stream, "   ")
     prop_stream.write(inspect.getdoc(prop.prop) or "")
+
+
+@display.register(types.FunctionType)
+def _(function, stream, level): #@DuplicatedSignature
+    stream.write("\n\n.. function:: " + function.__name__ + inspect.formatargspec(*inspect.getargspec(function)) + "\n\n")
+    function_stream = IndentStream(stream, "   ")
+    function_stream.write(inspect.getdoc(function) or "")
 
 
 if __name__ == "__main__":
