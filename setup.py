@@ -3,7 +3,7 @@ from setuptools import setup
 
 setup(
     name="quickdoc",
-    version="0.1.1",
+    version="0.1.2",
     description="TBD",
     author="Alexander Boyd",
     author_email="alex@opengroove.org",
