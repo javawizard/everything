@@ -202,7 +202,7 @@ def display_class(cls, stream, level, args): #@DuplicatedSignature
     
     for name, kind, definer, thing in sorted(inspect.classify_class_attrs(cls)):
         print "Class member {}".format(name)
-        if definer is cls and pydoc.visiblename(name, None, thing):
+        if definer is cls and pydoc.visiblename(name, None, thing) and name != "__init__":
             # TODO: Handle nested classes here
             if should_document_as_method(thing):
                 try:
