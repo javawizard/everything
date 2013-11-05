@@ -14,6 +14,10 @@ FILE = File(__file__)
 MethodWrapper = namedtuple("MethodWrapper", ["function"])
 PropertyWrapper = namedtuple("PropertyWrapper", ["name", "prop"])
 
+def make_switch(parser, name, default):
+    parser.add_argument("--" + name, action="store_const", dest=name, const=True, default=default)
+    parser.add_argument("--no-" + name, action="store_const", dest=name, const=False, default=default)
+
 def main():
     parser = argparse.ArgumentParser()
     parser.add_argument("--discover", nargs="+", default=[])
@@ -21,6 +25,9 @@ def main():
     parser.add_argument("--rst", default=None)
     parser.add_argument("--html", default=None)
     parser.add_argument("--skip-failed", action="store_true")
+    make_switch(parser, "inheritance", False)
+    make_switch(parser, "mro", True)
+    make_switch(parser, "overrides", True)
     args = parser.parse_args()
     #output_dir = File(args.output)
     #output_dir.create_folder(ignore_existing=True, recursive=True)
@@ -79,7 +86,7 @@ def main():
     
     for module in modules:
         with module_dir.child(module.__name__ + ".rst").open("wb") as m:
-            display(module, m, 0)
+            display_module(module, m, 0, args)
     
     if args.html:
         html = File(args.html)
@@ -110,12 +117,11 @@ class IndentStream(object):
 
 
 @singledispatch
-def display(thing, stream, level):
-    print "SKIPPING %r" % thing
+def display(thing, stream, level, args):
+    print "SKIPPING {0!r}".format(thing)
 
 
-@display.register(types.ModuleType)
-def _(module, stream, level):
+def display_module(module, stream, level, args):
     synopsis, doc = pydoc.splitdoc(inspect.getdoc(module) or "")
     title(stream, level, ":mod:`" + module.__name__ + "` --- " + synopsis)
     stream.write(".. module:: " + module.__name__ + "\n   :synopsis: " + synopsis + "\n\n")
@@ -126,13 +132,18 @@ def _(module, stream, level):
         if isinstance(thing, types.FunctionType):
             continue
         if should_document_module_member(name, thing, module):
-            display(thing, stream, level + 1)
+            if isinstance(thing, type):
+                display_class(thing, stream, level + 1, args)
+            elif isinstance(thing, types.FunctionType):
+                display_function(thing, stream, level + 1, args)
+            else:
+                print "Unknown type, skipping module member {0!r}".format(name)
     function_names = [n for n in sorted(dir(module)) if isinstance(getattr(module, n), types.FunctionType) and should_document_module_member(n, getattr(module, n), module)]
     if function_names:
         title(stream, level + 1, "Functions")
         for name in function_names:
             thing = getattr(module, name)
-            display(thing, stream, level + 2)
+            display_function(thing, stream, level + 2, args)
 
 
 def should_document_module_member(name, thing, module):
@@ -151,8 +162,7 @@ def should_document_module_member(name, thing, module):
     return True
 
 
-@display.register(type)
-def _(cls, stream, level): #@DuplicatedSignature
+def display_class(cls, stream, level, args): #@DuplicatedSignature
     print "Class {}".format(cls.__name__)
     title(stream, level, "Class " + cls.__name__)
     stream.write(inspect.getdoc(cls) or "")
@@ -166,47 +176,89 @@ def _(cls, stream, level): #@DuplicatedSignature
             spec = ""
         else:
             spec = inspect.formatargspec(*inspect.getargspec(cls.__init__))
+    
+    if args.mro:
+        mro = inspect.getmro(cls)[1:-1]
+        if mro:
+            stream.write("\n\n")
+            stream.write("*Method resolution order:* ")
+            stream.write(", ".join(":class:`~{0}.{1}`".format(c.__module__, c.__name__) for c in mro))
+
     stream.write("\n\n.. class:: " + cls.__name__ + spec + "\n\n")
     class_stream = IndentStream(stream, "   ")
     class_stream.write(inspect.getdoc(cls.__init__) or "")
+    
+    
     for name, kind, definer, thing in sorted(inspect.classify_class_attrs(cls)):
         print "Class member {}".format(name)
-        thing = getattr(cls, name)
         if definer is cls and pydoc.visiblename(name, None, thing):
             # TODO: Handle nested classes here
-            if callable(thing):
+            if should_document_as_method(thing):
                 try:
                     inspect.getargspec(thing)
                 except:
-                    print "Skipping"
+                    print "Couldn't get argspec, skipping"
                 else:
-                    display(MethodWrapper(thing), class_stream, level + 1)
-            elif isinstance(thing, property):
-                display(PropertyWrapper(name, thing), class_stream, level + 1)
+                    display_method(thing, class_stream, level + 1, args, cls, name)
+            elif should_document_as_property(thing):
+                display_property(thing, class_stream, level + 1, args, cls, name)
             else:
-                display(thing, class_stream, level + 1)
+                print "Not a method or property, skipping"
+    
+    if args.inheritance:
+        inheritance_dict = {}
+        for name, kind, definer, thing in sorted(inspect.classify_class_attrs(cls)):
+            if (
+                    definer is not cls and
+                    definer is not object and
+                    pydoc.visiblename(name, None, thing) and
+                    name not in ["__dict__", "__weakref__"] and
+                    (should_document_as_method(thing) or should_document_as_property(thing))):
+                inheritance_dict.setdefault(definer, []).append(name)
+        for base_class in inspect.getmro(cls):
+            if base_class in inheritance_dict:
+                class_stream.write("\n\n*Members inherited from class* :class:`~{0}.{1}`\\ *:* ".format(base_class.__module__, base_class.__name__))
+                class_stream.write(", ".join(":obj:`~{0}.{1}.{2}`".format(base_class.__module__, base_class.__name__, n) for n in inheritance_dict[base_class]))
 
 
-@display.register(MethodWrapper)
-def _(wrapper, stream, level): #@DuplicatedSignature
-    function = wrapper.function
+def display_method(function, stream, level, args, cls, name):
     stream.write("\n\n.. method:: " + function.__name__ + inspect.formatargspec(*inspect.getargspec(function)) + "\n\n")
     method_stream = IndentStream(stream, "   ")
     method_stream.write(inspect.getdoc(function) or "")
+    display_override_info(function, method_stream, level, args, cls, name)
 
 
-@display.register(PropertyWrapper)
-def _(prop, stream, level): #@DuplicatedSignature
-    stream.write("\n\n.. attribute:: " + prop.name + "\n\n")
+def display_property(prop, stream, level, args, cls, name): #@DuplicatedSignature
+    stream.write("\n\n.. attribute:: " + name + "\n\n")
     prop_stream = IndentStream(stream, "   ")
-    prop_stream.write(inspect.getdoc(prop.prop) or "")
+    prop_stream.write(inspect.getdoc(prop) or "")
+    display_override_info(prop, prop_stream, level, args, cls, name)
 
 
-@display.register(types.FunctionType)
-def _(function, stream, level): #@DuplicatedSignature
+def display_override_info(thing, stream, level, args, cls, name):
+    if args.overrides:
+        for base_class in inspect.getmro(cls)[1:]:
+            # Special-case: ignore overrides from object as these tend to be overly
+            # verbose (we don't need a note on every __init__, for example, telling
+            # us that it overrides object.__init__)
+            if name in base_class.__dict__ and base_class is not object:
+                stream.write("\n\n")
+                stream.write("*Overrides* :obj:`~{0}.{1}.{2}` *in class* :class:`~{0}.{1}`".format(base_class.__module__, base_class.__name__, name))
+                break
+
+
+def display_function(function, stream, level, args): #@DuplicatedSignature
     stream.write("\n\n.. function:: " + function.__name__ + inspect.formatargspec(*inspect.getargspec(function)) + "\n\n")
     function_stream = IndentStream(stream, "   ")
     function_stream.write(inspect.getdoc(function) or "")
+
+
+def should_document_as_method(thing):
+    return callable(thing)
+
+
+def should_document_as_property(thing):
+    return isinstance(thing, property)
 
 
 if __name__ == "__main__":
