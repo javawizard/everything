@@ -15,8 +15,8 @@ MethodWrapper = namedtuple("MethodWrapper", ["function"])
 PropertyWrapper = namedtuple("PropertyWrapper", ["name", "prop"])
 
 def make_switch(parser, name, default):
-    parser.add_argument("--" + name, action="store_const", dest=name, const=True, default=default)
-    parser.add_argument("--no-" + name, action="store_const", dest=name, const=False, default=default)
+    parser.add_argument("--" + name, action="store_const", dest=name.replace("-", "_"), const=True, default=default)
+    parser.add_argument("--no-" + name, action="store_const", dest=name.replace("-", "_"), const=False, default=default)
 
 
 def flatten(list):
@@ -28,6 +28,7 @@ def main():
     parser.add_argument("--discover", action="append", nargs="+", default=[])
     parser.add_argument("--modules", action="append", nargs="+", default=[])
     parser.add_argument("--exclude", action="append", nargs="+", default=[])
+    parser.add_argument("--interlink", action="append", default=[])
     parser.add_argument("--rst", default=None)
     parser.add_argument("--html", default=None)
     parser.add_argument("--skip-failed", action="store_true")
@@ -107,10 +108,26 @@ def main():
     
     # conf = "project = {0!r}\n".format("Test Project")
     with rst.child("conf.py").open("wb") as f:
+        extensions = []
+        
         if args.title:
             f.write("project = {0!r}\n".format(args.title))
         if args.theme:
             f.write("html_theme = {0!r}\n".format(args.theme))
+        
+        if args.interlink:
+            extensions.append("sphinx.ext.intersphinx")
+            intersphinx_mapping = {}
+            for url in args.interlink:
+                # We're not supporting explicit keys for now, so just use the
+                # URL to make sure we've got a unique one. Perhaps in the
+                # future I'll add something like --named-interlink <name> <url>
+                # to support qualified interlinking.
+                intersphinx_mapping[url] = (url, None)
+            f.write("intersphinx_mapping = {0!r}\n".format(intersphinx_mapping))
+            f.write("intersphinx_cache_limit = 0\n")
+        
+        f.write("extensions = {0!r}\n".format(extensions))
     
     with rst.child("contents.rst").open("wb") as contents:
         contents.write(".. toctree::\n")
@@ -215,7 +232,7 @@ def display_class(cls, stream, level, args): #@DuplicatedSignature
         if mro:
             stream.write("\n\n")
             stream.write("*Method resolution order:* ")
-            stream.write(", ".join(":class:`~{0}.{1}`".format(c.__module__, c.__name__) for c in mro))
+            stream.write(", ".join(":obj:`~{0}.{1}`".format(c.__module__, c.__name__) for c in mro))
 
     stream.write("\n\n.. class:: " + cls.__name__ + spec + "\n\n")
     class_stream = IndentStream(stream, "   ")
@@ -250,7 +267,7 @@ def display_class(cls, stream, level, args): #@DuplicatedSignature
                 inheritance_dict.setdefault(definer, []).append(name)
         for base_class in inspect.getmro(cls):
             if base_class in inheritance_dict:
-                class_stream.write("\n\n*Members inherited from class* :class:`~{0}.{1}`\\ *:* ".format(base_class.__module__, base_class.__name__))
+                class_stream.write("\n\n*Members inherited from class* :obj:`~{0}.{1}`\\ *:* ".format(base_class.__module__, base_class.__name__))
                 class_stream.write(", ".join(":obj:`~{0}.{1}.{2}`".format(base_class.__module__, base_class.__name__, n) for n in inheritance_dict[base_class]))
 
 
@@ -276,7 +293,7 @@ def display_override_info(thing, stream, level, args, cls, name):
             # us that it overrides object.__init__)
             if name in base_class.__dict__ and base_class is not object:
                 stream.write("\n\n")
-                stream.write("*Overrides* :obj:`~{0}.{1}.{2}` *in class* :class:`~{0}.{1}`".format(base_class.__module__, base_class.__name__, name))
+                stream.write("*Overrides* :obj:`~{0}.{1}.{2}` *in class* :obj:`~{0}.{1}`".format(base_class.__module__, base_class.__name__, name))
                 break
 
 
