@@ -25,6 +25,8 @@ def main():
     parser.add_argument("--rst", default=None)
     parser.add_argument("--html", default=None)
     parser.add_argument("--skip-failed", action="store_true")
+    parser.add_argument("--theme", default=None)
+    parser.add_argument("--title", default=None)
     make_switch(parser, "inheritance", False)
     make_switch(parser, "mro", True)
     make_switch(parser, "overrides", True)
@@ -74,6 +76,7 @@ def main():
     
     if args.rst:
         rst = File(args.rst)
+        rst.delete(ignore_missing=True)
     else:
         rst = create_temporary_folder(delete_on_exit=True)
     rst.create_folder(ignore_existing=True, recursive=True)
@@ -81,8 +84,11 @@ def main():
     module_dir.create_folder(True, True)
     
     # conf = "project = {0!r}\n".format("Test Project")
-    conf = ""
-    rst.child("conf.py").write(conf)
+    with rst.child("conf.py").open("wb") as f:
+        if args.title:
+            f.write("project = {0!r}\n".format(args.title))
+        if args.theme:
+            f.write("html_theme = {0!r}\n".format(args.theme))
     
     with rst.child("contents.rst").open("wb") as contents:
         contents.write(".. toctree::\n")
