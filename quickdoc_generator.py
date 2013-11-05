@@ -18,10 +18,16 @@ def make_switch(parser, name, default):
     parser.add_argument("--" + name, action="store_const", dest=name, const=True, default=default)
     parser.add_argument("--no-" + name, action="store_const", dest=name, const=False, default=default)
 
+
+def flatten(list):
+    return [v for l in list for v in l]
+
+
 def main():
     parser = argparse.ArgumentParser()
-    parser.add_argument("--discover", nargs="+", default=[])
-    parser.add_argument("--modules", nargs="+", default=[])
+    parser.add_argument("--discover", action="append", nargs="+", default=[])
+    parser.add_argument("--modules", action="append", nargs="+", default=[])
+    parser.add_argument("--exclude", action="append", nargs="+", default=[])
     parser.add_argument("--rst", default=None)
     parser.add_argument("--html", default=None)
     parser.add_argument("--skip-failed", action="store_true")
@@ -31,6 +37,9 @@ def main():
     make_switch(parser, "mro", True)
     make_switch(parser, "overrides", True)
     args = parser.parse_args()
+    args.discover = flatten(args.discover)
+    args.modules = flatten(args.modules)
+    args.exclude = flatten(args.exclude)
     #output_dir = File(args.output)
     #output_dir.create_folder(ignore_existing=True, recursive=True)
     
@@ -46,7 +55,7 @@ def main():
         sys.path.insert(0, folder.path)
         print "Discovering packages and modules in %r..." % folder.path
         for thing in folder.recurse(lambda f:
-                YIELD if f.name.endswith(".py") and f.name != "__init__.py" and f != folder.child("setup.py") else 
+                YIELD if f.name.endswith(".py") and not f.name.startswith("__") and f != folder.child("setup.py") else 
                 True if f.child("__init__.py").exists else
                 RECURSE if f == folder else SKIP):
             name = thing.get_path(relative_to=folder, separator=".")
@@ -58,6 +67,18 @@ def main():
     for name in args.modules:
         print "Including module %s on request" % name
         module_names.add(name)
+    
+    exclude = set(args.exclude)
+    for name in set(module_names):
+        current = name
+        # See if the module or any of its parent packages are in the exclude
+        # list
+        while current:
+            if current in exclude:
+                print "Excluding %s on request" % name
+                module_names.discard(name)
+                break
+            current, _, _ = current.rpartition(".")
     
     modules = set()
     for module_name in module_names:
@@ -73,6 +94,7 @@ def main():
             modules.add(module)
     
     modules = sorted(modules, key=lambda m: m.__name__)
+    print "Final list of modules to document: %s" % ", ".join(m.__name__ for m in modules)
     
     if args.rst:
         rst = File(args.rst)
