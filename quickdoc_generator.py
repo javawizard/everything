@@ -143,6 +143,17 @@ def main():
         with rst.as_working:
             subprocess.check_output(["sphinx-build", "-b", "html",
                                      rst.path, html.path])
+        # Include a simple index.html that redirects to py-modindex.html. I'll
+        # likely make the index page's content configurable at some point.
+        html.child("index.html").write("""
+        <html>
+            <head>
+                <meta http-equiv="refresh" content="0; url=py-modindex.html"/>
+            </head>
+            <body>
+                <a href="py-modindex.html">py-modindex.html</a>
+            </body>
+        </html>""")
 
 
 def title(stream, level, text):
