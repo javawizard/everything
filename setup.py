@@ -7,6 +7,11 @@ setup(
     description="TBD",
     author="Alexander Boyd",
     author_email="alex@opengroove.org",
-    packages=["quickdoc"],
-    install_requires=["fileutils", "singledispatch"]
+    py_modules=["quickdoc_generator"],
+    install_requires=["fileutils", "singledispatch"],
+    entry_points = {
+        "console_scripts": [
+            "quickdoc = quickdoc_generator:main"
+        ]
+    }
 )
