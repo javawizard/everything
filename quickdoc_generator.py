@@ -32,6 +32,11 @@ def main():
     #output_dir = File(args.output)
     #output_dir.create_folder(ignore_existing=True, recursive=True)
     
+    if not (args.modules or args.discover):
+        print "Error: need one of --modules or --discover."
+        print "Use --help for more info."
+        sys.exit(1)
+    
     module_names = set()
     for folder_name in args.discover:
         folder = File(folder_name)
