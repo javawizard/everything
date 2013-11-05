@@ -1,6 +1,6 @@
 
 import argparse
-from fileutils import File, YIELD, SKIP, RECURSE
+from fileutils import File, YIELD, SKIP, RECURSE, create_temporary_folder
 import importlib
 import inspect
 from singledispatch import singledispatch
@@ -8,6 +8,7 @@ import types
 import pydoc
 from collections import namedtuple
 import sys
+import subprocess
 
 FILE = File(__file__)
 MethodWrapper = namedtuple("MethodWrapper", ["function"])
@@ -30,7 +31,10 @@ def main():
         # Add the folder to the path so we can import things from it
         sys.path.insert(0, folder.path)
         print "Discovering packages and modules in %r..." % folder.path
-        for thing in folder.recurse(lambda f: YIELD if f.name.endswith(".py") and f.name != "__init__.py" else True if f.child("__init__.py").exists else RECURSE if f == folder else SKIP):
+        for thing in folder.recurse(lambda f:
+                YIELD if f.name.endswith(".py") and f.name != "__init__.py" and f != folder.child("setup.py") else 
+                True if f.child("__init__.py").exists else
+                RECURSE if f == folder else SKIP):
             name = thing.get_path(relative_to=folder, separator=".")
             # Strip off trailing ".py" for modules
             if thing.is_file:
@@ -56,12 +60,16 @@ def main():
     
     modules = sorted(modules, key=lambda m: m.__name__)
     
-    rst = File(args.rst)
+    if args.rst:
+        rst = File(args.rst)
+    else:
+        rst = create_temporary_folder(delete_on_exit=True)
     rst.create_folder(ignore_existing=True, recursive=True)
     module_dir = rst.child("modules")
     module_dir.create_folder(True, True)
     
-    conf = "project = {0!r}\n".format("Test Project")
+    # conf = "project = {0!r}\n".format("Test Project")
+    conf = ""
     rst.child("conf.py").write(conf)
     
     with rst.child("contents.rst").open("wb") as contents:
@@ -72,6 +80,12 @@ def main():
     for module in modules:
         with module_dir.child(module.__name__ + ".rst").open("wb") as m:
             display(module, m, 0)
+    
+    if args.html:
+        html = File(args.html)
+        with rst.as_working:
+            subprocess.check_output(["sphinx-build", "-b", "html",
+                                     rst.path, html.path])
 
 
 def title(stream, level, text):
