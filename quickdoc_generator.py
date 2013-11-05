@@ -169,10 +169,11 @@ def _(cls, stream, level): #@DuplicatedSignature
     stream.write("\n\n.. class:: " + cls.__name__ + spec + "\n\n")
     class_stream = IndentStream(stream, "   ")
     class_stream.write(inspect.getdoc(cls.__init__) or "")
-    for name in sorted(dir(cls)):
+    for name, kind, definer, thing in sorted(inspect.classify_class_attrs(cls)):
         print "Class member {}".format(name)
         thing = getattr(cls, name)
-        if not name.startswith("__") and pydoc.visiblename(name, None, thing):
+        if definer is cls and pydoc.visiblename(name, None, thing):
+            # TODO: Handle nested classes here
             if callable(thing):
                 try:
                     inspect.getargspec(thing)
