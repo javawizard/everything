@@ -1,12 +1,13 @@
 
 import argparse
-from fileutils import File
+from fileutils import File, YIELD, SKIP, RECURSE
 import importlib
 import inspect
 from singledispatch import singledispatch
 import types
 import pydoc
 from collections import namedtuple
+import sys
 
 FILE = File(__file__)
 MethodWrapper = namedtuple("MethodWrapper", ["function"])
@@ -14,15 +15,45 @@ PropertyWrapper = namedtuple("PropertyWrapper", ["name", "prop"])
 
 def main():
     parser = argparse.ArgumentParser()
-    parser.add_argument("modules", nargs="+")
+    parser.add_argument("--discover", nargs="+", default=[])
+    parser.add_argument("--modules", nargs="+", default=[])
     parser.add_argument("--rst", default=None)
+    parser.add_argument("--html", default=None)
+    parser.add_argument("--skip-failed", action="store_true")
     args = parser.parse_args()
     #output_dir = File(args.output)
     #output_dir.create_folder(ignore_existing=True, recursive=True)
+    
+    module_names = set()
+    for folder_name in args.discover:
+        folder = File(folder_name)
+        # Add the folder to the path so we can import things from it
+        sys.path.insert(0, folder.path)
+        print "Discovering packages and modules in %r..." % folder.path
+        for thing in folder.recurse(lambda f: YIELD if f.name.endswith(".py") and f.name != "__init__.py" else True if f.child("__init__.py").exists else RECURSE if f == folder else SKIP):
+            name = thing.get_path(relative_to=folder, separator=".")
+            # Strip off trailing ".py" for modules
+            if thing.is_file:
+                name = name[:-3]
+            print "Discovered package/module %s" % name
+            module_names.add(name)
+    for name in args.modules:
+        print "Including module %s on request" % name
+        module_names.add(name)
+    
     modules = set()
-    for module_name in args.modules:
-        module = importlib.import_module(module_name)
-        modules.add(module)
+    for module_name in module_names:
+        print "Importing %s" % module_name
+        try:
+            module = importlib.import_module(module_name)
+        except:
+            if args.skip_failed:
+                print "IMPORT FAILED, ignoring."
+            else:
+                raise
+        else:
+            modules.add(module)
+    
     modules = sorted(modules, key=lambda m: m.__name__)
     
     rst = File(args.rst)
