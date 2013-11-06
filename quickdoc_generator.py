@@ -185,6 +185,7 @@ def display(thing, stream, level, args):
 
 
 def display_module(module, stream, level, args):
+    print "module " + module.__name__
     synopsis, doc = pydoc.splitdoc(inspect.getdoc(module) or "")
     title(stream, level, ":mod:`" + module.__name__ + "` --- " + synopsis)
     stream.write(".. module:: " + module.__name__ + "\n   :synopsis: " + synopsis + "\n\n")
@@ -200,13 +201,13 @@ def display_module(module, stream, level, args):
             elif isinstance(thing, types.FunctionType):
                 display_function(thing, stream, level + 1, args)
             else:
-                print "Unknown type, skipping module member {0!r}".format(name)
+                print "  Unknown type, skipping {}".format(name)
     function_names = [n for n in sorted(dir(module)) if isinstance(getattr(module, n), types.FunctionType) and should_document_module_member(n, getattr(module, n), module)]
     if function_names:
         title(stream, level + 1, "Functions")
         for name in function_names:
             thing = getattr(module, name)
-            display_function(thing, stream, level + 2, args)
+            display_function(thing, stream, level + 2, args, name)
 
 
 def should_document_module_member(name, thing, module):
@@ -226,7 +227,7 @@ def should_document_module_member(name, thing, module):
 
 
 def display_class(cls, stream, level, args): #@DuplicatedSignature
-    print "Class {}".format(cls.__name__)
+    print "  class {}".format(cls.__name__)
     title(stream, level, "Class " + cls.__name__)
     stream.write(inspect.getdoc(cls) or "")
     if cls.__init__ is object.__init__:
@@ -235,7 +236,7 @@ def display_class(cls, stream, level, args): #@DuplicatedSignature
         try:
             inspect.getargspec(cls.__init__)
         except:
-            print "Skipping"
+            print "    Skipping class spec"
             spec = ""
         else:
             spec = inspect.formatargspec(*inspect.getargspec(cls.__init__))
@@ -251,22 +252,42 @@ def display_class(cls, stream, level, args): #@DuplicatedSignature
     class_stream = IndentStream(stream, "   ")
     class_stream.write(inspect.getdoc(cls.__init__) or "")
     
-    
+    # Sort out aliases. thing_dict maps names (the names we're going to
+    # document things under) to 2-tuples (thing, names), where thing is the
+    # thing itself and names is a list of names under which it can be found
+    # (including the key under which the tuple is registered in thing_dict)
+    thing_dict = {}
     for name, kind, definer, thing in sorted(inspect.classify_class_attrs(cls)):
-        print "Class member {}".format(name)
         if definer is cls and pydoc.visiblename(name, None, thing) and name != "__init__":
-            # TODO: Handle nested classes here
-            if should_document_as_method(thing):
-                try:
-                    inspect.getargspec(thing)
-                except:
-                    print "Couldn't get argspec, skipping"
-                else:
-                    display_method(thing, class_stream, level + 1, args, cls, name)
-            elif should_document_as_property(thing):
-                display_property(thing, class_stream, level + 1, args, cls, name)
+            # See if we've already seen this thing before
+            for k, (v, names) in thing_dict.iteritems():
+                # We have to use == here instead of "is" as the bound method
+                # object returned for each attribute of a class is generated on
+                # the fly, so it's different each time we request it. They
+                # compare equal, though, if they wrap the same underlying
+                # function, so using == works as expected.
+                if v == thing:
+                    # We have, under the name k. Add an alias for it under our
+                    # current name.
+                    names.append(name)
+                    break
             else:
-                print "Not a method or property, skipping"
+                # We haven't seen it before, so add a new entry for it.
+                thing_dict[name] = (thing, [name])
+    
+    for _, (thing, names) in sorted(thing_dict.iteritems()):
+        # TODO: Handle nested classes here
+        if should_document_as_method(thing):
+            try:
+                inspect.getargspec(thing)
+            except:
+                print "    Couldn't get argspec, skipping {}".format(names)
+            else:
+                display_method(thing, class_stream, level + 1, args, cls, names)
+        elif should_document_as_property(thing):
+            display_property(thing, class_stream, level + 1, args, cls, names)
+        else:
+            print "    Not a method or property, skipping {}".format(names)
     
     if args.inheritance:
         inheritance_dict = {}
@@ -278,40 +299,56 @@ def display_class(cls, stream, level, args): #@DuplicatedSignature
                     name not in ["__dict__", "__weakref__"] and
                     (should_document_as_method(thing) or should_document_as_property(thing))):
                 inheritance_dict.setdefault(definer, []).append(name)
+        if inheritance_dict:
+            class_stream.write("\n")
         for base_class in inspect.getmro(cls):
             if base_class in inheritance_dict:
-                class_stream.write("\n\n*Members inherited from class* :obj:`~{0}.{1}`\\ *:* ".format(base_class.__module__, base_class.__name__))
+                class_stream.write("\n|  *Members inherited from class* :obj:`~{0}.{1}`\\ *:* ".format(base_class.__module__, base_class.__name__))
                 class_stream.write(", ".join(":obj:`~{0}.{1}.{2}`".format(base_class.__module__, base_class.__name__, n) for n in inheritance_dict[base_class]))
 
 
-def display_method(function, stream, level, args, cls, name):
-    stream.write("\n\n.. method:: " + function.__name__ + inspect.formatargspec(*inspect.getargspec(function)) + "\n\n")
+def display_method(function, stream, level, args, cls, names):
+    print "    method {!r}".format(names)
+    signature = inspect.formatargspec(*inspect.getargspec(function))
+    stream.write("\n\n.. method:: " + names[0] + signature + "\n")
+    for name in names[1:]:
+        stream.write("            " + name + signature + "\n")
+    stream.write("\n")
     method_stream = IndentStream(stream, "   ")
     method_stream.write(inspect.getdoc(function) or "")
-    display_override_info(function, method_stream, level, args, cls, name)
+    display_override_info(function, method_stream, level, args, cls, names)
 
 
-def display_property(prop, stream, level, args, cls, name): #@DuplicatedSignature
-    stream.write("\n\n.. attribute:: " + name + "\n\n")
+def display_property(prop, stream, level, args, cls, names): #@DuplicatedSignature
+    print "    property {!r}".format(names)
+    stream.write("\n\n.. attribute:: " + names[0] + "\n")
+    for name in names[1:]:
+        stream.write("               " + name + "\n")
+    stream.write("\n")
     prop_stream = IndentStream(stream, "   ")
     prop_stream.write(inspect.getdoc(prop) or "")
-    display_override_info(prop, prop_stream, level, args, cls, name)
+    display_override_info(prop, prop_stream, level, args, cls, names)
 
 
-def display_override_info(thing, stream, level, args, cls, name):
-    if args.overrides:
-        for base_class in inspect.getmro(cls)[1:]:
-            # Special-case: ignore overrides from object as these tend to be overly
-            # verbose (we don't need a note on every __init__, for example, telling
-            # us that it overrides object.__init__)
-            if name in base_class.__dict__ and base_class is not object:
-                stream.write("\n\n")
-                stream.write("*Overrides* :obj:`~{0}.{1}.{2}` *in class* :obj:`~{0}.{1}`".format(base_class.__module__, base_class.__name__, name))
-                break
+def display_override_info(thing, stream, level, args, cls, names):
+    found_override = False
+    for name in names:
+        if args.overrides:
+            for base_class in inspect.getmro(cls)[1:]:
+                # Special-case: ignore overrides from object as these tend to be overly
+                # verbose (we don't need a note on every __init__, for example, telling
+                # us that it overrides object.__init__)
+                if name in base_class.__dict__ and base_class is not object:
+                    if not found_override:
+                        found_override = True
+                        stream.write("\n")
+                    stream.write("\n|  *Overrides* :obj:`~{0}.{1}.{2}` *in class* :obj:`~{0}.{1}`".format(base_class.__module__, base_class.__name__, name))
+                    break
 
 
-def display_function(function, stream, level, args): #@DuplicatedSignature
-    stream.write("\n\n.. function:: " + function.__name__ + inspect.formatargspec(*inspect.getargspec(function)) + "\n\n")
+def display_function(function, stream, level, args, name): #@DuplicatedSignature
+    print "  Function " + name
+    stream.write("\n\n.. function:: " + name + inspect.formatargspec(*inspect.getargspec(function)) + "\n\n")
     function_stream = IndentStream(stream, "   ")
     function_stream.write(inspect.getdoc(function) or "")
 
