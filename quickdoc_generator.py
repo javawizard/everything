@@ -140,6 +140,8 @@ def main():
     
     if args.html:
         html = File(args.html)
+        html.delete(ignore_missing=True)
+        html.create_folder(recursive=True)
         with rst.as_working:
             subprocess.check_output(["sphinx-build", "-b", "html",
                                      rst.path, html.path])
