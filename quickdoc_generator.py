@@ -299,11 +299,9 @@ def display_class(cls, stream, level, args): #@DuplicatedSignature
                     name not in ["__dict__", "__weakref__"] and
                     (should_document_as_method(thing) or should_document_as_property(thing))):
                 inheritance_dict.setdefault(definer, []).append(name)
-        if inheritance_dict:
-            class_stream.write("\n")
         for base_class in inspect.getmro(cls):
             if base_class in inheritance_dict:
-                class_stream.write("\n|  *Members inherited from class* :obj:`~{0}.{1}`\\ *:* ".format(base_class.__module__, base_class.__name__))
+                class_stream.write("\n\n*Members inherited from class* :obj:`~{0}.{1}`\\ *:* ".format(base_class.__module__, base_class.__name__))
                 class_stream.write(", ".join(":obj:`~{0}.{1}.{2}`".format(base_class.__module__, base_class.__name__, n) for n in inheritance_dict[base_class]))
 
 
