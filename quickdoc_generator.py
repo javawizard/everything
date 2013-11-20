@@ -259,8 +259,10 @@ def display_class(cls, stream, level, args): #@DuplicatedSignature
     thing_dict = {}
     for name, kind, definer, thing in sorted(inspect.classify_class_attrs(cls)):
         if definer is cls and pydoc.visiblename(name, None, thing) and name != "__init__":
-            # See if we've already seen this thing before
-            for k, (v, names) in thing_dict.iteritems():
+            # See if we've already seen this thing before. Python 3
+            # compatibility note: we have to iterate over a copy of the dict's
+            # items since we could end up modifying the dict during iteration.
+            for k, (v, names) in list(thing_dict.items()):
                 # We have to use == here instead of "is" as the bound method
                 # object returned for each attribute of a class is generated on
                 # the fly, so it's different each time we request it. They
@@ -270,6 +272,19 @@ def display_class(cls, stream, level, args): #@DuplicatedSignature
                     # We have, under the name k. Add an alias for it under our
                     # current name.
                     names.append(name)
+                    # If this thing has a __name__ and its __name__ is the
+                    # current name we're looking at, relocate the thing's entry
+                    # in thing_dict to list it under the current name. This
+                    # causes things to be preferentially documented under the
+                    # name with which they were actually defined.
+                    if getattr(thing, "__name__", None) == name:
+                        del thing_dict[k]
+                        thing_dict[name] = (v, names)
+                        # Also move the defined name so that it's first in the
+                        # list, which will cause it to be listed first in the
+                        # resulting documentation
+                        names.remove(name)
+                        names.insert(0, name)
                     break
             else:
                 # We haven't seen it before, so add a new entry for it.
