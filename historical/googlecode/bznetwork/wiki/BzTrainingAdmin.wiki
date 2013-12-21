@@ -1,0 +1,27 @@
+*This page is obsolete.* See [BZNetwork] instead. BZNetwork is the web administration interface I ended up designing for the BZTraining server network, so the rest of this document no longer applies (since BZNetwork ended up being quite a bit different than this document).
+
+=Details=
+
+The system should be complete with enough functionality that a full server could be created, managed, and configured right from within the bztraining server administration system. It should manage starting and stopping servers, editing the map right from within the server, downloading and uploading the map, editing configuration settings, etc.
+
+It should also show logs in some sort of table-based format, and allow the logs to be searched.
+
+Bans should be synchronized across server groups only.
+
+Users have three roles: manager, administrator, and participant. Managers can add, edit, and delete groups, and have the administrator role for all groups. Administrators have a list of groups that they can manage, and they have full permissions within that group, including adding other users to that group and creating other users in that group. Participants have a list of groups that they are on, and they can do everything in that group except manage its users.
+
+A ban file is shared across a single group.
+
+Admins and Participants can create a new server in a group, and configure it as they wish.  When they create the server, they can choose a port nunmber for it within the range 5100 to 5800. They can then set the map for the server, set configuration variables, and start and stop the server. They can also view the list of users that are currently on the server. In the future, I'll write a plugin so that they can view a javascript-generated image of the server's current "radar", that refreshes every 5 or so seconds. Regardless, they will be able to view the current user list for the server, and they can view live logs (and view live chat by filtering the logs on chat only).
+
+They can also send messages to the server, which appear as coming from "SERVER: (<web-user-name>): <message>". They can kick people from the server, and ban them from the server (which also bans them over the entire group). 
+
+The ban list can be viewed and edited. 
+
+A bzgroups configuration can be set up for the entire group, and an additional one on a per-server basis. Or the specific server can choose to use only its bzgroup file, not the entire group file.
+
+I'll work on options for a replay server in the future. 
+
+The server will most likely use proxy storage, since I think it could handle it in terms of speed. Although for some things, serialized objects might be a better idea. I don't know yet.
+
+The user could also choose which plugins to load onto the server, from a list. serverControl would always be loaded, and would be automatically configured. All the other plugins can be specified if they load, and the user can configure, via a UI, each plugin has its own specific UI for configuring it.

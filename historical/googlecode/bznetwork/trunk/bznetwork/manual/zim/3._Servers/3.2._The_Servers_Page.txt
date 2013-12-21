@@ -1,0 +1,9 @@
+Content-Type: text/x-zim-wiki
+Wiki-Format: zim 0.26
+Creation-Date: Sat, 22 Aug 2009 01:34:37 -0600
+Modification-Date: Sat, 22 Aug 2009 01:36:09 -0600
+
+====== 1. The Servers Page ======
+Created Saturday 22 August 2009
+
+The servers page can be accessed by using the Servers link in the BZNetwork menu. 

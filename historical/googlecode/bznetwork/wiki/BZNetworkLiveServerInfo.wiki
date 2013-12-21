@@ -1,0 +1,7 @@
+This page is about how BZNetwork internally keeps track of servers that are currently running.
+
+Each currently-running servers is represented by a LiveServer object. These are stored in a HashMap in the BZNetworkServer class that maps server ids to their live server instances. The live server object stores this id as well.
+
+The live server object holds a reference to the Process object used to spawn the bzfs instance. This can be used to forcibly terminate bzfs if normal shutdown (which involves telling the bznetwork plugin to shut down the server) does not work.
+
+Each server object maintains a list of the last 300 or so events that have occurred on the server. This allows the live view to quickly get an update on what events have occurred.

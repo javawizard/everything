@@ -1,0 +1,4 @@
+#labels help
+This page contains a list of actions that bznetwork logs to the action log.
+
+|| *Event* || *Description* ||

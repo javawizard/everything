@@ -1,0 +1,9 @@
+Content-Type: text/x-zim-wiki
+Wiki-Format: zim 0.26
+Creation-Date: Sat, 22 Aug 2009 01:52:11 -0600
+Modification-Date: Sat, 22 Aug 2009 01:53:27 -0600
+
+====== 1. Roles ======
+Created Saturday 22 August 2009
+
+At the heart of the authentication and authorization system is the role. A role defines a set of permissions that will be applied to users when they have authenticated. A permission specifies a set of actions the user can carry out on a particular object. For example, a role could define that a user with that role can view the logs of a particular server.

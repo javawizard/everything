@@ -1,0 +1,11 @@
+Content-Type: text/x-zim-wiki
+Wiki-Format: zim 0.26
+Creation-Date: Sat, 22 Aug 2009 01:56:34 -0600
+Modification-Date: Sat, 22 Aug 2009 01:56:34 -0600
+
+====== 1. Banfiles ======
+Created Saturday 22 August 2009
+
+Jumping in to the topic of banfiles without covering the topic of servers might seem rather strange. There is a very good reason for doing so, which is that a server will not start unless it has a banfile. This merits a discussion into the topic of banfiles. 
+
+BZNetwork allows individual banfiles to be maintained. These banfiles are all independent of one another; bans do not transfer from one banfile to another. Multiple servers can use any given banfile, and BZNetwork will automatically load the serverControl plugin to keep the servers properly synchronized.

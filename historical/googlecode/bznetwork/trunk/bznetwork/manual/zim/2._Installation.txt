@@ -1,0 +1,9 @@
+Content-Type: text/x-zim-wiki
+Wiki-Format: zim 0.26
+Creation-Date: Sat, 22 Aug 2009 01:16:08 -0600
+Modification-Date: Sat, 22 Aug 2009 01:17:19 -0600
+
+====== 2. Installation ======
+Created Saturday 22 August 2009
+
+Installation seems like a logical first section, as you'll probably need to install BZNetwork before you can use it. 

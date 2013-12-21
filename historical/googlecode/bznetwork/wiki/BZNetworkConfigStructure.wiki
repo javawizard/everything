@@ -1,0 +1,11 @@
+This is the folder structure of the WEB-INF/config folder when the user has installed BZNetwork and has visited install.jsp and gone through all the steps.
+
+  * *config:* This is the config folder itself. Its presence indicates that BZNetwork has been successfully set up.
+    * *settings.props:* This holds information about the entire setup. It is the only file within the config folder that is mandatory; the rest of them are there by convention but their locations can be altered by editing settings.props. See [BZNetworkSettingsProps] for information on this file's content.
+    * *db:* This folder typically has 2 files in it, bzn.data.db and bzn.index.db. These are H2 embedded files, and are not present if H2 is not used with its default options.
+    * *store:* This folder holds the ban files and groupdb files used by BZNetwork. BZNetwork must have read/write access to this folder.
+      * *bans:* This folder holds one file per group, with its name being the group's numeric id, which is the banfile for that group. Any bzfs instances spawned by BZNetwork must have read/write access to this folder.
+      * *groudb:* This folder holds one file per group and one file per server (with the file's name being the group or server's numeric id), containing that group/server's groupdb. Bzfs instances do not need to have access to this folder.
+      * *maps:* This folder holds one file per server, whose name is the server's id (without .bzw at the end), which is the map file. Bzfs does not need read access to this folder.
+    * *cache:* This folder holds the combined groupdb files that are actually passed to the bzfs instances, as well as the world files read by bzfs. Essentially, this folder contains any files that bzfs will only need read access to when starting up. BZNetwork must have read/write access to this folder, but any bzfs instances spawned by BZNetwork only need to have read access to this folder. Each file within it has a long and randomly-generated name, and each file a server is dependent on (a particular file is used by no more than one server) is deleted when the server is shut down or restarted.
+      

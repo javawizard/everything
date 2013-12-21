@@ -1,0 +1,7 @@
+bz_iplugin_bznetwork is a plugin written by javawizard2539/jcp for BZNetwork. The plugin is loaded into all bzfs servers that bznetwork runs, and it uses the plugin to interact with bzfs. The plugin takes over stdin and stdout, and in order for bznetwork to function correctly bz_iplugin_bznetwork must be the only plugin to access these streams.
+
+This plugin uses threads. Currently, this causes a segfault when bzflag exits, but it doesn't seem to be causing a problem right now (since bzflag is exiting anyway). If anyone wants to try and figure out what the problem is, I'd be very grateful.
+
+Due to the way some of the text is formatted, the plugin does not allow users to join with callsigns containing pipe characters, or callsigns that start with a plus character. Players that join with these types of callsigns will be immediately kicked by the plugin, with a message that indicates that callsigns can't contain these characters.
+
+This plugin currently works only on linux, primarily due to the fact that it uses pthread.h to accomplish threading. I haven't tried building the plugin with cygwin or mingw, so I don't know if either of those could be used to get the plugin to run on windows.

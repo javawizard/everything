@@ -1,0 +1,11 @@
+Content-Type: text/x-zim-wiki
+Wiki-Format: zim 0.26
+Creation-Date: Sat, 22 Aug 2009 01:40:16 -0600
+Modification-Date: Sat, 22 Aug 2009 01:43:39 -0600
+
+====== 2. Managing Bans ======
+Created Saturday 22 August 2009
+
+When you click on the //bans// link next to a banfile in the Banfiles page, you will be taken to a screen where you can see the full list of bans in the banfile. Depending on your permissions, you can use this screen to add bans, delete bans, and modify existing bans.
+
+TBD

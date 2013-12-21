@@ -1,0 +1,81 @@
+#labels help
+This file documents all permissions in the BZNetwork interface.
+
+Permission levels are organized hierarchically like this:
+ * Global
+  * Group
+   * Server
+  * Banfile
+
+A permission of a certain level can be applied to any item of that level or any level above it in the hierarchy. For example, view-logs, which is a server level permission, could be applied to a group, which would grant access to the logs of any server within that group.
+
+=Available permissions=
+Here is the list of available permissions and what they do. At the bottom of the table is a list of sensitive permissions. Sensitive permissions are those that generally allow a user to take full control of the server with them.
+
+|| *Permission*            || *Target* || *Description* ||
+|| manage-users            || global  ||Allows the user to add, edit, and delete internal users, and set a particular user's role.||
+|| manage-roles            || global  ||Allows the user to add, and delete roles and edit the permissions applied to each role. This inherently allows the user to get at the list of groups and servers, since they need that list to select which groups and servers certain permissions apply to.||
+|| manage-auth             || global  ||Allows the user to manage which authentication providers are enabled on the server, and select what the default provider is or if there is a default.     ||
+|| view-logs               || server  ||Allows the user to view the logs of a server, and to view the server's chat in real time via the web interface. NOTE: As a side note, I'm thinking that the user might be able to select how they want to view the logs: in a grid style ("grid"), or in a console style ("console"). Grid shows chat and such like norang's log interface, and Console shows chat as if the user was watching a bzflag console. They're both just different modes of displaying stuff.||
+|| view-user               || global  ||Allows the user to view information about a particular bzflag user that has visited a server.||
+|| cross-reference-user    || global  ||Allows the user to cross-reference users. This shows them the list of ip address that the user has signed on, and allows them to look up an ip address and see the users that have signed on from it.||
+|| edit-map                || server  ||Allows the user to manage the map of a server.||
+|| edit-groupdb            || server  ||Allows the user to edit the group db of a server.||
+|| inherit-parent-groupdb  || server  ||Allows the user to select whether a server also inherits its group's groupdb. This requires edit-server-settings to work.||
+|| edit-group-groupdb      || group   ||Allows the user to edit a particular group's groupdb.||
+|| edit-server-settings    || server  ||Allows the user to edit general settings about the server.||
+|| manage-callsign-auth    || global  ||Allows the user to manage the mapping of a particular bzflag authentication group with the role that applies to it, and the mapping of a particular bzflag callsign with the role that applies to it (in addition to any roles applied by the callsign's groups).||
+|| start-stop-server       || server  ||Allows the user to start, stop, and restart a server.||
+|| create-server           || group   ||Allows the user to create a new server in a given group. They won't, however, be granted any permissions on the server, so it's recommended that people with create-server also receive other server-related permissions on the group that they have create-server on.||
+|| delete-server           || group   ||Allows the user to delete servers within the group. This could technically be applied on a per-server level, but it seems somewhat pointless to do that, and there are some technical issues involved due to permission removal.||
+|| manage-banfiles         || global  ||Allows the user to create and delete banfiles. This permission doesn't, however, grant the user any permissions to edit any banfiles.||
+|| view-bans               || banfile ||Allows the user to view the banfile and its bans||
+|| add-ipban               || banfile ||Allows the user to add an ip ban to the banfile||
+|| add-idban               || banfile ||Allows the user to add an idban to the banfile||
+|| add-hostban             || banfile ||Allows the user to add a hostban to the banfile||
+|| add-long-ban            || banfile ||Allows the user to add bans longer than 5 hours||
+|| delete-ban              || banfile ||Allows the user to delete any ban from a banfile||
+|| delete-self-ban         || banfile ||Allows the user to delete their own bans from a banfile. Bans only store usernames as their source, so an internally-authenticated user with the same username as a callsign-authenticated user are treated as the same user.||
+|| edit-server-banfile     || server  ||Allows the user to select which banfile a server uses||
+|| edit-group-banfile      || group   ||Allows the user to select which banfile is the default for servers created within a particular group||
+|| say                     || server  ||Allows the user to say something on the actual server. The message will appear as if coming from the server, but will be prefixed with the user's username plus a colon. The last character of the message must not be a close-parenthesis (with trailing whitespace removed), to prevent spoofing of the in-game /say command.||
+|| hidden-say              || server  ||Allows the user to say something on the actual server. Unlike the say permission, the message can be anything (and it can end with a close-parenthesis), and it will not be prefixed. If the user has both say and hidden-say, there will be a dropdown box to allow them to choose which one to use, and it will, by default, be set to hidden-say.||
+|| view-in-server-list     || server  ||Allows the user to view a particular server in the server list. This also allows them to view the users currently logged into the server, and in the future their ip addresses. Most other server-related permissions are pointless without this one, as the user will have no way to actually see the server. This should generally be applied to groups that a particular user has create-server on, so they can see servers that they create.||
+|| edit-server-notes       || server  ||Allows the user to edit a server's notes. These notes are general information on what the server is for. Anyone with view-in-server-list on a server can read the server's notes, but this permission is required to actually edit those notes.||
+|| edit-group-notes        || group   ||Allows the user to edit a group's notes. This is identical to edit-server-notes, except that note viewing is dependent on view-in-group-list instead of view-in-server-list.||
+|| view-in-group-list      || group   ||Allows the user to view a particular group in the group list. This is similar to view-in-server-list. View-in-server-list, and consequently almost all other server-related permissions, are pointless without view-in-group-list for the group that owns the servers.||
+|| view-action-log         || global  ||Allows the user to view the action log, which records the actions of all users on the site.||
+|| clear-action-log        || global  ||Allows the user to clear the action log of any user. After the action log is cleared, it will contain one event, noting that the action log was cleared.||
+|| edit-configuration      || global  ||Allows the user to edit the server's configuration. Currently, this includes the welcome message, the site name, the bzflag executable, and the site contact.||
+|| all                     ||         ||A special permission that grants all other applicable permissions to whatever level it is applied.||
+|| view-sessions           || global  ||Allows the user to use the sessions page, which lets them view the users that are currently logged into the web interface and selectively kick them off of the server||
+|| create-group            || global  ||Allows the user to create groups.||
+|| rename-group            || group   ||Allows the user to rename a group.||
+|| manage-irc              || global  ||Allows the user to manage the list of IRC bots.||
+|| manage-triggers         || global  ||Allows the user to manage triggers on the server.||
+|| manage-email-groups     || global  ||Allows the user to manage the email groups on the server. In the future, there will be permissions that can be used to grant access to the email addresses of email groups on an individual basis.||
+
+The following permissions are sensitive:
+ * *manage-users:* The user can apply any role to their own account, allowing them to gain the highest possible level of access of anyone on the server.
+ * *manage-roles:* The user can add any permissions they want to their own role.
+ * *manage-auth:* This one is only sensitive if the server owner doesn't take some precautions. If the server owner doesn't remove the internal admin account, but disables the internal authentication provider (assuming that this will prevent other users from gaining permissions through use of the admin account), then a user with manage-auth can re-enable the provider and gain full access.
+ * *manage-callsign-auth:* TODO
+ * *edit-configuration:* The user could set the bzfs executable to some other executable such as vsftpd, and then use this to connect to the server and do whatever they want. 
+ * *view-sessions:* Session ids are sent when the user views the list of sessions. A user can use this id to appear to the server as if they are another, logged-in user, so a user could use this to gain the privileges of any user currently logged in. I plan on changing this in the future so that a hash of the session's id is what gets sent to the client, and the server maintains a map of session id hashes to the actual session, which would remove this permission from the list of sensitive permissions.
+ * *edit-server-settings:* This is due to a bug with BZNetwork that I'm working on fixing. Contact jcp on irc.freenode.net if you want the details.
+
+In particlar, *edit-configuration* allows a user to grant themselves access to the physical server on which BZNetwork is running, so it should be used with extreme caution.
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 

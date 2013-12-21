@@ -1,0 +1,51 @@
+#labels help
+This is a list of questions that you might run into while using BZNetwork. If you have a question that isn't on the list, join #bztraining on irc.freenode.net and ask jcp.
+
+The questions are organized by the page that they are relevant to. Pages are the links that appear in the left navigation bar in BZNetwork, or in the menu accessed by clicking the <b>Menu</b> link in the upper-right corner, depending on what the BZNetwork server administrator has set their preferences to be.
+
+<wiki:toc max_depth="3"/>
+==Logs==
+===Is it possible to change the format of the date and time shown in the logs?===
+Yes Go to the Configuration page, and change the Date-only Format and Date/Time Format configuration settings. Date formats should be specified as a text string formatted as described in the *Date and Time Patterns* section of [http://java.sun.com/javase/6/docs/api/java/text/SimpleDateFormat.html this page]. 
+
+==Servers==
+===In the banfiles column, sometimes there's a dropdown box, sometimes the dropdown box is disabled, and sometimes it's just text. What's the difference between these?===
+Which of these three states the banfile appears as depends on what permissions you have and whether or not the server is running. If you don't have permission to edit that server's banfile, then the banfile appears as just text. If you do have permission to edit the banfile, but the server is currently running, then the banfile appears as a disabled dropdown box. If you have permission to edit the banfile, and the server is not currently running, then the banfile appears as a normal dropdown box.
+
+===Why not have the banfile editable while the server is running, and then just not have changes take effect until the server is restarted, like settings on the Settings popup box do?===
+The reason for this is that banfiles can be deleted. When you try to delete a banfile, it checks to make sure that all servers that use it are shut down, so that deleting the actual ban file doesn't mess up the servers. If you could change a server's banfile while the server is running, BZNetwork wouldn't know that the actual server was still using that banfile.
+
+===Sometimes the color of a server's name is red, sometimes it's yellow, sometimes it's green, and sometimes it's blue. What do all these colors mean?===
+If the server's name is red, the server is not currently running. If the server's name is green, then the server is running. If the server's name is yellow, then a server shutdown has been requested but the server has not shut down yet. If the server's name is blue, the server has been started but the BZNetwork plugin has not yet reported that the server has finished initializing.
+
+===When I try to upload a map, BZNetwork complains that its size exceeds the configured maximum. Is there a way to raise the maximum map size? ===
+
+The default maximum map size is 15MB. To raise it, edit WEB-INF/web.xml and search for something that looks like this:
+{{{
+	<!-- max size, in bytes, of map file uploads -->
+	<context-param>
+		<param-name>maxSize</param-name>
+		<param-value>15000000</param-value>
+	</context-param>
+}}}
+Change the 15000000 to be the maximum size, in bytes, that you want to allow for uploaded maps.
+
+===Is it possible to move a server to a different group than it was created under?===
+Not currently. I'm planning on adding this feature in the future, but there are a number of privilege escalation issues that this would cause that need to be resolved first.
+
+If you really want to change a server's parent group, you can manually edit the database to do so. Shut down the server, then log into the database system you're using, find the server's row in the servers table (the server's name is in the name column; you could write a query that searches this column). Then find the row in the groups table (which also has a name column) for the new group that you want to put this server under. Update the row in the servers table and set its groupid column to be the groupid column of the row in the groups table that holds the group you want to put the server under.
+
+Contact me as indicated at the top of this page if you're confused.
+
+==Misc==
+===A lot of pages don't have save buttons. How do I save my changes to these pages?===
+The pages that don't have save buttons are typically those that only use multiple-choice widgets. The Authentication page is a good example of this. On these pages, changes are saved immediately as you make them.
+
+===I'm trying to use my own database with BZNetwork, but some of the SQL isn't quite the right syntax for my database. Is there a file I can edit that contains all of the SQL statements?===
+Yes. There are two files that contain all of the statements executed by BZNetwork, with the exception of 1 database statement that is currently generated in code (contact jcp as mentioned at the top of this FAQ if this statement is giving you syntax errors; it runs when you delete any entity that would cause another dependent entity to be deleted, such as deleting a role). The file WEB-INF/tables.sql contains the statements executed when you first install BZNetwork that create all of the tables, and the file WEB-INF/classes/general-sqlmap.xml contains the statements that are used when BZNetwork is actually running.
+
+===Users can choose to log in with either their BZFlag username/password or a BZNetwork-specific username/password. Is it possible to allow users to log in using means other than these?===
+Yes. For example, you could authenticate users against an LDAP database, allow users to log in with an OpenID, allow users to access BZNetwork if they've logged into a WordPress blog running on your site, and much more. Join irc.freenode.net channel #bztraining and ask jcp for help.
+
+===Are there any easter eggs in BZNetwork?===
+There are two. I'm not going to tell you what they are, though, so don't ask. I will tell you that one of them has something in common with gdm. If you're desperate, go search the BZNetwork source code for "easter egg".

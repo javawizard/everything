@@ -1,0 +1,115 @@
+<html>
+<body>
+</body>
+</html>
+<!--
+Servers will have a config file. Groups will have a config file that is 
+either applied before or after the server's config, probably depending
+on a particular setting for that group. If options are specified on both
+a group and a server that conflict, the server wins. For example, if the
+group and the server specify -lagdrop, the server's version will be used.
+If both the group and the server specify help pages, the set of help pages
+will be merged, except where both the group and the server specify the same
+help page name, in which case the server's version will be used. How this
+overriding thing should work with boolean values is tricky. For example,
+how does a server specify that it should require udp when its group says
+that it shouldn't, and another server specify that it shouldn't require udp
+when its group specifies that it should? Perhaps the options should have a
+checkbox next to them that specifies whether that option should be used.
+Another thing that could be done is to have no checkboxes, but instead have
+a dropdown box that has "require udp", "don't require udp", and "" in it.
+The blank option would cause the server to inherit from its group. I'm kinda
+liking the "enable" checkbox idea more, though. Groups would also have this, 
+and unchecking it means that the group default is not to use that bzflag
+command-line switch at all. 
+
+Also make sure that certain options are disabled when not applicable. For
+example, -c and -cr can't both be used at the same time.
+ -->
+<!--
+ groups:
+   Flags: +f -f +s -s -fl -sb -sa -st -sw
+   Style: -mp -j +r -c -cr
+   
+   Maybe it would be worth it to figure out how to add controls in a way that 
+   you just change a simple string to change what group a control is in and 
+   what order within the group the control falls under. Maybe that would also 
+   allow bznetwork server owners to specify what groups these all appear under.
+  -->
+<!--
+Switches: (* at the beginning means that it's been completed, # means it's been grouped)
+
+  -a <linear> <angular>
+  -adminlagannounce <min-lag-to-announce>
+  -admsg <message-to-broadcast>
+  -advertise <groupname>,<groupname>...
+  -autoTeam
+  -b
+  -badwords <bad-words-file>
+  -c
+  -cr
+  -density <random-building-density>
+  -disableBots
+# +f FLAGID{number-of-flags}
+# -f FLAGID
+# -fb
+  -filterCallsigns
+  -filterChat
+  -filterSimple
+  -g
+  -h
+  -handicap
+  -helpmsg <help-file> <help-page-name>
+  -j
+  -jitterdrop <warning-count>
+  -jitterwarn <milliseconds>
+  -lagannounce <milliseconds>
+  -lagdrop <warning-count>
+  -lagwarn <milliseconds>
+  -maxidle <seconds>
+  -mp rogue,red,green,blue,purple,observer
+  -mps
+  -ms
+  -mts
+  -packetlossdrop
+  -packetlosswarn
+  -passdb?
+  -passwd?
+  -poll
+  +r
+  -rabbit
+  -recbuf
+  -recbufonly
+  -recdir
+  -replay (probably in a dropdown of server types, "Free-for-all", "CTF", "Rabbit hunt", and "Replay"
+  -requireudp
+# +s
+# -s
+# -sa
+  -sb
+  -set (would also be nice if /set on the server could somehow persist over to this config file, maybe on demand, like /savevars or something)
+# -sl
+  -spamtime
+  -spamwarn
+  -speedtol
+  -srvmsg
+# -st
+# -sw
+  -synctime
+  -t
+  -tftimeout
+  -time
+  -timemanual
+  -tk
+  -tkkr
+  -trackplayhistory
+  -worldsize
+  -loadplugin (and pluggable config widget, backing datastore object, and command-line argument generator for each plugin in the WEB-INF/custom-bzfs-plugins folder)
+-->
+
+
+
+
+
+
+

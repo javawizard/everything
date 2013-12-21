@@ -1,0 +1,9 @@
+Content-Type: text/x-zim-wiki
+Wiki-Format: zim 0.26
+Creation-Date: Sat, 22 Aug 2009 01:32:05 -0600
+Modification-Date: Sat, 22 Aug 2009 01:51:57 -0600
+
+====== 5. Authentication ======
+Created Saturday 22 August 2009
+
+BZNetwork has a sophisticated authentication and authorization system. BZNetwork can authenticate users based on their BZFlag callsign or a BZNetwork-specific username and password. BZNetwork can authorize users based on individual permissions applied to particular items.

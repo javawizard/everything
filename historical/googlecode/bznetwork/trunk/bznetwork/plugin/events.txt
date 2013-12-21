@@ -1,0 +1,37 @@
+The events that are going to be implemented by the plugin are:
+
+ban
+filteredChatMessage (done)
+capture
+playerDie**
+playerSpawn**
+rawChatMessage
+unknownSlashCommand
+listServerUpdate?
+hostBanNotify
+hostBanModify
+idBan
+kick
+kill** (compare with playerDie, maybe only have one of them)
+teamkill (done)
+playerPaused** (can be used to detect F5ing)
+messageFiltered (compare with filteredChatMessage)
+gameStart
+gameEnd
+slashCommand
+playerAuth
+serverMsg
+anointRabbit**?
+newRabbit**?
+reload
+logging
+flagTransferred*
+flagGrabbed*
+flagDropped*
+playerCollision (if this refers to physical collision, remove it; if it refers to nick collision, keep it)
+flagReset
+reportFiled
+teleport*
+
+* These can be enabled by a parameter to the plugin itself. This makes it so that the bznetwork user can set whether or not they want to see those events. A busy server would benefit from improved performance with this disabled.
+** These are enabled by default, but a parameter can be passed into the plugin to disable them. Servers which need super-speedy performance can disable these.

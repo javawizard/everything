@@ -1,0 +1,20 @@
+<project name="BZNetwork">
+	<property name="target-folder" value="/data/apache/tomcat/webapps/bznetwork">
+	</property>
+	<target name="deploy">
+		<delete dir="${target-folder}">
+		</delete>
+        <copy todir="${target-folder}">
+            <fileset dir="${basedir}/war">
+                <include name="**/*" />
+                <exclude name="**/.svn" />
+            </fileset>
+        </copy>
+        <copy todir="${target-folder}/WEB-INF/classes">
+            <fileset dir="${basedir}/war/WEB-INF/resources">
+                <include name="**/*" />
+                <exclude name="**/.svn" />
+            </fileset>
+        </copy>
+	</target>
+</project>

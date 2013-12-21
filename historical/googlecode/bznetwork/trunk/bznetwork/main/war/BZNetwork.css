@@ -1,0 +1,336 @@
+.bznetwork-ServerListTable {
+	border: 1px solid #cccccc
+}
+
+.bznetwork-MenuCurrentScreenItem {
+	text-decoration: none;
+	color: black;
+	font-weight: bold
+}
+
+.bznetwork-MainScreenHeader {
+	font-weight: bold;
+	font-size: 24px;
+}
+
+.bznetwork-MainScreenHeaderLeft {
+	padding-left: 117px;
+}
+
+.bznetwork-MainScreenHeaderName {
+	font-weight: bold;
+	font-size: 24px;
+	color: #aaaaaa
+}
+
+.bznetwork-PeriodButton {
+	text-align: center;
+}
+
+.bznetwork-DateButton {
+	text-align: center;
+}
+
+.bznetwork-MainScreenHeaderSeparator {
+	font-weight: bold;
+	font-size: 24px;
+	color: #555555;
+	text-align: center;
+	width: 15px;
+	padding-right: 5px
+}
+
+.plainbutton {
+	background: none;
+	border: none;
+}
+
+.bznetwork-GettingStartedLink {
+	color: #888888;
+	font-size: 20px;
+	font-weight: bold;
+	text-decoration: underline;
+}
+
+.bznetwork-GettingStartedLink-out {
+	color: #888888;
+	font-size: 20px;
+	font-weight: bold;
+}
+
+.bznetwork-GettingStartedLink-out a {
+	text-decoration: none
+}
+
+.bznetwork-MenuBoxPanelLeft {
+	width: 112px;
+	border-right: 1px solid #888888;
+	margin-right: 6px;
+	font-size: 12px;
+}
+
+.bznetwork-Header2 {
+	font-weight: bold;
+	font-size: 20px;
+}
+
+.bznetwork-Header3 {
+	font-weight: bold;
+	font-size: 16px;
+}
+
+.bznetwork-centered {
+	text-align: center;
+}
+
+.bznetwork-PermsTableOn {
+	color: #888888
+}
+
+.bznetwork-PermsTableGlobal {
+	color: #888888
+}
+
+.bznetwork-PermsTableNewGlobal {
+	color: #888888
+}
+
+.bznetwork-PermsTableGroupServerSlash {
+	color: #888888
+}
+
+.bznetwork-AuthEditorProviderName {
+	font-weight: bold;
+}
+
+.epc-StaticTextBuilder-editorgrid {
+	border: 1px solid #BBBBBB;
+	border-spacing: 0px;
+}
+
+.bznetwork-ServerList-GroupName {
+	font-weight: bold
+}
+
+.bznetwork-ServerList-DetailsNoUsers {
+	color: #888888;
+}
+
+.bznetwork-ServerState-LIVE .header,.bznetwork-ServerState-LIVE .header a,.bznetwork-ServerState-LIVE .header td
+	{
+	color: #00aa00
+}
+
+.bznetwork-ServerState-STARTING .header,.bznetwork-ServerState-STARTING .header a,.bznetwork-ServerState-STARTING .header td
+	{
+	color: #0055aa
+}
+
+.bznetwork-ServerState-STOPPING .header,.bznetwork-ServerState-STOPPING .header a,.bznetwork-ServerState-STOPPING .header td
+	{
+	color: #aaaa00
+}
+
+.bznetwork-ServerState-STOPPED .header,.bznetwork-ServerState-STOPPED .header a,.bznetwork-ServerState-STOPPED .header td
+	{
+	color: #aa0000
+}
+
+.bznetwork-indented {
+	padding-left: 16px
+}
+
+.bznetwork-None {
+	
+}
+
+.bznetwork-Actions-DetailsBox {
+	border-left: 15px solid white;
+}
+
+/* The style that is applied when the user would have an "@" on the bzflag server */
+.bznetwork-ServerPlayerList-Admin {
+	color: #00aaaa
+}
+
+/* The style that is applied when the user would have a "+" on the bzflag server */
+.bznetwork-ServerPlayerList-Verified {
+	color: #00aaaa
+}
+
+/* The style that is applied when the user would have a "-" on the bzflag server */
+.bznetwork-ServerPlayerList-VerifiedWrong {
+	color: #00aaaa
+}
+
+.bznetwork-ServerPlayerList-red {
+	color: #aa0000
+}
+
+.bznetwork-ServerPlayerList-rogue {
+	color: #aaaa00
+}
+
+.bznetwork-ServerPlayerList-green {
+	color: #00aa00
+}
+
+.bznetwork-ServerPlayerList-blue {
+	color: #0000aa
+}
+
+.bznetwork-ServerPlayerList-purple {
+	color: #aa00aa
+}
+
+.bznetwork-ServerPlayerList-hunters {
+	color: #aa5500
+}
+
+.bznetwork-ServerPlayerList-rabbit {
+	color: #000000;
+	font-family: monospace;
+}
+
+.bznetwork-ServerPlayerList-observer {
+	color: #000000
+}
+
+.bznetwork-ServerPlayerList-noteam {
+	color: #000000;
+	font-style: italic
+}
+
+.bznetwork-TimeBox {
+	text-align: center;
+	width: 100%;
+}
+
+.bznetwork-LogFilterWidget-SearchButton {
+	width: 100%;
+	height: 100%;
+	font-size: 20px;
+}
+
+.bznetwork-LogViewerTable {
+	width: 100%
+}
+
+.bznetwork-LogViewerTableKey {
+	width: 100%
+}
+
+/*These styles are for the log viewer table rows and such*/
+.lvtp-red {
+	color: #770000
+}
+
+.lvtp-green {
+	color: #005539
+}
+
+.lvtp-blue {
+	color: #004477
+}
+
+.lvtp-purple {
+	color: #770077
+}
+
+.lvtp-rogue {
+	color: #776600;
+}
+
+.lvtp-hunters {
+	color: #367700
+}
+
+.lvtp-rabbit {
+	color: #000000;
+	/*Monospaced fonts for the rabbit look kind of weird, 
+	but lighter text colors don't work with the backgrounds 
+	so it's pretty much the best I can think of at the moment.*/
+	font-family: monospace;
+}
+
+/*Now the styles for the different types of events.*/
+.lvtr-stdout {
+	background-color: #cccccc
+}
+
+.lvtr-filtered {
+	background-color: #ffff33
+}
+
+.lvtr-report {
+	background-color: #e39bd1
+}
+
+.lvtr-slashcommand {
+	background-color: #ff6666
+}
+
+.lvtr-chat-unknown {
+	background-color: #eeeeee
+}
+
+.lvtr-chat-server {
+	background-color: #f8ebcd
+}
+
+.lvtr-chat-broadcast {
+	background-color: #8df394
+}
+
+.lvtr-chat-admin {
+	background-color: #f39551
+}
+
+.lvtr-chat-team {
+	background-color: #39e4ef
+}
+
+.lvtr-chat-private {
+	background-color: #f1ed8c
+}
+
+.lvtr-join {
+	background-color: #16ae88
+}
+
+.lvtr-part {
+	background-color: #16ae88
+}
+
+.lvtr-status {
+	background-color: #a8a9ef
+}
+
+.bznetwork-LogViewerTable-header {
+	font-weight: bold
+}
+
+/*END styles for the log viewer table*/
+.bznetwork-VerticalBar {
+	vertical-align: middle;
+}
+
+.bznetwork-ChooseAuthProviderButton {
+	white-space: pre-line
+}
+/*
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+*/

@@ -1,0 +1,8 @@
+This file describes settings.props, a file located under WEB-INF/config in BZNetwork instances. The properties contained in the file are:
+
+  * *db-url:* The jdbc url of the database to connect to
+  * *db-driver:* The driver of the database to connect to
+  * *db-username:* The username to use when connecting to the database
+  * *db-password:* The password to use when connecting to the database
+  * *store-folder:* The folder to use to store persistent files, which BZNetwork and bzfs must have read/write access to
+  * *cache-folder:* The folder to use as a cache. BZNetwork must have read/write access, and bzfs must have read access.

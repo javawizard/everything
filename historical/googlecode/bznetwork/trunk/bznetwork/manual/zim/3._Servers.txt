@@ -1,0 +1,9 @@
+Content-Type: text/x-zim-wiki
+Wiki-Format: zim 0.26
+Creation-Date: Sat, 22 Aug 2009 01:16:53 -0600
+Modification-Date: Sat, 22 Aug 2009 01:34:14 -0600
+
+====== 3. Servers ======
+Created Saturday 22 August 2009
+
+BZNetwork's entire function is to manage BZFlag servers.

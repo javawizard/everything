@@ -1,0 +1,3 @@
+BZNetwork doesn't have any downloads available yet. If you have [http://java.sun.com Java], [http://ant.apache.org Ant], [http://eclipse.org Eclipse], and [http://gwt.google.com GWT], then you can build BZNetwork yourself. I'll post instructions here soon on how to build it.
+
+Or you can join #bztraining on irc.freenode.net and ask jcp for instructions.

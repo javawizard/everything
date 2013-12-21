@@ -1,0 +1,11 @@
+This describes some things about what BZNetwork.html does.
+
+BZNetwork.html is what actually runs the web administration interface. It is also in charge of internal authentication. It is never called without a `mode` query parameter unless the user has already logged in. If it is called without such a parameter, and the user has not logged in, it redirects to index.jsp.
+
+The mode parameter can currently contain one of two values: internal-auth and choose-auth-provider. internal-auth indicates that bznetwork is to show a form that allows the user to enter a username and password. If there are any other enabled providers besides the internal provider, then a link will also be shown that reads roughly "Choose another method to log in" that when clicked on causes bznetwork to display the choose-auth-provider screen (but without actually redirecting to add this parameter).
+
+choose-auth-provider causes the authentication provider choosing screen to show. This shows a message that reads roughly "Choose a method to use to log in to {site-name}", in a vertical panel, with buttons below that, one for each enabled provider. I'm thinking the width should be fixed at 200px or 300px for the buttons.
+
+When the user clicks on a button, it redirects them to the url for that authentication provider. For simplicity, and extensibility, this includes the internal provider, so that it will cause a page reload when they click the button to go to the internal provider.
+
+When the user manages to log in successfully via the internal provider (the server-side code correspondingly validating their credentials and telling the bznetworkserver class that they have logged in), it refreshes the page, but without the mode parameter. As covered in other documents in the wiki, other providers should have their own jsp files that authenticate them with the bznetworkserver class and then redirect them to BZNetwork.html.

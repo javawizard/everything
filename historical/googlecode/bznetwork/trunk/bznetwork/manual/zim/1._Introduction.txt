@@ -1,0 +1,17 @@
+Content-Type: text/x-zim-wiki
+Wiki-Format: zim 0.26
+Creation-Date: Sat, 22 Aug 2009 01:09:12 -0600
+Modification-Date: Sat, 22 Aug 2009 01:24:24 -0600
+
+====== Introduction ======
+Created Saturday 22 August 2009
+
+This is the official BZNetwork manual. It is intended to comprehensive. This means that I'm going to make a best effort to document every last feature that BZNetwork has. If you're new to BZNetwork, I suggest you read the Getting Started guide, found at http://code.google.com/p/bznetwork/wiki/GettingStarted.
+
+BZNetwork is still a work-in-progress. If you see anything in BZNetwork that is not included in this manual, make sure and file an issue on it at http://code.google.com/p/bznetwork/issues/entry. You will need a Google account to file an issue at that location.
+
+If you have any questions after reading this manual, join #bztraining on irc.freenode.net and ask jcp.
+
+This manual is organized into the following sections:
+
+TBD

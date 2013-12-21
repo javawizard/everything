@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE web-app
+    PUBLIC "-//Sun Microsystems, Inc.//DTD Web Application 2.3//EN"
+    "http://java.sun.com/dtd/web-app_2_3.dtd">
+<web-app>
+
+	<!-- Default page to serve -->
+	<welcome-file-list>
+		<welcome-file>index.jsp</welcome-file>
+	</welcome-file-list>
+	<!-- max size, in bytes, of map file uploads -->
+	<context-param>
+		<param-name>maxSize</param-name>
+		<param-value>15000000</param-value>
+	</context-param>
+
+	<!-- Servlets -->
+	<servlet>
+		<servlet-name>authLink</servlet-name>
+		<servlet-class>jw.bznetwork.server.rpc.GlobalLinkImpl</servlet-class>
+	</servlet>
+	<servlet-mapping>
+		<servlet-name>authLink</servlet-name>
+		<url-pattern>/bznetwork/auth-link</url-pattern>
+	</servlet-mapping>
+	<servlet>
+		<servlet-name>downloadMapServlet</servlet-name>
+		<servlet-class>jw.bznetwork.server.MapDownloadServlet</servlet-class>
+	</servlet>
+	<servlet-mapping>
+		<servlet-name>downloadMapServlet</servlet-name>
+		<url-pattern>/download-map/*</url-pattern>
+	</servlet-mapping>
+	<servlet>
+		<servlet-name>unauthLink</servlet-name>
+		<servlet-class>jw.bznetwork.server.rpc.GlobalUnauthLinkImpl</servlet-class>
+	</servlet>
+	<servlet-mapping>
+		<servlet-name>unauthLink</servlet-name>
+		<url-pattern>/bznetwork/unauth-link</url-pattern>
+	</servlet-mapping>
+	<servlet>
+		<servlet-name>mapUploadServlet</servlet-name>
+		<servlet-class>jw.bznetwork.server.MapUploadServlet</servlet-class>
+	</servlet>
+	<servlet-mapping>
+		<servlet-name>mapUploadServlet</servlet-name>
+		<url-pattern>*.gwtupmap</url-pattern>
+	</servlet-mapping>
+	<servlet>
+		<servlet-name>redirectToRoot</servlet-name>
+		<servlet-class>jw.bznetwork.server.RootRedirectServlet</servlet-class>
+	</servlet>
+	<servlet-mapping>
+		<servlet-name>redirectToRoot</servlet-name>
+		<url-pattern>/,</url-pattern>
+	</servlet-mapping>
+	<listener>
+		<listener-class> jw.bznetwork.server.BZNetworkServer </listener-class>
+	</listener>
+	<filter>
+		<filter-name>request-tracker</filter-name>
+		<filter-class>jw.bznetwork.server.RequestTrackerFilter</filter-class>
+	</filter>
+	<filter-mapping>
+		<filter-name>request-tracker</filter-name>
+		<url-pattern>/*</url-pattern>
+	</filter-mapping>
+</web-app>

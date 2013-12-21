@@ -1,0 +1,23 @@
+#labels Help
+XSM-inline is a slight variant of [http://code.google.com/p/opengroove/wiki/XSM XSM] used in various places within BZNetwork as a sand-boxed scripting language. It allows for easy embedding of XSM code within other text, where the XSM code can dynamically contribute to that text.
+
+Within text that supports XSM-inline, such as the Welcome page (you can edit its contents on the Configuration page in BZNetwork), you can include pairs of the text `[xsm]`. Between matching pairs should be XSM code, and everywhere else is literal text. The XSM code can use the `<print>` command to include dynamic text in the output.
+
+For example, If you set BZNetwork's welcome message to be:
+{{{
+Hey [xsm]<print><user/></print>[xsm]. Welcome to the BZTraining administration site.
+}}}
+and the user logged in with the username or callsign "javawizard2539", then the welcome page would show:
+{{{
+Hey javawizard2539. Welcome to the BZTraining administration site.
+}}}
+BZNetwork's XSM interpreter also includes the following commands, in addition to what the default interpreter (mentioned at the URL at the top of this page) includes. Some of these are commands that the default interpreter shows as "not yet implemented"; These are commands that I have implemented in BZNetwork's XSM interpreter but that have not yet been ported back to the normal XSM interpreter.
+
+==User==
+This command returns the username of the user that is logged in to BZNetwork, or null if the user is not logged in.
+
+==Provider==
+This command returns the provider of the user that is logged in to BZNetwork, or null if the user is not logged in.
+
+==Vars==
+This is one of the commands that I intend to backport to XInterpreter. It returns a list of the names of all of the variables defined within that scope. When used within functions, it currently only returns variables local to that function, not global variables. When used outside of a function, it returns global variables.

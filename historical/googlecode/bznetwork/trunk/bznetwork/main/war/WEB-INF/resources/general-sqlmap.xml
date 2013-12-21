@@ -1,0 +1,309 @@
+
+<!DOCTYPE sqlMap      
+    PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN"      
+    "http://ibatis.apache.org/dtd/sql-map-2.dtd">
+<sqlMap>
+
+	<!-- !ADDTOSQL -->
+
+    <select id="listTriggersByRecipient" 
+         parameterClass="java.lang.Integer" 
+         resultClass="jw.bznetwork.client.data.model.Trigger" >
+        select * from triggers where recipient = #value#
+    </select>
+
+    <select id="getEmailGroupById" 
+         parameterClass="java.lang.Integer" 
+         resultClass="jw.bznetwork.client.data.model.EmailGroup" >
+        select * from emailgroups where emailgroupid=#value#
+    </select>
+
+    <select id="getIrcBotById" 
+         parameterClass="java.lang.Integer" 
+         resultClass="jw.bznetwork.client.data.model.IrcBot" >
+        select * from ircbots where botid = #value#
+    </select>
+
+    <select id="getTriggerById" 
+         parameterClass="java.lang.Integer" 
+         resultClass="jw.bznetwork.client.data.model.Trigger" >
+        select * from `triggers` where triggerid = #value#
+    </select>
+
+    <select id="listTriggersByTargetAndEvent" 
+         parameterClass="jw.bznetwork.client.data.model.TargetEventPair" 
+         resultClass="jw.bznetwork.client.data.model.Trigger" >
+        select * from triggers
+        where event=#event#
+        and target=#target#
+    </select>
+
+    <select id="listIrcBots" 
+         resultClass="jw.bznetwork.client.data.model.IrcBot" >
+        select * from ircbots
+    </select>
+
+    <select id="listEmailGroups" 
+         resultClass="jw.bznetwork.client.data.model.EmailGroup" >
+        select * from emailgroups
+    </select>
+
+    <select id="listTriggers" 
+         resultClass="jw.bznetwork.client.data.model.Trigger" >
+        select * from triggers
+    </select>
+
+    <update id="updateTrigger" 
+         parameterClass="jw.bznetwork.client.data.model.Trigger" >
+        update `triggers` set
+        event=#event#,
+        target=#target#,
+        sendtype=#sendtype#,
+        recipient=#recipient#,
+        subject=#subject#,
+        message=#message#
+        where triggerid=#triggerid#
+    </update>
+
+    <delete id="deleteTrigger" 
+         parameterClass="java.lang.Integer" >
+        delete from `triggers`
+        where triggerid = #value#
+    </delete>
+
+    <insert id="addTrigger" 
+         parameterClass="jw.bznetwork.client.data.model.Trigger" >
+        insert into `triggers`
+        (triggerid,event,target,sendtype,recipient,subject,message)
+        values
+        (#triggerid#,#event#,#target#,#sendtype#,#recipient#,
+        #subject#,#message#)
+    </insert>
+
+    <update id="updateIrcBot" 
+         parameterClass="jw.bznetwork.client.data.model.IrcBot" >
+        update ircbots set
+        nick=#nick#,
+        server=#server#,
+        port=#port#,
+        password=#password#,
+        channel=#channel#
+        where botid = #botid#
+    </update>
+
+    <update id="updateEmailGroup" 
+         parameterClass="jw.bznetwork.client.data.model.EmailGroup" >
+        update emailgroups set
+        name=#name#,
+        addresses=#addresses#
+        where emailgroupid = #emailgroupid#
+    </update>
+
+    <delete id="deleteEmailGroup" 
+         parameterClass="java.lang.Integer" >
+        delete from emailgroups where emailgroupid = #value#
+    </delete>
+
+    <insert id="addEmailGroup" 
+         parameterClass="jw.bznetwork.client.data.model.EmailGroup" >
+        insert into emailgroups
+        (emailgroupid,name,addresses)
+        values
+        (#emailgroupid#,#name#,#addresses#)
+    </insert>
+
+    <delete id="deleteIrcBot" 
+         parameterClass="java.lang.Integer" >
+        delete from ircbots where botid = #value#
+    </delete>
+
+    <insert id="addIrcBot" 
+         parameterClass="jw.bznetwork.client.data.model.IrcBot" >
+        insert into ircbots
+        (botid,nick,server,port,password,channel)
+        values
+        (#botid#,#nick#,#server#,#port#,#password#,#channel#
+        )
+    </insert>
+	<select id="getConfigSetting" parameterClass="java.lang.String"
+		resultClass="jw.bznetwork.client.data.model.ConfigSetting"> select * from configsettings where name = #name#</select>
+	<update id="updateConfigSetting" parameterClass="jw.bznetwork.client.data.model.ConfigSetting"> update
+		configsettings set value = #value# where name = #name#</update>
+	<insert id="addConfigSetting" parameterClass="jw.bznetwork.client.data.model.ConfigSetting"> insert into
+		configsettings (name,value) values (#name#,#value#)</insert>
+	<delete id="deleteConfigSetting" parameterClass="jw.bznetwork.client.data.model.ConfigSetting"> delete from
+		configsettings where name = #name# and value = #value#</delete>
+	<select id="listConfigSettingNames" resultClass="java.lang.String"> select name
+		from configsettings</select>
+	<select id="listConfigSettings" resultClass="jw.bznetwork.client.data.model.ConfigSetting"> select * from
+		configsettings</select>
+	<select id="getConfigSettingValue" parameterClass="java.lang.String"
+		resultClass="java.lang.String"> select value from configsettings where name = #value#
+	</select>
+	<select id="searchLogs" parameterClass="jw.bznetwork.client.data.model.LogRequest"
+		resultClass="jw.bznetwork.client.data.model.LogEvent"> select * from logevents where `when` &gt; #start# and `when` &lt; #end#
+        $filter$ 
+    </select>
+
+    <delete id="clearActionLog" 
+         parameterClass="jw.bznetwork.client.data.model.UserPair" >
+        delete from actions 
+        where provider = #provider#
+        and username = #user#
+    </delete>
+
+    <select id="getActionUserList" 
+         resultClass="jw.bznetwork.client.data.model.UserPair" >
+        select distinct provider, username as user from actions
+    </select>
+
+    <select id="getActionEventNames" 
+         resultClass="java.lang.String" >
+        select distinct event from actions
+    </select>
+
+    <select id="getActionCountForSearch" 
+         parameterClass="jw.bznetwork.client.data.model.ActionRequest" 
+         resultClass="java.lang.Integer" >
+        select count(*) from actions
+        where provider = $literalProvider$
+        and username = $literalUser$
+        and event = $literalEvent$
+    </select>
+
+    <select id="listActionsForSearch" 
+         parameterClass="jw.bznetwork.client.data.model.ActionRequest" 
+         resultClass="jw.bznetwork.client.data.model.Action" >
+        select * from actions
+        where provider = $literalProvider$
+        and username = $literalUser$
+        and event = $literalEvent$
+        order by `when` desc
+        limit #length# offset #offset#
+    </select>
+
+    <select id="getCallsignByName" 
+         parameterClass="java.lang.String" 
+         resultClass="jw.bznetwork.client.data.model.Callsign" >
+        select * from callsigns where LOWER(callsign) = LOWER(#value#)
+    </select>
+
+    <delete id="deleteCallsign" 
+         parameterClass="java.lang.String" >
+        delete from callsigns
+        where callsign = #value#
+    </delete>
+	<select id="listCallsigns" resultClass="jw.bznetwork.client.data.model.Callsign">
+		select * from callsigns</select>
+	<insert id="addCallsign" parameterClass="jw.bznetwork.client.data.model.Callsign">
+		insert into callsigns (callsign,role) values (#callsign#,#role#)
+	</insert>
+	<insert id="addActionEvent" parameterClass="jw.bznetwork.client.data.model.Action">
+		insert into actions (provider,username,`when`,event,details,target)
+		values (#provider#,#username#,#when#,#event#, #details#,#target#)
+	</insert>
+	<update id="updateServer" parameterClass="jw.bznetwork.client.data.model.Server">
+		update servers set name = #name#, port = #port#, groupid=#groupid#,
+		listed=#listed#, running=#running#, dirty=#dirty#, notes=#notes#,
+		inheritgroupdb=#inheritgroupdb#, loglevel=#loglevel#,
+		banfile=#banfile# where serverid=#serverid#</update>
+	<insert id="addServer" parameterClass="jw.bznetwork.client.data.model.Server">
+		insert into servers
+		(serverid,name,port,groupid,listed,running,dirty,notes,
+		inheritgroupdb,loglevel,banfile) values
+		(#serverid#,#name#,#port#,#groupid#,#listed#,
+		#running#,#dirty#,#notes#,#inheritgroupdb#, #loglevel#,#banfile#)
+	</insert>
+	<update id="updateGroup" parameterClass="jw.bznetwork.client.data.model.Group">
+		update groups set name = #name#, banfile = #banfile# where groupid =
+		#groupid#</update>
+	<insert id="addGroup" parameterClass="jw.bznetwork.client.data.model.Group">
+		insert into groups (groupid,name,banfile) values
+		(#groupid#,#name#,#banfile#)</insert>
+	<select id="listServersByGroup" parameterClass="java.lang.Integer"
+		resultClass="jw.bznetwork.client.data.model.Server"> select * from
+		servers where groupid = #value# order by port asc</select>
+	<insert id="addBanfile" parameterClass="jw.bznetwork.client.data.model.Banfile">
+		insert into banfiles (banfileid,name) values ( #banfileid#, #name#);
+	</insert>
+	<select id="getBanfileById" parameterClass="java.lang.Integer"
+		resultClass="jw.bznetwork.client.data.model.Banfile"> select * from
+		banfiles where banfileid = #value#</select>
+	<select id="listBanfiles" resultClass="jw.bznetwork.client.data.model.Banfile">
+		select * from banfiles</select>
+	<insert id="addLogEvent" parameterClass="jw.bznetwork.client.data.model.LogEvent">
+		insert into logevents
+		(serverid,event,`when`,source,target,sourceid,targetid,
+		sourceteam,targetteam,ipaddress,bzid,email, metadata,data) values
+		(#serverid#, #event#, #when#, #source#, #target#, #sourceid#,
+		#targetid#, #sourceteam#, #targetteam#, #ipaddress#, #bzid#, #email#,
+		#metadata#, #data#)</insert>
+	<select id="getPermission" parameterClass="jw.bznetwork.client.data.model.Permission"
+		resultClass="jw.bznetwork.client.data.model.Permission"> select * from
+		permissions where roleid = #roleid# and permission = #permission# and
+		target = #target#</select>
+	<select id="listServers" resultClass="jw.bznetwork.client.data.model.Server">
+		select * from servers order by port asc</select>
+	<select id="listGroups" resultClass="jw.bznetwork.client.data.model.Group">
+		select * from groups order by name asc</select>
+	<select id="getServerById" parameterClass="java.lang.Integer"
+		resultClass="jw.bznetwork.client.data.model.Server"> select * from
+		servers where serverid = #value#</select>
+	<select id="getGroupById" parameterClass="java.lang.Integer"
+		resultClass="jw.bznetwork.client.data.model.Group"> select * from
+		groups where groupid = #value#</select>
+	<update id="executeSql" parameterClass="java.lang.String">
+		$value$</update>
+	<update id="setNextId" parameterClass="java.lang.Integer">
+		update idsequence set nextvalue = #value#</update>
+	<select id="getNextId" resultClass="java.lang.Integer"> select *
+		from idsequence</select>
+<!-- 	<update id="updateConfiguration" parameterClass="jw.bznetwork.client.data.model.Configuration">
+		update configuration set welcome = #welcome#, sitename = #sitename#,
+		contact = #contact#, executable = #executable#, menuleft = #menuleft#,
+		currentname = #currentname#</update> -->
+	<insert id="addAuthgroup" parameterClass="jw.bznetwork.client.data.model.Authgroup">
+		insert into authgroups values (#name#,#role#)</insert>
+	<delete id="deleteAuthgroup" parameterClass="java.lang.String">
+		delete from authgroups where name = #value#</delete>
+	<delete id="deletePermissionsByTarget" parameterClass="java.lang.Integer">
+		delete from permissions where target = #target#</delete>
+	<delete id="deletePermissionsByRole" parameterClass="java.lang.Integer">
+		delete from permissions where roleid = #value#</delete>
+	<update id="deletePermission" parameterClass="jw.bznetwork.client.data.model.Permission">
+		delete from permissions where roleid = #roleid# and permission =
+		#permission# and target = #target#</update>
+	<insert id="addPermission" parameterClass="jw.bznetwork.client.data.model.Permission">
+		insert into permissions values (#roleid#, #permission#, #target#)
+	</insert>
+	<delete id="deleteRole" parameterClass="jw.bznetwork.client.data.model.ValueFive">
+		delete from users where role = #data1#; delete from authgroups where
+		role = #data2#; delete from callsigns where role = #data3#; delete
+		from permissions where roleid = #data4#; delete from roles where
+		roleid = #data5#</delete>
+	<update id="updateRole" parameterClass="jw.bznetwork.client.data.model.Role">
+		update roles set name = #name# where roleid = #roleid#</update>
+	<insert id="addRole" parameterClass="jw.bznetwork.client.data.model.Role">
+		insert into roles values (#roleid#, #name#)</insert>
+	<select id="listRoles" resultClass="jw.bznetwork.client.data.model.Role">
+		select * from roles</select>
+	<select id="getAuthgroupByName" parameterClass="java.lang.String"
+		resultClass="jw.bznetwork.client.data.model.Authgroup"> select * from
+		authgroups where name = #value#</select>
+	<select id="listAuthgroups" resultClass="jw.bznetwork.client.data.model.Authgroup">
+		select * from authgroups</select>
+	<select id="getPermissionsByRole" parameterClass="java.lang.Integer"
+		resultClass="jw.bznetwork.client.data.model.Permission"> select
+		p.roleid, p.permission, p.target, s.groupid as `group`, b.banfileid as
+		banfile from permissions p left outer join servers s on s.serverid =
+		p.target left outer join banfiles b on b.banfileid = p.target where
+		p.roleid = #value#</select>
+	<select id="getRoleById" parameterClass="java.lang.Integer"
+		resultClass="jw.bznetwork.client.data.model.Role"> select * from roles
+		where roleid = #value#</select>
+	<select id="getUserByUsername" parameterClass="java.lang.String"
+		resultClass="jw.bznetwork.client.data.model.User"> select * from users
+		where username = #value#</select>
+<!--	<select id="getConfiguration" resultClass="jw.bznetwork.client.data.model.Configuration">
+		select * from configuration</select> -->
+</sqlMap>

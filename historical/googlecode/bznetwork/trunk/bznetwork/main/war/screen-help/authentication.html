@@ -1,0 +1,43 @@
+<html>
+<body>
+<h2>Authentication</h2>
+<p>The authentication page allows you to change how users can log
+into your site. It's made up of a list of authentication providers, and
+you can use the page to select which providers are enabled, and if a
+particular provider is the default.<br>
+</p>
+<p>You can also write your own custom authentication provider if
+you'd like to pull login information from some other source. I'll get to
+that later on in this help page.</p>
+<p>For each authentication provider installed on the server, there's
+a short description of what that provider does, and a dropdown box that
+you can use to select whether that provider is enabled, disabled, or the
+default. Only one provider can be the default, but multiple providers
+can be enabled or disabled at the same time.</p><p>If there is no default provider, users will be presented with a choice of which provider to use when they log in, along with a short description of what each provider is for.<br>
+</p>
+<h3>Callsign-based authentication<br>
+</h3>
+<p>This authentication provider authenticates users by asking them
+for their BZFlag callsign. Roles are assigned to BZFlag groups or to
+individual callsigns (or both). This is done using the <a href="authgroups.html">Authgroups</a> page and the <a href="callsigns.html">Callsigns</a> page, respectively. When a user
+logs in, they are assigned the role that is present on their callsign,
+if any, and the roles of all of the groups that they are a member of. If
+this does not result in them being assigned with any roles, they are
+informed that they do not have any permissions at the server, and that
+they should try to authenticate using different means. When I get a
+public site working, users without permissions will show as being logged
+in, but their permissions will be the same as users that have not logged
+in.</p>
+<h3>Internal username authentication<br>
+</h3>
+<p>This authentication provider authenticates off of users stored in
+the <b>users</b> database table. The <i>admin</i> user created when you
+first install BZNetwork on a server is an internal username. In the
+future, you will be able to actually edit this list of users with a <b>Users</b>
+page, but since I haven't finished that page yet, there's no way to edit
+these users as of yet. Because of this, it's a good idea to either
+disable this provider altogether (so that other users can't use the
+admin account to log in) or run <font face="'Courier New', Courier, mono">delete
+from users</font> on the database that BZNetwork uses to delete the admin account. If you're going to do this, make sure that you've applied a role with all permissions to one of your BZFlag callsigns.</p><h3>Custom authentication providers<br></h3><p>It's possible to create a custom authentication provider for BZNetwork by writing a JSP file (this is Java's analog of a PHP file) and adding a line to <font face="'Courier New', Courier, mono">WEB-INF/server/auth.txt</font>. As an example, you could write a custom authentication provider that authenticates based on a WordPress username and password. I'll explain more about writing a custom authentication provider later, or you can ask me if you want to use a custom authentication provider (or if you'd like me to write one for you, which I'd be more than happy to do). Connect to irc.freenode.net, join channel #bztraining, and ask jcp.<br></p>
+</body>
+</html>

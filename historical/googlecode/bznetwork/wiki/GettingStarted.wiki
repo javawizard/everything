@@ -1,0 +1,2 @@
+#labels help
+The Getting Started guide is coming soon. In the mean time, join #bztraining at irc.freenode.net and ask jcp.
