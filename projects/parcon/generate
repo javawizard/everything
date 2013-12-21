@@ -1,0 +1,25 @@
+#!/bin/bash
+
+cd docs
+
+
+for DOC in parcon-tutorial parcon-examples parcon-donate parcon-download
+do
+	pandoc -o ${DOC}-temp.html ${DOC}.md
+	../technotes/template-creator.pl ../technotes/web-template.html ${DOC}-temp.html ../technotes/sidebar.html ${DOC}.html
+	rm ${DOC}-temp.html
+done
+
+
+for PACKAGE in parcon parcon.pargen parcon.static parcon.pargon parcon.pargon.nbo \
+parcon.graph parcon.testframework parcon.tests parcon.railroad parcon.railroad.raildraw \
+parcon.railroad.regex parcon.options parcon.ordered_dict
+do
+	PYTHONPATH=.. pydoc -w $PACKAGE
+	../technotes/pydoc-analytics.pl ${PACKAGE}.html ${PACKAGE}-new.html
+	rm ${PACKAGE}.html
+	mv ${PACKAGE}-new.html ${PACKAGE}.html
+done
+
+
+cd .. 
