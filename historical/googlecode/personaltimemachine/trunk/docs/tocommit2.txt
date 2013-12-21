@@ -1,0 +1,15 @@
+This is the new documentation on how we commit. Most stuff is the same as in
+tocommit.txt, so I won't mention everything here.
+
+The main difference lies in how files that exist in both revisions are compared. The 
+head is stored line-encoded. Then, when a commit happens, the working copy is copied to
+tmp/lineformatted. All of the files, then, as reported to find, are line-formatted. This
+folder is the one that is then diffed against the head revision. Once the revision has
+been applied, the contents of the head folder are deleted, and tmp/lineformatted is
+renamed to head.
+
+When a revision is to be exported, or applied somewhere, the diffs are put together as
+normal. Once everything's been restored via the diffs and command list, the whole thing
+is line-unformatted, producing the final result.
+
+New files are stored line-formatted, for ease of exporting.

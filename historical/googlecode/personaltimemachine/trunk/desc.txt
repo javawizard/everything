@@ -1,0 +1,38 @@
+PersonalTimeMachine is a versioning tool for a local folder. It's probably more like a time machine tool than a version control tool. It doesn't support multiple people working on the same repository, and the repository is a local one; network access is not supported. It's main purpose, therefore, is to version a local folder that only one person will be editing, so that the user can view previous versions of that folder in case they make a mistake when editing a file in that folder.
+
+Actions cannot be performed on individual elements; they can only be performed on the repository as a whole.
+
+Because only one person can use a repository, merging is not supported. Reverting can only be performed when there are no outstanding changes, and the entire repository will be reverted. If individual files are to be reverted, instead of the whole repository, then the revision in question should be exported and the relevant files copied back to the main repository.
+
+PersonalTimeMachine, despite being a java project, is written entirely in shell scripts. It is run by executing the ptm shell script. ptm.bat is provided for convinence of windows users. It simply runs "bash ptm", which requires that cygwin be installed on the user's computer.
+
+PersonalTimeMachine requires the following unix command-line utilities to be installed:
+
+diff
+patch
+find
+xargs
+awk (see note below)
+bash
+sed
+rsync (see note below)
+
+Most of these are installed by default on any unix system. With cygwin, patch is not selected by default, so it must be manually selected for installation. PersonalTimeMachine also requires some typical utilities such as rm, mkdir, and cd, but I've yet to hear of a machine that doesn't come with these, so I won't mention more about them here. If you see a message that a particular command can't be found while executing PersonalTimeMachine, then you need to install that command.
+
+Awk is used for number iteration. It generates lists of number sequences for use with the "for in" shell function, so that the for in statement can be used like a "for i=0;i<...;i++" statement. PersonalTimeMachine can be modified so as not to require awk, at the expense of more disk space usage. This would be accomplished by reimplementing the ptm-numberlist.sh command to read from a file containing a list of numbers and return those that are greater than or equal to the first argument but less than or equal to the second argument, and append more numbers onto the file if not enough numbers are present.
+
+Rsync is used to copy folders, excluding some files and folders. This could probably be done using a long script involving xargs, find, mkdir, and cp, but I'm not really in the mood to figure out how to do it right now. If you don't want to install rsync, you just have to re-write ptm-copy-without-ptm.sh to work without rsync installed.
+
+PersonalTimeMachine works best on files with periodic newlines. If a binary file has no newlines, then a commit that modifies it will contain bytes equal in size to the size of the file before the change, and the size of the file after. For example, if a binary file 10KB in size is versioned, and this file has no newlines, then a change that increases the file's size to 15KB will result in the commit taking up an additional 25KB. This is due to the way that diff stores files. UPDATE: I'm working on changing this, so that newlines are forced into a file before diffing it and removed after diffing it.
+
+Binary files are handled just fine by PersonalTimeMachine, except for the size issue in the preceding paragraph. 
+
+PersonalTimeMachine is not meant to be fast. Commits are generally fastish (except that the versioned folder is copied before a commit), but exporting a given revision tends to be quite slow. This is because PersonalTimeMachine exports a given revision by exporting the first revision, then updating that to the second revision, and so on.
+
+
+
+
+
+
+
+

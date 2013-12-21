@@ -1,0 +1,36 @@
+#!/bin/bash
+
+if [ $# -lt 1 ] ; then
+    cat << END_FILE
+Try 'ptm help' for usage.
+END_FILE
+    exit
+fi
+if [ $1 = help ] ; then
+    shift
+    ptm-help.sh $*
+    exit
+fi
+if [ $1 = create ] ; then
+    shift
+    ptm-create.sh $*
+    exit
+fi
+# all other commands need to be run on a working copy, so we'll check for existence of a
+# .ptm folder. We'll also clean the tmp folder as well.
+if [ ! -d .ptm ] ; then
+    cat << END_FILE
+To run this particular command ($1), your working directory needs to be a working copy.
+END_FILE
+    exit 2;
+fi
+rm -rf .ptm/tmp/*
+if [ $1 = commit ] ; then
+    shift
+    ptm-commit.sh $*
+    exit
+fi
+cat << END_FILE
+The command you specified ($1) isn't a valid command. Try "ptm help" for a list of commands.
+END_FILE
+exit 3;

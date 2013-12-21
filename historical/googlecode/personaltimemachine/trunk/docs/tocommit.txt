@@ -1,0 +1,59 @@
+This is yet another brainstorming file.
+
+So anyway, what needs to be done when we commit a revision? let's see...
+
+4 different types of modifications need to be stored, in this order:
+
+added directories
+changed files (added files included here)
+removed files
+removed directories
+
+added directories can be found by running find on the head and on the working copy (making sure to grep out the .ptm folder), sorting the output, and comparing it with ptm-linediff. removed directories can be discovered in the same way, but by reversing the arguments. 
+
+For each added directory, a line should be added to the commandlist file (after the initial "if [ $1 = REV ]" statement) that runs the mkdir command on the added directory. 
+
+For each removed directory, a rm -rf line should be added. For each removed file, a similar line should should be added. 
+
+Added files will be captured in the diff file, so no special processing is needed for them.
+
+diff -U 0 -a --binary --unidirectional-new-file -r . ../.. is then run in the head folder, which outputs a diff of all files that exist in both the head and the working copy, and of all files that are new in the working copy. This is then stored under the diffs folder, with a name equal to the revision number. A command is then added to the commandlist that patches the local directory with the diff file.
+
+
+
+
+
+This regex will list all dirs (and files if you change -type d to -type f) that aren't the .ptm dir:
+
+find . -type d | grep -v ^\\.\\/\\.ptm\$ | grep -v ^\\.\\/\\.ptm\\/
+
+
+
+
+
+TO EXPORT:
+
+Exporting isn't very fast, but is the main useful function of ptm. I'm thinking that exports might be able to track their own revision in the future (so that, for example, you could have an external folder that you use to view past versions, and you can change it's revision as you want), but not for now. Anyway, exporting is actually easier than committing. the script stores in a local variable the current directory, then pushd's to the directory that is to be exported to. If the directory doesn't exist, it is created. Then, the commandlist script in the .ptm folder is run, passing in the arguments 1, REV, and print, where REV is the revision to export. The result will be that the folder specified is sequentially updated with revision 1 first, then that is updated to revision 2, then to revision 3, all the way up to the revision to udpate to. That's all there is to it! 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+ 

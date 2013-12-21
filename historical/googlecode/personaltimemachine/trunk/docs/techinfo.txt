@@ -1,0 +1,31 @@
+File structure.
+
+In a versioned folder, there is a folder called ".ptm". Under this folder are a few things. 
+
+First we have a folder called "diffs". it contains one file per revision. This file contains TODO: diffs for each file separated by some sort of delimiter that isn't one of "+-@ " and parse out with sed 
+
+Then we have the "commandlist" file, which contains additional commands that need to be executed for each revision. This file is in the form of a shell script that contains a ton of if statements. There is one if statement per revision, which checks to see that the argument to the "commandlist" command is that particular revision number, and if so, then it executes a series of commands. There are three types of commands that will typically show up in here: mkdir commands, rm commands, and cp commands. If a new folder is added in a revision, then a mkdir command will be present here, which creates that folder. If a file or folder is removed in a revision, then an rm command will be here. If a new file is added in a revision, then the file will be present under the "new" folder (which I'll explain in a bit), and a cp command will be present here to copy the new file to it's proper location. The commandlist file is intended to be executed from the repository folder, not from the .ptm folder.
+
+Then we have the "revinfo" file. This contains information about all revisions. Each line in the file starts with a number and an underscore, followed by a single letter that indicates what type of line it is. The number is the number of the revision that this particular line is for. To get the lines for a particular revision and line type, grep ^REV_LINETYPE | sed -e "s/^REV_LINETYPE//" can be used (replacing REV with the number of the revision to get and LINETYPE with the character representing the line type), which will print all of the lines, without the revision and linetype stuff, of that particular type.
+
+Allowed line types in the revinfo file are:
+
+m - commit message lines. Multiple of these can be present for a given revision, indicating a multiline commit message.
+d - the date and time that the revision was committed, as returned from the unix date command. 
+
+Then we have the "head" folder. The contents of this folder exactly mirror the working copy, and are used to check for differences when the working copy is committed.
+
+Then we have the "new" folder. This contains one folder per revision, who's contents are a hierarchy of the new files added during that revision.
+
+There is also a folder called "tmp". Temporary files are put into this folder. ptm removes the contents of this folder whenever it is run, so if leftover files remain for some reason, they won't get stuck for long.
+
+
+
+
+
+
+
+
+
+Yes, PersonalTimeMachine contains a lot of uses of the "cat" command where the "<" operator would be faster. I'll get around to removing these sometime. This is called "useless use of cat", and to be honest I really don't give a darn right now. If someone wants to clean all of that up, I'd be happy to let you. Just tell me. But I don't plan on doing it myself any time soon.
+
