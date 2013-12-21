@@ -1,0 +1,267 @@
+------   Event Registration
+
+BZF_API bool bz_registerEvent ( bz_eEventType eventType, bz_EventHandler* eventHandler );
+BZF_API bool bz_removeEvent ( bz_eEventType eventType, bz_EventHandler* eventHandler );
+
+------   Non-Player Connections
+
+BZF_API bool bz_registerNonPlayerConnectionHandler ( int connectionID, bz_NonPlayerConnectionHandler* handler );
+BZF_API bool bz_removeNonPlayerConnectionHandler ( int connectionID, bz_NonPlayerConnectionHandler* handler );
+BZF_API bool bz_sendNonPlayerData ( int connectionID, const void *data, unsigned int size );
+BZF_API bool bz_disconectNonPlayerConnection ( int connectionID );
+
+------   Player Information
+
+BZF_API bool bz_getPlayerIndexList ( bz_APIIntList *playerList );
+BZF_API bz_APIIntList *bz_getPlayerIndexList ( void );
+BZF_API bz_BasePlayerRecord *bz_getPlayerByIndex ( int index );
+BZF_API bool bz_updatePlayerData ( bz_BasePlayerRecord *playerRecord );
+BZF_API bool bz_hasPerm ( int playerID, const char* perm );
+BZF_API bool bz_grantPerm ( int playerID, const char* perm );
+BZF_API bool bz_revokePerm ( int playerID, const char* perm );
+BZF_API bool bz_getAdmin ( int playerID );
+BZF_API bool bz_validAdminPassword ( const char* passwd );
+BZF_API bool bz_freePlayerRecord ( bz_BasePlayerRecord *playerRecord );
+BZF_API const char* bz_getPlayerFlag ( int playerID );
+BZF_API const char* bz_getPlayerCallsign ( int playerID );
+BZF_API bool bz_getPlayerCurrentState ( int playerID, bz_PlayerUpdateState &state );
+BZF_API bool bz_isPlayerPaused ( int playerID );
+BZF_API bool bz_setPlayerOperator ( int playerId );
+BZF_API bz_APIIntList* bz_getPlayerIndexList ( void );
+BZF_API bool bz_canPlayerSpawn( int playerID );
+BZF_API bool bz_setPlayerSpawnable( int playerID, bool spawn );
+BZF_API bool bz_setPlayerLimboText( int playerID, const char* text );
+BZF_API int bz_getPlayerCount ( void );
+BZF_API bool bz_anyPlayers ( void );
+
+------   Team Management
+
+BZF_API unsigned int bz_getTeamPlayerLimit ( bz_eTeamType team )
+BZF_API int bz_getTeamCount (bz_eTeamType team );
+BZF_API int bz_getTeamScore (bz_eTeamType team );
+BZF_API int bz_getTeamWins (bz_eTeamType team );
+BZF_API int bz_getTeamLosses (bz_eTeamType team );
+BZF_API void bz_setTeamWins (bz_eTeamType team, int wins );
+BZF_API void bz_setTeamLosses (bz_eTeamType team, int losses );
+BZF_API void bz_resetTeamScore (bz_eTeamType team );
+BZF_API void bz_resetTeamScores ( void );
+BZF_API void bz_changeTeam( int player, bz_eTeamType team );
+
+------   Score Management
+
+BZF_API bool bz_setPlayerWins (int playerId, int wins);
+BZF_API bool bz_setPlayerLosses (int playerId, int losses);
+BZF_API bool bz_setPlayerTKs (int playerId, int tks);
+BZF_API bool bz_resetPlayerScore (int playerId);
+BZF_API int bz_getPlayerWins (int playerId);
+BZF_API int bz_getPlayerLosses (int playerId);
+BZF_API int bz_getPlayerTKs (int playerId);
+
+------   Latency Information
+
+BZF_API int bz_getPlayerLag ( int playerId );
+BZF_API int bz_getPlayerJitter ( int playerId );
+BZF_API float bz_getPlayerPacketloss ( int playerId );
+
+------   Permission Group Management
+
+BZF_API bz_APIStringList* bz_getGroupList ( void );
+BZF_API bz_APIStringList* bz_getGroupPerms ( const char* group );
+BZF_API bool bz_groupAllowPerm( const char* group, const char* perm );
+
+------   Chat Messages
+
+BZF_API bool bz_sendTextMessage (int from, int to, const char* message);
+BZF_API bool bz_sendTextMessage (int from, bz_eTeamType to, const char* message);
+BZF_API bool bz_sendTextMessagef (int from, int to, const char* fmt, ...);
+BZF_API bool bz_sendTextMessagef (int from, bz_eTeamType to, const char* fmt, ...);
+BZF_API bool bz_sendFetchResMessage ( int playerID,  const char* URL );
+
+------   Server Management
+
+BZF_API bool bz_restart ( void );
+BZF_API void bz_shutdown ();
+BZF_API void bz_superkill ();
+BZF_API void bz_gameOver (int playerID, bz_eTeamType = eNoTeam);
+BZF_API void bz_reloadLocalBans ();
+BZF_API void bz_reloadMasterBans ();
+BZF_API void bz_reloadGroups ();
+BZF_API void bz_reloadUsers ();
+BZF_API void bz_reloadHelp ();
+
+------   Rabbit Hunt
+
+BZF_API void bz_newRabbit( int player, bool swap );
+BZF_API void bz_removeRabbit( int player );
+
+------   Map Management
+
+BZF_API void bz_setClientWorldDownloadURL( const char* URL );
+BZF_API const bzApiString bz_getClientWorldDownloadURL ( void );
+BZF_API bool bz_saveWorldCacheFile( const char* file );
+
+------   Flag Management
+
+BZF_API bool bz_givePlayerFlag ( int playerID, const char* flagType, bool force );
+BZF_API bool bz_removePlayerFlag ( int playerID );
+BZF_API void bz_resetFlags ( bool onlyUnused );
+BZF_API unsigned int bz_getNumFlags ( void );
+BZF_API const bz_ApiString bz_getFlagName( int flag );
+BZF_API bool bz_resetFlag ( int flag );
+BZF_API int bz_flagPlayer ( int flag );
+BZF_API bool bz_getFlagPosition ( int flag, float* pos );
+BZF_API bool bz_moveFlag ( int flag, float pos[3], bool reset = true );
+BZF_API bool bz_RegisterCustomFlag ( const char* abbr, const char* name, const char* helpString, bz_eShotType shotType, bz_eFlagQuality quality );
+
+------   Shot Type Control
+
+BZF_API bool bz_setPlayerShotType( int playerId, bz_eShotType shotType );
+
+------   World Weapon Management
+
+BZF_API bool bz_fireWorldWep ( const char* flagType, float lifetime, float *pos, float tilt, float direction, int shotID , float dt );
+BZF_API int bz_fireWorldGM ( int targetPlayerID, float lifetime, float *pos, float tilt, float direction, float dt);
+
+------   Server Time
+
+BZF_API double bz_getCurrentTime ( void );
+BZF_API float bz_getMaxWaitTime ( void );
+BZF_API void bz_setMaxWaitTime ( float maxTime );
+BZF_API void bz_getLocaltime ( bz_localTime *ts );
+
+------   Global Database Management (BZDB)
+
+BZF_API double bz_getBZDBDouble ( const char* variable );
+BZF_API bz_ApiString bz_getBZDBString( const char* variable );
+BZF_API bool bz_getBZDBBool( const char* variable );
+BZF_API int bz_getBZDBInt( const char* variable );
+BZF_API int bz_getBZDBItemPerms ( const char* variable );
+BZF_API bool bz_getBZDBItemPersistent( const char* variable );
+BZF_API bool bz_BZDBItemExists( const char* variable );
+BZF_API bool bz_setBZDBDouble ( const char* variable, double val, int perms = 0, bool persistent = false );
+BZF_API bool bz_setBZDBString( const char* variable, const char *val, int perms = 0, bool persistent = false  );
+BZF_API bool bz_setBZDBBool( const char* variable, bool val, int perms = 0, bool persistent = false  );
+BZF_API bool bz_setBZDBInt( const char* variable, int val, int perms = 0, bool persistent = false  );
+BZF_API int bz_getBZDBVarList( bz_APIStringList	*varList );
+BZF_API void bz_resetBZDBVar( const char* variable );
+BZF_API void bz_resetALLBZDBVars( void );
+
+------   Logging
+
+BZF_API void bz_debugMessage ( int level, const char* message );
+BZF_API void bz_debugMessagef( int level, const char* fmt, ... )
+BZF_API int bz_getDebugLevel ( void );
+
+------   Server Administration
+
+BZF_API bool bz_kickUser ( int playerIndex, const char* reason, bool notify );
+BZF_API bool bz_IPBanUser ( int playerIndex, const char* ip, int durration, const char* reason );
+BZF_API bool bz_IDBanUser ( int playerIndex, const char* bzID , int duration, const char *reason );
+BZF_API bool bz_IPUnbanUser ( const char* ip );
+BZF_API bool bz_IDUnbanUser ( const char* bzID );
+
+BZF_API int bz_getLagWarn( void );
+BZF_API bool bz_setLagWarn( int lagwarn );
+BZF_API bool bz_pollActive( void );
+BZF_API bool bz_pollVeto( void );
+
+------   Reporting
+
+BZF_API bz_APIStringList* bz_getReports( void );
+BZF_API bool bz_fileReport( const char* message );
+
+------   Timed Game Management
+
+BZF_API bool bz_setTimeLimit( float timeLimit );
+BZF_API float bz_getTimeLimit( void );
+BZF_API bool bz_isTimeManualStart( void );
+BZF_API bool bz_isCountDownActive( void );
+BZF_API bool bz_isCountDownInProgress( void );
+BZF_API void bz_pauseCountdown ( const char *pausedBy );
+BZF_API void bz_resumeCountdown ( const char *resumedBy );
+BZF_API void bz_startCountdown ( int delay, float limit, const char *byWho );
+
+------   Custom Text Commands
+
+BZF_API bool bz_registerCustomSlashCommand ( const char* command, bz_CustomSlashCommandHandler *handler );
+BZF_API bool bz_removeCustomSlashCommand ( const char* command );
+
+------   Plug-in Management
+
+BZF_API int bz_getLoadedPlugins( bz_APIStringList * list );
+BZF_API bool bz_loadPlugin( const char* path, const char* params );
+BZF_API bool bz_unloadPlugin( const char* path );
+BZF_API bool bz_registerCustomPluginHandler ( const char* extension, bz_APIPluginHandler * handler );
+BZF_API bool bz_removeCustomPluginHandler ( const char* extension, bz_APIPluginHandler * handler );
+
+------   Public Server Information
+
+BZF_API bool bz_getPublic( void );
+BZF_API bz_ApiString bz_getPublicAddr( void );
+BZF_API bz_ApiString bz_getPublicDescription( void );
+BZF_API void bz_updateListServer ( void );
+
+------   HTTP Transfer
+
+BZF_API bool bz_addURLJob ( const char* URL, bz_BaseURLHandler* handler = NULL, const char* postData = NULL );
+BZF_API bool bz_removeURLJob ( const char* URL );
+BZF_API bool bz_stopAllURLJobs ( void );
+
+------   Inter-Plug-in Communications
+
+BZF_API bool bz_clipFieldExists ( const char *name );
+BZF_API const char* bz_getclipFieldString ( const char *name );
+BZF_API float bz_getclipFieldFloat ( const char *name );
+BZF_API int bz_getclipFieldInt ( const char *name );
+BZF_API bool bz_setclipFieldString ( const char *name, const char* data );
+BZF_API bool bz_setclipFieldFloat ( const char *name, float data );
+BZF_API bool bz_setclipFieldInt ( const char *name, int data );
+BZF_API bool bz_addClipFieldNotifier ( const char *name, [[bz_ClipFiledNotifier *cb );
+BZF_API _removeClipFieldNotifier ( const char *name, [[bz_ClipFiledNotifier *cb );
+
+------   Game Recording
+
+BZF_API bool bz_saveRecBuf( const char * _filename, int seconds);
+BZF_API bool bz_startRecBuf( void );
+BZF_API bool bz_stopRecBuf( void );
+
+------   Map Management
+------   Map Information
+
+BZF_API void bz_getWorldSize( float *size, float *wallHeight );
+BZF_API int bz_getWorldObjectCount( void );
+BZF_API bz_APIWorldObjectList* bz_getWorldObjectList( void );
+BZF_API void bz_releaseWorldObjectList( bz_APIWorldObjectList* list );
+
+------   Map Collisions
+
+bz_eAPIColType bz_cylinderInMapObject ( float pos[3], float height, float radius, bz_APIBaseWorldObject **object );
+bz_eAPIColType bz_boxInMapObject ( float pos[3], float size[3], float angle, bz_APIBaseWorldObject **object );
+
+------   Custom Map Objects
+
+BZF_API bool bz_registerCustomMapObject ( const char* object, bz_CustomMapObjectHandler *handler );
+BZF_API bool bz_removeCustomMapObject ( const char* object );
+
+------   Utility
+
+77BZF_API const char *bz_MD5(const char* str);
+BZF_API const char *bz_MD5(const void* data, size_t size);
+
+------   Misc
+
+BZF_API bool bz_getStandardSpawn ( int playerID, float pos[3], float *rot );
+BZF_API bool bz_killPlayer ( int playerID, bool spawnOnBase, int killerID = -1, const char* flagID = NULL );
+BZF_API bool bz_sendPlayCustomLocalSound ( int playerID, const char* soundName );
+BZF_API bz_ApiString bz_filterPath ( const char* path );
+BZF_API const char *bz_format(const char* fmt, ...)_ATTRIBUTE12;
+BZF_API const char *bz_toupper(const char* val );
+BZF_API const char *bz_tolower(const char* val );
+BZF_API const char *bz_urlEncode(const char* val );
+BZF_API bz_eGameType bz_getGameType( void );
+BZF_API bz_eTeamType bz_checkBaseAtPoint ( float pos[3] );
+
+------   Server Side Players (Development)
+
+BZF_API int bz_addServerSidePlayer ( bz_ServerSidePlayerHandler *handler );
+BZF_API bool bz_removeServerSidePlayer ( int playerID, bz_ServerSidePlayerHandler *handler );

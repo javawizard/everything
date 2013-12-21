@@ -1,0 +1,37 @@
+org/bzflag/jzapi/BasePlayerRecord
+bz_BasePlayerRecord
+  int version;
+  int playerID;
+  bz_ApiString callsign;
+
+  bz_eTeamType team;
+
+  bz_ApiString ipAddress;
+
+  int currentFlagID;
+  bz_ApiString currentFlag;
+  bz_APIStringList flagHistory;
+
+  double lastUpdateTime;
+  bz_PlayerUpdateState lastKnownState;
+  bz_PlayerUpdateState currentState;
+
+  bz_ApiString clientVersion;
+  bool spawned;
+  bool verified;
+  bool globalUser;
+  bz_ApiString bzID;
+  bool admin;
+  bool op;
+  bool canSpawn;
+  bz_APIStringList groups;
+
+  int lag;
+  int jitter;
+  float packetLoss;
+
+  float rank;
+  int wins;
+  int losses;
+  int teamKills;
+
