@@ -1,0 +1,8 @@
+.. toctree::
+   modules/fileutils.rst
+   modules/fileutils.constants.rst
+   modules/fileutils.interface.rst
+   modules/fileutils.local.rst
+   modules/fileutils.mixins.rst
+   modules/fileutils.ssh.rst
+   modules/fileutils.url.rst
