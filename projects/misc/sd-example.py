@@ -102,7 +102,8 @@ productions = OrderedDict([
 
 options = {
     "raildraw_title_before":20,
-    "raildraw_title_after": 30
+    "raildraw_title_after": 30,
+    "raildraw_scale": 0.7
 }
 
 draw_to_image(sys.argv[1], productions, options, sys.argv[2], True)
