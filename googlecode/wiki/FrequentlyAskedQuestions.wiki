@@ -1,0 +1,28 @@
+#labels G5
+*This is a list of frequently asked questions about !OpenGroove.* Some of these are relevant to users actually using !OpenGroove, some are relevant to those developing !OpenGroove itself, and some are relevant to developers writing plugins for !OpenGroove.
+
+If there's something you're wondering that's not listed here, go to the Issues tab above and file an issue on it.
+
+<wiki:toc/>
+
+=Installing=
+==Does !OpenGroove run on Windows?==
+Yes, but it's not as straightforward as the developers would like it to be. You have to install a ton of stuff yourself.
+
+TODO: finish this entry
+
+=!OpenGroove Database=
+==Does OGDB have any sort of upsert operation?==
+For attributes on objects, the *set* operation is an upsert. For objects themselves, an upsert can be emulated with an insert followed by a set. The insert will be ignored by the database if the object already exists.
+
+=Code=
+==What language is !OpenGroove written in?==
+Python.
+
+==What language do you write !OpenGroove plugins in?==
+Python.
+
+==Why does !OpenGroove use the "%" string operator all over the place even though it's deprecated?==
+TODO: finish this, it's because % is more standard and their other formatting stuff is too python-specific
+
+TODO: add a FAQ about why javawizard keeps failing and documenting stuff with the word "throw" when he means the word "raise" because he comes from java.

@@ -1,0 +1,48 @@
+<!-- This version of 9 bottles of pop makes things more fancy, mainly by changing "bottles" to "bottle" if there's only one, and by changing 0 to "No more". -->
+
+<for var="i" final="1" step="-1">
+    <initial>
+        <number>
+            <prompt message="How many bottles of pop? Do less than 20, more than that is slow."/>
+        </number>
+    </initial>
+    <set name="is1">
+        <equals>
+            <var name="i"/>
+            <number>1</number>
+        </equals>
+    </set>
+    <set name="is2ormore">
+        <not>
+            <var name="is1"/>
+        </not>
+    </set>
+    <if condition="is1">
+        <set name="bottle">
+            <string>bottle</string>
+        </set>
+    </if>
+    <if condition="is2ormore">
+        <set name="bottle">
+            <string>bottles</string>
+        </set>
+    </if>
+    <print>
+        <string><var name="i"/> <var name="bottle"/> of pop on the wall</string>
+    </print>
+    <print>
+        <string><var name="i"/> <var name="bottle"/> of pop.</string>
+    </print>
+    <print>
+        <string>Take one down, pass it around</string>
+    </print>
+    <print>
+        <string>
+            <subtract>
+                <var name="i"/>
+                <number>1</number>
+            </subtract>
+            bottles of pop on the wall.
+        </string>
+    </print>
+</for>

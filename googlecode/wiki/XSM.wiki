@@ -1,0 +1,347 @@
+#labels G4, XSM, Obsolete
+<p align="center"><font size="5">*XSM: An XML Programming Language*</font></p>
+
+------
+
+<font color="#00aa00" size="3"><b>To run XSM programs online using a Javascript interpreter I wrote, go [http://trivergia.com/xsm/org.opengroove.xsm.web.XSM_web/XSM_web.html here].</b></font>
+
+=Description=
+Note this page is slightly outdated; I have backported a few functions from [http://bznetwork.googlecode.com BZNetwork] that I haven't yet added to this page.
+
+XSM is a turing-complete programming language invented by Alexander Boyd that uses XML to represent programs. It's probably one of the most pointless projects I've started (I wrote the initial version of the language, and the initial version of the web-based interpreter above, in less than 2 days), but I need a small server-side scripting language for !OpenGroove's help pages, and this fits the bill for the moment. It's also used in BZNetwork, in a variant known as [http://code.google.com/p/bznetwork/wiki/XSMinline XSM-inline].
+
+The name stands for *XS Modified*. [http://www.markcarter.me.uk/computing/xs.html XS] is another XML-based language that provided inspiration for an XML-based language.
+
+------
+
+<wiki:toc max_depth="2"/>
+
+------
+
+=Hello world=
+Before I get started with describing the actual language, here's a hello world program:
+{{{
+<print>Hello world!</print>
+}}}
+You can use the interpreter mentioned at the top of the page to run this program if you want.
+
+=The language=
+The language is kind of a cross between Java, Javascript, and Logo (a variant of Lisp). I program in all three, so I've gotten ideas from them. The language shares javascript's and logo's dynamic typing (IE a variable does not have a type; its type is the type of whatever it's holding at the moment), and it shares java's and javascript's autolocal variables (IE you can't see a variable declared in a method that's calling yours). It does not support classes; it is therefore a procedural language. Functions are not first-class objects. Code can be run outside of a function. Code that returns that is run in a context where output is not expected has the output silently discarded.
+
+All tags, except the literal tags, must contain only other XML tags, not plain text. For functions that accept some sort of text as an argument, the text should be wrapped with a string tag. The exception to this is `<print>`, which acts as if its contents were wrapped with an implicit `<string>` tag.
+
+==Functions==
+Functions are defined using the function tag. It has one attribute, name, which is the name of the function.
+
+Functions are called by using the name of the function as a tag name. Tag attribute values are available within the function as variables named "param.NAME", where NAME is the lowercase name of the attribute. Each element within the function call's tag that returns a value is available as an "arg.N" variable, where N is the number starting at 1.
+
+For example, the code:
+{{{
+<function name="test">
+    <print><var name="param.somevalue"></print>
+    <print><var name="arg.1"></print>
+    <print><var name="arg.2"></print>
+</function>
+<test somevalue="an attribute">
+    <string>a value</string>
+    <number>12345</number>
+</test>
+}}}
+Prints the following output:
+{{{
+an attribute
+a value
+12345
+}}}
+
+==Variadic functions==
+Since functions don't explicitly specify what attributes and arguments they take when they are defined, any old function can be variadic, both in terms of attributes and in terms of arguments. It's up to the function to decide how it handles both cases. See the `<defined>` function (lower on in the page, at the list of built-in commands) for more information on how to get the number of arguments that were given to the function.
+
+Creating functions that can accept parameters either as attributes or as child tags with the specified name, like the built-in for tag, is somewhat different. To do that, you use an args tag at the top of the function tag. This contains any number of arg tags.
+
+Each arg tag contains the attributes name (which specifies the attribute or tag name), optional (which is either true or false, defaults to false), number (which defaults to false and only applies if resolve is false; it means that the attribute, if it is specified as an attribute, will be parsed to a number instead of a string), and resolve (which only applies when the argument appears as an attribute, and indicates that the argument's value should be the value of the variable named by the attribute instead of a string containing the attribute's literal value). 
+
+==Code/Argument/Literal functions==
+Functions are divided into three different types. User-defined functions are always argument functions.
+
+ * *Code functions* are those that are invoked with their tag content being XSM code. They then do something with it. Tags within a code function don't always have to return something for the code function to use. The function tag itself is a code function. Other examples include `if` and `while`. 
+
+ * *Argument functions* are those that are invoked with their tag content being a list of values. These functions then do stuff with the values, not with the code. All tags within an argument function must return a value (but they are allowed to return null as their value). Functions _defined_ with the function tag are argument functions. Other examples include `set` and `print`.
+
+ * *Literal functions* are those that take raw text as arguments. These might allow tags to be embedded within them, but they do their own special processing on the tags. Examples of literal functions include `print` and `number`.
+
+==Variables==
+Variables are dynamically-typed. XSM is a procedural language; there is no such thing as objects in XSM. Variables, therefore, hold one of these types of value:
+
+|| *Literal tag name* || Description ||
+|| boolean || A value that is either true or false. ||
+|| number  || An signed, 64-bit integer. ||
+|| double  || A signed, 64-bit decimal number. ||
+|| string  || A piece of text. ||
+|| list    || A list of other values. Lists themselves are passed around by reference, so passing a list to a function that modifies the list's content will result in the list being modified in the caller. The literal list tag is an argument function instead of a literal function, and makes a list of each value within it. ||
+|| null    || Nothing. ||
+
+Each of the literal tags can be used, with the tag's content being the value to use (which is specific to the type). Additionally, the tags true and false can be used directly in place of `<boolean>true</boolean>` and `<boolean>false</boolean>`, respectively. The string literal can have other tags embedded within it, amid text, and their return value will be embedded in the string.
+
+To create a variable, you use the set tag. This can be invoked with the name attribute and one argument, or two arguments. In the latter case, the first argument is taken as the name of the variable.
+
+To get a variable's value, you use the var tag. It takes either an attribute called name or a single argument, which is used as the name.
+
+For example, the code:
+{{{
+<set name="foo">
+    <string>Hello, how are you?</string>
+</set>
+<set>
+    <string>bar</string>
+    <string>I am fine</string>
+</set>
+<print>
+    <var>
+        <string>foo</string>
+    </var>
+</print>
+<print>
+    <var name="bar"/>
+</print>
+}}}
+Prints the following output:
+{{{
+Hello, how are you?
+I am fine
+}}}
+
+==Looping==
+Looping is done with the while tag and the for tag. These are code functions that execute their content multiple times.
+
+===While===
+While takes an attribute called var. This should be the name of a variable that holds a boolean. The content of the while loop generally modifies this variable as it needs to. When the variable's value is false, the while loop stops looping.
+
+The first child tag can be a condition tag, which contains the condition. In this case, var should not be present as an attribute.
+
+For example, the code:
+{{{
+<set name="condition">
+    <true/>
+</set>
+<set name="loop">
+    <number>3</number>
+</set>
+<while var="condition">
+    <print>
+        <string>The number is <var name="loop"/></string>
+    </print>
+    <set name="loop">
+        <add>
+            <var name="loop"/>
+            <number>1</number>
+        </add>
+    </set>
+    <set name="condition">
+        <less>
+            <var name="loop"/>
+            <number>7</number>
+        </less>
+    </set>
+</while>
+}}}
+Prints the following output:
+{{{
+The number is 3
+The number is 4
+The number is 5
+The number is 6
+}}}
+
+===For===
+The for loop takes the attributes var, initial, final, and step. If any of these (except for var) need to be dynamic, there can be a tag named that whose value is the value to use. These must appear right at the top of the for loop.
+
+===Each===
+The each loop is like the for loop, but it iterates over the elements of a list. The list should not be modified during iteration; if it is, the results are undefined. OpenGroove's interpreter throws a ConcurrentModificationException if the list is modified during iteration, except on the last iteration, but this behavior could be different on a different interpreter.
+
+The each loop takes three attributes, any of which can be specified as named tags within the loop instead. They are var, over, and count. Count is optional. Var is the variable that will hold the current element of the list, over is the list (the name of the variable that holds it if it's an attribute), and count is the name of a variable that the current iteration count (starting at 1; all XSM indexes are 1-based) should be stored in.
+
+==Conditionals==
+Conditional support is in the form of the if function and the else function. an else-if function is not supported right now, so you'll have to use an if within an else. The if statement is much like the while statement in that the condition is the name of a variable, or it can be an inner element at the top. The else tag doesn't have to appear directly after the if tag (although good coding practice dictates that it should), and can appear multiple times without another if (although this is pretty much pointless). It basically executes if the last if statement encountered within the custom function (or the last one encountered outside of a function, if the else statement is outside of a function), including if statements encountered in loops and such, had its conditional evaluate to false and therefore didn't execute.
+
+==Reflection==
+XSM does not have support for reflection right now. I plan to add such support in the future. This reflection will be in the form of a DOM-like interface that can be used to modify the document that represents the program.
+
+=Built-in functions=
+This is the list of functions that are built in to the XSM language. These do not include !OpenGroove-specific functions. The letter in parentheses immediately after the function name specifies what type of function it is: (a) means an argument function, (c) means a code function, and (l) means a literal function. See [#Code/Argument/Literal_functions Code/Argument/Literal functions] for more information on what this means.
+
+<table border="0" cellspacing="0" cellpadding="0"><tr><td rowspan="2" height="22" valign="middle">If you want to implement any non-implemented functions, send me an email (my email address is </td><td rowspan="2" width="4"> </td><td height="3"> </td><td rowspan="2" valign="middle">)</td></tr><tr><td height="32" valign="middle">[http://www.facebook.com/string_image.php?ct=AAAAAQAQsAOsubkIGPDoK_h5i91dDQAAABjELNrZhbSyWhSzUHb-qQd1iYb8s8mXRkc%2C&fp=9&state=0&highlight=&bogusvariable=.png]</td></tr></table>
+
+==Implemented==
+These functions have been implemented in the interpreter mentioned at the top of the page.
+
+===Set (a)===
+Sets the value of a variable, creating one if one does not already exist. The attribute name specifies the name of the variable to create. The first argument is the value that the variable should have. If the name attribute is not present, then the first argument is the name of the variable to create and the second is the value.
+
+===Var (a)===
+Returns the value of the specified variable. The variable is either contained in the attribute name, or it is the single argument to the var function.
+
+===Print (a)===
+Prints the text contained within the tag. The contents of the print tag have an implied `<string>` tag around them, so literal text can appear within the print function. If this program is a standalone program (programs run in the interpreter mentioned at the top of the page are considered to be standalone programs), this will be printed to the console. If this program is embedded inside a web page or an !OpenGroove help page, this will be sent to the page itself. If an attribute called newline has the value "false", then a newline will not be appended.
+
+===Prompt (a)===
+Prompts the user for some input. In the above interpreter, this uses javascript to ask them for a single line of text via Window.prompt(). One attribute may be specified, message, or there may be a single child element, and this is the message that will be shown to the user. Prompt then returns the user's input, or null if the user chose cancel.
+
+===Boolean (l)===
+Returns a boolean that represents the literal value passed to it.
+
+===True (a)===
+Returns the boolean true.
+
+===False (a)===
+Returns the boolean false.
+
+===Number (l)===
+Returns a number that represents the literal number passed to it. The number is a 64-bit signed integer.
+
+===Double (l)===
+Returns a double that represents the literal number passed to it. The number is a 64-bit floating-point number.
+
+===Numeric (l)===
+Sort of a combination of number and double. It functions exactly as if it were `<number>` when the content does not contain a decimal point, and `<double>` when the content does contain a decimal point (even if the number after it is 0).
+
+===String (l)===
+Returns a string representing its string content. Tags that return can be embedded, and the return value will be converted to a string form and included inside the string. Lists are represented as an open bracket and the value of each item in the list, separated by commas, followed by a close bracket.
+
+===List (a)===
+Creates a list that contains each argument to the function. The list command can be empty, which creates a list with no items in it.
+
+===Null (a)===
+Returns the value null.
+
+===Function (c)===
+Defines a new function. See [#Functions Functions] for more info.
+
+===While (c)===
+A while loop. Same syntax as `<if>`, except that it executes its contents and the condition (the condition first) over and over again until the condition is false.
+
+===For (c)===
+
+===Each (c)===
+
+===If (c)===
+
+===Else (c)===
+
+===Add (a)===
+
+===Subtract (a)===
+
+===Multiply (a)===
+
+===Divide (a)===
+
+===Less (a)===
+Takes two child tags, which must return a number or a double. Returns true if the first is less than the second.
+
+===Greater (a)===
+Same as `<less>`, but returns true if the first is greater than the second.
+
+===And (a)===
+Takes as many child tags as are wanted (but there must be at least one). Returns true if all of the child tags return true, false otherwise. This tag is a short-circuit operator; as soon as a child tag returns false, `<and>` returns false without evaluating further children.
+
+===Or (a)===
+Takes as many child tags as are wanted (but there must be at least one). Returns false if all of the child tags return false, true otherwise. This tag is a short-circuit operator; as soon as a child tag returns true, `<or>` returns true without evaluating further children.
+
+===Not (a)===
+Takes a single child tag and returns the inverse of it. The tag must return a boolean.
+
+===Increment (a)===
+Takes either name or var as an attribute. Increments the number or double stored in that variable.
+
+===Decrement (a)===
+Takes either name or var as an attribute. Decrements the number or double stored in that variable.
+
+===Size (a)===
+Works on lists and strings. Returns the character count for a string or the number of items in a list.
+
+===Item (a)===
+Lists and strings. Index as attribute, contained element is the list or string. Additional element, above the list or string, can be index. Null if nonexistent, item in list, substring of length 1 in string
+
+===Overwrite (a)===
+Lists only. Expands as needed, filling with nulls. Value attribute means a literal string value to put into the list.
+
+===Resize (a)===
+Lists only. Truncates if smaller, fills with nulls if larger.
+
+===Cat (a)===
+Strings only. Concatenates the strings given end-to-end, without the space inbetween each of its arguments that `<string>` inserts, but also without support for literal strings.
+
+===Char (a)===
+Given a number, outputs a string with a single character, the char represented by that number (so, for example, 65 is A). Given a list of numbers, outputs a string with one character for each number. Given a string of length 1, outputs a single number. Given a string larger than that, outputs a list of numbers. Given a list of length 0, null, or an empty string, outputs null.
+
+===Defined (a)===
+Takes one attribute, name (var works too), or a single tag within it that returns a string. Returns true if the variable by that name exists, and false if it doesn't. This can be used within a while loop to figure out how many arguments were given to a custom-defined function:
+{{{
+<function name="print-arg-count">
+    <set name="argcount">
+        <number>1</number>
+    </set>
+    <while>
+        <condition>
+            <defined>
+                <cat>
+                    <string>arg.</string>
+                    <var name="argcount"/>
+                </cat>
+            </defined>
+        </condition>
+        <increment name="argcount"/>
+    </while>
+    <decrement name="argcount"/>
+    <print><var name="argcount"/> arguments were given to this function.</print>
+</function>
+<print-arg-count>
+    <string>hi</string>
+    <string>bye</string>
+    <string>another</string>
+</print-arg-count>
+}}}
+
+===Return (a)===
+Returns the return value of its only child tag from the current custom-defined function.
+
+===Identity (a)===
+Returns the return value of its only child tag. It essentially acts as if it were not there, and were replaced by its child element. This can be used in cases where a particular tag name is treated specially at the top of another tag. For example, if, for some reason, you wanted to include a call to the var function at the top of a for loop, you would have to enclose it in an identity tag to prevent the for loop from interpreting it as the name of the variable to stick the current count in. 
+
+===Space (a)===
+Returns a string containing one character, a space character. Short for `<char><number>32</number></char>`
+
+==Unimplemented==
+These functions have not yet been implemented in the interpreter above, or they have bugs that generally prohibit them from being used.
+
+===Substring (a)===
+Takes two attributes, start and end. Either can be missing, but not both. If given as arguments, they must be surrounded by `<start>` and `<end>` tags. Takes one argument after that, a string. Returns a substring of that string. start and end are 1 based and are inclusive. End can never be less than start for now, which means strings will (and must) have at least one character. 
+
+===Type (a)===
+Takes either one attribute, var, or contains one element. Returns the type, as a string, of the value of the attribute or of the element, which is the same as the element's literal tag name (null included; the type of null is "null").
+
+===Gset (a)===
+Sets a global variable. Same as `<gvar>`, but sets a variable instead of getting one. Same syntax as `<set>`.
+
+===Gvar (a)===
+Gets a global variable (one defined with `<set>` while not within a custom function or one defined with `<gset>`). Exactly the same attributes and arguments as `<var>`.
+
+===Replace (a)===
+Replaces text in a string with other text. This takes one of two attributes, regex or target, which define what to replace it with (target means search for an exact string match and regex means search for a regular expression), and replacement, which defines the new replacement. Unlike most other argument functions that allow arguments as child tags, the replace tag requires all of its attributes that are to be dynamic to be enclosed in a tag named after the attribute. This is because otherwise it wouldn't be able to figure out which is which of regex and target. The very last child tag within the replace tag, however, should not be enclosed in another name tag, and should be a tag that returns a string which is the string to search and replace in. That string itself will not be modified; replace will return the new, modified, string.
+
+===Copy (a)===
+Works on lists.
+
+===Round (a)===
+Double to number.
+
+===Floor (a)===
+Double to number.
+
+===Ceiling (a)===
+Double to number.
+
+=Examples=
+
+Visit [http://trivergia.com/xsm the online interpreter] for some examples, To the right of that page there are some links which you can use to load some examples into the interpreter. You can then experiment with them and change them, and see what they do.

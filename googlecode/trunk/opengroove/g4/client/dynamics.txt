@@ -1,0 +1,25 @@
+The dynamics subsystem.
+
+The dynamics subsystem takes storage in the form of a folder.
+
+
+
+Anyway, the dynamics system is a system that can help with data synchronization. 
+
+The core concept is the engine, and the idea that changes can be reverted.
+
+An engine is somewhat ignorant to the workings of G4. All an engine knows about is its storage that it can use to store actual data, and that it can have commands applied to it and reverted. 
+
+An engine implementation has a folder that it can store data in. This would initially start out as empty. An engine implementation should provide an implementation of EngineWriter that has methods specific to that engine. For example, a map engine might have setProperty and removeProperty as its writer methods.
+
+The engine writer, once committed, generates a list of commands. That's all it does; it doesn't write any data at all. So in the above case, our writer could generate SET and REMOVE commands.
+
+The engine itself also provides an EngineReader, which reads engine data in whatever format the engine provides. Our engine reader in our example would probably have a getProperty method to read data, and a listProperties method to list the keys in the engine.
+
+The engine then has methods to apply a set of commands sequentially, returning a revert string for each command. When that method is called, it should block all engine readers from reading during that time, apply the set of commands (ensuring that either all of the commands go through or none of them do; this might be tricky if the system crashes in the middle but is necessary to maintain concurrency), and then unblock engine readers. A string array is returned, containing the revert strings.
+
+Immediately after the commands are applied, the changes are available to engine readers.
+
+Engines also make available a method that can take a revert block list and a list of commands and will apply the reverts, then apply the commands (returning the new reverts for those commands), all in one transaction and while blocking all EngineReaders while it does it.
+
+UPDATE: instead of revert information and command data using strings, they are going to use DataBlocks. DataBlock is an interface, with two implementations: ByteBlock, which stores its data as a byte array and is suitable for small amounts of data only, and FileBlock, which stores its data in a file and is suitable for large amounts of data. FileBlock files should generally be marked as deleteOnExit (that's a method on java.io.File) so that they will be deleted when the VM exits, as they do not need to persist over multiple invocations of the VM. The main reason for this change is that a Files tool in a tool workspace would need to have a backing engine that can store entire files (which could be hundreds of megabytes in size), and you can't very easily store a large file in a byte array or a string without running out of memory. G4 itself will probably use file blocks when the data in question is larger than, say, 1KB, and byte blocks otherwise.

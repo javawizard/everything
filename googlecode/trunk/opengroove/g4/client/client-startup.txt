@@ -1,0 +1,3 @@
+When the client starts, it loads the tray icon and the notification frame. It then starts the thread that automatically garbage-collects. Then it checks to see if there are any users. If not, it prompts to create a user, storing config in a newly-created folder. If there are any users set to automatically log in, then it prompts for their password, or just logs them in if their password is to be remebered.
+
+This then starts up a communicator, a User object for that user, a MessageManager, and a StoredMessageManager. It then sets up the launchbar. A lot of the launchbar code will probably be taken from G3, as well as a lot of the message management code.

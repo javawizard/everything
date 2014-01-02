@@ -1,0 +1,3 @@
+<for var="i" initial="1" final="10" step="1">
+    <print>This is number <var name="i"/></print>
+</for>

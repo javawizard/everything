@@ -1,0 +1,108 @@
+#labels G5, Obsolete
+*THIS IS NOW OBSOLETE. IDEAS ARE BEING POSTED ON THE ISSUE TRACKER INSTEAD.*
+
+*Initial generation 5 ideas, copied from Alex's computer:*
+
+So, basically a list of random ideas that I'm starting off with for Generation 5.
+
+There should be a clear concept of domains. By that, I mean that, like XMPP, OpenGroove users have an account at a particular domain. This effectively decentralizes the whole OpenGroove system while (subject to server policy) allowing users to communicate between domains.
+
+The server should allow its administrators to restrict outside contact in some form or other. The specific use cases I was thinking of are where a company has their own domain that they want isolated from the outside world, or where the company has multiple domains and they want those domains to be able to interconnect but not be able to connect with the outside world. For example, a company could have sales.example.com, developers.example.com, and bigwigs.example.com that can all communicate, but they might not want anyone except bigwigs.example.com to be able to communicate with the outside world.
+
+There should be some form of directory, whereby users can look up other users. It would probably be a good idea if this could be decentralized in some fashion too. Directories could be hosted at particular domains, and the client could allow directories to be added that can be searched or registered with. The default entry in the list would be something like directory.opengroove.org.
+
+It should be possible for servers to enforce some policies on the clients that use those servers, and to manipulate some aspects of the client. For example, it should be possible for the server to somehow add directory servers into clients that use that server, which would be useful if a company is running a server and would like its company directory added to the client. The client should probably maintain a notion of directory servers specific to an account as opposed to directory servers for the whole client, the point of this being that users could have both company accounts and individual accounts within OpenGroove.
+
+I'm considering having the server and the workspace server be two separate concepts, like how in XMPP the chat server and the multi-user chat server are two separate things.
+
+Actually, that brings to mind an interesting idea: this whole thing could potentially be based on XMPP in some fashion. That would certainly make a lot of functionality easier. Workspaces and perhaps messaging could then simply be provided by use of a service, much like multi-user chat is provided as a service.
+
+That would actually solve all of the problems associated with figuring out the roster. It doesn't solve multi-computer roster synchronization issues, unless you just enforce some rules like the roster can only be changed when online or you can't delete from the roster unless online. There would be ways to deal with that problem.
+
+One thing that Google Wave has that would most likely be cool is the ability for changes to a workspace to be signed by the user that made those changes. This would provide some protection against a workspace hosted on one server being sent spoofed changes from another server.
+
+And apparently the proper name for the whole engine concept that Groove uses is Operational Transformation. There's a Wikipedia article about it.
+
+The one disadvantage, though, about building on top of XMPP is that there's no longer an option for communicating across a local network where two machines can contact each other but not the internet at large.
+
+So, let's get back to thinking about this from the perspective of a standalone server. It would be very, very good if stuff could synchronize without access to a server. And I mean like, workspace creation, deletion, adding members, removing them, etc, shoudl all be doable while offline given the user's encryption keys or whatever is used to authenticate a particular user.
+
+And a user should probably be authenticated off of their private key pair, and then if it gets compromized then the user has to create a new account.
+
+The distributed, no-internet-connection-required thing is because I'm paranoid some earthquake will happen here that will render the internet nonfunctional. People could still set up wireless networks, though, and synchronize information and stuff by syncing through those and syncing with one another.
+
+I'm thinking workspaces should maintain a complete version history back from the day they were first created. It'd also be cool if they could be viewed in some sort of mode where the user could view the history of the workspace as it looked like at any point in time, and view the workspace and "browse around it" as it looked like then.
+
+It might also be cool to keep a synchronization log of the workspace side-by-side with it. This would obviously vary from computer-to-computer, and would be more for diagnostic and informational purposes than any real purpose.
+
+Since eventually the version history of a workspace might grow large, it should be possible to create an exact copy of a particular workspace into another particular workspace. There should be an option for choosing which tools should be copied over, and which users in the workspace. This also brings up another point: names within a workspace should reflect a user's correct name even after they've been removed from the workspace.
+
+I've decided that workspaces definitely will keep a permanent version history of every change that occurred to them. The change log will be user-visible, and will most likely be intended for normal use (as opposed to simply "debug" use). Keeping a permanent history has the result of making synchronization redundancy-tolerant, meaning that changes delivered multiple times are OK because the operational transformation code can discard the change when it sees that it has the same id as other changes next to it.
+
+And, given that version history will be user-visible, the view part of the MVC design should definitely have a mechanism for specifying whether or not the view should be mutable. Immutable views would be used when viewing version history; mutable views would be used when actually interacting with the workspace.
+
+Another thing that'd be cool is if workspaces could be forked. By that, I mean that an exact copy of a workspace, minus its member set, could be made from not only the latest version of a workspace but from the workspace's history at any point in time.
+
+Workspaces should exist as their own independent entity without an affiliation to a particular domain. This would make it so that workspaces can be created while a user is disconnected from the internet, and indeed shared with users on an ad-hoc network and synchronized with them without ever establishing an internet connection.
+
+Users should be able to search their local network for other users that are set to be visible to their local network. This would use UDP multicast to send out pings, and then TCP connections to actually talk. Users should be able to then add those local users to their contact list and interact with them.
+
+There's one problem, though, with domains that I just got thinking about. That problem is that there no longer exists a distributed, independent, system of accounts when they are named instead of simply identified. A particular user's unique userid should be directly related to the user's public key and to nothing else. I'm thinking at this point that a user's unique userid should be the first _n_ characters of the hexcoded form of the SHA-512 hash of the user's public key and the user's signature key, perhaps concatenated or separated with some sort of delimiter so as to distinguish the two, and perhaps with some magic characters before the hash substring so as to identify it in case it needs to change laster. I was thinking of "ogs5", which stands for <b>O</b>pen<b>G</b>roove <b>S</b>HA-<b>5</b>12. This would allow for changing the hash algorithm or the public key algorithm some time in the future. That would make it trivial to verify a user's public key set given the user's userid.
+
+The one problem this leaves unresolved is how connections across the internet should work. If users only have a userid, then there's no way for a user to communicate across the internet specifically, as there's no way to just find where a user is by their userid.
+
+Perhaps, therefore, there should be a means whereby users can sign up for an account at a particular server. They then associate their userid with that account. However, if the ability to dual-register on a server is present, then this makes it difficult to decide when to stop trying to deliver a message to a user over a particular medium. If a message history is always kept, then this wouldn't be so much of a problem, but it's not generally practical to keep a complete message history given the potential size of files being sent. And even that doesn't help with what to do if a new provider is added. More thought needs to go into this part.
+
+So, a feature that definitely needs to be in workspaces: it should be possible to create workspaces even while disconnected from the internet. And it should be possible to share those workspaces with other users and synchronize them while disconnected from the internet. This would be extremely important for allowing OpenGroove to function in absence of the internet. Contacts should also be manageable, meaning a user can add and remove contacts as they want. The one problem this brings up is synchronization of contact lists, but that would be resolved if a user's contact list also kept a permanent version history and used operational transformation.
+
+Actually, viewing a history of the contact list would be sort of cool. It would then be possible to go back in time in case the user accidentally deletes a contact that they didn't want to delete.
+
+One problem that's coming up with the idea of users being identified simply by the hash of their keys is that this doesn't provide for users that have multiple computers and want to synchronize stuff between those computers.
+
+On the whole thing about how to synchronize with servers and a concept of domains when there isn't an idea of account names, a couple of thoughts. Perhaps directory servers should not only provide a directory of userids and their corresponding keys and the user's information, but they could potentially provide a username-to-userid mapping.
+
+Another important characteristic that directory servers should have: all of the information about a particular user that is stored in a directory server should be signed by the user as well. A user's entry in a directory server contains the user's public encryption and signature keys, which means that it's possible for another user to download the information about that user from the directory server and validate that the information really is the user's informationand make sure that the directory server hasn't just created random information about that user.
+
+It would also be cool if the information stored in the directory included the date at which the user set that information. This isn't critically important, but it would be useful for figuring out which data from a particular directory server is the latest data. The user information signature created by the user should include that date in some manner.
+
+So, I just made an interesting observation about Microsoft Groove: interestingly enough, a Groove workspace appears to store a permanent version history of itself too, although it doesn't make this user-visible. I found this out by adding and removing a file over and over again from a files tool in a Groove workspace and watching the size of the workspace (which Groove does report). Every time I added and removed the file, it increased by roughly the size of the file, even though it was the same file and I removed it each time. No-one else is a member of the workspace, which nullifies the possibility that it's storing data to be sent to other users. This is a good thing; if OpenGroove stores a permanent version history, it won't make it any less space-efficient than Groove.
+
+I'm thinking that communication mechanisms should be pluggable. This was an idea I had considered adding to Generation 4, and I'm thinking I'll also add it to Generation 5. I'm thinking there would essentially be four communications plugins either included with OpenGroove or available from the default update site: Standard, Ad-hoc, Loopback, and File. The standard transport would use relay servers or other servers in some manner I'm still working out (see my above thoughts on why hashed userids and usernames cause problems). The ad-hoc transport scans for computers on the local network with multicast when enabled and connects to them. The loopback transport shows the user as always online to themselves, and allows users to send messages to themselves. The file transport allows messages to be exported into a file and then imported from that same file on another machine, and all relevant messages from that file will be processed.
+
+I'm thinking now that message history, in the sense of user messages, should be permanent, IE you can't delete messages (but maybe you can delete attachments if they're taking up too much storage space). That would provide redundancy-tolerant messaging.
+
+I'm still deciding what sort of keys workspaces should have associated with them. It would be useful if clients could be instructed to change workspace keys to get rid of a rogue user, but the problem is that the rogue user could just instruct clients to change their keys before the normal user does. But then again, if only certain roles can change keys, then the clients could ignore change-key messages from clients not authorized to do that. More thought needs to go into this and how to kick people from a workspace forcibly, or if the user should just make a copy of the workspace, including its history (which should be possible from any given history revision), and invite all but the rogue user to it.
+
+Each revision in a workspace should also be signed by the workspace's creator and in some manner by the workspace's keys.
+
+So now, getting back to the idea of userids and how synchronization while on the internet would work. Groove does that whole thing using relay servers, meaning that Microsoft (and formerly groove.net) runs a bunch of servers for relaying messages between people, and people sign up 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

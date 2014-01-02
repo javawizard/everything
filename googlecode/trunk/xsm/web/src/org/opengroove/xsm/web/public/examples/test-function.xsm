@@ -1,0 +1,12 @@
+<function name="test">
+    <print>
+        <var name="param.toprint"/>
+    </print>
+    <return>
+        <string>This is the return value</string>
+    </return>
+</function>
+
+<print>
+    <test toprint="Hello, this is an attribute."/>
+</print>

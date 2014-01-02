@@ -1,0 +1,121 @@
+G4 is the 4th generation of OpenGroove (aka the fourth rewrite). I know that's a lot of rewrites.
+
+Anyway, I think I started to write the kitchen sink into generation 3 (the first one known as OpenGroove; generation 1 was known as InTouch and generation 2 was known as Convergia). This made it not really feasible to complete. I'm going to simplify dramatically for G4.
+
+So I'm simplifying things quite a bit.
+
+One thing I noticed about Groove is that it has no concept of immediate messages, and manages to get away with it. In otherwords, with a Groove server, the only things you can do are register yourself with a directory server (which allows other users to search for your user account) and send and receive blocks of bytes to another user. As soon as you've sent those "blocks of bytes", you lose track of them, and they will be delivered as soon as they can be.
+
+This seemed like a relatively simplistic approach for a system like Groove. the G3 server had quite a bit more than that built in (in fact, the G3 server had no less than 67 different commands whereas the Microsoft Groove servers have exactly 5 commands: send message, receive message [pending message lists are pushed to the client by the server, not asked for], search for users, add yourself to the directory, and remove yourself from the directory), which was making the protocol extremely complicated. It all seemed necessary, however, until I started looking through Groove's protocol.
+
+I haven't yet figured out how Groove does presence, but it looks like Alice (a Groove client) asks Bob (another Groove client) to send her a message when his status changes. Bob then does this, and Alice uses it to update her UI. She might get a flood of messages when she signs on after a while and bob has been offline, but it's not hugely significant. I haven't yet figured out how clients deal with people going offline.
+
+When Alice sends a Groove message to Bob, it's sent as a protocol message. When the Groove client successfully pushes the message up to the server, the message shows up as "sent, waiting for delivery". When Bob downloads the message, he sends a message in reply that simply tells Alice that her message has been received. Alice's client then shows "delivered" as the message status. When Bob opens the message, he sends another reply telling Alice that the message has been opened. Alice's message then shows "opened" as the status, and then it goes away.
+
+Workspaces work similarly. Whenever a user makes changes to a workspace (which are commands being applied to engines), this is sent as a message to all other members of the workspace. I haven't yet figured out what happens if a new member has been added but the one with changes doesn't know about this new member yet, although I think that what it might be doing is when it gets word that a new user is present, it sends the new user all updates since they joined. But I don't know for sure.
+
+Anyway, everything is done by the exchange of messages. So, I started to think, there's got to be some sort of server out there that can do something similar.
+
+It turns out that there is. The xmpp protocol does pretty much exactly that. Different servers have different policies on whether or not they will store and forward messages or whether they will only allow messages to users that are online. The one requirement would be a server that does not, under any circumstances, silently discard messages. Bouncing is ok to an extent (as long as the client can figure out that the message is a bounced message and not a real message from another user, namely the server).
+
+I did some more looking, and figured out that the Openfire server pretty much exactly matches this description. So I think I have my server now. G4 will use the xmpp protocol for transport.
+
+Since I don't think that the xmpp protocol can handle large messages being sent across it at a time, stored messages will be (yes, I know this is an evil word) chunked. Each stored message will be split into blocks 2KB in size. This chunking will be much less complicated than that done with the G2 and G3 servers, though. Each chunk will contain an id for the message (as all messages do), the number of chunks in the message, and the number of that particular chunk. Message recipients, upon receiving chunks, store them until they have a complete message, and then they process it. Since I'm only planning on G4 being used inside of Trivergia for now, there won't be any protection against a client being flooded with messages that are missing just one chunk, although there will be a UI interface that can be used to view incoming messages and how many chunks have arrived and how many are left.
+
+Because the chunk sizes will be 32-bit signed integers, a message cannot be larger than 4TB in size. This is 2K (the chunk size) multiplied by 2G (approximately 2^31). I really don't think I'll have a message even this large, so I'm not particularly concerned about increasing this limit.
+
+Presence, unlike Groove, will be done using xmpp's built-in presence mechanisms instead of using messages, since xmpp already provides presence information. The same is true about directory information.
+
+
+
+Ok, so that's done. Now really the only thing to figure out is how to do the whole workspaces thing when you have a service that you can use to reliably send stored messages.
+
+For now, we're going to assume that any users that leave do so voluntarily. I think that will be easiest, since using some sort of dynamics system for user management would have the effect that an evicted user could simply post a dynamics update that evicts the manager that evicted them just before they were evicted, thereby rendering the eviction void.
+
+Actually, since I'm in the mood to trust people (and that isn't a horrible thing right now), let's just make everyone a manger. In otherwords, any user can add and remove any other user from the workspace. If an update is received removing a user, then any changes that have been applied from that user since then to any other engine within the workspace are discarded. How this would work if the user is re-added (in which case would some of those changes need to be re-applied?) would still have to be determined.
+
+Ok, so assuming I can figure out what to do when a user is removed and then re-added, the protocol that I just described would make workspaces safe against people that have never been in the workspace and people that have been kicked out of the workspace long enough that every computer has had a chance to synchronize since then. It wouldn't offer protection from users that got kicked but then attacked before everyone synchronized, for the reasons described above.
+
+I think, therefore, that the security model is ok for now. I'm still going to stick with just managers, though, since I think it's going to be difficult to work with the case where a user gets invited by a manager, changes data, and then an update from yet another manages comes demoting the first manager before he invited the user. Technically, the user should then be kicked out of the workspace and all of their data reverted, but this would be somewhat tedious to code, not to mention the case where the user is then added back into the workspace.
+
+And I figured out how removing a user and then re-adding them works. In fact, there isn't really much to worry about. When a user is removed, we revert all changes that they have made since then (but we don't actually delete them from our command history). When they are re-added, then any commands in the command history sent by them since are re-applied in the correct order.
+
+How a workspace would manage engines, however, is something I'm still trying to figure out. The other thing I'm trying to figure out is how to know how far back the command history should be kept. If Alice is making changes to the workspace and then broadcasting them, but Bob is a member but doesn't frequently change stuff, then everyone will be keeping data back to the last time Bob changed something, since for all they know there could still be changed messages pending from him. Perhaps the best thing to do would be to (and yes, I don't like this because it involves a periodic timer but I can't figure out a way around it) have each user add a moot engine command to the workspace every day. This could be a command on the members engine called, maybe, NOP, which does nothing to the engine (and reverting it also does nothing). Every user then adds a NOP every day that they are signed on to G4. This then ensures that if all of the users are regularly syncing, their command logs will be cleared out once per day, instead of accumulating until each and every user makes a modification.
+
+Ok, I think I'm figuring this all out. Now I still have to figure out how to manage engines within a workspace. The way Groove does it is that each workspace has 0 or more engines associated with it. In G4's case, it would have at least 1 engine (the members engine), and then as many more as are needed. How to manage these engines, though, is an issue. 
+
+Hmm, maybe what we could do is have any workspace have its fixed management engine, which contains the list of managers and participants (and later on guests, but not for now) and the list of engines in the workspace (which has their name and their type). When the management engine receives a command to create a new engine, it not only adds that to its internal storage mechanism, but it goes off and creates the folder fot that engine's content. This revert string simply indicates that the engine is to be removed, which is what would happen if you go back and revert that command. When the management engine receives a command to delete an engine, it zips up the contents of the engine's storage space and provides that, along with the information about the engine, as the revert string. Reverting this command would result in the engine being re-created.
+
+So to things outside of the workspace, all engines appear as one collective engine, with an additional specifier for each command: the target engine. All commands would be kept in the same log, which I'm thinking (at a low level) would probably be a series of files.
+
+This also removes the concept of a "delta". The original reason for having a delta (which was a group of commands) was that you wouldn't want any other commands to get applied in between the set of commands. However, since all commands have an associated date that specifies where they fall in terms of ordering, then this date could just be a BigInteger that contains the actual date, multiplied by, say, 2^128. The next 96 bits would be a random number for sequencing purposes (so that two commands executed at exactly the same date by different people wouldn't get mixed up), and the last 32 bits would be the command sequencing number. Sets of commands that would have been a delta have the same date and the same random number but incremental sequencing numbers. Workspaces receiving the commands, then, only have to order them by the number as a whole, and this will handle sorting them first by date, then by random number, then by sequence within the "delta per se".
+
+So now it seems that the easiest thing to do is to have all of the engines act as one collective engine, as it appears from the perspective of the log and from the perspective of commands being pushed into this one large "workspace engine" (not to be confused with the management engine), as it's called. This pseudo-engine is also capable of intercepting commands instead of handing them down to the actual engine. Where this comes in useful is in the case that a new engine is created by Alice, Bob gets this update and modifies the engine's data, and Carol signs on but gets only Bob's update. When Carol gets the update for that engine, the engine does not exist. The workspace engine sees that, and realizing that it has no engine to hand the information down to, it simply ignores it and returns an empty revert string. When Bob's update finally arrives, Carol's update is reverted (which has no effect since it has an empty revert string), Bob's update is applied (which instructs the management engine to create the new engine, which it does), and then Carol's update is re-applied. This time, however, the workspace engine realizes that the target engine actually does exist, so it hands the command off to the target engine.
+
+There is one other slight issue: what to do with updates incoming from a user that's not a member of a workspace. Initial thought would tell us to discard these, but that causes some complications. The only really safe way is to save them up until the last synchronized date with every other user in the workspace, so in effect they would be injected into the log and "applied", and the workspace engine would filter them out into a nop because they're from a user that's not a member of the workspace. This is why this is needed: Alice and Bob share a workspace. Bob invites Carol to the workspace. Carol then makes some changes. Alice then signs on and receives Carol's updates before Bob's update adding Carol. If Alice were to discard Carol's changes, then Bob and Carol would have Carol's changes, but not Alice (all users would still have the correct member list). This would be solved by storing Carol's change. Then, when Bob's update adding Carol arrives, Carol's change would be reverted (which does nothing since it was filtered out by the workspace engine), Bob's change adding Carol applied, and then Carol's change re-applied (which would actually go into effect this time because Carol is now a member of the workspace according to Alice's management engine). This would solve the problem, but it adds the issue that anyone could spam another user with updates for a workspace, and the user would have to store them for a while before they know whether or not they are valid. I think I'll still use the solution, however, and worry about this denial-of-service issue later.
+
+Another issue is how users should receive updates from others in the workspace that have made changes before they were added, but the inviter didn't get those changes before the workspace was sent out. Here's an example: Alice and Bob are members of a workspace. Alice modifies some data. Bob adds Carol to the workspace and sends her the workspace as he sees it. Bob then receives Alice's change and applies it. Alice then receives Bob's change and adds Carol to her list of workspace members. Alice and Bob then have Alice's change, but Carol doesn't. Everyone has the correct user list (Alice, Bob, and Carol), though. So there needs to be some sort of means to solve this issue. 
+
+
+
+
+
+
+
+
+
+
+
+One other problem I just thought of is how updates should propegate to newly-added users. 
+
+Now to cover the management engine. Whenever the management engine is about to apply a command, it locks every other engine in the workspace before doing so. This might seem like it would slow down G4 considerably, but commands are only applied to the management engine when an engine is created or deleted, or a user is added, removed, or their permissions are changed. The reason for this locking is that the management engine has the ability to modify other engines (and their actual data storage, too) when applying its commands. 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

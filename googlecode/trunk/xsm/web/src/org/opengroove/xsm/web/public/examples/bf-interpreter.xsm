@@ -1,0 +1,191 @@
+<!-- An interpreter for the BF programming language. I'll be referring to the language simply by the acronym, since the second letter is profane. Do a google search for "BF programming language" for more information on what it is. -->
+
+<function name="bfzero">
+    <if>
+        <condition>
+            <equals>
+                <item>
+                    <index><var name="arg.1"/></index>
+                    <target><var name="arg.2"/></target>
+                </item>
+                <null/>
+            </equals>
+        </condition>
+        <overwrite>
+            <index><var name="arg.1"/></index>
+            <target><var name="arg.2"/></target>
+            <value><number>0</number></value>
+        </overwrite>
+    </if>
+</function>
+
+<set name="program">
+    <prompt message="Type a BF program to execute. Don't include comments."/>
+</set>
+<set name="size">
+    <size>
+        <var name="program"/>
+    </size>
+</set>
+<set name="counter">
+    <number>1</number>
+</set>
+<set name="bracket">
+    <number>0</number>
+</set>
+<set name="data">
+    <list/>
+</set>
+<set name="pointer">
+    <number>1</number>
+</set>
+<print>Executing program.</print>
+<print></print>
+<while>
+    <condition>
+        <not>
+            <greater>
+                <var name="counter"/>
+                <var name="size"/>
+            </greater>
+        </not>
+    </condition>
+    <set name="current">
+        <item>
+            <var name="counter"/>
+            <var name="program"/>
+        </item>
+    </set>
+    <switch var="current">
+        <case value="&gt;">
+            <set name="pointer">
+                <add>
+                    <var name="pointer"/>
+                    <number>1</number>
+                </add>
+            </set>
+        </case>
+        <case value="&lt;">
+            <set name="pointer">
+                <subtract>
+                    <var name="pointer"/>
+                    <number>1</number>
+                </subtract>
+            </set>
+        </case>
+        <case value="+">
+            <bfzero>
+                <var name="pointer"/>
+                <var name="data"/>
+            </bfzero>
+            <overwrite>
+                <index><var name="pointer"/></index>
+                <target><var name="data"/></target>
+                <value>
+                    <add>
+                        <item>
+                            <index><var name="pointer"/></index>
+                            <target><var name="data"/></target>
+                        </item>
+                        <number>1</number>
+                    </add>
+                </value>
+            </overwrite>
+        </case>
+        <case value="-">
+            <bfzero>
+                <var name="pointer"/>
+                <var name="data"/>
+            </bfzero>
+            <overwrite>
+                <index><var name="pointer"/></index>
+                <target><var name="data"/></target>
+                <value>
+                    <subtract>
+                        <item>
+                            <index><var name="pointer"/></index>
+                            <target><var name="data"/></target>
+                        </item>
+                        <number>1</number>
+                    </subtract>
+                </value>
+            </overwrite>
+        </case>
+        <case value=".">
+            <print newline="false">
+                <char>
+                    <item>
+                        <index><var name="pointer"/></index>
+                        <target><var name="data"/></target>
+                    </item>
+                </char>
+            </print>
+        </case>
+        <case value=",">
+            <overwrite>
+                <target><var name="data"/></target>
+                <index><var name="pointer"/></index>
+                <value>
+                    <char>
+                        <prompt message="Type a single character as input to the program."/>
+                    </char>
+                </value>
+            </overwrite>
+        </case>
+        <case value="[">
+            <!-- implement this. Add a boolean var called skip, which, when true,
+            causes instructions not to be executed until a close bracket. This
+            open bracket sets skip to true if the pointed data is 0. If not, then
+            it doesn't set skip, and... hmm, nested brackets need to be accounted for.
+            We should probably use a list, and then add stack internal commands to
+            XSM, and then push and pop the current bracket index. We'll need to push
+            the amount of opens and closes we encounter onto the stack when skipping,
+            so that we don't stop for an inner close but instead stop at the correct one.
+            Or maybe the processing should be moved to a function, and then gset and
+            gvar used to get the current pointer and such. Bracket position would
+            be a function-local var, and it would recurse for each nested set
+            of brackets. --> 
+        </case>
+        <case value="]">
+        </case>
+    <set name="counter">
+        <add>
+            <var name="counter"/>
+            <number>1</number>
+        </add>
+    </set>
+</while>
+                
+                
+                
+                
+                
+                
+                
+                
+                
+                
+                
+                
+                
+                
+                
+                
+                
+                
+                
+                
+                
+                
+                
+                
+                
+                
+                
+                
+                
+                
+                
+                
+                
+                

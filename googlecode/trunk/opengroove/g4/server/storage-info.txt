@@ -1,0 +1,8 @@
+The storage tree has some folders under it. 
+
+Under the storage folder is auth. This currently holds one file, users.props. This is a properties file of usernames to hashed passwords.
+
+When a user opens a socket to the server to send a message, a new file is created in messagecache, using the message's id. When the message has been successfully received, the file is copied over to messages/<username>, where <username> is the recipient's username.
+
+Message ids must start with the user's username and then a hyphen.
+

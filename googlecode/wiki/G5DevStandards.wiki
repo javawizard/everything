@@ -1,0 +1,7 @@
+#labels G5
+This page outlines some practices OpenGroove G5 developers need to follow.
+
+==Comments==
+Comments always make code easier to read. OpenGroove code should be thoroughly commented. The comment ratio for the entire OpenGroove project must stay above 35%, and preferably above 40%. http://ohloh.net/projects/opengroove tracks the code-to-comment ratio; refer to this often.
+
+Docstrings should be present on most, if not all, classes and functions. If a class has a docstring that would adequately cover what the class's __init__ method does, then the __init__ method does not need to have a docstring. Similarly, if it's obvious what a special method (such as __and__ or __div__) does, then it doesn't need to be documented. When in doubt, though, use docstrings. And using docstrings on these methods is never a bad idea; it's just not required.

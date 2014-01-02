@@ -1,0 +1,70 @@
+The G4 protocol is entirely based on the exchange of serialized objects. 
+
+This might seem like it would cause some problems, since objects are stored in memory. This was, in fact, the main reason why G3's protocol was a custom binary protocol, was because messages could well be gigabytes in size and I didn't want them to cause an out of memory error.
+
+Those of you that are serialization gurus are probably laughing your head off at the me that created G3's protocol. As I now know, objects can have custom serializers. In other words, large amounts of data can be stored in a file with an object that wraps that file, and is serializable, and that provides the file's contents to the stream on serialization and creates a new temporary file with the file's contents on deserialization.
+
+This is exactly what G4's protocol does. The FileBlock class is serializable, and does exactly what was described in the paragraph above. So messages can easily be sent as serialized objects, and stored messages would include FileBlocks for their attachment data (and maybe even for the main message itself).
+
+Anyway, on to the actual protocol. I debated having two separate streams, one for large objects and one for smaller ones. I ended up deciding against this because it would significantly increase protocol complexity. So for now there is just one stream (well two actually, one to the server and one from the server), and all objects (including large ones, like messages) go over that stream.
+
+This has the disadvantage that if a message is being sent by a client, and they receive a message and then tell the server that they received it and then disconnect, the server might not get notice that they actually did receive it since they were in the middle of sending a file to the server. As a result, messages might sometimes get delivered twice. This will only happen in consecutive protocol connections, however, so the client will keep a list of messages that it has already received (specifically, their server-generated ids), and it will check all incoming messages against this list to make sure that they haven't already been received. This list will be cleared when the initial set of messages has been received from the server for the session *after* that message id was received, and the initial set did not include that id. The server sends an object after the initial set indicating that the initial set has been completed.
+
+Users can have multiple computers. Each computer's message cache has a separate folder on the server, so it's important not to avoid signing on from a computer for too long, as the server will accumulate a large amount of data. Users can view how much server data is being held for them on other computers, and they can see if they need to sign on to another computer soon based on that data.
+
+I haven't yet worked out how workspaces and other computers will work, since my current priority is to get messaging up and running. I might even decide to have workspaces stored on the server of the user that created the workspace, which would make management a lot easier (although engines would still be required, and the server would store engine data and order that along with the user's engine data).
+
+Userids have a textual format. A userid can represent a server, a user, or a computer. These different userids are used for different purposes.
+
+An absolute computer userid is of the format "server::username:computer". An absolute user userid is of the format "server::username". An absolute server userid is of the format "server::".  A username userid relative to the server is of the format "username". A computer userid relative to a user is of the format ":computer". A computer userid relative to the server is of the format "username:computer".
+
+Ok, now I'm going to get back to the actual G4 protocol. There are two different protocols, one for client-server communication and one for server-server communication. I'm only going to write the client-server protocol right now, since the server-server protocol isn't very important yet.
+
+The client-server protocol runs on port 64472. It is an object stream protocol. The client connects to the server, and then starts an ObjectOutputStream and then an ObjectInputStream (in that exact order, not vice versa since that would cause a deadlock as per the javadoc on the constructor for ObjectInputStream).
+
+The client then immediately sends either a PingPacket, a RegisterPacket, a RegisterInformationPacket, or a LoginPacket. The middle two will be documented later, but they request registration with the server and request information on what extra data needs to be provided to the server, respectively. The first receives a PingPacket back from the server, after which the connection terminates. The latter receives a LoginResponse, indicating whether or not the login succeeded.
+
+The login packet contains the username, computer, and password that the user wants to log in with. The computer can be null, in which case the user will be logged in under "non-computer mode". This mode's command set is restricted to adding new computers.
+
+The login response indicates whether the user was successfully logged in or not, and if not, then the reason that the user was not logged in.
+
+Then the server sends the roster, the time, all roster presence updates, and all messages. It then sends an InitialCompletePacket.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

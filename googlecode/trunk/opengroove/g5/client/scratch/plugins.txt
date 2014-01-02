@@ -1,0 +1,51 @@
+So, some thought on the plugin system.
+
+One thing I got thinking about was the mechanism behind dependencies. I was thinking, ok, let's have some elaborate version scheme, whereby plugins can specify really complex matching rules for selecting which other versions of plugins they depend on. But then I started thinking about how GNU autoconf files work: they check for features, not for versions.
+
+That's actually an interesting idea that would be really cool if it was done right. What if plugins depended on certain features of other plugins instead of specific plugin versions? I'm not saying that version numbering should totally go away; there still needs to be a notion of plugin versions to allow for plugins to be upgraded when a new version comes out. But version numbers would not be the primary mechanism behind dependency.
+
+And the other cool thing about the whole idea of features is that maybe there could be some way for a plugin to say that it depends on a particular feature without specifying a particular plugin that has that feature. It could, however, specify a plugin, or perhaps a list of plugins, that it suggests for that feature. The reason that depending on just a particular feature instead of a particular plugin is useful is that different plugins that implement that feature in a different manner could be used. For example, the part of OpenGroove that shows the notification box could depend on the notification-animation feature. Various animations (such as slide, spin, fade, etc) could be installed that provide this feature.
+
+That's another thing to think about, is the ability of a plugin to depend on a feature in some manner so that if multiple plugins implementing that feature are present, it can use them all. There should also be a way that a plugin can depend on a feature in such a way that if multiple plugins implementing that feature are present, it will only use one of those plugins.
+
+It might also be cool if a plugin can specify a set of features that must all be present on the same plugin without specifying the plugin's name either.
+
+Feature suggestions would be another cool thing: a plugin could suggest features that aren't required but that would enhance its ability to function. Perhaps this could be merged with the idea of features being satisfied by multiple plugins: a plugin can state, for any given feature dependency, whether that dependency is a requirement or a suggestion, and whether or not that dependency allows multiple plugins to satisfy it. If it doesn't allow multiple plugins to satisfy it, then other plugins can certainly be installed, but the user will be asked to select a plugin to use.
+
+Perhaps dependency logic could also be introduced. This would allow a plugin to say, for example, that it depends on either one of two certain features, or that it depends on either both of two certain features, or another feature.
+
+One thing that needs to be considered here is how this will work with plugins that OpenGroove will include. I'm thinking that, like Eclipse, a large part of OpenGroove itself will be written as plugins. Plugins that are included with OpenGroove, yes, but plugins nonetheless, complete with plugin descriptors (special XML files that describe the plugin). But the problems start to show up when thinking about workspaces. Workspace types are written as plugins; a tool workspace is simply another type of workspace, registered via a plugin that satisfies a multi-feature dependency by what I'm calling the core OpenGroove plugin, which is what contains most of OpenGroove's features (the launchbar might end up being its own plugin, but more thought needs to go into that, and there should be some command-line interface for installing plugins in case the user accidentally uninstalls the launchbar if this is the way things end up going). The problem occurrs when you start getting really complex dependencies. Sharing a workspace with a user on another computer requires that they have the ability to view said workspace. The problem here is whether or not just the plugin's id and version need to be sent, or whether the plugin's dependencies need to be sent.
+
+Here's an example where this problem would become apparent: consider an othello game tool plugin that depends on a game tool feature. There are several different plugins satisfying this feature that all store their data in the database in different formats. All of the workspace users need to have the same database format, obviously, so how would this work?
+
+A potential answer to that would be that OpenGroove simply leaves it up to the developer. This is sounding like the best answer to me as I'm thinking about this. Basically, a game tool that uses a particular storage format could provide a dummy feature indicating that it supports that storage format, and then games could depend on that feature to ensure that even if another plugin ends up getting substituted in, it will use the same data format. I still don't know yet if a particular tool will include its plugin id or some other identifier; ideally, multiple tools should be able to be packaged into a single plugin, and this would need to be taken into account in some manner.
+
+I'm thinking at this point that features don't have any sort of notion of versions. Meaning, if the method in which you access a portion of a particular plugin needs to change for the next version of that plugin, then the plugin should have a different feature name to indicate that it's not compatible anymore. Or if it still supports the old method of access, then it can keep that feature and add a new one onto it.
+
+So now I'm thinking that there should be a way for a plugin to provide a feature multiple times. I'm thinking primarily on having multiple workspace tools provided in a particular plugin. Maybe this calls for an additional idea of components, which are parts of a plugin that themselves provide a list of features. Or something like that. Plugins should have a way of depending on a set of features that are not only all within the same plugin but that are also all within the same component, if needed. More thought on this is going to be required.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

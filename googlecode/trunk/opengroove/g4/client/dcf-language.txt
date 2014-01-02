@@ -1,0 +1,9 @@
+The Data Container Format is a system for mapping structured data to a byte-level representation. It is similar to the ProxyStorage system in that you define data formats as a set of interfaces, and then DCF takes care of converting instances of those interfaces to DataBlocks and vice versa. DCF is also suitable for applications where the data to be stored could contain gigabytes of data, and DCF will cache the data in a file to avoid an OutOfMemoryError.
+
+DCF is a binary format, so any sort of transport that it is layered over must support binary data.
+
+DCF uses DataBlocks extensively to allow for data that might be very large. DCF is intended to be the format that stored messages use, and stored messages need to allow for attachments up to 2GB in size and up to 1TB of total data.
+
+Anyway, on to the actual format and how it is represented by java interfaces.
+
+DCF objects are created be defining a class
