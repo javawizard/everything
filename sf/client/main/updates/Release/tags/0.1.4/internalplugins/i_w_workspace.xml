@@ -1,0 +1,7 @@
+<plugin name="Workspace management" 
+ description="Provides the concept of workspaces to OpenGroove"
+ class="net.sf.opengroove.client.plugins.AccumulatingSupervisor">
+    <extension-point id="workspace"
+     class="net.sf.opengroove.client.plugins.AccumulatingExtensionPoint"
+     interface="net.sf.opengroove.client.workspace.WorkspaceFactory"/>
+</plugin>

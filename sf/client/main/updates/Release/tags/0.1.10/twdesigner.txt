@@ -1,0 +1,7 @@
+INFO ON THE FORTHCOMING WORKSPACE DESIGNER IN THE TOOL WORKSPACE
+
+This document describes the tool workspace layout designer that will be added to convergia.
+
+Users can access the layout designer by going to the workspace's configuration window (accessible from the launchbar)
+or by using an action button that they have linked to the layout designer. implementations of LayoutContainerFactory
+class can be registered as features, using the id toolworkspacelayoutcontainer. These are the containers that are

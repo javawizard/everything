@@ -1,0 +1,66 @@
+MORE RAMBLE FROM ME ON HOW convergia WORKS
+
+specifically, how feature plugins work
+
+
+one (and only one) instance of a feature plugin class is instantiated at startup of the convergia system. in the initialize()
+method, the feature implementation should register components by calling registerComponent(). 
+
+features can send a message to that feature class in another user's box. currently, there is no way to tell what features are
+installed on another computer, so if a message is sent by a feature to another computer and the other computer doesn't have
+that feature installed,  the message is silently discarded. expect this to change in the future, so that there will be a
+method that a feature can call to see if a user has that same feature installed.
+
+any plugins that are features are loaded at convergia startup. there is a class called FeatureManager in package
+net.sf.convergia.client.features that manages lots of stuff related to features. any messages received by convergia that
+start with fm| should be delegated to the feature manager. any messages that then have the component f mean that the next
+component is the plugin id of the feature to which the message is targeted. the next component dictates what part of a feature
+the message is addressed to. the only allowable value is imessage, which means that the content of the message after the | sign
+that is right after imessage should be passed to the receiveMessage method on feature.
+
+features can add taskbar notifications in much the same way that workspaces and tools can.
+
+the registerComponent method of a feature takes 2 arguments: the component (any Object) to register, and the id of the
+feature component handler that dictates where the component should go. each feature component handler allows different types
+of components to be passed to it. the ids of feature handlers are case-insensitive. there are a few feature component handlers
+that are built in to convergia. those are:
+
+launchbarmenu - accepts JMenu components. this is a menu that will be added on to the end of the menu bar in the convergia
+launchbar.
+
+launchbartab - accepts net.sf.convergia.client.Tab objects. this is a tab (Tab objects are Java Beans that have a name and
+a component) to add to the launchbar tabbed pane.
+
+launchbarconvergiamenuitem - accepts any JMenuItem or JMenu. this is added to the bottom of the convergia menu in the launchbar.
+
+launchbarhelpmenuitem - accepts any JMenuItem or JMenu. this is added to the bottom of the Help menu in the launchbar.
+
+launchbarworkspacelink - accepts JButtons. JLinkButton is reccomended (it's a subclass of JButton included with convergia, 
+originally from www.l2fprod.com). these are added as links above the workspace list. examples of these are Create a workspace
+and Participate in a workspace.
+
+launchbarcontactlink - same as launchbarworkspacelink but adds it to the contacts pane.
+
+workspacetoolicon (coming soon) - accepts a ComponentFactory of any Component (java.awt), preferably a JLinkButton or JLabel
+with only an icon on it. Whenever a workspace tool is loaded into the tabbed pane, a new Component is created from the component
+factory, and added to the right of the name of the tool in the tabbed pane, similar in location to the pop out icon. the
+ComponentFactoryContext passed in is an instance of ToolIconComponentFactoryContext, which makes accessible to the
+ComponentFactory the Tool object and it's ToolWrapper.
+
+
+features are initialized AFTER workspaces are initialized. this makes it so that workspaces can register feature component
+handlers. A feature component handler is registered by calling FeatureManager.registerComponentHander(), which takes 2
+arguments, the first one is a string which is the name of the feature component handler, and the second is an instance
+of FeatureComponentHandler.
+
+when calling registerComponent(), a ClassCastException will be raised if the type of component passed is not compatible
+with the feature component handler named by the id passed in.
+
+***UPDATE: features are loaded FIRST. for now, plugins should not reigster their own feature component handlers. only
+convergia should register these.
+
+
+
+
+
+

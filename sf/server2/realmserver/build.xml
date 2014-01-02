@@ -1,0 +1,76 @@
+<?xml version="1.0"?>
+<!-- ====================================================================== 
+     Jan 1, 2008 2:34:47 AM                                                        
+
+     project    
+     description
+                   
+     Alexander Boyd                                                              
+     ====================================================================== -->
+<project name="OpenGroove Realm Server" default="deploy">
+    <description>
+
+    </description>
+
+    <target name="deploy">
+        <antcall target="compile">
+        </antcall>
+        <antcall target="gwt">
+        </antcall>
+    </target>
+
+    <target name="compile">
+        <mkdir dir="${basedir}/classes" />
+        <javac debug="on"
+               debuglevel="lines,vars,source"
+               destdir="${basedir}/classes"
+               nowarn="true">
+            <src path="${basedir}/src" />
+            <src path="${basedir}/gwt-src" />
+            <classpath>
+                <fileset dir="${basedir}/lib" />
+            </classpath>
+            <classpath>
+                <fileset dir="${basedir}" />
+            </classpath>
+        </javac>
+    </target>
+
+    <target name="gwt">
+        <java fork="true"
+              maxmemory="256M"
+              classname="com.google.gwt.dev.GWTCompiler"
+              failonerror="true">
+            <classpath>
+                <pathelement location="${basedir}/gwt-src" />
+                <pathelement location="${basedir}/lib/gwt-user.jar" />
+                <pathelement location="${basedir}/lib/gwt-dev-windows.jar" />
+                <fileset dir="${basedir}/lib" />
+                <fileset dir="${basedir}" />
+            </classpath>
+            <arg value="-out" />
+            <arg value="${basedir}/web/bypass/gwt" />
+            <arg value="net.sf.opengroove.realmserver.gwt.AdminInterface" />
+        </java>
+    </target>
+
+    <!-- ================================= 
+          target: default              
+         ================================= -->
+    <target name="javadoc">
+        <javadoc access="private"
+                 destdir="javadocs"
+                 additionalparam="-J-Dfile.encoding=UTF-8 -subpackages net.sf.opengroove"
+                 author="true"
+                 source="1.6"
+                 sourcepath="src"
+                 splitindex="true"
+                 use="true"
+                 version="true"
+                 doctitle="OpenGroove Realm Server Documentation"
+                 footer="&lt;a href='http://www.opengroove.org'&gt;OpenGroove&lt;/a&gt;">
+            <link href="http://java.sun.com/javase/6/docs/api/" />
+        </javadoc>
+    </target>
+
+</project>

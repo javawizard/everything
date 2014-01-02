@@ -1,0 +1,35 @@
+<launch4jConfig>
+  <jar>opengrooveinstaller.jar</jar>
+  <headerType>gui</headerType>
+  <outfile>setup.exe</outfile>
+  <errTitle>OpenGroove Installer</errTitle>
+  <priority>normal</priority>
+  <downloadUrl>http://java.com/download</downloadUrl>
+  <supportUrl>http://www.opengroove.org/opengroove-error</supportUrl>
+  <jre>
+    <minVersion>1.6.0</minVersion>
+    <maxVersion></maxVersion>
+    <jdkPreference>preferJre</jdkPreference>
+    <initialHeapSize>8</initialHeapSize>
+    <maxHeapSize>128</maxHeapSize>
+  </jre>
+  <versionInfo>
+    <fileVersion>0.1.1.1058</fileVersion>
+    <txtFileVersion>0.1.1 revision 1058</txtFileVersion>
+    <fileDescription>A setup program that installs OpenGroove, a groupware application</fileDescription>
+    <copyright>2007 - 2008 Alexander Boyd, released under the terms of the BSD license</copyright>
+    <productVersion>0.1.1.1058</productVersion>
+    <txtProductVersion>0.1.1 revision 1058</txtProductVersion>
+    <productName>OpenGroove Installer</productName>
+    <companyName></companyName>
+    <internalName>OpenGroove Installer</internalName>
+    <originalFilename>setup.exe</originalFilename>
+  </versionInfo>
+  <messages>
+    <startupErr>An error occurred while starting OpenGroove Installer. Visit www.opengroove.org/opengroove-error to get assistance.</startupErr>
+    <bundledJreErr>OpenGroove Installer was configured to use a bundled Java Runtime Environment, but it is missing. Visit www.opengroove.org/opengroove-error to get assistance.</bundledJreErr>
+    <jreVersionErr>OpenGroove Installer can&apos;t find a Java Runtime Environment, which is needed. Visit www.java.com/download to obtain one, or visit www.opengroove.org/opengroove-error to get assistance.</jreVersionErr>
+    <launcherErr>Your version of Java appears to be corrupted. Visit www.opengroove.org/opengroove-error to get assistance.</launcherErr>
+    <instanceAlreadyExistsMsg>OpenGroove Installer is already running. You cannot start OpenGroove Installer multiple times. If you need help, visit www.opengroove.org/opengroove-error for assistance.</instanceAlreadyExistsMsg>
+  </messages>
+</launch4jConfig>

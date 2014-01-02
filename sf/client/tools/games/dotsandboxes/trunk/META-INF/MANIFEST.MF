@@ -1,0 +1,6 @@
+Manifest-Version: 1.2
+it3-type: tool
+it3-class: net.sf.convergia.client.tools.games.dotsandboxes.DotsAndBoxes
+it3-name: Dots and Boxes
+it3-description: <html>A game of connecting dots. A grid of dots is shown,<br/>and players take turns connecting dots on the grid<br/>with lines. When you create a box with 4 lines, you<br/>capture that box. When all lines are filled in, the<br/>person with the most boxes wins.
+

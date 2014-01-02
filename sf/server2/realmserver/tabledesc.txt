@@ -1,0 +1,192 @@
+This document describes all of the tables that the realm server uses in it's database.
+
+
+These tables reside in the persistant database:
+
+
+webusers:
+
+This table contains the users that can manage this realm server from the web. This is entirely unrelated to the OpenGroove users registered to this realm server.
+
+username varchar(64) The user's username
+role varchar(32) The role of this user. Currently only admin is allowed.
+password varchar(200) The hex representation of the SHA-512 of the password for this user
+
+
+
+configuration:
+
+This table holds general configuration of the server, such as whether or not registration is open, This server's name and description in the OpenGroove realm server directory, etc.
+
+name varchar(64) The name of this configuration setting
+value varchar(1024) The value of this configuration setting
+
+
+
+users:
+
+This table holds the users that are signed up with this realm server.
+
+username varchar(64) The username of this user.
+password varchar(200) The hex representation of the SHA-512 of the password for this user. It should only need to be 128 chars long but it's longer just in case.
+publiclylisted boolean true if the user should be listed in the public directory (in which case results from searchusers could return this user as a result), false otherwise.
+
+
+
+userquotas:
+
+This table holds the quotas that apply to a user.
+
+username varchar(64) The username of the user that this quota applies to. This table is also used to store default quota values, and these have a username that is the empty string.
+name varchar(32) the name of the quota
+value int the value of the quota
+
+
+
+usersettings:
+
+This table holds settings that a user specifies. A user can set settings for their account to allow multiple computers to be able to download this information. Settings who's name start with public- can be viewed (but not edited) by anyone, and all other settings can only be viewed and edited by the user themselves. A user cannot have more than 256KB of settings (this does not include individual computer settings) This includes a 64-byte overhead for each setting, the length of the key, and the length of the value.
+
+username varchar(64) The username of the user that this setting is for
+name varchar(64) The name of this particular setting
+value varchar(2048) The value of this setting
+
+
+
+computersettings:
+
+This table holds settings similar to usersettings, but the settings are computer-specific. When a setting is created, the computer that created it is marked as the owner of the setting. Any other computer of that user can modify the setting if it knows the name of the computer. Setting names of this type do not need to be unique across all of the user's settings. A computer can only have 16KB of settings, using the same spec as the usersettings table. A user is only able to create 8 computers by default; this can be configured using the web ui.
+
+username varchar(64) The username of the user that owns the computer that the setting is for
+computername varchar(64) The name of the computer that created this setting
+name varchar(64) The name of this setting
+value varchar(2048) The value of this setting
+
+
+
+computers:
+
+This table holds the computers that are registered for each user.
+
+username varchar(64) The username of the user that this computer is registered to
+computername varchar(64) The name of this computer
+type varchar(32) The type of computer. When a computer is created, it's type is specified, and it's type cannot change thereafter. Currently, the valid types are pc (the normal OpenGroove Client), pda (for OpenGroove PDA clients), mobile (for OpenGroove mobile clients, these run on mobile phones and have an extremely reduced interface), and web (if a user signs on to their account using the web interface. only one user of this type is usually created).
+capabilities varchar(512) The capabilities of this computer, delimited by commas. Other users can see the capabilities of a computer, and they can use those when communicating with it. A list of capabilities is still being worked out.
+lastonline bigint the time that this computer was last online, in milliseconds since january 1, 1970 utc
+
+
+
+subscriptions:
+
+This table holds the list of subscriptions that users have created.
+
+type varchar(64) the type of subscription.
+username varchar(64) the username of the user who created this subscription.
+onusername varchar(64) the username, or userid if the user is not of this realm server, of the user who's changes are to be subscribed to. If the subscription type is not for a particular user, then this is the empty string.
+oncomputername varchar(64) If this subscription type applies to a specific computer, then this is the name of the computer. If not, this is the empty string.
+onsettingname varchar(128) If this subscription type applies to a specific user or computer setting, then this is the name of that setting. If not, this is the empty string.
+deletewithtarget boolean True if this subscription should be deleted when it's target has nothing to be subscribed to (for example, if a computer who's updates have been subscribed to gets deleted), false if not.
+properties varchar(1024) the properties of this subscription, specific to the subscription type, in the properties file format. If the subscription needs no additional properties besides those in the columns of this table, then this can be the empty string.
+
+
+
+imessagequotas
+
+This table contains the quotas applied by a user on how many imessages may be received from another user.
+
+username varchar(64) the username of the user that has applied the quota
+onusername varchar(64) the username or userid (if the user is not of this realm server) that the quota applies to
+messagecount int the number of messages per minute that onusername can send to username
+
+
+
+help
+
+This table contains the help pages visible to OpenGroove users.
+
+pathname varchar(512) The pathname (starting wtih a forward slash) of this help topic.
+contents varchar(64511) The contents of this help topic, in html format.
+
+
+
+predefinednotifications
+
+This table holds predefined user notifications. When a notification is to be sent, the user of the web interface can choose a predefined notification to populate the subject and message fields with. This makes it so that the user doesn't have to write down a bunch of predefined notifications and paste them into the message or subject field. 
+
+name varchar(128) The name of this notification. This is what shows in the dropdown list for selecting the notification when sending a notification.
+type varchar(128) The fixed type of the notification. This is normally empty, but in the future I'm planning on adding functionality for the server to send out notifications when it needs to do a particular task, such as download and install updates (which would require the server to shut down for some time while it does this). A notification with a type of, say, installingupdates, could be created, which the server will send to all users when it is going to do that.
+subject varchar(512) The subject of the notification.
+message varchar(4096) The actual message contents of the notification.
+notes varchar(8192) Some notes for the notification. These are only used when creating and editing notifications to write down information about what they are for, when to use them, etc.
+warnings varchar(1024) Some warning notes that, if not empty, will be shown to a user in a javascript alert box when they choose this particular notification as one to send. This could be used to make suggestions as to the length that the notification should persist for, or it's usual priority.
+
+
+
+workspaces:
+
+This table contains a list of workspaces.
+
+columns TBD
+
+
+
+workspacemembers
+
+This table contains a list of members of a workspace.
+
+columns TBD
+
+
+
+workspaceproperties
+
+This table contains the properties for the workspaces.
+
+columns TBD
+
+
+
+workspacecomputers
+
+This table contains which computers of a particular workspace user are participants in the workspace.
+
+columns TBD
+
+
+
+These tables reside in the large database:
+
+
+messages:
+
+This table holds the list of stored messages that are queued on this realm server right now. It doesn't actually contain the message data (except for the message's metadata, which is limited to 1024 characters total), which is stored in the large database table storedmessagedata.
+
+id varchar(128) The id of the message. It's recommended that this start with the userid of the sender of the message, to avoid message id collisions.
+sender varchar(64) The username (or userid if the message is from a user not on this realm server) of the message's sender.
+computer varchar(64)  The name of the computer that sent this message, the empty string if unavailable
+sent boolean true if this message has been finalized (or sent) by it's sender. If this is false, then the sender still has control over the message, and it should not be visible to any recipients. If this is true, then the sender has no control over the message, and recipients can read the message as they wish and remove themselves as a recipient from the message.
+
+
+
+messagerecipients:
+
+This table holds the list of recipients for a message. Recipients are usually just a username. However, if the sender of the message is of this realm server, then the recipients can be of other realm servers (in which case they would be userids), and this realm server will contact the recipients' realm servers and send the message off to them, and then delete them as a recipient from this message.
+
+id varchar(128) The id of the message that this recipient is for
+recipient varchar(64) The username or userid of this recipient
+computer varchar(64) The name of the computer that this recipient entry targets. If this recipient is of another realm server, then this can be the empty string, in which case it will be expanded to a list of the recipient's computers by the recipient's realm server.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

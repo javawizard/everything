@@ -1,0 +1,15 @@
+Start here on January 8, 2008
+
+Then, these need to be imcorporated into WorkspaceManager and Workspace, so that a serverside workspace is created
+whenever a workspace is created, and the corresponding serverside workspace is deleted when the local workspace is deleted.
+Instead of checking for exceptions when creating or deleting, we should call canAccess() to see if creating or deleting
+was successful.
+We should only be allowed to create and delete workspaces when online, to avoid not creating or deleting a serverside
+workspace that corresponds to this clientside workspace. Then, methods should be made available to implementations of
+Workspace to allow them to read and write workspace properties. We don't need to add caching of these yet. Then
+we should go ahead and work on MultiplayerSequenceGame. There will not be a game manager now, because the current player can
+just set that it is the next player's turn as a property, and then the next player will read that and pick up the turn.
+This poses a problem that if a game participant goes offline, then the game will be stuck on their turn, but we should
+worry about that later, since it is not very likely right now. Then we should allow game participants to set some sort
+of player metadata that all other players can read. Game participants and observers should be notified when the current
+player changes. They should also be notified when the board object changes.

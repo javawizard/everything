@@ -1,0 +1,25 @@
+These are notes to myself (Alex, javawizard2539) about random stuff related to convergia.
+
+Suggestion for new plugin packaging: A plugin file could be it's own custom format
+instead of a jar file. it would be a properties file format, with all of the keys
+typically defined in the jar manifest, but in studleycaps instead of hyphenated and
+no it3- prefix on the beginning. basically, the format of internal plugin descriptor
+files. there is one additional key, called jarUrl. this is the url to the jar file
+containing the code for the plugin. if it's value is the word inline, then any number
+of inlineX parameters are allowed, where X is a number. each of these parameters
+contains base64 encoded data. the data is concatenated together in the order of the
+number on the parameters to form the jar file contents. in general, each inlineX
+property should contain no more than 16KB of data to avoid an out of memory error.
+the file extention for a plugin would probably be .cvgp
+
+the plugin system should probably be redone so that it is more of a compromize
+between feature plugins and plugin types. basically, it should have more of an extention
+point and extention model. this would probably involve each plugin having to subclass
+some sort of Plugin class. TODO: finish this section
+
+a shortcut system should be created. somehow plugins would be able to register some sort
+of shortcut object that gets notified when it's activated. the convergia class should
+accept a shortcut id as an argument, which activates the shortcut. if convergia is already
+running, a message could be sent across some sort of socket to alert the already-running
+instance to activate the shortcut specified.
+

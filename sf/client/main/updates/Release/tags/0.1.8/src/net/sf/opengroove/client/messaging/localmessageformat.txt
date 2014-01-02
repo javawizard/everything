@@ -1,0 +1,71 @@
+Unlike most other information in OpenGroove, user messages are stored as a file, instead of as a proxy storage object. The format of the file that is stored locally is exactly identical to the format that the message is sent as. All messages (both inbound and outbound) are stored in a folder specific to the user.
+
+The contents of the message file is as follows. Each field has a number of bytes next to it, which indicates how many bytes that field takes up. If something is marked as a string, then 4 bytes are written with it's length, followed by the string itself. The same thing happens for a byte[]. 
+
+header
+ header size - 4 bytes, specifies size of header not including this field
+ sent date - 8 bytes
+ sender - string
+ read - 1 byte
+ recipient count - 4 bytes
+ [for each recipient]
+  recipient userid - string
+ in reply to - string
+ property count - 4 bytes
+ [for each property]
+  property name - string
+  property value - string
+body
+ content type - string
+ subject - string
+ message - string
+attachments
+ attachment count - 4 bytes
+ [for each attachment]
+  filename - string
+  type - string (one of file, folder, embedded, or voice)
+  has saved - 1 byte
+  property count - 4 bytes
+  [for each property]
+   property name - string
+   property value - string
+  content length - 4 bytes
+ [for each attachment]
+  content - byte[], not prefixed with length
+  
+
+
+
+
+
+
+Ideas for sequence of order:
+
+header
+ sent date
+ sender
+ read [always false for transferred messages]
+ recipients
+ in reply to [empty if not in reply]
+ properties
+body
+ content type
+ subject
+ message
+attachments
+ attachment count
+ [for each attachment]
+  filename
+  type - file, folder, voice
+  hascontent [always true for transferred messages]
+  hassaved [always false for transferred messages]
+  properties
+  content length
+ [for each attachment]
+  content [empty if hascontent is false] 
+
+ 
+ 
+ 
+ 
+  

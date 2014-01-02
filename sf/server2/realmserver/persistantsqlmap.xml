@@ -1,0 +1,278 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+
+<!DOCTYPE sqlMap      
+    PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN"      
+    "http://ibatis.apache.org/dtd/sql-map-2.dtd">
+
+<sqlMap>
+	<select id="authenticateWebUser" parameterClass="java.util.Map"
+		resultClass="java.lang.String">
+		select role from $$prefix$$webusers where username = #username# and password
+		= #password#
+    </select>
+	<select id="listWebUsers" resultClass="java.lang.String">
+		select username from $$prefix$$webusers;
+    </select>
+	<insert id="addWebUser" parameterClass="java.util.Map">
+		insert into $$prefix$$webusers (username,role,password) values
+		(#username#, #role#, #password#)
+    </insert>
+	<delete id="deleteWebUser" parameterClass="java.lang.String">
+		delete from $$prefix$$webusers where username = #value#
+    </delete>
+	<select id="authUser" parameterClass="net.sf.opengroove.realmserver.data.model.User"
+		resultClass="net.sf.opengroove.realmserver.data.model.User">
+		select * from $$prefix$$users where username = #username# and password =
+		#password#
+    </select>
+	<select id="getUser" parameterClass="java.lang.String"
+		resultClass="net.sf.opengroove.realmserver.data.model.User">
+		select * from $$prefix$$users where username = #value#
+    </select>
+	<select id="getComputer" parameterClass="net.sf.opengroove.realmserver.data.model.Computer"
+		resultClass="net.sf.opengroove.realmserver.data.model.Computer">
+		select * from $$prefix$$computers where username = #username# and
+		computername = #computername#
+    </select>
+	<select id="getComputersForUser" parameterClass="java.lang.String"
+		resultClass="net.sf.opengroove.realmserver.data.model.Computer">
+		select * from $$prefix$$computers where username = #value#
+    </select>
+	<select id="getUserLastOnline" parameterClass="java.lang.String"
+		resultClass="java.lang.Long">
+		select lastonline from $$prefix$$computers computers where username =
+		#username#
+		order by lastonline desc limit 1
+    </select>
+	<insert id="addComputer" parameterClass="net.sf.opengroove.realmserver.data.model.Computer">
+		insert into $$prefix$$computers (username,computername,type,lastonline)
+		values (#username#,#computername#,#type#,#lastonline#)
+    </insert>
+	<select id="searchUsers"
+		parameterClass="net.sf.opengroove.realmserver.data.model.SearchUsers"
+		resultClass="net.sf.opengroove.realmserver.data.model.User">
+		select * from $$prefix$$users where publiclylisted = true
+		and
+		(
+		lower(username) like lower(#search#)
+		or
+		(
+		#searchkeys# and username in
+		(
+		select username from $$prefix$$usersettings
+		where lower(value) like lower(#search#)
+		<iterate prepend="and" open="(" property="keys" conjunction="or"
+			close=")">
+			lower(name) = lower(#keys[]#) 
+                    </iterate>
+		)
+		)
+		)
+		limit #limit# offset #offset#
+	</select>
+	<select id="searchUsersCount"
+		parameterClass="net.sf.opengroove.realmserver.data.model.SearchUsers"
+		resultClass="java.lang.Integer">
+		select count(*) from $$prefix$$users where publiclylisted = true
+		and
+		(
+		lower(username) like lower(#search#)
+		or
+		(
+		#searchkeys# and username in
+		(
+		select username from $$prefix$$usersettings
+		where lower(value) like lower(#search#)
+		<iterate prepend="and" open="(" property="keys" conjunction="or"
+			close=")">
+			lower(name) = lower(#keys[]#) 
+                    </iterate>
+		)
+		)
+		)
+	</select>
+	<update id="updateComputer" parameterClass="net.sf.opengroove.realmserver.data.model.Computer">
+		update $$prefix$$computers set type = #type#, lastonline = #lastonline#
+		where username = #username# and computername = #computername#
+    </update>
+	<delete id="deleteComputer">
+		delete from $$prefix$$computers where username = #username# and
+		computername = #computername#
+    </delete>
+	<select id="listUserSettings" parameterClass="java.lang.String"
+		resultClass="net.sf.opengroove.realmserver.data.model.UserSetting">
+		select * from $$prefix$$usersettings where username = #value# 
+    </select>
+	<select id="listPublicUserSettings" parameterClass="java.lang.String"
+		resultClass="net.sf.opengroove.realmserver.data.model.UserSetting">
+		select * from $$prefix$$usersettings where username = #value#
+		and name like 'public-%'
+    </select>
+    <select id="getUserSettingSize"
+    parameterClass="java.lang.String" resultClass="java.lang.Integer">
+        select sum(character_length(name) + character_length(value) + 10) 
+        from $$prefix$$usersettings where username = #value#
+    </select>
+    <select id="getUserSetting"
+    parameterClass="net.sf.opengroove.realmserver.data.model.UserSetting"
+    resultClass="net.sf.opengroove.realmserver.data.model.UserSetting">
+        select * from $$prefix$$usersettings where username = #username#
+        and name = #name#
+    </select>
+    <insert id="insertUserSetting"
+    parameterClass="net.sf.opengroove.realmserver.data.model.UserSetting">
+        insert into $$prefix$$usersettings (username,name,value)
+        values (#username#,#name#,#value#)
+    </insert>
+    <update id="updateUserSetting"
+    parameterClass="net.sf.opengroove.realmserver.data.model.UserSetting">
+        update $$prefix$$usersettings set value=#value#
+        where username=#username# and name=#name#
+    </update>
+    <delete id="deleteUserSetting"
+    parameterClass="net.sf.opengroove.realmserver.data.model.UserSetting">
+        delete from $$prefix$$usersettings where username = #username#
+        and name=#name#
+    </delete>
+    <select id="listUsers"
+    resultClass="net.sf.opengroove.realmserver.data.model.User">
+        select * from $$prefix$$users;
+    </select>
+    <insert id="addUser"
+    parameterClass="net.sf.opengroove.realmserver.data.model.User">
+        insert into $$prefix$$users (username,password,publiclylisted)
+        values (#username#, #password#, #publiclylisted#)
+    </insert>
+    <update id="updateUser"
+    parameterClass="net.sf.opengroove.realmserver.data.model.User">
+        update $$prefix$$users set password = #password#, publiclylisted = #publiclylisted#
+        where username = #username#
+    </update>
+    <delete id="deleteUser"
+    parameterClass="java.lang.String">
+        delete from $$prefix$$users where username = #value#
+    </delete>
+    
+    
+    <!--start computer settings -->
+    
+    
+        <select id="listComputerSettings"
+    parameterClass="net.sf.opengroove.realmserver.data.model.ComputerSetting"
+    resultClass="net.sf.opengroove.realmserver.data.model.ComputerSetting">
+        select * from $$prefix$$computerusersettings where username = #username#
+        and computername = #computername# 
+    </select>
+    <select id="listPublicComputerSettings"
+    parameterClass="net.sf.opengroove.realmserver.data.model.ComputerSetting"
+    resultClass="net.sf.opengroove.realmserver.data.model.ComputerSetting">
+        select * from $$prefix$$computerusersettings where username = #username#
+        and computername = #computername#
+        and name like 'public-%'
+    </select>
+    <select id="getComputerSettingSize"
+    parameterClass="net.sf.opengroove.realmserver.data.model.ComputerSetting"
+    resultClass="java.lang.Integer">
+        select sum(character_length(name) + character_length(value) + 10) 
+        from $$prefix$$computerusersettings where username = #username#
+        and computername = #computername#
+    </select>
+    <select id="getComputerSetting"
+    parameterClass="net.sf.opengroove.realmserver.data.model.ComputerSetting"
+    resultClass="net.sf.opengroove.realmserver.data.model.ComputerSetting">
+        select * from $$prefix$$computerusersettings where username = #username#
+        and computername = #computername#
+        and name = #name#
+    </select>
+    <insert id="insertComputerSetting"
+    parameterClass="net.sf.opengroove.realmserver.data.model.ComputerSetting">
+        insert into $$prefix$$computerusersettings (username,computername,name,value)
+        values (#username#,#computername#,#name#,#value#)
+    </insert>
+    <update id="updateComputerSetting"
+    parameterClass="net.sf.opengroove.realmserver.data.model.ComputerSetting">
+        update $$prefix$$computerusersettings set value=#value#
+        where username=#username# and computername=#computername# and name=#name#
+    </update>
+    <delete id="deleteComputerSetting"
+    parameterClass="net.sf.opengroove.realmserver.data.model.ComputerSetting">
+        delete from $$prefix$$computerusersettings where username = #username#
+        and computername = #computername# and name=#name#
+    </delete>
+    
+    <!--end computer settings -->
+    
+    
+    <!-- !ADDTOSQL -->
+
+    <select id="getMatchingSubscriptionCount" 
+         parameterClass="net.sf.opengroove.realmserver.data.model.Subscription" 
+         resultClass="java.lang.Integer" >
+        select count(*) from $$prefix$$subscriptions where type
+        = #type# and username = #username# and onusername
+        = #onusername# and oncomputername =
+        #oncomputername# and onsettingname =
+        #onsettingname# and deletewithtarget = #deletewithtarget#
+        and properties = #properties#
+    </select>
+
+    <delete id="deleteSubscription" 
+         parameterClass="net.sf.opengroove.realmserver.data.model.Subscription" >
+        delete from $$prefix$$subscriptions where type = #type#
+        and username = #username# and onusername
+        = #onusername# and oncomputername =
+        #oncomputername# and onsettingname =
+        #onsettingname#
+    </delete>
+
+    <select id="getSubscriptionCount" 
+         parameterClass="java.lang.String" 
+         resultClass="java.lang.Integer" >
+        select count(*) from $$prefix$$subscriptions where username
+        = #value#
+    </select>
+
+    <select id="listSubscriptionsByTypedTargetUser" 
+         parameterClass="net.sf.opengroove.realmserver.data.model.Subscription" 
+         resultClass="net.sf.opengroove.realmserver.data.model.Subscription" >
+        select * from $$prefix$$subscriptions where onusername
+        = #onusername# and type = #type#
+    </select>
+
+    <select id="listSubscriptionsByTargetSetting" 
+         parameterClass="net.sf.opengroove.realmserver.data.model.Subscription" 
+         resultClass="net.sf.opengroove.realmserver.data.model.Subscription" >
+        select * from $$prefix$$subscriptions where
+        onusername=#onusername# and onsettingname
+        = #onsettingname#
+    </select>
+
+    <select id="listSubscriptionsByTargetUser" 
+         parameterClass="java.lang.String" 
+         resultClass="net.sf.opengroove.realmserver.data.model.Subscription" >
+        select * from $$prefix$$subscriptions where onusername
+        = #value#
+    </select>
+
+    <select id="listSubscriptionsByUser" 
+         parameterClass="java.lang.String" 
+         resultClass="net.sf.opengroove.realmserver.data.model.Subscription" >
+        select * from $$prefix$$subscriptions where username
+        = #value#
+    </select>
+
+    <insert id="insertSubscription" 
+         parameterClass="net.sf.opengroove.realmserver.data.model.Subscription" >
+        insert into $$prefix$$subscriptions values (
+        #type#,#username#,#onusername#,#oncomputername#,
+        #onsettingname#,#deletewithtarget#,#properties#)
+    </insert>
+
+    <select id="listComputersByUser" 
+         parameterClass="java.lang.String" 
+         resultClass="net.sf.opengroove.realmserver.data.model.Computer" >
+        select * from $$prefix$$computers where username
+        = #username#
+    </select>
+    
+</sqlMap>

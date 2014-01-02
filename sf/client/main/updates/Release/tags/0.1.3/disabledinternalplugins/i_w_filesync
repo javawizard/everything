@@ -1,0 +1,5 @@
+type=workspace
+class=net.sf.opengroove.client.filesyncworkspace.FileSyncWorkspace
+name=Folder Synchronization Workspace
+description=<html>This workspace allows you to synchronize a folder<br/>on your hard disk with folders on all<br/>participant's hard disks.
+installMessage=<html>This workspace allows you to synchronize a folder<br/>on your hard disk with folders on all<br/>participant's hard disks.

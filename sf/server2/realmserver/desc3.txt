@@ -1,0 +1,4 @@
+The main server uses a database to stoe it's information. It has these tables:
+
+opengroove_users
+opengroove_
