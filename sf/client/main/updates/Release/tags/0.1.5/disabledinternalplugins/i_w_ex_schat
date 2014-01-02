@@ -1,5 +1,0 @@
-type=workspace
-class=net.sf.opengroove.client.example.ExampleChatWorkspace
-name=Example Chat Workspace
-description=<html>This workspace is a simple chat workspace. You can<br/>type a message to send to all<br/>members, and they see it once it arrives.
-installMessage=This workspace is a simple chat workspace. You can type a message to send to all members, and they see it once it arrives.

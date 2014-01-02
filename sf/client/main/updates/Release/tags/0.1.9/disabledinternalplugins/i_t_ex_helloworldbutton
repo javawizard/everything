@@ -1,8 +1,0 @@
-type=tool
-class=net.sf.opengroove.client.example.HelloWorldTool
-name=Hello World Button tool
-description=<html>a simple tool that presents the user with a<br/>\
-button. when someone in the workspace clicks the button, it<br/>\
-changes it's text on everyone's computer to show that it was<br/>\
-clicked by another user.
-installMessage=hello world button tool

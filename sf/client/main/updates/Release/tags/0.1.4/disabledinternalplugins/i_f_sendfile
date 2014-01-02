@@ -1,7 +1,0 @@
-type=feature
-class=net.sf.opengroove.client.messaging.FileTransferFeature
-name=File Transfer
-description=\
-<html>\
-Allows you to send a file to another user with this feature installed.
-installMessage=

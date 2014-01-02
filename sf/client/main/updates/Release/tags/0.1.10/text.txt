@@ -1,1 +1,0 @@
-This file is mainly for testing whether or not updates get through. If you're trying to see if a particular instance of OpenGroove really is at the version that Subversion says it's at, then add something to this file, and see if it appears when you tell OpenGroove to update.

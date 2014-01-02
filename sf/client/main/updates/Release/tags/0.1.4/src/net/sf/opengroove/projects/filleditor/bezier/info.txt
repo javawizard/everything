@@ -1,3 +1,0 @@
-The classes in this packages were obtained from
-http://www.math.ubc.ca/~cass/gfx/bezier.html
-and were modified a bit by me (Alexander Boyd) to work with OpenGroove.

@@ -1,9 +1,0 @@
-<plugin name="Tool workspace" 
- description="A workspace that allows you to add tools, and share those tools with other members of the workspace" 
- class="net.sf.opengroove.client.plugins.AccumulatingSupervisor">
-    <extension-point id="tool"
-     class="net.sf.opengroove.client.plugins.AccumulatingExtensionPoint" 
-     interface="net.sf.opengroove.client.toolworkspace.plugin.ToolFactory"/>
-    <extension id="workspace"
-     class="net.sf.opengroove.client.toolworkspace.ToolWorkspaceFactory"/>
-</plugin>

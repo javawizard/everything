@@ -1,4 +1,0 @@
-The backgrounds folder contains a bunch of .fdsc files, which are serialized
-net.sf.opengroove.projects.filleditor.FillImage s. These represent backgrounds 
-used in OpenGroove for some of the windows. In the future, users will be
-able to use the FillEditor to edit these.

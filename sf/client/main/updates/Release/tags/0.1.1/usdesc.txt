@@ -1,6 +1,0 @@
-MORE MEANINGLESS RAMBLE FROM ME TO ME
-
-each time new updates are released, the revision number should be increased by one. this is true
-for changes to a major version number, a minor version number, or even an update. it is implied that revision numbers
-are consecutive, IE you will never have a revision 24 right after 22, with no 23 inbetween. it is also implied that version numbers
-increase as time goes onward.

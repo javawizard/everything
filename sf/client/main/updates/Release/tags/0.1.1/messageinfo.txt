@@ -1,6 +1,0 @@
-This document is a description of how the client handles messaging, and a few topics related to workspaces.
-
-
-
-
-
