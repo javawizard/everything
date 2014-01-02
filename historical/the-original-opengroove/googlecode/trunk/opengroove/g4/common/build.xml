@@ -1,0 +1,16 @@
+<project name="G4 Common">
+    <target name="build">
+        <mkdir dir="output" />
+        <jar destfile="output/g4common.jar" basedir="classes">
+        </jar>
+    </target>
+    <target name="deploy"
+            description="Deploys the G4 Common jar to ../G4-client/lib and ../G4-server/lib"
+            depends="build">
+        <delete file="../G4-client/lib/g4common.jar" failonerror="false" />
+        <delete file="../G4-server/lib/g4common.jar" failonerror="false" />
+        <copy file="output/g4common.jar" todir="../G4-client/lib" />
+        <copy file="output/g4common.jar" todir="../G4-server/lib" />
+        <copy file="output/g4common.jar" todir="../OpenGroove Client/lib" />
+    </target>
+</project>

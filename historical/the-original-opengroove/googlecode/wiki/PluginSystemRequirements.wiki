@@ -1,0 +1,10 @@
+#labels G5
+Requirements for the plugin system:
+
+  * Ability to properly serialize/deserialize objects provided by a plugin
+  * Automatic updating of plugin code and resources
+  * Sandboxing of plugin library dependencies (for example, two plugins could require different versions of a library, and both versions would be downloaded successfully and each one used for its respective plugin)
+  * Ability of a plugin to request a class from another plugin that registers an extension to it
+  * Ability for plugins to be downloaded from an update site, or installed locally
+  * Ability for plugins to be tracked as "automatic", IE plugins that were downloaded because another depended on them but not installed themselves, and these not show up in the UI and not automatically update unless requested by another plugin
+  * Dependency management, including specific version dependencies

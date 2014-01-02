@@ -1,0 +1,150 @@
+Stuff on writing OGDB
+
+In here, some_object refers to the python object representing a particular database object.
+
+So, let's think. It'd be cool if database objects could function something like maps in terms of subpaths (or even absolute paths). So you could do some_object["other"] and it'd get the object that's an immediate child of some_object that has the id "other". None is returned if the object doesn't exist.
+
+And then you could also do paths, so some_object["other/something/else"]. And, if you really wanted (although this would be generally discouraged due to the whole hierarchy thing), you could probably do some_object["/something/etc"], which would basically be an absolute path starting from the root of the hierarchy.
+
+So like, some_object["other/something/else"] would be roughly equivalent to some_object["other"]["something"]["else"], the one difference being that you won't get a TypeError if there's no object with that path; you'll simply get back None.
+
+Object attributes can't be named "db", and they can't start with "db_". Those names are reserved for functions and attributes built in to the DB. For example, some_object.db refers to the database that the object came from, and some_object.db_changeset() creates a new changeset bound to that particular object. Objects also can't have an attribute called "self" to avoid problems with that conflicting with the first argument to class methods.
+
+Changesets are bound to a particular path. Modifying properties and such on a changeset causes an operation modifying the object denoted by the specified changeset to be added to the changeset's list of changes. For example, assuming we've just run this:
+
+changeset = some_object.db_changeset()
+
+then:
+
+changeset.something = "hello"
+
+causes a set operation to be added that sets the attribute "something" to have the string value "hello", and
+
+del changeset.something
+
+causes an unset operation to be added that deletes the attribute "something". To create an update operation, you have to call the update method:
+
+changeset.update(something="hello")
+
+which would cause an update operation to be added that sets the attribute "something" to have the string value "hello". There is also a set method that can be used in the same way, as well as an unset method that accepts a bunch of strings arguments:
+
+changeset.set(something="hello")
+changeset.unset("hello","another_attribute","a_third_one")
+
+Note that these operations do not automatically collapse, which means that two update operations on the same attribute in the same changeset will cause two updates to be stored and redundantly executed (redundant because they both modify the same attribute). This is something to watch out for; the code
+
+changeset.set(something="hello").set(something="bye")
+
+will have the same net effect on the database as
+
+changeset.set(something="bye")
+
+but the former will be considerably less efficient. It also demonstrates an important feature: most of the functions on the changeset object return the changeset that they were called on, thereby allowing for chained method invocation, as in
+
+changeset.set(something="hello").update(another="howdy").unset("a_third")
+
+which can sometimes shorten code and make it more readable. This shouldn't be abused, though.
+
+Changesets representing the same logical list of changes as another changeset but bound to a different path can be obtained like this:
+
+changeset["other"]
+
+So for example, if we have some_object's child object called "other", like this:
+
+other = some_object["other"]
+
+and we want to set the attribute "example" to "hello" on some_object and the attribute "testing" to "bye" on other, all in the same changeset, we could do
+
+changeset = some_object.db_changeset()
+changeset.example = "hello"
+sub_changeset = changeset["other"]
+sub_changeset.testing = "bye"
+sub_changeset.apply()
+
+Note that the last line could also have been "changeset.apply()"; the result would have been the same either way. That 5-line update could also have been done in a more condensed way like this:
+
+some_object.db_changeset().set(example="hello")["other"].set(testing="bye").apply()
+
+although that statement borders on being unreadably complex.
+
+Since changesets don't know whether the path they're bound to actually exists or not, operations can be executed on paths that don't exist. This is precisely how insert is implemented. To insert an object with some_object as its parent and with the attribute "example" set to "hello", using the id "other" and the type "hello", you'd do something like this:
+
+some_object.db_changeset()["other"].insert("hello", example="hello").apply()
+
+Note, however, that this has a distinctly different effect than
+
+some_object.db_changeset()["other"].insert("hello").set(example="hello").apply()
+
+in that if the object already exists, none of the initial attributes supplied to the insert will be added, whereas attributes present on subsequent set operations will still be applied to the object if it already exists.
+
+Objects can be deleted using a similar notation. The statement
+
+some_object.db_changeset()["other"].delete().apply()
+
+and the statement
+
+some_object["other"].db_changeset().delete().apply()
+
+both delete the specified object, the difference being that the former will do nothing if the object doesn't exist anyway whereas the latter will raise an AttributeError.
+
+Changesets internally back themselves with an OperationList instance. The primary difference between those two is that a changeset is bound to a particular path, whereas an operation list has no such restriction. The operation list holds the list of operations that are present in the changeset and a reference to the database. Operations that pertain to the changeset as a whole, such as the apply() method, delegate straight to the operation list, which then delegates most of its work to the database.
+
+The changeset class tracks the operation list backing it and the path that it's bound to, and that's just about it.
+
+The operation list also holds the metadata that's present on the changeset. This is the dictionary whose keys and values must be strings and which will be stored alongside the changeset on the hard disk. It does nothing more than allow the database user to store additional information along with each specific change. OG will use this to store the time the changeset was created and a signature of the changeset. When creating the signature, OG will set the signature metadata attribute to the empty string, and same when validating the signature. Because the encoded changeset string needs to be consistent across multiple platforms, dictionary keys and values must be encoded in alphabetical order. Individual operations should also obey this when encoding dictionaries that they might store.
+
+Ok so now, we have changesets pretty much down. Now for how to access objects.
+
+When an object is requested, it is retrieved from the database immediately and stored in memory. Attributes are implemented using a __getattr__() method instead of just by setting attributes to allow all of the attributes to be updated at once when the db_reload() method is called. The attributes are then stored in a dictionary on the object.
+
+The db_reload() method present on an object causes it to update itself from the database. If the object no longer exists in the database, all of the object's attributes will be removed. In the future, a db_exists attribute might be present to allow for detecting whether or not the object exists.
+
+db_changeset() can be called on the object to create a new changeset. The changeset will be bound to the object's path.
+
+db_path is an attribute present on the object that represents the object's absolute path.
+
+db_parent can be used to get the parent of the specified object.
+
+db is the database object that the object came from.
+
+Now for the database. The database's storage location is a folder. In that folder it has another folder called datastore-sqlite. In there it puts the sqlite database, using a filename of "db".
+
+The database allows for pre-apply and post-apply functions to be set. These are run before and after a particular changeset gets applied to the database. They are passed the operation list representing the changes to be applied.
+
+When the database is initialized, it creates the root object and stores it in the root attribute on itself.
+
+So now, let's get into the query interface.
+
+My thinking is that queries will be fairly basic right now. They won't really be super complex. They're going to bank on the fact that combining where-expressions with the and keyword is a lot more common than combining them with the or keyword. Chained method invocation on the same query causes more and more and-filters, as I'm going to call them, to be added to the query. The or operator on two queries combines them together and returns a new query. This query does not contain any sort or limit/offset information, even if the two queries it was constructed from did.
+
+Queries internally store a list representing the constraints that have been placed on them thus far. They also store the list of attributes that the query is to order by, and the directions those queries are supposed to order by.
+
+Predicates are stored as instances of several predicate classes. Each of them has an sql method that can be used to convert the predicate to a string of SQL representing it and a list of positional parameter values it requires. Compound predicates are those that merge other predicates together. "and", "or", and "not" are good examples of this.
+
+The query itself has an sql method on it 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

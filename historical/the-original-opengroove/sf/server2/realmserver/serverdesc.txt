@@ -1,0 +1,62 @@
+MORE MEANINGLESS RAMBLE FROM ME ABOUT THE WAY THINGS WORK
+
+users can create workspaces. a given user can create no more than 20 workspaces that exist at a time,
+and a workspace can contain no more than 1MB of data. the data is volatile, by this we mean that we will 
+try to preserve it but we don't back it up, hence it should only be used as a cache. as of january 7, 2008,
+we have not had to restart our server or had it crash on us since about august of 2007. that is a good few months that
+the data stuck around for. anyway, any member of the workspace can set properties that are in the workspace.
+only the creator of a workspace can modify who's a member of a workspace. the creator is the only one who
+can delete a workspace. workspace data is made up of properties, which are keys and values. a property's key must
+be no longer than 1024 characters and it's value must not be longer than 20KB.
+
+NOTE TO ME FOR TRIVERGIA SERVER: workspace creator and member info should be stored directly in the it3s installation folder.
+actual workspace data is stured somewhere under /mnt.
+
+keys can only contain ascii visible characters, and cannot contain /, \, or . (dot). they
+also cannot contain any characters that would be considered invalid in a UNIX filename.
+values can contain any ascii visible character allowed as arguments in the GITP. if you need
+a wider data set than this, consider encoding the data in Base64. a Base64 encoder/decoder is included with InTouch 3 Client.
+the class to use is Base64Coder for both encoding and decoding.
+
+there are a few commands associated with workspaces:
+
+createworkspace: command used to create a workspace. the only argument is the id that you wish the new workspace
+to have. the id must start with the user's username, followed by a hyphen. for example, if my username is alex,
+then i could create a workspace called alex-5849305894. workspace ids can only contain A-Z, a-z, 0-9, and hyphens.
+if that workspace id already exist, the command will fail. workspace ids cannot be longer than 256 characters. generally,
+they should be more like 20 or 30.
+
+setworkspacepermissions: sets which users can access and modify the contents of the workspace. the arguments are the workspace
+id, a space, and the list of users allowed to read and write it, each separated by a space. the user calling
+this command must be the workspace creator, otherwise the command will fail. the user calling this command may or may not
+be included in this list, either way, the user calling this command will be able to read and write the workspace.
+duplicates should not be present in this list.
+
+deleteworkspace: deletes the workspace. the arguments to this command is simply the workspace id.
+
+getworkspaceproperty: gets the specified workspace property. the arguments are the workspace id, a space,
+and the key of the property. the response will contain the value. if the value doesn't exist, the
+command will fail.
+
+setworkspaceproperty: sets the specified workspace property. the arguments are the workspace id, a space,
+the key of the property, another space, and the value to set.
+
+listworkspaceproperties: lists the workspace properties in a workspace. the arguments are the workspace id, and optionally
+a space followed by a prefix. if a space and prefix are included, only those keys that start with the prefix
+specified will be returned.
+
+listownedworkspaces: lists the workspaces that the calling user created. the result is a newline-separated list
+of workspace ids.
+
+listworkspaces: lists the workspaces that the calling user has access to. the result is a newline-separated list
+of workspace ids.
+
+canaccess: this command checks to see if we have access (or are a member) of the workspace specified by the arguments.
+if we do, the command is successful (OK is the response). if we don't, the command will fail (FAIL is the response).
+
+NOTE TO ME FOR SERVER IMPLEMENTATION: workspaces are stored in a folder called "workspaces". each file is a serialized Server.Workspace
+(a static inner class). Server.Workspaces have a String which is the workspace id (kind of redundant since
+the name of the file is also the workspace id), a String which is the creator of the workspace, and a String[]
+which is the users allowed to access and modify the workspace. then there is a folder called workspacestorage which
+is located in /mnt on the trivergia server. it contains a folder for each workspace with it's name being the workspace's
+id. it contains one file for each property, with it's name being the property's key and it's contents being the property's value.

@@ -1,0 +1,7 @@
+TODO June 8, 2009:
+
+Consider just re-doing the OpenGroove client. Basically, scrap all of the periodic tasks for now, specifically those related to messaging. Drop in a new communicator that uses the object protocol, and rework everything to use that communicator. Have messages work like was described in messageprocessing.txt here. The OpenGroove client will use the G4 server.
+
+The encryption stuff will be removed from now, as G4 won't use any such encryption. Stored messages will be moved to the filesystem as serialized objects instead of being stored in proxy storage, with the header being stored in a separate file additionally. 
+
+Roster support will probably have to be added on the server.

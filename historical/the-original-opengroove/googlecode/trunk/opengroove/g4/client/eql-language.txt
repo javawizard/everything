@@ -1,0 +1,30 @@
+This file is the official reference for the Entity Query Language, the query language used by G4's TableEngine.
+
+EQL is a query language that is more advanced than GQL but significantly less advanced than SQL. It is designed for use with the table engine's schema-less layout.
+
+Basic structure:
+
+
+SELECT FROM <type> 
+    [WHERE  <check>]
+    [ORDER BY <property> ( ASC | DESC ) [, <property> ( ASC | DESC ) ...]]
+    [OFFSET <offset>]
+    [LIMIT <limit>]
+    
+	
+
+<check>       :=  ( <condition> | <check> ( AND | OR | NOT ) <check> )
+
+<condition>   :=  ( <comparison> | <property> IS NULL )   
+
+<comparison>  :=   <property> ( = | > | >= | < | <= | != | <- | -> ) 
+                  ( <property> | <literal> )
+
+ 
+<type> is an entity type, and all results will be of that type.
+<property> is the name of any property of an entity. Comparisons that operate on a property will evaluate to false if that particular property is not present on a particular entity. "<property> IS NULL" can be used to detect if an entity does not have the property specified. 
+<literal> is a number (which is only constrained, in terms of maximum value, by the value of a double, even if the comparison is against another type), "true" or "false", a string enclosed in single quotes, or a question mark. Question marks are filled in like they are in SQL.
+
+Offset and limit can both be present, or one or the other can be present, or neither. All of these will work.
+
+Parentheses can be used to enforce precedence of AND, OR, and NOT keywords. If parentheses are omitted, NOT has precedence, then OR, then AND. "<condition> AND <condition> OR NOT <condition> OR <condition>" is interpreted like "<condition> AND (<condition> OR (NOT <condition>) OR <condition>)". left-to-right precedence is not significant because of the nature of the AND and OR operators.

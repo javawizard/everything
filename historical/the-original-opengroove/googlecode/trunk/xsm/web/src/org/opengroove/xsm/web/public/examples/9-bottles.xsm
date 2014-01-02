@@ -1,0 +1,19 @@
+<!-- My family is LDS (see http://mormon.org), so the version of the song that we sing around our house is "99 bottles of pop" instead of "99 bottles of beer". So that's the version that I'm using in the program. -->
+
+<for var="i" final="1" step="-1">
+    <initial>
+        <number>
+            <prompt message="How many bottles of pop? Do less than 20, more than that is slow."/>
+        </number>
+    </initial>
+    <print><var name="i"/> bottles of pop on the wall,</print>
+    <print><var name="i"/> bottles of pop.</print>
+    <print>Take one down, pass it around</print>
+    <print>
+        <subtract>
+            <var name="i"/>
+            <number>1</number>
+        </subtract>
+        bottles of pop on the wall.
+    </print>
+</for>

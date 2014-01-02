@@ -1,0 +1,21 @@
+There are two different protocols used by csm, to simplify things. Both are layered over SSL. The persistent stream is an object stream. The message streams are established as needed to send and receive messsages, and have their own byte-level protocol.
+
+
+First I'll discuss the message stream protocol. It's used to send a message or receive a message. The protocol, up until the actual message, is line-based. The first line is the user's username, the second line is the password. The third line is the message's id. New message can have this be whatever they want, as long as it's not reused. CMS client uses the current time, plus Math.random(), plus either "--o" for an "opened" reply or "-SUBJECT" with the subject of the message. The fourth line is the action, "send" or "receive".
+
+For "send", each line after that is a recipient, followed by a blank line, followed by the letter "c". The message's data immediately follows. The client then waits for "done" from the server (followed by a newline), before terminating and removing the message from its outbound list of messages.
+
+For "receive", the server responds in the exact same format that the client would use for "send". The client sends "done" to tell the server that it received the message, and the server deletes it from its outbound queue.
+
+The format of the message is a data stream version of the message text, then an integer which is the number of attachments. For each attachment is a string that contains the name of the attachment, then an integer that contains the length of the attachment, then the attachment bytes.
+
+
+
+The persistent stream is an object stream. On connecting, the client sends a LoginPacket, which contains the username and password. The server then responds with a LoginResponsePacket, indicating if the login succeeded or failed. If it failed, the stream is immediately closed by the server. If it succeeded, then the server sends an AddUserPacket for each user the server knows about. Then it sends a StatusChangePacket for each user that is online. The server also multicasts to all other users a StatusChangePacket indicating that this client has just signed on. Other users that are idle, on receiving that, will re-multicast their idle status.
+
+StatusChangePacket is sent from the server only. IdlePacket and NotIdlePacket are sent by the client, and the server then multicasts a StatusChangePacket.
+
+A StatusChangePacket has the user that it pertains to, plus the status which is ONLINE, OFFLINE, IDLE, or BACK. It also contains a field for how long ago the user went idle, if it's an IDLE packet.
+
+When a message is available, the server sends a MessageAvailable packet. This is sent for each available message when the user signs on, and is also sent when 
+

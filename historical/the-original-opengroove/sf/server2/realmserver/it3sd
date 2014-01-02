@@ -1,0 +1,1 @@
+/j2sdk1.4.2_12/bin/java -cp bin -Djavax.net.ssl.keyStore=/root/.keystore -Djavax.net.ssl.keyStorePassword=changeit com.trivergia.intouch3.server.Server &

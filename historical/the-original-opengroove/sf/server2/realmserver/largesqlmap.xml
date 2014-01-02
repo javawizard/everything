@@ -1,0 +1,130 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE sqlMap      
+    PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN"      
+    "http://ibatis.apache.org/dtd/sql-map-2.dtd">
+
+<sqlMap>
+    <!-- !ADDTOSQL -->
+
+    <select id="listOrphanMessageRecipients" 
+         resultClass="net.sf.opengroove.realmserver.data.model.MessageRecipient" >
+        select * from $$prefix$$messagerecipients
+        where not
+        (
+            $$prefix$$messagerecipients.id in
+            (
+                select id from $$prefix$$messages
+            )
+        )
+    </select>
+
+    <select id="listMessagesWithoutRecipients" 
+         resultClass="net.sf.opengroove.realmserver.data.model.Message" >
+        select * from $$prefix$$messages where not 
+        (
+            $$prefix$$messages.id in 
+            (
+                select id from 
+                $$prefix$$messagerecipients
+            )
+        )
+        
+    </select>
+
+    <delete id="deleteMessageRecipients" 
+         parameterClass="java.lang.String" >
+        delete from $$prefix$$messagerecipients
+        where id = #id#
+    </delete>
+
+    <select id="listOutboundMessages" 
+         parameterClass="net.sf.opengroove.realmserver.data.model.Message" 
+         resultClass="java.lang.String" >
+        select id from $$prefix$$messages
+        where sender = #sender# and computer = #computer#
+        and sent = false
+    </select>
+
+    <select id="listInboundMessages" 
+         parameterClass="net.sf.opengroove.realmserver.data.model.MessageRecipient" 
+         resultClass="java.lang.String" >
+        select id from $$prefix$$messagerecipients
+        where id in
+        (
+            select id from $$prefix$$messages
+            where sent = true
+        )
+        and recipient = #recipient# and computer = #computer#
+    </select>
+
+    <update id="updateMessage" 
+         parameterClass="net.sf.opengroove.realmserver.data.model.Message" >
+        update $$prefix$$messages
+        set sender = #sender#,
+        computer=#computer#,
+        sent=#sent#
+        where id = #id#
+    </update>
+
+    <select id="getMessage" 
+         parameterClass="java.lang.String" 
+         resultClass="net.sf.opengroove.realmserver.data.model.Message" >
+        select * from $$prefix$$messages where id = #value#
+    </select>
+
+    <delete id="deleteMessage" 
+         parameterClass="java.lang.String" >
+        delete from $$prefix$$messages where id = #value#
+    </delete>
+
+    <select id="isMessageSender" 
+         parameterClass="net.sf.opengroove.realmserver.data.model.Message" 
+         resultClass="java.lang.Integer" >
+        select count(*) from $$prefix$$messages
+        where id = #id# and sender = #sender#
+        and computer = #computer#
+    </select>
+
+    <select id="isMessageRecipient" 
+         parameterClass="net.sf.opengroove.realmserver.data.model.MessageRecipient" 
+         resultClass="java.lang.Integer" >
+        select count(*) from $$prefix$$messagerecipients
+        where id = #id# and recipient = #recipient#
+        and computer = #computer#
+    </select>
+
+    <delete id="deleteMessageRecipient" 
+         parameterClass="net.sf.opengroove.realmserver.data.model.MessageRecipient" >
+        delete from $$prefix$$messagerecipients
+        where id = #id# and recipient = #recipient#
+        and computer = #computer#
+    </delete>
+
+    <select id="listMessageRecipients" 
+         parameterClass="java.lang.String" 
+         resultClass="net.sf.opengroove.realmserver.data.model.MessageRecipient" >
+        select * from $$prefix$$messagerecipients
+        where id = #value#
+    </select>
+
+    <insert id="addMessageRecipient" 
+         parameterClass="net.sf.opengroove.realmserver.data.model.MessageRecipient" >
+        insert into $$prefix$$messagerecipients values
+        (#id#,#recipient#,#computer#)
+    </insert>
+
+    <insert id="addMessage" 
+         parameterClass="net.sf.opengroove.realmserver.data.model.Message" >
+        insert into $$prefix$$messages values 
+        (#id#,#sender#,#computer#,#sent#)
+    </insert>
+
+    <select id="checkMessageExists" 
+         parameterClass="java.lang.String" 
+         resultClass="java.lang.Integer" >
+        select count(*) from $$prefix$$messages where 
+        id = #value#
+    </select>
+
+
+</sqlMap>

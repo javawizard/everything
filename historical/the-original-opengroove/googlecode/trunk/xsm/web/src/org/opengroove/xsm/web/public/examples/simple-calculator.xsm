@@ -1,0 +1,70 @@
+<set name="first">
+    <number>
+        <prompt message="Type the first number. No decimal points for now."/>
+    </number>
+</set>
+<set name="second">
+    <number>
+        <prompt message="Type the second number. No decimal points for now."/>
+    </number>
+</set>
+<set name="operation">
+    <prompt message="Type add, subtract, multiply, or divide."/>
+</set>
+<if>
+    <condition>
+        <equals>
+            <var name="operation"/>
+            <string>add</string>
+        </equals>
+    </condition>
+    <set name="result">
+        <add>
+            <var name="first"/>
+            <var name="second"/>
+        </add>
+    </set>
+</if>
+<if>
+    <condition>
+        <equals>
+            <var name="operation"/>
+            <string>subtract</string>
+        </equals>
+    </condition>
+    <set name="result">
+        <subtract>
+            <var name="first"/>
+            <var name="second"/>
+        </subtract>
+    </set>
+</if>
+<if>
+    <condition>
+        <equals>
+            <var name="operation"/>
+            <string>multiply</string>
+        </equals>
+    </condition>
+    <set name="result">
+        <multiply>
+            <var name="first"/>
+            <var name="second"/>
+        </multiply>
+    </set>
+</if>
+<if>
+    <condition>
+        <equals>
+            <var name="operation"/>
+            <string>divide</string>
+        </equals>
+    </condition>
+    <set name="result">
+        <divide>
+            <var name="first"/>
+            <var name="second"/>
+        </divide>
+    </set>
+</if>
+<print>The result is <var name="result"/></print>    

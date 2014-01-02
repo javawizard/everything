@@ -1,0 +1,56 @@
+The TXT description files in the server project contain information about communications between clients and the server, etc.
+whereas the TXT description files on the client contain information about how the UI and the code behind it work.
+
+This file contains an overview of the projects associated with InTouch 3.
+
+There are 3 projects as of this time. those are:
+
+InTouch 3                         the end-user client
+InTouch 3 Server                  the server
+InTouch 3 Data Store              the program that stores large but generally temporary data
+
+
+
+InTouch 3 is the client. it is what the end user sees. usually, the end user doesn't even know that the other 2 projects exist.
+
+InTouch 3 Server is the server component. Clients connect to this. In the future, more than one server will be allowed, and they will
+be managed by another project, InTouch 3 Server Manager.
+
+InTouch 3 Data Store is the data store program. it runs on a computer with relatively large bandwith and a relatively large hard disk.
+Messages sent when the recipient is offline are cached on one of these. Information is usually stored redundantly, on up to 3 of these
+servers, so that space can be lent by computers that may be offline frequently.
+
+anyway, about the data store and it's role in this whole system. each data store has a username and a password
+
+
+THE ABOVE NEEDS UPDATING
+
+there is one management server that runs. it stores authentication info for all users, all main servers, and all data stores.
+it maintains a list of servers that are connected to it, and this list is accessible from any of the main servers.
+it also keeps track of a few bits of information about main server useful for load balancing, such as
+the number of users logged into each main server and the number of users that a main server states it can
+handle. in the future, it will also keep track of the load (in bytes in and out) and latency of a main server,
+so that if it detects that a main server is getting overloaded (even if it's owner specifies that
+it still has user capacity), it will send users to other servers.
+in general, the management server listens for connections on the main InTouch 3 port as well as on the
+management port, and InTouch 3 clients are configured to connect to the management server as their server.
+the management server then sends a redirect to the server it deems has the lowest load.
+i'll get to which port numbers correspond to which parts of the system in just a minute.
+anyway, each main server, upon startup, connects to the management server on the management port
+and authenticates itself. it then requests a list of a
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+currently, only the workspace creator can create tools.

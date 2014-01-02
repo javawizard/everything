@@ -1,0 +1,25 @@
+#summary A glossary of terms used throughout OpenGroove
+#labels G5
+This is a glossary of all of the terms used in !OpenGroove. Some of these are extremely technical and will most likely only be understood by !OpenGroove developers; others are the type that normal users would have no problem understanding. Feel free to ask any of the !OpenGroove developers if you don't understand one of these and would like to find out more about it.
+
+<wiki:toc max_depth="2"/>
+
+==Change==
+...
+
+==Changeset==
+A changeset is a set of changes made by a single user that should all be applied together, along with the id of the changeset and the signature of the user that created the changeset.
+
+==Datastore==
+...
+
+==Database==
+The !OpenGroove Database is the database used to store data from most parts of !OpenGroove. Conceptually, it's a mix of relational and object database designs. It was influenced significantly by Google !AppEngine's database. See OpenGrooveDatabase for a more in-depth description.
+
+The !OpenGroove Database is *not* atomic. If a crash occurs during a database write, the database will be left corrupted. As a result, for anything other than temporary data storage, the [#Datastore OpenGroove Datastore] should be used instead. The Datastore uses the Database internally, but adds atomicity and versioning on top of the database.
+
+==Tool==
+...
+
+==Workspace==
+....

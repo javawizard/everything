@@ -1,0 +1,19 @@
+<project name="G4 Common">
+    <target name="build">
+        <mkdir dir="output" />
+        <jar destfile="output/g4mobile.jar" basedir="classes">
+        </jar>
+        <copy todir="output">
+            <fileset dir="lib">
+                <include name="**/*" />
+                <exclude name="**/.svn" />
+            </fileset>
+        </copy>
+        <zip destfile="g4m.zip">
+            <fileset dir="output">
+                <include name="**/*" />
+                <exclude name="**/.svn" />
+            </fileset>
+        </zip>
+    </target>
+</project>

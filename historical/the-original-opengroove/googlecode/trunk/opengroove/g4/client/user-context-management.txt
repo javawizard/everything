@@ -1,0 +1,7 @@
+For each user that is logged in locally, a UserContext object is created for that user. This context holds information on that user specific to their session.
+
+Information on a currently-signed-on user is typically passed around via the user context. For example, when a stored message manager is created, it accepts a user context as an argument, and it registers itself with the context's message manager. Similarly, a message manager takes a user context object, and it uses the context's communicator and then registers itself as the message manager for that context.
+
+the message manager registers itself as a listener for message packets on the context's communicator. The stored message manager registers itself as a message handler with the context's message manager, and registers itself as the context's stored message manager.
+
+proxy storage will probably be used for some things, like user configuration.

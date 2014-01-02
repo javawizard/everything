@@ -1,0 +1,6 @@
+Manifest-Version: 1.2
+it3-type: tool
+it3-class: net.sf.convergia.client.tools.games.risk.Risk
+it3-name: Risk
+it3-description: <html>A game of Risk. Risk is a board game<br/>where players attempt to dominate the world.
+

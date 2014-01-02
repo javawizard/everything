@@ -1,0 +1,11 @@
+CentricServerMessenger is a small program that is intended to be a very "featureless" messenger that acts like MS Groove's message system. Each organization has a dedicated server, and the list of users and their passwords are stored on the server. The client connects using an object stream over SSL. When it connects, it receives a list of users. This is basically a list of strings, which represent all users that can log into the server. The list of users is stored in a configuration file on the server, along with their hashed passwords.
+
+Then, the server sends out one packet for each user that is online, telling the client that the user is online. Whenever a user disconnects, a packet is broadcast saying that the user has disconnected, and vice versa for when the user connects. When a user goes idle, they send a multicast packet to the server that gets broadcast to all other users. The same thing happens when they are not idle anymore. A list of server uses can be viewed from the tray, and whether they are online, offline, or idle.
+
+A message can then be sent to any user, whether online or offline. The client opens up a new SSL socket to the server, authenticates again over it, then indicates a string list of the message's recipients, and then proceeds to stream the message over the socket until it closes it. The length of the message is sent, so that the server won't accept it if it doesn't receive the whole entire message.
+
+Messages themselves are not encrypted, except by the SSL socket, in the interest of simplicity.
+
+A user's object stream receives a packet every 3 minutes when the user has an available message. The user's client then downloads the message by connecting to that socket again, authenticating, and providing the number of the message to download. The message is then provided. When the message has been completely downloaded, it is deleted from the server, and the client will no longer be notified about the message via their object stream.
+
+When a user opens a message, their client sends another message to the other user, indicating this. Until the other client receives the message, or their user dismisses the notification, the message will not go away from their taskbar notification frame.

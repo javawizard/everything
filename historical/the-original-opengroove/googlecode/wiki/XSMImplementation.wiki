@@ -1,0 +1,22 @@
+#labels G4, XSM, Obsolete
+Ideas on the implementation of the XSM interpreter.
+
+The class name, by the way, is org.opengroove.xsm.web.client.lang.XInterpreter.
+
+The interpreter should store things in two separate formats, parsing one to the other at execution time. The first one is a DOM-like format. It basically consists of nodes. A node is either a text or an element. Elements have hash maps representing their attributes, plus a list of sub elements. Texts are text strings.
+
+The reason for this custom dom layout is so that different XML parsers, such as jdom and GWT's dom, can be used.
+
+The second one more accurately represents functions.
+
+Or maybe there shouldn't be a second one, and the first one should be parsed on-the-fly. 
+
+Anyway, the first one also has a method to copy its contents, or shallow copy them, which is useful when only part of it should be executed.
+
+When an element (which should be an xsm element) is executed, the interpreter scans over all of its subelements and looks up commands by their name and then runs them in sequence. The command is handed the element that represents it. If the command outputs, this is returned to the caller that executed the command. The caller can decide whether or not to do something with the value.
+
+The function command creates a new command implementation that sets the appropriate variables and executes all of the commands within it.
+
+Oh, and a command is given a context with its function-specific variable list. It can set and get variables. Invoking a user-defined function creates a new context for that function, adds the arguments and attributes to that function, and runs it.
+
+Ok, so there's a method on the interpreter for executing an element as a command and returning the result, if there was one.
