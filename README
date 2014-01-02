@@ -6,3 +6,5 @@ since been lost to history. It was then tracked in a project on SourceForge;
 the history of the project during these years is located under the sf
 directory. It was then tracked on Google Code, the history of which is located
 under googlecode.
+
+NOTE: The contents of sf/client/main/updates/Release were removed after importing sf's history on account of their size. Have a look at d1dc9cd6368e187aa1b01f236cdc05e5e79a4990 if you want to see what that directory contained, but be prepared for a ~700 MB working copy when you do so.
