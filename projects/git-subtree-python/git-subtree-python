@@ -1,0 +1,9 @@
+#!/usr/bin/env python
+
+# A Python re-implementation (using Dulwich) of git-subtree that (I'm hoping)
+# will be faster and will have some additional features like caching of subtree
+# splits (think "--rejoin"-esque speed without actually rejoining), proper
+# splitting of dirs with children imported with subtree add (history for the
+# child isn't currently preserved in such splits by git subtree; see my post to
+# the git mailing list a few days ago), and hopefully a few others.
+
