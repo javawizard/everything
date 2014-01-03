@@ -18,6 +18,10 @@ def split(hash, prefix): # -> new hash
     if is_add_or_rejoin(hash):
         hash_prefix = get_subtree_prefix(hash)
         if hash_prefix == prefix:
+            # Splitting a/b/c and we just encountered a/b/c being imported.
+            # Just use a/b/c's prior history for now. Consider (as noted below)
+            # scanning the rest of the mainline and possibly including any of
+            # a/b/c's prior history before it was (presumably) deleted.
             return get_subtree_split(hash)
         if is_parent_of(hash_prefix, prefix):
             # Splitting a/b/c and we just encountered a/b being imported as a
