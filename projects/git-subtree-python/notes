@@ -1,0 +1,60 @@
+I'm writing a Python rough equivalent to git subtree that should be faster (it'll use Dulwich and thus avoid the overhead of launching a ton of git processes, and I'm hoping the overhead of using Python will be less than this) and will fix a number of issues with git subtree that would be difficult to fix as things are currently implemented.
+
+So, splitting...
+
+Following "renames" effected by subtree adds and rejoins is a must. Git subtree doesn't do this (i.e. if you import (via subtree add) c into a/b/c and then split b, c's history is lost as git subtree sees the changes on c's side of the "subtree add" merge as modifying files entirely independent from b), which results in lots of surprises when working with nested subtrees, and half the motivation for my Python rewrite is to fix this issue.
+
+So I want to be able to import c into a/b/c, then split b, then, inside the newly-split b, split c and obtain the original c's history. This'll make a good benchmark I can use to make sure I've got my implementation right.
+
+(Note that this will, if I'm not much mistaken, require rewriting subtree-related merge messages when splitting, although I'm not sure to what extent such messages will need to be rewritten; I know that the three git-subtree-* lines will need to be modified, but I *think* it should be safe (if less than intuitive) to leave the "Add '...' from commit '...'" line alone.)
+
+I think I'm going to write out a sketch of the algorithm I need to implement to get splits right. I'm going to write it out as if large amounts of recursion were perfectly permissible; this will need to change later. (Or I could implement this in Haskell, where it would be much less of an issue... Not sure if there are any good Haskell libraries for accessing a git repository, though.)
+
+So, something like this...
+
+def split(hash, prefix): # -> new hash
+    if empty(prefix):
+        return hash
+    if is_add_or_rejoin(hash):
+        hash_prefix = get_subtree_prefix(hash)
+        if hash_prefix == prefix:
+            return get_subtree_split(hash)
+        if is_parent_of(hash_prefix, prefix):
+            # Splitting a/b/c and we just encountered a/b being imported as a
+            # subtree. c presumably didn't exist before this point (if it had,
+            # `subtree add` would have complained that b wasn't empty and so
+            # another repository couldn't have been imported on top of it), so
+            # split c out of b and then use that split commit. In the future,
+            # we might want to continue splitting the mainline in case a/b/c
+            # existed previously but was deleted at some point in the past,
+            # although it's debatable whether we should consider c's prior
+            # history relevant to its current history as a child of b; maybe
+            # add a flag specifying what to do here, but that's probably not
+            # important until we have proper rename tracking support anyway.
+            return split(get_subtree_split(hash), strip_prefix(hash_prefix, prefix))
+        if is_parent_of(prefix, hash_prefix):
+            # Splitting a/b and we just encountered a/b/c being imported as a
+            # subtree. Need to split the rest of the mainline as usual, then
+            # synthesize a subtree add/rejoin merge whose git-subtree-dir
+            # points to c's path relative to b (and whose git-subtree-mainline
+            # points to the newly split mainline).
+            new_mainline = split(get_subtree_mainline(hash), prefix)
+            new_split = get_subtree_split(hash)
+            ... TODO: Synthesize merge commit ...
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

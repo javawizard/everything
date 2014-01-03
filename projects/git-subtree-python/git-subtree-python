@@ -7,3 +7,20 @@
 # child isn't currently preserved in such splits by git subtree; see my post to
 # the git mailing list a few days ago), and hopefully a few others.
 
+import argparse
+from dulwich.repo import Repo
+
+parser = argparse.ArgumentParser()
+parser.add_argument("--prefix", required=True)
+parser.add_argument("cmd")
+parser.add_argument("args", nargs="*")
+
+def main():
+    args = parser.parse_args()
+    
+    if args.cmd == "split":
+        pass
+
+
+if __name__ == "__main__":
+    main()
