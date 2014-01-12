@@ -21,7 +21,10 @@ def split(hash, prefix): # -> new hash
             # Splitting a/b/c and we just encountered a/b/c being imported.
             # Just use a/b/c's prior history for now. Consider (as noted below)
             # scanning the rest of the mainline and possibly including any of
-            # a/b/c's prior history before it was (presumably) deleted.
+            # a/b/c's prior history before it was (presumably) deleted. UPDATE:
+            # Actually, that's a bad idea, as it gives a/b/c a different
+            # history from when it was imported if something else previously
+            # existed at a/b/c, so just use the current a/b/c's history.
             return get_subtree_split(hash)
         if is_parent_of(hash_prefix, prefix):
             # Splitting a/b/c and we just encountered a/b being imported as a
@@ -35,6 +38,9 @@ def split(hash, prefix): # -> new hash
             # history relevant to its current history as a child of b; maybe
             # add a flag specifying what to do here, but that's probably not
             # important until we have proper rename tracking support anyway.
+            # UPDATE: As above, continuing along the mainline in such a case is
+            # a bad idea, for the simple reason that it can mangle a/b/c's
+            # history when a/b/c previously existed in the mainline.
             return split(get_subtree_split(hash), strip_prefix(hash_prefix, prefix))
         if is_parent_of(prefix, hash_prefix):
             # Splitting a/b and we just encountered a/b/c being imported as a
@@ -45,6 +51,11 @@ def split(hash, prefix): # -> new hash
             new_mainline = split(get_subtree_mainline(hash), prefix)
             new_split = get_subtree_split(hash)
             ... TODO: Synthesize merge commit ...
+
+So that sounds good insofar as the more complicated bits go. I think I can reason the rest of it out without resorting to infinite recursion.
+
+So I was thinking I could implement merges the same as other commits, in the sense that when we're converting a commit, we look at its converted parents (all zero or more of them) and just strip out the fast forward ones, which will have the effect of stripping merges and such that don't have anything to do with us. Needs more thought.
+
 
 
 
