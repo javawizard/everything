@@ -29,3 +29,118 @@ Food for thought. So I should make sure and design the world and associated obje
 (Probably have as much as possible in the coordinator then, and have a different strategy. So then the coordinator probably injects shots, with their behaviors and strategies, into the world, and the world handles updating them from there.)
 
 Anyways.
+
+And maybe like... Shots could have listeners that are called when the shot's absorbed, probably by the local tank (which would probably then fire an event noting that it died, or that it dropped its currently held shield flag, or something like that). Then the coordinator just sets a listener on shots it creates to send a server message when they're absorbed and such.
+
+And so then the local player could have events for things like it dying.
+
+And it'd be kind of cool to make this flexible enough that two local players, each with their own cameras (and one using up/down/left/right and one using WSAD), could be on the same world, although there's rendering issues involved with that that might make that too tricky.
+
+Although the world could just be the model, and we could have the 3D objects be separate entities that register listeners on the world objects and update themselves accordingly... That might be getting a bit complicated though, and I'm not sure how well it would perform.
+
+You know, I could always write it like that, with the idea that the view will be a separate entity, and then fall back to having objects integrated into the world if it turns out it doesn't perform well.
+
+Actually, one big advantage of separating things out is that then the radar is just a particular view of the world, and the HUD is another such view.
+
+So the view would need to be told when new shots are brought into existence and when shots go away.
+
+It would need to be told the same about tanks.
+
+It would need to be told when shots move.
+
+It would need to be told when tanks move.
+
+So a world takes care of animating itself, or rather, it's expected that you start an animation loop calling an animate function on the world every frame or something like that. Or maybe the world does that itself and then you tell the world to stop animating itself just before you're about to throw it away because you're disconnecting or whatever. So it's the world that's in charge of actually animating things, and shots and tanks by themselves don't actually end up moving at all. I think that's fair enough for now, although I could theoretically change that later to have each thing take care of animating itself, although it's questionable how good a job it could do without knowing what else is in the world around it to collide with and such, so yeah.
+
+(Oh and, thinking effects like bolts exploding at the end of their life should be view only, so the world doesn't know about them. Radar doesn't have that, so you know.)
+
+So we have listeners on things, and presumably we have a way to suppress events temporarily as needed, and we assume that we won't have circular events or anything like that, so that should be fine.
+
+So, some basics.
+
+We can listen for when a new shot is added to a world.
+
+So then the HUD listens for shots to be added, and when they're added, it sets up a sprite in the 3D world and then adds listeners to the shot for when it moves and for when it's destroyed.
+
+Then, whenever the shot's moved, it updates the sprite's position.
+
+When the shot's destroyed, it removes the sprite. And it'll be told why it was destroyed, and depending on the reason it might choose to add an explosion in its place.
+
+So then the coordinator would also register to be notified when shots are added, and its own logic that adds shots that the server reports would suppress receipt of the new shot notification so that it wouldn't tell the server about a shot that the server told it about. (We could also just only tell the server about our shots, but suppressing the event really is the proper way of doing the thing.) When it's told about a new shot, it sends a message to the server.
+
+And it also registers to be notified when the shot goes away. When it does, the coordinator would send a MsgShotEnd as appropriate for the reason the shot went away. (I don't remember if we send MsgShotEnd if we're terminating the shot because we got shot, but if we don't, then we'd just not send anything if that's the case. The world takes care of letting us know in these events why the shot was terminated.)
+
+So then I'm not exactly sure how GMs would be handled... I really don't want the world knowing things specific to GMs, though, if I can help it.
+
+So ok, what if shots (normal shots; not worrying about shockwaves/lasers/thief beams yet) have... well, they have a current position, and then they have a strategy, and the strategy can be told hey, you know how the shot's supposed to fly, now here's a shot and a number representing the current time; update this shot's position, or tell the shot that its lifespan is over and it's supposed to die, or whatever. So then the normal strategy would compute where the shot's supposed to be on its path given the current time and update its position accordingly, and the GM strategy would compute where it's supposed to be based on the last update sent from the client that fired the GM (only the GM strategy itself doesn't know that, it just knows that its info is being constantly updated, and for remote shots that would be by the coordinator and for local shots that would be by perhaps an instance of GMTargeter or some class like that that knows how to take a tank and a GM and make the GM follow the tank somehow).
+
+And actually, I think I was going to have strategies be in charge of figuring out if they hit us. So then we probably construct the strategy with the shot as a parameter (reference cycles will happen here, but that should be fine) and then we continually tell the strategy how much time has passed and to update itself, and at some point during one update it might decide to nix the shot because it's decided that the shot would impact our tank and then also nix our tank.
+
+So I think that would largely work. Then shockwaves.
+
+They're basically shots with slightly different model data, like no velocity but a rate at which they're expanding. And the behavior... Oh, I need to go re-read what the point of those Behavior classes I was writing was and if I still want to use them... Anyways... OH, Actually, maybe shots don't hold a reference to strategies, it's just the other way around, and strategies animate themselves somehow and update the shot as needed and then listen for the shot to be destroyed and stop animating themselves, and then the coordinator itself holds onto the GMStrategy instance and updates it as updates come in from the server but the world has no idea about it. That might work.
+
+Anyways, shockwaves... seem like a weapon but with different metadata. But they'd have a strategy as well, and it would update their radius and such and then see which tanks are within the radius and kill them off. (So note, a strategy probably needs a reference to the world in which the shot that it's animating lives.)
+
+(And actually, I just realized three.js nodes hold references to their parents, so reference cycles are totally fine.)
+
+So I should benchmark how many functions can be registered with requestAnimationFrame without slowing things down. Because if it's a large number, then theoretically I could just have each strategy take care of animating itself and cancelling animation when its shot is destroyed. Then creating a shot could theoretically be as simple as:
+
+var shot = new Shot(...probably info about who fired it etc...);
+world.addShot(shot); // Causes MsgShotBegin to be sent if this shot is our shot... oooh, how do we handle locally created GMs here?
+var strategy = new OrdinaryStrategy(world, shot, ...start point, direction, speed, distance, etc...);
+
+and that would be it. Maybe OrdinaryStrategy would have a start function or something, but really, that probably isn't even needed.
+
+And then maybe we just have generic weapons that can be added to the world, with bullets and shockwaves and lasers being the three main ones right now.
+
+So, if that event causes the MsgShotBegin to be sent, I need to think about how we get GM updates to the coordinator properly. That needs a bit more thought, and I'll worry about that tomorrow.
+
+(Maybe we don't have strategies, and instead just subclasses of Shot, and Shot subclasses Weapon... Then we can make additional strategies by subclassing Shot. Needs more thought.)
+
+...gm extrapolation needed both local and remote gm shots, then velocity info updates is what's different; locals are updated by a targeter, remotes are updated by packets. locals being updated causes packets to be sent as well...
+
+So then maybe we do have a class GMShot which requests animation frames and updates its superclass's position based on velocity etc., and then something else updates its velocity and location info; locally fired shots are wrapped in a GMTargeter that updates the shot to face the target, and the coordinator sees the velocity being changed and sends updates accordingly, and then remote shots are updated by the coordinator when it receives messages. That'd work.
+
+(We'd probably want to have the world track a list of targeters or something so that they can change who they're targeting if we lock onto someone else mid flight. Or the world can report who we're locked on to and then targeters just register to receive a notice when the world changes that.)
+
+So then to fire a local shot at otherPlayer, we just do something like:
+
+var shot = new GMShot(location, initialVelocity, me, ...);
+world.addShot(shot); // Causes MsgShotBegin to be sent out
+new GMTargeter(me, shot, otherPlayer).start(); // me would carry a reference to who we're locked on to somehow, so we need that. Also note that when we lock onto someone, we'd want to listen for them to disconnect and remove our lock on them when that happens.
+
+(Other quick note: if we have the coordinator keep its own list of players the server's told it about, we can have other local players on the field that the server doesn't know about and that would work "fine". Not sure if there's actually any point to that, but it might come in useful if I ever implement bots... Not sure if the protocol even supports those anymore, but food for thought. Not too big an issue, though, so maybe I won't worry about it for now.)
+
+Or we could even have a Locker or something that holds a single reference to someone we've locked on to, and then we just give a GMTargeter a locker to follow. That would let GMs be created independently of local players, which would be useful to allow world weapons to fire GMs locked onto specific players. (I don't remember if BZFlag permits this at present, but if not, it really should.)
+
+Actually... We could call that a Targeter, and then call the thing that points a GM toward a player a GMFollower. I like that better.
+
+So then Targeter just registers a listener on whoever it's targeting telling them to let it know when they're disconnecting or when they die so it can stop targeting them. Then when we remove a player (or when we die for that matter), we null out its targeter's target to get rid of the reference from the target to the targeter and then we're all good.
+
+So, with that paradigm, firing a GM would look something like:
+
+var shot = new GMShot(me, location, velocity, ...);
+world.addShot(shot); // Causes MsgShotBegin to be sent out
+new GMFollower(shot, me.targeter);
+
+and, presuming that me.targeter.target == otherPlayer, that would create a shot that would follow said player.
+
+(Heck, I could write a quick function that creates a targeter that gets nulled out when a particular shot ends, and then it'd be /really easy/ to hand-roll code that fires a GM at a specific person.)
+
+So collision detection and position extrapolation are handled inside GMShot, not GMFollower, and the most GMFollower knows about it is when it's told that the GMShot collided with the intended target or a wall and was destroyed, in which case the targeter duly stops animating itself, unregisters listeners, and waits patiently to be garbage collected.
+
+GMFollower would also register listeners on the player currently being targeted such that it would be notified when the player's position changes, which it could then use to update the direction toward which the GM should be facing. In fact, if I do that I think I can make GMFollower not even need to animate itself at all, except possibly when it's trying to steer toward a target and isn't able to turn sharp enough immediately to do so; I don't recall exactly how this is handled at the protocol level in BZFlag, but I'd need to account for it as well.
+
+(I really should read up again on how BZFlag handles GM tracking.)
+
+So then shockwaves are weapons that don't even subclass Shot. They still look like weapons, though, so you can ask them to let you know when they go away (but note that they don't go away due to having hit someone, for obvious reasons, so they'll let tanks know that they're dead now but they won't kill themselves until they expire).
+
+And the coordinator would request to be notified when we, the local tank, are dead, and it would send a... whatever the message is that tells everyone that we just died and for what reason. Then there would be a function like kill() on the local tank that you give it a reason why we've died and it lets listeners know.
+
+And the same thing happens with remote tanks, except it's the coordinator calling kill() and only the HUD and the radar take any notice of it instead of the coordinator as well because it's not the local tank. (The coordinator probably needs to be given an explicit reference to the local tank that it can listen for things to happen to; it doesn't care if another tank dies (as this shouldn't even happen without its say so), only if the local tank dies.)
+
+
+
+
+
