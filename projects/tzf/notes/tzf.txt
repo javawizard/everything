@@ -1,0 +1,31 @@
+Idea is to eventually be a browser-based BZFlag client.
+
+(ThreeZFlag is the current working name.)
+
+So, idea right now is that the server-side component basically just relays packets between bzfs and the client, perhaps with a bit of interpretation if I can't figure out an easy way to parse binary packet data in JavaScript.
+
+But of course I want the communications details abstracted into a class (and by "class" I mean a JavaScript function with a prototype, that sort of thing), so I can worry about the precise details later.
+
+(It'd be nice to write a bzfs plugin that allows tzf to talk directly to a bzfs, but I don't recall at the moment if the bzfs API allows one to intercept socket connections... I'll worry about that later.)
+
+So we have a class that we can use to talk to the server and that can talk to us. (Note: unlike BZFlag, there won't be a global message callback like handleServerMessage; I'm trying as hard as I can to avoid globals, so I think I'm going to have some sort of World object that tracks a map, players, shots, and that sort of thing, and messages would just be passed from the server link to the world.)
+
+So we also have shots.
+
+And probably shot strategies like BZFlag has. I don't like the huge if statement in LocalPlayer (I believe) that decides what shot type have an effect on the player and so on, so I'd like to move those to shot behavior classes if at all possible.
+
+So I probably need shot behaviors or something, and shot behaviors specify associated strategies, where strategies are concerned solely with how the shot moves (so ShockwaveStrategy (which I like better than ShockWaveStrategy, just noting), GuidedMissileStrategy, OrdinaryStrategy, maybe SuperBulletStrategy although that could just be a special case of OrdinaryStrategy... and I think that's it) and behaviors control other things like whether the shot affects zoned tanks and so on. (So if SuperBulletStrategy is combined into OrdinaryStrategy, then SuperBulletBehavior would be in charge of instantiating the OrdinaryStrategy in such a way that it would go through walls.)
+
+So we also probably need an object representing the physical world, i.e.... the map. So I think Map will do.
+
+Shot strategies (and therefore effects) would presumably have access to it to calculate ricochet and such things.
+
+So I'm thinking the world will have functions for doing things to it (like creating shots fired by remote players, or giving it updates as to a player's last known position and velocity) and events that it will issue when it's doing things (like when it's updated a GM's velocity and such to point toward a given remote player). Then we have a class (like Coordinator or something) that's given a world and a server link, and it's in charge of receiving messages from the server link and applying them to the world and listening for events from the world and sending them as messages to the server link.
+
+So I'm thinking it might be cool, probably in a future version, to move all of the shot intersection, GM tracking, and such logic to the server and then have the client be relatively dumb in comparison. Then the client tells the server its speed and direction (and the server could do some sanity checking on this) and when it wants to fire a bullet, and the server tells the client when it's died and so forth. Then locally-fired GMs would be updated the same as remotely-fired GMs as far as the client's concerned, and the client can instruct the server to lock them onto a new target and things like that. And same with locally-fired shots; the client just tells the server that it wants to fire a shot or something, and the server creates the shot and then tells the client where it is and stuff.
+
+Food for thought. So I should make sure and design the world and associated objects such that it would be fairly easy to swap in an implementation that works with things being tracked on the server, and make sure that both sets of objects could easily coexist and interoperate, so that I could maintain working copies of both client-does-everything clients and server-does-everything clients.
+
+(Probably have as much as possible in the coordinator then, and have a different strategy. So then the coordinator probably injects shots, with their behaviors and strategies, into the world, and the world handles updating them from there.)
+
+Anyways.
