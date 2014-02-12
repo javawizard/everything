@@ -142,5 +142,81 @@ And the same thing happens with remote tanks, except it's the coordinator callin
 
 
 
+So, notes about some messages and flags and how they'd fit into this model.
+
+(Oh, and note: starting in BZFlag 2.4, we don't know what type of a flag a given flag is until we pick it up or presumably someone else does. I don't recall whether we're given enough information to keep track of what type a flag is after that, so I'll worry about that when I come to the relevant messages.)
+
+(I'm reading through playing.cxx to make sure I can account for the entire protocol with my current conceptual model.)
+
+So...
+
+MsgNearFlag: I'll think about this one in a bit.
+
+MsgFetchResources: Not sure what this does yet, so I'll come back to it.
+
+MsgCustomSound: I didn't even know this existed... We'll just ignore it for now.
+
+MsgUDPLinkEstablished: The server will handle the specifics of how we actually communicate updates, so I don't need to worry about this for now. (I'm thinking my first version will just send everything across a WebSocket; later on I'll probably try using WebRCP, which I'm told can be used to effect communication over UDP with the server, with WebSocket channeling everything that goes over TCP in normal BZFlag and perhaps channeling updates if WebRCP isn't available. That would actually provide a really good argument for moving things to the server, since then the lag/jitter introduced by using TCP would simply serve to make the client's life more difficult, not the other clients in the world.)
+
+MsgUDPLinkRequest: Same thing.
+
+MsgSuperKill: Just disconnect. I'll worry about how we go about setting up a world later, but the world shouldn't care about how and when it's set up and such things, apart from having a function that can be used to tell it to stop animating itself.
+
+MsgAccept: I don't recall exactly what this does... I think it's sent to us when the server decides to let us join a game. So that's also beyond the scope of the world.
+
+MsgReject: Same thing.
+
+MsgNegotiateFlags: Not sure what this one does, as the client appears to just issue a warning if it contains any content.
+
+...skipping game setup ones...
+
+MsgGameTime: Not sure if this is an absolute measure of time provided by the server or time left in a match... I'll worry about that later as well.
+
+MsgTimeUpdate: Ah, that one seems to be the "time left" one. I'll worry about that later as well, although I'll probably just keep it in global state somewhere (does it belong on the world, or should there be an object on top of the world that handles things not related to objects physically /in/ the world, like world variables, whether a game's running, chat messages, and so on?).
+
+MsgScoreOver: Same thing, I think that has to do with matches as well.
+
+MsgAddPlayer: Now we're getting to the fun ones. This one's sent when a player joins the server, including us. I believe we get sent our player id as part of MsgAccept, so we can use that to see if it's us or someone else. If it's someone else, we'd just create some sort of player object and stick it into the world.
+
+Oh, interesting question: how are we handling players? Do we have player objects and then tank objects which are attached to a player, and the tank objects disappear from the world when the players aren't alive? Or do we just have players, and players either have a position or they don't? I'm not sure.
+
+Would a tank, for that matter, need to keep any state beyond its position? Or if we had it track what flags it's holding, what would be left for players to hold?
+
+So you know what, for now let's just have one object representing players, and they either have a position or they don't, and they have an event that's fired when they die (which we already want to have; the coordinator listens using that event for us to die and notifies the server that we died).
+
+So if it's someone else, we'd probably create a player for them, stick them into the world, associate them either on the world (if it knows about player ids) or on the coordinator with their player id in a dictionary that we can use to access them as needed, and... I think that'd be it. The player would presumably include their name and such information.
+
+Oh, and, players have a team that they're associated with (probably just generic objects with names and such, but with global constant instances for the standard BZFlag teams that the coordinator can make use of; I'll worry about how to handle the rogue team later). We probably specify this on the player object (but note that players can be moved to a different team as of BZFlag 2.4 iirc while the game is playing, so we'd need to be able to listen for this to change in the view), and then the world (or the bookkeeping object if it's separate) would track a dictionary of teams to players on those teams.
+
+(Players also have associated statistics like wins, losses, tks, and they have a motto as well.)
+
+Digression: This seems to be a pattern, having a bunch of fixed properties that can each be observed for changes (and being able to suppress a given observer while making changes to such a property). I think I might write a simple property mechanism to handle that automatically... Or on second thought, I don't think I will, and I'll write one later once I've got code (presumably with lots of boilerplate) that works.
+
+I also need to keep in mind that the protocol allows a client to join multiple robots to the server (although most servers don't allow it iirc), so I should keep things generic enough that that would work. And particularly, things identifying players uniquely in a world no longer map to BZFlag player ids since a robot, I believe, just reuses the player's id, so we'd need something else to identify them in dictionaries and such. Probably just use the old unique-id-per-object pattern and then have a dictionary (I could create an IdentityDictionary class to handle this; it would just inspect each object's objectId, say, property and compare with that, and then objects would be in charge of allocating themselves objectId values) mapping BZFlag ids to players and their robots and vice versa. Or we just store the player id and/or the robot id on the Player object and then look at player events and use those when sending to the server; then we'd only need the server-player-id/robot-id-to-Player dictionary for the sake of directing received position updates accordingly.
+
+Anyways...
+
+Also, observers... Not sure how to handle those yet; maybe players added to the world that don't have a position, and have a special type or something like that.
+
+So, if it's us being added, we just create a player, set up listeners on it that listen for when it spawns and when it's killed and when its velocity changes and so on and so forth and have them send status updates to the server, and so on.
+
+(I also need to figure out where the logic for telling if a bullet has intersected us is going to go. Maybe have a custom class that monitors our local tank, or have a LocalTank class... Actually yeah, have a base Player class that tracks position and basic things that all players have, and then LocalPlayer checks for collisions or delegates to flags as necessary... I was going to do that, wasn't I?... whereas RemotePlayer wouldn't.)
+
+MsgRemovePlayer: If it's remote, find the player in the world and remove it. Also remove shots that it originated, or assign them to the world weapon, I don't remember how that's supposed to be handled. (Or have shots be associated with a Player object instead of a player id; then just remove the player from the world. That way we'd still be able to tell in the status window who shot us even if they parted. We'd probably want to null out the player's bzfs id, though, and then have the coordinator tell everyone that the world weapon killed us if the player's id is nulled out.)
+
+Oooh, make sure to handle the world weapon properly. Probably just have it be an actual player on the world which we just never spawn or anything like that, but which we let fire shots as needed. Or just don't add a player to the world at all and insert shots pointing to a Player object representing the world weapon that isn't actually part of the world.
+
+MsgFlagUpdate: Not sure what that does, so come back to it later.
+
+MsgTeamUpdate: I believe that includes updates about a team's score; not sure if it includes reassigning players. If just the former, update bookkeeping information (and actually, we'd probably want to have team objects be specific to a coordinator, then, since they'd be mutable) on the team objects. If the latter, update a player's assigned team.
+
+(Oh, make sure we're accounting for game modes like hunt the rabbit, CTF, and such, and make sure that the details of those modes can be abstracted into a separate class like GameType that controls that side of the game's logic.)
+
+
+
+
+
+
+
 
 
