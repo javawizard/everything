@@ -1,0 +1,17 @@
+I think I'm going to change how I'm computing real positions from known positions.
+
+So I've got a global current animation time now, right? So I can use that whenever I want to compute where things should be and so on.
+
+So Player doesn't really care about updating its real position in real time insofar as Player doesn't actually contain any collision logic (and really, the code that does contain collision logic could compute the exact moment in time at which a collision would happen given each player and each bullet's current last known positions).
+
+So... What I'm going to do is have Player's realX, realY, realZ, and realA properties compute the position on the fly given the current global animationTime and the last known position of the player. And then I'll probably have them cache the position so that it doesn't have to be recomputed until it's needed in a subsequent frame.
+
+Then bullets would work the same way, where you ask them for their real position and they recompute it if needed and then give it to you.
+
+(And note that there'd still be listeners for being notified when a tank or bullet's /known/ position changes, just not listeners for being notified when its real position changes.)
+
+Then only the things that need to recompute a tank's or a bullet's real position in real time will use animation loops, so that'd be basically the renderer itself (to draw them where they're supposed to be) and the collision detection logic that checks to see if a bullet's collided with the local tank and kills the local tank if so. (And I was putting that in the shot strategy, right? I don't remember now, but I'll check... But regardless, it'd be pretty simple for it to start an animation loop on construction and then stop the loop when the bullet dies.)
+
+(I'll need to figure out how to handle bullet deaths later... What I really need is a function to allow me to schedule animation functions to be called at a certain point /in the future/ but have those integrated into the animation loop, so that if only functions scheduled for some point /in the future/ were scheduled, then it just uses setTimeout, but if functions scheduled to be run as soon as possible were scheduled, then it uses requestAnimationFrame as usual and hand checks each function to see if it's supposed to be invoked yet, and so on. I suppose I'll worry about that later, though.)
+
+ 
