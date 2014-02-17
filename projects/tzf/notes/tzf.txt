@@ -212,6 +212,24 @@ MsgTeamUpdate: I believe that includes updates about a team's score; not sure if
 
 (Oh, make sure we're accounting for game modes like hunt the rabbit, CTF, and such, and make sure that the details of those modes can be abstracted into a separate class like GameType that controls that side of the game's logic.)
 
+Hm, game types...
+
+Rabbit chase just assigns players to teams as needed.
+
+CTF takes care of seeing when a player lands on a base and taking the flag from them and such things and managing CTF store and so forth.
+
+And actually, I'd probably have the game type handle the specifics of team killing, since it's something that's somewhat specific to the type of game being played.
+
+Oh, random aside: I just saw mention that a while back someone requested a non-lethal weapon that just disabled a tank for a short amount of time, in response to which the Phoenix plugin was written. I should keep the possibility of such a weapon being introduced in the future in mind while writing everything... That shouldn't be too hard, really, if shot collision and killing are offloaded to the strategies themselves, as then this non lethal weapon's strategy would simply mark the local tank as disabled somehow instead of killing it.
+
+Also, I'm not sure if the server can synthesize shots on behalf of a player (I was just reminded of the shockwaveDeath plugin and realized it'd be neat if the resulting shockwave could be synthesized on behalf of the player that died instead of being a world weapon), but I should make sure I can account for things like that. And the server would presumably be in charge of making changes to such shots... So... actually, as long as I don't have any "Is this the local player? Yes, it is / No, it isn't" tied into shot tracking or anything, then that should be fine; we simply create different strategies or whatever for shots reported remotely regardless of what id they were reported under.
+
+Another totally random idea that'll never happen: it'd be cool if both tzf and the main client supported status lines or some such thing, some sort of ability for the server to set a piece of persistent text that would show up on the hud and report something, and it'd be cool if some sort of markup could be included to indicate an inline timer or two. It'd be given in terms of the time at which it's supposed to be at zero, which directions it can count (just count up and stay at zero until the zero time rolls around, just count down and stay at zero once the zero time rolls around, can count both up and down and flips over when the zero time rolls around, or can't count at all and is useful only for display purposes as a stopped timer), and... maybe a color that it turns once it hits zero or something, I dunno. Point would be to allow things like KOTH to show a countdown to win without having to send out messages every so often.
+
+
+
+
+
 
 
 
