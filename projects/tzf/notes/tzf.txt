@@ -228,6 +228,10 @@ Another totally random idea that'll never happen: it'd be cool if both tzf and t
 
 
 
+So I just found out something rather unexpected: apparently, GM updates are only sent when the player being tracked changes, not every N seconds like I had expected. It's then up to the client to not only make local GMs track opponents but to make remote GMs track opponents, local or otherwise, as well, and it's also up to the client to expire and teleport GMs as it thinks they should be. This makes me really nervous (imagine how easy it would be for a small amount of lag to shift a GM that cleared a wall on one client into colliding with the wall on another client), but if it's how it is, then so be it.
+
+I want to be able to support GMs that stream positioning information more frequently (perhaps as frequently as position updates for the player being tracked are received) as far as the model goes, but I'll also need to support the way BZFlag itself does things right now...
+
 
 
 
