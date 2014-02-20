@@ -4,3 +4,4 @@
 **/.classpath
 **/*.pyc
 **/*~
+projects/*/build
