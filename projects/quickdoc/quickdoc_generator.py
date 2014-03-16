@@ -191,7 +191,11 @@ def display_module(module, stream, level, args):
     stream.write(".. module:: " + module.__name__ + "\n   :synopsis: " + synopsis + "\n\n")
     stream.write(doc or "")
     # stream.write("\n\n.. contents:: Things\n   :depth: 1\n   :local:\n\n")
-    for name in sorted(dir(module)):
+    if hasattr(module, "__all__"):
+        names = module.__all__
+    else:
+        names = sorted(dir(module))
+    for name in names:
         thing = getattr(module, name)
         if isinstance(thing, types.FunctionType):
             continue
@@ -202,7 +206,7 @@ def display_module(module, stream, level, args):
                 display_function(thing, stream, level + 1, args)
             else:
                 print "  Unknown type, skipping {}".format(name)
-    function_names = [n for n in sorted(dir(module)) if isinstance(getattr(module, n), types.FunctionType) and should_document_module_member(n, getattr(module, n), module)]
+    function_names = [n for n in names if isinstance(getattr(module, n), types.FunctionType) and should_document_module_member(n, getattr(module, n), module)]
     if function_names:
         title(stream, level + 1, "Functions")
         for name in function_names:
