@@ -56,21 +56,180 @@
             
   <div class="section" id="module-fileutils.ssh">
 <span id="fileutils-ssh"></span><h1><a class="reference internal" href="#module-fileutils.ssh" title="fileutils.ssh"><tt class="xref py py-mod docutils literal"><span class="pre">fileutils.ssh</span></tt></a> &#8212;<a class="headerlink" href="#module-fileutils.ssh" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="class-agent">
+<h2>Class Agent<a class="headerlink" href="#class-agent" title="Permalink to this headline">¶</a></h2>
+<p>An authentication method that authenticates using the local SSH agent.</p>
+<p><em>Method resolution order:</em> <a class="reference internal" href="#fileutils.ssh.Authenticator" title="fileutils.ssh.Authenticator"><tt class="xref py py-obj docutils literal"><span class="pre">Authenticator</span></tt></a></p>
+<dl class="class">
+<dt id="fileutils.ssh.Agent">
+<em class="property">class </em><tt class="descclassname">fileutils.ssh.</tt><tt class="descname">Agent</tt><big>(</big><em>self</em><big>)</big><a class="headerlink" href="#fileutils.ssh.Agent" title="Permalink to this definition">¶</a></dt>
+<dd><p>Create a new Agent authenticate method that will authenticate using the
+keys made available by the local SSH agent.</p>
+<dl class="method">
+<dt id="fileutils.ssh.Agent.__repr__">
+<tt class="descname">__repr__</tt><big>(</big><em>self</em><big>)</big><a class="headerlink" href="#fileutils.ssh.Agent.__repr__" title="Permalink to this definition">¶</a></dt>
+<dt id="fileutils.ssh.Agent.__str__">
+<tt class="descname">__str__</tt><big>(</big><em>self</em><big>)</big><a class="headerlink" href="#fileutils.ssh.Agent.__str__" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="fileutils.ssh.Agent.authenticate">
+<tt class="descname">authenticate</tt><big>(</big><em>self</em>, <em>transport</em>, <em>username</em><big>)</big><a class="headerlink" href="#fileutils.ssh.Agent.authenticate" title="Permalink to this definition">¶</a></dt>
+<dd><div class="line-block">
+<div class="line"><em>Overrides</em> <a class="reference internal" href="#fileutils.ssh.Authenticator.authenticate" title="fileutils.ssh.Authenticator.authenticate"><tt class="xref py py-obj docutils literal"><span class="pre">authenticate</span></tt></a> <em>in class</em> <a class="reference internal" href="#fileutils.ssh.Authenticator" title="fileutils.ssh.Authenticator"><tt class="xref py py-obj docutils literal"><span class="pre">Authenticator</span></tt></a></div>
+</div>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="class-authenticator">
+<h2>Class Authenticator<a class="headerlink" href="#class-authenticator" title="Permalink to this headline">¶</a></h2>
+<p>Class of methods that can be used to authenticate to an SSH server.</p>
+<p>These are wrappers around the various paramiko.Transport.auth_* methods.</p>
+<dl class="class">
+<dt id="fileutils.ssh.Authenticator">
+<em class="property">class </em><tt class="descclassname">fileutils.ssh.</tt><tt class="descname">Authenticator</tt><a class="headerlink" href="#fileutils.ssh.Authenticator" title="Permalink to this definition">¶</a></dt>
+<dd><p>x.__init__(...) initializes x; see help(type(x)) for signature</p>
+<dl class="method">
+<dt id="fileutils.ssh.Authenticator.authenticate">
+<tt class="descname">authenticate</tt><big>(</big><em>self</em>, <em>transport</em><big>)</big><a class="headerlink" href="#fileutils.ssh.Authenticator.authenticate" title="Permalink to this definition">¶</a></dt>
+<dd><p>Authenticate to the specified transport using this method.</p>
+<p>If authentication fails, AuthenticationException will be raised. If
+authentication succeeds but multi-factor authentication is required,
+PartialAuthentication will be raised.</p>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="class-firstof">
+<h2>Class FirstOf<a class="headerlink" href="#class-firstof" title="Permalink to this headline">¶</a></h2>
+<p>An authentication method that tries several other methods and succeeds once
+one of them does. If all of the methods fail, it fails.</p>
+<p>If one of them raises PartialAuthentication to indicate that it succeeded
+but didn&#8217;t conclude authentication, FirstOf continues on with the rest of
+the authentication methods, then re-raises PartialAuthentication if none of
+them concluded authentication. I&#8217;m still debating exactly how partial
+authentication should work, so this could change.</p>
+<p><em>Method resolution order:</em> <a class="reference internal" href="#fileutils.ssh.Authenticator" title="fileutils.ssh.Authenticator"><tt class="xref py py-obj docutils literal"><span class="pre">Authenticator</span></tt></a></p>
+<dl class="class">
+<dt id="fileutils.ssh.FirstOf">
+<em class="property">class </em><tt class="descclassname">fileutils.ssh.</tt><tt class="descname">FirstOf</tt><big>(</big><em>self</em>, <em>*methods</em><big>)</big><a class="headerlink" href="#fileutils.ssh.FirstOf" title="Permalink to this definition">¶</a></dt>
+<dd><p>Create a new FirstOf authentication method that will attempt to
+authenticate using the specified Authenticator instances.</p>
+<dl class="method">
+<dt id="fileutils.ssh.FirstOf.__repr__">
+<tt class="descname">__repr__</tt><big>(</big><em>self</em><big>)</big><a class="headerlink" href="#fileutils.ssh.FirstOf.__repr__" title="Permalink to this definition">¶</a></dt>
+<dt id="fileutils.ssh.FirstOf.__str__">
+<tt class="descname">__str__</tt><big>(</big><em>self</em><big>)</big><a class="headerlink" href="#fileutils.ssh.FirstOf.__str__" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="fileutils.ssh.FirstOf.authenticate">
+<tt class="descname">authenticate</tt><big>(</big><em>self</em>, <em>transport</em>, <em>username</em><big>)</big><a class="headerlink" href="#fileutils.ssh.FirstOf.authenticate" title="Permalink to this definition">¶</a></dt>
+<dd><div class="line-block">
+<div class="line"><em>Overrides</em> <a class="reference internal" href="#fileutils.ssh.Authenticator.authenticate" title="fileutils.ssh.Authenticator.authenticate"><tt class="xref py py-obj docutils literal"><span class="pre">authenticate</span></tt></a> <em>in class</em> <a class="reference internal" href="#fileutils.ssh.Authenticator" title="fileutils.ssh.Authenticator"><tt class="xref py py-obj docutils literal"><span class="pre">Authenticator</span></tt></a></div>
+</div>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="class-key">
+<h2>Class Key<a class="headerlink" href="#class-key" title="Permalink to this headline">¶</a></h2>
+<p>An authentication method that authenticates using a private key.</p>
+<p>Currently, keys that require a passphrase are not yet supported. I plan on
+adding such support in the near future.</p>
+<p><em>Method resolution order:</em> <a class="reference internal" href="#fileutils.ssh.Authenticator" title="fileutils.ssh.Authenticator"><tt class="xref py py-obj docutils literal"><span class="pre">Authenticator</span></tt></a></p>
+<dl class="class">
+<dt id="fileutils.ssh.Key">
+<em class="property">class </em><tt class="descclassname">fileutils.ssh.</tt><tt class="descname">Key</tt><big>(</big><em>self</em>, <em>key</em>, <em>required=False</em><big>)</big><a class="headerlink" href="#fileutils.ssh.Key" title="Permalink to this definition">¶</a></dt>
+<dd><p>Create a Key authentication method that will authenticate using the
+specified private key.</p>
+<p>The key can be an instance of any subclass of paramiko.PKey (such as
+paramiko.RSAKey), a BaseFile instance (in which case the file in
+question will be read and its contents used as the key), a string
+representing a local path to a key file, or a seekable file-like
+object.</p>
+<p>If required is False and key is a BaseFile or a local path that does
+not exist, the returned Key instance will do nothing (but raise an
+AuthenticationException). Otherwise, a
+fileutils.exceptions.FileNotFoundError will be raised.</p>
+<dl class="method">
+<dt id="fileutils.ssh.Key.authenticate">
+<tt class="descname">authenticate</tt><big>(</big><em>self</em>, <em>transport</em>, <em>username</em><big>)</big><a class="headerlink" href="#fileutils.ssh.Key.authenticate" title="Permalink to this definition">¶</a></dt>
+<dd><div class="line-block">
+<div class="line"><em>Overrides</em> <a class="reference internal" href="#fileutils.ssh.Authenticator.authenticate" title="fileutils.ssh.Authenticator.authenticate"><tt class="xref py py-obj docutils literal"><span class="pre">authenticate</span></tt></a> <em>in class</em> <a class="reference internal" href="#fileutils.ssh.Authenticator" title="fileutils.ssh.Authenticator"><tt class="xref py py-obj docutils literal"><span class="pre">Authenticator</span></tt></a></div>
+</div>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="class-password">
+<h2>Class Password<a class="headerlink" href="#class-password" title="Permalink to this headline">¶</a></h2>
+<p>An authentication method that authenticates using a password.</p>
+<p><em>Method resolution order:</em> <a class="reference internal" href="#fileutils.ssh.Authenticator" title="fileutils.ssh.Authenticator"><tt class="xref py py-obj docutils literal"><span class="pre">Authenticator</span></tt></a></p>
+<dl class="class">
+<dt id="fileutils.ssh.Password">
+<em class="property">class </em><tt class="descclassname">fileutils.ssh.</tt><tt class="descname">Password</tt><big>(</big><em>self</em>, <em>password</em>, <em>fallback=True</em><big>)</big><a class="headerlink" href="#fileutils.ssh.Password" title="Permalink to this definition">¶</a></dt>
+<dd><p>Create a Password authentication method that will authenticate using
+the specified password.</p>
+<p>username, password, and fallback are passed to the underlying call to
+paramiko.Transport.auth_password.</p>
+<dl class="method">
+<dt id="fileutils.ssh.Password.__repr__">
+<tt class="descname">__repr__</tt><big>(</big><em>self</em><big>)</big><a class="headerlink" href="#fileutils.ssh.Password.__repr__" title="Permalink to this definition">¶</a></dt>
+<dt id="fileutils.ssh.Password.__str__">
+<tt class="descname">__str__</tt><big>(</big><em>self</em><big>)</big><a class="headerlink" href="#fileutils.ssh.Password.__str__" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="fileutils.ssh.Password.authenticate">
+<tt class="descname">authenticate</tt><big>(</big><em>self</em>, <em>transport</em>, <em>username</em><big>)</big><a class="headerlink" href="#fileutils.ssh.Password.authenticate" title="Permalink to this definition">¶</a></dt>
+<dd><div class="line-block">
+<div class="line"><em>Overrides</em> <a class="reference internal" href="#fileutils.ssh.Authenticator.authenticate" title="fileutils.ssh.Authenticator.authenticate"><tt class="xref py py-obj docutils literal"><span class="pre">authenticate</span></tt></a> <em>in class</em> <a class="reference internal" href="#fileutils.ssh.Authenticator" title="fileutils.ssh.Authenticator"><tt class="xref py py-obj docutils literal"><span class="pre">Authenticator</span></tt></a></div>
+</div>
+</dd></dl>
+
+</dd></dl>
+
+</div>
 <div class="section" id="class-sshfile">
 <h2>Class SSHFile<a class="headerlink" href="#class-sshfile" title="Permalink to this headline">¶</a></h2>
-<p>A concrete file implementation allowing file operations to be carried
+<p>A concrete BaseFile implementation allowing file operations to be carried
 out on a remote host via SSH and SFTP.</p>
-<p>Instances of SSHFile can be constructed around an instance of
-paramiko.Transport by doing:</p>
-<div class="highlight-python"><div class="highlight"><pre><span class="n">f</span> <span class="o">=</span> <span class="n">SSHFile</span><span class="o">.</span><span class="n">from_transport</span><span class="p">(</span><span class="n">transport</span><span class="p">)</span>
+<p>Instances of SSHFile can be obtained from an SSHFileSystem via its
+child(path) method, or from its root property:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">f</span> <span class="o">=</span> <span class="n">SSHFileSystem</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="n">hostname</span><span class="p">,</span> <span class="n">username</span><span class="p">,</span> <span class="n">password</span><span class="p">)</span><span class="o">.</span><span class="n">root</span>
+<span class="n">f</span> <span class="o">=</span> <span class="n">SSHFileSystem</span><span class="p">(</span><span class="n">paramiko_transport</span><span class="p">)</span><span class="o">.</span><span class="n">root</span>
+<span class="n">f</span> <span class="o">=</span> <span class="n">SSHFileSystem</span><span class="p">(</span><span class="n">paramiko_transport</span><span class="p">)</span><span class="o">.</span><span class="n">child</span><span class="p">(</span><span class="s">&quot;/some/path&quot;</span><span class="p">)</span>
 </pre></div>
 </div>
-<p>They can also be obtained from <tt class="xref py py-obj docutils literal"><span class="pre">connect</span></tt>.</p>
-<p>SSHFile instances wrap their underlying paramiko.Transport instances with
-an object that automatically closes them on garbage collection. There&#8217;s
-therefore no need to do anything special with an SSHFile when you&#8217;re done
-with it, although you can use it as a context manager to force it to close
-before it&#8217;s garbage collected.</p>
+<p>They can also be obtained from some convenience functions that construct an
+SSHFileSystem for you, such as connect and from_transport:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">f</span> <span class="o">=</span> <span class="n">SSHFile</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="n">hostname</span><span class="p">,</span> <span class="n">username</span><span class="p">,</span> <span class="n">password</span><span class="p">)</span>
+<span class="n">f</span> <span class="o">=</span> <span class="n">SSHFile</span><span class="o">.</span><span class="n">from_transport</span><span class="p">(</span><span class="n">paramiko_transport</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>SSHFileSystem instances (to which all SSHFile instance hold a reference)
+wrap their underlying paramiko.Transport instances with an object that
+automatically closes them on garbage collection. There&#8217;s therefore no need
+to do anything special with an SSHFile when you&#8217;re done with it, although
+you can use it as a context manager to force its underlying SSHFileSystem
+to close before it&#8217;s garbage collected.</p>
+<p>SSHFileSystem instances (to which all SSHFile instances hold a reference)
+have a __del__ that automatically closes their underlying
+paramiko.Transport on garbage collection. There&#8217;s therefore no need to do
+anything special with an SSHFile instance when you&#8217;re done with it,
+although you can force it to close before it&#8217;s garbage collected by calling
+self.filesystem.close() on it, or by using it (or its underlying
+SSHFileSystem) as a context manager:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="k">with</span> <span class="n">SSHFile</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="o">...</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+    <span class="o">...</span>
+</pre></div>
+</div>
 <p><em>Method resolution order:</em> <a class="reference internal" href="fileutils.mixins.html#fileutils.mixins.ChildrenMixin" title="fileutils.mixins.ChildrenMixin"><tt class="xref py py-obj docutils literal"><span class="pre">ChildrenMixin</span></tt></a>, <a class="reference internal" href="fileutils.interface.html#fileutils.interface.BaseFile" title="fileutils.interface.BaseFile"><tt class="xref py py-obj docutils literal"><span class="pre">BaseFile</span></tt></a></p>
 <dl class="class">
 <dt id="fileutils.ssh.SSHFile">
@@ -127,13 +286,20 @@ before it&#8217;s garbage collected.</p>
 <dl class="method">
 <dt id="fileutils.ssh.SSHFile.disconnect">
 <tt class="descname">disconnect</tt><big>(</big><em>self</em><big>)</big><a class="headerlink" href="#fileutils.ssh.SSHFile.disconnect" title="Permalink to this definition">¶</a></dt>
-<dd><p>Disconnect this SSHFile&#8217;s underlying connection.</p>
+<dd><p>Note: This function is deprecated, and will be removed in the future.
+Use self.filesystem.close() instead.</p>
+<p>Disconnect this SSHFile&#8217;s underlying connection.</p>
 <p>You usually won&#8217;t need to call this explicitly; connections are
 automatically closed when all SSHFiles referring to them are garbage
 collected. You can use this method to force the connection to
 disconnect before all such references are garbage collected, if you
 want.</p>
 </dd></dl>
+
+<dl class="attribute">
+<dt id="fileutils.ssh.SSHFile.filesystem">
+<tt class="descname">filesystem</tt><a class="headerlink" href="#fileutils.ssh.SSHFile.filesystem" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
 
 <dl class="method">
 <dt id="fileutils.ssh.SSHFile.get_path_components">
@@ -207,6 +373,31 @@ want.</p>
 </div>
 </dd></dl>
 
+<dl class="attribute">
+<dt id="fileutils.ssh.SSHFile.url">
+<tt class="descname">url</tt><a class="headerlink" href="#fileutils.ssh.SSHFile.url" title="Permalink to this definition">¶</a></dt>
+<dd><p>An <a class="reference external" href="ssh://">ssh://</a> URL corresponding to the location of this file.</p>
+<p>A few important notes:</p>
+<blockquote>
+<div><ul class="simple">
+<li>If this SSHFile&#8217;s underlying SSHFileSystem was constructed by
+passing in a paramiko.Transport instance directly, the hostname in
+the resulting URL is only a (well educated) guess as to the remote
+end&#8217;s IP address. If it was instead constructed via
+SSHFileSystem.connect or SSHFile.connect, the hostname in the
+resulting URL will be the same as that passed to connect().</li>
+<li>The password, if any, given to SSHFile.connect won&#8217;t be preserved by
+this property as (by design) the password isn&#8217;t stored anywhere
+after authentication.</li>
+<li>The path of the returned URL will start with two slashes, something
+like <a class="reference external" href="ssh://host//path">ssh://host//path</a>. This prevents it from being interpreted as a
+path relative to the user&#8217;s home directory by some applications
+(like Mercurial) that interpret paths with only one leading slash as
+such.</li>
+</ul>
+</div></blockquote>
+</dd></dl>
+
 <p><em>Members inherited from class</em> <a class="reference internal" href="fileutils.mixins.html#fileutils.mixins.ChildrenMixin" title="fileutils.mixins.ChildrenMixin"><tt class="xref py py-obj docutils literal"><span class="pre">ChildrenMixin</span></tt></a><em>:</em> <a class="reference internal" href="fileutils.mixins.html#fileutils.mixins.ChildrenMixin.children" title="fileutils.mixins.ChildrenMixin.children"><tt class="xref py py-obj docutils literal"><span class="pre">children</span></tt></a></p>
 <p><em>Members inherited from class</em> <a class="reference internal" href="fileutils.interface.html#fileutils.interface.BaseFile" title="fileutils.interface.BaseFile"><tt class="xref py py-obj docutils literal"><span class="pre">BaseFile</span></tt></a><em>:</em> <a class="reference internal" href="fileutils.interface.html#fileutils.interface.BaseFile.__div__" title="fileutils.interface.BaseFile.__div__"><tt class="xref py py-obj docutils literal"><span class="pre">__div__</span></tt></a>, <a class="reference internal" href="fileutils.interface.html#fileutils.interface.BaseFile.ancestor_of" title="fileutils.interface.BaseFile.ancestor_of"><tt class="xref py py-obj docutils literal"><span class="pre">ancestor_of</span></tt></a>, <a class="reference internal" href="fileutils.interface.html#fileutils.interface.BaseFile.ancestors" title="fileutils.interface.BaseFile.ancestors"><tt class="xref py py-obj docutils literal"><span class="pre">ancestors</span></tt></a>, <a class="reference internal" href="fileutils.interface.html#fileutils.interface.BaseFile.append" title="fileutils.interface.BaseFile.append"><tt class="xref py py-obj docutils literal"><span class="pre">append</span></tt></a>, <a class="reference internal" href="fileutils.interface.html#fileutils.interface.BaseFile.as_working" title="fileutils.interface.BaseFile.as_working"><tt class="xref py py-obj docutils literal"><span class="pre">as_working</span></tt></a>, <a class="reference internal" href="fileutils.interface.html#fileutils.interface.BaseFile.attributes" title="fileutils.interface.BaseFile.attributes"><tt class="xref py py-obj docutils literal"><span class="pre">attributes</span></tt></a>, <a class="reference internal" href="fileutils.interface.html#fileutils.interface.BaseFile.cd" title="fileutils.interface.BaseFile.cd"><tt class="xref py py-obj docutils literal"><span class="pre">cd</span></tt></a>, <a class="reference internal" href="fileutils.interface.html#fileutils.interface.BaseFile.change_to" title="fileutils.interface.BaseFile.change_to"><tt class="xref py py-obj docutils literal"><span class="pre">change_to</span></tt></a>, <a class="reference internal" href="fileutils.interface.html#fileutils.interface.BaseFile.check_file" title="fileutils.interface.BaseFile.check_file"><tt class="xref py py-obj docutils literal"><span class="pre">check_file</span></tt></a>, <a class="reference internal" href="fileutils.interface.html#fileutils.interface.BaseFile.check_folder" title="fileutils.interface.BaseFile.check_folder"><tt class="xref py py-obj docutils literal"><span class="pre">check_folder</span></tt></a>, <a class="reference internal" href="fileutils.interface.html#fileutils.interface.BaseFile.copy_attributes_to" title="fileutils.interface.BaseFile.copy_attributes_to"><tt class="xref py py-obj docutils literal"><span class="pre">copy_attributes_to</span></tt></a>, <a class="reference internal" href="fileutils.interface.html#fileutils.interface.BaseFile.copy_into" title="fileutils.interface.BaseFile.copy_into"><tt class="xref py py-obj docutils literal"><span class="pre">copy_into</span></tt></a>, <a class="reference internal" href="fileutils.interface.html#fileutils.interface.BaseFile.copy_to" title="fileutils.interface.BaseFile.copy_to"><tt class="xref py py-obj docutils literal"><span class="pre">copy_to</span></tt></a>, <a class="reference internal" href="fileutils.interface.html#fileutils.interface.BaseFile.dereference" title="fileutils.interface.BaseFile.dereference"><tt class="xref py py-obj docutils literal"><span class="pre">dereference</span></tt></a>, <a class="reference internal" href="fileutils.interface.html#fileutils.interface.BaseFile.descendant_of" title="fileutils.interface.BaseFile.descendant_of"><tt class="xref py py-obj docutils literal"><span class="pre">descendant_of</span></tt></a>, <a class="reference internal" href="fileutils.interface.html#fileutils.interface.BaseFile.exists" title="fileutils.interface.BaseFile.exists"><tt class="xref py py-obj docutils literal"><span class="pre">exists</span></tt></a>, <a class="reference internal" href="fileutils.interface.html#fileutils.interface.BaseFile.get_ancestors" title="fileutils.interface.BaseFile.get_ancestors"><tt class="xref py py-obj docutils literal"><span class="pre">get_ancestors</span></tt></a>, <a class="reference internal" href="fileutils.interface.html#fileutils.interface.BaseFile.get_path" title="fileutils.interface.BaseFile.get_path"><tt class="xref py py-obj docutils literal"><span class="pre">get_path</span></tt></a>, <a class="reference internal" href="fileutils.interface.html#fileutils.interface.BaseFile.hash" title="fileutils.interface.BaseFile.hash"><tt class="xref py py-obj docutils literal"><span class="pre">hash</span></tt></a>, <a class="reference internal" href="fileutils.interface.html#fileutils.interface.BaseFile.is_broken" title="fileutils.interface.BaseFile.is_broken"><tt class="xref py py-obj docutils literal"><span class="pre">is_broken</span></tt></a>, <a class="reference internal" href="fileutils.interface.html#fileutils.interface.BaseFile.is_directory" title="fileutils.interface.BaseFile.is_directory"><tt class="xref py py-obj docutils literal"><span class="pre">is_directory</span></tt></a>, <a class="reference internal" href="fileutils.interface.html#fileutils.interface.BaseFile.is_file" title="fileutils.interface.BaseFile.is_file"><tt class="xref py py-obj docutils literal"><span class="pre">is_file</span></tt></a>, <a class="reference internal" href="fileutils.interface.html#fileutils.interface.BaseFile.is_folder" title="fileutils.interface.BaseFile.is_folder"><tt class="xref py py-obj docutils literal"><span class="pre">is_folder</span></tt></a>, <a class="reference internal" href="fileutils.interface.html#fileutils.interface.BaseFile.is_link" title="fileutils.interface.BaseFile.is_link"><tt class="xref py py-obj docutils literal"><span class="pre">is_link</span></tt></a>, <a class="reference internal" href="fileutils.interface.html#fileutils.interface.BaseFile.is_mount" title="fileutils.interface.BaseFile.is_mount"><tt class="xref py py-obj docutils literal"><span class="pre">is_mount</span></tt></a>, <a class="reference internal" href="fileutils.interface.html#fileutils.interface.BaseFile.makedirs" title="fileutils.interface.BaseFile.makedirs"><tt class="xref py py-obj docutils literal"><span class="pre">makedirs</span></tt></a>, <a class="reference internal" href="fileutils.interface.html#fileutils.interface.BaseFile.mkdir" title="fileutils.interface.BaseFile.mkdir"><tt class="xref py py-obj docutils literal"><span class="pre">mkdir</span></tt></a>, <a class="reference internal" href="fileutils.interface.html#fileutils.interface.BaseFile.mkdirs" title="fileutils.interface.BaseFile.mkdirs"><tt class="xref py py-obj docutils literal"><span class="pre">mkdirs</span></tt></a>, <a class="reference internal" href="fileutils.interface.html#fileutils.interface.BaseFile.mountpoint" title="fileutils.interface.BaseFile.mountpoint"><tt class="xref py py-obj docutils literal"><span class="pre">mountpoint</span></tt></a>, <a class="reference internal" href="fileutils.interface.html#fileutils.interface.BaseFile.name" title="fileutils.interface.BaseFile.name"><tt class="xref py py-obj docutils literal"><span class="pre">name</span></tt></a>, <a class="reference internal" href="fileutils.interface.html#fileutils.interface.BaseFile.path" title="fileutils.interface.BaseFile.path"><tt class="xref py py-obj docutils literal"><span class="pre">path</span></tt></a>, <a class="reference internal" href="fileutils.interface.html#fileutils.interface.BaseFile.path_components" title="fileutils.interface.BaseFile.path_components"><tt class="xref py py-obj docutils literal"><span class="pre">path_components</span></tt></a>, <a class="reference internal" href="fileutils.interface.html#fileutils.interface.BaseFile.read" title="fileutils.interface.BaseFile.read"><tt class="xref py py-obj docutils literal"><span class="pre">read</span></tt></a>, <a class="reference internal" href="fileutils.interface.html#fileutils.interface.BaseFile.read_blocks" title="fileutils.interface.BaseFile.read_blocks"><tt class="xref py py-obj docutils literal"><span class="pre">read_blocks</span></tt></a>, <a class="reference internal" href="fileutils.interface.html#fileutils.interface.BaseFile.recurse" title="fileutils.interface.BaseFile.recurse"><tt class="xref py py-obj docutils literal"><span class="pre">recurse</span></tt></a>, <a class="reference internal" href="fileutils.interface.html#fileutils.interface.BaseFile.safe_child" title="fileutils.interface.BaseFile.safe_child"><tt class="xref py py-obj docutils literal"><span class="pre">safe_child</span></tt></a>, <a class="reference internal" href="fileutils.interface.html#fileutils.interface.BaseFile.same_as" title="fileutils.interface.BaseFile.same_as"><tt class="xref py py-obj docutils literal"><span class="pre">same_as</span></tt></a>, <a class="reference internal" href="fileutils.interface.html#fileutils.interface.BaseFile.sibling" title="fileutils.interface.BaseFile.sibling"><tt class="xref py py-obj docutils literal"><span class="pre">sibling</span></tt></a>, <a class="reference internal" href="fileutils.interface.html#fileutils.interface.BaseFile.valid" title="fileutils.interface.BaseFile.valid"><tt class="xref py py-obj docutils literal"><span class="pre">valid</span></tt></a>, <a class="reference internal" href="fileutils.interface.html#fileutils.interface.BaseFile.write" title="fileutils.interface.BaseFile.write"><tt class="xref py py-obj docutils literal"><span class="pre">write</span></tt></a></p>
 </dd></dl>
@@ -214,8 +405,34 @@ want.</p>
 </div>
 <div class="section" id="class-sshfilesystem">
 <h2>Class SSHFileSystem<a class="headerlink" href="#class-sshfilesystem" title="Permalink to this headline">¶</a></h2>
-<p>An implementation of <a class="reference internal" href="fileutils.interface.html#fileutils.interface.FileSystem" title="fileutils.interface.FileSystem"><tt class="xref py py-obj docutils literal"><span class="pre">FileSystem</span></tt></a>
-that allows access to a remote machine using SSH and SFTP.</p>
+<p>A concrete FileSystem implementation allowing file operations to be carried
+out on a remote host via SSH and SFTP.</p>
+<p>Instances of SSHFileSystem can be constructed by connecting to a remote
+server with SSHFileSystem.connect:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">fs</span> <span class="o">=</span> <span class="n">SSHFileSystem</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="n">hostname</span><span class="p">,</span> <span class="n">username</span><span class="p">,</span> <span class="n">password</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>They can also be constructed around an instance of paramiko.Transport:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">fs</span> <span class="o">=</span> <span class="n">SSHFileSystem</span><span class="o">.</span><span class="n">from_transport</span><span class="p">(</span><span class="n">transport</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Instances of SSHFile can then be obtained using self.child(path), or from
+the <tt class="xref py py-obj docutils literal"><span class="pre">root</span></tt> property, an SSHFile pointing to &#8220;/&#8221;.</p>
+<p>SSHFileSystem instances have a __del__ that automatically closes their
+underlying paramiko.Transport on garbage collection. There&#8217;s therefore no
+need to do anything special with an SSHFileSystem instance when you&#8217;re done
+with it, although you can force it to close before it&#8217;s garbage collected
+by calling its close() function, or by using it as a context manager:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="k">with</span> <span class="n">SSHFileSystem</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="o">...</span><span class="p">)</span> <span class="k">as</span> <span class="n">fs</span><span class="p">:</span>
+    <span class="o">...</span>
+</pre></div>
+</div>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">SSHFileSystem does not yet implement the full FileSystem interface.
+Specifically, attempting to access SSHFileSystem.mountpoints will result
+in a NotImplementedError, and SSHFile.mountpoint is always None.</p>
+</div>
 <p><em>Method resolution order:</em> <a class="reference internal" href="fileutils.interface.html#fileutils.interface.FileSystem" title="fileutils.interface.FileSystem"><tt class="xref py py-obj docutils literal"><span class="pre">FileSystem</span></tt></a></p>
 <dl class="class">
 <dt id="fileutils.ssh.SSHFileSystem">
@@ -223,6 +440,16 @@ that allows access to a remote machine using SSH and SFTP.</p>
 <dd><dl class="method">
 <dt id="fileutils.ssh.SSHFileSystem.__del__">
 <tt class="descname">__del__</tt><big>(</big><em>self</em><big>)</big><a class="headerlink" href="#fileutils.ssh.SSHFileSystem.__del__" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="fileutils.ssh.SSHFileSystem.__enter__">
+<tt class="descname">__enter__</tt><big>(</big><em>self</em><big>)</big><a class="headerlink" href="#fileutils.ssh.SSHFileSystem.__enter__" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="fileutils.ssh.SSHFileSystem.__exit__">
+<tt class="descname">__exit__</tt><big>(</big><em>self</em>, <em>*args</em><big>)</big><a class="headerlink" href="#fileutils.ssh.SSHFileSystem.__exit__" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="method">
@@ -255,6 +482,42 @@ that allows access to a remote machine using SSH and SFTP.</p>
 </dd></dl>
 
 </div>
+<div class="section" id="class-user">
+<h2>Class User<a class="headerlink" href="#class-user" title="Permalink to this headline">¶</a></h2>
+<p>An authenticator that causes the authenticator it wraps to authenticate
+using an alternative username.</p>
+<p>Instances of this class can be used to attempt to authenticate with several
+different usernames thus:</p>
+<blockquote>
+<div>FirstOf(User(&#8216;foo&#8217;, Password(...)), User(&#8216;bar&#8217;, Key(...)))</div></blockquote>
+<p><em>Method resolution order:</em> <a class="reference internal" href="#fileutils.ssh.FirstOf" title="fileutils.ssh.FirstOf"><tt class="xref py py-obj docutils literal"><span class="pre">FirstOf</span></tt></a>, <a class="reference internal" href="#fileutils.ssh.Authenticator" title="fileutils.ssh.Authenticator"><tt class="xref py py-obj docutils literal"><span class="pre">Authenticator</span></tt></a></p>
+<dl class="class">
+<dt id="fileutils.ssh.User">
+<em class="property">class </em><tt class="descclassname">fileutils.ssh.</tt><tt class="descname">User</tt><big>(</big><em>self</em>, <em>username</em>, <em>*authenticators</em><big>)</big><a class="headerlink" href="#fileutils.ssh.User" title="Permalink to this definition">¶</a></dt>
+<dd><p>Create a new User instance that will authenticate using the specified
+username and authenticators.</p>
+<dl class="method">
+<dt id="fileutils.ssh.User.__repr__">
+<tt class="descname">__repr__</tt><big>(</big><em>self</em><big>)</big><a class="headerlink" href="#fileutils.ssh.User.__repr__" title="Permalink to this definition">¶</a></dt>
+<dt id="fileutils.ssh.User.__str__">
+<tt class="descname">__str__</tt><big>(</big><em>self</em><big>)</big><a class="headerlink" href="#fileutils.ssh.User.__str__" title="Permalink to this definition">¶</a></dt>
+<dd><div class="line-block">
+<div class="line"><em>Overrides</em> <a class="reference internal" href="#fileutils.ssh.FirstOf.__repr__" title="fileutils.ssh.FirstOf.__repr__"><tt class="xref py py-obj docutils literal"><span class="pre">__repr__</span></tt></a> <em>in class</em> <a class="reference internal" href="#fileutils.ssh.FirstOf" title="fileutils.ssh.FirstOf"><tt class="xref py py-obj docutils literal"><span class="pre">FirstOf</span></tt></a></div>
+<div class="line"><em>Overrides</em> <a class="reference internal" href="#fileutils.ssh.FirstOf.__str__" title="fileutils.ssh.FirstOf.__str__"><tt class="xref py py-obj docutils literal"><span class="pre">__str__</span></tt></a> <em>in class</em> <a class="reference internal" href="#fileutils.ssh.FirstOf" title="fileutils.ssh.FirstOf"><tt class="xref py py-obj docutils literal"><span class="pre">FirstOf</span></tt></a></div>
+</div>
+</dd></dl>
+
+<dl class="method">
+<dt id="fileutils.ssh.User.authenticate">
+<tt class="descname">authenticate</tt><big>(</big><em>self</em>, <em>transport</em>, <em>username</em><big>)</big><a class="headerlink" href="#fileutils.ssh.User.authenticate" title="Permalink to this definition">¶</a></dt>
+<dd><div class="line-block">
+<div class="line"><em>Overrides</em> <a class="reference internal" href="#fileutils.ssh.FirstOf.authenticate" title="fileutils.ssh.FirstOf.authenticate"><tt class="xref py py-obj docutils literal"><span class="pre">authenticate</span></tt></a> <em>in class</em> <a class="reference internal" href="#fileutils.ssh.FirstOf" title="fileutils.ssh.FirstOf"><tt class="xref py py-obj docutils literal"><span class="pre">FirstOf</span></tt></a></div>
+</div>
+</dd></dl>
+
+</dd></dl>
+
+</div>
 <div class="section" id="functions">
 <h2>Functions<a class="headerlink" href="#functions" title="Permalink to this headline">¶</a></h2>
 <dl class="function">
@@ -276,8 +539,14 @@ compatibility, and will likely be going away soon.</p>
   <h3><a href="../contents.html">Table Of Contents</a></h3>
   <ul>
 <li><a class="reference internal" href="#"><tt class="docutils literal"><span class="pre">fileutils.ssh</span></tt> &#8212;</a><ul>
+<li><a class="reference internal" href="#class-agent">Class Agent</a></li>
+<li><a class="reference internal" href="#class-authenticator">Class Authenticator</a></li>
+<li><a class="reference internal" href="#class-firstof">Class FirstOf</a></li>
+<li><a class="reference internal" href="#class-key">Class Key</a></li>
+<li><a class="reference internal" href="#class-password">Class Password</a></li>
 <li><a class="reference internal" href="#class-sshfile">Class SSHFile</a></li>
 <li><a class="reference internal" href="#class-sshfilesystem">Class SSHFileSystem</a></li>
+<li><a class="reference internal" href="#class-user">Class User</a></li>
 <li><a class="reference internal" href="#functions">Functions</a></li>
 </ul>
 </li>

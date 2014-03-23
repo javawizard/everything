@@ -268,6 +268,38 @@ created.
 
    *Members inherited from class* :obj:`~fileutils.interface.BaseFile`\ *:* :obj:`~fileutils.interface.BaseFile.__div__`, :obj:`~fileutils.interface.BaseFile.ancestor_of`, :obj:`~fileutils.interface.BaseFile.ancestors`, :obj:`~fileutils.interface.BaseFile.append`, :obj:`~fileutils.interface.BaseFile.as_working`, :obj:`~fileutils.interface.BaseFile.cd`, :obj:`~fileutils.interface.BaseFile.check_file`, :obj:`~fileutils.interface.BaseFile.check_folder`, :obj:`~fileutils.interface.BaseFile.copy_attributes_to`, :obj:`~fileutils.interface.BaseFile.copy_into`, :obj:`~fileutils.interface.BaseFile.copy_to`, :obj:`~fileutils.interface.BaseFile.dereference`, :obj:`~fileutils.interface.BaseFile.descendant_of`, :obj:`~fileutils.interface.BaseFile.exists`, :obj:`~fileutils.interface.BaseFile.get_ancestors`, :obj:`~fileutils.interface.BaseFile.get_path`, :obj:`~fileutils.interface.BaseFile.hash`, :obj:`~fileutils.interface.BaseFile.is_broken`, :obj:`~fileutils.interface.BaseFile.is_directory`, :obj:`~fileutils.interface.BaseFile.is_file`, :obj:`~fileutils.interface.BaseFile.is_folder`, :obj:`~fileutils.interface.BaseFile.is_link`, :obj:`~fileutils.interface.BaseFile.is_mount`, :obj:`~fileutils.interface.BaseFile.makedirs`, :obj:`~fileutils.interface.BaseFile.mkdir`, :obj:`~fileutils.interface.BaseFile.mkdirs`, :obj:`~fileutils.interface.BaseFile.name`, :obj:`~fileutils.interface.BaseFile.path`, :obj:`~fileutils.interface.BaseFile.path_components`, :obj:`~fileutils.interface.BaseFile.read`, :obj:`~fileutils.interface.BaseFile.read_blocks`, :obj:`~fileutils.interface.BaseFile.recurse`, :obj:`~fileutils.interface.BaseFile.safe_child`, :obj:`~fileutils.interface.BaseFile.same_as`, :obj:`~fileutils.interface.BaseFile.sibling`, :obj:`~fileutils.interface.BaseFile.valid`, :obj:`~fileutils.interface.BaseFile.write`
 
+----------------
+Class LocalCache
+----------------
+
+An object representing a remote file that's been cached locally.
+These can be obtained from LocalFileSystem.cache(). See that method's
+docstring for more information.
+
+.. class:: LocalCache(self, cache, location)
+
+
+
+   .. method:: __enter__(self)
+
+
+
+   .. method:: __exit__(self)
+
+
+
+   .. attribute:: cache
+
+      The temporary directory created to contain the local temporary file, or
+      None if the file was already a local file. This is the directory that
+      will be deleted by self.__exit__.
+
+   .. attribute:: location
+
+      The local temporary file or directory, as a BaseFile object. This file
+      contains the same data as the remote file passed into
+      LocalFileSystem.cache(). It also has the same name.
+
 ---------------------
 Class LocalFileSystem
 ---------------------
@@ -279,6 +311,42 @@ Class LocalFileSystem
 .. class:: LocalFileSystem
 
    x.__init__(...) initializes x; see help(type(x)) for signature
+
+   .. method:: __cmp__(self, other)
+
+
+
+   .. method:: __hash__(self)
+
+
+
+   .. method:: cache(self, file_to_cache)
+
+      Copy the specified file or directory (a BaseFile instance) onto the
+      local machine in the system temporary directory and return a LocalCache
+      instance wrapping the temporary copy, unless it's already a local file,
+      in which case a LocalCache wrapping the file itself will be returned.
+
+      The returned LocalCache instance can be used as a context manager like
+      so::
+
+          with LocalFileSystem().cache(some_file) as local_file:
+              ...
+
+      During the execution of the above block, local_file will be a File
+      instance pointing to the local temporary copy of the file. After the
+      block exits, the file will be deleted (unless it was already a local
+      file, in which case nothing whatsoever will happen).
+
+      The file can also be accessed directly from the LocalCache instance's
+      location property.
+
+      The newly created temporary directory containing the local temporary
+      copy of the file will have its delete_on_exit property set to True.
+      This allows the file to be passed around without needing to use the
+      returned LocalCache instance as a context manager, if you so desire.
+      (delete_on_exit will not, of course, be set to True if the file was
+      already a local file.)
 
    .. method:: child(self, *path_components)
 
@@ -306,7 +374,7 @@ Class LocalMountPoint
 
       |  *Overrides* :obj:`~fileutils.interface.MountPoint.filesystem` *in class* :obj:`~fileutils.interface.MountPoint`
 
-   *Members inherited from class* :obj:`~fileutils.interface.MountPoint`\ *:* :obj:`~fileutils.interface.MountPoint.available_space`, :obj:`~fileutils.interface.MountPoint.device`, :obj:`~fileutils.interface.MountPoint.devices`, :obj:`~fileutils.interface.MountPoint.free_space`, :obj:`~fileutils.interface.MountPoint.location`, :obj:`~fileutils.interface.MountPoint.total_space`, :obj:`~fileutils.interface.MountPoint.unmount`, :obj:`~fileutils.interface.MountPoint.usage`, :obj:`~fileutils.interface.MountPoint.used_space`
+   *Members inherited from class* :obj:`~fileutils.interface.MountPoint`\ *:* :obj:`~fileutils.interface.MountPoint.available_space`, :obj:`~fileutils.interface.MountPoint.device`, :obj:`~fileutils.interface.MountPoint.devices`, :obj:`~fileutils.interface.MountPoint.free_space`, :obj:`~fileutils.interface.MountPoint.location`, :obj:`~fileutils.interface.MountPoint.total_space`, :obj:`~fileutils.interface.MountPoint.umount`, :obj:`~fileutils.interface.MountPoint.unmount`, :obj:`~fileutils.interface.MountPoint.usage`, :obj:`~fileutils.interface.MountPoint.used_space`
 
 ---------------
 Class PosixFile
@@ -398,7 +466,7 @@ Class PosixLocalFileSystem
 
       |  *Overrides* :obj:`~fileutils.interface.FileSystem.roots` *in class* :obj:`~fileutils.interface.FileSystem`
 
-   *Members inherited from class* :obj:`~fileutils.local.LocalFileSystem`\ *:* :obj:`~fileutils.local.LocalFileSystem.child`
+   *Members inherited from class* :obj:`~fileutils.local.LocalFileSystem`\ *:* :obj:`~fileutils.local.LocalFileSystem.__cmp__`, :obj:`~fileutils.local.LocalFileSystem.__hash__`, :obj:`~fileutils.local.LocalFileSystem.cache`, :obj:`~fileutils.local.LocalFileSystem.child`
 
    *Members inherited from class* :obj:`~fileutils.interface.FileSystem`\ *:* :obj:`~fileutils.interface.FileSystem.root`
 
@@ -449,7 +517,7 @@ Class PosixLocalMountPoint
 
    *Members inherited from class* :obj:`~fileutils.local.LocalMountPoint`\ *:* :obj:`~fileutils.local.LocalMountPoint.filesystem`
 
-   *Members inherited from class* :obj:`~fileutils.interface.MountPoint`\ *:* :obj:`~fileutils.interface.MountPoint.available_space`, :obj:`~fileutils.interface.MountPoint.device`, :obj:`~fileutils.interface.MountPoint.free_space`, :obj:`~fileutils.interface.MountPoint.total_space`, :obj:`~fileutils.interface.MountPoint.used_space`
+   *Members inherited from class* :obj:`~fileutils.interface.MountPoint`\ *:* :obj:`~fileutils.interface.MountPoint.available_space`, :obj:`~fileutils.interface.MountPoint.device`, :obj:`~fileutils.interface.MountPoint.free_space`, :obj:`~fileutils.interface.MountPoint.total_space`, :obj:`~fileutils.interface.MountPoint.umount`, :obj:`~fileutils.interface.MountPoint.used_space`
 
 ---------------------------
 Class PosixLocalPermissions
@@ -474,9 +542,7 @@ Class PosixLocalPermissions
 
       |  *Overrides* :obj:`~fileutils.attributes.PosixPermissions.mode` *in class* :obj:`~fileutils.attributes.PosixPermissions`
 
-   *Members inherited from class* :obj:`~fileutils.attributes.PosixPermissions`\ *:* :obj:`~fileutils.attributes.PosixPermissions.execute`, :obj:`~fileutils.attributes.PosixPermissions.get`, :obj:`~fileutils.attributes.PosixPermissions.group`, :obj:`~fileutils.attributes.PosixPermissions.other`, :obj:`~fileutils.attributes.PosixPermissions.set`, :obj:`~fileutils.attributes.PosixPermissions.setgid`, :obj:`~fileutils.attributes.PosixPermissions.setuid`, :obj:`~fileutils.attributes.PosixPermissions.sticky`, :obj:`~fileutils.attributes.PosixPermissions.user`
-
-   *Members inherited from class* :obj:`~fileutils.attributes.AttributeSet`\ *:* :obj:`~fileutils.attributes.AttributeSet.copy_to`
+   *Members inherited from class* :obj:`~fileutils.attributes.PosixPermissions`\ *:* :obj:`~fileutils.attributes.PosixPermissions.copy_to`, :obj:`~fileutils.attributes.PosixPermissions.execute`, :obj:`~fileutils.attributes.PosixPermissions.get`, :obj:`~fileutils.attributes.PosixPermissions.group`, :obj:`~fileutils.attributes.PosixPermissions.other`, :obj:`~fileutils.attributes.PosixPermissions.set`, :obj:`~fileutils.attributes.PosixPermissions.setgid`, :obj:`~fileutils.attributes.PosixPermissions.setuid`, :obj:`~fileutils.attributes.PosixPermissions.sticky`, :obj:`~fileutils.attributes.PosixPermissions.user`
 
 -----------------
 Class WindowsFile
@@ -543,7 +609,7 @@ Class WindowsLocalFileSystem
 
       |  *Overrides* :obj:`~fileutils.interface.FileSystem.roots` *in class* :obj:`~fileutils.interface.FileSystem`
 
-   *Members inherited from class* :obj:`~fileutils.local.LocalFileSystem`\ *:* :obj:`~fileutils.local.LocalFileSystem.child`
+   *Members inherited from class* :obj:`~fileutils.local.LocalFileSystem`\ *:* :obj:`~fileutils.local.LocalFileSystem.__cmp__`, :obj:`~fileutils.local.LocalFileSystem.__hash__`, :obj:`~fileutils.local.LocalFileSystem.cache`, :obj:`~fileutils.local.LocalFileSystem.child`
 
    *Members inherited from class* :obj:`~fileutils.interface.FileSystem`\ *:* :obj:`~fileutils.interface.FileSystem.root`
 
@@ -561,7 +627,7 @@ Class WindowsMountPoint
 
    *Members inherited from class* :obj:`~fileutils.local.LocalMountPoint`\ *:* :obj:`~fileutils.local.LocalMountPoint.filesystem`
 
-   *Members inherited from class* :obj:`~fileutils.interface.MountPoint`\ *:* :obj:`~fileutils.interface.MountPoint.available_space`, :obj:`~fileutils.interface.MountPoint.device`, :obj:`~fileutils.interface.MountPoint.devices`, :obj:`~fileutils.interface.MountPoint.free_space`, :obj:`~fileutils.interface.MountPoint.location`, :obj:`~fileutils.interface.MountPoint.total_space`, :obj:`~fileutils.interface.MountPoint.unmount`, :obj:`~fileutils.interface.MountPoint.usage`, :obj:`~fileutils.interface.MountPoint.used_space`
+   *Members inherited from class* :obj:`~fileutils.interface.MountPoint`\ *:* :obj:`~fileutils.interface.MountPoint.available_space`, :obj:`~fileutils.interface.MountPoint.device`, :obj:`~fileutils.interface.MountPoint.devices`, :obj:`~fileutils.interface.MountPoint.free_space`, :obj:`~fileutils.interface.MountPoint.location`, :obj:`~fileutils.interface.MountPoint.total_space`, :obj:`~fileutils.interface.MountPoint.umount`, :obj:`~fileutils.interface.MountPoint.unmount`, :obj:`~fileutils.interface.MountPoint.usage`, :obj:`~fileutils.interface.MountPoint.used_space`
 
 ---------
 Functions

@@ -86,6 +86,10 @@ on the system.</p>
 <p>On Windows, there will be exactly one mount point for each drive
 letter. On POSIX systems, there will be one mount point per, well,
 mount point.</p>
+<p>FileSystem implementations like URLFileSystem that don&#8217;t support a
+proper notion of mount points are permitted to return None from this
+function.</p>
+<p>The default implementation of this method just returns None.</p>
 </dd></dl>
 
 <dl class="attribute">
@@ -178,14 +182,17 @@ mount point is mounted.</p>
 <dl class="method">
 <dt id="fileutils.interface.MountPoint.unmount">
 <tt class="descname">unmount</tt><big>(</big><em>self</em>, <em>force=True</em><big>)</big><a class="headerlink" href="#fileutils.interface.MountPoint.unmount" title="Permalink to this definition">¶</a></dt>
-<dd><p>Unmount the topmost device attached to this mount point.</p>
+<dt id="fileutils.interface.MountPoint.umount">
+<tt class="descname">umount</tt><big>(</big><em>self</em>, <em>force=True</em><big>)</big><a class="headerlink" href="#fileutils.interface.MountPoint.umount" title="Permalink to this definition">¶</a></dt>
+<dd><p>Unmount the device whose data is currently visible at this mount point.</p>
 </dd></dl>
 
 <dl class="attribute">
 <dt id="fileutils.interface.MountPoint.usage">
 <tt class="descname">usage</tt><a class="headerlink" href="#fileutils.interface.MountPoint.usage" title="Permalink to this definition">¶</a></dt>
 <dd><p>An instance of <a class="reference internal" href="#fileutils.interface.DiskUsage" title="fileutils.interface.DiskUsage"><tt class="xref py py-obj docutils literal"><span class="pre">DiskUsage</span></tt></a> indicating the current disk and inode
-usage for this mount point.</p>
+usage for this mount point, or None if this MountPoint implementation
+does not expose disk usage information.</p>
 </dd></dl>
 
 <dl class="attribute">
@@ -515,27 +522,30 @@ else, one could use:</p>
 
 <dl class="method">
 <dt id="fileutils.interface.BaseFile.copy_into">
-<tt class="descname">copy_into</tt><big>(</big><em>self</em>, <em>other</em>, <em>overwrite=False</em><big>)</big><a class="headerlink" href="#fileutils.interface.BaseFile.copy_into" title="Permalink to this definition">¶</a></dt>
+<tt class="descname">copy_into</tt><big>(</big><em>self</em>, <em>other</em>, <em>overwrite=False</em>, <em>dereference_links=True</em>, <em>which_attributes={}</em><big>)</big><a class="headerlink" href="#fileutils.interface.BaseFile.copy_into" title="Permalink to this definition">¶</a></dt>
 <dd><p>Copies this file to an identically named file inside the specified
 folder. This is just shorthand for self.copy_to(other.child(self.name))
 which, from experience, seems to be by far the most common use case for
 the copy_to function.</p>
 <p>The newly-created file in the specified folder will be returned as per
 other.child(self.name).</p>
+<p>overwrite, dereference_links, and which_attributes have the same
+meanings as their respective arguments given to copy_to.</p>
 </dd></dl>
 
 <dl class="method">
 <dt id="fileutils.interface.BaseFile.copy_to">
-<tt class="descname">copy_to</tt><big>(</big><em>self</em>, <em>other</em>, <em>overwrite=False</em>, <em>dereference_links=True</em>, <em>attribute_sets=None</em><big>)</big><a class="headerlink" href="#fileutils.interface.BaseFile.copy_to" title="Permalink to this definition">¶</a></dt>
-<dd><p>Copies the contents of this file to the specified file object. An
-exception will be thrown if the specified file already exists and
-overwrite is False.</p>
+<tt class="descname">copy_to</tt><big>(</big><em>self</em>, <em>other</em>, <em>overwrite=False</em>, <em>dereference_links=True</em>, <em>which_attributes={}</em><big>)</big><a class="headerlink" href="#fileutils.interface.BaseFile.copy_to" title="Permalink to this definition">¶</a></dt>
+<dd><p>Copies the contents and attributes of this file or directory to the
+specified file. An exception will be thrown if the specified file
+already exists and overwrite is False.</p>
 <p>If dereference_links is True (the default), symbolic links encountered
 during copying will be dereferenced and their targets copied in their
 place. If dereference_links is False, such links will be recreated
-purely as symbolic links.</p>
-<p>This also does not currently preserve file attributes or permissions;
-such abilities will be added soon.</p>
+purely as symbolic links. Note that this could render some symbolic
+links broken.</p>
+<p>which_attributes is a dictionary indicating which attributes are to be
+copied, in the same format as that given to <a class="reference internal" href="#fileutils.interface.BaseFile.copy_attributes_to" title="fileutils.interface.BaseFile.copy_attributes_to"><tt class="xref py py-obj docutils literal"><span class="pre">copy_attributes_to</span></tt></a>.</p>
 </dd></dl>
 
 <dl class="method">
@@ -678,7 +688,8 @@ True even for broken symbolic links.</p>
 <dt id="fileutils.interface.BaseFile.is_mount">
 <tt class="descname">is_mount</tt><a class="headerlink" href="#fileutils.interface.BaseFile.is_mount" title="Permalink to this definition">¶</a></dt>
 <dd><p>True if this File is a mount point, False if it isn&#8217;t.</p>
-<p>This is just short for self.mountpoint.location == self.</p>
+<p>This is just short for self.mountpoint.location == self, but with a
+check to ensure that self.mountpoint.location is not None.</p>
 </dd></dl>
 
 <dl class="attribute">
@@ -721,7 +732,10 @@ be absolute.</p>
 <dl class="attribute">
 <dt id="fileutils.interface.BaseFile.mountpoint">
 <tt class="descname">mountpoint</tt><a class="headerlink" href="#fileutils.interface.BaseFile.mountpoint" title="Permalink to this definition">¶</a></dt>
-<dd><p>The MountPoint instance on which this file resides.</p>
+<dd><p>The MountPoint instance on which this file resides, or None if this
+file is an instance of a class like URL that doesn&#8217;t support mount
+points.</p>
+<p>The default implementation of this method just returns None.</p>
 </dd></dl>
 
 <dl class="attribute">

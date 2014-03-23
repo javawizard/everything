@@ -41,12 +41,18 @@ machine. Other subclasses include
       letter. On POSIX systems, there will be one mount point per, well,
       mount point.
 
+      FileSystem implementations like URLFileSystem that don't support a
+      proper notion of mount points are permitted to return None from this
+      function.
+
+      The default implementation of this method just returns None.
+
    .. attribute:: root
 
       A sensible "default" root for this file system, or None if there isn't
       really any sensible default.
 
-      The default implementation just returns self.roots[0]. 
+      The default implementation just returns self.roots[0].
 
    .. attribute:: roots
 
@@ -116,13 +122,15 @@ property that returns a list of all of the system's mount points.
       Shorthand for self.\ :obj:`usage <usage>`.\ :obj:`space <DiskUsage.space>`.\ :obj:`total <Usage.total>`.
 
    .. method:: unmount(self, force=True)
+               umount(self, force=True)
 
-      Unmount the topmost device attached to this mount point.
+      Unmount the device whose data is currently visible at this mount point.
 
    .. attribute:: usage
 
       An instance of :obj:`DiskUsage` indicating the current disk and inode
-      usage for this mount point.
+      usage for this mount point, or None if this MountPoint implementation
+      does not expose disk usage information.
 
    .. attribute:: used_space
 
@@ -419,7 +427,7 @@ of the file system's root directories.
 
       so take it as purely an example.)
 
-   .. method:: copy_into(self, other, overwrite=False)
+   .. method:: copy_into(self, other, overwrite=False, dereference_links=True, which_attributes={})
 
       Copies this file to an identically named file inside the specified
       folder. This is just shorthand for self.copy_to(other.child(self.name))
@@ -429,19 +437,23 @@ of the file system's root directories.
       The newly-created file in the specified folder will be returned as per
       other.child(self.name).
 
-   .. method:: copy_to(self, other, overwrite=False, dereference_links=True, attribute_sets=None)
+      overwrite, dereference_links, and which_attributes have the same
+      meanings as their respective arguments given to copy_to.
 
-      Copies the contents of this file to the specified file object. An
-      exception will be thrown if the specified file already exists and
-      overwrite is False.
+   .. method:: copy_to(self, other, overwrite=False, dereference_links=True, which_attributes={})
+
+      Copies the contents and attributes of this file or directory to the
+      specified file. An exception will be thrown if the specified file
+      already exists and overwrite is False.
 
       If dereference_links is True (the default), symbolic links encountered
       during copying will be dereferenced and their targets copied in their
       place. If dereference_links is False, such links will be recreated
-      purely as symbolic links.
+      purely as symbolic links. Note that this could render some symbolic
+      links broken.
 
-      This also does not currently preserve file attributes or permissions;
-      such abilities will be added soon.
+      which_attributes is a dictionary indicating which attributes are to be
+      copied, in the same format as that given to :obj:`copy_attributes_to`\ .
 
    .. method:: create_folder(self, ignore_existing=False, recursive=False)
 
@@ -568,7 +580,8 @@ of the file system's root directories.
 
       True if this File is a mount point, False if it isn't.
 
-      This is just short for self.mountpoint.location == self.
+      This is just short for self.mountpoint.location == self, but with a
+      check to ensure that self.mountpoint.location is not None.
 
    .. attribute:: link_target
 
@@ -601,7 +614,11 @@ of the file system's root directories.
 
    .. attribute:: mountpoint
 
-      The MountPoint instance on which this file resides.
+      The MountPoint instance on which this file resides, or None if this
+      file is an instance of a class like URL that doesn't support mount
+      points.
+
+      The default implementation of this method just returns None.
 
    .. attribute:: name
 

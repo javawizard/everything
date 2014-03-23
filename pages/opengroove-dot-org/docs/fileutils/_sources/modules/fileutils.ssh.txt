@@ -9,25 +9,178 @@
 
 
 
+-----------
+Class Agent
+-----------
+
+An authentication method that authenticates using the local SSH agent.
+
+*Method resolution order:* :obj:`~fileutils.ssh.Authenticator`
+
+.. class:: Agent(self)
+
+   Create a new Agent authenticate method that will authenticate using the
+   keys made available by the local SSH agent.
+
+   .. method:: __repr__(self)
+               __str__(self)
+
+
+
+   .. method:: authenticate(self, transport, username)
+
+
+
+      |  *Overrides* :obj:`~fileutils.ssh.Authenticator.authenticate` *in class* :obj:`~fileutils.ssh.Authenticator`
+
+-------------------
+Class Authenticator
+-------------------
+
+Class of methods that can be used to authenticate to an SSH server.
+
+These are wrappers around the various paramiko.Transport.auth_* methods.
+
+.. class:: Authenticator
+
+   x.__init__(...) initializes x; see help(type(x)) for signature
+
+   .. method:: authenticate(self, transport)
+
+      Authenticate to the specified transport using this method.
+
+      If authentication fails, AuthenticationException will be raised. If
+      authentication succeeds but multi-factor authentication is required,
+      PartialAuthentication will be raised.
+
+-------------
+Class FirstOf
+-------------
+
+An authentication method that tries several other methods and succeeds once
+one of them does. If all of the methods fail, it fails.
+
+If one of them raises PartialAuthentication to indicate that it succeeded
+but didn't conclude authentication, FirstOf continues on with the rest of
+the authentication methods, then re-raises PartialAuthentication if none of
+them concluded authentication. I'm still debating exactly how partial
+authentication should work, so this could change.
+
+*Method resolution order:* :obj:`~fileutils.ssh.Authenticator`
+
+.. class:: FirstOf(self, *methods)
+
+   Create a new FirstOf authentication method that will attempt to
+   authenticate using the specified Authenticator instances.
+
+   .. method:: __repr__(self)
+               __str__(self)
+
+
+
+   .. method:: authenticate(self, transport, username)
+
+
+
+      |  *Overrides* :obj:`~fileutils.ssh.Authenticator.authenticate` *in class* :obj:`~fileutils.ssh.Authenticator`
+
+---------
+Class Key
+---------
+
+An authentication method that authenticates using a private key.
+
+Currently, keys that require a passphrase are not yet supported. I plan on
+adding such support in the near future.
+
+*Method resolution order:* :obj:`~fileutils.ssh.Authenticator`
+
+.. class:: Key(self, key, required=False)
+
+   Create a Key authentication method that will authenticate using the
+   specified private key.
+
+   The key can be an instance of any subclass of paramiko.PKey (such as
+   paramiko.RSAKey), a BaseFile instance (in which case the file in
+   question will be read and its contents used as the key), a string
+   representing a local path to a key file, or a seekable file-like
+   object.
+
+   If required is False and key is a BaseFile or a local path that does
+   not exist, the returned Key instance will do nothing (but raise an
+   AuthenticationException). Otherwise, a
+   fileutils.exceptions.FileNotFoundError will be raised.
+
+   .. method:: authenticate(self, transport, username)
+
+
+
+      |  *Overrides* :obj:`~fileutils.ssh.Authenticator.authenticate` *in class* :obj:`~fileutils.ssh.Authenticator`
+
+--------------
+Class Password
+--------------
+
+An authentication method that authenticates using a password.
+
+*Method resolution order:* :obj:`~fileutils.ssh.Authenticator`
+
+.. class:: Password(self, password, fallback=True)
+
+   Create a Password authentication method that will authenticate using
+   the specified password.
+
+   username, password, and fallback are passed to the underlying call to
+   paramiko.Transport.auth_password.
+
+   .. method:: __repr__(self)
+               __str__(self)
+
+
+
+   .. method:: authenticate(self, transport, username)
+
+
+
+      |  *Overrides* :obj:`~fileutils.ssh.Authenticator.authenticate` *in class* :obj:`~fileutils.ssh.Authenticator`
+
 -------------
 Class SSHFile
 -------------
 
-A concrete file implementation allowing file operations to be carried
+A concrete BaseFile implementation allowing file operations to be carried
 out on a remote host via SSH and SFTP.
 
-Instances of SSHFile can be constructed around an instance of
-paramiko.Transport by doing::
+Instances of SSHFile can be obtained from an SSHFileSystem via its
+child(path) method, or from its root property::
 
-    f = SSHFile.from_transport(transport)
+    f = SSHFileSystem.connect(hostname, username, password).root
+    f = SSHFileSystem(paramiko_transport).root
+    f = SSHFileSystem(paramiko_transport).child("/some/path")
 
-They can also be obtained from :obj:`~SSHFile.connect`.
+They can also be obtained from some convenience functions that construct an
+SSHFileSystem for you, such as connect and from_transport::
 
-SSHFile instances wrap their underlying paramiko.Transport instances with
-an object that automatically closes them on garbage collection. There's
-therefore no need to do anything special with an SSHFile when you're done
-with it, although you can use it as a context manager to force it to close
-before it's garbage collected.
+    f = SSHFile.connect(hostname, username, password)
+    f = SSHFile.from_transport(paramiko_transport)
+
+SSHFileSystem instances (to which all SSHFile instance hold a reference)
+wrap their underlying paramiko.Transport instances with an object that
+automatically closes them on garbage collection. There's therefore no need
+to do anything special with an SSHFile when you're done with it, although
+you can use it as a context manager to force its underlying SSHFileSystem
+to close before it's garbage collected.
+
+SSHFileSystem instances (to which all SSHFile instances hold a reference)
+have a __del__ that automatically closes their underlying
+paramiko.Transport on garbage collection. There's therefore no need to do
+anything special with an SSHFile instance when you're done with it,
+although you can force it to close before it's garbage collected by calling
+self.filesystem.close() on it, or by using it (or its underlying
+SSHFileSystem) as a context manager::
+
+    with SSHFile.connect(...) as f:
+        ...
 
 *Method resolution order:* :obj:`~fileutils.mixins.ChildrenMixin`, :obj:`~fileutils.interface.BaseFile`
 
@@ -74,6 +227,9 @@ before it's garbage collected.
 
    .. method:: disconnect(self)
 
+      Note: This function is deprecated, and will be removed in the future.
+      Use self.filesystem.close() instead.
+
       Disconnect this SSHFile's underlying connection.
 
       You usually won't need to call this explicitly; connections are
@@ -81,6 +237,10 @@ before it's garbage collected.
       collected. You can use this method to force the connection to
       disconnect before all such references are garbage collected, if you
       want.
+
+   .. attribute:: filesystem
+
+
 
    .. method:: get_path_components(self, relative_to=None)
 
@@ -136,6 +296,29 @@ before it's garbage collected.
 
       |  *Overrides* :obj:`~fileutils.interface.BaseFile.type` *in class* :obj:`~fileutils.interface.BaseFile`
 
+   .. attribute:: url
+
+      An ssh:// URL corresponding to the location of this file.
+
+      A few important notes:
+
+       * If this SSHFile's underlying SSHFileSystem was constructed by
+         passing in a paramiko.Transport instance directly, the hostname in
+         the resulting URL is only a (well educated) guess as to the remote
+         end's IP address. If it was instead constructed via
+         SSHFileSystem.connect or SSHFile.connect, the hostname in the
+         resulting URL will be the same as that passed to connect().
+         
+       * The password, if any, given to SSHFile.connect won't be preserved by
+         this property as (by design) the password isn't stored anywhere
+         after authentication.
+         
+       * The path of the returned URL will start with two slashes, something
+         like ssh://host//path. This prevents it from being interpreted as a
+         path relative to the user's home directory by some applications
+         (like Mercurial) that interpret paths with only one leading slash as
+         such. 
+
    *Members inherited from class* :obj:`~fileutils.mixins.ChildrenMixin`\ *:* :obj:`~fileutils.mixins.ChildrenMixin.children`
 
    *Members inherited from class* :obj:`~fileutils.interface.BaseFile`\ *:* :obj:`~fileutils.interface.BaseFile.__div__`, :obj:`~fileutils.interface.BaseFile.ancestor_of`, :obj:`~fileutils.interface.BaseFile.ancestors`, :obj:`~fileutils.interface.BaseFile.append`, :obj:`~fileutils.interface.BaseFile.as_working`, :obj:`~fileutils.interface.BaseFile.attributes`, :obj:`~fileutils.interface.BaseFile.cd`, :obj:`~fileutils.interface.BaseFile.change_to`, :obj:`~fileutils.interface.BaseFile.check_file`, :obj:`~fileutils.interface.BaseFile.check_folder`, :obj:`~fileutils.interface.BaseFile.copy_attributes_to`, :obj:`~fileutils.interface.BaseFile.copy_into`, :obj:`~fileutils.interface.BaseFile.copy_to`, :obj:`~fileutils.interface.BaseFile.dereference`, :obj:`~fileutils.interface.BaseFile.descendant_of`, :obj:`~fileutils.interface.BaseFile.exists`, :obj:`~fileutils.interface.BaseFile.get_ancestors`, :obj:`~fileutils.interface.BaseFile.get_path`, :obj:`~fileutils.interface.BaseFile.hash`, :obj:`~fileutils.interface.BaseFile.is_broken`, :obj:`~fileutils.interface.BaseFile.is_directory`, :obj:`~fileutils.interface.BaseFile.is_file`, :obj:`~fileutils.interface.BaseFile.is_folder`, :obj:`~fileutils.interface.BaseFile.is_link`, :obj:`~fileutils.interface.BaseFile.is_mount`, :obj:`~fileutils.interface.BaseFile.makedirs`, :obj:`~fileutils.interface.BaseFile.mkdir`, :obj:`~fileutils.interface.BaseFile.mkdirs`, :obj:`~fileutils.interface.BaseFile.mountpoint`, :obj:`~fileutils.interface.BaseFile.name`, :obj:`~fileutils.interface.BaseFile.path`, :obj:`~fileutils.interface.BaseFile.path_components`, :obj:`~fileutils.interface.BaseFile.read`, :obj:`~fileutils.interface.BaseFile.read_blocks`, :obj:`~fileutils.interface.BaseFile.recurse`, :obj:`~fileutils.interface.BaseFile.safe_child`, :obj:`~fileutils.interface.BaseFile.same_as`, :obj:`~fileutils.interface.BaseFile.sibling`, :obj:`~fileutils.interface.BaseFile.valid`, :obj:`~fileutils.interface.BaseFile.write`
@@ -144,8 +327,35 @@ before it's garbage collected.
 Class SSHFileSystem
 -------------------
 
-An implementation of :obj:`FileSystem <fileutils.interface.FileSystem>`
-that allows access to a remote machine using SSH and SFTP.
+A concrete FileSystem implementation allowing file operations to be carried
+out on a remote host via SSH and SFTP.
+
+Instances of SSHFileSystem can be constructed by connecting to a remote
+server with SSHFileSystem.connect::
+
+    fs = SSHFileSystem.connect(hostname, username, password)
+
+They can also be constructed around an instance of paramiko.Transport::
+
+    fs = SSHFileSystem.from_transport(transport)
+
+Instances of SSHFile can then be obtained using self.child(path), or from
+the :obj:`root` property, an SSHFile pointing to "/".
+
+SSHFileSystem instances have a __del__ that automatically closes their
+underlying paramiko.Transport on garbage collection. There's therefore no
+need to do anything special with an SSHFileSystem instance when you're done
+with it, although you can force it to close before it's garbage collected
+by calling its close() function, or by using it as a context manager::
+
+    with SSHFileSystem.connect(...) as fs:
+        ...
+
+.. note::
+
+   SSHFileSystem does not yet implement the full FileSystem interface.
+   Specifically, attempting to access SSHFileSystem.mountpoints will result
+   in a NotImplementedError, and SSHFile.mountpoint is always None.
 
 *Method resolution order:* :obj:`~fileutils.interface.FileSystem`
 
@@ -154,6 +364,14 @@ that allows access to a remote machine using SSH and SFTP.
 
 
    .. method:: __del__(self)
+
+
+
+   .. method:: __enter__(self)
+
+
+
+   .. method:: __exit__(self, *args)
 
 
 
@@ -178,6 +396,39 @@ that allows access to a remote machine using SSH and SFTP.
       |  *Overrides* :obj:`~fileutils.interface.FileSystem.roots` *in class* :obj:`~fileutils.interface.FileSystem`
 
    *Members inherited from class* :obj:`~fileutils.interface.FileSystem`\ *:* :obj:`~fileutils.interface.FileSystem.mountpoints`, :obj:`~fileutils.interface.FileSystem.root`
+
+----------
+Class User
+----------
+
+An authenticator that causes the authenticator it wraps to authenticate
+using an alternative username.
+
+Instances of this class can be used to attempt to authenticate with several
+different usernames thus:
+
+    FirstOf(User('foo', Password(...)), User('bar', Key(...)))
+
+*Method resolution order:* :obj:`~fileutils.ssh.FirstOf`, :obj:`~fileutils.ssh.Authenticator`
+
+.. class:: User(self, username, *authenticators)
+
+   Create a new User instance that will authenticate using the specified
+   username and authenticators.
+
+   .. method:: __repr__(self)
+               __str__(self)
+
+
+
+      |  *Overrides* :obj:`~fileutils.ssh.FirstOf.__repr__` *in class* :obj:`~fileutils.ssh.FirstOf`
+      |  *Overrides* :obj:`~fileutils.ssh.FirstOf.__str__` *in class* :obj:`~fileutils.ssh.FirstOf`
+
+   .. method:: authenticate(self, transport, username)
+
+
+
+      |  *Overrides* :obj:`~fileutils.ssh.FirstOf.authenticate` *in class* :obj:`~fileutils.ssh.FirstOf`
 
 ---------
 Functions

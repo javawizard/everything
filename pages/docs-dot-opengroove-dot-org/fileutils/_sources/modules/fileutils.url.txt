@@ -58,6 +58,10 @@ This class supports several different URL schemes:
 
       |  *Overrides* :obj:`~fileutils.interface.BaseFile.dereference` *in class* :obj:`~fileutils.interface.BaseFile`
 
+   .. attribute:: filesystem
+
+
+
    .. method:: get_path_components(self, relative_to=None)
 
 
@@ -105,3 +109,53 @@ This class supports several different URL schemes:
 
 
    *Members inherited from class* :obj:`~fileutils.interface.BaseFile`\ *:* :obj:`~fileutils.interface.BaseFile.__div__`, :obj:`~fileutils.interface.BaseFile.ancestor_of`, :obj:`~fileutils.interface.BaseFile.ancestors`, :obj:`~fileutils.interface.BaseFile.append`, :obj:`~fileutils.interface.BaseFile.as_working`, :obj:`~fileutils.interface.BaseFile.attributes`, :obj:`~fileutils.interface.BaseFile.cd`, :obj:`~fileutils.interface.BaseFile.change_to`, :obj:`~fileutils.interface.BaseFile.check_file`, :obj:`~fileutils.interface.BaseFile.check_folder`, :obj:`~fileutils.interface.BaseFile.child_names`, :obj:`~fileutils.interface.BaseFile.children`, :obj:`~fileutils.interface.BaseFile.copy_attributes_to`, :obj:`~fileutils.interface.BaseFile.copy_into`, :obj:`~fileutils.interface.BaseFile.copy_to`, :obj:`~fileutils.interface.BaseFile.create_folder`, :obj:`~fileutils.interface.BaseFile.delete`, :obj:`~fileutils.interface.BaseFile.descendant_of`, :obj:`~fileutils.interface.BaseFile.exists`, :obj:`~fileutils.interface.BaseFile.get_ancestors`, :obj:`~fileutils.interface.BaseFile.get_path`, :obj:`~fileutils.interface.BaseFile.hash`, :obj:`~fileutils.interface.BaseFile.is_broken`, :obj:`~fileutils.interface.BaseFile.is_directory`, :obj:`~fileutils.interface.BaseFile.is_file`, :obj:`~fileutils.interface.BaseFile.is_folder`, :obj:`~fileutils.interface.BaseFile.is_link`, :obj:`~fileutils.interface.BaseFile.is_mount`, :obj:`~fileutils.interface.BaseFile.link_to`, :obj:`~fileutils.interface.BaseFile.makedirs`, :obj:`~fileutils.interface.BaseFile.mkdir`, :obj:`~fileutils.interface.BaseFile.mkdirs`, :obj:`~fileutils.interface.BaseFile.mountpoint`, :obj:`~fileutils.interface.BaseFile.name`, :obj:`~fileutils.interface.BaseFile.open_for_writing`, :obj:`~fileutils.interface.BaseFile.path`, :obj:`~fileutils.interface.BaseFile.path_components`, :obj:`~fileutils.interface.BaseFile.read`, :obj:`~fileutils.interface.BaseFile.read_blocks`, :obj:`~fileutils.interface.BaseFile.recurse`, :obj:`~fileutils.interface.BaseFile.rename_to`, :obj:`~fileutils.interface.BaseFile.safe_child`, :obj:`~fileutils.interface.BaseFile.sibling`, :obj:`~fileutils.interface.BaseFile.valid`, :obj:`~fileutils.interface.BaseFile.write`
+
+-------------------
+Class URLFileSystem
+-------------------
+
+
+
+*Method resolution order:* :obj:`~fileutils.interface.FileSystem`
+
+.. class:: URLFileSystem(self, scheme, netloc)
+
+
+
+   .. method:: __cmp__(self, other)
+
+
+
+   .. method:: __hash__(self)
+
+
+
+   .. method:: __repr__(self)
+               __str__(self)
+
+
+
+   .. method:: child(self, path)
+
+
+
+      |  *Overrides* :obj:`~fileutils.interface.FileSystem.child` *in class* :obj:`~fileutils.interface.FileSystem`
+
+   .. attribute:: roots
+
+
+
+      |  *Overrides* :obj:`~fileutils.interface.FileSystem.roots` *in class* :obj:`~fileutils.interface.FileSystem`
+
+   *Members inherited from class* :obj:`~fileutils.interface.FileSystem`\ *:* :obj:`~fileutils.interface.FileSystem.mountpoints`, :obj:`~fileutils.interface.FileSystem.root`
+
+---------
+Functions
+---------
+
+
+
+.. function:: sane_urlparse(url)
+
+   An alternative to urlparse used by this module that works around
+   http://bugs.python.org/issue7904

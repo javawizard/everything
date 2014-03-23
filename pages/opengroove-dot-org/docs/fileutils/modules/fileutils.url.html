@@ -111,6 +111,11 @@ so they can be read, written, and listed as per usual.</li>
 </div>
 </dd></dl>
 
+<dl class="attribute">
+<dt id="fileutils.url.URL.filesystem">
+<tt class="descname">filesystem</tt><a class="headerlink" href="#fileutils.url.URL.filesystem" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
 <dl class="method">
 <dt id="fileutils.url.URL.get_path_components">
 <tt class="descname">get_path_components</tt><big>(</big><em>self</em>, <em>relative_to=None</em><big>)</big><a class="headerlink" href="#fileutils.url.URL.get_path_components" title="Permalink to this definition">¶</a></dt>
@@ -176,6 +181,59 @@ so they can be read, written, and listed as per usual.</li>
 </dd></dl>
 
 </div>
+<div class="section" id="class-urlfilesystem">
+<h2>Class URLFileSystem<a class="headerlink" href="#class-urlfilesystem" title="Permalink to this headline">¶</a></h2>
+<p><em>Method resolution order:</em> <a class="reference internal" href="fileutils.interface.html#fileutils.interface.FileSystem" title="fileutils.interface.FileSystem"><tt class="xref py py-obj docutils literal"><span class="pre">FileSystem</span></tt></a></p>
+<dl class="class">
+<dt id="fileutils.url.URLFileSystem">
+<em class="property">class </em><tt class="descclassname">fileutils.url.</tt><tt class="descname">URLFileSystem</tt><big>(</big><em>self</em>, <em>scheme</em>, <em>netloc</em><big>)</big><a class="headerlink" href="#fileutils.url.URLFileSystem" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="method">
+<dt id="fileutils.url.URLFileSystem.__cmp__">
+<tt class="descname">__cmp__</tt><big>(</big><em>self</em>, <em>other</em><big>)</big><a class="headerlink" href="#fileutils.url.URLFileSystem.__cmp__" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="fileutils.url.URLFileSystem.__hash__">
+<tt class="descname">__hash__</tt><big>(</big><em>self</em><big>)</big><a class="headerlink" href="#fileutils.url.URLFileSystem.__hash__" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="fileutils.url.URLFileSystem.__repr__">
+<tt class="descname">__repr__</tt><big>(</big><em>self</em><big>)</big><a class="headerlink" href="#fileutils.url.URLFileSystem.__repr__" title="Permalink to this definition">¶</a></dt>
+<dt id="fileutils.url.URLFileSystem.__str__">
+<tt class="descname">__str__</tt><big>(</big><em>self</em><big>)</big><a class="headerlink" href="#fileutils.url.URLFileSystem.__str__" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="fileutils.url.URLFileSystem.child">
+<tt class="descname">child</tt><big>(</big><em>self</em>, <em>path</em><big>)</big><a class="headerlink" href="#fileutils.url.URLFileSystem.child" title="Permalink to this definition">¶</a></dt>
+<dd><div class="line-block">
+<div class="line"><em>Overrides</em> <a class="reference internal" href="fileutils.interface.html#fileutils.interface.FileSystem.child" title="fileutils.interface.FileSystem.child"><tt class="xref py py-obj docutils literal"><span class="pre">child</span></tt></a> <em>in class</em> <a class="reference internal" href="fileutils.interface.html#fileutils.interface.FileSystem" title="fileutils.interface.FileSystem"><tt class="xref py py-obj docutils literal"><span class="pre">FileSystem</span></tt></a></div>
+</div>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="fileutils.url.URLFileSystem.roots">
+<tt class="descname">roots</tt><a class="headerlink" href="#fileutils.url.URLFileSystem.roots" title="Permalink to this definition">¶</a></dt>
+<dd><div class="line-block">
+<div class="line"><em>Overrides</em> <a class="reference internal" href="fileutils.interface.html#fileutils.interface.FileSystem.roots" title="fileutils.interface.FileSystem.roots"><tt class="xref py py-obj docutils literal"><span class="pre">roots</span></tt></a> <em>in class</em> <a class="reference internal" href="fileutils.interface.html#fileutils.interface.FileSystem" title="fileutils.interface.FileSystem"><tt class="xref py py-obj docutils literal"><span class="pre">FileSystem</span></tt></a></div>
+</div>
+</dd></dl>
+
+<p><em>Members inherited from class</em> <a class="reference internal" href="fileutils.interface.html#fileutils.interface.FileSystem" title="fileutils.interface.FileSystem"><tt class="xref py py-obj docutils literal"><span class="pre">FileSystem</span></tt></a><em>:</em> <a class="reference internal" href="fileutils.interface.html#fileutils.interface.FileSystem.mountpoints" title="fileutils.interface.FileSystem.mountpoints"><tt class="xref py py-obj docutils literal"><span class="pre">mountpoints</span></tt></a>, <a class="reference internal" href="fileutils.interface.html#fileutils.interface.FileSystem.root" title="fileutils.interface.FileSystem.root"><tt class="xref py py-obj docutils literal"><span class="pre">root</span></tt></a></p>
+</dd></dl>
+
+</div>
+<div class="section" id="functions">
+<h2>Functions<a class="headerlink" href="#functions" title="Permalink to this headline">¶</a></h2>
+<dl class="function">
+<dt id="fileutils.url.sane_urlparse">
+<tt class="descclassname">fileutils.url.</tt><tt class="descname">sane_urlparse</tt><big>(</big><em>url</em><big>)</big><a class="headerlink" href="#fileutils.url.sane_urlparse" title="Permalink to this definition">¶</a></dt>
+<dd><p>An alternative to urlparse used by this module that works around
+<a class="reference external" href="http://bugs.python.org/issue7904">http://bugs.python.org/issue7904</a></p>
+</dd></dl>
+
+</div>
 </div>
 
 
@@ -188,6 +246,8 @@ so they can be read, written, and listed as per usual.</li>
   <ul>
 <li><a class="reference internal" href="#"><tt class="docutils literal"><span class="pre">fileutils.url</span></tt> &#8212;</a><ul>
 <li><a class="reference internal" href="#class-url">Class URL</a></li>
+<li><a class="reference internal" href="#class-urlfilesystem">Class URLFileSystem</a></li>
+<li><a class="reference internal" href="#functions">Functions</a></li>
 </ul>
 </li>
 </ul>

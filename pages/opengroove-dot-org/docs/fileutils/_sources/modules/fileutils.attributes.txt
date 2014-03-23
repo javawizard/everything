@@ -51,6 +51,9 @@ thus::
       they're not given further direction as to which attribute sets should
       be copied from one file to another.
 
+      All of the subclasses of AttributeSet provide implementations of this
+      property. Subclasses of those classes shouldn't need to override this.
+
    .. method:: copy_to(self, other)
 
       Copy attributes exposed by this attribute set to the specified
@@ -108,6 +111,12 @@ bits.
 .. class:: PosixPermissions
 
    x.__init__(...) initializes x; see help(type(x)) for signature
+
+   .. method:: copy_to(self, other)
+
+
+
+      |  *Overrides* :obj:`~fileutils.attributes.AttributeSet.copy_to` *in class* :obj:`~fileutils.attributes.AttributeSet`
 
    .. attribute:: execute
 
@@ -176,5 +185,3 @@ bits.
       and one can mark the file as being executable by its owner with::
 
           self.user.execute = True
-
-   *Members inherited from class* :obj:`~fileutils.attributes.AttributeSet`\ *:* :obj:`~fileutils.attributes.AttributeSet.copy_to`

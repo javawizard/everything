@@ -93,6 +93,8 @@ shouldn&#8217;t be.</p>
 BaseFile.copy_to and BaseFile.copy_into) consult this property when
 they&#8217;re not given further direction as to which attribute sets should
 be copied from one file to another.</p>
+<p>All of the subclasses of AttributeSet provide implementations of this
+property. Subclasses of those classes shouldn&#8217;t need to override this.</p>
 </dd></dl>
 
 <dl class="method">
@@ -162,6 +164,14 @@ bits.</p>
 <dt id="fileutils.attributes.PosixPermissions">
 <em class="property">class </em><tt class="descclassname">fileutils.attributes.</tt><tt class="descname">PosixPermissions</tt><a class="headerlink" href="#fileutils.attributes.PosixPermissions" title="Permalink to this definition">¶</a></dt>
 <dd><p>x.__init__(...) initializes x; see help(type(x)) for signature</p>
+<dl class="method">
+<dt id="fileutils.attributes.PosixPermissions.copy_to">
+<tt class="descname">copy_to</tt><big>(</big><em>self</em>, <em>other</em><big>)</big><a class="headerlink" href="#fileutils.attributes.PosixPermissions.copy_to" title="Permalink to this definition">¶</a></dt>
+<dd><div class="line-block">
+<div class="line"><em>Overrides</em> <a class="reference internal" href="#fileutils.attributes.AttributeSet.copy_to" title="fileutils.attributes.AttributeSet.copy_to"><tt class="xref py py-obj docutils literal"><span class="pre">copy_to</span></tt></a> <em>in class</em> <a class="reference internal" href="#fileutils.attributes.AttributeSet" title="fileutils.attributes.AttributeSet"><tt class="xref py py-obj docutils literal"><span class="pre">AttributeSet</span></tt></a></div>
+</div>
+</dd></dl>
+
 <dl class="attribute">
 <dt id="fileutils.attributes.PosixPermissions.execute">
 <tt class="descname">execute</tt><a class="headerlink" href="#fileutils.attributes.PosixPermissions.execute" title="Permalink to this definition">¶</a></dt>
@@ -241,7 +251,6 @@ this file with:</p>
 </div>
 </dd></dl>
 
-<p><em>Members inherited from class</em> <a class="reference internal" href="#fileutils.attributes.AttributeSet" title="fileutils.attributes.AttributeSet"><tt class="xref py py-obj docutils literal"><span class="pre">AttributeSet</span></tt></a><em>:</em> <a class="reference internal" href="#fileutils.attributes.AttributeSet.copy_to" title="fileutils.attributes.AttributeSet.copy_to"><tt class="xref py py-obj docutils literal"><span class="pre">copy_to</span></tt></a></p>
 </dd></dl>
 
 </div>
