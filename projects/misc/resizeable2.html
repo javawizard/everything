@@ -23,7 +23,9 @@
 </head>
 <body style="background-color: #fff">
 
-<canvas id="canvas" width="1500" height="300" onmousedown="onMouseDown(event)" onmouseup="onMouseUp(event)" onmousemove="onMouseMove(event)">
+<div style="position: fixed; bottom: 0; left: 0; padding: 5px"><button style="width: 1.9em; height: 1.5em; font-size: 1.5em" onclick="zoomIn()">+</button>&nbsp;<button style="width: 1.9em; height: 1.5em; font-size: 1.5em" onclick="zoomOut()">&ndash;</button></div>
+
+<canvas id="canvas" width="1500" height="600" onmousedown="onMouseDown(event)" onmouseup="onMouseUp(event)" onmousemove="onMouseMove(event)" tabindex="1">
 </canvas>
 
 <script>
@@ -31,7 +33,7 @@
 var marks = [{track: 0, start: 0, stop: 0.5}, {track: 1, start: 1, stop: 1.5}];
 var totalSize = 3;
 var gridDivision = 12;
-var numberOfTracks = 4;
+var numberOfTracks = 16;
 var headerHeight = 23;
 var headerMajorLineHeight = 20;
 var headerMinorLineHeight = 8;
@@ -92,6 +94,9 @@ function withShadow(context, color, blur, offsetX, offsetY, f) {
 }
 
 function getMarkAt(track, position) {
+    if(track === null || position === null) {
+        return null;    
+    }
     for(var i = marks.length - 1; i >= 0; i--) {
         if(marks[i].track === track && marks[i].start <= position && marks[i].stop >= position) {
             return marks[i];
@@ -178,6 +183,11 @@ function draw() {
             darkColor = "#3bf";
             lightColor = "#94e8ff";
         }
+        if(mark === selectedMark) {
+            var c = darkColor;
+            darkColor = lightColor;
+            lightColor = c;
+        }
         drawMark(context, canvasWidth, mark.track, start, stop, darkColor, lightColor);
     }
     
@@ -202,6 +212,7 @@ function draw() {
 
 function onMouseDown(event) {
     onMouseMove(event);
+    console.log("down");
     mouseStartMark = hoveredMark;
     mouseStartPresumedMode = hoveredPresumedMode;
     hoveredMark = null;
@@ -211,7 +222,6 @@ function onMouseDown(event) {
     mouseStartPosition = getPositionAt(event.offsetX);
     if(mouseStartTrack != null && mouseStartPosition != null) {
         mouseStartMark = getMarkAt(mouseStartTrack, mouseStartPosition);
-        console.log(mouseStartMark);
     }
     mouseStartX = event.offsetX;
     mouseStartY = event.offsetY;
@@ -220,6 +230,7 @@ function onMouseDown(event) {
 
 function onMouseUp(event) {
     onMouseMove(event);
+    console.log("up");
     if(mouseMode == "resize") {
         mouseResizeMark.start = Math.min(mouseResizeThis, mouseResizeOther);
         mouseResizeMark.stop = Math.max(mouseResizeThis, mouseResizeOther);
@@ -227,6 +238,23 @@ function onMouseUp(event) {
     else if(mouseMode == "drag") {
         mouseDragMark.start = mouseDragStart;
         mouseDragMark.stop = mouseDragStart + mouseDragWidth;
+    }
+    else if(mouseMode == "create") {
+        mark = {
+            track: mouseCreateTrack,
+            start: Math.min(mouseCreateThis, mouseCreateOther),
+            stop: Math.max(mouseCreateThis, mouseCreateOther)
+        }
+        marks.push(mark);
+    }
+    else if(mouseMode == "unknown") {
+        selectedMark = mouseStartMark;
+        if(selectedMark != null) {
+            console.log("selected");
+        }
+        else {
+            console.log("unselected");
+        }
     }
     mouseMode = null;
     mouseStartTrack = null;
@@ -243,7 +271,6 @@ function onMouseUp(event) {
 
 function onMouseMove(event) {
     var outsideMovementThreshold = event.offsetX > mouseStartX + movementThreshold || event.offsetX < mouseStartX - movementThreshold;
-    console.log("Move, outside? " + outsideMovementThreshold);
     if(mouseMode == null) {
         hoveredMark = getMarkAt(getTrackAt(event.offsetY), getPositionAt(event.offsetX));
         if(hoveredMark != null) {
@@ -291,6 +318,7 @@ function onMouseMove(event) {
             mouseCreateTrack = mouseStartTrack;
             mouseCreateOther = snapValueToGrid(mouseStartPosition, event.ctrlKey);
             mouseCreateThis = snapValueToGrid(getPositionAt(event.offsetX), event.ctrlKey);
+            console.log("create");
         }
     }
     else if(mouseMode == "resize") {
@@ -303,6 +331,23 @@ function onMouseMove(event) {
         mouseCreateThis = snapValueToGrid(getPositionAt(event.offsetX), event.ctrlKey);
     }
     draw();
+}
+
+function onKeyDown(event) {
+    console.log("keypress");
+    if(event.which === 46 && selectedMark != null) {
+        for(var i = 0; i < marks.length; i++) {
+            if(marks[i] === selectedMark) {
+                selectedMark = null;
+                marks.splice(i, 1);
+                draw();
+                break;
+            }
+        }
+    }
+}
+
+function onKeyUp(event) {
 }
 
 function updateMouseResizeThis(requestedPosition, forceToGrid) {
@@ -327,7 +372,20 @@ function snapValueToGrid(requestedPosition, forceToGrid) {
     return requestedPosition;
 }
 
+function zoomIn() {
+    canvas.width = canvas.width * 1.4;
+    draw();
+}
+
+function zoomOut() {
+    canvas.width = canvas.width / 1.4;
+    draw();
+}
+
 window.onload = draw;
+
+canvas.addEventListener('keydown', onKeyDown);
+canvas.addEventListener('keyup', onKeyUp);
 </script>
  
 </body>
