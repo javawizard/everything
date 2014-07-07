@@ -1,0 +1,334 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>resizable demo</title>
+  <link rel="stylesheet" href="../Downloads/jquery-ui.css">
+  <style>
+    .mark {
+        width: 120px;
+        height: 100%;
+        background: linear-gradient(#7df, #09f)
+    }	
+    .track {
+        width: 1200px;
+        border: 1px solid #fff;
+        background-color: #f2f2f2;
+        height: 30px;
+        position: relative;
+    }
+   </style>
+  <script src="../Downloads/jquery-1.10.2.js"></script>
+  <script src="../Downloads/jquery-ui.js"></script>
+</head>
+<body style="background-color: #fff">
+
+<canvas id="canvas" width="1500" height="300" onmousedown="onMouseDown(event)" onmouseup="onMouseUp(event)" onmousemove="onMouseMove(event)">
+</canvas>
+
+<script>
+
+var marks = [{track: 0, start: 0, stop: 0.5}, {track: 1, start: 1, stop: 1.5}];
+var totalSize = 3;
+var gridDivision = 12;
+var numberOfTracks = 4;
+var headerHeight = 23;
+var headerMajorLineHeight = 20;
+var headerMinorLineHeight = 8;
+var headerColor = "#888";
+var trackHeight = 30;
+var trackColor = "#eee";
+var trackBorderSize = 2;
+var resizeHandleWidth = 12;
+var movementThreshold = 3;
+
+var trackStart = headerHeight + trackBorderSize;
+
+var mouseStartTrack = null;
+var mouseStartPosition = null;
+var mouseStartX = null;
+var mouseStartY = null;
+var mouseStartMark = null;
+var mouseStartPresumedMode = null;
+var mouseMode = null;
+var mouseResizeThis = null;
+var mouseResizeOther = null;
+var mouseResizeMark = null;
+var mouseDragMark = null;
+var mouseDragStart = null;
+var mouseDragStartOffset = null;
+var mouseDragWidth = null;
+var mouseCreateTrack = null;
+var mouseCreateThis = null;
+var mouseCreateOther = null;
+
+var selectedMark = null;
+var hoveredMark = null;
+var hoveredPresumedMode = null;
+
+var canvas = document.getElementById('canvas');
+
+function drawLine(context, x0, y0, x1, y1) {
+    context.beginPath();
+    context.moveTo(x0, y0);
+    context.lineTo(x1, y1);
+    context.stroke();
+}
+
+function withShadow(context, color, blur, offsetX, offsetY, f) {
+    var oldColor = context.shadowColor;
+    var oldBlur = context.shadowBlur;
+    var oldOffsetX = context.shadowOffsetX;
+    var oldOffsetY = context.shadowOffsetY;
+    context.shadowColor = color;
+    context.shadowBlur = blur;
+    context.shadowOffsetX = offsetX;
+    context.shadowOffsetY = offsetY;
+    f();
+    context.shadowColor = oldColor;
+    context.shadowBlur = oldBlur;
+    context.shadowOffsetX = oldOffsetX;
+    context.shadowOffsetY = oldOffsetY;
+}
+
+function getMarkAt(track, position) {
+    for(var i = marks.length - 1; i >= 0; i--) {
+        if(marks[i].track === track && marks[i].start <= position && marks[i].stop >= position) {
+            return marks[i];
+        }
+    }
+    return null;
+}
+
+function getTrackAt(y) {
+    var relativeY = y - trackStart;
+    if((relativeY + trackBorderSize) % (trackHeight + trackBorderSize) < trackBorderSize) {
+        return null;
+    }
+    return Math.floor(relativeY / (trackHeight + trackBorderSize))
+}
+
+function getPositionAt(x) {
+    return x / $(canvas).width() * totalSize;
+}
+
+function getXAt(position) {
+    return position / totalSize * $(canvas).width();
+}
+
+function drawMark(context, canvasWidth, track, start, stop, darkColor, lightColor) {
+    var gradient = context.createLinearGradient(0, trackStart + track * (trackHeight + trackBorderSize), 0, trackStart + track * (trackHeight + trackBorderSize) + trackHeight);
+    gradient.addColorStop(1, darkColor);
+    gradient.addColorStop(0, lightColor);
+    context.fillStyle = gradient;
+    withShadow(context, 'rgba(0, 0, 0, 0.15)', 6, 1, 1, function() {
+        context.fillRect(start / totalSize * canvasWidth, trackStart + track * (trackHeight + trackBorderSize), (stop - start) / totalSize * canvasWidth, trackHeight);
+    });
+}
+
+function draw() {
+    var context = canvas.getContext('2d');
+    var canvasWidth = $(canvas).width();
+    var canvasHeight = $(canvas).height();
+    
+    context.clearRect(0, 0, canvasWidth, canvasHeight);
+    
+    // Draw header
+    context.strokeStyle = "#888";
+    withShadow(context, 'rgba(0, 0, 0, 0.25)', 5, 1, 1, function() {
+        drawLine(context, 0, headerHeight / 2, canvasWidth, headerHeight / 2);
+        for(var m = 0; m < totalSize; m++) {
+            var majorX = Math.round(m / totalSize * canvasWidth) + 0.5;
+            context.fillStyle = '#000';
+            withShadow(context, null, null, null, null, function() {
+                context.fillText("" + (m + 1), majorX + 1, headerHeight / 2 - 2);
+            });
+            drawLine(context, majorX, Math.round(headerHeight / 2 - headerMajorLineHeight / 2) - 0.5, majorX, Math.round(headerHeight / 2 + headerMajorLineHeight / 2) - 0.5);
+            for(var d = 0; d < gridDivision; d++) {
+                var minorX = Math.round((m * gridDivision + d) * canvasWidth / totalSize / gridDivision) + 0.5;
+                drawLine(context, minorX, Math.round(headerHeight / 2 - headerMinorLineHeight / 2) - 0.5, minorX, Math.round(headerHeight / 2 + headerMinorLineHeight / 2) - 0.5);
+            }
+        }
+        var majorX = Math.round(canvasWidth - 1) + 0.5;
+        drawLine(context, majorX, Math.round(headerHeight / 2 - headerMajorLineHeight / 2) - 0.5, majorX, Math.round(headerHeight / 2 + headerMajorLineHeight / 2) - 0.5);
+    });
+    
+    // Draw tracks
+    for(var i = 0; i < numberOfTracks; i++) {
+        context.fillStyle = trackColor;
+        context.fillRect(0, trackStart + (trackHeight + trackBorderSize) * i, canvasWidth, trackHeight);
+    }
+    
+    // Draw actual marks
+    for(var i = 0; i < marks.length; i++) {
+        var mark = marks[i];
+        var start = mark.start;
+        var stop = mark.stop;
+        if(mouseMode == "resize" && mark === mouseResizeMark) {
+            start = Math.min(mouseResizeThis, mouseResizeOther);
+            stop = Math.max(mouseResizeThis, mouseResizeOther);
+        }
+        else if(mouseMode == "drag" && mark == mouseDragMark) {
+            start = mouseDragStart;
+            stop = mouseDragStart + mouseDragWidth;
+        }
+        var darkColor = "#09f";
+        var lightColor = "#7df";
+        if(mark === hoveredMark) {
+            darkColor = "#3bf";
+            lightColor = "#94e8ff";
+        }
+        drawMark(context, canvasWidth, mark.track, start, stop, darkColor, lightColor);
+    }
+    
+    if(mouseMode == "create") {
+        drawMark(context, canvasWidth, mouseCreateTrack, Math.min(mouseCreateThis, mouseCreateOther), Math.max(mouseCreateThis, mouseCreateOther), "#09f", "#7df");
+    }
+    
+    // Set mouse cursor
+    if(hoveredPresumedMode == "resizeLeft" || mouseStartPresumedMode == "resizeLeft") {
+        canvas.style.cursor = "w-resize";
+    }
+    else if(hoveredPresumedMode == "resizeRight" || mouseStartPresumedMode == "resizeRight") {
+        canvas.style.cursor = "e-resize";
+    }
+    else if(mouseMode == "drag") {
+        canvas.style.cursor = "move";
+    }
+    else {
+        canvas.style.cursor = "default";
+    }
+}
+
+function onMouseDown(event) {
+    onMouseMove(event);
+    mouseStartMark = hoveredMark;
+    mouseStartPresumedMode = hoveredPresumedMode;
+    hoveredMark = null;
+    hoveredPresumedMode = null;
+    mouseMode = "unknown";
+    mouseStartTrack = getTrackAt(event.offsetY);
+    mouseStartPosition = getPositionAt(event.offsetX);
+    if(mouseStartTrack != null && mouseStartPosition != null) {
+        mouseStartMark = getMarkAt(mouseStartTrack, mouseStartPosition);
+        console.log(mouseStartMark);
+    }
+    mouseStartX = event.offsetX;
+    mouseStartY = event.offsetY;
+    onMouseMove(event);
+}
+
+function onMouseUp(event) {
+    onMouseMove(event);
+    if(mouseMode == "resize") {
+        mouseResizeMark.start = Math.min(mouseResizeThis, mouseResizeOther);
+        mouseResizeMark.stop = Math.max(mouseResizeThis, mouseResizeOther);
+    }
+    else if(mouseMode == "drag") {
+        mouseDragMark.start = mouseDragStart;
+        mouseDragMark.stop = mouseDragStart + mouseDragWidth;
+    }
+    mouseMode = null;
+    mouseStartTrack = null;
+    mouseStartPosition = null;
+    mouseStartMark = null;
+    mouseStartPresumedMode = null;
+    mouseStartX = null;
+    mouseStartY = null;
+    mouseResizeMark = null;
+    mouseResizeThis = null;
+    mouseResizeOther = null;
+    onMouseMove(event);
+}
+
+function onMouseMove(event) {
+    var outsideMovementThreshold = event.offsetX > mouseStartX + movementThreshold || event.offsetX < mouseStartX - movementThreshold;
+    console.log("Move, outside? " + outsideMovementThreshold);
+    if(mouseMode == null) {
+        hoveredMark = getMarkAt(getTrackAt(event.offsetY), getPositionAt(event.offsetX));
+        if(hoveredMark != null) {
+            if(event.offsetX < getXAt(hoveredMark.start) + resizeHandleWidth) {
+                hoveredPresumedMode = "resizeLeft";
+            }
+            else if(event.offsetX > getXAt(hoveredMark.stop) - resizeHandleWidth) {
+                hoveredPresumedMode = "resizeRight";
+            }
+            else {
+                hoveredPresumedMode = "drag";
+            }
+        }
+        else {
+            hoveredPresumedMode = null;
+        }
+    }
+    else if(mouseMode == "unknown") {
+        if(outsideMovementThreshold && mouseStartPresumedMode == "resizeLeft") {
+            mouseMode = "resize";
+            mouseResizeMark = mouseStartMark;
+            mouseResizeOther = mouseResizeMark.stop;
+            // TODO: Probably get rid of this line
+            updateMouseResizeThis(getPositionAt(event.offsetX), event.ctrlKey);
+            console.log("resizeLeft");
+        }
+        else if(outsideMovementThreshold && mouseStartPresumedMode == "resizeRight") {
+            mouseMode = "resize";
+            mouseResizeMark = mouseStartMark;
+            mouseResizeOther = mouseResizeMark.start;
+            // TODO: Probably get rid of this line
+            updateMouseResizeThis(getPositionAt(event.offsetX), event.ctrlKey);
+            console.log("resizeRight");
+        }
+        else if(outsideMovementThreshold && mouseStartPresumedMode == "drag") {
+            mouseMode = "drag";
+            mouseDragMark = mouseStartMark;
+            mouseDragStartOffset = mouseStartPosition - mouseDragMark.start;
+            mouseDragWidth = mouseDragMark.stop - mouseDragMark.start;
+            updateMouseDrag(getPositionAt(event.offsetX), event.ctrlKey);
+            console.log("drag");
+        }
+        else if(outsideMovementThreshold && mouseStartPresumedMode == null && mouseStartTrack != null && mouseStartPosition != null) {
+            mouseMode = "create";
+            mouseCreateTrack = mouseStartTrack;
+            mouseCreateOther = snapValueToGrid(mouseStartPosition, event.ctrlKey);
+            mouseCreateThis = snapValueToGrid(getPositionAt(event.offsetX), event.ctrlKey);
+        }
+    }
+    else if(mouseMode == "resize") {
+        updateMouseResizeThis(getPositionAt(event.offsetX), event.ctrlKey);
+    }
+    else if(mouseMode == "drag") {
+        updateMouseDrag(getPositionAt(event.offsetX), event.ctrlKey);
+    }
+    else if(mouseMode == "create") {
+        mouseCreateThis = snapValueToGrid(getPositionAt(event.offsetX), event.ctrlKey);
+    }
+    draw();
+}
+
+function updateMouseResizeThis(requestedPosition, forceToGrid) {
+    if(forceToGrid) {
+        requestedPosition = Math.round(requestedPosition * gridDivision) / gridDivision;
+    }
+    mouseResizeThis = requestedPosition;
+}
+
+function updateMouseDrag(requestedPosition, forceToGrid) {
+    requestedStart = requestedPosition - mouseDragStartOffset;
+    if(forceToGrid) {
+        requestedStart = Math.round(requestedStart * gridDivision) / gridDivision;
+    }
+    mouseDragStart = requestedStart;
+}
+
+function snapValueToGrid(requestedPosition, forceToGrid) {
+    if(forceToGrid) {
+        requestedPosition = Math.round(requestedPosition * gridDivision) / gridDivision;
+    }
+    return requestedPosition;
+}
+
+window.onload = draw;
+</script>
+ 
+</body>
+</html>
